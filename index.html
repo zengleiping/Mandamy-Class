@@ -808,6 +808,57 @@
     font-size:58px; font-weight:800; color:var(--ink); display:flex; align-items:baseline; white-space:nowrap;
   }
   .bell-label{ font-size:30px; font-weight:800; margin-left:12px; color:var(--brand-dark); }
+
+  /* 教材庫管理 Content Manager */
+  .cm-tab-btn{ font-size:13.5px; }
+  .cm-tab-btn.active{ background:var(--brand); color:#fff; box-shadow:none; }
+  .cm-lesson-item{
+    display:flex; align-items:center; justify-content:space-between; gap:6px; padding:9px 12px; border-radius:10px;
+    background:var(--card-alt); border:1.5px solid transparent; cursor:pointer; font-size:13px; transition:.15s;
+  }
+  .cm-lesson-item:hover{ background:var(--nav-hover); }
+  .cm-lesson-item.active{ border-color:var(--brand); background:var(--brand-soft, var(--card-alt)); font-weight:700; }
+  .cm-lesson-item .cm-del{ border:none; background:transparent; color:var(--ink-faint); cursor:pointer; font-size:13px; padding:2px 4px; border-radius:6px; }
+  .cm-lesson-item .cm-del:hover{ color:var(--wrong); background:var(--wrong-soft); }
+  .cm-list-row{
+    display:flex; align-items:center; justify-content:space-between; gap:10px; padding:9px 12px; border-radius:10px;
+    background:var(--card-alt); font-size:13px;
+  }
+  .cm-list-row .cm-row-main{ flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .cm-list-row .cm-row-actions{ display:flex; gap:4px; flex:0 0 auto; }
+  .cm-list-row .cm-row-actions button{ border:none; background:transparent; cursor:pointer; font-size:14px; padding:3px 6px; border-radius:6px; color:var(--ink-soft); }
+  .cm-list-row .cm-row-actions button:hover{ background:var(--nav-hover); }
+  .cm-list-row .cm-row-actions button.cm-del:hover{ color:var(--wrong); background:var(--wrong-soft); }
+  .cm-field-label{ font-size:12.5px; font-weight:700; color:var(--ink-soft); margin-bottom:2px; display:block; }
+  .cm-field-input{
+    width:100%; padding:8px 11px; border-radius:9px; border:1px solid var(--border); background:var(--card-alt);
+    color:var(--ink); font-family:inherit; font-size:13.5px; box-sizing:border-box;
+  }
+  .cm-field-row{ display:flex; gap:10px; flex-wrap:wrap; }
+  .cm-field-row > div{ flex:1 1 160px; min-width:140px; }
+  .cm-text-line-row{ display:flex; gap:8px; align-items:flex-start; }
+  .cm-text-line-row input[name="cmLineSpeaker"]{ flex:0 0 100px; }
+  .cm-text-line-row input[name="cmLineText"]{ flex:1 1 auto; }
+  .cm-line-block{ background:var(--card-alt); border-radius:12px; padding:10px; }
+  .cm-zy-toggle{
+    border:none; background:transparent; color:var(--brand-dark); font-size:12px; font-weight:700; cursor:pointer;
+    padding:4px 2px; margin-top:2px;
+  }
+  .cm-zy-toggle:hover{ text-decoration:underline; }
+  .cm-zy-panel{ margin-top:8px; padding-top:8px; border-top:1px dashed var(--border); }
+  .cm-zy-paste-row{ display:flex; gap:6px; margin-bottom:8px; }
+  .cm-zy-paste-row input{ flex:1; }
+  .cm-zy-chars{ display:flex; flex-wrap:wrap; gap:6px; }
+  .cm-char-box{ display:flex; flex-direction:column; align-items:center; gap:3px; }
+  .cm-char-box .cm-char{ font-size:15px; font-weight:700; color:var(--ink); }
+  .cm-char-box input{
+    width:52px; padding:5px 2px; text-align:center; border-radius:6px; border:1px solid var(--border);
+    background:var(--card); color:var(--ink); font-family:inherit; font-size:12px; box-sizing:border-box;
+  }
+  .cm-untaught-warning{
+    font-size:12px; line-height:1.6; color:var(--lesson1); background:var(--accent-soft);
+    border:1px dashed var(--lesson1); border-radius:8px; padding:6px 10px; margin-top:6px;
+  }
   .bell-input{
     width:82px; font-size:58px; font-weight:800; text-align:center; border:none; border-bottom:4px solid var(--border);
     background:transparent; color:var(--ink); outline:none; font-family:inherit; padding:0 2px;
@@ -1001,11 +1052,13 @@
     <div class="stat-pill">語法點 <b id="statGrammar">0</b> 個</div>
     <div class="stat-pill">已上 <b id="statLesson">0</b> 課</div>
     <button class="bell-btn" id="bellOpenBtn">⏰ 上下課時間</button>
+    <button class="bell-btn" id="cloudSyncOpenBtn">☁️ 生詞雲端同步</button>
   </div>
 </header>
 
 <div class="quick-links">
   <span class="quick-links-label">🔗 相關連結</span>
+  <a class="quick-link-btn" href="https://zengleiping.github.io/Mandamy-Test/practice.html" target="_blank" rel="noopener">🀄 曼米中文 測驗平台</a>
   <a class="quick-link-btn" href="https://padlet.com/zeng_li_ping/115-1-s023817flpay52qkz0tr" target="_blank" rel="noopener">📌 班級 Padlet</a>
   <a class="quick-link-btn" href="https://meet.google.com/bxd-mkfe-nfh" target="_blank" rel="noopener">🎥 線上上課</a>
   <a class="quick-link-btn" href="https://toneoz.com/imez/?lang=zh-TW" target="_blank" rel="noopener">🔤 曉聲通字典</a>
@@ -1342,6 +1395,159 @@
 
 <footer>由 Claude 依對話產生・資料來源：教師課堂生詞庫＋國家華語測驗推動工作委員會「華語八千詞表」(TOCFL 2.0)・寫字練習筆順資料來自 Hanzi Writer／Make Me a Hanzi</footer>
 
+<!-- 生詞雲端同步（跟「曼米中文 Mandamy」測驗平台共用同一套教師帳號與生詞庫） -->
+<div id="cloudSyncOverlay" class="bell-overlay" style="display:none;">
+  <div class="bell-card" style="max-width:460px; padding:40px 32px 32px; text-align:left;">
+    <button class="bell-close" id="cloudSyncCloseBtn">✕</button>
+    <h2 style="margin:0 0 6px; font-size:20px;">☁️ 生詞雲端同步</h2>
+    <p style="margin:0 0 20px; font-size:13.5px; color:var(--ink-soft); line-height:1.6;">用「曼米中文 Mandamy」的教師帳號，把這個班的生詞跟雲端測驗平台共用同一份資料。</p>
+
+    <div id="cloudSyncConnecting" style="font-size:13px; color:var(--ink-soft); margin-bottom:12px;">⏳ 正在連線雲端服務…</div>
+
+    <div id="cloudSyncLoginSection" style="display:none;">
+      <label style="display:block; font-size:13px; font-weight:700; margin-bottom:4px;">帳號 Username</label>
+      <input type="text" id="cloudSyncUsername" autocomplete="username" style="width:100%; padding:10px 12px; margin-bottom:12px; border-radius:10px; border:1px solid var(--border); background:var(--card-alt); color:var(--ink); font-family:inherit; font-size:14px; box-sizing:border-box;">
+      <label style="display:block; font-size:13px; font-weight:700; margin-bottom:4px;">密碼 Password</label>
+      <input type="password" id="cloudSyncPassword" autocomplete="current-password" style="width:100%; padding:10px 12px; margin-bottom:16px; border-radius:10px; border:1px solid var(--border); background:var(--card-alt); color:var(--ink); font-family:inherit; font-size:14px; box-sizing:border-box;">
+      <div id="cloudSyncError" style="display:none; color:var(--wrong); font-size:13px; margin-bottom:12px;"></div>
+      <button type="button" class="draw-btn" id="cloudSyncLoginBtn" style="width:100%; display:flex; justify-content:center; box-sizing:border-box;">登入 Log In</button>
+      <p style="font-size:12px; color:var(--ink-faint); margin-top:14px; line-height:1.6;">還沒有帳號？先到「曼米中文 測驗平台」(Mandamy-Test/practice.html) 設定管理員帳號，再回來這裡登入。</p>
+    </div>
+
+    <div id="cloudSyncActionsSection" style="display:none;">
+      <p style="font-size:14px; margin:0 0 4px;">已登入：<b id="cloudSyncWhoAmI"></b></p>
+      <p id="cloudSyncCloudStatus" style="font-size:13px; color:var(--ink-soft); margin:0 0 18px; line-height:1.6;"></p>
+      <div id="cloudSyncActionMsg" style="display:none; font-size:13px; margin-bottom:12px;"></div>
+      <button type="button" class="draw-btn" id="cloudSyncManageContentBtn" style="width:100%; display:flex; justify-content:center; margin-bottom:14px; box-sizing:border-box; background:linear-gradient(135deg,var(--brand),var(--brand-dark));">📚 管理我的教材庫（生詞／語法／課文）</button>
+      <div style="border-top:1px dashed var(--border); margin:0 0 14px;"></div>
+      <button type="button" class="draw-btn" id="cloudSyncUploadBtn" style="width:100%; display:flex; justify-content:center; margin-bottom:10px; box-sizing:border-box;">⬆️ 上傳目前生詞到雲端</button>
+      <button type="button" class="draw-btn" id="cloudSyncDownloadBtn" style="width:100%; display:flex; justify-content:center; margin-bottom:10px; box-sizing:border-box; background:linear-gradient(135deg,var(--accent),var(--lesson2));">⬇️ 套用雲端最新生詞</button>
+      <button type="button" class="back-btn" id="cloudSyncResetBtn" style="width:100%; display:flex; justify-content:center; margin-bottom:10px; box-sizing:border-box;">🔄 清除雲端快取，改用本機資料</button>
+      <button type="button" class="back-btn" id="cloudSyncLogoutBtn" style="width:100%; display:flex; justify-content:center; box-sizing:border-box;">登出 Log Out</button>
+    </div>
+
+    <div id="cloudSyncOfflineSection" style="display:none;">
+      <p style="font-size:13.5px; color:var(--wrong); margin:0 0 14px;">⚠️ 無法連線雲端服務，請檢查網路連線。</p>
+      <button type="button" class="back-btn" id="cloudSyncRetryBtn" style="width:100%; display:flex; justify-content:center; box-sizing:border-box;">🔄 重試 Retry</button>
+    </div>
+  </div>
+</div>
+
+<!-- 教材庫管理（每位老師登入後自己的生詞／語法／課文，存在 teacherVocabBanks/{teacherId}） -->
+<div id="contentManagerOverlay" class="bell-overlay" style="display:none;">
+  <div class="bell-card" style="max-width:960px; width:94vw; max-height:90vh; overflow-y:auto; padding:40px 36px 32px; text-align:left;">
+    <button class="bell-close" id="cmCloseBtn">✕</button>
+    <h2 style="margin:0 0 4px; font-size:20px;">📚 我的教材庫管理</h2>
+    <p style="margin:0 0 18px; font-size:13px; color:var(--ink-soft); line-height:1.6;">新增/編輯屬於你自己的課次、生詞、語法與課文；按下方「儲存並套用」後，賓果卡、轉盤、翻卡、生詞卡等所有課堂遊戲都會改用這份資料。</p>
+
+    <div style="display:flex; gap:22px; align-items:flex-start; flex-wrap:wrap;">
+      <div style="flex:0 0 230px; min-width:210px;">
+        <div style="font-weight:700; font-size:13.5px; margin-bottom:8px; color:var(--ink-soft);">課次 Lessons</div>
+        <div id="cmLessonList" style="display:flex; flex-direction:column; gap:6px; max-height:360px; overflow-y:auto; margin-bottom:10px; padding-right:2px;"></div>
+        <div id="cmAddLessonForm" style="display:none; background:var(--card-alt); border-radius:12px; padding:10px; margin-bottom:8px;">
+          <input type="number" id="cmNewLessonNum" placeholder="課次（例如 5）" style="width:100%; padding:8px 10px; margin-bottom:6px; border-radius:8px; border:1px solid var(--border); background:var(--card); color:var(--ink); font-family:inherit; font-size:13px; box-sizing:border-box;">
+          <input type="text" id="cmNewLessonTitle" placeholder="課名（例如 我的家人）" style="width:100%; padding:8px 10px; margin-bottom:8px; border-radius:8px; border:1px solid var(--border); background:var(--card); color:var(--ink); font-family:inherit; font-size:13px; box-sizing:border-box;">
+          <div style="display:flex; gap:8px;">
+            <button type="button" class="back-btn" id="cmNewLessonCancelBtn" style="flex:1; justify-content:center; display:flex;">取消</button>
+            <button type="button" class="draw-btn" id="cmNewLessonConfirmBtn" style="flex:1; justify-content:center; display:flex; padding:9px 12px; font-size:13px;">新增</button>
+          </div>
+        </div>
+        <button type="button" class="back-btn" id="cmAddLessonBtn" style="width:100%; display:flex; justify-content:center; box-sizing:border-box;">＋ 新增課次</button>
+      </div>
+
+      <div style="flex:1 1 420px; min-width:280px;">
+        <div id="cmNoLessonHint" style="font-size:13.5px; color:var(--ink-faint); padding:40px 0; text-align:center;">← 請先在左邊選擇或新增一課</div>
+        <div id="cmLessonEditor" style="display:none;">
+          <div style="display:flex; gap:8px; margin-bottom:16px; border-bottom:1px solid var(--border); padding-bottom:12px;">
+            <button type="button" class="back-btn cm-tab-btn active" data-tab="vocab">📇 生詞 <span id="cmVocabCount"></span></button>
+            <button type="button" class="back-btn cm-tab-btn" data-tab="grammar">🧩 語法 <span id="cmGrammarCount"></span></button>
+            <button type="button" class="back-btn cm-tab-btn" data-tab="texts">📖 課文 <span id="cmTextsCount"></span></button>
+          </div>
+
+          <div id="cmTabVocab" class="cm-tab-panel">
+            <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px;">
+              <button type="button" class="draw-btn" id="cmAddVocabBtn" style="padding:9px 16px; font-size:13px;">＋ 新增生詞</button>
+              <button type="button" class="back-btn" id="cmDlTemplateBtn" style="padding:9px 14px; font-size:13px;">📄 下載 Excel 範本</button>
+              <button type="button" class="back-btn" id="cmImportExcelBtn" style="padding:9px 14px; font-size:13px;">📥 Excel 匯入（本課）</button>
+              <input type="file" id="cmExcelFileInput" accept=".xlsx,.xls,.csv" style="display:none;">
+            </div>
+            <div id="cmVocabList" style="display:flex; flex-direction:column; gap:6px; max-height:380px; overflow-y:auto;"></div>
+          </div>
+
+          <div id="cmTabGrammar" class="cm-tab-panel" style="display:none;">
+            <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px;">
+              <button type="button" class="draw-btn" id="cmAddGrammarBtn" style="padding:9px 16px; font-size:13px;">＋ 新增語法點</button>
+              <button type="button" class="back-btn" id="cmDlGrammarTemplateBtn" style="padding:9px 14px; font-size:13px;">📄 下載 Excel 範本</button>
+              <button type="button" class="back-btn" id="cmImportGrammarBtn" style="padding:9px 14px; font-size:13px;">📥 Excel 匯入（本課）</button>
+              <input type="file" id="cmGrammarExcelFileInput" accept=".xlsx,.xls,.csv" style="display:none;">
+            </div>
+            <div id="cmGrammarList" style="display:flex; flex-direction:column; gap:6px; max-height:380px; overflow-y:auto;"></div>
+          </div>
+
+          <div id="cmTabTexts" class="cm-tab-panel" style="display:none;">
+            <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px;">
+              <button type="button" class="draw-btn" id="cmAddTextBtn" style="padding:9px 16px; font-size:13px;">＋ 新增課文</button>
+              <button type="button" class="back-btn" id="cmDlTextTemplateBtn" style="padding:9px 14px; font-size:13px;">📄 下載 Excel 範本</button>
+              <button type="button" class="back-btn" id="cmImportTextBtn" style="padding:9px 14px; font-size:13px;">📥 Excel 匯入（本課）</button>
+              <input type="file" id="cmTextExcelFileInput" accept=".xlsx,.xls,.csv" style="display:none;">
+            </div>
+            <div id="cmTextsList" style="display:flex; flex-direction:column; gap:6px; max-height:380px; overflow-y:auto;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:22px; padding-top:16px; border-top:1px solid var(--border); flex-wrap:wrap; gap:10px;">
+      <div id="cmSaveMsg" style="font-size:13px; color:var(--ink-soft);"></div>
+      <button type="button" class="draw-btn" id="cmSaveBtn">💾 儲存並套用到課堂遊戲</button>
+    </div>
+  </div>
+</div>
+
+<!-- 生詞 新增／編輯 -->
+<div id="cmVocabFormOverlay" class="bell-overlay" style="display:none; z-index:1100;">
+  <div class="bell-card" style="max-width:600px; max-height:88vh; overflow-y:auto; padding:36px 32px 28px; text-align:left;">
+    <button class="bell-close" id="cmVocabFormCloseBtn">✕</button>
+    <h2 id="cmVocabFormTitle" style="margin:0 0 16px; font-size:18px;">新增生詞</h2>
+    <div id="cmVocabFormBody" style="display:flex; flex-direction:column; gap:10px;"></div>
+    <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:18px;">
+      <button type="button" class="back-btn" id="cmVocabFormCancelBtn">取消</button>
+      <button type="button" class="draw-btn" id="cmVocabFormSaveBtn">儲存這筆生詞</button>
+    </div>
+  </div>
+</div>
+
+<!-- 語法 新增／編輯 -->
+<div id="cmGrammarFormOverlay" class="bell-overlay" style="display:none; z-index:1100;">
+  <div class="bell-card" style="max-width:560px; max-height:88vh; overflow-y:auto; padding:36px 32px 28px; text-align:left;">
+    <button class="bell-close" id="cmGrammarFormCloseBtn">✕</button>
+    <h2 id="cmGrammarFormTitle" style="margin:0 0 16px; font-size:18px;">新增語法點</h2>
+    <div id="cmGrammarFormBody" style="display:flex; flex-direction:column; gap:10px;"></div>
+    <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:18px;">
+      <button type="button" class="back-btn" id="cmGrammarFormCancelBtn">取消</button>
+      <button type="button" class="draw-btn" id="cmGrammarFormSaveBtn">儲存這個語法點</button>
+    </div>
+  </div>
+</div>
+
+<!-- 課文 新增／編輯 -->
+<div id="cmTextFormOverlay" class="bell-overlay" style="display:none; z-index:1100;">
+  <div class="bell-card" style="max-width:640px; max-height:88vh; overflow-y:auto; padding:36px 32px 28px; text-align:left;">
+    <button class="bell-close" id="cmTextFormCloseBtn">✕</button>
+    <h2 id="cmTextFormTitle" style="margin:0 0 16px; font-size:18px;">新增課文</h2>
+    <label style="display:block; font-size:13px; font-weight:700; margin-bottom:4px;">課文標題</label>
+    <input type="text" id="cmTextTitleInput" placeholder="例如：問候與自我介紹" style="width:100%; padding:9px 12px; margin-bottom:14px; border-radius:10px; border:1px solid var(--border); background:var(--card-alt); color:var(--ink); font-family:inherit; font-size:14px; box-sizing:border-box;">
+    <label style="display:block; font-size:13px; font-weight:700; margin-bottom:6px;">對話內容（依序，每行一句）</label>
+    <div id="cmTextLinesList" style="display:flex; flex-direction:column; gap:8px; margin-bottom:10px;"></div>
+    <button type="button" class="back-btn" id="cmAddTextLineBtn" style="margin-bottom:8px;">＋ 新增一句台詞</button>
+    <p style="font-size:11.5px; color:var(--ink-faint); margin:0 0 4px; line-height:1.6;">注音會依每個字自動拆開留白，儲存後如果需要可以之後再逐字補上注音。</p>
+    <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:14px;">
+      <button type="button" class="back-btn" id="cmTextFormCancelBtn">取消</button>
+      <button type="button" class="draw-btn" id="cmTextFormSaveBtn">儲存這篇課文</button>
+    </div>
+  </div>
+</div>
+
 <script>
 /**
  * Hanzi Writer v3.7.3 | https://chanind.github.io/hanzi-writer
@@ -1349,6 +1555,8 @@
 
 var HanziWriter=function(){"use strict";var t,e,r;const i="undefined"==typeof window?global:window,s=i.performance&&(()=>i.performance.now())||(()=>Date.now()),o=(null===(t=i.requestAnimationFrame)||void 0===t?void 0:t.bind(i))||(t=>setTimeout(()=>t(s()),1e3/60)),n=(null===(e=i.cancelAnimationFrame)||void 0===e?void 0:e.bind(i))||clearTimeout;function a(t){return t[t.length-1]}const h=(t,e)=>t<0?e+t:t;function l(t,e){const r={...t};for(const i in e){const s=t[i],o=e[i];s!==o&&(s&&o&&"object"==typeof s&&"object"==typeof o&&!Array.isArray(o)?r[i]=l(s,o):r[i]=o)}return r}let c=0;function d(){return c++,c}function u(t){return t.reduce((t,e)=>e+t,0)/t.length}function _(t){const e=t.toUpperCase().trim();if(/^#([A-F0-9]{3}){1,2}$/.test(e)){let t=e.substring(1).split("");3===t.length&&(t=[t[0],t[0],t[1],t[1],t[2],t[2]]);const r=""+t.join("");return{r:parseInt(r.slice(0,2),16),g:parseInt(r.slice(2,4),16),b:parseInt(r.slice(4,6),16),a:1}}const r=e.match(/^RGBA?\((\d+)\s*,\s*(\d+)\s*,\s*(\d+)(?:\s*,\s*(\d*\.?\d+))?\)$/);if(r)return{r:parseInt(r[1],10),g:parseInt(r[2],10),b:parseInt(r[3],10),a:parseFloat(r[4]||1,10)};throw new Error("Invalid color: "+t)}function p(t,e){const r={};for(let i=0;i<e;i++)r[i]=t;return r}function g(t,e){const r={};for(let i=0;i<t;i++)r[i]=e(i);return r}const k=(null===(r=i.navigator)||void 0===r?void 0:r.userAgent)||"",m=k.indexOf("MSIE ")>0||k.indexOf("Trident/")>0||k.indexOf("Edge/")>0,f=()=>{};class v{constructor(t,e,r=f){this._mutationChains=[],this._onStateChange=r,this.state={options:{drawingFadeDuration:e.drawingFadeDuration,drawingWidth:e.drawingWidth,drawingColor:_(e.drawingColor),strokeColor:_(e.strokeColor),outlineColor:_(e.outlineColor),radicalColor:_(e.radicalColor||e.strokeColor),highlightColor:_(e.highlightColor)},character:{main:{opacity:e.showCharacter?1:0,strokes:{}},outline:{opacity:e.showOutline?1:0,strokes:{}},highlight:{opacity:1,strokes:{}}},userStrokes:null};for(let e=0;e<t.strokes.length;e++)this.state.character.main.strokes[e]={opacity:1,displayPortion:1},this.state.character.outline.strokes[e]={opacity:1,displayPortion:1},this.state.character.highlight.strokes[e]={opacity:0,displayPortion:1}}overwriteOnStateChange(t){this._onStateChange=t}updateState(t){const e=l(this.state,t);this._onStateChange(e,this.state),this.state=e}run(t,e={}){const r=t.map(t=>t.scope);return this.cancelMutations(r),new Promise(i=>{const s={_isActive:!0,_index:0,_resolve:i,_mutations:t,_loop:e.loop,_scopes:r};this._mutationChains.push(s),this._run(s)})}_run(t){if(!t._isActive)return;const e=t._mutations;if(t._index>=e.length){if(!t._loop)return t._isActive=!1,this._mutationChains=this._mutationChains.filter(e=>e!==t),void t._resolve({canceled:!1});t._index=0}t._mutations[t._index].run(this).then(()=>{t._isActive&&(t._index++,this._run(t))})}_getActiveMutations(){return this._mutationChains.map(t=>t._mutations[t._index])}pauseAll(){this._getActiveMutations().forEach(t=>t.pause())}resumeAll(){this._getActiveMutations().forEach(t=>t.resume())}cancelMutations(t){for(const e of this._mutationChains)for(const r of e._scopes)for(const i of t)(r.startsWith(i)||i.startsWith(r))&&this._cancelMutationChain(e)}cancelAll(){this.cancelMutations([""])}_cancelMutationChain(t){var e;t._isActive=!1;for(let e=t._index;e<t._mutations.length;e++)t._mutations[e].cancel(this);null===(e=t._resolve)||void 0===e||e.call(t,{canceled:!0}),this._mutationChains=this._mutationChains.filter(e=>e!==t)}}const y=(t,e)=>({x:t.x-e.x,y:t.y-e.y}),C=t=>Math.sqrt(Math.pow(t.x,2)+Math.pow(t.y,2)),S=(t,e)=>C(y(t,e)),w=(t,e=1)=>{const r=10*e;return{x:Math.round(r*t.x)/r,y:Math.round(r*t.y)/r}},P=t=>{let e=t[0];return t.slice(1).reduce((t,r)=>{const i=S(r,e);return e=r,t+i},0)},D=(t,e,r)=>{const i=y(e,t),s=r/C(i);return{x:e.x+s*i.x,y:e.y+s*i.y}},x=t=>{const e=((t,e=30)=>{const r=P(t)/(e-1),i=[t[0]],s=a(t),o=t.slice(1);for(let t=0;t<e-2;t++){let t=a(i),e=r,s=!1;for(;!s;){const r=S(t,o[0]);if(r<e)e-=r,t=o.shift();else{const n=D(t,o[0],e-r);i.push(n),s=!0}}}return i.push(s),i})(t),r={x:u(e.map(t=>t.x)),y:u(e.map(t=>t.y))},i=e.map(t=>y(t,r)),s=Math.sqrt(u([Math.pow(i[0].x,2)+Math.pow(i[0].y,2),Math.pow(a(i).x,2)+Math.pow(a(i).y,2)]));return((t,e=.05)=>{const r=t.slice(0,1);for(const i of t.slice(1)){const t=r[r.length-1],s=S(i,t);if(s>e){const o=Math.ceil(s/e),n=s/o;for(let e=0;e<o;e++)r.push(D(i,t,-1*n*(e+1)))}else r.push(i)}return r})(i.map(t=>({x:t.x/s,y:t.y/s})))};function M(t,e=!1){const r=w(t[0]),i=t.slice(1);let s=`M ${r.x} ${r.y}`;return i.forEach(t=>{const e=w(t);s+=` L ${e.x} ${e.y}`}),e&&(s+="Z"),s}const R=(t,e)=>{const r=(t=>{if(t.length<3)return t;const e=[t[0],t[1]];return t.slice(2).forEach(t=>{const r=e.length,i=y(t,e[r-1]),s=y(e[r-1],e[r-2]);i.y*s.x-i.x*s.y==0&&e.pop(),e.push(t)}),e})(t);if(r.length<2)return r;const i=r[1],s=r[0],o=D(i,s,e),n=r.slice(1);return n.unshift(o),n};class T{constructor(t,e,r,i=!1){this.path=t,this.points=e,this.strokeNum=r,this.isInRadical=i}getStartingPoint(){return this.points[0]}getEndingPoint(){return this.points[this.points.length-1]}getLength(){return P(this.points)}getVectors(){let t=this.points[0];return this.points.slice(1).map(e=>{const r=y(e,t);return t=e,r})}getDistance(t){const e=this.points.map(e=>S(e,t));return Math.min(...e)}getAverageDistance(t){return t.reduce((t,e)=>t+this.getDistance(e),0)/t.length}}class A{constructor(t,e){this.symbol=t,this.strokes=e}}function O({radStrokes:t,strokes:e,medians:r}){return e.map((e,i)=>{const s=r[i].map(t=>{const[e,r]=t;return{x:e,y:r}});return new T(e,s,i,(o=i,(null!==(n=null==t?void 0:t.indexOf(o))&&void 0!==n?n:-1)>=0));var o,n})}const[b,$]=[{x:0,y:-124},{x:1024,y:900}],z=$.x-b.x,L=$.y-b.y;class E{constructor(t){const{padding:e,width:r,height:i}=t;this.padding=e,this.width=r,this.height=i;const s=r-2*e,o=i-2*e,n=s/z,a=o/L;this.scale=Math.min(n,a);const h=e+(s-this.scale*z)/2,l=e+(o-this.scale*L)/2;this.xOffset=-1*b.x*this.scale+h,this.yOffset=-1*b.y*this.scale+l}convertExternalPoint(t){return{x:(t.x-this.xOffset)/this.scale,y:(this.height-this.yOffset-t.y)/this.scale}}}const W=(t,e)=>{const r=(t=>{const e=[];let r=t[0];return t.slice(1).forEach(t=>{e.push(y(t,r)),r=t}),e})(t),i=e.getVectors();return u(r.map(t=>{const e=i.map(e=>{return i=t,((r=e).x*i.x+r.y*i.y)/C(r)/C(i);var r,i});return Math.max(...e)}))>0},H=t=>{if(t.length<2)return t;const[e,...r]=t,i=[e];for(const t of r)s=t,o=i[i.length-1],(s.x!==o.x||s.y!==o.y)&&i.push(t);var s,o;return i},F=[Math.PI/16,Math.PI/32,0,-1*Math.PI/32,-1*Math.PI/16],I=(t,e,r)=>{const i=x(t),s=x(e);let o=1/0;return F.forEach(t=>{const e=((t,e)=>{const r=t.length>=e.length?t:e,i=t.length>=e.length?e:t,s=(t,e,s,o)=>{if(0===t&&0===e)return S(r[0],i[0]);if(t>0&&0===e)return Math.max(s[0],S(r[t],i[0]));const n=o[o.length-1];return 0===t&&e>0?Math.max(n,S(r[0],i[e])):Math.max(Math.min(s[e],s[e-1],n),S(r[t],i[e]))};let o=[];for(let t=0;t<r.length;t++){const e=[];for(let r=0;r<i.length;r++)e.push(s(t,r,o,e));o=e}return o[i.length-1]})(i,((t,e)=>t.map(t=>({x:Math.cos(e)*t.x-Math.sin(e)*t.y,y:Math.sin(e)*t.x+Math.cos(e)*t.y})))(s,t));e<o&&(o=e)}),o<=.4*r},B=(t,e,r)=>{const{leniency:i=1,isOutlineVisible:s=!1,checkBackwards:o=!0,averageDistanceThreshold:n=350}=r,a=e.getAverageDistance(t),h=a<=n*(s||e.strokeNum>0?.5:1)*i;if(!h)return{isMatch:!1,avgDist:a,meta:{isStrokeBackwards:!1}};const l=((t,e,r)=>{const i=S(e.getStartingPoint(),t[0]),s=S(e.getEndingPoint(),t[t.length-1]);return i<=250*r&&s<=250*r})(t,e,i),c=W(t,e),d=I(t,e.points,i),u=((t,e,r)=>r*(P(t)+25)/(e.getLength()+25)>=.35)(t,e,i),_=h&&l&&c&&d&&u;if(o&&!_){if(B([...t].reverse(),e,{...r,checkBackwards:!1}).isMatch)return{isMatch:_,avgDist:a,meta:{isStrokeBackwards:!0}}}return{isMatch:_,avgDist:a,meta:{isStrokeBackwards:!1}}};class q{constructor(t,e,r){this.id=t,this.points=[e],this.externalPoints=[r]}appendPoint(t,e){this.points.push(t),this.externalPoints.push(e)}}class N{constructor(t,e,r={}){this._tick=t=>{if(null!==this._startPauseTime)return;const e=Math.min(1,(t-this._startTime-this._pausedDuration)/this._duration);if(1===e)this._renderState.updateState(this._values),this._frameHandle=void 0,this.cancel(this._renderState);else{const t=V(e),r=j(this._startState,this._values,t);this._renderState.updateState(r),this._frameHandle=o(this._tick)}},this.scope=t,this._valuesOrCallable=e,this._duration=r.duration||0,this._force=r.force,this._pausedDuration=0,this._startPauseTime=null}run(t){return this._values||this._inflateValues(t),0===this._duration&&t.updateState(this._values),0===this._duration||U(t.state,this._values)?Promise.resolve():(this._renderState=t,this._startState=t.state,this._startTime=performance.now(),this._frameHandle=o(this._tick),new Promise(t=>{this._resolve=t}))}_inflateValues(t){let e=this._valuesOrCallable;"function"==typeof this._valuesOrCallable&&(e=this._valuesOrCallable(t.state)),this._values=function(t,e){const r=t.split("."),i={};let s=i;for(let t=0;t<r.length;t++){const i=t===r.length-1?e:{};s[r[t]]=i,s=i}return i}(this.scope,e)}pause(){null===this._startPauseTime&&(this._frameHandle&&n(this._frameHandle),this._startPauseTime=performance.now())}resume(){null!==this._startPauseTime&&(this._frameHandle=o(this._tick),this._pausedDuration+=performance.now()-this._startPauseTime,this._startPauseTime=null)}cancel(t){var e;null===(e=this._resolve)||void 0===e||e.call(this),this._resolve=void 0,n(this._frameHandle||-1),this._frameHandle=void 0,this._force&&(this._values||this._inflateValues(t),t.updateState(this._values))}}function j(t,e,r){const i={};for(const s in e){const o=e[s],n=null==t?void 0:t[s];i[s]="number"==typeof n&&"number"==typeof o&&o>=0?r*(o-n)+n:j(n,o,r)}return i}function U(t,e){for(const r in e){const i=e[r],s=null==t?void 0:t[r];if(i>=0){if(i!==s)return!1}else if(!U(s,i))return!1}return!0}N.Delay=class{constructor(t){this._duration=t,this._startTime=null,this._paused=!1,this.scope="delay."+t}run(){return this._startTime=s(),this._runningPromise=new Promise(t=>{this._resolve=t,this._timeout=setTimeout(()=>this.cancel(),this._duration)}),this._runningPromise}pause(){if(this._paused)return;const t=performance.now()-(this._startTime||0);this._duration=Math.max(0,this._duration-t),clearTimeout(this._timeout),this._paused=!0}resume(){this._paused&&(this._startTime=performance.now(),this._timeout=setTimeout(()=>this.cancel(),this._duration),this._paused=!1)}cancel(){clearTimeout(this._timeout),this._resolve&&this._resolve(),this._resolve=void 0}};const V=t=>-Math.cos(t*Math.PI)/2+.5,Q=(t,e,r)=>[new N(`character.${t}.strokes`,p({opacity:1,displayPortion:1},e.strokes.length),{duration:r,force:!0})],G=(t,e,r)=>[new N("character."+t,{opacity:1,strokes:p({opacity:1,displayPortion:1},e.strokes.length)},{duration:r,force:!0})],X=(t,e,r)=>[new N(`character.${t}.opacity`,0,{duration:r,force:!0}),...Q(t,e,0)],K=(t,e,r)=>[new N("options."+t,e,{duration:r})],Y=(t,e,r)=>{const i=t.strokeNum,s=(t.getLength()+600)/(3*r);return[new N("options.highlightColor",e),new N("character.highlight",{opacity:1,strokes:{[i]:{displayPortion:0,opacity:0}}}),new N("character.highlight.strokes."+i,{displayPortion:1,opacity:1},{duration:s}),new N(`character.highlight.strokes.${i}.opacity`,0,{duration:s,force:!0})]},J=(t,e,r)=>{const i=e.strokeNum,s=(e.getLength()+600)/(3*r);return[new N("character."+t,{opacity:1,strokes:{[i]:{displayPortion:0,opacity:1}}}),new N(`character.${t}.strokes.${i}.displayPortion`,1,{duration:s})]},Z=(t,e,r,i,s)=>{let o=X(t,e,r);return o=o.concat(Q(t,e,0)),o.push(new N("character."+t,{opacity:1,strokes:p({opacity:0},e.strokes.length)},{force:!0})),e.strokes.forEach((e,r)=>{r>0&&o.push(new N.Delay(s)),o=o.concat(J(t,e,i))}),o},tt=t=>(null==t?void 0:t.map(t=>new N("userStrokes."+t,null,{force:!0})))||[];class et{constructor(t,e,r){this._currentStrokeIndex=0,this._mistakesOnStroke=0,this._totalMistakes=0,this._character=t,this._renderState=e,this._isActive=!1,this._positioner=r}startQuiz(t){this._userStrokesIds&&this._renderState.run(tt(this._userStrokesIds)),this._userStrokesIds=[],this._isActive=!0,this._options=t;const e=h(t.quizStartStrokeNum,this._character.strokes.length);return this._currentStrokeIndex=Math.min(e,this._character.strokes.length-1),this._mistakesOnStroke=0,this._totalMistakes=0,this._renderState.run((r=this._character,i=t.strokeFadeDuration,s=this._currentStrokeIndex,[...X("main",r,i),new N("character.highlight",{opacity:1,strokes:p({opacity:0},r.strokes.length)},{force:!0}),new N("character.main",{opacity:1,strokes:g(r.strokes.length,t=>({opacity:t<s?1:0}))},{force:!0})]));var r,i,s}startUserStroke(t){var e;if(!this._isActive)return null;if(this._userStroke)return this.endUserStroke();const r=this._positioner.convertExternalPoint(t),i=d();return this._userStroke=new q(i,r,t),null===(e=this._userStrokesIds)||void 0===e||e.push(i),this._renderState.run(((t,e)=>[new N("quiz.activeUserStrokeId",t,{force:!0}),new N("userStrokes."+t,{points:[e],opacity:1},{force:!0})])(i,r))}continueUserStroke(t){if(!this._userStroke)return Promise.resolve();const e=this._positioner.convertExternalPoint(t);this._userStroke.appendPoint(e,t);const r=this._userStroke.points.slice(0);return this._renderState.run((i=this._userStroke.id,[new N(`userStrokes.${i}.points`,r,{force:!0})]));var i}setPositioner(t){this._positioner=t}endUserStroke(){var t,e,r;if(!this._userStroke)return;if(this._renderState.run((e=this._userStroke.id,r=null!==(t=this._options.drawingFadeDuration)&&void 0!==t?t:300,[new N(`userStrokes.${e}.opacity`,0,{duration:r})])),1===this._userStroke.points.length)return void(this._userStroke=void 0);const{acceptBackwardsStrokes:i,markStrokeCorrectAfterMisses:s}=this._options,o=this._getCurrentStroke(),{isMatch:n,meta:a}=function(t,e,r,i={}){const s=e.strokes,o=H(t.points);if(o.length<2)return{isMatch:!1,meta:{isStrokeBackwards:!1}};const{isMatch:n,meta:a,avgDist:h}=B(o,s[r],i);if(!n)return{isMatch:n,meta:a};const l=s.slice(r+1);let c=h;for(let t=0;t<l.length;t++){const{isMatch:e,avgDist:r}=B(o,l[t],{...i,checkBackwards:!1});e&&r<c&&(c=r)}if(c<h){const t=.6*(c+h)/(2*h),{isMatch:e,meta:n}=B(o,s[r],{...i,leniency:(i.leniency||1)*t});return{isMatch:e,meta:n}}return{isMatch:n,meta:a}}(this._userStroke,this._character,this._currentStrokeIndex,{isOutlineVisible:this._renderState.state.character.outline.opacity>0,leniency:this._options.leniency,averageDistanceThreshold:this._options.averageDistanceThreshold}),h=s&&this._mistakesOnStroke+1>=s;if(n||h||a.isStrokeBackwards&&i)this._handleSuccess(a);else{this._handleFailure(a);const{showHintAfterMisses:t,highlightColor:e,strokeHighlightSpeed:r}=this._options;!1!==t&&this._mistakesOnStroke>=t&&this._renderState.run(Y(o,_(e),r))}this._userStroke=void 0}cancel(){this._isActive=!1,this._userStrokesIds&&this._renderState.run(tt(this._userStrokesIds))}_getStrokeData({isCorrect:t,meta:e}){return{character:this._character.symbol,strokeNum:this._currentStrokeIndex,mistakesOnStroke:this._mistakesOnStroke,totalMistakes:this._totalMistakes,strokesRemaining:this._character.strokes.length-this._currentStrokeIndex-(t?1:0),drawnPath:(r=this._userStroke,{pathString:M(r.externalPoints),points:r.points.map(t=>w(t))}),isBackwards:e.isStrokeBackwards};var r}nextStroke(){if(!this._options)return;const{strokes:t,symbol:e}=this._character,{onComplete:r,highlightOnComplete:i,strokeFadeDuration:s,highlightCompleteColor:o,highlightColor:n,strokeHighlightDuration:a}=this._options;let h=(l="main",c=this._currentStrokeIndex,[new N(`character.${l}.strokes.${c}`,{displayPortion:1,opacity:1},{duration:s,force:!0})]);var l,c;this._mistakesOnStroke=0,this._currentStrokeIndex+=1;this._currentStrokeIndex===t.length&&(this._isActive=!1,null==r||r({character:e,totalMistakes:this._totalMistakes}),i&&(h=h.concat(((t,e,r)=>[new N("options.highlightColor",e),...X("highlight",t),...G("highlight",t,r/2),...X("highlight",t,r/2)])(this._character,_(o||n),2*(a||0))))),this._renderState.run(h)}_handleSuccess(t){if(!this._options)return;const{onCorrectStroke:e}=this._options;null==e||e({...this._getStrokeData({isCorrect:!0,meta:t})}),this.nextStroke()}_handleFailure(t){var e,r;this._mistakesOnStroke+=1,this._totalMistakes+=1,null===(e=(r=this._options).onMistake)||void 0===e||e.call(r,this._getStrokeData({isCorrect:!1,meta:t}))}_getCurrentStroke(){return this._character.strokes[this._currentStrokeIndex]}}function rt(t){return document.createElementNS("http://www.w3.org/2000/svg",t)}function it(t,e,r){t.setAttributeNS(null,e,r)}function st(t,e){Object.keys(e).forEach(r=>it(t,r,e[r]))}function ot(t){var e;null==t||null===(e=t.parentNode)||void 0===e||e.removeChild(t)}class nt{constructor(t){this.stroke=t,this._pathLength=t.getLength()+nt.STROKE_WIDTH/2}_getStrokeDashoffset(t){return.999*this._pathLength*(1-t)}_getColor({strokeColor:t,radicalColor:e}){return e&&this.stroke.isInRadical?e:t}}nt.STROKE_WIDTH=200;class at extends nt{constructor(t){super(t),this._oldProps=void 0}mount(t){this._animationPath=rt("path"),this._clip=rt("clipPath"),this._strokePath=rt("path");const e="mask-"+d();it(this._clip,"id",e),it(this._strokePath,"d",this.stroke.path),this._animationPath.style.opacity="0",it(this._animationPath,"clip-path",function(t){let e="";return window.location&&window.location.href&&(e=window.location.href.replace(/#[^#]*$/,"").replace(/"/gi,"%22")),`url("${e}#${t}")`}(e));const r=R(this.stroke.points,100);return it(this._animationPath,"d",M(r)),st(this._animationPath,{stroke:"#FFFFFF","stroke-width":200..toString(),fill:"none","stroke-linecap":"round","stroke-linejoin":"miter","stroke-dasharray":`${this._pathLength},${this._pathLength}`}),this._clip.appendChild(this._strokePath),t.defs.appendChild(this._clip),t.svg.appendChild(this._animationPath),this}render(t){var e,r;if(t===this._oldProps||!this._animationPath)return;t.displayPortion!==(null===(e=this._oldProps)||void 0===e?void 0:e.displayPortion)&&(this._animationPath.style.strokeDashoffset=this._getStrokeDashoffset(t.displayPortion).toString());const i=this._getColor(t);if(!this._oldProps||i!==this._getColor(this._oldProps)){const{r:t,g:e,b:r,a:s}=i;st(this._animationPath,{stroke:`rgba(${t},${e},${r},${s})`})}t.opacity!==(null===(r=this._oldProps)||void 0===r?void 0:r.opacity)&&(this._animationPath.style.opacity=t.opacity.toString()),this._oldProps=t}}class ht{constructor(t){this._oldProps=void 0,this._strokeRenderers=t.strokes.map(t=>new at(t))}mount(t){const e=t.createSubRenderTarget();this._group=e.svg,this._strokeRenderers.forEach(t=>{t.mount(e)})}render(t){var e,r;if(t===this._oldProps||!this._group)return;const{opacity:i,strokes:s,strokeColor:o,radicalColor:n=null}=t;var a;i!==(null===(e=this._oldProps)||void 0===e?void 0:e.opacity)&&(this._group.style.opacity=i.toString(),m||(0===i?this._group.style.display="none":0===(null===(a=this._oldProps)||void 0===a?void 0:a.opacity)&&this._group.style.removeProperty("display")));const h=!this._oldProps||o!==this._oldProps.strokeColor||n!==this._oldProps.radicalColor;if(h||s!==(null===(r=this._oldProps)||void 0===r?void 0:r.strokes))for(let t=0;t<this._strokeRenderers.length;t++){var l;!h&&null!==(l=this._oldProps)&&void 0!==l&&l.strokes&&s[t]===this._oldProps.strokes[t]||this._strokeRenderers[t].render({strokeColor:o,radicalColor:n,opacity:s[t].opacity,displayPortion:s[t].displayPortion})}this._oldProps=t}}class lt{constructor(){this._oldProps=void 0}mount(t){this._path=rt("path"),t.svg.appendChild(this._path)}render(t){var e,r,i,s;if(this._path&&t!==this._oldProps){if(t.strokeColor!==(null===(e=this._oldProps)||void 0===e?void 0:e.strokeColor)||t.strokeWidth!==(null===(r=this._oldProps)||void 0===r?void 0:r.strokeWidth)){const{r:e,g:r,b:i,a:s}=t.strokeColor;st(this._path,{fill:"none",stroke:`rgba(${e},${r},${i},${s})`,"stroke-width":t.strokeWidth.toString(),"stroke-linecap":"round","stroke-linejoin":"round"})}t.opacity!==(null===(i=this._oldProps)||void 0===i?void 0:i.opacity)&&it(this._path,"opacity",t.opacity.toString()),t.points!==(null===(s=this._oldProps)||void 0===s?void 0:s.points)&&it(this._path,"d",M(t.points)),this._oldProps=t}}destroy(){ot(this._path)}}class ct{constructor(t){this.node=t}addPointerStartListener(t){this.node.addEventListener("mousedown",e=>{t(this._eventify(e,this._getMousePoint))}),this.node.addEventListener("touchstart",e=>{t(this._eventify(e,this._getTouchPoint))})}addPointerMoveListener(t){this.node.addEventListener("mousemove",e=>{t(this._eventify(e,this._getMousePoint))}),this.node.addEventListener("touchmove",e=>{t(this._eventify(e,this._getTouchPoint))})}addPointerEndListener(t){document.addEventListener("mouseup",t),document.addEventListener("touchend",t)}getBoundingClientRect(){return this.node.getBoundingClientRect()}updateDimensions(t,e){this.node.setAttribute("width",""+t),this.node.setAttribute("height",""+e)}_eventify(t,e){return{getPoint:()=>e.call(this,t),preventDefault:()=>t.preventDefault()}}_getMousePoint(t){const{left:e,top:r}=this.getBoundingClientRect();return{x:t.clientX-e,y:t.clientY-r}}_getTouchPoint(t){const{left:e,top:r}=this.getBoundingClientRect();return{x:t.touches[0].clientX-e,y:t.touches[0].clientY-r}}}class dt extends ct{constructor(t,e){super(t),this.svg=t,this.defs=e,"createSVGPoint"in t&&(this._pt=t.createSVGPoint())}static init(t,e="100%",r="100%"){const i="string"==typeof t?document.getElementById(t):t;if(!i)throw new Error("HanziWriter target element not found: "+t);const s=i.nodeName.toUpperCase(),o=(()=>{if("SVG"===s||"G"===s)return i;{const t=rt("svg");return i.appendChild(t),t}})();st(o,{width:e,height:r});const n=rt("defs");return o.appendChild(n),new dt(o,n)}createSubRenderTarget(){const t=rt("g");return this.svg.appendChild(t),new dt(t,this.defs)}_getMousePoint(t){if(this._pt&&(this._pt.x=t.clientX,this._pt.y=t.clientY,"getScreenCTM"in this.node)){var e;const t=this._pt.matrixTransform(null===(e=this.node.getScreenCTM())||void 0===e?void 0:e.inverse());return{x:t.x,y:t.y}}return super._getMousePoint.call(this,t)}_getTouchPoint(t){if(this._pt&&(this._pt.x=t.touches[0].clientX,this._pt.y=t.touches[0].clientY,"getScreenCTM"in this.node)){var e;const t=this._pt.matrixTransform(null===(e=this.node.getScreenCTM())||void 0===e?void 0:e.inverse());return{x:t.x,y:t.y}}return super._getTouchPoint(t)}}var ut={HanziWriterRenderer:class{constructor(t,e){this._character=t,this._positioner=e,this._mainCharRenderer=new ht(t),this._outlineCharRenderer=new ht(t),this._highlightCharRenderer=new ht(t),this._userStrokeRenderers={}}mount(t){const e=t.createSubRenderTarget(),r=e.svg,{xOffset:i,yOffset:s,height:o,scale:n}=this._positioner;it(r,"transform",`translate(${i}, ${o-s}) scale(${n}, ${-1*n})`),this._outlineCharRenderer.mount(e),this._mainCharRenderer.mount(e),this._highlightCharRenderer.mount(e),this._positionedTarget=e}render(t){const{main:e,outline:r,highlight:i}=t.character,{outlineColor:s,radicalColor:o,highlightColor:n,strokeColor:a,drawingWidth:h,drawingColor:l}=t.options;this._outlineCharRenderer.render({opacity:r.opacity,strokes:r.strokes,strokeColor:s}),this._mainCharRenderer.render({opacity:e.opacity,strokes:e.strokes,strokeColor:a,radicalColor:o}),this._highlightCharRenderer.render({opacity:i.opacity,strokes:i.strokes,strokeColor:n});const c=t.userStrokes||{};for(const t in this._userStrokeRenderers){var d;if(!c[t])null===(d=this._userStrokeRenderers[t])||void 0===d||d.destroy(),delete this._userStrokeRenderers[t]}for(const t in c){const e=c[t];if(!e)continue;const r={strokeWidth:h,strokeColor:l,...e};(()=>{if(this._userStrokeRenderers[t])return this._userStrokeRenderers[t];const e=new lt;return e.mount(this._positionedTarget),this._userStrokeRenderers[t]=e,e})().render(r)}}destroy(){ot(this._positionedTarget.svg),this._positionedTarget.defs.innerHTML=""}},createRenderTarget:dt.init};const _t=(t,e)=>{t.beginPath();const r=e[0],i=e.slice(1);t.moveTo(r.x,r.y);for(const e of i)t.lineTo(e.x,e.y);t.stroke()};class pt extends nt{constructor(t,e=!0){super(t),e&&Path2D?this._path2D=new Path2D(this.stroke.path):this._pathCmd=(t=>{const e=t.split(/(^|\s+)(?=[A-Z])/).filter(t=>" "!==t),r=[t=>t.beginPath()];for(const t of e){const[e,...i]=t.split(/\s+/),s=i.map(t=>parseFloat(t));"M"===e?r.push(t=>t.moveTo(...s)):"L"===e?r.push(t=>t.lineTo(...s)):"C"===e?r.push(t=>t.bezierCurveTo(...s)):"Q"===e&&r.push(t=>t.quadraticCurveTo(...s))}return t=>r.forEach(e=>e(t))})(this.stroke.path),this._extendedMaskPoints=R(this.stroke.points,nt.STROKE_WIDTH/2)}render(t,e){if(e.opacity<.05)return;var r;(t.save(),this._path2D)?t.clip(this._path2D):(null===(r=this._pathCmd)||void 0===r||r.call(this,t),t.globalAlpha=0,t.stroke(),t.clip());const{r:i,g:s,b:o,a:n}=this._getColor(e),a=1===n?`rgb(${i},${s},${o})`:`rgb(${i},${s},${o},${n})`,h=this._getStrokeDashoffset(e.displayPortion);t.globalAlpha=e.opacity,t.strokeStyle=a,t.fillStyle=a,t.lineWidth=nt.STROKE_WIDTH,t.lineCap="round",t.lineJoin="round",t.setLineDash([this._pathLength,this._pathLength],h),t.lineDashOffset=h,_t(t,this._extendedMaskPoints),t.restore()}}class gt{constructor(t){this._strokeRenderers=t.strokes.map(t=>new pt(t))}render(t,e){if(e.opacity<.05)return;const{opacity:r,strokeColor:i,radicalColor:s,strokes:o}=e;for(let e=0;e<this._strokeRenderers.length;e++)this._strokeRenderers[e].render(t,{strokeColor:i,radicalColor:s,opacity:o[e].opacity*r,displayPortion:o[e].displayPortion||0})}}function kt(t,e){if(e.opacity<.05)return;const{opacity:r,strokeWidth:i,strokeColor:s,points:o}=e,{r:n,g:a,b:h,a:l}=s;t.save(),t.globalAlpha=r,t.lineWidth=i,t.strokeStyle=`rgba(${n},${a},${h},${l})`,t.lineCap="round",t.lineJoin="round",_t(t,o),t.restore()}class mt extends ct{constructor(t){super(t)}static init(t,e="100%",r="100%"){const i="string"==typeof t?document.getElementById(t):t;if(!i)throw new Error("HanziWriter target element not found: "+t);const s=i.nodeName.toUpperCase(),o=(()=>{if("CANVAS"===s)return i;const t=document.createElement("canvas");return i.appendChild(t),t})();return o.setAttribute("width",e),o.setAttribute("height",r),new mt(o)}getContext(){return this.node.getContext("2d")}}var ft={HanziWriterRenderer:class{constructor(t,e){this.destroy=f,this._character=t,this._positioner=e,this._mainCharRenderer=new gt(t),this._outlineCharRenderer=new gt(t),this._highlightCharRenderer=new gt(t)}mount(t){this._target=t}_animationFrame(t){const{width:e,height:r,scale:i,xOffset:s,yOffset:o}=this._positioner,n=this._target.getContext();n.clearRect(0,0,e,r),n.save(),n.translate(s,r-o),n.transform(1,0,0,-1,0,0),n.scale(i,i),t(n),n.restore(),n.draw&&n.draw()}render(t){const{outline:e,main:r,highlight:i}=t.character,{outlineColor:s,strokeColor:o,radicalColor:n,highlightColor:a,drawingColor:h,drawingWidth:l}=t.options;this._animationFrame(c=>{this._outlineCharRenderer.render(c,{opacity:e.opacity,strokes:e.strokes,strokeColor:s}),this._mainCharRenderer.render(c,{opacity:r.opacity,strokes:r.strokes,strokeColor:o,radicalColor:n}),this._highlightCharRenderer.render(c,{opacity:i.opacity,strokes:i.strokes,strokeColor:a});const d=t.userStrokes||{};for(const t in d){const e=d[t];if(e){kt(c,{strokeWidth:l,strokeColor:h,...e})}}})}},createRenderTarget:mt.init};const vt={charDataLoader:(t,e,r)=>{const i=new XMLHttpRequest;i.overrideMimeType&&i.overrideMimeType("application/json"),i.open("GET",(t=>`https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0.1/${t}.json`)(t),!0),i.onerror=t=>{r(i,t)},i.onreadystatechange=()=>{4===i.readyState&&(200===i.status?e(JSON.parse(i.responseText)):0!==i.status&&r&&r(i))},i.send(null)},onLoadCharDataError:null,onLoadCharDataSuccess:null,showOutline:!0,showCharacter:!0,renderer:"svg",width:0,height:0,padding:20,strokeAnimationSpeed:1,strokeFadeDuration:400,strokeHighlightDuration:200,strokeHighlightSpeed:2,delayBetweenStrokes:1e3,delayBetweenLoops:2e3,strokeColor:"#555",radicalColor:null,highlightColor:"#AAF",outlineColor:"#DDD",drawingColor:"#333",leniency:1,showHintAfterMisses:3,highlightOnComplete:!0,highlightCompleteColor:null,markStrokeCorrectAfterMisses:!1,acceptBackwardsStrokes:!1,quizStartStrokeNum:0,averageDistanceThreshold:350,drawingFadeDuration:300,drawingWidth:4,strokeWidth:2,outlineWidth:2,rendererOverride:{}};class yt{constructor(t){this._loadCounter=0,this._isLoading=!1,this.loadingFailed=!1,this._options=t}_debouncedLoad(t,e){const r=t=>{var r;e===this._loadCounter&&(null===(r=this._resolve)||void 0===r||r.call(this,t))},i=t=>{var r;e===this._loadCounter&&(null===(r=this._reject)||void 0===r||r.call(this,t))},s=this._options.charDataLoader(t,r,i);s&&("then"in s?s.then(r).catch(i):r(s))}_setupLoadingPromise(){return new Promise((t,e)=>{this._resolve=t,this._reject=e}).then(t=>{var e,r;return this._isLoading=!1,null===(e=(r=this._options).onLoadCharDataSuccess)||void 0===e||e.call(r,t),t}).catch(t=>{if(this._isLoading=!1,this.loadingFailed=!0,this._options.onLoadCharDataError)return void this._options.onLoadCharDataError(t);if(t instanceof Error)throw t;const e=new Error("Failed to load char data for "+this._loadingChar);throw e.reason=t,e})}loadCharData(t){this._loadingChar=t;const e=this._setupLoadingPromise();return this.loadingFailed=!1,this._isLoading=!0,this._loadCounter++,this._debouncedLoad(t,this._loadCounter),e}}class Ct{constructor(t,e={}){const{HanziWriterRenderer:r,createRenderTarget:i}="canvas"===e.renderer?ft:ut,s=e.rendererOverride||{};this._renderer={HanziWriterRenderer:s.HanziWriterRenderer||r,createRenderTarget:s.createRenderTarget||i},this.target=this._renderer.createRenderTarget(t,e.width,e.height),this._options=this._assignOptions(e),this._loadingManager=new yt(this._options),this._setupListeners()}static create(t,e,r){const i=new Ct(t,r);return i.setCharacter(e),i}static loadCharacterData(t,e={}){const r=(()=>{const{_loadingManager:r,_loadingOptions:i}=Ct;return(null==r?void 0:r._loadingChar)===t&&i===e?r:new yt({...vt,...e})})();return Ct._loadingManager=r,Ct._loadingOptions=e,r.loadCharData(t)}static getScalingTransform(t,e,r=0){const i=new E({width:t,height:e,padding:r});return{x:i.xOffset,y:i.yOffset,scale:i.scale,transform:(s=`\n        translate(${i.xOffset}, ${i.height-i.yOffset})\n        scale(${i.scale}, ${-1*i.scale})\n      `,s.replace(/^\s+/,"").replace(/\s+$/,"")).replace(/\s+/g," ")};var s}showCharacter(t={}){return this._options.showCharacter=!0,this._withData(()=>{var e;return null===(e=this._renderState)||void 0===e?void 0:e.run(G("main",this._character,"number"==typeof t.duration?t.duration:this._options.strokeFadeDuration)).then(e=>{var r;return null===(r=t.onComplete)||void 0===r||r.call(t,e),e})})}hideCharacter(t={}){return this._options.showCharacter=!1,this._withData(()=>{var e;return null===(e=this._renderState)||void 0===e?void 0:e.run(X("main",this._character,"number"==typeof t.duration?t.duration:this._options.strokeFadeDuration)).then(e=>{var r;return null===(r=t.onComplete)||void 0===r||r.call(t,e),e})})}animateCharacter(t={}){return this.cancelQuiz(),this._withData(()=>{var e;return null===(e=this._renderState)||void 0===e?void 0:e.run(Z("main",this._character,this._options.strokeFadeDuration,this._options.strokeAnimationSpeed,this._options.delayBetweenStrokes)).then(e=>{var r;return null===(r=t.onComplete)||void 0===r||r.call(t,e),e})})}animateStroke(t,e={}){return this.cancelQuiz(),this._withData(()=>{var r;return null===(r=this._renderState)||void 0===r?void 0:r.run(((t,e,r,i)=>{const s=e.strokes[r];return[new N("character."+t,r=>{const i=r.character[t],s={opacity:1,strokes:{}};for(let t=0;t<e.strokes.length;t++)s.strokes[t]={opacity:i.opacity*i.strokes[t].opacity};return s}),...J(t,s,i)]})("main",this._character,h(t,this._character.strokes.length),this._options.strokeAnimationSpeed)).then(t=>{var r;return null===(r=e.onComplete)||void 0===r||r.call(e,t),t})})}highlightStroke(t,e={}){return this._withData(()=>{var r,i;if(this._character&&this._renderState)return this._renderState.run(Y((r=this._character.strokes,i=t,r[h(i,r.length)]),_(this._options.highlightColor),this._options.strokeHighlightSpeed)).then(t=>{var r;return null===(r=e.onComplete)||void 0===r||r.call(e,t),t})})}async loopCharacterAnimation(){return this.cancelQuiz(),this._withData(()=>this._renderState.run(((t,e,r,i,s,o)=>{const n=Z(t,e,r,i,s);return n.push(new N.Delay(o)),n})("main",this._character,this._options.strokeFadeDuration,this._options.strokeAnimationSpeed,this._options.delayBetweenStrokes,this._options.delayBetweenLoops),{loop:!0}))}pauseAnimation(){return this._withData(()=>{var t;return null===(t=this._renderState)||void 0===t?void 0:t.pauseAll()})}resumeAnimation(){return this._withData(()=>{var t;return null===(t=this._renderState)||void 0===t?void 0:t.resumeAll()})}showOutline(t={}){return this._options.showOutline=!0,this._withData(()=>{var e;return null===(e=this._renderState)||void 0===e?void 0:e.run(G("outline",this._character,"number"==typeof t.duration?t.duration:this._options.strokeFadeDuration)).then(e=>{var r;return null===(r=t.onComplete)||void 0===r||r.call(t,e),e})})}hideOutline(t={}){return this._options.showOutline=!1,this._withData(()=>{var e;return null===(e=this._renderState)||void 0===e?void 0:e.run(X("outline",this._character,"number"==typeof t.duration?t.duration:this._options.strokeFadeDuration)).then(e=>{var r;return null===(r=t.onComplete)||void 0===r||r.call(t,e),e})})}updateDimensions({width:t,height:e,padding:r}){if(void 0!==t&&(this._options.width=t),void 0!==e&&(this._options.height=e),void 0!==r&&(this._options.padding=r),this.target.updateDimensions(this._options.width,this._options.height),this._character&&this._renderState&&this._hanziWriterRenderer&&this._positioner){this._hanziWriterRenderer.destroy();const t=this._initAndMountHanziWriterRenderer(this._character);this._renderState.overwriteOnStateChange(e=>t.render(e)),t.render(this._renderState.state),this._quiz&&this._quiz.setPositioner(this._positioner)}}updateColor(t,e,r={}){var i;let s=[];const o=_((()=>"radicalColor"!==t||e?e:this._options.strokeColor)());this._options[t]=e;const n=null!==(i=r.duration)&&void 0!==i?i:this._options.strokeFadeDuration;return s=s.concat(K(t,o,n)),"radicalColor"!==t||e||(s=s.concat(K(t,null,0))),this._withData(()=>{var t;return null===(t=this._renderState)||void 0===t?void 0:t.run(s).then(t=>{var e;return null===(e=r.onComplete)||void 0===e||e.call(r,t),t})})}quiz(t={}){return this._withData(async()=>{this._character&&this._renderState&&this._positioner&&(this.cancelQuiz(),this._quiz=new et(this._character,this._renderState,this._positioner),this._options={...this._options,...t},this._quiz.startQuiz(this._options))})}skipQuizStroke(){this._quiz&&this._quiz.nextStroke()}cancelQuiz(){this._quiz&&(this._quiz.cancel(),this._quiz=void 0)}setCharacter(t){return this.cancelQuiz(),this._char=t,this._hanziWriterRenderer&&this._hanziWriterRenderer.destroy(),this._renderState&&this._renderState.cancelAll(),this._hanziWriterRenderer=null,this._withDataPromise=this._loadingManager.loadCharData(t).then(e=>{if(!e||this._loadingManager.loadingFailed)return;this._character=function(t,e){const r=O(e);return new A(t,r)}(t,e),this._renderState=new v(this._character,this._options,t=>r.render(t));const r=this._initAndMountHanziWriterRenderer(this._character);r.render(this._renderState.state)}),this._withDataPromise}_initAndMountHanziWriterRenderer(t){const{width:e,height:r,padding:i}=this._options;this._positioner=new E({width:e,height:r,padding:i});const s=new this._renderer.HanziWriterRenderer(t,this._positioner);return s.mount(this.target),this._hanziWriterRenderer=s,s}async getCharacterData(){if(!this._char)throw new Error("setCharacter() must be called before calling getCharacterData()");return await this._withData(()=>this._character)}_assignOptions(t){const e={...vt,...t};return t.strokeAnimationDuration&&!t.strokeAnimationSpeed&&(e.strokeAnimationSpeed=500/t.strokeAnimationDuration),t.strokeHighlightDuration&&!t.strokeHighlightSpeed&&(e.strokeHighlightSpeed=500/e.strokeHighlightDuration),t.highlightCompleteColor||(e.highlightCompleteColor=e.highlightColor),this._fillWidthAndHeight(e)}_fillWidthAndHeight(t){const e={...t};if(e.width&&!e.height)e.height=e.width;else if(e.height&&!e.width)e.width=e.height;else if(!e.width&&!e.height){const{width:t,height:r}=this.target.getBoundingClientRect(),i=Math.min(t,r);e.width=i,e.height=i}return e}_withData(t){if(this._loadingManager.loadingFailed)throw Error("Failed to load character data. Call setCharacter and try again.");return this._withDataPromise?this._withDataPromise.then(()=>{if(!this._loadingManager.loadingFailed)return t()}):Promise.resolve().then(t)}_setupListeners(){this.target.addPointerStartListener(t=>{this._quiz&&(t.preventDefault(),this._quiz.startUserStroke(t.getPoint()))}),this.target.addPointerMoveListener(t=>{this._quiz&&(t.preventDefault(),this._quiz.continueUserStroke(t.getPoint()))}),this.target.addPointerEndListener(()=>{var t;null===(t=this._quiz)||void 0===t||t.endUserStroke()})}}return Ct._loadingManager=null,Ct._loadingOptions=null,Ct}();
 </script>
+<!-- SheetJS：支援教材庫 Excel 匯入／匯出（跟 Mandamy-Test 用同一個版本） -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="data.js"></script>
 <script>
 /* ============================================================
@@ -1901,9 +2109,21 @@ const EMBEDDED_SAMPLE_DATA = [
     ]
   }
 ];
-const ACTIVE_COURSE_DATA = (typeof courseData !== 'undefined' && Array.isArray(courseData) && courseData.length)
-  ? courseData
-  : EMBEDDED_SAMPLE_DATA;
+const CLOUD_VOCAB_CACHE_KEY = 'mandamy_cloud_coursedata_v1';
+function readCloudVocabCache(){
+  try{
+    var cached = localStorage.getItem(CLOUD_VOCAB_CACHE_KEY);
+    if(cached){
+      var parsed = JSON.parse(cached);
+      if(Array.isArray(parsed) && parsed.length) return parsed;
+    }
+  }catch(e){}
+  return null;
+}
+const ACTIVE_COURSE_DATA = readCloudVocabCache()
+  || ((typeof courseData !== 'undefined' && Array.isArray(courseData) && courseData.length)
+    ? courseData
+    : EMBEDDED_SAMPLE_DATA);
 const VOCAB = ACTIVE_COURSE_DATA.flatMap(l => (l.vocab || []).map(v => ({ ...v, 課別: l.lesson })));
 const GRAMMAR = ACTIVE_COURSE_DATA.flatMap(l => (l.grammar || []).map(g => ({ ...g, 課別: l.lesson })));
 const LESSON_TEXTS = ACTIVE_COURSE_DATA.flatMap(l => (l.texts || []).map(t => ({ ...t, lesson: l.lesson })));
@@ -4906,6 +5126,1050 @@ buildLessonChips('qaLessonChips', selectedQaLessons, ()=>{
 renderScoreboard();
 renderKinshipScoreboard();
 render();
+</script>
+
+<!-- ============================================================
+     生詞雲端同步：跟「曼米中文 Mandamy」測驗平台(Mandamy-Test)共用同一套
+     Firebase 教師帳號系統(teacherAccounts)，並透過新的 teacherVocabBanks/{teacherId}
+     節點共用生詞資料。這裡刻意不在開機時就打 Firebase，只有老師自己按下
+     「☁️ 生詞雲端同步」才會連線，完全不影響原本秒開、免登入的離線使用體驗。
+     ============================================================ -->
+<script>
+  window.FIREBASE_CONFIG = {
+    apiKey: "AIzaSyC6DjPDuRCdSKuZYKKiCSlbWI_eLVM05oc",
+    authDomain: "chinese-onlineboard.firebaseapp.com",
+    databaseURL: "https://chinese-onlineboard-default-rtdb.asia-southeast1.firebasedatabase.app/",
+    projectId: "chinese-onlineboard",
+    storageBucket: "chinese-onlineboard.firebasestorage.app",
+    messagingSenderId: "635462964030",
+    appId: "1:635462964030:web:4059918956a649bf6a926f"
+  };
+</script>
+<script type="module">
+(async function(){
+  try{
+    var mods = await Promise.all([
+      import("https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js"),
+      import("https://www.gstatic.com/firebasejs/12.18.0/firebase-database.js"),
+      import("https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js")
+    ]);
+    var appMod = mods[0], dbMod = mods[1], authMod = mods[2];
+    var fbApp = appMod.initializeApp(window.FIREBASE_CONFIG);
+    window.db = dbMod.getDatabase(fbApp);
+    window.ref = dbMod.ref; window.get = dbMod.get; window.set = dbMod.set;
+    window.serverTimestamp = dbMod.serverTimestamp;
+    window.auth = authMod.getAuth(fbApp);
+    await new Promise(function(resolve, reject){
+      authMod.onAuthStateChanged(window.auth, function(user){ if(user) resolve(user); });
+      authMod.signInAnonymously(window.auth).catch(reject);
+    });
+    window.__firebaseReady = true;
+    window.dispatchEvent(new Event("firebase-bridge-ready"));
+  }catch(e){
+    console.error("Firebase 連線初始化失敗：", e);
+  }
+})();
+</script>
+<script>
+(function(){
+  "use strict";
+
+  // 跟 Mandamy-Test(practice.html)用同一把 key，讓兩邊在同一個瀏覽器裡
+  // 只要登入一次，另一邊也能直接讀到登入狀態(因為兩個網站是同一個 GitHub
+  // Pages 網域下的不同路徑，localStorage 本來就是共用的)。
+  var TEACHER_SESSION_KEY = "hanyu_mandamy_teacher_session";
+  var FIREBASE_WAIT_TIMEOUT_MS = 12000;
+  var PBKDF2_ITERATIONS = 100000;
+
+  function bytesToHex(bytes){
+    return Array.prototype.map.call(bytes, function(b){ return b.toString(16).padStart(2, "0"); }).join("");
+  }
+  function hexToBytes(hex){
+    var bytes = new Uint8Array(hex.length / 2);
+    for(var i = 0; i < bytes.length; i++){ bytes[i] = parseInt(hex.substr(i * 2, 2), 16); }
+    return bytes;
+  }
+  async function hashPassword(password, saltHex){
+    var enc = new TextEncoder();
+    var salt = saltHex ? hexToBytes(saltHex) : crypto.getRandomValues(new Uint8Array(16));
+    var keyMaterial = await crypto.subtle.importKey("raw", enc.encode(password), { name: "PBKDF2" }, false, ["deriveBits"]);
+    var bits = await crypto.subtle.deriveBits({ name: "PBKDF2", salt: salt, iterations: PBKDF2_ITERATIONS, hash: "SHA-256" }, keyMaterial, 256);
+    return { saltHex: bytesToHex(salt), hashHex: bytesToHex(new Uint8Array(bits)), iterations: PBKDF2_ITERATIONS };
+  }
+  async function verifyPassword(password, saltHex, hashHex){
+    var result = await hashPassword(password, saltHex);
+    return result.hashHex === hashHex;
+  }
+  function sanitizeUsername(raw){
+    return String(raw || "").trim().toLowerCase().replace(/[^a-z0-9_]/g, "");
+  }
+  function waitForFirebase(){
+    return new Promise(function(resolve){
+      if(window.__firebaseReady){ resolve(true); return; }
+      var settled = false;
+      var to = setTimeout(function(){ if(!settled){ settled = true; resolve(false); } }, FIREBASE_WAIT_TIMEOUT_MS);
+      window.addEventListener("firebase-bridge-ready", function(){ if(!settled){ settled = true; clearTimeout(to); resolve(true); } }, { once: true });
+    });
+  }
+  async function fetchTeacherAccount(teacherId){
+    var snap = await window.get(window.ref(window.db, "teacherAccounts/" + teacherId));
+    return snap.exists() ? snap.val() : null;
+  }
+  async function fetchCloudVocabBank(teacherId){
+    var snap = await window.get(window.ref(window.db, "teacherVocabBanks/" + teacherId));
+    return snap.exists() ? snap.val() : null;
+  }
+  async function saveCloudVocabBank(teacherId, courseDataToSave, displayName){
+    await window.set(window.ref(window.db, "teacherVocabBanks/" + teacherId), {
+      courseData: courseDataToSave,
+      updatedAt: window.serverTimestamp ? window.serverTimestamp() : Date.now(),
+      updatedBy: displayName || teacherId
+    });
+  }
+
+  var overlay = document.getElementById("cloudSyncOpenBtn") && document.getElementById("cloudSyncOverlay");
+  if(!overlay) return; // 這個檔案如果被單獨抽掉某些區塊使用，就安靜跳過，不影響其他功能
+
+  var connectingEl = document.getElementById("cloudSyncConnecting");
+  var loginSection = document.getElementById("cloudSyncLoginSection");
+  var actionsSection = document.getElementById("cloudSyncActionsSection");
+  var offlineSection = document.getElementById("cloudSyncOfflineSection");
+  var usernameInput = document.getElementById("cloudSyncUsername");
+  var passwordInput = document.getElementById("cloudSyncPassword");
+  var errorEl = document.getElementById("cloudSyncError");
+  var loginBtn = document.getElementById("cloudSyncLoginBtn");
+  var whoAmIEl = document.getElementById("cloudSyncWhoAmI");
+  var cloudStatusEl = document.getElementById("cloudSyncCloudStatus");
+  var actionMsgEl = document.getElementById("cloudSyncActionMsg");
+  var uploadBtn = document.getElementById("cloudSyncUploadBtn");
+  var downloadBtn = document.getElementById("cloudSyncDownloadBtn");
+  var resetBtn = document.getElementById("cloudSyncResetBtn");
+  var logoutBtn = document.getElementById("cloudSyncLogoutBtn");
+  var retryBtn = document.getElementById("cloudSyncRetryBtn");
+
+  var currentCloudTeacher = null; // { id, username, displayName }
+
+  function showStage(stage){
+    connectingEl.style.display = stage === "connecting" ? "block" : "none";
+    loginSection.style.display = stage === "login" ? "block" : "none";
+    actionsSection.style.display = stage === "actions" ? "block" : "none";
+    offlineSection.style.display = stage === "offline" ? "block" : "none";
+  }
+  function showError(msg){ errorEl.textContent = msg; errorEl.style.display = "block"; }
+  function clearError(){ errorEl.style.display = "none"; errorEl.textContent = ""; }
+  function showActionMsg(msg, isError){
+    actionMsgEl.textContent = msg;
+    actionMsgEl.style.color = isError ? "var(--wrong)" : "var(--accent)";
+    actionMsgEl.style.display = "block";
+  }
+  function clearActionMsg(){ actionMsgEl.style.display = "none"; actionMsgEl.textContent = ""; }
+
+  function refreshCloudStatusText(){
+    if(!currentCloudTeacher) return;
+    whoAmIEl.textContent = currentCloudTeacher.displayName + "（" + currentCloudTeacher.username + "）";
+    var usingCloud = !!readCloudVocabCache();
+    cloudStatusEl.textContent = usingCloud
+      ? "目前這台裝置正在使用雲端版生詞（跟測驗平台共用）。"
+      : "目前這台裝置使用的是本機生詞，還沒套用雲端版本。";
+  }
+
+  async function openCloudSyncModal(){
+    overlay.style.display = "flex";
+    clearError(); clearActionMsg();
+    if(currentCloudTeacher){
+      showStage("actions");
+      refreshCloudStatusText();
+      return;
+    }
+    showStage("connecting");
+    var ready = await waitForFirebase();
+    if(!ready){ showStage("offline"); return; }
+
+    var savedId = null;
+    try{ savedId = localStorage.getItem(TEACHER_SESSION_KEY); }catch(e){}
+    if(savedId){
+      try{
+        var account = await fetchTeacherAccount(savedId);
+        if(account && !account.disabled){
+          currentCloudTeacher = { id: account.id || savedId, username: account.username, displayName: account.displayName || account.username };
+          showStage("actions");
+          refreshCloudStatusText();
+          return;
+        }
+      }catch(e){ /* 讀取失敗就當作沒有登入，讓老師重新輸入帳密 */ }
+      try{ localStorage.removeItem(TEACHER_SESSION_KEY); }catch(e){}
+    }
+    showStage("login");
+    setTimeout(function(){ usernameInput.focus(); }, 50);
+  }
+
+  async function doCloudLogin(){
+    clearError();
+    var username = sanitizeUsername(usernameInput.value);
+    var password = passwordInput.value;
+    if(!username || !password){ showError("請輸入帳號和密碼"); return; }
+    loginBtn.disabled = true;
+    var originalText = loginBtn.textContent;
+    loginBtn.textContent = "登入中…";
+    try{
+      var account = await fetchTeacherAccount(username);
+      if(!account){ showError("找不到這個帳號，請確認帳號是否正確，或先到「曼米中文 測驗平台」建立帳號。"); return; }
+      if(account.disabled){ showError("這個帳號已被停用。"); return; }
+      var ok = await verifyPassword(password, account.saltHex, account.hashHex);
+      if(!ok){ showError("密碼不正確。"); return; }
+      currentCloudTeacher = { id: account.id || username, username: account.username, displayName: account.displayName || account.username };
+      try{ localStorage.setItem(TEACHER_SESSION_KEY, currentCloudTeacher.id); }catch(e){}
+      passwordInput.value = "";
+      showStage("actions");
+      refreshCloudStatusText();
+    }catch(e){
+      showError("連線發生問題，請稍後再試一次。");
+    }finally{
+      loginBtn.disabled = false;
+      loginBtn.textContent = originalText;
+    }
+  }
+
+  async function doCloudUpload(){
+    clearActionMsg();
+    uploadBtn.disabled = true;
+    var originalText = uploadBtn.textContent;
+    uploadBtn.textContent = "上傳中…";
+    try{
+      await saveCloudVocabBank(currentCloudTeacher.id, ACTIVE_COURSE_DATA, currentCloudTeacher.displayName);
+      showActionMsg("✅ 已上傳到雲端，測驗平台那邊也能讀到這份生詞了。", false);
+    }catch(e){
+      showActionMsg("上傳失敗，請檢查網路連線後再試一次。", true);
+    }finally{
+      uploadBtn.disabled = false;
+      uploadBtn.textContent = originalText;
+    }
+  }
+
+  async function doCloudDownload(){
+    clearActionMsg();
+    downloadBtn.disabled = true;
+    var originalText = downloadBtn.textContent;
+    downloadBtn.textContent = "下載中…";
+    try{
+      var bank = await fetchCloudVocabBank(currentCloudTeacher.id);
+      if(!bank || !Array.isArray(bank.courseData) || !bank.courseData.length){
+        showActionMsg("雲端還沒有生詞資料，請先按上面的「上傳」建立一份。", true);
+        return;
+      }
+      try{ localStorage.setItem(CLOUD_VOCAB_CACHE_KEY, JSON.stringify(bank.courseData)); }catch(e){}
+      showActionMsg("✅ 已套用雲端最新生詞，重新整理頁面中…", false);
+      setTimeout(function(){ location.reload(); }, 900);
+    }catch(e){
+      showActionMsg("下載失敗，請檢查網路連線後再試一次。", true);
+      downloadBtn.disabled = false;
+      downloadBtn.textContent = originalText;
+    }
+  }
+
+  function doCloudReset(){
+    try{ localStorage.removeItem(CLOUD_VOCAB_CACHE_KEY); }catch(e){}
+    showActionMsg("已清除雲端快取，重新整理頁面中…", false);
+    setTimeout(function(){ location.reload(); }, 900);
+  }
+
+  function doCloudLogout(){
+    currentCloudTeacher = null;
+    try{ localStorage.removeItem(TEACHER_SESSION_KEY); }catch(e){}
+    usernameInput.value = ""; passwordInput.value = "";
+    clearActionMsg();
+    showStage("login");
+  }
+
+  document.getElementById("cloudSyncOpenBtn").addEventListener("click", openCloudSyncModal);
+  setupOverlay("cloudSyncOverlay", "cloudSyncCloseBtn");
+  loginBtn.addEventListener("click", doCloudLogin);
+  passwordInput.addEventListener("keydown", function(e){ if(e.key === "Enter") doCloudLogin(); });
+  uploadBtn.addEventListener("click", doCloudUpload);
+  downloadBtn.addEventListener("click", doCloudDownload);
+  resetBtn.addEventListener("click", doCloudReset);
+  logoutBtn.addEventListener("click", doCloudLogout);
+  retryBtn.addEventListener("click", openCloudSyncModal);
+
+  /* ================== 教材庫管理 Content Manager（每位登入的老師自己的生詞／語法／課文） ================== */
+  var cmOverlay = document.getElementById("contentManagerOverlay");
+  var cmCloseBtnEl = document.getElementById("cmCloseBtn");
+  var cmLessonListEl = document.getElementById("cmLessonList");
+  var cmAddLessonBtnEl = document.getElementById("cmAddLessonBtn");
+  var cmAddLessonFormEl = document.getElementById("cmAddLessonForm");
+  var cmNewLessonNumEl = document.getElementById("cmNewLessonNum");
+  var cmNewLessonTitleEl = document.getElementById("cmNewLessonTitle");
+  var cmNewLessonCancelBtnEl = document.getElementById("cmNewLessonCancelBtn");
+  var cmNewLessonConfirmBtnEl = document.getElementById("cmNewLessonConfirmBtn");
+  var cmNoLessonHintEl = document.getElementById("cmNoLessonHint");
+  var cmLessonEditorEl = document.getElementById("cmLessonEditor");
+  var cmVocabCountEl = document.getElementById("cmVocabCount");
+  var cmGrammarCountEl = document.getElementById("cmGrammarCount");
+  var cmTextsCountEl = document.getElementById("cmTextsCount");
+  var cmTabVocabEl = document.getElementById("cmTabVocab");
+  var cmTabGrammarEl = document.getElementById("cmTabGrammar");
+  var cmTabTextsEl = document.getElementById("cmTabTexts");
+  var cmVocabListEl = document.getElementById("cmVocabList");
+  var cmGrammarListEl = document.getElementById("cmGrammarList");
+  var cmTextsListEl = document.getElementById("cmTextsList");
+  var cmAddVocabBtnEl = document.getElementById("cmAddVocabBtn");
+  var cmDlTemplateBtnEl = document.getElementById("cmDlTemplateBtn");
+  var cmImportExcelBtnEl = document.getElementById("cmImportExcelBtn");
+  var cmExcelFileInputEl = document.getElementById("cmExcelFileInput");
+  var cmAddGrammarBtnEl = document.getElementById("cmAddGrammarBtn");
+  var cmAddTextBtnEl = document.getElementById("cmAddTextBtn");
+  var cmSaveMsgEl = document.getElementById("cmSaveMsg");
+  var cmSaveBtnEl = document.getElementById("cmSaveBtn");
+
+  var cmVocabFormOverlayEl = document.getElementById("cmVocabFormOverlay");
+  var cmVocabFormTitleEl = document.getElementById("cmVocabFormTitle");
+  var cmVocabFormBodyEl = document.getElementById("cmVocabFormBody");
+  var cmVocabFormCancelBtnEl = document.getElementById("cmVocabFormCancelBtn");
+  var cmVocabFormSaveBtnEl = document.getElementById("cmVocabFormSaveBtn");
+
+  var cmGrammarFormOverlayEl = document.getElementById("cmGrammarFormOverlay");
+  var cmGrammarFormTitleEl = document.getElementById("cmGrammarFormTitle");
+  var cmGrammarFormBodyEl = document.getElementById("cmGrammarFormBody");
+  var cmGrammarFormCancelBtnEl = document.getElementById("cmGrammarFormCancelBtn");
+  var cmGrammarFormSaveBtnEl = document.getElementById("cmGrammarFormSaveBtn");
+
+  var cmTextFormOverlayEl = document.getElementById("cmTextFormOverlay");
+  var cmTextFormTitleEl = document.getElementById("cmTextFormTitle");
+  var cmTextTitleInputEl = document.getElementById("cmTextTitleInput");
+  var cmTextLinesListEl = document.getElementById("cmTextLinesList");
+  var cmAddTextLineBtnEl = document.getElementById("cmAddTextLineBtn");
+  var cmTextFormCancelBtnEl = document.getElementById("cmTextFormCancelBtn");
+  var cmTextFormSaveBtnEl = document.getElementById("cmTextFormSaveBtn");
+
+  var cmLibrary = [];            // 目前正在編輯的完整課程資料（深拷貝；沒按「儲存並套用」不會真的存到雲端）
+  var cmSelectedLessonIdx = -1;
+  var cmActiveTab = "vocab";
+  var cmEditingVocabIdx = null;   // null＝新增
+  var cmEditingGrammarIdx = null;
+  var cmEditingTextIdx = null;
+  var cmTextLines = [];
+  var cmDirty = false;
+
+  function todayIso(){
+    var d = new Date();
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  }
+
+  /* ---------- 未教過生詞提醒（純前端規則比對，不使用 AI／不呼叫任何 API） ----------
+     做法：把老師自己教材庫裡的每個「生詞」收進一個字典（詞 -> 最早出現的課次），
+     造句時用「最大正向比對」切詞，凡是比對到字典裡的詞、但那個詞的課次比目前正在編輯
+     的課次還後面，就列為警告。字典裡完全找不到的字／詞（標點、還沒收錄的字…）一律不提醒，
+     避免誤判。這只是提醒、不會擋下儲存，老師可以直接忽略。 */
+  function getVocabDictWithLessons(){
+    var dict = {};
+    cmLibrary.forEach(function(lesson){
+      var lessonNum = Number(lesson.lesson);
+      (lesson.vocab || []).forEach(function(v){
+        var word = (v && v["生詞"] || "").trim();
+        if(!word) return;
+        if(!(word in dict) || lessonNum < dict[word]) dict[word] = lessonNum;
+      });
+    });
+    return dict;
+  }
+
+  function checkSentenceForUntaughtVocab(sentence, currentLessonNum, extraKnownWords){
+    var dict = getVocabDictWithLessons();
+    var known = {};
+    (extraKnownWords || []).forEach(function(w){ if(w) known[w] = true; });
+    var maxWordLen = 1;
+    Object.keys(dict).forEach(function(w){ if(w.length > maxWordLen) maxWordLen = w.length; });
+    var chars = Array.from(String(sentence || ""));
+    var found = {}; // 詞 -> 課次，用物件天生去重
+    var i = 0;
+    while(i < chars.length){
+      var matched = null, matchedLen = 0;
+      var maxTry = Math.min(maxWordLen, chars.length - i);
+      for(var len = maxTry; len >= 1; len--){
+        var candidate = chars.slice(i, i + len).join("");
+        if(dict.hasOwnProperty(candidate)){ matched = candidate; matchedLen = len; break; }
+      }
+      if(matched){
+        if(!known[matched] && dict[matched] > currentLessonNum) found[matched] = dict[matched];
+        i += matchedLen;
+      } else {
+        i += 1; // 字典裡完全沒有的字／符號，直接跳過、不提醒
+      }
+    }
+    return Object.keys(found).map(function(w){ return { word: w, lesson: found[w] }; })
+      .sort(function(a, b){ return a.lesson - b.lesson; });
+  }
+
+  function formatUntaughtWarning(hits){
+    if(!hits || !hits.length) return "";
+    return "⚠️ 用到還沒教過的生詞：" + hits.map(function(h){ return h.word + "（第" + h.lesson + "課）"; }).join("、");
+  }
+
+  async function openContentManager(){
+    if(!currentCloudTeacher) return;
+    overlay.style.display = "none"; // 先關掉雲端同步彈窗
+    cmSaveMsgEl.textContent = "";
+    cmDirty = false;
+    cmOverlay.style.display = "flex";
+    cmLessonListEl.innerHTML = '<p style="font-size:12.5px; color:var(--ink-soft);">⏳ 讀取中…</p>';
+    cmNoLessonHintEl.style.display = "block"; cmLessonEditorEl.style.display = "none";
+    try{
+      var bank = await fetchCloudVocabBank(currentCloudTeacher.id);
+      cmLibrary = (bank && Array.isArray(bank.courseData)) ? JSON.parse(JSON.stringify(bank.courseData)) : [];
+    }catch(e){
+      cmLibrary = [];
+    }
+    cmSelectedLessonIdx = cmLibrary.length ? 0 : -1;
+    renderCmLessonList();
+    renderCmLessonEditor();
+  }
+
+  function closeContentManagerWithConfirm(){
+    if(cmDirty && !confirm("你有還沒儲存的修改，確定要關閉嗎？未按「儲存並套用」的內容會遺失。")) return;
+    cmOverlay.style.display = "none";
+  }
+
+  function renderCmLessonList(){
+    cmLessonListEl.innerHTML = "";
+    if(!cmLibrary.length){
+      var p = document.createElement("p");
+      p.style.cssText = "font-size:12.5px; color:var(--ink-faint); line-height:1.6;";
+      p.textContent = "還沒有課次，按下面「＋ 新增課次」開始建立你自己的教材。";
+      cmLessonListEl.appendChild(p);
+      return;
+    }
+    cmLibrary.forEach(function(lesson, idx){
+      var row = document.createElement("div");
+      row.className = "cm-lesson-item" + (idx === cmSelectedLessonIdx ? " active" : "");
+      var label = document.createElement("span");
+      label.textContent = "第" + lesson.lesson + "課" + (lesson.title ? "：" + lesson.title : "");
+      label.style.cssText = "flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;";
+      label.addEventListener("click", function(){ cmSelectedLessonIdx = idx; renderCmLessonList(); renderCmLessonEditor(); });
+      var delBtn = document.createElement("button");
+      delBtn.type = "button"; delBtn.className = "cm-del"; delBtn.title = "刪除這一課"; delBtn.textContent = "🗑️";
+      delBtn.addEventListener("click", function(e){
+        e.stopPropagation();
+        if(!confirm("確定要刪除「第" + lesson.lesson + "課" + (lesson.title ? "：" + lesson.title : "") + "」嗎？\n這一課底下的生詞、語法、課文都會一起刪除。")) return;
+        cmLibrary.splice(idx, 1);
+        cmDirty = true;
+        if(cmSelectedLessonIdx === idx) cmSelectedLessonIdx = cmLibrary.length ? 0 : -1;
+        else if(cmSelectedLessonIdx > idx) cmSelectedLessonIdx--;
+        renderCmLessonList(); renderCmLessonEditor();
+      });
+      row.appendChild(label); row.appendChild(delBtn);
+      cmLessonListEl.appendChild(row);
+    });
+  }
+
+  function currentCmLesson(){
+    return (cmSelectedLessonIdx >= 0 && cmLibrary[cmSelectedLessonIdx]) ? cmLibrary[cmSelectedLessonIdx] : null;
+  }
+
+  function renderCmLessonEditor(){
+    var lesson = currentCmLesson();
+    if(!lesson){
+      cmNoLessonHintEl.style.display = "block";
+      cmLessonEditorEl.style.display = "none";
+      return;
+    }
+    cmNoLessonHintEl.style.display = "none";
+    cmLessonEditorEl.style.display = "block";
+    if(!lesson.vocab) lesson.vocab = [];
+    if(!lesson.grammar) lesson.grammar = [];
+    if(!lesson.texts) lesson.texts = [];
+    cmVocabCountEl.textContent = "(" + lesson.vocab.length + ")";
+    cmGrammarCountEl.textContent = "(" + lesson.grammar.length + ")";
+    cmTextsCountEl.textContent = "(" + lesson.texts.length + ")";
+    renderCmTabButtons();
+    renderCmVocabList();
+    renderCmGrammarList();
+    renderCmTextsList();
+  }
+
+  function renderCmTabButtons(){
+    document.querySelectorAll(".cm-tab-btn").forEach(function(btn){
+      btn.classList.toggle("active", btn.getAttribute("data-tab") === cmActiveTab);
+    });
+    cmTabVocabEl.style.display = cmActiveTab === "vocab" ? "block" : "none";
+    cmTabGrammarEl.style.display = cmActiveTab === "grammar" ? "block" : "none";
+    cmTabTextsEl.style.display = cmActiveTab === "texts" ? "block" : "none";
+  }
+  document.querySelectorAll(".cm-tab-btn").forEach(function(btn){
+    btn.addEventListener("click", function(){ cmActiveTab = btn.getAttribute("data-tab"); renderCmTabButtons(); });
+  });
+
+  /* ---------- 生詞 Vocab ---------- */
+  function renderCmVocabList(){
+    var lesson = currentCmLesson(); if(!lesson) return;
+    cmVocabListEl.innerHTML = "";
+    if(!lesson.vocab.length){
+      cmVocabListEl.innerHTML = '<p style="font-size:12.5px; color:var(--ink-faint);">這一課還沒有生詞。</p>';
+      return;
+    }
+    lesson.vocab.forEach(function(v, idx){
+      var row = document.createElement("div"); row.className = "cm-list-row";
+      var main = document.createElement("div"); main.className = "cm-row-main";
+      main.textContent = (v["生詞"] || "") + (v["拼音"] ? "（" + v["拼音"] + "）" : "") + (v["英文翻譯"] ? " · " + v["英文翻譯"] : "");
+      var actions = document.createElement("div"); actions.className = "cm-row-actions";
+      var editBtn = document.createElement("button"); editBtn.type = "button"; editBtn.textContent = "✏️"; editBtn.title = "編輯";
+      editBtn.addEventListener("click", function(){ openVocabForm(idx); });
+      var delBtn = document.createElement("button"); delBtn.type = "button"; delBtn.className = "cm-del"; delBtn.textContent = "🗑️"; delBtn.title = "刪除";
+      delBtn.addEventListener("click", function(){
+        if(!confirm('確定要刪除生詞「' + (v["生詞"] || "") + '」嗎？')) return;
+        lesson.vocab.splice(idx, 1); cmDirty = true; renderCmLessonEditor();
+      });
+      actions.appendChild(editBtn); actions.appendChild(delBtn);
+      row.appendChild(main); row.appendChild(actions);
+      cmVocabListEl.appendChild(row);
+    });
+  }
+
+  var CM_VOCAB_FIELDS = [
+    { key: "生詞", label: "生詞 *", type: "text" },
+    { key: "拼音", label: "拼音", type: "text" },
+    { key: "注音", label: "注音", type: "text" },
+    { key: "詞性", label: "詞性", type: "text" },
+    { key: "TOCFL等級", label: "TOCFL 等級", type: "text" },
+    { key: "英文翻譯", label: "英文翻譯", type: "text" },
+    { key: "泰文翻譯", label: "泰文翻譯", type: "text" },
+    { key: "例句（中文）", label: "例句（中文）", type: "text" },
+    { key: "例句（英文）", label: "例句（英文）", type: "text" },
+    { key: "例句（泰文）", label: "例句（泰文）", type: "text" },
+    { key: "建議補充生詞", label: "建議補充生詞", type: "text" },
+    { key: "Emoji／圖示", label: "Emoji／圖示", type: "text" },
+    { key: "圖片搜尋關鍵字（英文）", label: "圖片搜尋關鍵字（英文）", type: "text" },
+    { key: "備註", label: "備註", type: "text" },
+    { key: "問題", label: "延伸問題（每行一題）", type: "textarea" }
+  ];
+
+  function openVocabForm(idx){
+    cmEditingVocabIdx = (idx === undefined) ? null : idx;
+    var lesson = currentCmLesson(); if(!lesson) return;
+    var v = (cmEditingVocabIdx !== null) ? lesson.vocab[cmEditingVocabIdx] : {};
+    cmVocabFormTitleEl.textContent = (cmEditingVocabIdx !== null) ? "編輯生詞" : "新增生詞";
+    cmVocabFormBodyEl.innerHTML = "";
+    var vocabWordInputEl = null;
+    var vocabSentenceInputEl = null;
+    var vocabSentenceWarnEl = null;
+    function refreshVocabSentenceWarning(){
+      if(!vocabSentenceWarnEl || !vocabSentenceInputEl) return;
+      var known = vocabWordInputEl ? [vocabWordInputEl.value.trim()] : [];
+      var hits = checkSentenceForUntaughtVocab(vocabSentenceInputEl.value, Number(lesson.lesson), known);
+      var msg = formatUntaughtWarning(hits);
+      vocabSentenceWarnEl.textContent = msg;
+      vocabSentenceWarnEl.style.display = msg ? "block" : "none";
+    }
+    CM_VOCAB_FIELDS.forEach(function(f){
+      var wrap = document.createElement("div");
+      var label = document.createElement("label"); label.className = "cm-field-label"; label.textContent = f.label;
+      var input;
+      if(f.type === "textarea"){
+        input = document.createElement("textarea"); input.rows = 3;
+        input.value = Array.isArray(v[f.key]) ? v[f.key].join("\n") : (v[f.key] || "");
+      } else {
+        input = document.createElement("input"); input.type = "text";
+        input.value = v[f.key] || "";
+      }
+      input.className = "cm-field-input"; input.setAttribute("data-field", f.key);
+      wrap.appendChild(label); wrap.appendChild(input);
+      if(f.key === "生詞"){
+        vocabWordInputEl = input;
+        input.addEventListener("input", refreshVocabSentenceWarning);
+      }
+      if(f.key === "例句（中文）"){
+        vocabSentenceInputEl = input;
+        var warnEl = document.createElement("div");
+        warnEl.className = "cm-untaught-warning";
+        warnEl.style.display = "none";
+        wrap.appendChild(warnEl);
+        vocabSentenceWarnEl = warnEl;
+        input.addEventListener("input", refreshVocabSentenceWarning);
+      }
+      cmVocabFormBodyEl.appendChild(wrap);
+    });
+    refreshVocabSentenceWarning();
+    cmVocabFormOverlayEl.style.display = "flex";
+  }
+  cmAddVocabBtnEl.addEventListener("click", function(){ openVocabForm(); });
+  setupOverlay("cmVocabFormOverlay", "cmVocabFormCloseBtn");
+  cmVocabFormCancelBtnEl.addEventListener("click", function(){ cmVocabFormOverlayEl.style.display = "none"; });
+  cmVocabFormSaveBtnEl.addEventListener("click", function(){
+    var lesson = currentCmLesson(); if(!lesson) return;
+    var obj = {};
+    cmVocabFormBodyEl.querySelectorAll("[data-field]").forEach(function(input){
+      var key = input.getAttribute("data-field");
+      if(key === "問題"){
+        obj[key] = input.value.split("\n").map(function(s){ return s.trim(); }).filter(Boolean);
+      } else {
+        obj[key] = input.value.trim();
+      }
+    });
+    if(!obj["生詞"]){ alert("請至少填寫「生詞」欄位"); return; }
+    obj["新增日期"] = (cmEditingVocabIdx !== null && lesson.vocab[cmEditingVocabIdx]["新增日期"]) ? lesson.vocab[cmEditingVocabIdx]["新增日期"] : todayIso();
+    if(cmEditingVocabIdx !== null) lesson.vocab[cmEditingVocabIdx] = obj;
+    else lesson.vocab.push(obj);
+    cmDirty = true;
+    cmVocabFormOverlayEl.style.display = "none";
+    renderCmLessonEditor();
+  });
+
+  /* ---------- Excel 範本／匯入（生詞，依目前選的課次匯入） ---------- */
+  var CM_EXCEL_COLS = ["生詞","拼音","注音","詞性","TOCFL等級","英文翻譯","泰文翻譯","例句（中文）","例句（英文）","例句（泰文）","建議補充生詞","Emoji／圖示","圖片搜尋關鍵字（英文）","備註","問題（用｜分隔多題）"];
+  cmDlTemplateBtnEl.addEventListener("click", function(){
+    var rows = [CM_EXCEL_COLS, ["你好", "nǐ hǎo", "ㄋㄧˇ ㄏㄠˇ", "招呼語", "未收錄", "hello", "สวัสดี", "你好！我叫小明。", "Hello! My name is Xiaoming.", "", "", "👋", "waving hello icon", "", "請用「你好」造一個句子。"]];
+    var ws = XLSX.utils.aoa_to_sheet(rows);
+    ws["!cols"] = CM_EXCEL_COLS.map(function(){ return { wch: 16 }; });
+    var wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "生詞範本");
+    XLSX.writeFile(wb, "曼米中文_生詞匯入範本.xlsx");
+  });
+  cmImportExcelBtnEl.addEventListener("click", function(){ cmExcelFileInputEl.click(); });
+  cmExcelFileInputEl.addEventListener("change", function(e){
+    var file = e.target.files[0]; if(!file) return;
+    var lesson = currentCmLesson();
+    if(!lesson){ alert("請先在左邊選一課，再匯入生詞。"); e.target.value = ""; return; }
+    var reader = new FileReader();
+    reader.onload = function(evt){
+      try{
+        var wb = XLSX.read(evt.target.result, { type: "binary" });
+        var ws = wb.Sheets[wb.SheetNames[0]];
+        var rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
+        var header = rows[0] || [];
+        var idxOf = {}; header.forEach(function(h, i){ idxOf[String(h).trim()] = i; });
+        var body = rows.slice(1).filter(function(r){ return r && r[idxOf["生詞"]]; });
+        if(!body.length){ alert("這個檔案裡沒有可以匯入的生詞（找不到「生詞」欄位或內容是空的）。"); return; }
+        var added = 0;
+        body.forEach(function(r){
+          var obj = {};
+          CM_EXCEL_COLS.forEach(function(col){
+            var i = idxOf[col];
+            var val = (i !== undefined) ? r[i] : "";
+            if(col === "問題（用｜分隔多題）"){
+              obj["問題"] = String(val || "").split("｜").map(function(s){ return s.trim(); }).filter(Boolean);
+            } else {
+              obj[col] = String(val === undefined ? "" : val).trim();
+            }
+          });
+          if(!obj["生詞"]) return;
+          obj["新增日期"] = todayIso();
+          lesson.vocab.push(obj);
+          added++;
+        });
+        cmDirty = true;
+        renderCmLessonEditor();
+        alert("✅ 已匯入 " + added + " 筆生詞到「第" + lesson.lesson + "課」。");
+      }catch(err){
+        alert("匯入失敗，請確認檔案格式是否正確（可以先下載範本檔參考欄位）。");
+      }
+      e.target.value = "";
+    };
+    reader.readAsBinaryString(file);
+  });
+
+  /* ---------- 語法 Grammar ---------- */
+  function renderCmGrammarList(){
+    var lesson = currentCmLesson(); if(!lesson) return;
+    cmGrammarListEl.innerHTML = "";
+    if(!lesson.grammar.length){
+      cmGrammarListEl.innerHTML = '<p style="font-size:12.5px; color:var(--ink-faint);">這一課還沒有語法點。</p>';
+      return;
+    }
+    lesson.grammar.forEach(function(g, idx){
+      var row = document.createElement("div"); row.className = "cm-list-row";
+      var main = document.createElement("div"); main.className = "cm-row-main";
+      main.textContent = (g["語法點"] || "") + (g["結構／用法"] ? "：" + g["結構／用法"] : "");
+      var actions = document.createElement("div"); actions.className = "cm-row-actions";
+      var editBtn = document.createElement("button"); editBtn.type = "button"; editBtn.textContent = "✏️"; editBtn.title = "編輯";
+      editBtn.addEventListener("click", function(){ openGrammarForm(idx); });
+      var delBtn = document.createElement("button"); delBtn.type = "button"; delBtn.className = "cm-del"; delBtn.textContent = "🗑️"; delBtn.title = "刪除";
+      delBtn.addEventListener("click", function(){
+        if(!confirm('確定要刪除語法點「' + (g["語法點"] || "") + '」嗎？')) return;
+        lesson.grammar.splice(idx, 1); cmDirty = true; renderCmLessonEditor();
+      });
+      actions.appendChild(editBtn); actions.appendChild(delBtn);
+      row.appendChild(main); row.appendChild(actions);
+      cmGrammarListEl.appendChild(row);
+    });
+  }
+  var CM_GRAMMAR_FIELDS = [
+    { key: "語法點", label: "語法點 *" },
+    { key: "結構／用法", label: "結構／用法" },
+    { key: "例句（中文）", label: "例句（中文）" },
+    { key: "例句（英文）", label: "例句（英文）" },
+    { key: "例句（泰文）", label: "例句（泰文）" },
+    { key: "備註", label: "備註" }
+  ];
+  function openGrammarForm(idx){
+    cmEditingGrammarIdx = (idx === undefined) ? null : idx;
+    var lesson = currentCmLesson(); if(!lesson) return;
+    var g = (cmEditingGrammarIdx !== null) ? lesson.grammar[cmEditingGrammarIdx] : {};
+    cmGrammarFormTitleEl.textContent = (cmEditingGrammarIdx !== null) ? "編輯語法點" : "新增語法點";
+    cmGrammarFormBodyEl.innerHTML = "";
+    var grammarSentenceInputEl = null;
+    var grammarSentenceWarnEl = null;
+    function refreshGrammarSentenceWarning(){
+      if(!grammarSentenceWarnEl || !grammarSentenceInputEl) return;
+      var hits = checkSentenceForUntaughtVocab(grammarSentenceInputEl.value, Number(lesson.lesson), []);
+      var msg = formatUntaughtWarning(hits);
+      grammarSentenceWarnEl.textContent = msg;
+      grammarSentenceWarnEl.style.display = msg ? "block" : "none";
+    }
+    CM_GRAMMAR_FIELDS.forEach(function(f){
+      var wrap = document.createElement("div");
+      var label = document.createElement("label"); label.className = "cm-field-label"; label.textContent = f.label;
+      var input = document.createElement("input"); input.type = "text"; input.className = "cm-field-input";
+      input.setAttribute("data-field", f.key); input.value = g[f.key] || "";
+      wrap.appendChild(label); wrap.appendChild(input);
+      if(f.key === "例句（中文）"){
+        grammarSentenceInputEl = input;
+        var warnEl = document.createElement("div");
+        warnEl.className = "cm-untaught-warning";
+        warnEl.style.display = "none";
+        wrap.appendChild(warnEl);
+        grammarSentenceWarnEl = warnEl;
+        input.addEventListener("input", refreshGrammarSentenceWarning);
+      }
+      cmGrammarFormBodyEl.appendChild(wrap);
+    });
+    refreshGrammarSentenceWarning();
+    cmGrammarFormOverlayEl.style.display = "flex";
+  }
+  cmAddGrammarBtnEl.addEventListener("click", function(){ openGrammarForm(); });
+  setupOverlay("cmGrammarFormOverlay", "cmGrammarFormCloseBtn");
+  cmGrammarFormCancelBtnEl.addEventListener("click", function(){ cmGrammarFormOverlayEl.style.display = "none"; });
+  cmGrammarFormSaveBtnEl.addEventListener("click", function(){
+    var lesson = currentCmLesson(); if(!lesson) return;
+    var obj = {};
+    cmGrammarFormBodyEl.querySelectorAll("[data-field]").forEach(function(input){ obj[input.getAttribute("data-field")] = input.value.trim(); });
+    if(!obj["語法點"]){ alert("請至少填寫「語法點」欄位"); return; }
+    obj["新增日期"] = (cmEditingGrammarIdx !== null && lesson.grammar[cmEditingGrammarIdx]["新增日期"]) ? lesson.grammar[cmEditingGrammarIdx]["新增日期"] : todayIso();
+    if(cmEditingGrammarIdx !== null) lesson.grammar[cmEditingGrammarIdx] = obj;
+    else lesson.grammar.push(obj);
+    cmDirty = true;
+    cmGrammarFormOverlayEl.style.display = "none";
+    renderCmLessonEditor();
+  });
+
+  /* ---------- 課文 Texts ---------- */
+  function renderCmTextsList(){
+    var lesson = currentCmLesson(); if(!lesson) return;
+    cmTextsListEl.innerHTML = "";
+    if(!lesson.texts.length){
+      cmTextsListEl.innerHTML = '<p style="font-size:12.5px; color:var(--ink-faint);">這一課還沒有課文。</p>';
+      return;
+    }
+    lesson.texts.forEach(function(t, idx){
+      var row = document.createElement("div"); row.className = "cm-list-row";
+      var main = document.createElement("div"); main.className = "cm-row-main";
+      main.textContent = (t.title || "（無標題）") + " · " + ((t.lines || []).length) + " 句對話";
+      var actions = document.createElement("div"); actions.className = "cm-row-actions";
+      var editBtn = document.createElement("button"); editBtn.type = "button"; editBtn.textContent = "✏️"; editBtn.title = "編輯";
+      editBtn.addEventListener("click", function(){ openTextForm(idx); });
+      var delBtn = document.createElement("button"); delBtn.type = "button"; delBtn.className = "cm-del"; delBtn.textContent = "🗑️"; delBtn.title = "刪除";
+      delBtn.addEventListener("click", function(){
+        if(!confirm('確定要刪除課文「' + (t.title || "") + '」嗎？')) return;
+        lesson.texts.splice(idx, 1); cmDirty = true; renderCmLessonEditor();
+      });
+      actions.appendChild(editBtn); actions.appendChild(delBtn);
+      row.appendChild(main); row.appendChild(actions);
+      cmTextsListEl.appendChild(row);
+    });
+  }
+  // 讓一行台詞的 zy（每個字的注音，跟文字逐字對齊）跟目前文字內容保持同樣的字數：
+  // 文字沒變的字沿用原本標好的注音，新增的字補空白，字變少了就把多出來的注音丟掉。
+  function syncLineZy(line){
+    var chars = Array.from(String(line.text || ""));
+    var oldZy = line.zy || [];
+    line.zy = chars.map(function(ch, i){ return oldZy[i] !== undefined ? oldZy[i] : ""; });
+  }
+  function renderCharBoxes(line, wrapEl){
+    wrapEl.innerHTML = "";
+    var chars = Array.from(String(line.text || ""));
+    if(!chars.length){
+      wrapEl.innerHTML = '<p style="font-size:12px; color:var(--ink-faint); margin:0;">請先輸入這句台詞的內容。</p>';
+      return;
+    }
+    var charsWrap = document.createElement("div"); charsWrap.className = "cm-zy-chars";
+    chars.forEach(function(ch, i){
+      var box = document.createElement("div"); box.className = "cm-char-box";
+      var charEl = document.createElement("div"); charEl.className = "cm-char"; charEl.textContent = ch;
+      var input = document.createElement("input"); input.type = "text"; input.placeholder = "注音";
+      input.value = (line.zy && line.zy[i]) || "";
+      input.addEventListener("input", function(){ line.zy[i] = input.value; });
+      box.appendChild(charEl); box.appendChild(input);
+      charsWrap.appendChild(box);
+    });
+    wrapEl.appendChild(charsWrap);
+  }
+  function renderCmTextLines(){
+    cmTextLinesListEl.innerHTML = "";
+    cmTextLines.forEach(function(line, idx){
+      syncLineZy(line);
+      var block = document.createElement("div"); block.className = "cm-line-block";
+      var row = document.createElement("div"); row.className = "cm-text-line-row";
+      var speakerInput = document.createElement("input"); speakerInput.type = "text"; speakerInput.name = "cmLineSpeaker";
+      speakerInput.className = "cm-field-input"; speakerInput.placeholder = "說話者"; speakerInput.value = line.speaker || "";
+      speakerInput.addEventListener("input", function(){ line.speaker = speakerInput.value; });
+      var textInput = document.createElement("input"); textInput.type = "text"; textInput.name = "cmLineText";
+      textInput.className = "cm-field-input"; textInput.placeholder = "這句台詞的內容"; textInput.value = line.text || "";
+      var delBtn = document.createElement("button"); delBtn.type = "button"; delBtn.className = "cm-del";
+      delBtn.style.cssText = "border:none; background:transparent; cursor:pointer; font-size:14px; padding:6px;";
+      delBtn.textContent = "🗑️";
+      delBtn.addEventListener("click", function(){ cmTextLines.splice(idx, 1); renderCmTextLines(); });
+      row.appendChild(speakerInput); row.appendChild(textInput); row.appendChild(delBtn);
+      block.appendChild(row);
+
+      var lineWarnEl = document.createElement("div");
+      lineWarnEl.className = "cm-untaught-warning";
+      lineWarnEl.style.display = "none";
+      block.appendChild(lineWarnEl);
+      function refreshLineWarning(){
+        var curLesson = currentCmLesson();
+        var lessonNum = curLesson ? Number(curLesson.lesson) : 0;
+        var hits = checkSentenceForUntaughtVocab(line.text, lessonNum, []);
+        var msg = formatUntaughtWarning(hits);
+        lineWarnEl.textContent = msg;
+        lineWarnEl.style.display = msg ? "block" : "none";
+      }
+      refreshLineWarning();
+
+      var zyToggle = document.createElement("button"); zyToggle.type = "button"; zyToggle.className = "cm-zy-toggle";
+      zyToggle.textContent = "🔤 標注注音 ▾";
+      var zyPanel = document.createElement("div"); zyPanel.className = "cm-zy-panel"; zyPanel.style.display = "none";
+      var pasteRow = document.createElement("div"); pasteRow.className = "cm-zy-paste-row";
+      var pasteInput = document.createElement("input"); pasteInput.className = "cm-field-input";
+      pasteInput.placeholder = "快速貼上整句注音，用空格分隔每個字，例如：ㄋㄧˇ ㄏㄠˇ ，";
+      var pasteBtn = document.createElement("button"); pasteBtn.type = "button"; pasteBtn.className = "back-btn";
+      pasteBtn.style.cssText = "padding:6px 12px; font-size:12px;"; pasteBtn.textContent = "套用";
+      var charsWrap = document.createElement("div");
+      pasteBtn.addEventListener("click", function(){
+        var tokens = pasteInput.value.trim().split(/\s+/).filter(function(s){ return s.length; });
+        var chars = Array.from(String(line.text || ""));
+        if(!chars.length){ alert("請先輸入這句台詞的內容，再貼上注音。"); return; }
+        if(tokens.length !== chars.length){
+          alert("提醒：這句台詞有 " + chars.length + " 個字，但貼上的注音有 " + tokens.length + " 個，已經依序對應、多的會被忽略、不夠的留空，貼上後請檢查一下。");
+        }
+        line.zy = chars.map(function(ch, i){ return tokens[i] || ""; });
+        pasteInput.value = "";
+        renderCharBoxes(line, charsWrap);
+      });
+      pasteRow.appendChild(pasteInput); pasteRow.appendChild(pasteBtn);
+      zyPanel.appendChild(pasteRow); zyPanel.appendChild(charsWrap);
+      renderCharBoxes(line, charsWrap);
+
+      textInput.addEventListener("input", function(){
+        line.text = textInput.value;
+        syncLineZy(line);
+        if(zyPanel.style.display !== "none") renderCharBoxes(line, charsWrap);
+        refreshLineWarning();
+      });
+
+      zyToggle.addEventListener("click", function(){
+        var showing = zyPanel.style.display !== "none";
+        zyPanel.style.display = showing ? "none" : "block";
+        zyToggle.textContent = showing ? "🔤 標注注音 ▾" : "🔤 標注注音 ▴";
+        if(!showing) renderCharBoxes(line, charsWrap);
+      });
+
+      block.appendChild(zyToggle);
+      block.appendChild(zyPanel);
+      cmTextLinesListEl.appendChild(block);
+    });
+  }
+  function openTextForm(idx){
+    cmEditingTextIdx = (idx === undefined) ? null : idx;
+    var lesson = currentCmLesson(); if(!lesson) return;
+    var t = (cmEditingTextIdx !== null) ? lesson.texts[cmEditingTextIdx] : { title: "", lines: [] };
+    cmTextFormTitleEl.textContent = (cmEditingTextIdx !== null) ? "編輯課文" : "新增課文";
+    cmTextTitleInputEl.value = t.title || "";
+    cmTextLines = (t.lines || []).map(function(l){
+      var zy = Array.isArray(l.zy) ? l.zy.map(function(pair){ return Array.isArray(pair) ? (pair[1] || "") : ""; }) : [];
+      return { speaker: l.speaker || "", text: l.text || "", zy: zy };
+    });
+    if(!cmTextLines.length) cmTextLines.push({ speaker: "", text: "", zy: [] });
+    renderCmTextLines();
+    cmTextFormOverlayEl.style.display = "flex";
+  }
+  cmAddTextBtnEl.addEventListener("click", function(){ openTextForm(); });
+  cmAddTextLineBtnEl.addEventListener("click", function(){ cmTextLines.push({ speaker: "", text: "", zy: [] }); renderCmTextLines(); });
+  setupOverlay("cmTextFormOverlay", "cmTextFormCloseBtn");
+  cmTextFormCancelBtnEl.addEventListener("click", function(){ cmTextFormOverlayEl.style.display = "none"; });
+  cmTextFormSaveBtnEl.addEventListener("click", function(){
+    var lesson = currentCmLesson(); if(!lesson) return;
+    var title = cmTextTitleInputEl.value.trim();
+    var lines = cmTextLines.filter(function(l){ return (l.text || "").trim(); }).map(function(l){
+      syncLineZy(l);
+      var chars = Array.from(String(l.text));
+      return { speaker: (l.speaker || "").trim(), text: l.text, zy: chars.map(function(ch, i){ return [ch, l.zy[i] || ""]; }) };
+    });
+    if(!title){ alert("請填寫課文標題"); return; }
+    if(!lines.length){ alert("請至少輸入一句台詞內容"); return; }
+    var obj = { title: title, lines: lines };
+    if(cmEditingTextIdx !== null) lesson.texts[cmEditingTextIdx] = obj;
+    else lesson.texts.push(obj);
+    cmDirty = true;
+    cmTextFormOverlayEl.style.display = "none";
+    renderCmLessonEditor();
+  });
+
+  /* ---------- 語法／課文 Excel 範本與匯入 ---------- */
+  var cmDlGrammarTemplateBtnEl = document.getElementById("cmDlGrammarTemplateBtn");
+  var cmImportGrammarBtnEl = document.getElementById("cmImportGrammarBtn");
+  var cmGrammarExcelFileInputEl = document.getElementById("cmGrammarExcelFileInput");
+  var cmDlTextTemplateBtnEl = document.getElementById("cmDlTextTemplateBtn");
+  var cmImportTextBtnEl = document.getElementById("cmImportTextBtn");
+  var cmTextExcelFileInputEl = document.getElementById("cmTextExcelFileInput");
+
+  var CM_GRAMMAR_EXCEL_COLS = ["語法點", "結構／用法", "例句（中文）", "例句（英文）", "例句（泰文）", "備註"];
+  cmDlGrammarTemplateBtnEl.addEventListener("click", function(){
+    var rows = [CM_GRAMMAR_EXCEL_COLS, ["是", "N/代名詞＋是＋N（A是B）", "他是陳心美。", "He is Chen Xinmei.", "เขาคือเฉิน ซินเหม่ย", ""]];
+    var ws = XLSX.utils.aoa_to_sheet(rows);
+    ws["!cols"] = CM_GRAMMAR_EXCEL_COLS.map(function(){ return { wch: 22 }; });
+    var wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "語法範本");
+    XLSX.writeFile(wb, "曼米中文_語法匯入範本.xlsx");
+  });
+  cmImportGrammarBtnEl.addEventListener("click", function(){ cmGrammarExcelFileInputEl.click(); });
+  cmGrammarExcelFileInputEl.addEventListener("change", function(e){
+    var file = e.target.files[0]; if(!file) return;
+    var lesson = currentCmLesson();
+    if(!lesson){ alert("請先在左邊選一課，再匯入語法。"); e.target.value = ""; return; }
+    var reader = new FileReader();
+    reader.onload = function(evt){
+      try{
+        var wb = XLSX.read(evt.target.result, { type: "binary" });
+        var ws = wb.Sheets[wb.SheetNames[0]];
+        var rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
+        var header = rows[0] || [];
+        var idxOf = {}; header.forEach(function(h, i){ idxOf[String(h).trim()] = i; });
+        var body = rows.slice(1).filter(function(r){ return r && r[idxOf["語法點"]]; });
+        if(!body.length){ alert("這個檔案裡沒有可以匯入的語法點（找不到「語法點」欄位或內容是空的）。"); return; }
+        var added = 0;
+        body.forEach(function(r){
+          var obj = {};
+          CM_GRAMMAR_EXCEL_COLS.forEach(function(col){
+            var i = idxOf[col];
+            obj[col] = String((i !== undefined ? r[i] : "") || "").trim();
+          });
+          if(!obj["語法點"]) return;
+          obj["新增日期"] = todayIso();
+          lesson.grammar.push(obj);
+          added++;
+        });
+        cmDirty = true;
+        renderCmLessonEditor();
+        alert("✅ 已匯入 " + added + " 筆語法點到「第" + lesson.lesson + "課」。");
+      }catch(err){
+        alert("匯入失敗，請確認檔案格式是否正確（可以先下載範本檔參考欄位）。");
+      }
+      e.target.value = "";
+    };
+    reader.readAsBinaryString(file);
+  });
+
+  var CM_TEXT_EXCEL_COLS = ["課文標題", "說話者", "台詞內容"];
+  cmDlTextTemplateBtnEl.addEventListener("click", function(){
+    var rows = [
+      CM_TEXT_EXCEL_COLS,
+      ["你好", "大文", "你好，我是李大文。"],
+      ["你好", "心美", "你好，我叫陳心美。"],
+      ["你好", "大文", "他叫什麼名字？"],
+      ["你好", "心美", "他叫林東明。"]
+    ];
+    var ws = XLSX.utils.aoa_to_sheet(rows);
+    ws["!cols"] = [{ wch: 18 }, { wch: 12 }, { wch: 36 }];
+    var wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "課文範本");
+    XLSX.writeFile(wb, "曼米中文_課文匯入範本.xlsx");
+  });
+  cmImportTextBtnEl.addEventListener("click", function(){ cmTextExcelFileInputEl.click(); });
+  cmTextExcelFileInputEl.addEventListener("change", function(e){
+    var file = e.target.files[0]; if(!file) return;
+    var lesson = currentCmLesson();
+    if(!lesson){ alert("請先在左邊選一課，再匯入課文。"); e.target.value = ""; return; }
+    var reader = new FileReader();
+    reader.onload = function(evt){
+      try{
+        var wb = XLSX.read(evt.target.result, { type: "binary" });
+        var ws = wb.Sheets[wb.SheetNames[0]];
+        var rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
+        var header = rows[0] || [];
+        var idxOf = {}; header.forEach(function(h, i){ idxOf[String(h).trim()] = i; });
+        var body = rows.slice(1).filter(function(r){ return r && r[idxOf["課文標題"]] && r[idxOf["台詞內容"]]; });
+        if(!body.length){ alert("這個檔案裡沒有可以匯入的課文（找不到「課文標題」／「台詞內容」欄位或內容是空的）。"); return; }
+        var titleOrder = []; var byTitle = {};
+        body.forEach(function(r){
+          var title = String(r[idxOf["課文標題"]] || "").trim();
+          var speaker = String(r[idxOf["說話者"]] || "").trim();
+          var text = String(r[idxOf["台詞內容"]] || "").trim();
+          if(!title || !text) return;
+          if(!byTitle[title]){ byTitle[title] = []; titleOrder.push(title); }
+          byTitle[title].push({ speaker: speaker, text: text });
+        });
+        var added = 0;
+        titleOrder.forEach(function(title){
+          var lines = byTitle[title].map(function(l){
+            var chars = Array.from(l.text);
+            return { speaker: l.speaker, text: l.text, zy: chars.map(function(ch){ return [ch, ""]; }) };
+          });
+          lesson.texts.push({ title: title, lines: lines });
+          added++;
+        });
+        cmDirty = true;
+        renderCmLessonEditor();
+        alert("✅ 已匯入 " + added + " 篇課文到「第" + lesson.lesson + "課」（注音先留白，可以之後在編輯裡用「🔤 標注注音」補上）。");
+      }catch(err){
+        alert("匯入失敗，請確認檔案格式是否正確（可以先下載範本檔參考欄位）。");
+      }
+      e.target.value = "";
+    };
+    reader.readAsBinaryString(file);
+  });
+
+  /* ---------- 課次新增／儲存整份教材庫 ---------- */
+  cmAddLessonBtnEl.addEventListener("click", function(){
+    cmAddLessonFormEl.style.display = "block";
+    var nextNum = cmLibrary.length ? Math.max.apply(null, cmLibrary.map(function(l){ return Number(l.lesson) || 0; })) + 1 : 1;
+    cmNewLessonNumEl.value = nextNum;
+    cmNewLessonTitleEl.value = "";
+    setTimeout(function(){ cmNewLessonTitleEl.focus(); }, 30);
+  });
+  cmNewLessonCancelBtnEl.addEventListener("click", function(){ cmAddLessonFormEl.style.display = "none"; });
+  cmNewLessonConfirmBtnEl.addEventListener("click", function(){
+    var num = Number(cmNewLessonNumEl.value);
+    var title = cmNewLessonTitleEl.value.trim();
+    if(!num){ alert("請輸入課次數字"); return; }
+    cmLibrary.push({ lesson: num, title: title, vocab: [], grammar: [], texts: [] });
+    cmLibrary.sort(function(a, b){ return (Number(a.lesson) || 0) - (Number(b.lesson) || 0); });
+    cmSelectedLessonIdx = cmLibrary.findIndex(function(l){ return l.lesson === num && l.title === title; });
+    cmDirty = true;
+    cmAddLessonFormEl.style.display = "none";
+    renderCmLessonList(); renderCmLessonEditor();
+  });
+
+  cmSaveBtnEl.addEventListener("click", async function(){
+    cmSaveBtnEl.disabled = true;
+    var originalText = cmSaveBtnEl.textContent;
+    cmSaveBtnEl.textContent = "儲存中…";
+    try{
+      await saveCloudVocabBank(currentCloudTeacher.id, cmLibrary, currentCloudTeacher.displayName);
+      try{ localStorage.setItem(CLOUD_VOCAB_CACHE_KEY, JSON.stringify(cmLibrary)); }catch(e){}
+      cmDirty = false;
+      cmSaveMsgEl.textContent = "✅ 已儲存！即將重新整理頁面套用到課堂遊戲…";
+      cmSaveMsgEl.style.color = "var(--accent)";
+      setTimeout(function(){ location.reload(); }, 1000);
+    }catch(e){
+      cmSaveMsgEl.textContent = "儲存失敗，請檢查網路連線後再試一次。";
+      cmSaveMsgEl.style.color = "var(--wrong)";
+      cmSaveBtnEl.disabled = false;
+      cmSaveBtnEl.textContent = originalText;
+    }
+  });
+
+  document.getElementById("cloudSyncManageContentBtn").addEventListener("click", openContentManager);
+  cmCloseBtnEl.addEventListener("click", closeContentManagerWithConfirm);
+  cmOverlay.addEventListener("click", function(e){ if(e.target === cmOverlay) closeContentManagerWithConfirm(); });
+})();
 </script>
 </body>
 </html>
