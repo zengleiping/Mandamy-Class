@@ -1419,6 +1419,9 @@
       <p id="cloudSyncCloudStatus" style="font-size:13px; color:var(--ink-soft); margin:0 0 18px; line-height:1.6;"></p>
       <div id="cloudSyncActionMsg" style="display:none; font-size:13px; margin-bottom:12px;"></div>
       <button type="button" class="draw-btn" id="cloudSyncManageContentBtn" style="width:100%; display:flex; justify-content:center; margin-bottom:14px; box-sizing:border-box; background:linear-gradient(135deg,var(--brand),var(--brand-dark));">📚 管理我的教材庫（生詞／語法／課文）</button>
+      <button type="button" class="draw-btn" id="capsuleManageOpenBtn" style="width:100%; display:flex; justify-content:center; margin-bottom:14px; box-sizing:border-box; background:linear-gradient(135deg,var(--accent),var(--lesson2));">🎁 時空膠囊連結（親子異步留言）</button>
+      <button type="button" class="draw-btn" id="relayManageOpenBtn" style="width:100%; display:flex; justify-content:center; margin-bottom:14px; box-sizing:border-box; background:linear-gradient(135deg,var(--lesson2),var(--brand));">📖 接力故事（陪伴式寫作）</button>
+      <button type="button" class="draw-btn" id="classManageOpenBtn" style="width:100%; display:flex; justify-content:center; margin-bottom:14px; box-sizing:border-box; background:linear-gradient(135deg,var(--lesson3),var(--brand-dark));">🧑‍🤝‍🧑 班級接力故事（小隊輪值＋投票）</button>
       <div style="border-top:1px dashed var(--border); margin:0 0 14px;"></div>
       <button type="button" class="draw-btn" id="cloudSyncUploadBtn" style="width:100%; display:flex; justify-content:center; margin-bottom:10px; box-sizing:border-box;">⬆️ 上傳目前生詞到雲端</button>
       <button type="button" class="draw-btn" id="cloudSyncDownloadBtn" style="width:100%; display:flex; justify-content:center; margin-bottom:10px; box-sizing:border-box; background:linear-gradient(135deg,var(--accent),var(--lesson2));">⬇️ 套用雲端最新生詞</button>
@@ -5292,6 +5295,7 @@ render();
         var account = await fetchTeacherAccount(savedId);
         if(account && !account.disabled){
           currentCloudTeacher = { id: account.id || savedId, username: account.username, displayName: account.displayName || account.username };
+          window.__capsuleCurrentTeacherId = currentCloudTeacher.id;
           showStage("actions");
           refreshCloudStatusText();
           return;
@@ -5318,6 +5322,7 @@ render();
       var ok = await verifyPassword(password, account.saltHex, account.hashHex);
       if(!ok){ showError("密碼不正確。"); return; }
       currentCloudTeacher = { id: account.id || username, username: account.username, displayName: account.displayName || account.username };
+      window.__capsuleCurrentTeacherId = currentCloudTeacher.id;
       try{ localStorage.setItem(TEACHER_SESSION_KEY, currentCloudTeacher.id); }catch(e){}
       passwordInput.value = "";
       showStage("actions");
@@ -5375,6 +5380,7 @@ render();
 
   function doCloudLogout(){
     currentCloudTeacher = null;
+    window.__capsuleCurrentTeacherId = null;
     try{ localStorage.removeItem(TEACHER_SESSION_KEY); }catch(e){}
     usernameInput.value = ""; passwordInput.value = "";
     clearActionMsg();
@@ -6171,5 +6177,1668 @@ render();
   cmOverlay.addEventListener("click", function(e){ if(e.target === cmOverlay) closeContentManagerWithConfirm(); });
 })();
 </script>
+
+<!-- ============================================================
+     🎁 時空膠囊／親子異步留言(Time Capsule):老師幫每位學生建立一組
+     專屬連結(不用註冊登入),分享給學生跟家長各自用自己的裝置打開。
+     學生下午在生詞/語法卡上圈選+留語音,家長晚上打開同一個連結就能
+     重播、回應。跟現有雲端同步共用同一個 Firebase 專案,但是全新的
+     capsuleLinkOwners / capsuleLinks / capsuleMarks 節點,不會動到
+     既有的 teacherAccounts / teacherVocabBanks 資料。
+     ============================================================ -->
+<script>
+(function(){
+  "use strict";
+
+  var CAPSULE_ROLE_KEY_PREFIX = "hanyu_capsule_role_";
+  var MAX_RECORD_MS = 15000;
+
+  function randomId(len){
+    len = len || 8;
+    var chars = "abcdefghijkmnopqrstuvwxyz23456789"; // 去掉容易混淆的 l/1/0/o
+    var out = "";
+    var arr = new Uint8Array(len);
+    crypto.getRandomValues(arr);
+    for(var i=0;i<len;i++){ out += chars[arr[i] % chars.length]; }
+    return out;
+  }
+  function sanitizeKey(raw){
+    return String(raw==null ? "" : raw).replace(/[.#$\[\]\/]/g, "_").slice(0, 120);
+  }
+  function escHtml(s){
+    return String(s==null ? "" : s).replace(/[&<>"']/g, function(c){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+    });
+  }
+  function waitForFirebaseBridge(){
+    return new Promise(function(resolve){
+      if(window.__firebaseReady){ resolve(true); return; }
+      var settled = false;
+      var to = setTimeout(function(){ if(!settled){ settled = true; resolve(false); } }, 12000);
+      window.addEventListener("firebase-bridge-ready", function(){ if(!settled){ settled = true; clearTimeout(to); resolve(true); } }, { once:true });
+    });
+  }
+  async function fbGet(path){
+    var snap = await window.get(window.ref(window.db, path));
+    return snap.exists() ? snap.val() : null;
+  }
+  async function fbSet(path, val){
+    await window.set(window.ref(window.db, path), val);
+  }
+  function blobToBase64(blob){
+    return new Promise(function(resolve, reject){
+      var reader = new FileReader();
+      reader.onloadend = function(){
+        var result = reader.result || "";
+        var idx = result.indexOf(",");
+        resolve(idx >= 0 ? result.slice(idx+1) : result);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  }
+
+  // ============================================================
+  // 老師端:管理「這個學生的時空膠囊連結」
+  // ============================================================
+  function buildCapsuleManageOverlayIfNeeded(){
+    if(document.getElementById("capsuleManageOverlay")) return;
+    var html = ''
+      + '<div id="capsuleManageOverlay" class="bell-overlay" style="display:none;">'
+      + '  <div class="bell-card" style="max-width:520px; padding:36px 32px 28px; text-align:left;">'
+      + '    <button class="bell-close" id="capsuleManageCloseBtn">✕</button>'
+      + '    <h2 style="margin:0 0 6px; font-size:20px;">🎁 時空膠囊連結</h2>'
+      + '    <p style="font-size:13px; color:var(--ink-soft); margin:0 0 16px; line-height:1.6;">幫每位學生建立一組專屬連結,分享給學生跟家長各自用自己的裝置打開(不用註冊登入)。學生下午在生詞/語法卡上圈選+留語音,家長晚上打開同一個連結就能重播、回應。</p>'
+      + '    <div style="display:flex; gap:8px; margin-bottom:14px;">'
+      + '      <input type="text" id="capsuleNewStudentName" placeholder="學生名字/暱稱" style="flex:1; padding:10px 12px; border-radius:10px; border:1px solid var(--border); background:var(--card-alt); color:var(--ink); font-family:inherit; font-size:14px; box-sizing:border-box;">'
+      + '      <button type="button" class="draw-btn" id="capsuleNewStudentBtn" style="white-space:nowrap;">＋ 新增</button>'
+      + '    </div>'
+      + '    <div id="capsuleLinkList"></div>'
+      + '  </div>'
+      + '</div>';
+    document.body.insertAdjacentHTML("beforeend", html);
+    document.getElementById("capsuleManageCloseBtn").addEventListener("click", function(){
+      document.getElementById("capsuleManageOverlay").style.display = "none";
+    });
+    document.getElementById("capsuleManageOverlay").addEventListener("click", function(e){
+      if(e.target.id === "capsuleManageOverlay") e.currentTarget.style.display = "none";
+    });
+  }
+
+  function capsuleLinkUrl(linkId){
+    return location.origin + location.pathname + "?capsule=" + linkId;
+  }
+
+  async function renderCapsuleLinkList(teacherId){
+    var wrap = document.getElementById("capsuleLinkList");
+    wrap.innerHTML = '<p style="font-size:13px; color:var(--ink-soft);">載入中…</p>';
+    var links = (await fbGet("capsuleLinks/" + teacherId)) || {};
+    var ids = Object.keys(links).sort(function(a,b){ return (links[b].createdAt||0) - (links[a].createdAt||0); });
+    if(!ids.length){
+      wrap.innerHTML = '<p style="font-size:13px; color:var(--ink-soft);">還沒有任何學生連結,上面新增一個看看。</p>';
+      return;
+    }
+    wrap.innerHTML = ids.map(function(id){
+      var l = links[id];
+      var url = capsuleLinkUrl(id);
+      return ''
+        + '<div style="border:1px solid var(--border); border-radius:12px; padding:12px 14px; margin-bottom:10px; background:var(--card-alt);">'
+        + '  <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">'
+        + '    <b style="font-size:14px;">' + escHtml(l.studentName || "(未命名)") + '</b>'
+        + '    <button type="button" class="back-btn capsule-delete-btn" data-id="' + id + '" style="padding:4px 10px; font-size:12px;">刪除</button>'
+        + '  </div>'
+        + '  <div style="display:flex; gap:8px; margin-top:8px; align-items:center;">'
+        + '    <input type="text" readonly value="' + escHtml(url) + '" style="flex:1; font-size:12px; padding:6px 8px; border-radius:8px; border:1px solid var(--border); background:var(--card); color:var(--ink-soft);" onclick="this.select()">'
+        + '    <button type="button" class="draw-btn capsule-copy-btn" data-url="' + escHtml(url) + '" style="padding:6px 12px; font-size:12px; white-space:nowrap;">複製</button>'
+        + '  </div>'
+        + '</div>';
+    }).join("");
+    wrap.querySelectorAll(".capsule-copy-btn").forEach(function(btn){
+      btn.addEventListener("click", async function(){
+        try{ await navigator.clipboard.writeText(btn.getAttribute("data-url")); btn.textContent = "已複製！"; setTimeout(function(){ btn.textContent = "複製"; }, 1500); }
+        catch(e){ alert("複製失敗,請手動選取連結文字複製。"); }
+      });
+    });
+    wrap.querySelectorAll(".capsule-delete-btn").forEach(function(btn){
+      btn.addEventListener("click", async function(){
+        var id = btn.getAttribute("data-id");
+        if(!confirm("確定要刪除「" + (links[id].studentName || id) + "」的時空膠囊連結嗎?舊連結會直接失效,裡面留過的留言也會一併刪除,無法復原。")) return;
+        await fbSet("capsuleLinks/" + teacherId + "/" + id, null);
+        await fbSet("capsuleLinkOwners/" + id, null);
+        await fbSet("capsuleMarks/" + id, null);
+        renderCapsuleLinkList(teacherId);
+      });
+    });
+  }
+
+  async function openCapsuleManageOverlay(teacherId){
+    buildCapsuleManageOverlayIfNeeded();
+    document.getElementById("capsuleManageOverlay").style.display = "flex";
+    renderCapsuleLinkList(teacherId);
+  }
+
+  document.addEventListener("DOMContentLoaded", function(){
+    document.body.addEventListener("click", async function(e){
+      var openBtn = e.target.closest && e.target.closest("#capsuleManageOpenBtn");
+      if(openBtn){
+        var teacherId = window.__capsuleCurrentTeacherId;
+        if(!teacherId){ alert("請先登入教師帳號。"); return; }
+        var ready = await waitForFirebaseBridge();
+        if(!ready){ alert("雲端服務連線逾時，請稍後再試一次。"); return; }
+        openCapsuleManageOverlay(teacherId);
+        return;
+      }
+      var newBtn = e.target.closest && e.target.closest("#capsuleNewStudentBtn");
+      if(newBtn){
+        var input = document.getElementById("capsuleNewStudentName");
+        var name = (input.value || "").trim();
+        if(!name){ alert("請輸入學生名字或暱稱。"); return; }
+        var tId = window.__capsuleCurrentTeacherId;
+        if(!tId) return;
+        newBtn.disabled = true;
+        try{
+          var linkId = randomId(8);
+          await fbSet("capsuleLinks/" + tId + "/" + linkId, { studentName: name, createdAt: Date.now() });
+          await fbSet("capsuleLinkOwners/" + linkId, tId);
+          input.value = "";
+          renderCapsuleLinkList(tId);
+        }catch(err){ alert("建立失敗，請檢查網路連線後再試一次。"); }
+        finally{ newBtn.disabled = false; }
+        return;
+      }
+    });
+
+    var params = new URLSearchParams(location.search);
+    var capsuleLinkId = params.get("capsule");
+    if(capsuleLinkId){ initCapsuleViewer(sanitizeKey(capsuleLinkId)); }
+  });
+
+  // ============================================================
+  // 學生／家長端:時空膠囊瀏覽模式(?capsule=linkId)
+  // ============================================================
+  var capsuleState = {
+    linkId: null, teacherId: null, studentName: "",
+    courseData: [], vocabList: [], grammarList: [],
+    role: null, selectedLesson: "all", marksCache: {}
+  };
+
+  function capsuleRoleStorageKey(){ return CAPSULE_ROLE_KEY_PREFIX + capsuleState.linkId; }
+  function loadCapsuleRole(){ try{ return localStorage.getItem(capsuleRoleStorageKey()) || null; }catch(e){ return null; } }
+  function saveCapsuleRole(role){ try{ localStorage.setItem(capsuleRoleStorageKey(), role); }catch(e){} }
+
+  function buildCapsuleViewerRootIfNeeded(){
+    if(document.getElementById("capsuleViewerRoot")) return;
+    var html = ''
+      + '<div id="capsuleViewerRoot" style="position:fixed; inset:0; z-index:5000; background:var(--bg); overflow:auto; display:none;">'
+      + '  <div style="max-width:680px; margin:0 auto; padding:20px 16px 80px;">'
+      + '    <div id="capsuleViewerHeader"></div>'
+      + '    <div id="capsuleViewerBody"></div>'
+      + '  </div>'
+      + '</div>';
+    document.body.insertAdjacentHTML("beforeend", html);
+  }
+  function showCapsuleViewerMessage(msg){
+    buildCapsuleViewerRootIfNeeded();
+    document.getElementById("capsuleViewerRoot").style.display = "block";
+    document.getElementById("capsuleViewerHeader").innerHTML = '<div style="text-align:center; padding:60px 20px;"><div style="font-size:40px; margin-bottom:12px;">🎁</div><p style="color:var(--ink-soft); font-size:14px;">' + escHtml(msg) + '</p></div>';
+    document.getElementById("capsuleViewerBody").innerHTML = "";
+  }
+
+  async function initCapsuleViewer(linkId){
+    capsuleState.linkId = linkId;
+    buildCapsuleViewerRootIfNeeded();
+    document.getElementById("capsuleViewerRoot").style.display = "block";
+    showCapsuleViewerMessage("連線中…");
+    var ready = await waitForFirebaseBridge();
+    if(!ready){ showCapsuleViewerMessage("連線逾時，請檢查網路後重新整理頁面再試一次。"); return; }
+
+    var teacherId = await fbGet("capsuleLinkOwners/" + linkId);
+    if(!teacherId){ showCapsuleViewerMessage("這個連結已經失效或不存在，請跟老師確認一下網址。"); return; }
+    var linkInfo = await fbGet("capsuleLinks/" + teacherId + "/" + linkId);
+    if(!linkInfo){ showCapsuleViewerMessage("這個連結已經失效或不存在，請跟老師確認一下網址。"); return; }
+
+    capsuleState.teacherId = teacherId;
+    capsuleState.studentName = linkInfo.studentName || "";
+
+    var bank = await fbGet("teacherVocabBanks/" + teacherId);
+    var courseData = (bank && bank.courseData) || [];
+    capsuleState.courseData = courseData;
+    capsuleState.vocabList = courseData.flatMap(function(l){ return (l.vocab||[]).map(function(v){ return Object.assign({}, v, { 課別: l.lesson }); }); });
+    capsuleState.grammarList = courseData.flatMap(function(l){ return (l.grammar||[]).map(function(g){ return Object.assign({}, g, { 課別: l.lesson }); }); });
+    capsuleState.role = loadCapsuleRole();
+
+    renderCapsuleViewer();
+  }
+
+  function capsuleLessonOptions(){
+    var set = {};
+    capsuleState.courseData.forEach(function(l){ set[l.lesson] = l.title || ""; });
+    return Object.keys(set).map(Number).sort(function(a,b){ return a-b; }).map(function(n){ return { lesson:n, title:set[n] }; });
+  }
+
+  function renderCapsuleHeader(){
+    var header = document.getElementById("capsuleViewerHeader");
+    var lessons = capsuleLessonOptions();
+    header.innerHTML = ''
+      + '<div style="text-align:center; padding:18px 0 10px;">'
+      + '  <div style="font-size:32px;">🎁</div>'
+      + '  <h1 style="font-size:20px; margin:6px 0 2px;">' + escHtml(capsuleState.studentName) + ' 的時空膠囊</h1>'
+      + '  <p style="font-size:12.5px; color:var(--ink-soft); margin:0 0 14px;">在生詞／語法卡上留下圈選＋語音留言，晚一點打開同一個連結就能看到對方的回音。</p>'
+      + '</div>'
+      + '<div style="display:flex; justify-content:center; gap:8px; margin-bottom:14px;">'
+      + '  <button type="button" class="draw-btn capsule-role-btn" data-role="student" style="padding:8px 16px; font-size:13px;' + (capsuleState.role==='student' ? '' : ' opacity:.45;') + '">🧒 我是學生</button>'
+      + '  <button type="button" class="draw-btn capsule-role-btn" data-role="parent" style="padding:8px 16px; font-size:13px; background:linear-gradient(135deg,var(--accent),var(--lesson2));' + (capsuleState.role==='parent' ? '' : ' opacity:.45;') + '">❤️ 我是家長</button>'
+      + '</div>'
+      + (lessons.length ? (''
+        + '<div style="display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-bottom:16px;">'
+        + '  <button type="button" class="lesson-chip capsule-lesson-chip" data-lesson="all" style="background:' + (capsuleState.selectedLesson==='all' ? 'var(--brand)' : 'var(--card-alt)') + '; color:' + (capsuleState.selectedLesson==='all' ? '#fff' : 'var(--ink-soft)') + '; cursor:pointer; border:none;">全部</button>'
+        + lessons.map(function(l){
+            var active = String(capsuleState.selectedLesson) === String(l.lesson);
+            return '<button type="button" class="lesson-chip capsule-lesson-chip" data-lesson="' + l.lesson + '" style="background:' + (active ? 'var(--brand)' : 'var(--card-alt)') + '; color:' + (active ? '#fff' : 'var(--ink-soft)') + '; cursor:pointer; border:none;">第' + l.lesson + '課' + (l.title ? ' ' + escHtml(l.title) : '') + '</button>';
+          }).join("")
+        + '</div>') : '<p style="text-align:center; font-size:13px; color:var(--ink-soft);">老師還沒上傳教材內容，晚點再回來看看。</p>');
+
+    header.querySelectorAll(".capsule-role-btn").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        capsuleState.role = btn.getAttribute("data-role");
+        saveCapsuleRole(capsuleState.role);
+        renderCapsuleViewer();
+      });
+    });
+    header.querySelectorAll(".capsule-lesson-chip").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        capsuleState.selectedLesson = btn.getAttribute("data-lesson");
+        renderCapsuleViewer();
+      });
+    });
+  }
+
+  function capsuleFilteredItems(){
+    var lesson = capsuleState.selectedLesson;
+    var matches = function(it){ return lesson === "all" || String(it["課別"]) === String(lesson); };
+    var vocab = capsuleState.vocabList.filter(matches).map(function(v){ return { type:"vocab", data:v, key: "v_" + v["課別"] + "_" + sanitizeKey(v["生詞"]), label: v["生詞"] }; });
+    var grammar = capsuleState.grammarList.filter(matches).map(function(g){ return { type:"grammar", data:g, key: "g_" + g["課別"] + "_" + sanitizeKey(g["語法點"]), label: g["語法點"] }; });
+    return vocab.concat(grammar);
+  }
+
+  function renderCapsuleViewer(){
+    renderCapsuleHeader();
+    var body = document.getElementById("capsuleViewerBody");
+    if(!capsuleState.role){
+      body.innerHTML = '<p style="text-align:center; font-size:13px; color:var(--ink-soft); margin-top:20px;">👆 先選「我是學生」還是「我是家長」，才能開始留言喔。</p>';
+      return;
+    }
+    var items = capsuleFilteredItems();
+    if(!items.length){ body.innerHTML = '<p style="text-align:center; font-size:13px; color:var(--ink-soft);">這個範圍還沒有內容。</p>'; return; }
+    body.innerHTML = items.map(function(it){
+      var inner = it.type === "vocab" ? vocabCardInnerHtml(it.data) : grammarCardInnerHtml(it.data);
+      var cls = it.type === "vocab" ? "card" : "grammar-card";
+      return ''
+        + '<div class="' + cls + ' capsule-item-card" data-key="' + escHtml(it.key) + '" data-label="' + escHtml(it.label) + '" style="margin-bottom:14px;">'
+        + inner
+        + '  <div class="capsule-item-footer" style="margin-top:10px; padding-top:10px; border-top:1px dashed var(--border); display:flex; justify-content:space-between; align-items:center;">'
+        + '    <span class="capsule-mark-count" style="font-size:12.5px; color:var(--ink-soft);">💬 載入中…</span>'
+        + '    <button type="button" class="reveal-btn capsule-record-btn" style="padding:6px 14px; font-size:12.5px;">🎙️ 留言</button>'
+        + '  </div>'
+        + '  <div class="capsule-marks-panel" style="display:none; margin-top:10px;"></div>'
+        + '</div>';
+    }).join("");
+
+    body.querySelectorAll(".capsule-item-card").forEach(function(cardEl){ loadAndRenderMarksSummary(cardEl); });
+    body.querySelectorAll(".capsule-record-btn").forEach(function(btn){
+      btn.addEventListener("click", function(){ openCapsuleRecorder(btn.closest(".capsule-item-card")); });
+    });
+  }
+
+  async function loadAndRenderMarksSummary(cardEl){
+    var key = cardEl.getAttribute("data-key");
+    var marks = (await fbGet("capsuleMarks/" + capsuleState.linkId + "/" + key)) || {};
+    capsuleState.marksCache[key] = marks;
+    var countEl = cardEl.querySelector(".capsule-mark-count");
+    if(!countEl) return; // 使用者可能已經切換課次，卡片被重繪掉了
+    var n = Object.keys(marks).length;
+    countEl.textContent = n ? ("💬 " + n + " 則留言（點一下看）") : "💬 還沒有留言";
+    countEl.style.cursor = n ? "pointer" : "default";
+    countEl.onclick = n ? function(){ toggleCapsuleMarksPanel(cardEl); } : null;
+  }
+
+  function formatCapsuleTime(ts){
+    if(!ts) return "";
+    var d = new Date(ts);
+    var pad = function(n){ return String(n).padStart(2,"0"); };
+    return (d.getMonth()+1) + "/" + d.getDate() + " " + pad(d.getHours()) + ":" + pad(d.getMinutes());
+  }
+
+  function toggleCapsuleMarksPanel(cardEl){
+    var panel = cardEl.querySelector(".capsule-marks-panel");
+    var key = cardEl.getAttribute("data-key");
+    if(panel.style.display === "block"){ panel.style.display = "none"; return; }
+    var marks = capsuleState.marksCache[key] || {};
+    var ids = Object.keys(marks).sort(function(a,b){ return (marks[a].createdAt||0) - (marks[b].createdAt||0); });
+    panel.innerHTML = (ids.map(function(id){
+      var m = marks[id];
+      var roleIcon = m.role === "parent" ? "❤️" : "🧒";
+      return ''
+        + '<div class="capsule-mark-row" data-mark-id="' + id + '" style="display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:10px; background:var(--card-alt); margin-bottom:6px;">'
+        + '  <span style="font-size:18px;">' + roleIcon + '</span>'
+        + '  <button type="button" class="reveal-btn capsule-play-btn" data-mark-id="' + id + '" style="padding:5px 12px; font-size:12px;">▶️ 播放</button>'
+        + '  <span style="font-size:11.5px; color:var(--ink-faint); margin-left:auto;">' + formatCapsuleTime(m.createdAt) + '</span>'
+        + '</div>';
+    }).join("")) || '<p style="font-size:12.5px; color:var(--ink-soft);">還沒有留言。</p>';
+    panel.style.display = "block";
+    panel.querySelectorAll(".capsule-play-btn").forEach(function(btn){
+      btn.addEventListener("click", function(){ playCapsuleMark(cardEl, marks[btn.getAttribute("data-mark-id")]); });
+    });
+  }
+
+  // ---------- 圈選軌跡 + 語音錄製 ----------
+  function openCapsuleRecorder(cardEl){
+    var key = cardEl.getAttribute("data-key");
+    var label = cardEl.getAttribute("data-label");
+    var overlayId = "capsuleRecordOverlay";
+    var existing = document.getElementById(overlayId);
+    if(existing) existing.remove();
+
+    var html = ''
+      + '<div id="' + overlayId + '" class="bell-overlay" style="display:flex; z-index:6000;">'
+      + '  <div class="bell-card" style="max-width:420px; padding:30px 26px 24px; text-align:left;">'
+      + '    <button class="bell-close" id="capsuleRecordCloseBtn">✕</button>'
+      + '    <h3 style="margin:0 0 8px; font-size:16px;">🎙️ 留言給「' + escHtml(label) + '」</h3>'
+      + '    <p style="font-size:12.5px; color:var(--ink-soft); margin:0 0 12px;">按住下面的框開始畫圈，同時對著麥克風說話（最長 15 秒），放開就結束。</p>'
+      + '    <div id="capsuleDrawWrap" style="position:relative; width:100%; aspect-ratio:3/2; border:2px dashed var(--border); border-radius:14px; background:var(--card-alt); touch-action:none; overflow:hidden;">'
+      + '      <canvas id="capsuleDrawCanvas" style="position:absolute; inset:0; width:100%; height:100%;"></canvas>'
+      + '      <div id="capsuleDrawHint" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:13px; color:var(--ink-faint); pointer-events:none; text-align:center; padding:20px;">👇 按住這裡開始畫圈+說話</div>'
+      + '    </div>'
+      + '    <div id="capsuleRecordStatus" style="text-align:center; font-size:12.5px; color:var(--ink-soft); margin:10px 0;"></div>'
+      + '    <div id="capsuleRecordActions" style="display:flex; gap:8px;"></div>'
+      + '  </div>'
+      + '</div>';
+    document.body.insertAdjacentHTML("beforeend", html);
+
+    var overlayEl = document.getElementById(overlayId);
+    var cleanup = setupCapsuleRecorderInteraction(cardEl, key, overlayEl);
+    document.getElementById("capsuleRecordCloseBtn").addEventListener("click", function(){ cleanup(); overlayEl.remove(); });
+    overlayEl.addEventListener("click", function(e){ if(e.target === overlayEl){ cleanup(); overlayEl.remove(); } });
+  }
+
+  function setupCapsuleRecorderInteraction(cardEl, itemKey, overlayEl){
+    var wrap = document.getElementById("capsuleDrawWrap");
+    var canvas = document.getElementById("capsuleDrawCanvas");
+    var hint = document.getElementById("capsuleDrawHint");
+    var statusEl = document.getElementById("capsuleRecordStatus");
+    var actionsEl = document.getElementById("capsuleRecordActions");
+    var ctx = canvas.getContext("2d");
+
+    var recording = false;
+    var path = [];
+    var startedAt = 0;
+    var mediaRecorder = null;
+    var audioChunks = [];
+    var stopTimer = null;
+    var resultBlob = null;
+    var resultMime = "";
+    var activeStream = null;
+
+    function fitCanvas(){
+      var rect = wrap.getBoundingClientRect();
+      var dpr = window.devicePixelRatio || 1;
+      canvas.width = Math.round(rect.width * dpr);
+      canvas.height = Math.round(rect.height * dpr);
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+    }
+    fitCanvas();
+    window.addEventListener("resize", fitCanvas);
+
+    function relPos(e){
+      var rect = wrap.getBoundingClientRect();
+      var cx = (e.touches ? e.touches[0].clientX : e.clientX);
+      var cy = (e.touches ? e.touches[0].clientY : e.clientY);
+      return { x: Math.min(1, Math.max(0, (cx-rect.left)/rect.width)), y: Math.min(1, Math.max(0, (cy-rect.top)/rect.height)) };
+    }
+    function drawSegment(p1, p2){
+      var rect = wrap.getBoundingClientRect();
+      ctx.strokeStyle = "#E8825A"; ctx.lineWidth = 4; ctx.lineCap = "round"; ctx.lineJoin = "round";
+      ctx.beginPath();
+      ctx.moveTo(p1.x*rect.width, p1.y*rect.height);
+      ctx.lineTo(p2.x*rect.width, p2.y*rect.height);
+      ctx.stroke();
+    }
+
+    async function startRecording(e){
+      if(recording) return;
+      recording = true;
+      hint.style.display = "none";
+      path = [];
+      startedAt = Date.now();
+      var p = relPos(e);
+      path.push({ x:p.x, y:p.y, t:0 });
+
+      try{
+        activeStream = await navigator.mediaDevices.getUserMedia({ audio:true });
+        audioChunks = [];
+        var mime = (window.MediaRecorder && MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported("audio/webm")) ? "audio/webm" : "";
+        mediaRecorder = mime ? new MediaRecorder(activeStream, { mimeType: mime }) : new MediaRecorder(activeStream);
+        mediaRecorder.ondataavailable = function(ev){ if(ev.data && ev.data.size) audioChunks.push(ev.data); };
+        mediaRecorder.start();
+        statusEl.textContent = "🔴 錄音中…放開就結束（最長 15 秒）";
+        stopTimer = setTimeout(finishRecording, MAX_RECORD_MS);
+      }catch(err){
+        statusEl.textContent = "⚠️ 沒有拿到麥克風權限，只會存畫的軌跡、沒有聲音。";
+      }
+    }
+    function moveRecording(e){
+      if(!recording) return;
+      e.preventDefault();
+      var p = relPos(e);
+      var last = path[path.length-1];
+      path.push({ x:p.x, y:p.y, t: Date.now()-startedAt });
+      drawSegment(last, p);
+    }
+    function finishRecording(){
+      if(!recording) return;
+      recording = false;
+      if(stopTimer){ clearTimeout(stopTimer); stopTimer = null; }
+      if(mediaRecorder && mediaRecorder.state !== "inactive"){
+        mediaRecorder.onstop = function(){
+          resultBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType || "audio/webm" });
+          resultMime = resultBlob.type;
+          if(activeStream) activeStream.getTracks().forEach(function(t){ t.stop(); });
+          showPreviewActions();
+        };
+        mediaRecorder.stop();
+      }else{
+        if(activeStream) activeStream.getTracks().forEach(function(t){ t.stop(); });
+        showPreviewActions();
+      }
+    }
+    function showPreviewActions(){
+      statusEl.textContent = path.length > 1 ? "✅ 錄好了，要送出嗎？" : "沒有畫到東西，重來一次吧。";
+      actionsEl.innerHTML = ''
+        + '<button type="button" class="back-btn" id="capsuleRecordRetryBtn" style="flex:1;">🔁 重錄</button>'
+        + (path.length > 1 ? '<button type="button" class="draw-btn" id="capsuleRecordSendBtn" style="flex:1;">✅ 送出</button>' : '');
+      document.getElementById("capsuleRecordRetryBtn").addEventListener("click", resetRecorder);
+      var sendBtn = document.getElementById("capsuleRecordSendBtn");
+      if(sendBtn) sendBtn.addEventListener("click", submitCapsuleMark);
+    }
+    function resetRecorder(){
+      path = []; resultBlob = null; resultMime = "";
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      hint.style.display = "flex";
+      statusEl.textContent = ""; actionsEl.innerHTML = "";
+    }
+    async function submitCapsuleMark(){
+      var sendBtn = document.getElementById("capsuleRecordSendBtn");
+      if(sendBtn) sendBtn.disabled = true;
+      statusEl.textContent = "上傳中…";
+      try{
+        var audioBase64 = "";
+        if(resultBlob && resultBlob.size){ audioBase64 = await blobToBase64(resultBlob); }
+        var markId = String(Date.now()) + "_" + randomId(4);
+        await fbSet("capsuleMarks/" + capsuleState.linkId + "/" + itemKey + "/" + markId, {
+          role: capsuleState.role,
+          createdAt: Date.now(),
+          path: path,
+          durationMs: path.length ? path[path.length-1].t : 0,
+          audioBase64: audioBase64,
+          audioMime: resultMime || ""
+        });
+        cleanup();
+        overlayEl.remove();
+        loadAndRenderMarksSummary(cardEl);
+      }catch(err){
+        statusEl.textContent = "⚠️ 上傳失敗，請檢查網路連線後再試一次。";
+        if(sendBtn) sendBtn.disabled = false;
+      }
+    }
+
+    function onPointerUp(){ if(recording) finishRecording(); }
+    wrap.addEventListener("pointerdown", startRecording);
+    wrap.addEventListener("pointermove", moveRecording);
+    window.addEventListener("pointerup", onPointerUp);
+
+    function cleanup(){
+      window.removeEventListener("resize", fitCanvas);
+      window.removeEventListener("pointerup", onPointerUp);
+      if(activeStream){ activeStream.getTracks().forEach(function(t){ t.stop(); }); activeStream = null; }
+      if(stopTimer){ clearTimeout(stopTimer); stopTimer = null; }
+    }
+    return cleanup;
+  }
+
+  function playCapsuleMark(cardEl, mark){
+    var panel = cardEl.querySelector(".capsule-marks-panel");
+    var existingStage = panel.querySelector(".capsule-play-stage");
+    if(existingStage) existingStage.remove();
+
+    panel.insertAdjacentHTML("beforeend", ''
+      + '<div class="capsule-play-stage" style="position:relative; width:100%; aspect-ratio:3/2; border-radius:14px; border:1px solid var(--border); background:var(--card-alt); margin-top:8px; overflow:hidden;">'
+      + '  <canvas class="capsule-play-canvas" style="position:absolute; inset:0; width:100%; height:100%;"></canvas>'
+      + '</div>');
+    var stage = panel.querySelector(".capsule-play-stage");
+    var canvas = stage.querySelector(".capsule-play-canvas");
+    var ctx = canvas.getContext("2d");
+    var rect = stage.getBoundingClientRect();
+    var dpr = window.devicePixelRatio || 1;
+    canvas.width = Math.round(rect.width*dpr); canvas.height = Math.round(rect.height*dpr);
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    ctx.strokeStyle = mark.role === "parent" ? "#4C8577" : "#E8825A";
+    ctx.lineWidth = 4; ctx.lineCap = "round"; ctx.lineJoin = "round";
+
+    var path = mark.path || [];
+    if(mark.audioBase64){
+      var audio = new Audio("data:" + (mark.audioMime||"audio/webm") + ";base64," + mark.audioBase64);
+      audio.play().catch(function(){});
+    }
+    var t0 = performance.now();
+    function step(now){
+      if(!document.body.contains(canvas)) return; // 使用者已經關掉/切換掉這張卡片
+      var elapsed = now - t0;
+      var r = stage.getBoundingClientRect();
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      ctx.beginPath();
+      var started = false;
+      for(var i=0;i<path.length;i++){
+        if(path[i].t > elapsed) break;
+        var p = path[i];
+        if(!started){ ctx.moveTo(p.x*r.width, p.y*r.height); started = true; }
+        else{ ctx.lineTo(p.x*r.width, p.y*r.height); }
+      }
+      ctx.stroke();
+      var totalMs = path.length ? path[path.length-1].t : 0;
+      if(elapsed < totalMs){ requestAnimationFrame(step); }
+    }
+    requestAnimationFrame(step);
+  }
+
+})();
+</script>
+<!-- ============================================================
+     📖 接力故事(陪伴式寫作 Relay Story):老師建立一個故事,設定
+     接力模式(老師接力／跨學生配對／親子接力)跟預計接力次數(可留
+     空=不限,老師手動結束),系統幫每個角色產生一組專屬連結(不用
+     註冊登入)。輪到誰,誰打開連結才看得到輸入框,寫完換下一位,
+     沒輪到的人只能閱讀目前寫到哪裡。跟時空膠囊共用同一套「專屬
+     連結/代碼」精神,但這次是文字接龍創作,不是留言/回放。全新的
+     relayStories / relayLinkOwners 節點,不會動到既有資料。
+     ============================================================ -->
+<script>
+(function(){
+  "use strict";
+
+  var RELAY_ROLE_KEY_PREFIX = "hanyu_relay_role_";
+  var MAX_SEGMENT_CHARS = 400;
+
+  var MODE_CONFIG = {
+    teacher: {
+      label: "🧑‍🏫 老師接力",
+      hint: "老師出開頭，學生跟老師輪流接寫，適合一對一課後陪伴練習。",
+      turnOrder: ["student","teacher"],
+      nameFields: [{ key:"student", label:"學生名字／暱稱" }]
+    },
+    peer: {
+      label: "🤝 跨學生配對",
+      hint: "兩位學生各拿一組連結，輪流接寫同一個故事。",
+      turnOrder: ["studentA","studentB"],
+      nameFields: [{ key:"studentA", label:"學生 A 名字／暱稱" }, { key:"studentB", label:"學生 B 名字／暱稱" }]
+    },
+    parent: {
+      label: "❤️ 親子接力",
+      hint: "一組連結給學生跟家長共用，各自選身分，輪流接寫，白天/晚上異步進行都可以。",
+      turnOrder: ["student","parent"],
+      nameFields: [{ key:"student", label:"學生名字／暱稱" }]
+    }
+  };
+  var ROLE_ICON = { teacher:"🧑‍🏫", student:"🧒", studentA:"🧒", studentB:"🧒", parent:"❤️" };
+  var ROLE_LABEL_FALLBACK = { teacher:"老師", student:"學生", studentA:"學生A", studentB:"學生B", parent:"家長" };
+
+  function randomId(len){
+    len = len || 8;
+    var chars = "abcdefghijkmnopqrstuvwxyz23456789";
+    var out = "";
+    var arr = new Uint8Array(len);
+    crypto.getRandomValues(arr);
+    for(var i=0;i<len;i++){ out += chars[arr[i] % chars.length]; }
+    return out;
+  }
+  function sanitizeKey(raw){
+    return String(raw==null ? "" : raw).replace(/[.#$\[\]\/]/g, "_").slice(0, 120);
+  }
+  function escHtml(s){
+    return String(s==null ? "" : s).replace(/[&<>"']/g, function(c){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+    });
+  }
+  function escAttr(s){ return escHtml(s).replace(/\n/g, " "); }
+  function waitForFirebaseBridge(){
+    return new Promise(function(resolve){
+      if(window.__firebaseReady){ resolve(true); return; }
+      var settled = false;
+      var to = setTimeout(function(){ if(!settled){ settled = true; resolve(false); } }, 12000);
+      window.addEventListener("firebase-bridge-ready", function(){ if(!settled){ settled = true; clearTimeout(to); resolve(true); } }, { once:true });
+    });
+  }
+  async function fbGet(path){
+    var snap = await window.get(window.ref(window.db, path));
+    return snap.exists() ? snap.val() : null;
+  }
+  async function fbSet(path, val){
+    await window.set(window.ref(window.db, path), val);
+  }
+
+  function roleDisplayName(story, role){
+    if(role === "teacher") return "老師";
+    if(story.roleNames && story.roleNames[role]) return story.roleNames[role];
+    return ROLE_LABEL_FALLBACK[role] || role;
+  }
+  function currentRoleOf(story){
+    var order = story.turnOrder || [];
+    if(!order.length) return null;
+    return order[(story.currentTurnIndex || 0) % order.length];
+  }
+  function relayLinkUrl(linkId){
+    return location.origin + location.pathname + "?relay=" + linkId;
+  }
+
+  // ============================================================
+  // 老師端:建立與管理接力故事
+  // ============================================================
+  var relayCreateMode = "teacher";
+
+  function buildRelayManageOverlayIfNeeded(){
+    if(document.getElementById("relayManageOverlay")) return;
+    var modeButtonsHtml = Object.keys(MODE_CONFIG).map(function(m){
+      return '<button type="button" class="back-btn relay-mode-btn" data-mode="' + m + '" style="flex:1; padding:8px 6px; font-size:12.5px;">' + MODE_CONFIG[m].label + '</button>';
+    }).join("");
+    var html = ''
+      + '<div id="relayManageOverlay" class="bell-overlay" style="display:none;">'
+      + '  <div class="bell-card" style="max-width:560px; padding:36px 32px 28px; text-align:left; max-height:86vh; overflow:auto;">'
+      + '    <button class="bell-close" id="relayManageCloseBtn">✕</button>'
+      + '    <h2 style="margin:0 0 6px; font-size:20px;">📖 接力故事</h2>'
+      + '    <p style="font-size:13px; color:var(--ink-soft); margin:0 0 16px; line-height:1.6;">建立一個故事，設定接力模式跟預計接力次數，系統會幫每個角色產生專屬連結，輪到誰才會看到輸入框。</p>'
+      + '    <div style="border:1px solid var(--border); border-radius:14px; padding:14px; margin-bottom:18px; background:var(--card-alt);">'
+      + '      <p style="font-size:13px; font-weight:600; margin:0 0 8px;">➕ 新增接力故事</p>'
+      + '      <input type="text" id="relayNewTitle" placeholder="故事名稱（例如：小熊的冒險）" style="width:100%; padding:9px 12px; border-radius:10px; border:1px solid var(--border); background:var(--card); color:var(--ink); font-family:inherit; font-size:13.5px; box-sizing:border-box; margin-bottom:8px;">'
+      + '      <textarea id="relayNewOpening" placeholder="故事開頭（可留空，由接力的人自己開頭）" rows="2" style="width:100%; padding:9px 12px; border-radius:10px; border:1px solid var(--border); background:var(--card); color:var(--ink); font-family:inherit; font-size:13.5px; box-sizing:border-box; margin-bottom:8px; resize:vertical;"></textarea>'
+      + '      <div style="display:flex; gap:6px; margin-bottom:6px;">' + modeButtonsHtml + '</div>'
+      + '      <p id="relayModeHint" style="font-size:12px; color:var(--ink-faint); margin:0 0 10px;"></p>'
+      + '      <div id="relayNewNameFields" style="margin-bottom:8px;"></div>'
+      + '      <input type="number" id="relayNewTotalTurns" min="1" placeholder="預計接力次數（留空＝不限，老師可手動結束）" style="width:100%; padding:9px 12px; border-radius:10px; border:1px solid var(--border); background:var(--card); color:var(--ink); font-family:inherit; font-size:13.5px; box-sizing:border-box; margin-bottom:10px;">'
+      + '      <button type="button" class="draw-btn" id="relayNewCreateBtn" style="width:100%;">建立接力故事</button>'
+      + '    </div>'
+      + '    <div id="relayStoryList"></div>'
+      + '  </div>'
+      + '</div>';
+    document.body.insertAdjacentHTML("beforeend", html);
+    document.getElementById("relayManageCloseBtn").addEventListener("click", function(){
+      document.getElementById("relayManageOverlay").style.display = "none";
+    });
+    document.getElementById("relayManageOverlay").addEventListener("click", function(e){
+      if(e.target.id === "relayManageOverlay") e.currentTarget.style.display = "none";
+    });
+    document.querySelectorAll(".relay-mode-btn").forEach(function(btn){
+      btn.addEventListener("click", function(){ setRelayCreateMode(btn.getAttribute("data-mode")); });
+    });
+    setRelayCreateMode("teacher");
+  }
+
+  function setRelayCreateMode(mode){
+    relayCreateMode = mode;
+    document.querySelectorAll(".relay-mode-btn").forEach(function(btn){
+      var active = btn.getAttribute("data-mode") === mode;
+      btn.style.background = active ? "linear-gradient(135deg,var(--brand),var(--brand-dark))" : "";
+      btn.style.color = active ? "#fff" : "";
+    });
+    var hintEl = document.getElementById("relayModeHint");
+    if(hintEl) hintEl.textContent = MODE_CONFIG[mode].hint;
+    var fieldsWrap = document.getElementById("relayNewNameFields");
+    if(fieldsWrap){
+      fieldsWrap.innerHTML = MODE_CONFIG[mode].nameFields.map(function(f){
+        return '<input type="text" class="relay-new-name-field" data-role="' + f.key + '" placeholder="' + escAttr(f.label) + '" style="width:100%; padding:9px 12px; border-radius:10px; border:1px solid var(--border); background:var(--card); color:var(--ink); font-family:inherit; font-size:13.5px; box-sizing:border-box; margin-bottom:8px;">';
+      }).join("");
+    }
+  }
+
+  async function createRelayStory(teacherId){
+    var titleEl = document.getElementById("relayNewTitle");
+    var openingEl = document.getElementById("relayNewOpening");
+    var totalEl = document.getElementById("relayNewTotalTurns");
+    var title = (titleEl.value || "").trim();
+    if(!title){ alert("請輸入故事名稱。"); return; }
+    var cfg = MODE_CONFIG[relayCreateMode];
+    var roleNames = {};
+    var missing = false;
+    document.querySelectorAll(".relay-new-name-field").forEach(function(inp){
+      var v = (inp.value || "").trim();
+      if(!v) missing = true;
+      roleNames[inp.getAttribute("data-role")] = v;
+    });
+    if(missing){ alert("請把參與者的名字都填好。"); return; }
+    var totalTurnsRaw = (totalEl.value || "").trim();
+    var totalTurns = totalTurnsRaw ? Math.max(1, parseInt(totalTurnsRaw, 10)) : null;
+
+    var createBtn = document.getElementById("relayNewCreateBtn");
+    createBtn.disabled = true;
+    try{
+      var storyId = String(Date.now()) + "_" + randomId(4);
+      var links = {};
+      if(relayCreateMode === "parent"){
+        links.family = randomId(8);
+      }else{
+        cfg.nameFields.forEach(function(f){ links[f.key] = randomId(8); });
+      }
+      var story = {
+        title: title,
+        mode: relayCreateMode,
+        openingLine: (openingEl.value || "").trim(),
+        turnOrder: cfg.turnOrder,
+        roleNames: roleNames,
+        links: links,
+        totalTurns: totalTurns,
+        currentTurnIndex: 0,
+        roundsDone: 0,
+        status: "active",
+        segments: {},
+        createdAt: Date.now()
+      };
+      await fbSet("relayStories/" + teacherId + "/" + storyId, story);
+      var ownerWrites = Object.keys(links).map(function(roleKey){
+        return fbSet("relayLinkOwners/" + links[roleKey], { teacherId: teacherId, storyId: storyId, role: roleKey });
+      });
+      await Promise.all(ownerWrites);
+      titleEl.value = ""; openingEl.value = ""; totalEl.value = "";
+      document.querySelectorAll(".relay-new-name-field").forEach(function(inp){ inp.value = ""; });
+      renderRelayStoryList(teacherId);
+    }catch(err){
+      alert("建立失敗，請檢查網路連線後再試一次。");
+    }finally{
+      createBtn.disabled = false;
+    }
+  }
+
+  function relayProgressText(story){
+    var done = story.roundsDone || 0;
+    return story.totalTurns ? (done + " ／ " + story.totalTurns + " 次") : (done + " 次（不限）");
+  }
+
+  function relayLinksHtml(teacherId, storyId, story){
+    var cfg = MODE_CONFIG[story.mode];
+    var rows = [];
+    if(story.mode === "parent"){
+      var linkId = story.links.family;
+      rows.push({ label: (story.roleNames.student || "學生") + " ／ 家長（共用一組連結，打開後各自選身分）", url: relayLinkUrl(linkId) });
+    }else{
+      Object.keys(story.links).forEach(function(roleKey){
+        if(roleKey === "teacher") return;
+        rows.push({ label: (story.roleNames[roleKey] || ROLE_LABEL_FALLBACK[roleKey]) + "（" + roleKey + "）", url: relayLinkUrl(story.links[roleKey]) });
+      });
+    }
+    return rows.map(function(r){
+      return ''
+        + '<div style="display:flex; gap:8px; align-items:center; margin-top:6px;">'
+        + '  <span style="font-size:12px; color:var(--ink-soft); white-space:nowrap;">' + escHtml(r.label) + '</span>'
+        + '  <input type="text" readonly value="' + escHtml(r.url) + '" style="flex:1; min-width:0; font-size:11.5px; padding:5px 7px; border-radius:8px; border:1px solid var(--border); background:var(--card); color:var(--ink-soft);" onclick="this.select()">'
+        + '  <button type="button" class="draw-btn relay-copy-btn" data-url="' + escHtml(r.url) + '" style="padding:5px 10px; font-size:11.5px; white-space:nowrap;">複製</button>'
+        + '</div>';
+    }).join("");
+  }
+
+  function relayStoryTextHtml(story){
+    var parts = [];
+    if(story.openingLine){
+      parts.push('<p style="margin:0 0 10px; font-size:13.5px; line-height:1.9; color:var(--ink-soft);"><b>📖 開頭：</b>' + escHtml(story.openingLine) + '</p>');
+    }
+    var segs = story.segments || {};
+    var ids = Object.keys(segs).sort(function(a,b){ return (segs[a].createdAt||0) - (segs[b].createdAt||0); });
+    if(!ids.length && !story.openingLine){
+      parts.push('<p style="font-size:12.5px; color:var(--ink-faint);">還沒有人接寫，等待第一段。</p>');
+    }
+    ids.forEach(function(id){
+      var s = segs[id];
+      var icon = ROLE_ICON[s.role] || "✍️";
+      var name = roleDisplayName(story, s.role);
+      parts.push('<p style="margin:0 0 10px; font-size:13.5px; line-height:1.9;"><b>' + icon + ' ' + escHtml(name) + '：</b>' + escHtml(s.text) + '</p>');
+    });
+    return parts.join("");
+  }
+
+  async function renderRelayStoryList(teacherId){
+    var wrap = document.getElementById("relayStoryList");
+    wrap.innerHTML = '<p style="font-size:13px; color:var(--ink-soft);">載入中…</p>';
+    var stories = (await fbGet("relayStories/" + teacherId)) || {};
+    var ids = Object.keys(stories).sort(function(a,b){ return (stories[b].createdAt||0) - (stories[a].createdAt||0); });
+    if(!ids.length){
+      wrap.innerHTML = '<p style="font-size:13px; color:var(--ink-soft);">還沒有任何接力故事，上面新增一個看看。</p>';
+      return;
+    }
+    wrap.innerHTML = ids.map(function(id){
+      var s = stories[id];
+      var cfg = MODE_CONFIG[s.mode] || {};
+      var curRole = s.status === "active" ? currentRoleOf(s) : null;
+      var turnText = s.status === "completed" ? "🎉 已完成"
+        : (curRole ? ("⏳ 輪到 " + (ROLE_ICON[curRole]||"") + " " + roleDisplayName(s, curRole)) : "");
+      return ''
+        + '<div class="relay-story-item" data-id="' + id + '" style="border:1px solid var(--border); border-radius:12px; padding:12px 14px; margin-bottom:10px; background:var(--card-alt);">'
+        + '  <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">'
+        + '    <div>'
+        + '      <b style="font-size:14px;">' + escHtml(s.title || "(未命名)") + '</b>'
+        + '      <div style="font-size:11.5px; color:var(--ink-faint); margin-top:2px;">' + (cfg.label||s.mode) + ' · ' + relayProgressText(s) + (turnText ? ' · ' + turnText : '') + '</div>'
+        + '    </div>'
+        + '    <div style="display:flex; gap:6px; flex-shrink:0;">'
+        + '      <button type="button" class="back-btn relay-view-btn" data-id="' + id + '" style="padding:4px 10px; font-size:12px;">查看</button>'
+        + '      <button type="button" class="back-btn relay-delete-btn" data-id="' + id + '" style="padding:4px 10px; font-size:12px;">刪除</button>'
+        + '    </div>'
+        + '  </div>'
+        + '  <div class="relay-links-box">' + relayLinksHtml(teacherId, id, s) + '</div>'
+        + '  <div class="relay-story-detail" style="display:none; margin-top:10px; padding-top:10px; border-top:1px dashed var(--border);"></div>'
+        + '</div>';
+    }).join("");
+
+    wrap.querySelectorAll(".relay-copy-btn").forEach(function(btn){
+      btn.addEventListener("click", async function(){
+        try{ await navigator.clipboard.writeText(btn.getAttribute("data-url")); btn.textContent = "已複製！"; setTimeout(function(){ btn.textContent = "複製"; }, 1500); }
+        catch(e){ alert("複製失敗，請手動選取連結文字複製。"); }
+      });
+    });
+    wrap.querySelectorAll(".relay-delete-btn").forEach(function(btn){
+      btn.addEventListener("click", async function(){
+        var id = btn.getAttribute("data-id");
+        var s = stories[id];
+        if(!confirm("確定要刪除「" + (s.title || id) + "」這個接力故事嗎？所有連結會直接失效，寫過的內容也會一併刪除，無法復原。")) return;
+        var ownerRemovals = Object.keys(s.links || {}).map(function(roleKey){ return fbSet("relayLinkOwners/" + s.links[roleKey], null); });
+        await Promise.all(ownerRemovals);
+        await fbSet("relayStories/" + teacherId + "/" + id, null);
+        renderRelayStoryList(teacherId);
+      });
+    });
+    wrap.querySelectorAll(".relay-view-btn").forEach(function(btn){
+      btn.addEventListener("click", function(){ toggleRelayStoryDetail(teacherId, btn.getAttribute("data-id")); });
+    });
+  }
+
+  // 每次打開「查看」都重新從 Firebase 讀最新的故事內容,不用舊的快取資料——
+  // 不然老師開著管理面板沒重新整理,學生/家長剛寫完的內容跟輪到誰都會顯示過期的舊狀態
+  async function toggleRelayStoryDetail(teacherId, storyId){
+    var itemEl = document.querySelector('.relay-story-item[data-id="' + storyId + '"]');
+    if(!itemEl) return;
+    var detail = itemEl.querySelector(".relay-story-detail");
+    if(detail.style.display === "block"){ detail.style.display = "none"; return; }
+
+    detail.innerHTML = '<p style="font-size:12.5px; color:var(--ink-soft);">載入中…</p>';
+    detail.style.display = "block";
+    var story = await fbGet("relayStories/" + teacherId + "/" + storyId);
+    if(!story){ detail.innerHTML = '<p style="font-size:12.5px; color:var(--ink-soft);">這個故事已經不存在了,重新整理列表看看。</p>'; return; }
+
+    var curRole = story.status === "active" ? currentRoleOf(story) : null;
+    var isTeacherTurn = story.mode === "teacher" && curRole === "teacher";
+    var html = '<div style="max-height:260px; overflow:auto; margin-bottom:10px;">' + relayStoryTextHtml(story) + '</div>';
+    if(story.status === "completed"){
+      html += '<p style="font-size:12.5px; color:var(--ink-soft);">🎉 這個故事已經完成接力了。</p>';
+    }else if(isTeacherTurn){
+      html += ''
+        + '<textarea class="relay-teacher-compose" maxlength="' + MAX_SEGMENT_CHARS + '" rows="3" placeholder="輪到老師接寫這一段…" style="width:100%; padding:9px 12px; border-radius:10px; border:1px solid var(--border); background:var(--card); color:var(--ink); font-family:inherit; font-size:13.5px; box-sizing:border-box; margin-bottom:8px; resize:vertical;"></textarea>'
+        + '<button type="button" class="draw-btn relay-teacher-submit-btn" style="width:100%;">✅ 送出這一段</button>';
+    }else{
+      html += '<p style="font-size:12.5px; color:var(--ink-soft);">' + (curRole ? ('⏳ 現在輪到 ' + roleDisplayName(story, curRole) + '，還沒輪到老師。') : '') + '</p>';
+    }
+    html += '<button type="button" class="back-btn relay-end-btn" style="width:100%; margin-top:8px;" ' + (story.status==="completed" ? 'disabled' : '') + '>🏁 手動結束這個故事</button>';
+    detail.innerHTML = html;
+    detail.style.display = "block";
+
+    var submitBtn = detail.querySelector(".relay-teacher-submit-btn");
+    if(submitBtn){
+      submitBtn.addEventListener("click", async function(){
+        var ta = detail.querySelector(".relay-teacher-compose");
+        var text = (ta.value || "").trim();
+        if(!text){ alert("請先寫一點內容。"); return; }
+        submitBtn.disabled = true;
+        try{
+          await submitRelaySegment(teacherId, storyId, "teacher", text);
+          renderRelayStoryList(teacherId);
+        }catch(err){ alert("送出失敗，請檢查網路連線後再試一次。"); submitBtn.disabled = false; }
+      });
+    }
+    var endBtn = detail.querySelector(".relay-end-btn");
+    if(endBtn && story.status !== "completed"){
+      endBtn.addEventListener("click", async function(){
+        if(!confirm("確定要手動結束「" + (story.title||"") + "」嗎？結束後大家就不能再接寫了。")) return;
+        await fbSet("relayStories/" + teacherId + "/" + storyId + "/status", "completed");
+        renderRelayStoryList(teacherId);
+      });
+    }
+  }
+
+  // 送出一段接力文字的共用邏輯(教師端與學生/家長端共用)
+  async function submitRelaySegment(teacherId, storyId, role, text){
+    var story = await fbGet("relayStories/" + teacherId + "/" + storyId);
+    if(!story) throw new Error("story not found");
+    var order = story.turnOrder || [];
+    var curRole = order[(story.currentTurnIndex || 0) % order.length];
+    if(curRole !== role) throw new Error("not your turn"); // 送出當下才重新檢查一次順位,避免兩邊同時搶著寫
+    var segId = String(Date.now()) + "_" + randomId(4);
+    await fbSet("relayStories/" + teacherId + "/" + storyId + "/segments/" + segId, {
+      role: role, text: text.slice(0, MAX_SEGMENT_CHARS), createdAt: Date.now()
+    });
+    var newRounds = (story.roundsDone || 0) + 1;
+    var newIndex = (story.currentTurnIndex + 1) % order.length;
+    var newStatus = (story.totalTurns && newRounds >= story.totalTurns) ? "completed" : "active";
+    await fbSet("relayStories/" + teacherId + "/" + storyId + "/currentTurnIndex", newIndex);
+    await fbSet("relayStories/" + teacherId + "/" + storyId + "/roundsDone", newRounds);
+    await fbSet("relayStories/" + teacherId + "/" + storyId + "/status", newStatus);
+  }
+
+  async function openRelayManageOverlay(teacherId){
+    buildRelayManageOverlayIfNeeded();
+    document.getElementById("relayManageOverlay").style.display = "flex";
+    renderRelayStoryList(teacherId);
+  }
+
+  document.addEventListener("DOMContentLoaded", function(){
+    document.body.addEventListener("click", async function(e){
+      var openBtn = e.target.closest && e.target.closest("#relayManageOpenBtn");
+      if(openBtn){
+        var teacherId = window.__capsuleCurrentTeacherId;
+        if(!teacherId){ alert("請先登入教師帳號。"); return; }
+        var ready = await waitForFirebaseBridge();
+        if(!ready){ alert("雲端服務連線逾時，請稍後再試一次。"); return; }
+        openRelayManageOverlay(teacherId);
+        return;
+      }
+      var createBtn = e.target.closest && e.target.closest("#relayNewCreateBtn");
+      if(createBtn){
+        var tId = window.__capsuleCurrentTeacherId;
+        if(!tId) return;
+        createRelayStory(tId);
+        return;
+      }
+    });
+
+    var params = new URLSearchParams(location.search);
+    var relayLinkId = params.get("relay");
+    if(relayLinkId){ initRelayViewer(sanitizeKey(relayLinkId)); }
+  });
+
+  // ============================================================
+  // 學生／夥伴／家長端:接力故事寫作模式(?relay=linkId)
+  // ============================================================
+  var relayViewState = { linkId:null, teacherId:null, storyId:null, story:null, fixedRole:null, familyRole:null };
+
+  function relayFamilyRoleStorageKey(){ return RELAY_ROLE_KEY_PREFIX + relayViewState.linkId; }
+  function loadRelayFamilyRole(){ try{ return localStorage.getItem(relayFamilyRoleStorageKey()) || null; }catch(e){ return null; } }
+  function saveRelayFamilyRole(role){ try{ localStorage.setItem(relayFamilyRoleStorageKey(), role); }catch(e){} }
+
+  function buildRelayViewerRootIfNeeded(){
+    if(document.getElementById("relayViewerRoot")) return;
+    var html = ''
+      + '<div id="relayViewerRoot" style="position:fixed; inset:0; z-index:5000; background:var(--bg); overflow:auto; display:none;">'
+      + '  <div style="max-width:640px; margin:0 auto; padding:20px 16px 80px;">'
+      + '    <div id="relayViewerBody"></div>'
+      + '  </div>'
+      + '</div>';
+    document.body.insertAdjacentHTML("beforeend", html);
+  }
+  function showRelayViewerMessage(msg){
+    buildRelayViewerRootIfNeeded();
+    document.getElementById("relayViewerRoot").style.display = "block";
+    document.getElementById("relayViewerBody").innerHTML = '<div style="text-align:center; padding:60px 20px;"><div style="font-size:40px; margin-bottom:12px;">📖</div><p style="color:var(--ink-soft); font-size:14px;">' + escHtml(msg) + '</p></div>';
+  }
+
+  async function initRelayViewer(linkId){
+    relayViewState.linkId = linkId;
+    buildRelayViewerRootIfNeeded();
+    document.getElementById("relayViewerRoot").style.display = "block";
+    showRelayViewerMessage("連線中…");
+    var ready = await waitForFirebaseBridge();
+    if(!ready){ showRelayViewerMessage("連線逾時，請檢查網路後重新整理頁面再試一次。"); return; }
+
+    var owner = await fbGet("relayLinkOwners/" + linkId);
+    if(!owner){ showRelayViewerMessage("這個連結已經失效或不存在，請跟老師確認一下網址。"); return; }
+    var story = await fbGet("relayStories/" + owner.teacherId + "/" + owner.storyId);
+    if(!story){ showRelayViewerMessage("這個連結已經失效或不存在，請跟老師確認一下網址。"); return; }
+
+    relayViewState.teacherId = owner.teacherId;
+    relayViewState.storyId = owner.storyId;
+    relayViewState.story = story;
+    relayViewState.fixedRole = owner.role === "family" ? null : owner.role;
+    relayViewState.familyRole = owner.role === "family" ? loadRelayFamilyRole() : null;
+
+    renderRelayViewer();
+  }
+
+  function relayEffectiveRole(){
+    return relayViewState.fixedRole || relayViewState.familyRole;
+  }
+
+  function renderRelayViewer(){
+    var story = relayViewState.story;
+    var body = document.getElementById("relayViewerBody");
+    var cfg = MODE_CONFIG[story.mode] || {};
+    var headerHtml = ''
+      + '<div style="text-align:center; padding:18px 0 10px;">'
+      + '  <div style="font-size:32px;">📖</div>'
+      + '  <h1 style="font-size:20px; margin:6px 0 2px;">' + escHtml(story.title) + '</h1>'
+      + '  <p style="font-size:12.5px; color:var(--ink-soft); margin:0 0 4px;">' + (cfg.label||story.mode) + ' · ' + relayProgressText(story) + '</p>'
+      + '</div>';
+
+    var roleBarHtml = "";
+    if(!relayViewState.fixedRole){
+      var fr = relayViewState.familyRole;
+      roleBarHtml = ''
+        + '<div style="display:flex; justify-content:center; gap:8px; margin-bottom:14px;">'
+        + '  <button type="button" class="draw-btn relay-family-role-btn" data-role="student" style="padding:8px 16px; font-size:13px;' + (fr==='student' ? '' : ' opacity:.45;') + '">🧒 我是學生</button>'
+        + '  <button type="button" class="draw-btn relay-family-role-btn" data-role="parent" style="padding:8px 16px; font-size:13px; background:linear-gradient(135deg,var(--accent),var(--lesson2));' + (fr==='parent' ? '' : ' opacity:.45;') + '">❤️ 我是家長</button>'
+        + '</div>';
+    }
+
+    var storyBoxHtml = '<div class="card" style="margin-bottom:16px;">' + relayStoryTextHtml(story) + '</div>';
+
+    var actionHtml = "";
+    var effRole = relayEffectiveRole();
+    if(!effRole){
+      actionHtml = '<p style="text-align:center; font-size:13px; color:var(--ink-soft);">👆 先選「我是學生」還是「我是家長」，才能接寫故事喔。</p>';
+    }else if(story.status === "completed"){
+      actionHtml = '<div style="text-align:center; padding:20px; font-size:14px;">🎉 這個故事已經完成接力了，謝謝你的參與！</div>';
+    }else{
+      var curRole = currentRoleOf(story);
+      if(curRole === effRole){
+        actionHtml = ''
+          + '<div style="text-align:center; font-size:13px; color:var(--brand); margin-bottom:8px;">✏️ 輪到你接寫這一段了！</div>'
+          + '<textarea id="relayComposeText" maxlength="' + MAX_SEGMENT_CHARS + '" rows="4" placeholder="接著故事寫下去…" style="width:100%; padding:10px 12px; border-radius:12px; border:1px solid var(--border); background:var(--card-alt); color:var(--ink); font-family:inherit; font-size:14px; box-sizing:border-box; margin-bottom:8px; resize:vertical;"></textarea>'
+          + '<div id="relayComposeStatus" style="font-size:12px; color:var(--ink-faint); text-align:right; margin-bottom:8px;"></div>'
+          + '<button type="button" class="draw-btn" id="relayComposeSendBtn" style="width:100%;">✅ 送出這一段</button>';
+      }else{
+        actionHtml = '<div style="text-align:center; padding:20px; font-size:13.5px; color:var(--ink-soft);">⏳ 現在輪到 ' + (ROLE_ICON[curRole]||"") + ' ' + escHtml(roleDisplayName(story, curRole)) + ' 接寫，晚點再回來看看吧！</div>';
+      }
+    }
+
+    body.innerHTML = headerHtml + roleBarHtml + storyBoxHtml + '<div id="relayActionArea">' + actionHtml + '</div>';
+
+    body.querySelectorAll(".relay-family-role-btn").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        relayViewState.familyRole = btn.getAttribute("data-role");
+        saveRelayFamilyRole(relayViewState.familyRole);
+        renderRelayViewer();
+      });
+    });
+    var sendBtn = document.getElementById("relayComposeSendBtn");
+    if(sendBtn){
+      sendBtn.addEventListener("click", async function(){
+        var ta = document.getElementById("relayComposeText");
+        var text = (ta.value || "").trim();
+        if(!text){ alert("請先寫一點內容再送出。"); return; }
+        sendBtn.disabled = true;
+        var statusEl = document.getElementById("relayComposeStatus");
+        if(statusEl) statusEl.textContent = "送出中…";
+        try{
+          await submitRelaySegment(relayViewState.teacherId, relayViewState.storyId, effRole, text);
+          var fresh = await fbGet("relayStories/" + relayViewState.teacherId + "/" + relayViewState.storyId);
+          relayViewState.story = fresh;
+          renderRelayViewer();
+        }catch(err){
+          if(statusEl) statusEl.textContent = "⚠️ 送出失敗，可能剛好被搶先接寫了，重新整理頁面再看看。";
+          sendBtn.disabled = false;
+        }
+      });
+    }
+  }
+
+})();
+</script>
+
+<!-- ============================================================
+     🧑‍🤝‍🧑 班級接力故事(Class Relay Story):老師建立一個全班的故事,
+     設定學生名單、每輪值班小隊人數、預計輪數(人數/天數都不固定,
+     老師自己設定)。每輪由值班小隊各自送出接力提議,提議齊了老師
+     按「進入投票」,全班(含值班小隊)一起投票決定要接哪一段,得票
+     最高的正式併入故事,換下一組小隊值班。身分機制沿用時空膠囊／
+     接力故事同一套「專屬連結/代碼」精神——每個學生一組連結,不用
+     註冊登入。全新的 classStories / classLinkOwners 節點。
+     ============================================================ -->
+<script>
+(function(){
+  "use strict";
+
+  var MAX_PROPOSAL_CHARS = 300;
+
+  function randomId(len){
+    len = len || 8;
+    var chars = "abcdefghijkmnopqrstuvwxyz23456789";
+    var out = "";
+    var arr = new Uint8Array(len);
+    crypto.getRandomValues(arr);
+    for(var i=0;i<len;i++){ out += chars[arr[i] % chars.length]; }
+    return out;
+  }
+  function escHtml(s){
+    return String(s==null ? "" : s).replace(/[&<>"']/g, function(c){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+    });
+  }
+  function waitForFirebaseBridge(){
+    return new Promise(function(resolve){
+      if(window.__firebaseReady){ resolve(true); return; }
+      var settled = false;
+      var to = setTimeout(function(){ if(!settled){ settled = true; resolve(false); } }, 12000);
+      window.addEventListener("firebase-bridge-ready", function(){ if(!settled){ settled = true; clearTimeout(to); resolve(true); } }, { once:true });
+    });
+  }
+  async function fbGet(path){
+    var snap = await window.get(window.ref(window.db, path));
+    return snap.exists() ? snap.val() : null;
+  }
+  async function fbSet(path, val){
+    await window.set(window.ref(window.db, path), val);
+  }
+
+  function classLinkUrl(linkId){
+    return location.origin + location.pathname + "?squad=" + linkId;
+  }
+  function squadIndexesFor(story, cursor){
+    var n = story.roster.length;
+    var size = Math.min(story.squadSize, n);
+    var idxs = [];
+    for(var i=0;i<size;i++){ idxs.push((cursor + i) % n); }
+    return idxs;
+  }
+  function squadNamesOf(story, round){
+    return (round.squadIndexes || []).map(function(i){ return (story.roster[i] || {}).name || "?"; }).join("、");
+  }
+  function classProgressText(story){
+    var done = story.currentRoundIndex || 0;
+    return story.totalRounds ? ((done+1) + " ／ " + story.totalRounds + " 輪") : ((done+1) + " 輪（不限）");
+  }
+  function classStoryTextHtml(story){
+    var parts = [];
+    if(story.openingLine){
+      parts.push('<p style="margin:0 0 10px; font-size:13.5px; line-height:1.9; color:var(--ink-soft);"><b>📖 開頭：</b>' + escHtml(story.openingLine) + '</p>');
+    }
+    var segs = story.confirmedSegments || {};
+    var ids = Object.keys(segs).sort(function(a,b){ return (segs[a].createdAt||0) - (segs[b].createdAt||0); });
+    if(!ids.length && !story.openingLine){
+      parts.push('<p style="font-size:12.5px; color:var(--ink-faint);">還沒有接力內容，等待第一輪投票結果。</p>');
+    }
+    ids.forEach(function(id, i){
+      var s = segs[id];
+      parts.push('<p style="margin:0 0 10px; font-size:13.5px; line-height:1.9;"><b>✏️ 第' + (i+1) + '段：</b>' + escHtml(s.text) + '</p>');
+    });
+    return parts.join("");
+  }
+
+  // ============================================================
+  // 老師端:建立與管理班級接力故事
+  // ============================================================
+  function buildClassManageOverlayIfNeeded(){
+    if(document.getElementById("classManageOverlay")) return;
+    var html = ''
+      + '<div id="classManageOverlay" class="bell-overlay" style="display:none;">'
+      + '  <div class="bell-card" style="max-width:560px; padding:36px 32px 28px; text-align:left; max-height:86vh; overflow:auto;">'
+      + '    <button class="bell-close" id="classManageCloseBtn">✕</button>'
+      + '    <h2 style="margin:0 0 6px; font-size:20px;">🧑‍🤝‍🧑 班級接力故事</h2>'
+      + '    <p style="font-size:13px; color:var(--ink-soft); margin:0 0 16px; line-height:1.6;">設定學生名單、每輪值班小隊人數、預計輪數(人數/輪數都可以自己調整)。每輪由值班小隊送出接力提議，齊了之後開放全班投票，得票最高的併入故事。</p>'
+      + '    <div style="border:1px solid var(--border); border-radius:14px; padding:14px; margin-bottom:18px; background:var(--card-alt);">'
+      + '      <p style="font-size:13px; font-weight:600; margin:0 0 8px;">➕ 新增班級接力故事</p>'
+      + '      <input type="text" id="classNewTitle" placeholder="故事名稱（例如：森林大冒險）" style="width:100%; padding:9px 12px; border-radius:10px; border:1px solid var(--border); background:var(--card); color:var(--ink); font-family:inherit; font-size:13.5px; box-sizing:border-box; margin-bottom:8px;">'
+      + '      <textarea id="classNewOpening" placeholder="故事開頭（可留空，由第一輪小隊自己開頭）" rows="2" style="width:100%; padding:9px 12px; border-radius:10px; border:1px solid var(--border); background:var(--card); color:var(--ink); font-family:inherit; font-size:13.5px; box-sizing:border-box; margin-bottom:8px; resize:vertical;"></textarea>'
+      + '      <textarea id="classNewRoster" placeholder="學生名單，一行一位（例如：\n小明\n小華\n小強）" rows="5" style="width:100%; padding:9px 12px; border-radius:10px; border:1px solid var(--border); background:var(--card); color:var(--ink); font-family:inherit; font-size:13.5px; box-sizing:border-box; margin-bottom:8px; resize:vertical;"></textarea>'
+      + '      <div style="display:flex; gap:8px; margin-bottom:8px;">'
+      + '        <input type="number" id="classNewSquadSize" min="1" placeholder="每輪值班人數（例如 3）" style="flex:1; padding:9px 12px; border-radius:10px; border:1px solid var(--border); background:var(--card); color:var(--ink); font-family:inherit; font-size:13.5px; box-sizing:border-box;">'
+      + '        <input type="number" id="classNewTotalRounds" min="1" placeholder="預計輪數（留空＝不限）" style="flex:1; padding:9px 12px; border-radius:10px; border:1px solid var(--border); background:var(--card); color:var(--ink); font-family:inherit; font-size:13.5px; box-sizing:border-box;">'
+      + '      </div>'
+      + '      <button type="button" class="draw-btn" id="classNewCreateBtn" style="width:100%;">建立班級接力故事</button>'
+      + '    </div>'
+      + '    <div id="classStoryList"></div>'
+      + '  </div>'
+      + '</div>';
+    document.body.insertAdjacentHTML("beforeend", html);
+    document.getElementById("classManageCloseBtn").addEventListener("click", function(){
+      document.getElementById("classManageOverlay").style.display = "none";
+    });
+    document.getElementById("classManageOverlay").addEventListener("click", function(e){
+      if(e.target.id === "classManageOverlay") e.currentTarget.style.display = "none";
+    });
+  }
+
+  async function createClassStory(teacherId){
+    var titleEl = document.getElementById("classNewTitle");
+    var openingEl = document.getElementById("classNewOpening");
+    var rosterEl = document.getElementById("classNewRoster");
+    var squadSizeEl = document.getElementById("classNewSquadSize");
+    var totalRoundsEl = document.getElementById("classNewTotalRounds");
+
+    var title = (titleEl.value || "").trim();
+    if(!title){ alert("請輸入故事名稱。"); return; }
+    var rosterNames = (rosterEl.value || "").split(/[\n,，、]/).map(function(s){ return s.trim(); }).filter(Boolean);
+    if(rosterNames.length < 2){ alert("請至少輸入 2 位學生名字（一行一位）。"); return; }
+    var squadSize = Math.max(1, parseInt(squadSizeEl.value, 10) || 1);
+    if(squadSize > rosterNames.length) squadSize = rosterNames.length;
+    var totalRoundsRaw = (totalRoundsEl.value || "").trim();
+    var totalRounds = totalRoundsRaw ? Math.max(1, parseInt(totalRoundsRaw, 10)) : null;
+
+    var createBtn = document.getElementById("classNewCreateBtn");
+    createBtn.disabled = true;
+    try{
+      var storyId = String(Date.now()) + "_" + randomId(4);
+      var roster = rosterNames.map(function(name){ return { name: name, linkId: randomId(8) }; });
+      var story = {
+        title: title,
+        openingLine: (openingEl.value || "").trim(),
+        roster: roster,
+        squadSize: squadSize,
+        totalRounds: totalRounds,
+        rosterCursor: 0,
+        currentRoundIndex: 0,
+        status: "active",
+        confirmedSegments: {},
+        rounds: {},
+        createdAt: Date.now()
+      };
+      story.rounds[0] = { squadIndexes: squadIndexesFor(story, 0), proposals: {}, phase: "writing" };
+      await fbSet("classStories/" + teacherId + "/" + storyId, story);
+      var ownerWrites = roster.map(function(m, idx){
+        return fbSet("classLinkOwners/" + m.linkId, { teacherId: teacherId, storyId: storyId, memberIndex: idx });
+      });
+      await Promise.all(ownerWrites);
+      titleEl.value = ""; openingEl.value = ""; rosterEl.value = ""; squadSizeEl.value = ""; totalRoundsEl.value = "";
+      renderClassStoryList(teacherId);
+    }catch(err){
+      alert("建立失敗，請檢查網路連線後再試一次。");
+    }finally{
+      createBtn.disabled = false;
+    }
+  }
+
+  function classLinksHtml(story){
+    return story.roster.map(function(m){
+      var url = classLinkUrl(m.linkId);
+      return ''
+        + '<div style="display:flex; gap:8px; align-items:center; margin-top:6px;">'
+        + '  <span style="font-size:12px; color:var(--ink-soft); white-space:nowrap; min-width:64px;">' + escHtml(m.name) + '</span>'
+        + '  <input type="text" readonly value="' + escHtml(url) + '" style="flex:1; min-width:0; font-size:11.5px; padding:5px 7px; border-radius:8px; border:1px solid var(--border); background:var(--card); color:var(--ink-soft);" onclick="this.select()">'
+        + '  <button type="button" class="draw-btn class-copy-btn" data-url="' + escHtml(url) + '" style="padding:5px 10px; font-size:11.5px; white-space:nowrap;">複製</button>'
+        + '</div>';
+    }).join("");
+  }
+
+  async function renderClassStoryList(teacherId){
+    var wrap = document.getElementById("classStoryList");
+    wrap.innerHTML = '<p style="font-size:13px; color:var(--ink-soft);">載入中…</p>';
+    var stories = (await fbGet("classStories/" + teacherId)) || {};
+    var ids = Object.keys(stories).sort(function(a,b){ return (stories[b].createdAt||0) - (stories[a].createdAt||0); });
+    if(!ids.length){
+      wrap.innerHTML = '<p style="font-size:13px; color:var(--ink-soft);">還沒有任何班級接力故事，上面新增一個看看。</p>';
+      return;
+    }
+    wrap.innerHTML = ids.map(function(id){
+      var s = stories[id];
+      var round = s.rounds && s.rounds[s.currentRoundIndex];
+      var phaseText = s.status === "completed" ? "🎉 已完成" : (round ? (round.phase === "voting" ? "🗳️ 投票中" : "✏️ 接力中") : "");
+      var squadText = (s.status === "active" && round) ? ("值班：" + squadNamesOf(s, round)) : "";
+      return ''
+        + '<div class="class-story-item" data-id="' + id + '" style="border:1px solid var(--border); border-radius:12px; padding:12px 14px; margin-bottom:10px; background:var(--card-alt);">'
+        + '  <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">'
+        + '    <div>'
+        + '      <b style="font-size:14px;">' + escHtml(s.title || "(未命名)") + '</b>'
+        + '      <div style="font-size:11.5px; color:var(--ink-faint); margin-top:2px;">' + classProgressText(s) + ' · ' + phaseText + (squadText ? ' · ' + squadText : '') + '</div>'
+        + '    </div>'
+        + '    <div style="display:flex; gap:6px; flex-shrink:0;">'
+        + '      <button type="button" class="back-btn class-view-btn" data-id="' + id + '" style="padding:4px 10px; font-size:12px;">查看</button>'
+        + '      <button type="button" class="back-btn class-links-toggle-btn" data-id="' + id + '" style="padding:4px 10px; font-size:12px;">名單連結</button>'
+        + '      <button type="button" class="back-btn class-delete-btn" data-id="' + id + '" style="padding:4px 10px; font-size:12px;">刪除</button>'
+        + '    </div>'
+        + '  </div>'
+        + '  <div class="class-links-box" style="display:none; margin-top:8px; max-height:160px; overflow:auto;">' + classLinksHtml(s) + '</div>'
+        + '  <div class="class-story-detail" style="display:none; margin-top:10px; padding-top:10px; border-top:1px dashed var(--border);"></div>'
+        + '</div>';
+    }).join("");
+
+    wrap.querySelectorAll(".class-links-toggle-btn").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        var itemEl = btn.closest(".class-story-item");
+        var box = itemEl.querySelector(".class-links-box");
+        box.style.display = box.style.display === "block" ? "none" : "block";
+        if(box.style.display === "block"){
+          box.querySelectorAll(".class-copy-btn").forEach(function(cb){
+            cb.addEventListener("click", async function(){
+              try{ await navigator.clipboard.writeText(cb.getAttribute("data-url")); cb.textContent = "已複製！"; setTimeout(function(){ cb.textContent = "複製"; }, 1500); }
+              catch(e){ alert("複製失敗，請手動選取連結文字複製。"); }
+            });
+          });
+        }
+      });
+    });
+    wrap.querySelectorAll(".class-delete-btn").forEach(function(btn){
+      btn.addEventListener("click", async function(){
+        var id = btn.getAttribute("data-id");
+        var s = stories[id];
+        if(!confirm("確定要刪除「" + (s.title || id) + "」這個班級接力故事嗎？所有學生連結會直接失效，內容也會一併刪除，無法復原。")) return;
+        var ownerRemovals = (s.roster||[]).map(function(m){ return fbSet("classLinkOwners/" + m.linkId, null); });
+        await Promise.all(ownerRemovals);
+        await fbSet("classStories/" + teacherId + "/" + id, null);
+        renderClassStoryList(teacherId);
+      });
+    });
+    wrap.querySelectorAll(".class-view-btn").forEach(function(btn){
+      btn.addEventListener("click", function(){ toggleClassStoryDetail(teacherId, btn.getAttribute("data-id")); });
+    });
+  }
+
+  async function toggleClassStoryDetail(teacherId, storyId){
+    var itemEl = document.querySelector('.class-story-item[data-id="' + storyId + '"]');
+    if(!itemEl) return;
+    var detail = itemEl.querySelector(".class-story-detail");
+    if(detail.style.display === "block"){ detail.style.display = "none"; return; }
+
+    detail.innerHTML = '<p style="font-size:12.5px; color:var(--ink-soft);">載入中…</p>';
+    detail.style.display = "block";
+    var story = await fbGet("classStories/" + teacherId + "/" + storyId);
+    if(!story){ detail.innerHTML = '<p style="font-size:12.5px; color:var(--ink-soft);">這個故事已經不存在了，重新整理列表看看。</p>'; return; }
+
+    var round = story.status === "active" ? story.rounds[story.currentRoundIndex] : null;
+    var html = '<div style="max-height:220px; overflow:auto; margin-bottom:10px;">' + classStoryTextHtml(story) + '</div>';
+
+    if(story.status === "completed"){
+      html += '<p style="font-size:12.5px; color:var(--ink-soft);">🎉 這個故事已經完成接力了。</p>';
+    }else if(round){
+      html += '<p style="font-size:12.5px; margin:0 0 6px;"><b>本輪值班：</b>' + escHtml(squadNamesOf(story, round)) + '</p>';
+      var props = round.proposals || {};
+      var pids = Object.keys(props).sort(function(a,b){ return (props[a].createdAt||0) - (props[b].createdAt||0); });
+      if(round.phase === "writing"){
+        html += pids.length
+          ? ('<div style="margin-bottom:8px;">' + pids.map(function(pid, i){
+              var p = props[pid];
+              return '<p style="font-size:12.5px; margin:0 0 6px; padding:6px 8px; background:var(--card); border-radius:8px;"><b>' + escHtml((story.roster[p.authorIndex]||{}).name || "?") + '：</b>' + escHtml(p.text) + '</p>';
+            }).join("") + '</div>')
+          : '<p style="font-size:12.5px; color:var(--ink-faint); margin-bottom:8px;">還沒有人送出提議。</p>';
+        html += '<button type="button" class="draw-btn class-enter-voting-btn" style="width:100%;" ' + (pids.length ? '' : 'disabled') + '>🗳️ 進入投票階段</button>';
+      }else if(round.phase === "voting"){
+        html += '<div style="margin-bottom:8px;">' + pids.map(function(pid, i){
+          var p = props[pid];
+          var voteCount = Object.keys(p.votes || {}).length;
+          return '<p style="font-size:12.5px; margin:0 0 6px; padding:6px 8px; background:var(--card); border-radius:8px;"><b>提議 ' + (i+1) + '（' + escHtml((story.roster[p.authorIndex]||{}).name || "?") + '）：</b>' + escHtml(p.text) + '　<span style="color:var(--brand);">🗳️ ' + voteCount + ' 票</span></p>';
+        }).join("") + '</div>';
+        html += '<button type="button" class="draw-btn class-resolve-btn" style="width:100%;" ' + (pids.length ? '' : 'disabled') + '>🏆 公布結果，進入下一輪</button>';
+      }
+    }
+    html += '<button type="button" class="back-btn class-end-btn" style="width:100%; margin-top:8px;" ' + (story.status==="completed" ? 'disabled' : '') + '>🏁 手動結束這個故事</button>';
+    detail.innerHTML = html;
+    detail.style.display = "block";
+
+    var enterVotingBtn = detail.querySelector(".class-enter-voting-btn");
+    if(enterVotingBtn){
+      enterVotingBtn.addEventListener("click", async function(){
+        enterVotingBtn.disabled = true;
+        try{
+          await fbSet("classStories/" + teacherId + "/" + storyId + "/rounds/" + story.currentRoundIndex + "/phase", "voting");
+          renderClassStoryList(teacherId);
+        }catch(err){ alert("操作失敗，請檢查網路連線後再試一次。"); enterVotingBtn.disabled = false; }
+      });
+    }
+    var resolveBtn = detail.querySelector(".class-resolve-btn");
+    if(resolveBtn){
+      resolveBtn.addEventListener("click", async function(){
+        resolveBtn.disabled = true;
+        try{
+          await resolveClassRound(teacherId, storyId);
+          renderClassStoryList(teacherId);
+        }catch(err){ alert("操作失敗，請檢查網路連線後再試一次。"); resolveBtn.disabled = false; }
+      });
+    }
+    var endBtn = detail.querySelector(".class-end-btn");
+    if(endBtn && story.status !== "completed"){
+      endBtn.addEventListener("click", async function(){
+        if(!confirm("確定要手動結束「" + (story.title||"") + "」嗎？結束後大家就不能再接力／投票了。")) return;
+        await fbSet("classStories/" + teacherId + "/" + storyId + "/status", "completed");
+        renderClassStoryList(teacherId);
+      });
+    }
+  }
+
+  // 統計目前這一輪的得票,把得票最高的提議併入正式故事,換下一組小隊值班
+  async function resolveClassRound(teacherId, storyId){
+    var story = await fbGet("classStories/" + teacherId + "/" + storyId);
+    if(!story) throw new Error("story not found");
+    var roundIdx = story.currentRoundIndex;
+    var round = story.rounds[roundIdx];
+    if(!round || round.phase !== "voting") throw new Error("not in voting phase");
+    var props = round.proposals || {};
+    var pids = Object.keys(props).sort(function(a,b){ return (props[a].createdAt||0) - (props[b].createdAt||0); });
+    if(!pids.length) throw new Error("no proposals");
+    var winnerId = pids[0];
+    var winnerVotes = Object.keys(props[winnerId].votes || {}).length;
+    pids.forEach(function(pid){
+      var v = Object.keys(props[pid].votes || {}).length;
+      if(v > winnerVotes){ winnerId = pid; winnerVotes = v; }
+    });
+    var segId = String(Date.now()) + "_" + randomId(4);
+    await fbSet("classStories/" + teacherId + "/" + storyId + "/confirmedSegments/" + segId, {
+      text: props[winnerId].text, roundIndex: roundIdx, authorIndex: props[winnerId].authorIndex, createdAt: Date.now()
+    });
+    var newCursor = (story.rosterCursor + Math.min(story.squadSize, story.roster.length)) % story.roster.length;
+    var newRoundIdx = roundIdx + 1;
+    var completed = !!(story.totalRounds && newRoundIdx >= story.totalRounds);
+    await fbSet("classStories/" + teacherId + "/" + storyId + "/rosterCursor", newCursor);
+    await fbSet("classStories/" + teacherId + "/" + storyId + "/currentRoundIndex", newRoundIdx);
+    if(completed){
+      await fbSet("classStories/" + teacherId + "/" + storyId + "/status", "completed");
+    }else{
+      var freshStoryForIdx = Object.assign({}, story, { roster: story.roster, squadSize: story.squadSize });
+      await fbSet("classStories/" + teacherId + "/" + storyId + "/rounds/" + newRoundIdx, {
+        squadIndexes: squadIndexesFor(freshStoryForIdx, newCursor), proposals: {}, phase: "writing"
+      });
+    }
+  }
+
+  async function openClassManageOverlay(teacherId){
+    buildClassManageOverlayIfNeeded();
+    document.getElementById("classManageOverlay").style.display = "flex";
+    renderClassStoryList(teacherId);
+  }
+
+  document.addEventListener("DOMContentLoaded", function(){
+    document.body.addEventListener("click", async function(e){
+      var openBtn = e.target.closest && e.target.closest("#classManageOpenBtn");
+      if(openBtn){
+        var teacherId = window.__capsuleCurrentTeacherId;
+        if(!teacherId){ alert("請先登入教師帳號。"); return; }
+        var ready = await waitForFirebaseBridge();
+        if(!ready){ alert("雲端服務連線逾時，請稍後再試一次。"); return; }
+        openClassManageOverlay(teacherId);
+        return;
+      }
+      var createBtn = e.target.closest && e.target.closest("#classNewCreateBtn");
+      if(createBtn){
+        var tId = window.__capsuleCurrentTeacherId;
+        if(!tId) return;
+        createClassStory(tId);
+        return;
+      }
+    });
+
+    var params = new URLSearchParams(location.search);
+    var squadLinkId = params.get("squad");
+    if(squadLinkId){ initClassViewer(String(squadLinkId).replace(/[.#$\[\]\/]/g, "_").slice(0,120)); }
+  });
+
+  // ============================================================
+  // 學生端:班級接力故事寫作/投票模式(?squad=linkId)
+  // ============================================================
+  var classViewState = { linkId:null, teacherId:null, storyId:null, memberIndex:null, story:null };
+
+  function buildClassViewerRootIfNeeded(){
+    if(document.getElementById("classViewerRoot")) return;
+    var html = ''
+      + '<div id="classViewerRoot" style="position:fixed; inset:0; z-index:5000; background:var(--bg); overflow:auto; display:none;">'
+      + '  <div style="max-width:640px; margin:0 auto; padding:20px 16px 80px;">'
+      + '    <div id="classViewerBody"></div>'
+      + '  </div>'
+      + '</div>';
+    document.body.insertAdjacentHTML("beforeend", html);
+  }
+  function showClassViewerMessage(msg){
+    buildClassViewerRootIfNeeded();
+    document.getElementById("classViewerRoot").style.display = "block";
+    document.getElementById("classViewerBody").innerHTML = '<div style="text-align:center; padding:60px 20px;"><div style="font-size:40px; margin-bottom:12px;">🧑‍🤝‍🧑</div><p style="color:var(--ink-soft); font-size:14px;">' + escHtml(msg) + '</p></div>';
+  }
+
+  async function initClassViewer(linkId){
+    classViewState.linkId = linkId;
+    buildClassViewerRootIfNeeded();
+    document.getElementById("classViewerRoot").style.display = "block";
+    showClassViewerMessage("連線中…");
+    var ready = await waitForFirebaseBridge();
+    if(!ready){ showClassViewerMessage("連線逾時，請檢查網路後重新整理頁面再試一次。"); return; }
+
+    var owner = await fbGet("classLinkOwners/" + linkId);
+    if(!owner){ showClassViewerMessage("這個連結已經失效或不存在，請跟老師確認一下網址。"); return; }
+    var story = await fbGet("classStories/" + owner.teacherId + "/" + owner.storyId);
+    if(!story){ showClassViewerMessage("這個連結已經失效或不存在，請跟老師確認一下網址。"); return; }
+
+    classViewState.teacherId = owner.teacherId;
+    classViewState.storyId = owner.storyId;
+    classViewState.memberIndex = owner.memberIndex;
+    classViewState.story = story;
+    renderClassViewer();
+  }
+
+  async function refreshClassViewer(){
+    var fresh = await fbGet("classStories/" + classViewState.teacherId + "/" + classViewState.storyId);
+    if(fresh) classViewState.story = fresh;
+    renderClassViewer();
+  }
+
+  function renderClassViewer(){
+    var story = classViewState.story;
+    var myIndex = classViewState.memberIndex;
+    var myName = (story.roster[myIndex] || {}).name || "";
+    var body = document.getElementById("classViewerBody");
+
+    var headerHtml = ''
+      + '<div style="text-align:center; padding:18px 0 10px;">'
+      + '  <div style="font-size:32px;">🧑‍🤝‍🧑</div>'
+      + '  <h1 style="font-size:20px; margin:6px 0 2px;">' + escHtml(story.title) + '</h1>'
+      + '  <p style="font-size:12.5px; color:var(--ink-soft); margin:0 0 4px;">' + classProgressText(story) + ' · 你是 ' + escHtml(myName) + '</p>'
+      + '</div>';
+
+    var storyBoxHtml = '<div class="card" style="margin-bottom:16px;">' + classStoryTextHtml(story) + '</div>';
+
+    var actionHtml = "";
+    if(story.status === "completed"){
+      actionHtml = '<div style="text-align:center; padding:20px; font-size:14px;">🎉 這個故事已經完成接力了，謝謝你的參與！</div>';
+    }else{
+      var round = story.rounds[story.currentRoundIndex];
+      var onDuty = (round.squadIndexes || []).indexOf(myIndex) !== -1;
+      var squadText = squadNamesOf(story, round);
+      actionHtml += '<p style="text-align:center; font-size:12.5px; color:var(--ink-soft); margin-bottom:10px;">👥 本輪值班：' + escHtml(squadText) + (onDuty ? '（包含你！）' : '') + '</p>';
+
+      if(round.phase === "writing"){
+        if(onDuty){
+          var myProposal = null, myPid = null;
+          Object.keys(round.proposals || {}).forEach(function(pid){
+            if(round.proposals[pid].authorIndex === myIndex){ myProposal = round.proposals[pid]; myPid = pid; }
+          });
+          if(myProposal){
+            actionHtml += ''
+              + '<div style="text-align:center; font-size:13px; color:var(--brand); margin-bottom:6px;">✅ 你已經送出提議了：</div>'
+              + '<p style="font-size:13.5px; padding:10px 12px; background:var(--card-alt); border-radius:10px; margin-bottom:8px;">' + escHtml(myProposal.text) + '</p>'
+              + '<textarea id="classProposeText" maxlength="' + MAX_PROPOSAL_CHARS + '" rows="3" placeholder="想改一下你的提議…" style="width:100%; padding:10px 12px; border-radius:12px; border:1px solid var(--border); background:var(--card-alt); color:var(--ink); font-family:inherit; font-size:14px; box-sizing:border-box; margin-bottom:8px; resize:vertical;"></textarea>'
+              + '<button type="button" class="draw-btn" id="classProposeSendBtn" style="width:100%;">✏️ 更新我的提議</button>';
+          }else{
+            actionHtml += ''
+              + '<div style="text-align:center; font-size:13px; color:var(--brand); margin-bottom:8px;">✏️ 輪到你的小隊接力了！寫一段接下去吧。</div>'
+              + '<textarea id="classProposeText" maxlength="' + MAX_PROPOSAL_CHARS + '" rows="4" placeholder="接著故事寫下去…" style="width:100%; padding:10px 12px; border-radius:12px; border:1px solid var(--border); background:var(--card-alt); color:var(--ink); font-family:inherit; font-size:14px; box-sizing:border-box; margin-bottom:8px; resize:vertical;"></textarea>'
+              + '<button type="button" class="draw-btn" id="classProposeSendBtn" style="width:100%;">✅ 送出我的提議</button>';
+          }
+        }else{
+          actionHtml += '<div style="text-align:center; padding:16px; font-size:13.5px; color:var(--ink-soft);">⏳ 現在是接力階段，還沒輪到你的小隊。等值班同學寫完、開放投票時再回來投票喔！</div>';
+        }
+        actionHtml += '<button type="button" class="back-btn" id="classRefreshBtn" style="width:100%; margin-top:8px;">🔄 重新整理看看進度</button>';
+      }else if(round.phase === "voting"){
+        var props = round.proposals || {};
+        var pids = Object.keys(props).sort(function(a,b){ return (props[a].createdAt||0) - (props[b].createdAt||0); });
+        var myVotePid = null;
+        pids.forEach(function(pid){ if(props[pid].votes && props[pid].votes[myIndex]) myVotePid = pid; });
+        actionHtml += '<div style="text-align:center; font-size:13px; color:var(--brand); margin-bottom:8px;">🗳️ 投票時間到了！選一個你最喜歡的接力提議：</div>';
+        actionHtml += pids.map(function(pid, i){
+          var p = props[pid];
+          var mine = pid === myVotePid;
+          var voteCount = Object.keys(p.votes || {}).length;
+          return ''
+            + '<div class="class-vote-option" data-pid="' + pid + '" style="border:2px solid ' + (mine ? 'var(--brand)' : 'var(--border)') + '; border-radius:12px; padding:10px 12px; margin-bottom:8px; cursor:pointer; background:' + (mine ? 'var(--accent-soft)' : 'var(--card-alt)') + ';">'
+            + '  <div style="font-size:12px; color:var(--ink-faint); margin-bottom:4px;">提議 ' + (i+1) + (mine ? '　✅ 你投了這個' : '') + '　🗳️ ' + voteCount + ' 票</div>'
+            + '  <div style="font-size:13.5px;">' + escHtml(p.text) + '</div>'
+            + '</div>';
+        }).join("");
+        actionHtml += '<button type="button" class="back-btn" id="classRefreshBtn" style="width:100%; margin-top:4px;">🔄 重新整理看票數</button>';
+      }
+    }
+
+    body.innerHTML = headerHtml + storyBoxHtml + '<div id="classActionArea">' + actionHtml + '</div>';
+
+    var sendBtn = document.getElementById("classProposeSendBtn");
+    if(sendBtn){
+      sendBtn.addEventListener("click", async function(){
+        var ta = document.getElementById("classProposeText");
+        var text = (ta.value || "").trim();
+        if(!text){ alert("請先寫一點內容再送出。"); return; }
+        sendBtn.disabled = true;
+        try{
+          await submitClassProposal(text);
+          await refreshClassViewer();
+        }catch(err){ alert("送出失敗，請檢查網路連線後再試一次。"); sendBtn.disabled = false; }
+      });
+    }
+    var refreshBtn = document.getElementById("classRefreshBtn");
+    if(refreshBtn){ refreshBtn.addEventListener("click", refreshClassViewer); }
+    body.querySelectorAll(".class-vote-option").forEach(function(el){
+      el.addEventListener("click", async function(){
+        try{
+          await submitClassVote(el.getAttribute("data-pid"));
+          await refreshClassViewer();
+        }catch(err){ alert("投票失敗，請檢查網路連線後再試一次。"); }
+      });
+    });
+  }
+
+  async function submitClassProposal(text){
+    var teacherId = classViewState.teacherId, storyId = classViewState.storyId, myIndex = classViewState.memberIndex;
+    var story = await fbGet("classStories/" + teacherId + "/" + storyId);
+    if(!story) throw new Error("story not found");
+    var roundIdx = story.currentRoundIndex;
+    var round = story.rounds[roundIdx];
+    if(!round || round.phase !== "writing") throw new Error("not writing phase");
+    if((round.squadIndexes||[]).indexOf(myIndex) === -1) throw new Error("not on duty");
+    var props = round.proposals || {};
+    var existingPid = null;
+    Object.keys(props).forEach(function(pid){ if(props[pid].authorIndex === myIndex) existingPid = pid; });
+    var pid = existingPid || (String(Date.now()) + "_" + randomId(4));
+    await fbSet("classStories/" + teacherId + "/" + storyId + "/rounds/" + roundIdx + "/proposals/" + pid, {
+      authorIndex: myIndex, text: text.slice(0, MAX_PROPOSAL_CHARS), createdAt: (props[pid] && props[pid].createdAt) || Date.now(), votes: (props[pid] && props[pid].votes) || {}
+    });
+  }
+
+  async function submitClassVote(proposalId){
+    var teacherId = classViewState.teacherId, storyId = classViewState.storyId, myIndex = classViewState.memberIndex;
+    var story = await fbGet("classStories/" + teacherId + "/" + storyId);
+    if(!story) throw new Error("story not found");
+    var roundIdx = story.currentRoundIndex;
+    var round = story.rounds[roundIdx];
+    if(!round || round.phase !== "voting") throw new Error("not voting phase");
+    var props = round.proposals || {};
+    if(!props[proposalId]) throw new Error("proposal not found");
+    // 先把這個人在這一輪其他提議上的舊票清掉,確保一輪只能投一票
+    var writes = [];
+    Object.keys(props).forEach(function(pid){
+      var hasVote = props[pid].votes && props[pid].votes[myIndex];
+      if(pid === proposalId){
+        if(!hasVote) writes.push(fbSet("classStories/" + teacherId + "/" + storyId + "/rounds/" + roundIdx + "/proposals/" + pid + "/votes/" + myIndex, true));
+      }else if(hasVote){
+        writes.push(fbSet("classStories/" + teacherId + "/" + storyId + "/rounds/" + roundIdx + "/proposals/" + pid + "/votes/" + myIndex, null));
+      }
+    });
+    await Promise.all(writes);
+  }
+
+})();
+</script>
+
 </body>
 </html>
