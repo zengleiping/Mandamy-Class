@@ -1052,7 +1052,7 @@
     <div class="stat-pill">語法點 <b id="statGrammar">0</b> 個</div>
     <div class="stat-pill">已上 <b id="statLesson">0</b> 課</div>
     <button class="bell-btn" id="bellOpenBtn">⏰ 上下課時間</button>
-    <button class="bell-btn" id="cloudSyncOpenBtn">☁️ 生詞雲端同步</button>
+    <button class="bell-btn" id="cloudSyncOpenBtn">☁️ 老師專區</button>
   </div>
 </header>
 
@@ -1395,12 +1395,12 @@
 
 <footer>由 Claude 依對話產生・資料來源：教師課堂生詞庫＋國家華語測驗推動工作委員會「華語八千詞表」(TOCFL 2.0)・寫字練習筆順資料來自 Hanzi Writer／Make Me a Hanzi</footer>
 
-<!-- 生詞雲端同步（跟「曼米中文 Mandamy」測驗平台共用同一套教師帳號與生詞庫） -->
+<!-- 老師專區（登入後才看得到的所有雲端功能入口：生詞同步、教材庫管理、時空膠囊、接力故事、班級接力故事…） -->
 <div id="cloudSyncOverlay" class="bell-overlay" style="display:none;">
   <div class="bell-card" style="max-width:460px; padding:40px 32px 32px; text-align:left;">
     <button class="bell-close" id="cloudSyncCloseBtn">✕</button>
-    <h2 style="margin:0 0 6px; font-size:20px;">☁️ 生詞雲端同步</h2>
-    <p style="margin:0 0 20px; font-size:13.5px; color:var(--ink-soft); line-height:1.6;">用「曼米中文 Mandamy」的教師帳號，把這個班的生詞跟雲端測驗平台共用同一份資料。</p>
+    <h2 style="margin:0 0 6px; font-size:20px;">☁️ 老師專區</h2>
+    <p style="margin:0 0 20px; font-size:13.5px; color:var(--ink-soft); line-height:1.6;">用「曼米中文 Mandamy」的教師帳號登入，管理教材庫、生詞雲端同步，還有時空膠囊、接力故事這些跟學生／家長互動的功能都在這裡。</p>
 
     <div id="cloudSyncConnecting" style="font-size:13px; color:var(--ink-soft); margin-bottom:12px;">⏳ 正在連線雲端服務…</div>
 
@@ -1420,8 +1420,7 @@
       <div id="cloudSyncActionMsg" style="display:none; font-size:13px; margin-bottom:12px;"></div>
       <button type="button" class="draw-btn" id="cloudSyncManageContentBtn" style="width:100%; display:flex; justify-content:center; margin-bottom:14px; box-sizing:border-box; background:linear-gradient(135deg,var(--brand),var(--brand-dark));">📚 管理我的教材庫（生詞／語法／課文）</button>
       <button type="button" class="draw-btn" id="capsuleManageOpenBtn" style="width:100%; display:flex; justify-content:center; margin-bottom:14px; box-sizing:border-box; background:linear-gradient(135deg,var(--accent),var(--lesson2));">🎁 時空膠囊連結（親子異步留言）</button>
-      <button type="button" class="draw-btn" id="relayManageOpenBtn" style="width:100%; display:flex; justify-content:center; margin-bottom:14px; box-sizing:border-box; background:linear-gradient(135deg,var(--lesson2),var(--brand));">📖 接力故事（陪伴式寫作）</button>
-      <button type="button" class="draw-btn" id="classManageOpenBtn" style="width:100%; display:flex; justify-content:center; margin-bottom:14px; box-sizing:border-box; background:linear-gradient(135deg,var(--lesson3),var(--brand-dark));">🧑‍🤝‍🧑 班級接力故事（小隊輪值＋投票）</button>
+      <button type="button" class="draw-btn" id="relayStoryOpenBtn" style="width:100%; display:flex; justify-content:center; margin-bottom:14px; box-sizing:border-box; background:linear-gradient(135deg,var(--lesson2),var(--brand));">📖 接力故事（陪伴式寫作）</button>
       <div style="border-top:1px dashed var(--border); margin:0 0 14px;"></div>
       <button type="button" class="draw-btn" id="cloudSyncUploadBtn" style="width:100%; display:flex; justify-content:center; margin-bottom:10px; box-sizing:border-box;">⬆️ 上傳目前生詞到雲端</button>
       <button type="button" class="draw-btn" id="cloudSyncDownloadBtn" style="width:100%; display:flex; justify-content:center; margin-bottom:10px; box-sizing:border-box; background:linear-gradient(135deg,var(--accent),var(--lesson2));">⬇️ 套用雲端最新生詞</button>
@@ -1433,6 +1432,23 @@
       <p style="font-size:13.5px; color:var(--wrong); margin:0 0 14px;">⚠️ 無法連線雲端服務，請檢查網路連線。</p>
       <button type="button" class="back-btn" id="cloudSyncRetryBtn" style="width:100%; display:flex; justify-content:center; box-sizing:border-box;">🔄 重試 Retry</button>
     </div>
+  </div>
+</div>
+
+<!-- 接力故事類型選擇：老師點「📖 接力故事」入口後，先選要開一對一版還是班級版 -->
+<div id="relayTypeChooserOverlay" class="bell-overlay" style="display:none;">
+  <div class="bell-card" style="max-width:420px; padding:30px 26px 24px; text-align:left;">
+    <button class="bell-close" id="relayTypeChooserCloseBtn">✕</button>
+    <h3 style="margin:0 0 6px; font-size:17px;">📖 接力故事（陪伴式寫作）</h3>
+    <p style="margin:0 0 18px; font-size:13px; color:var(--ink-soft); line-height:1.6;">先選要用哪一種接力方式，之後可以再回來開新故事或查看進度：</p>
+    <button type="button" class="draw-btn" id="relayChooseOneBtn" style="width:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; padding:14px 22px; margin-bottom:12px; box-sizing:border-box; background:linear-gradient(135deg,var(--lesson2),var(--brand));">
+      <span>🤝 一對一接力故事</span>
+      <span style="font-weight:400; font-size:11px; opacity:.85;">老師接力／跨學生配對／親子接力</span>
+    </button>
+    <button type="button" class="draw-btn" id="relayChooseClassBtn" style="width:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; padding:14px 22px; box-sizing:border-box; background:linear-gradient(135deg,var(--lesson3),var(--brand-dark));">
+      <span>🧑‍🤝‍🧑 班級接力故事</span>
+      <span style="font-weight:400; font-size:11px; opacity:.85;">小隊輪值＋全班投票</span>
+    </button>
   </div>
 </div>
 
@@ -5146,10 +5162,12 @@ render();
 </script>
 
 <!-- ============================================================
-     生詞雲端同步：跟「曼米中文 Mandamy」測驗平台(Mandamy-Test)共用同一套
-     Firebase 教師帳號系統(teacherAccounts)，並透過新的 teacherVocabBanks/{teacherId}
-     節點共用生詞資料。這裡刻意不在開機時就打 Firebase，只有老師自己按下
-     「☁️ 生詞雲端同步」才會連線，完全不影響原本秒開、免登入的離線使用體驗。
+     老師專區：跟「曼米中文 Mandamy」測驗平台(Mandamy-Test)共用同一套
+     Firebase 教師帳號系統(teacherAccounts)，登入後除了原本的生詞雲端同步
+     （透過 teacherVocabBanks/{teacherId} 節點），也是教材庫管理、時空膠囊、
+     接力故事、班級接力故事這些「登入教師帳號才用得到」的功能共用入口。
+     這裡刻意不在開機時就打 Firebase，只有老師自己按下「☁️ 老師專區」才會
+     連線，完全不影響原本秒開、免登入的離線使用體驗。
      ============================================================ -->
 <script>
   window.FIREBASE_CONFIG = {
@@ -5281,13 +5299,45 @@ render();
   }
   function clearActionMsg(){ actionMsgEl.style.display = "none"; actionMsgEl.textContent = ""; }
 
-  function refreshCloudStatusText(){
+  // 把物件/陣列遞迴依 key 排序後再字串化，這樣不管 Firebase 讀回來的物件屬性
+  // 順序跟原本寫進去的是否一樣，只要「內容」相同就會比對出「一樣」，不會因為
+  // key 順序不同就誤判成不一樣。
+  function canonicalJson(value){
+    if(Array.isArray(value)){ return "[" + value.map(canonicalJson).join(",") + "]"; }
+    if(value && typeof value === "object"){
+      var keys = Object.keys(value).sort();
+      return "{" + keys.map(function(k){ return JSON.stringify(k) + ":" + canonicalJson(value[k]); }).join(",") + "}";
+    }
+    return JSON.stringify(value);
+  }
+  function formatCloudUpdatedAt(ts){
+    if(!ts || typeof ts !== "number") return "不明時間";
+    var d = new Date(ts);
+    var pad = function(n){ return String(n).padStart(2, "0"); };
+    return d.getFullYear() + "/" + pad(d.getMonth()+1) + "/" + pad(d.getDate()) + " " + pad(d.getHours()) + ":" + pad(d.getMinutes());
+  }
+
+  // 這裡不是只看「有沒有按過套用」這種粗略的記憶，而是每次打開都真的去抓一次
+  // 雲端目前的內容，跟這台裝置現在在用的生詞逐字比對，清楚顯示「一樣」還是
+  // 「不一樣＋雲端上次是誰、什麼時候更新的」，老師才不用用猜的。
+  async function refreshCloudStatusText(){
     if(!currentCloudTeacher) return;
     whoAmIEl.textContent = currentCloudTeacher.displayName + "（" + currentCloudTeacher.username + "）";
-    var usingCloud = !!readCloudVocabCache();
-    cloudStatusEl.textContent = usingCloud
-      ? "目前這台裝置正在使用雲端版生詞（跟測驗平台共用）。"
-      : "目前這台裝置使用的是本機生詞，還沒套用雲端版本。";
+    cloudStatusEl.textContent = "⏳ 正在跟雲端比對版本…";
+    try{
+      var bank = await fetchCloudVocabBank(currentCloudTeacher.id);
+      if(!bank || !Array.isArray(bank.courseData) || !bank.courseData.length){
+        cloudStatusEl.textContent = "☁️ 雲端目前還沒有生詞資料。按下面「⬆️ 上傳」可以把這台裝置現在的生詞建立成雲端版本。";
+        return;
+      }
+      var same = canonicalJson(bank.courseData) === canonicalJson(ACTIVE_COURSE_DATA);
+      var whenWho = "雲端上次更新：" + formatCloudUpdatedAt(bank.updatedAt) + (bank.updatedBy ? "，由「" + bank.updatedBy + "」更新" : "") + "。";
+      cloudStatusEl.textContent = same
+        ? ("✅ 這台裝置現在的生詞跟雲端版本一樣。" + whenWho)
+        : ("⚠️ 這台裝置現在的生詞跟雲端版本不一樣。" + whenWho + " 想用雲端版本按「⬇️ 套用」，想讓雲端跟上這台裝置的內容按「⬆️ 上傳」。");
+    }catch(e){
+      cloudStatusEl.textContent = "⚠️ 跟雲端比對版本時發生問題，請檢查網路連線後重新打開這個視窗再試一次。";
+    }
   }
 
   async function openCloudSyncModal(){
@@ -5357,6 +5407,7 @@ render();
     try{
       await saveCloudVocabBank(currentCloudTeacher.id, ACTIVE_COURSE_DATA, currentCloudTeacher.displayName);
       showActionMsg("✅ 已上傳到雲端，測驗平台那邊也能讀到這份生詞了。", false);
+      refreshCloudStatusText();
     }catch(e){
       showActionMsg("上傳失敗，請檢查網路連線後再試一次。", true);
     }finally{
@@ -6373,12 +6424,16 @@ render();
   var capsuleState = {
     linkId: null, teacherId: null, studentName: "",
     courseData: [], vocabList: [], grammarList: [],
-    role: null, selectedLesson: "all", marksCache: {}
+    role: null, selectedLesson: "all", marksCache: {}, renderToken: 0
   };
 
   function capsuleRoleStorageKey(){ return CAPSULE_ROLE_KEY_PREFIX + capsuleState.linkId; }
   function loadCapsuleRole(){ try{ return localStorage.getItem(capsuleRoleStorageKey()) || null; }catch(e){ return null; } }
   function saveCapsuleRole(role){ try{ localStorage.setItem(capsuleRoleStorageKey(), role); }catch(e){} }
+  var CAPSULE_EDIT_TOKEN_PREFIX = "hanyu_capsule_edit_";
+  function capsuleEditTokenKey(markId){ return CAPSULE_EDIT_TOKEN_PREFIX + capsuleState.linkId + "_" + markId; }
+  function saveCapsuleEditToken(markId, token){ try{ localStorage.setItem(capsuleEditTokenKey(markId), token); }catch(e){} }
+  function getCapsuleEditToken(markId){ try{ return localStorage.getItem(capsuleEditTokenKey(markId)); }catch(e){ return null; } }
 
   function buildCapsuleViewerRootIfNeeded(){
     if(document.getElementById("capsuleViewerRoot")) return;
@@ -6475,30 +6530,52 @@ render();
     return vocab.concat(grammar);
   }
 
-  function renderCapsuleViewer(){
+  async function renderCapsuleViewer(){
     renderCapsuleHeader();
     var body = document.getElementById("capsuleViewerBody");
     if(!capsuleState.role){
       body.innerHTML = '<p style="text-align:center; font-size:13px; color:var(--ink-soft); margin-top:20px;">👆 先選「我是學生」還是「我是家長」，才能開始留言喔。</p>';
       return;
     }
+    var myRenderToken = ++capsuleState.renderToken;
+    body.innerHTML = '<p style="text-align:center; font-size:13px; color:var(--ink-soft); margin-top:20px;">載入中…</p>';
+    var allMarks = {};
+    try{ allMarks = (await fbGet("capsuleMarks/" + capsuleState.linkId)) || {}; }catch(e){}
+    if(myRenderToken !== capsuleState.renderToken) return; // 使用者在載入中已經切換角色/課次，這次結果就不要用了
+    capsuleState.marksCache = allMarks;
+
     var items = capsuleFilteredItems();
-    if(!items.length){ body.innerHTML = '<p style="text-align:center; font-size:13px; color:var(--ink-soft);">這個範圍還沒有內容。</p>'; return; }
+    // 家長版只看已經有留言的卡片，不想在一堆空白卡片裡面找；學生版維持看全部卡片
+    if(capsuleState.role === "parent"){
+      items = items.filter(function(it){ var m = allMarks[it.key]; return m && Object.keys(m).length > 0; });
+    }
+    if(!items.length){
+      body.innerHTML = '<p style="text-align:center; font-size:13px; color:var(--ink-soft); margin-top:20px;">'
+        + (capsuleState.role === "parent" ? "這裡還沒有任何留言，晚點再回來看看吧。" : "這個範圍還沒有內容。")
+        + '</p>';
+      return;
+    }
     body.innerHTML = items.map(function(it){
+      var marks = allMarks[it.key] || {};
+      var n = Object.keys(marks).length;
       var inner = it.type === "vocab" ? vocabCardInnerHtml(it.data) : grammarCardInnerHtml(it.data);
       var cls = it.type === "vocab" ? "card" : "grammar-card";
       return ''
         + '<div class="' + cls + ' capsule-item-card" data-key="' + escHtml(it.key) + '" data-label="' + escHtml(it.label) + '" style="margin-bottom:14px;">'
         + inner
         + '  <div class="capsule-item-footer" style="margin-top:10px; padding-top:10px; border-top:1px dashed var(--border); display:flex; justify-content:space-between; align-items:center;">'
-        + '    <span class="capsule-mark-count" style="font-size:12.5px; color:var(--ink-soft);">💬 載入中…</span>'
+        + '    <span class="capsule-mark-count" style="font-size:12.5px; color:var(--ink-soft);' + (n ? ' cursor:pointer;' : '') + '">' + (n ? ("💬 " + n + " 則留言（點一下看）") : "💬 還沒有留言") + '</span>'
         + '    <button type="button" class="reveal-btn capsule-record-btn" style="padding:6px 14px; font-size:12.5px;">🎙️ 留言</button>'
         + '  </div>'
         + '  <div class="capsule-marks-panel" style="display:none; margin-top:10px;"></div>'
         + '</div>';
     }).join("");
 
-    body.querySelectorAll(".capsule-item-card").forEach(function(cardEl){ loadAndRenderMarksSummary(cardEl); });
+    body.querySelectorAll(".capsule-item-card").forEach(function(cardEl){
+      var key = cardEl.getAttribute("data-key");
+      var n = Object.keys(allMarks[key] || {}).length;
+      if(n){ cardEl.querySelector(".capsule-mark-count").onclick = function(){ toggleCapsuleMarksPanel(cardEl); }; }
+    });
     body.querySelectorAll(".capsule-record-btn").forEach(function(btn){
       btn.addEventListener("click", function(){ openCapsuleRecorder(btn.closest(".capsule-item-card")); });
     });
@@ -6532,36 +6609,53 @@ render();
     panel.innerHTML = (ids.map(function(id){
       var m = marks[id];
       var roleIcon = m.role === "parent" ? "❤️" : "🧒";
+      var myToken = getCapsuleEditToken(id);
+      var canEdit = !!(myToken && m.editToken && myToken === m.editToken);
       return ''
-        + '<div class="capsule-mark-row" data-mark-id="' + id + '" style="display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:10px; background:var(--card-alt); margin-bottom:6px;">'
+        + '<div class="capsule-mark-row" data-mark-id="' + id + '" style="display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:10px; background:var(--card-alt); margin-bottom:6px; flex-wrap:wrap;">'
         + '  <span style="font-size:18px;">' + roleIcon + '</span>'
         + '  <button type="button" class="reveal-btn capsule-play-btn" data-mark-id="' + id + '" style="padding:5px 12px; font-size:12px;">▶️ 播放</button>'
-        + '  <span style="font-size:11.5px; color:var(--ink-faint); margin-left:auto;">' + formatCapsuleTime(m.createdAt) + '</span>'
+        + (canEdit ? '  <button type="button" class="back-btn capsule-edit-btn" data-mark-id="' + id + '" style="padding:5px 12px; font-size:12px;">✏️ 編輯</button>' : '')
+        + '  <span style="font-size:11.5px; color:var(--ink-faint); margin-left:auto;">' + formatCapsuleTime(m.updatedAt || m.createdAt) + (m.updatedAt ? '（已編輯）' : '') + '</span>'
         + '</div>';
     }).join("")) || '<p style="font-size:12.5px; color:var(--ink-soft);">還沒有留言。</p>';
     panel.style.display = "block";
     panel.querySelectorAll(".capsule-play-btn").forEach(function(btn){
       btn.addEventListener("click", function(){ playCapsuleMark(cardEl, marks[btn.getAttribute("data-mark-id")]); });
     });
+    panel.querySelectorAll(".capsule-edit-btn").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        var id = btn.getAttribute("data-mark-id");
+        openCapsuleRecorder(cardEl, Object.assign({ id: id }, marks[id]));
+      });
+    });
   }
 
   // ---------- 圈選軌跡 + 語音錄製 ----------
-  function openCapsuleRecorder(cardEl){
+  // 設計:先按「開始錄音」拿到麥克風權限、正式開始錄，再讓使用者在框裡按住畫圈；
+  // 這樣瀏覽器跳出的權限詢問視窗不會打斷「按住畫圈」這個手勢(舊版是按住畫布同時
+  // 觸發權限請求,使用者常常還沒來得及在系統彈窗按「允許」就已經放開手指,反而錄不到聲音)。
+  function openCapsuleRecorder(cardEl, editingMark){
     var key = cardEl.getAttribute("data-key");
     var label = cardEl.getAttribute("data-label");
     var overlayId = "capsuleRecordOverlay";
     var existing = document.getElementById(overlayId);
     if(existing) existing.remove();
 
+    var titleText = editingMark ? ("✏️ 編輯留言（給「" + escHtml(label) + "」）") : ("🎙️ 留言給「" + escHtml(label) + "」");
+    var introText = editingMark
+      ? "重新錄一次會直接覆蓋原本這則留言。先點「🎙️ 開始錄音」，講話＋在框裡按住畫圈標重點（最長 15 秒），講完點「⏹️ 停止錄音」。"
+      : "先點「🎙️ 開始錄音」，講話＋在框裡按住畫圈標重點（最長 15 秒），講完點「⏹️ 停止錄音」。";
     var html = ''
       + '<div id="' + overlayId + '" class="bell-overlay" style="display:flex; z-index:6000;">'
       + '  <div class="bell-card" style="max-width:420px; padding:30px 26px 24px; text-align:left;">'
       + '    <button class="bell-close" id="capsuleRecordCloseBtn">✕</button>'
-      + '    <h3 style="margin:0 0 8px; font-size:16px;">🎙️ 留言給「' + escHtml(label) + '」</h3>'
-      + '    <p style="font-size:12.5px; color:var(--ink-soft); margin:0 0 12px;">按住下面的框開始畫圈，同時對著麥克風說話（最長 15 秒），放開就結束。</p>'
+      + '    <h3 style="margin:0 0 8px; font-size:16px;">' + titleText + '</h3>'
+      + '    <p style="font-size:12.5px; color:var(--ink-soft); margin:0 0 12px;">' + introText + '</p>'
+      + '    <div id="capsuleRecordMainActions" style="display:flex; gap:8px; margin-bottom:10px;"></div>'
       + '    <div id="capsuleDrawWrap" style="position:relative; width:100%; aspect-ratio:3/2; border:2px dashed var(--border); border-radius:14px; background:var(--card-alt); touch-action:none; overflow:hidden;">'
       + '      <canvas id="capsuleDrawCanvas" style="position:absolute; inset:0; width:100%; height:100%;"></canvas>'
-      + '      <div id="capsuleDrawHint" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:13px; color:var(--ink-faint); pointer-events:none; text-align:center; padding:20px;">👇 按住這裡開始畫圈+說話</div>'
+      + '      <div id="capsuleDrawHint" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:13px; color:var(--ink-faint); pointer-events:none; text-align:center; padding:20px;">👆 先點上面「開始錄音」，就可以在這裡按住畫圈</div>'
       + '    </div>'
       + '    <div id="capsuleRecordStatus" style="text-align:center; font-size:12.5px; color:var(--ink-soft); margin:10px 0;"></div>'
       + '    <div id="capsuleRecordActions" style="display:flex; gap:8px;"></div>'
@@ -6570,20 +6664,22 @@ render();
     document.body.insertAdjacentHTML("beforeend", html);
 
     var overlayEl = document.getElementById(overlayId);
-    var cleanup = setupCapsuleRecorderInteraction(cardEl, key, overlayEl);
+    var cleanup = setupCapsuleRecorderInteraction(cardEl, key, overlayEl, editingMark);
     document.getElementById("capsuleRecordCloseBtn").addEventListener("click", function(){ cleanup(); overlayEl.remove(); });
     overlayEl.addEventListener("click", function(e){ if(e.target === overlayEl){ cleanup(); overlayEl.remove(); } });
   }
 
-  function setupCapsuleRecorderInteraction(cardEl, itemKey, overlayEl){
+  function setupCapsuleRecorderInteraction(cardEl, itemKey, overlayEl, editingMark){
     var wrap = document.getElementById("capsuleDrawWrap");
     var canvas = document.getElementById("capsuleDrawCanvas");
     var hint = document.getElementById("capsuleDrawHint");
     var statusEl = document.getElementById("capsuleRecordStatus");
+    var mainActionsEl = document.getElementById("capsuleRecordMainActions");
     var actionsEl = document.getElementById("capsuleRecordActions");
     var ctx = canvas.getContext("2d");
 
     var recording = false;
+    var drawing = false;
     var path = [];
     var startedAt = 0;
     var mediaRecorder = null;
@@ -6592,6 +6688,7 @@ render();
     var resultBlob = null;
     var resultMime = "";
     var activeStream = null;
+    var hasAudioTrack = false;
 
     function fitCanvas(){
       var rect = wrap.getBoundingClientRect();
@@ -6618,40 +6715,68 @@ render();
       ctx.stroke();
     }
 
-    async function startRecording(e){
+    function renderMainActions(){
+      mainActionsEl.innerHTML = recording
+        ? '<button type="button" class="back-btn" id="capsuleStopBtn" style="flex:1;">⏹️ 停止錄音</button>'
+        : '<button type="button" class="draw-btn" id="capsuleStartBtn" style="flex:1;">🎙️ 開始錄音</button>';
+      var startBtn = document.getElementById("capsuleStartBtn");
+      if(startBtn) startBtn.addEventListener("click", startRecording);
+      var stopBtn = document.getElementById("capsuleStopBtn");
+      if(stopBtn) stopBtn.addEventListener("click", finishRecording);
+    }
+    renderMainActions();
+    if(editingMark){ statusEl.textContent = "這是編輯模式，送出後會覆蓋原本這則留言。"; }
+
+    async function startRecording(){
       if(recording) return;
-      recording = true;
-      hint.style.display = "none";
       path = [];
       startedAt = Date.now();
-      var p = relPos(e);
-      path.push({ x:p.x, y:p.y, t:0 });
-
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      resultBlob = null; resultMime = "";
+      actionsEl.innerHTML = "";
+      statusEl.textContent = "🎙️ 取得麥克風權限中…";
       try{
         activeStream = await navigator.mediaDevices.getUserMedia({ audio:true });
+        hasAudioTrack = true;
         audioChunks = [];
         var mime = (window.MediaRecorder && MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported("audio/webm")) ? "audio/webm" : "";
         mediaRecorder = mime ? new MediaRecorder(activeStream, { mimeType: mime }) : new MediaRecorder(activeStream);
         mediaRecorder.ondataavailable = function(ev){ if(ev.data && ev.data.size) audioChunks.push(ev.data); };
         mediaRecorder.start();
-        statusEl.textContent = "🔴 錄音中…放開就結束（最長 15 秒）";
-        stopTimer = setTimeout(finishRecording, MAX_RECORD_MS);
       }catch(err){
-        statusEl.textContent = "⚠️ 沒有拿到麥克風權限，只會存畫的軌跡、沒有聲音。";
+        hasAudioTrack = false;
+        mediaRecorder = null;
       }
+      recording = true;
+      hint.textContent = "👇 現在按住這裡可以畫圈標重點";
+      statusEl.textContent = hasAudioTrack
+        ? "🔴 錄音中…最長 15 秒，講完按「⏹️ 停止錄音」"
+        : "⚠️ 沒有拿到麥克風權限，只能畫圈、不會有聲音。按「⏹️ 停止錄音」結束。";
+      renderMainActions();
+      stopTimer = setTimeout(finishRecording, MAX_RECORD_MS);
     }
-    function moveRecording(e){
+    function startDraw(e){
       if(!recording) return;
+      drawing = true;
+      hint.style.display = "none";
+      var p = relPos(e);
+      path.push({ x:p.x, y:p.y, t: Date.now()-startedAt });
+    }
+    function moveDraw(e){
+      if(!recording || !drawing) return;
       e.preventDefault();
       var p = relPos(e);
       var last = path[path.length-1];
       path.push({ x:p.x, y:p.y, t: Date.now()-startedAt });
-      drawSegment(last, p);
+      if(last) drawSegment(last, p);
     }
+    function endDraw(){ drawing = false; }
     function finishRecording(){
       if(!recording) return;
       recording = false;
+      drawing = false;
       if(stopTimer){ clearTimeout(stopTimer); stopTimer = null; }
+      renderMainActions();
       if(mediaRecorder && mediaRecorder.state !== "inactive"){
         mediaRecorder.onstop = function(){
           resultBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType || "audio/webm" });
@@ -6666,10 +6791,11 @@ render();
       }
     }
     function showPreviewActions(){
-      statusEl.textContent = path.length > 1 ? "✅ 錄好了，要送出嗎？" : "沒有畫到東西，重來一次吧。";
+      var hasAudio = !!(resultBlob && resultBlob.size);
+      statusEl.textContent = hasAudio ? "✅ 錄好了，要送出嗎？" : (path.length > 1 ? "✅ 畫好了（沒有聲音），要送出嗎？" : "沒有錄到內容，重來一次吧。");
       actionsEl.innerHTML = ''
         + '<button type="button" class="back-btn" id="capsuleRecordRetryBtn" style="flex:1;">🔁 重錄</button>'
-        + (path.length > 1 ? '<button type="button" class="draw-btn" id="capsuleRecordSendBtn" style="flex:1;">✅ 送出</button>' : '');
+        + ((hasAudio || path.length > 1) ? '<button type="button" class="draw-btn" id="capsuleRecordSendBtn" style="flex:1;">✅ 送出</button>' : '');
       document.getElementById("capsuleRecordRetryBtn").addEventListener("click", resetRecorder);
       var sendBtn = document.getElementById("capsuleRecordSendBtn");
       if(sendBtn) sendBtn.addEventListener("click", submitCapsuleMark);
@@ -6678,7 +6804,9 @@ render();
       path = []; resultBlob = null; resultMime = "";
       ctx.clearRect(0,0,canvas.width,canvas.height);
       hint.style.display = "flex";
+      hint.textContent = "👆 先點上面「開始錄音」，就可以在這裡按住畫圈";
       statusEl.textContent = ""; actionsEl.innerHTML = "";
+      renderMainActions();
     }
     async function submitCapsuleMark(){
       var sendBtn = document.getElementById("capsuleRecordSendBtn");
@@ -6687,34 +6815,40 @@ render();
       try{
         var audioBase64 = "";
         if(resultBlob && resultBlob.size){ audioBase64 = await blobToBase64(resultBlob); }
-        var markId = String(Date.now()) + "_" + randomId(4);
+        var markId = editingMark ? editingMark.id : (String(Date.now()) + "_" + randomId(4));
+        var editToken = editingMark ? (editingMark.editToken || getCapsuleEditToken(markId) || randomId(10)) : randomId(10);
         await fbSet("capsuleMarks/" + capsuleState.linkId + "/" + itemKey + "/" + markId, {
-          role: capsuleState.role,
-          createdAt: Date.now(),
+          role: editingMark ? editingMark.role : capsuleState.role,
+          createdAt: editingMark ? (editingMark.createdAt || Date.now()) : Date.now(),
+          updatedAt: editingMark ? Date.now() : null,
           path: path,
           durationMs: path.length ? path[path.length-1].t : 0,
           audioBase64: audioBase64,
-          audioMime: resultMime || ""
+          audioMime: resultMime || "",
+          editToken: editToken
         });
+        saveCapsuleEditToken(markId, editToken);
         cleanup();
         overlayEl.remove();
-        loadAndRenderMarksSummary(cardEl);
+        await loadAndRenderMarksSummary(cardEl);
+        var panel = cardEl.querySelector(".capsule-marks-panel");
+        if(panel && panel.style.display === "block"){ panel.style.display = "none"; toggleCapsuleMarksPanel(cardEl); }
       }catch(err){
         statusEl.textContent = "⚠️ 上傳失敗，請檢查網路連線後再試一次。";
         if(sendBtn) sendBtn.disabled = false;
       }
     }
 
-    function onPointerUp(){ if(recording) finishRecording(); }
-    wrap.addEventListener("pointerdown", startRecording);
-    wrap.addEventListener("pointermove", moveRecording);
-    window.addEventListener("pointerup", onPointerUp);
+    wrap.addEventListener("pointerdown", startDraw);
+    wrap.addEventListener("pointermove", moveDraw);
+    window.addEventListener("pointerup", endDraw);
 
     function cleanup(){
       window.removeEventListener("resize", fitCanvas);
-      window.removeEventListener("pointerup", onPointerUp);
+      window.removeEventListener("pointerup", endDraw);
       if(activeStream){ activeStream.getTracks().forEach(function(t){ t.stop(); }); activeStream = null; }
       if(stopTimer){ clearTimeout(stopTimer); stopTimer = null; }
+      if(mediaRecorder && mediaRecorder.state !== "inactive"){ try{ mediaRecorder.stop(); }catch(e){} }
     }
     return cleanup;
   }
@@ -7147,14 +7281,36 @@ render();
   }
 
   document.addEventListener("DOMContentLoaded", function(){
+    // 接力故事的統一入口「📖 接力故事」按鈕先開「選一對一還是班級版」的選擇畫面，
+    // 這裡只負責選完「一對一接力故事」之後真的打開一對一版的管理彈窗。
     document.body.addEventListener("click", async function(e){
-      var openBtn = e.target.closest && e.target.closest("#relayManageOpenBtn");
+      var openBtn = e.target.closest && e.target.closest("#relayStoryOpenBtn");
       if(openBtn){
+        var tid0 = window.__capsuleCurrentTeacherId;
+        if(!tid0){ alert("請先登入教師帳號。"); return; }
+        var chooser = document.getElementById("relayTypeChooserOverlay");
+        if(chooser) chooser.style.display = "flex";
+        return;
+      }
+      var chooseOneBtn = e.target.closest && e.target.closest("#relayChooseOneBtn");
+      if(chooseOneBtn){
         var teacherId = window.__capsuleCurrentTeacherId;
         if(!teacherId){ alert("請先登入教師帳號。"); return; }
         var ready = await waitForFirebaseBridge();
         if(!ready){ alert("雲端服務連線逾時，請稍後再試一次。"); return; }
+        var chooserToClose = document.getElementById("relayTypeChooserOverlay");
+        if(chooserToClose) chooserToClose.style.display = "none";
         openRelayManageOverlay(teacherId);
+        return;
+      }
+      var chooserCloseBtn = e.target.closest && e.target.closest("#relayTypeChooserCloseBtn");
+      if(chooserCloseBtn){
+        var overlayToClose = document.getElementById("relayTypeChooserOverlay");
+        if(overlayToClose) overlayToClose.style.display = "none";
+        return;
+      }
+      if(e.target && e.target.id === "relayTypeChooserOverlay"){
+        e.target.style.display = "none";
         return;
       }
       var createBtn = e.target.closest && e.target.closest("#relayNewCreateBtn");
@@ -7648,13 +7804,16 @@ render();
   }
 
   document.addEventListener("DOMContentLoaded", function(){
+    // 統一入口「📖 接力故事」→ 選擇畫面選了「班級接力故事」之後才真的打開班級版管理彈窗
     document.body.addEventListener("click", async function(e){
-      var openBtn = e.target.closest && e.target.closest("#classManageOpenBtn");
+      var openBtn = e.target.closest && e.target.closest("#relayChooseClassBtn");
       if(openBtn){
         var teacherId = window.__capsuleCurrentTeacherId;
         if(!teacherId){ alert("請先登入教師帳號。"); return; }
         var ready = await waitForFirebaseBridge();
         if(!ready){ alert("雲端服務連線逾時，請稍後再試一次。"); return; }
+        var chooserToClose = document.getElementById("relayTypeChooserOverlay");
+        if(chooserToClose) chooserToClose.style.display = "none";
         openClassManageOverlay(teacherId);
         return;
       }
