@@ -1525,11 +1525,11 @@
 
 <!-- 生詞 新增／編輯 -->
 <div id="cmVocabFormOverlay" class="bell-overlay" style="display:none; z-index:1100;">
-  <div class="bell-card" style="max-width:600px; max-height:88vh; overflow-y:auto; padding:36px 32px 28px; text-align:left;">
+  <div class="bell-card" style="max-width:600px; max-height:88vh; padding:36px 32px 28px; text-align:left; display:flex; flex-direction:column; overflow:hidden;">
     <button class="bell-close" id="cmVocabFormCloseBtn">✕</button>
-    <h2 id="cmVocabFormTitle" style="margin:0 0 16px; font-size:18px;">新增生詞</h2>
-    <div id="cmVocabFormBody" style="display:flex; flex-direction:column; gap:10px;"></div>
-    <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:18px;">
+    <h2 id="cmVocabFormTitle" style="margin:0 0 16px; font-size:18px; flex-shrink:0;">新增生詞</h2>
+    <div id="cmVocabFormBody" style="display:flex; flex-direction:column; gap:10px; overflow-y:auto; flex:1 1 auto; min-height:0; padding-right:4px;"></div>
+    <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:18px; padding-top:14px; border-top:1px solid var(--border); flex-shrink:0;">
       <button type="button" class="back-btn" id="cmVocabFormCancelBtn">取消</button>
       <button type="button" class="draw-btn" id="cmVocabFormSaveBtn">儲存這筆生詞</button>
     </div>
@@ -1538,11 +1538,11 @@
 
 <!-- 語法 新增／編輯 -->
 <div id="cmGrammarFormOverlay" class="bell-overlay" style="display:none; z-index:1100;">
-  <div class="bell-card" style="max-width:560px; max-height:88vh; overflow-y:auto; padding:36px 32px 28px; text-align:left;">
+  <div class="bell-card" style="max-width:560px; max-height:88vh; padding:36px 32px 28px; text-align:left; display:flex; flex-direction:column; overflow:hidden;">
     <button class="bell-close" id="cmGrammarFormCloseBtn">✕</button>
-    <h2 id="cmGrammarFormTitle" style="margin:0 0 16px; font-size:18px;">新增語法點</h2>
-    <div id="cmGrammarFormBody" style="display:flex; flex-direction:column; gap:10px;"></div>
-    <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:18px;">
+    <h2 id="cmGrammarFormTitle" style="margin:0 0 16px; font-size:18px; flex-shrink:0;">新增語法點</h2>
+    <div id="cmGrammarFormBody" style="display:flex; flex-direction:column; gap:10px; overflow-y:auto; flex:1 1 auto; min-height:0; padding-right:4px;"></div>
+    <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:18px; padding-top:14px; border-top:1px solid var(--border); flex-shrink:0;">
       <button type="button" class="back-btn" id="cmGrammarFormCancelBtn">取消</button>
       <button type="button" class="draw-btn" id="cmGrammarFormSaveBtn">儲存這個語法點</button>
     </div>
@@ -1551,16 +1551,18 @@
 
 <!-- 課文 新增／編輯 -->
 <div id="cmTextFormOverlay" class="bell-overlay" style="display:none; z-index:1100;">
-  <div class="bell-card" style="max-width:640px; max-height:88vh; overflow-y:auto; padding:36px 32px 28px; text-align:left;">
+  <div class="bell-card" style="max-width:640px; max-height:88vh; padding:36px 32px 28px; text-align:left; display:flex; flex-direction:column; overflow:hidden;">
     <button class="bell-close" id="cmTextFormCloseBtn">✕</button>
-    <h2 id="cmTextFormTitle" style="margin:0 0 16px; font-size:18px;">新增課文</h2>
-    <label style="display:block; font-size:13px; font-weight:700; margin-bottom:4px;">課文標題</label>
-    <input type="text" id="cmTextTitleInput" placeholder="例如：問候與自我介紹" style="width:100%; padding:9px 12px; margin-bottom:14px; border-radius:10px; border:1px solid var(--border); background:var(--card-alt); color:var(--ink); font-family:inherit; font-size:14px; box-sizing:border-box;">
-    <label style="display:block; font-size:13px; font-weight:700; margin-bottom:6px;">對話內容（依序，每行一句）</label>
-    <div id="cmTextLinesList" style="display:flex; flex-direction:column; gap:8px; margin-bottom:10px;"></div>
-    <button type="button" class="back-btn" id="cmAddTextLineBtn" style="margin-bottom:8px;">＋ 新增一句台詞</button>
-    <p style="font-size:11.5px; color:var(--ink-faint); margin:0 0 4px; line-height:1.6;">注音會依每個字自動拆開留白，儲存後如果需要可以之後再逐字補上注音。</p>
-    <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:14px;">
+    <h2 id="cmTextFormTitle" style="margin:0 0 16px; font-size:18px; flex-shrink:0;">新增課文</h2>
+    <div style="overflow-y:auto; flex:1 1 auto; min-height:0; padding-right:4px;">
+      <label style="display:block; font-size:13px; font-weight:700; margin-bottom:4px;">課文標題</label>
+      <input type="text" id="cmTextTitleInput" placeholder="例如：問候與自我介紹" style="width:100%; padding:9px 12px; margin-bottom:14px; border-radius:10px; border:1px solid var(--border); background:var(--card-alt); color:var(--ink); font-family:inherit; font-size:14px; box-sizing:border-box;">
+      <label style="display:block; font-size:13px; font-weight:700; margin-bottom:6px;">對話內容（依序，每行一句）</label>
+      <div id="cmTextLinesList" style="display:flex; flex-direction:column; gap:8px; margin-bottom:10px;"></div>
+      <button type="button" class="back-btn" id="cmAddTextLineBtn" style="margin-bottom:8px;">＋ 新增一句台詞</button>
+      <p style="font-size:11.5px; color:var(--ink-faint); margin:0 0 4px; line-height:1.6;">注音會依每個字自動拆開留白，儲存後如果需要可以之後再逐字補上注音。</p>
+    </div>
+    <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:14px; padding-top:14px; border-top:1px solid var(--border); flex-shrink:0;">
       <button type="button" class="back-btn" id="cmTextFormCancelBtn">取消</button>
       <button type="button" class="draw-btn" id="cmTextFormSaveBtn">儲存這篇課文</button>
     </div>
