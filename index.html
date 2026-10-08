@@ -8015,5 +8015,26 @@ render();
 })();
 </script>
 
+<script>
+// ============================================================
+// 平台嵌入模式（?embed=1&lesson=N&tab=vocab|grammar|text|activities）
+// 由新平台（app.html）的課次頁用 iframe 載入：隱藏頁首、鎖定在指定課次與分頁。
+// ============================================================
+(function(){
+  var pp = new URLSearchParams(location.search);
+  if(!pp.get('embed')) return;
+  document.body.classList.add('embed');
+  var st = document.createElement('style');
+  st.textContent = 'body.embed header{display:none !important;} body.embed #lessonFilter{display:none !important;} body.embed .zoom-control{top:6px !important;}';
+  document.head.appendChild(st);
+  var lesson = pp.get('lesson'), tab = pp.get('tab');
+  try{
+    if(lesson){ state.lesson = String(lesson); var lf = document.getElementById('lessonFilter'); if(lf) lf.value = String(lesson); }
+    var tabMap = { vocab:'vocab', grammar:'grammar', text:'text', activities:'activities' };
+    var tb = tab && document.querySelector('nav.tabs button[data-tab="' + (tabMap[tab] || tab) + '"]');
+    if(tb) tb.click(); else render();
+  }catch(e){ console.warn('embed init failed', e); }
+})();
+</script>
 </body>
 </html>
