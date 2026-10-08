@@ -100,6 +100,9 @@
   }
   body.embed .brand{ display:none; }
   body.embed .student-mode .draw-toolbar-top{ display:none !important; }
+  /* 平台課次頁：投影片分頁只給新增投影片，測驗與練習分頁只給新增大題／題庫 */
+  body.kind-slides #btn-new-section, body.kind-slides #bank-menu-wrap{ display:none !important; }
+  body.kind-quiz #add-slide-menu-wrap{ display:none !important; }
   body.embed.focus .topbar, body.embed.focus .sidebar{ display:none !important; }
   body.embed.focus .layout{ grid-template-columns:1fr !important; }
   body.embed.focus .stage-wrap{ padding:4px !important; }
@@ -3912,6 +3915,7 @@
   function isCanvasSec(sec){ return !!sec && (sec.type === "board" || sec.type === "whiteboard"); } // 投影片（board）與小白板（whiteboard）共用同一個畫布
   // 平台嵌入時依分頁只顯示一種：slides＝投影片大題；quiz＝其餘（測驗、練習、小白板…）
   window.__embedKind = null;
+  function setEmbedKind(k){ window.__embedKind = k; document.body.classList.toggle("kind-slides", k === "slides"); document.body.classList.toggle("kind-quiz", k === "quiz"); }
   function kindAllows(sec){
     var k = window.__embedKind; if(!k || isStudent) return true;
     return k === "slides" ? sec.type === "board" : sec.type !== "board";
@@ -15716,7 +15720,7 @@
   }
   // 跳到目前專案裡第一份簡報（slides）或第一題測驗（quiz）
   function jumpToKind(focus){
-    window.__embedKind = focus; try{ renderSidebar(); }catch(e){}
+    setEmbedKind(focus); try{ renderSidebar(); }catch(e){}
     var pj = getActiveProject(); if(!pj) return;
     var target = null;
     Object.keys(pj.sections || {}).sort(function(x, y){ return (pj.sections[x].order || 0) - (pj.sections[y].order || 0); }).some(function(sid){
@@ -15736,7 +15740,15 @@
     try{
       var pq = new URLSearchParams(location.search);
       if(pq.get("embed")) document.body.classList.add("embed");
-      if(pq.get("embed") && /^(slides|quiz)$/.test(pq.get("focus") || "")){ window.__embedKind = pq.get("focus"); try{ renderSidebar(); }catch(e0){} }
+      if(pq.get("embed") && /^(slides|quiz)$/.test(pq.get("focus") || "")){ setEmbedKind(pq.get("focus")); try{ renderSidebar(); }catch(e0){} }
+      var newTitle = pq.get("newproject");
+      if(newTitle && pq.get("embed") && !urlRoom && !isStudent){
+        // 平台課次頁「為這一課建立」：建一個空專案，通知外層歸到這一課
+        var np = { id: uid("proj"), folderId: null, title: newTitle, desc: "", currentQId: null, sections: {} };
+        fsData.projects[np.id] = np; saveFS(); openProject(np.id);
+        try{ parent.postMessage({ mm: "projectCreated", pid: np.id, title: newTitle }, "*"); }catch(e1){}
+        pq.delete("newproject");
+      }
       var wantProj = pq.get("project");
       if(wantProj && fsData.projects && fsData.projects[wantProj] && !urlRoom){
         openProject(wantProj);

@@ -80,6 +80,7 @@
   .toast{ position:fixed; left:50%; bottom:24px; transform:translateX(-50%); background:var(--ink); color:#fff; padding:9px 16px; border-radius:99px; font-size:13px; z-index:9999; }
   @media (max-width:820px){ .side{ display:none; } .side.show{ display:block; position:fixed; z-index:50; top:48px; bottom:0; left:0; box-shadow:var(--shadow); } .menu-btn{ display:inline-block !important; } }
   .menu-btn{ display:none; }
+  .crumb a.cr{ color:var(--seal); text-decoration:none; } .crumb a.cr:hover{ text-decoration:underline; }
   .shell.focus .top, .shell.focus .side{ display:none; }
   .shell.focus .main:not(.flush){ padding:12px; }
   .tab.focus-btn{ margin-left:auto; color:var(--seal); border:1.5px solid var(--seal); border-radius:10px; padding:4px 12px; margin-bottom:5px; font-size:13px; }
@@ -355,12 +356,12 @@ async function syncLessonIndex(){
 // ---------- 網址記憶 ----------
 function restoreFromHash(){
   var h = new URLSearchParams(location.hash.replace(/^#/, ""));
-  var c = h.get("c"); if(c){ var p = c.split("."); if(p.length === 3 && p[2] && getCls({ s: p[0], t: p[1], c: p[2] })) S.sel = { s: p[0], t: p[1], c: p[2] }; else if(p.length >= 2 && !p[2] && getSchool(p[0], p[1])) S.sel = { s: p[0], t: p[1], c: null }; }
+  var c = h.get("c"); if(c){ var p = c.split("."); if(p.length === 3 && p[1] && p[2] && getCls({ s: p[0], t: p[1], c: p[2] })) S.sel = { s: p[0], t: p[1], c: p[2] }; else if(p.length >= 2 && p[1] && !p[2] && getSchool(p[0], p[1])) S.sel = { s: p[0], t: p[1], c: null }; else if(p[0] && !p[1] && schoolsOf()[p[0]]) S.sel = { s: p[0], t: null, c: null }; }
   S.lesson = h.get("l") || null; S.tab = h.get("tab") || null; S.sub = h.get("sub") || null;
 }
 function saveHash(){
   var h = new URLSearchParams();
-  if(S.sel) h.set("c", S.sel.s + "." + S.sel.t + "." + (S.sel.c || ""));
+  if(S.sel) h.set("c", S.sel.s + "." + (S.sel.t || "") + "." + (S.sel.c || ""));
   if(S.lesson) h.set("l", S.lesson); if(S.tab) h.set("tab", S.tab); if(S.sub) h.set("sub", S.sub);
   history.replaceState(null, "", location.pathname + location.search + (h.toString() ? "#" + h.toString() : ""));
 }
@@ -370,81 +371,106 @@ function shell(inner, opts){
   opts = opts || {};
   var isT = !!S.teacher;
   root.innerHTML = '<div class="shell' + (S.focus ? ' focus' : '') + '"><div class="top">' +
-    (isT ? '<button class="btn sm menu-btn" id="menu">☰</button>' : '') +
-    '<div class="brand">曼米中文<small>' + (isT ? '平台' : '學生') + '</small></div><div class="crumb" id="crumb"></div><div class="grow"></div>' +
+    '<div class="brand">曼米中文' + (isT ? '' : '<small>學生</small>') + '</div><div class="crumb" id="crumb"></div><div class="grow"></div>' +
     (isT ? '<span class="crumb">👤 ' + esc(S.teacher.name) + '</span><a class="btn sm" href="index.html" target="_blank">原教材頁</a><a class="btn sm" href="slides/practice.html" target="_blank">原簡報頁</a><button class="btn sm" id="logout">登出</button>'
          : '<span class="crumb">👤 ' + esc(S.student ? S.student.name : "") + '</span><button class="btn sm" id="leave">離開</button>') +
-    '</div><div class="body">' + (isT ? '<aside class="side" id="side"></aside>' : '') + '<main class="main' + (opts.flush ? ' flush' : '') + '" id="main">' + inner + '</main></div></div>';
+    '</div><div class="body">' + '<main class="main' + (opts.flush ? ' flush' : '') + '" id="main">' + inner + '</main></div></div>';
   if(isT){
     document.getElementById("logout").onclick = function(){ try{ localStorage.removeItem(SESSION_KEY); }catch(e){} S.teacher = null; S.sel = null; history.replaceState(null, "", location.pathname); viewLogin(); };
-    document.getElementById("menu").onclick = function(){ document.getElementById("side").classList.toggle("show"); };
-    renderSide();
   } else {
     document.getElementById("leave").onclick = function(){ S.student = null; history.replaceState(null, "", location.pathname); viewStudentEntry(); };
   }
 }
-function setCrumb(parts){ var c = document.getElementById("crumb"); if(c) c.textContent = parts.filter(Boolean).join("  ›  "); }
-
-// ---------- 老師：左側「學校 › 學期 › 班級」----------
-function renderSide(){
-  var side = document.getElementById("side"); if(!side) return;
-  var html = '<h3>年度／學校／班級</h3>';
-  var yids = Object.keys(schoolsOf()).sort(function(a, b){ return (schoolsOf()[b].order || 0) - (schoolsOf()[a].order || 0); });
-  yids.forEach(function(yid){
-    var yr = schoolsOf()[yid];
-    html += '<div class="tree-school"><div class="tree-row school"><span class="nm">📅 ' + esc(yr.name) + '</span><button class="mini" data-a="ren-s" data-s="' + yid + '" title="改名">✏️</button><button class="mini" data-a="add-t" data-s="' + yid + '" title="新增學校">＋學校</button><button class="mini" data-a="del-s" data-s="' + yid + '" title="刪除">🗑</button></div>';
-    var sids = Object.keys(yr.terms || {}).sort(function(a, b){ return (yr.terms[a].order || 0) - (yr.terms[b].order || 0); });
-    sids.forEach(function(sid){
-      var sc = yr.terms[sid];
-      var onS = S.sel && S.sel.s === yid && S.sel.t === sid && !S.sel.c;
-      html += '<div class="tree-row term' + (onS ? ' on' : '') + '" data-a="open-school" data-s="' + yid + '" data-t="' + sid + '"><span class="nm">🏫 ' + esc(sc.name) + '</span><button class="mini" data-a="ren-t" data-s="' + yid + '" data-t="' + sid + '">✏️</button><button class="mini" data-a="add-c" data-s="' + yid + '" data-t="' + sid + '">＋班級</button><button class="mini" data-a="del-t" data-s="' + yid + '" data-t="' + sid + '">🗑</button></div>';
-      Object.keys(sc.classes || {}).sort(function(a, b){ return (sc.classes[a].order || 0) - (sc.classes[b].order || 0); }).forEach(function(cid){
-        var on = S.sel && S.sel.s === yid && S.sel.t === sid && S.sel.c === cid;
-        html += '<div class="tree-row cls' + (on ? ' on' : '') + '" data-a="open" data-s="' + yid + '" data-t="' + sid + '" data-c="' + cid + '"><span class="nm">👥 ' + esc(sc.classes[cid].name) + '</span></div>';
-      });
-    });
-    html += '</div>';
-  });
-  html += '<button class="btn sm" data-a="add-s" style="width:100%;margin-top:6px;">＋ 新增年度</button>';
-  side.innerHTML = html;
-  side.onclick = async function(e){
-    var el = e.target.closest("[data-a]"); if(!el) return; e.stopPropagation();
-    var a = el.dataset.a, s = el.dataset.s, t = el.dataset.t, c = el.dataset.c, base = "teacherPlatform/" + S.teacher.id + "/schools";
-    if(a === "open"){ S.sel = { s: s, t: t, c: c }; S.lesson = null; S.tab = null; S.sub = null; side.classList.remove("show"); render(); return; }
-    if(a === "open-school"){ S.sel = { s: s, t: t, c: null }; S.lesson = null; S.tab = null; S.sub = null; side.classList.remove("show"); render(); return; }
-    if(a === "add-s"){
-      var n = await askText("年度名稱（例如 115 學年度上學期，或 115-1）", ""); if(!n) return;
-      var id = uid("y_"), terms = {};
-      var prev = Object.keys(S.plat.schools).sort(function(x, y){ return (S.plat.schools[y].order || 0) - (S.plat.schools[x].order || 0); })[0];
-      if(prev && confirm("要把上一個年度（" + S.plat.schools[prev].name + "）的學校名單一起帶過來嗎？（只帶學校，不帶班級）")){
-        Object.keys(S.plat.schools[prev].terms || {}).forEach(function(k){ terms[uid("s_")] = { name: S.plat.schools[prev].terms[k].name, order: S.plat.schools[prev].terms[k].order || 0, classes: {} }; });
-      }
-      S.plat.schools[id] = { name: n, order: Date.now(), terms: terms }; await fbSet(base + "/" + id, S.plat.schools[id]); render(); return; }
-    if(a === "ren-s"){ var n2 = await askText("年度名稱", S.plat.schools[s].name); if(!n2) return; S.plat.schools[s].name = n2; await fbUpdate(base + "/" + s, { name: n2 }); render(); return; }
-    if(a === "del-s"){
-      var codes = []; Object.keys(S.plat.schools[s].terms || {}).forEach(function(tt){ Object.keys(S.plat.schools[s].terms[tt].classes || {}).forEach(function(cc){ codes.push(S.plat.schools[s].terms[tt].classes[cc].code); }); });
-      if(!confirm("確定刪除年度「" + S.plat.schools[s].name + "」？底下所有學校、班級和學生連結都會一併刪除（教材與測驗不受影響）。")) return;
-      for(var i = 0; i < codes.length; i++){ if(codes[i]) try{ await fbSet("classCodes/" + codes[i], null); }catch(er){} }
-      delete S.plat.schools[s]; await fbSet(base + "/" + s, null); if(S.sel && S.sel.s === s) S.sel = null; render(); return;
-    }
-    if(a === "add-t"){ var n3 = await askText("學校名稱", ""); if(!n3) return; var tid = uid("s_"); var sc = S.plat.schools[s]; sc.terms = sc.terms || {}; sc.terms[tid] = { name: n3, order: Date.now(), classes: {} }; await fbSet(base + "/" + s + "/terms/" + tid, sc.terms[tid]); render(); return; }
-    if(a === "ren-t"){ var n4 = await askText("學校名稱", S.plat.schools[s].terms[t].name); if(!n4) return; S.plat.schools[s].terms[t].name = n4; await fbUpdate(base + "/" + s + "/terms/" + t, { name: n4 }); render(); return; }
-    if(a === "del-t"){
-      var tm = S.plat.schools[s].terms[t];
-      if(!confirm("確定刪除學校「" + tm.name + "」？底下的班級和學生連結會一併刪除。")) return;
-      var ks = Object.keys(tm.classes || {}); for(var j = 0; j < ks.length; j++){ var cd = tm.classes[ks[j]].code; if(cd) try{ await fbSet("classCodes/" + cd, null); }catch(er){} }
-      delete S.plat.schools[s].terms[t]; await fbSet(base + "/" + s + "/terms/" + t, null); if(S.sel && S.sel.t === t) S.sel = null; render(); return;
-    }
-    if(a === "add-c"){
-      var n5 = await askText("班級名稱（例如 七年一班、週三晚間班）", ""); if(!n5) return;
-      var code = await newCode(); var cid2 = uid("c_");
-      var cls = { name: n5, order: Date.now(), code: code, lessonOpen: {} };
-      var tmm = S.plat.schools[s].terms[t]; tmm.classes = tmm.classes || {}; tmm.classes[cid2] = cls;
-      await fbSet(base + "/" + s + "/terms/" + t + "/classes/" + cid2, cls);
-      await fbSet("classCodes/" + code, { t: S.teacher.id, s: s, tm: t, c: cid2 });
-      S.sel = { s: s, t: t, c: cid2 }; S.lesson = null; S.tab = null; render(); return;
-    }
+function setCrumb(parts){
+  var c = document.getElementById("crumb"); if(!c) return;
+  if(!S.teacher){ c.textContent = parts.filter(Boolean).join("  ›  "); return; }
+  var items = [{ t: "平台", go: "root" }];
+  if(S.sel){
+    var yr = schoolsOf()[S.sel.s], sc = S.sel.t ? getSchool(S.sel.s, S.sel.t) : null, cl = S.sel.c ? getCls(S.sel) : null;
+    if(yr) items.push({ t: yr.name, go: "year" });
+    if(sc) items.push({ t: sc.name, go: "school" });
+    if(cl) items.push({ t: cl.name, go: "class" });
+    if(S.lesson) items.push({ t: lessonTitle(S.lesson) });
+  }
+  var last = items.length - 1;
+  c.innerHTML = items.map(function(it, i){ return (it.go && i < last) ? '<a href="#" class="cr" data-go="' + it.go + '">' + esc(it.t) + '</a>' : '<span>' + esc(it.t) + '</span>'; }).join('<span style="margin:0 6px;opacity:.5;">›</span>');
+  c.onclick = function(e){
+    var a = e.target.closest("[data-go]"); if(!a) return; e.preventDefault();
+    var g = a.dataset.go, sel = S.sel; if(S.focus) setFocus(false);
+    if(g === "root") S.sel = null;
+    else if(g === "year") S.sel = { s: sel.s, t: null, c: null };
+    else if(g === "school") S.sel = { s: sel.s, t: sel.t, c: null };
+    else if(g === "class") S.sel = { s: sel.s, t: sel.t, c: sel.c };
+    S.lesson = null; S.tab = null; S.sub = null; pushLive(true); render();
   };
+}
+
+// ---------- 老師：新增／改名／刪除（年度、學校、班級）----------
+async function platAct(a, s, t, c){
+  var base = "teacherPlatform/" + S.teacher.id + "/schools";
+  if(a === "add-s"){
+    var n = await askText("年度名稱（例如 115 學年度上學期，或 115-1）", ""); if(!n) return;
+    var id = uid("y_"), terms = {};
+    var prev = Object.keys(S.plat.schools).sort(function(x, y){ return (S.plat.schools[y].order || 0) - (S.plat.schools[x].order || 0); })[0];
+    if(prev && confirm("要把上一個年度（" + S.plat.schools[prev].name + "）的學校名單一起帶過來嗎？（只帶學校，不帶班級）")){
+      Object.keys(S.plat.schools[prev].terms || {}).forEach(function(k){ terms[uid("s_")] = { name: S.plat.schools[prev].terms[k].name, order: S.plat.schools[prev].terms[k].order || 0, classes: {} }; });
+    }
+    S.plat.schools[id] = { name: n, order: Date.now(), terms: terms }; await fbSet(base + "/" + id, S.plat.schools[id]);
+    S.sel = { s: id, t: null, c: null }; render(); return;
+  }
+  if(a === "ren-s"){ var n2 = await askText("年度名稱", S.plat.schools[s].name); if(!n2) return; S.plat.schools[s].name = n2; await fbUpdate(base + "/" + s, { name: n2 }); render(); return; }
+  if(a === "del-s"){
+    var codes = []; Object.keys(S.plat.schools[s].terms || {}).forEach(function(tt){ Object.keys(S.plat.schools[s].terms[tt].classes || {}).forEach(function(cc){ codes.push(S.plat.schools[s].terms[tt].classes[cc].code); }); });
+    if(!confirm("確定刪除年度「" + S.plat.schools[s].name + "」？底下所有學校、班級和學生連結都會一併刪除（教材與測驗不受影響）。")) return;
+    for(var i = 0; i < codes.length; i++){ if(codes[i]) try{ await fbSet("classCodes/" + codes[i], null); }catch(er){} }
+    delete S.plat.schools[s]; await fbSet(base + "/" + s, null); S.sel = null; render(); return;
+  }
+  if(a === "add-t"){
+    var n3 = await askText("學校名稱", ""); if(!n3) return; var tid = uid("s_"); var sc = S.plat.schools[s]; sc.terms = sc.terms || {}; sc.terms[tid] = { name: n3, order: Date.now(), classes: {} };
+    await fbSet(base + "/" + s + "/terms/" + tid, sc.terms[tid]); S.sel = { s: s, t: tid, c: null }; render(); return;
+  }
+  if(a === "ren-t"){ var n4 = await askText("學校名稱", S.plat.schools[s].terms[t].name); if(!n4) return; S.plat.schools[s].terms[t].name = n4; await fbUpdate(base + "/" + s + "/terms/" + t, { name: n4 }); render(); return; }
+  if(a === "del-t"){
+    var tm = S.plat.schools[s].terms[t];
+    if(!confirm("確定刪除學校「" + tm.name + "」？底下的班級和學生連結會一併刪除。")) return;
+    var ks = Object.keys(tm.classes || {}); for(var j = 0; j < ks.length; j++){ var cd = tm.classes[ks[j]].code; if(cd) try{ await fbSet("classCodes/" + cd, null); }catch(er){} }
+    delete S.plat.schools[s].terms[t]; await fbSet(base + "/" + s + "/terms/" + t, null); S.sel = { s: s, t: null, c: null }; render(); return;
+  }
+  if(a === "add-c"){
+    var n5 = await askText("班級名稱（例如 七年一班、週三晚間班）", ""); if(!n5) return;
+    var code = await newCode(); var cid2 = uid("c_");
+    var cls = { name: n5, order: Date.now(), code: code, lessonOpen: {} };
+    var tmm = S.plat.schools[s].terms[t]; tmm.classes = tmm.classes || {}; tmm.classes[cid2] = cls;
+    await fbSet(base + "/" + s + "/terms/" + t + "/classes/" + cid2, cls);
+    await fbSet("classCodes/" + code, { t: S.teacher.id, s: s, tm: t, c: cid2 });
+    S.sel = { s: s, t: t, c: cid2 }; S.lesson = null; S.tab = null; render(); return;
+  }
+}
+function sortedBy(obj, desc){ return Object.keys(obj || {}).sort(function(a, b){ var d = (obj[a].order || 0) - (obj[b].order || 0); return desc ? -d : d; }); }
+function bindListPage(){
+  var m = document.getElementById("main");
+  m.onclick = function(e){
+    var b = e.target.closest("[data-a]"); if(!b) return;
+    var a = b.dataset.a, s = b.dataset.s, t = b.dataset.t, c = b.dataset.c;
+    if(a === "go"){ S.sel = (s ? { s: s, t: t || null, c: c || null } : null); S.lesson = null; render(); return; }
+    platAct(a, s, t, c);
+  };
+}
+function renderPlatformHome(){
+  S.focus = false;
+  var ys = sortedBy(schoolsOf(), true);
+  var html = '<div class="head-row"><div style="flex:1;"><h2>歡迎，' + esc(S.teacher.name) + '</h2><div class="note">選一個年度，再選學校和班級（沒有班級也沒關係）。</div></div><div><button class="btn" data-a="add-s">新增年度</button></div></div><div class="panel"><h3>年度</h3>';
+  html += ys.length ? '<div class="tools">' + ys.map(function(y){ return '<button class="btn" data-a="go" data-s="' + y + '">' + esc(schoolsOf()[y].name) + '</button>'; }).join("") + '</div>' : '<p class="note">還沒有年度。按右上角「新增年度」開始。</p>';
+  html += '</div>';
+  shell(html); setCrumb([]); bindListPage();
+}
+function renderYearHome(){
+  S.focus = false;
+  var yr = schoolsOf()[S.sel.s], ids = sortedBy(yr.terms, false);
+  var html = '<div class="head-row"><div style="flex:1;"><h2>' + esc(yr.name) + '</h2></div><div><button class="btn" data-a="add-t" data-s="' + S.sel.s + '">新增學校</button> <button class="btn sm" data-a="ren-s" data-s="' + S.sel.s + '">改名</button> <button class="btn sm danger" data-a="del-s" data-s="' + S.sel.s + '">刪除年度</button></div></div><div class="panel"><h3>學校</h3>';
+  html += ids.length ? '<div class="tools">' + ids.map(function(k){ var n = Object.keys(yr.terms[k].classes || {}).length; return '<button class="btn" data-a="go" data-s="' + S.sel.s + '" data-t="' + k + '">' + esc(yr.terms[k].name) + (n ? '　<span class="note">' + n + ' 班</span>' : '') + '</button>'; }).join("") + '</div>' : '<p class="note">這個年度還沒有學校。按右上角「新增學校」。</p>';
+  html += '</div>';
+  shell(html); setCrumb([]); bindListPage();
 }
 async function newCode(){
   var alpha = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
@@ -460,10 +486,9 @@ function render(){
   if(!S.teacher) return;
   if(S.sel){ var c0 = getCls(S.sel); S.live = c0 && c0.live && c0.live.on ? c0.live : null; }
   saveHash();
-  if(!S.sel){
-    shell('<div class="empty"><h2 style="margin-bottom:8px;">歡迎，' + esc(S.teacher.name) + '</h2><p class="note">先在左邊建立「年度 › 學校 › 班級」（沒有班級也沒關係），再選一個班級進來。<br>每個班級有自己的學生連結，可以各自決定每一課要開放哪些內容。</p></div>');
-    setCrumb(["平台"]); return;
-  }
+  if(!S.sel){ return renderPlatformHome(); }
+  if(!schoolsOf()[S.sel.s]){ S.sel = null; return render(); }
+  if(!S.sel.t){ return renderYearHome(); }
   if(!S.sel.c){ if(!getSchool(S.sel.s, S.sel.t)){ S.sel = null; render(); return; } return renderSchoolHome(); }
   var cls = getCls(S.sel);
   if(!cls){ S.sel = null; render(); return; }
@@ -472,21 +497,17 @@ function render(){
 }
 function renderSchoolHome(){
   S.focus = false;
-  var yr = schoolsOf()[S.sel.s], sc = yr.terms[S.sel.t], cl = sc.classes || {};
-  var ids = Object.keys(cl).sort(function(a, b){ return (cl[a].order || 0) - (cl[b].order || 0); });
-  var html = '<div class="head-row"><div style="flex:1;"><div class="note">' + esc(yr.name) + '</div><h2>' + esc(sc.name) + '</h2></div><div><button class="btn" id="addcls">＋ 新增班級</button></div></div><div class="panel"><h3>班級</h3>';
-  html += ids.length ? '<div class="tools">' + ids.map(function(k){ return '<button class="btn" data-open="' + k + '">👥 ' + esc(cl[k].name) + '　<span class="note">' + esc(cl[k].code) + '</span></button>'; }).join("") + '</div>' : '<p class="note">這間學校在這個年度還沒有班級。需要的時候再按「新增班級」就可以。</p>';
+  var yr = schoolsOf()[S.sel.s], sc = yr.terms[S.sel.t], ids = sortedBy(sc.classes, false);
+  var html = '<div class="head-row"><div style="flex:1;"><h2>' + esc(sc.name) + '</h2></div><div><button class="btn" data-a="add-c" data-s="' + S.sel.s + '" data-t="' + S.sel.t + '">新增班級</button> <button class="btn sm" data-a="ren-t" data-s="' + S.sel.s + '" data-t="' + S.sel.t + '">改名</button> <button class="btn sm danger" data-a="del-t" data-s="' + S.sel.s + '" data-t="' + S.sel.t + '">刪除學校</button></div></div><div class="panel"><h3>班級</h3>';
+  html += ids.length ? '<div class="tools">' + ids.map(function(k){ return '<button class="btn" data-a="go" data-s="' + S.sel.s + '" data-t="' + S.sel.t + '" data-c="' + k + '">' + esc(sc.classes[k].name) + '　<span class="note">' + esc(sc.classes[k].code) + '</span></button>'; }).join("") + '</div>' : '<p class="note">這間學校在這個年度還沒有班級。需要的時候再按「新增班級」就可以。</p>';
   html += '</div>';
-  shell(html);
-  setCrumb([yr.name, sc.name]);
-  document.getElementById("addcls").onclick = function(){ document.querySelector('#side [data-a="add-c"][data-s="' + S.sel.s + '"][data-t="' + S.sel.t + '"]').click(); };
-  document.querySelectorAll("[data-open]").forEach(function(b){ b.onclick = function(){ S.sel.c = b.dataset.open; render(); }; });
+  shell(html); setCrumb([]); bindListPage();
 }
 function studentLink(code){ return location.origin + location.pathname + "?class=" + code; }
 function renderClassHome(cls){
   S.focus = false;
   var sc = schoolsOf()[S.sel.s], tm = sc.terms[S.sel.t];
-  var html = '<div class="head-row"><div style="flex:1;min-width:200px;"><div class="note">' + esc(sc.name) + '　›　' + esc(tm.name) + '</div><h2>' + esc(cls.name) + '</h2></div>' +
+  var html = '<div class="head-row"><div style="flex:1;min-width:200px;"><h2>' + esc(cls.name) + '</h2></div>' +
     '<div><div class="note">班級代碼</div><span class="code">' + esc(cls.code) + '</span> <button class="btn sm" id="cpy">複製學生連結</button> <button class="btn sm" id="ren">改班名</button> <button class="btn sm danger" id="del">刪除班級</button></div></div>';
   html += '<div class="panel"><h3>班級功能</h3><div class="tools"><a class="btn" href="index.html" target="_blank">🎡 點名輪盤・⏳ 時空膠囊・班級工具（原教材頁）</a></div><p class="note" style="margin:8px 0 8px;">班級工具目前先連到原本的教材頁；之後會直接整合到這裡。</p>' +
     '<div class="note" style="font-weight:700;margin-bottom:6px;">🔗 這個班的常用連結（Padlet、Google Meet 等）</div><div class="tools" id="linkbox">' +
@@ -495,19 +516,6 @@ function renderClassHome(cls){
   html += '<div class="panel"><h3>這個班使用的教材</h3><p class="note" style="margin:0 0 8px;">勾選的教材才會出現在下面的課次清單，學生也只會看到這幾本。可以同時使用很多本。</p><div class="tools">' + bookIds().map(function(b){ var on = cls.books ? !!cls.books[b] : true; return '<span class="chip" style="padding:3px 4px 3px 10px;"><label style="cursor:pointer;"><input type="checkbox" data-usebook="' + esc(b) + '"' + (on ? ' checked' : '') + '> ' + esc(bookTitle(b)) + '</label> <button class="btn sm ghost" data-renbook="' + esc(b) + '" title="改名">✏️</button>' + (b === DEFAULT_BOOK ? '' : '<button class="btn sm ghost" data-delbook="' + esc(b) + '" title="刪除教材">🗑</button>') + '</span>'; }).join("") + '<button class="btn sm" id="addbook">＋ 新增教材</button></div></div>';
   html += '<div class="panel"><h3>課次與開放設定</h3><p class="note" style="margin:0 0 10px;">綠色＝這個班的學生看得到；灰色＝關閉。預設全部關閉，你打開了學生才看得到。</p><div id="lessons"></div><button class="btn sm" id="addunit" style="margin-top:6px;">＋ 新增複習單元（例如第 1–6 課複習）</button></div>';
   var ap = S.allProjects || {}, apk = Object.keys(ap), un = S.unassigned || {};
-  if(apk.length){
-    var opts = function(sel){
-      var o = '<option value="">（還沒歸課）</option>';
-      bookIds().forEach(function(b){
-        o += '<optgroup label="' + esc(bookTitle(b)) + '">' + lessonsOfBook(b).map(function(k){ var l = S.plat.lessons[k]; return '<option value="' + esc(k) + '"' + (String(sel) === String(k) ? ' selected' : '') + '>第 ' + l.no + ' 課' + (l.title ? ' ' + esc(l.title) : '') + '</option>'; }).join("") + '<option value="__new:' + esc(b) + '">＋ 新增課次…</option></optgroup>';
-      });
-      var us = unitKeys(); if(us.length) o += '<optgroup label="複習單元">' + us.map(function(k){ return '<option value="' + esc(k) + '"' + (String(sel) === String(k) ? ' selected' : '') + '>📚 ' + esc(S.plat.lessons[k].title) + '</option>'; }).join("") + '</optgroup>';
-      return o;
-    };
-    html += '<div class="panel"><h3>簡報與測驗歸課</h3><p class="note" style="margin:0 0 8px;">每一份簡報／測驗歸到一個課次或複習單元，就會出現在那裡的「投影片」「測驗與練習」分頁。標題有「第○課」的會自動歸課' + (Object.keys(un).length ? '；<b style="color:#B23B32;">標紅色的還沒歸課</b>' : '') + '。</p>';
-    apk.forEach(function(pid){ var cur = S.plat.lessonMap[pid]; if(un[pid]) cur = ""; html += '<div class="join"><span style="min-width:180px;font-weight:700;' + (un[pid] ? 'color:#B23B32;' : '') + '">' + esc(ap[pid].title) + '</span><span class="note">投影片 ' + ap[pid].slides + '・題目 ' + ap[pid].quiz + '</span><select data-assign="' + pid + '" style="padding:6px 8px;border-radius:8px;border:1.5px solid var(--line);background:var(--surface-2);max-width:280px;">' + opts(cur) + '</select></div>'; });
-    html += '</div>';
-  }
   if(S.ruleErr) html += '<div class="panel" style="border-color:#C0392B;"><h3>⚠️ 需要更新 Firebase 規則</h3><p class="note" style="margin:0 0 8px;">平台資料寫不進去。請到 Firebase 主控台 › Realtime Database › 規則，在原有規則的 <code>"rules": {</code> 裡面加上下面這兩段（原本的不要刪），再按「發布」：</p><pre style="background:var(--surface-2);padding:10px;border-radius:10px;font-size:12px;overflow:auto;user-select:text;">"teacherPlatform": { "$teacherId": { ".read": "auth != null", ".write": "auth != null" } },\n"classCodes": { "$code": { ".read": "auth != null", ".write": "auth != null" } },</pre></div>';
   shell(html); setCrumb([sc.name, tm.name, cls.name]);
   var box = document.getElementById("lessons");
@@ -563,7 +571,7 @@ function renderClassHome(cls){
   document.getElementById("del").onclick = async function(){
     if(!confirm("確定刪除班級「" + cls.name + "」？學生連結會失效。（教材與測驗不受影響）")) return;
     try{ await fbSet("classCodes/" + cls.code, null); }catch(er){}
-    delete tm.classes[S.sel.c]; await fbSet(clsPath(S.sel), null); S.sel = null; render();
+    delete tm.classes[S.sel.c]; await fbSet(clsPath(S.sel), null); S.sel = { s: S.sel.s, t: S.sel.t, c: null }; render();
   };
   document.querySelectorAll("select[data-assign]").forEach(function(sel){
     sel.onchange = async function(){
@@ -704,10 +712,12 @@ function renderLessonCommon(no, open, teacher, liveStudent){
   } else {
     var ps = ((S.plat.lessons || {})[no] || {}).projects || {}, pids = Object.keys(ps);
     var kind = S.tab === "slides" ? "slides" : "quiz";
-    pids = pids.filter(function(p){ return (ps[p][kind] || 0) > 0; });
+    if(!teacher) pids = pids.filter(function(p){ return (ps[p][kind] || 0) > 0; });
     if(teacher){
-      if(!pids.length) frame = '<div class="empty"><p class="note">這一課還沒有' + (kind === "slides" ? "投影片" : "測驗") + '。<br>到「原簡報頁」建立後，標題含「第○課」會自動歸到這一課。</p></div>';
-      else {
+      if(!pids.length){
+        if(S.creating === no) frame = lessonHtmlFrame("slides/practice.html?embed=1&newproject=" + encodeURIComponent(lessonTitle(no)) + "&focus=" + kind);
+        else frame = '<div class="empty"><h3 style="margin-bottom:8px;">' + lessonTitle(no) + '</h3><p class="note" style="margin-bottom:12px;">這一課還沒有' + (kind === "slides" ? "投影片" : "測驗與練習") + '。</p><button class="btn" id="mkproj">＋ 為這一課建立' + (kind === "slides" ? "投影片" : "測驗與練習") + '</button></div>';
+      } else {
         if(!S.sub || pids.indexOf(S.sub) === -1) S.sub = pids[0];
         if(pids.length > 1) sub = '<div class="subbar">' + pids.map(function(p){ return '<button class="tab' + (p === S.sub ? ' on' : '') + '" data-sub="' + p + '" style="padding:5px 14px;font-size:13.5px;">' + esc(ps[p].title) + '</button>'; }).join("") + '</div>';
         frame = lessonHtmlFrame("slides/practice.html?embed=1&project=" + encodeURIComponent(S.sub) + "&focus=" + kind + ((S.live && S.live.on && S.live.room && S.live.roomProject === S.sub) ? "&room=" + encodeURIComponent(S.live.room) : ""));
@@ -757,6 +767,14 @@ function pushLive(clearLesson){
   Object.keys(patch).forEach(function(k){ S.live[k] = patch[k]; });
   fbUpdate(liveRef(), patch).catch(function(){});
 }
+// 簡報頁（iframe）為這一課建好專案：歸到這一課（不重新載入 iframe，編輯器繼續用）
+window.addEventListener("message", function(e){
+  if(!S.teacher || !e.data || e.data.mm !== "projectCreated" || !S.lesson) return;
+  var pid = e.data.pid, key = S.lesson;
+  S.plat.lessonMap[pid] = key; fbSet("teacherPlatform/" + S.teacher.id + "/lessonMap/" + pid, key).catch(function(){});
+  var l = S.plat.lessons[key]; if(l){ l.projects = l.projects || {}; l.projects[pid] = { title: e.data.title, slides: 0, quiz: 0 }; }
+  S.sub = pid; S.creating = null;
+});
 // 簡報頁（iframe）裡老師開了房間：通知學生跟著進房
 window.addEventListener("message", function(e){
   if(!S.teacher || !e.data || e.data.mm !== "room" || !S.live || !S.live.on) return;
@@ -784,6 +802,7 @@ function bindLessonNav(cls, backFn, renderFn){
     if(b.dataset.focus){ setFocus(!S.focus); return; }
     if(b.dataset.live){ toggleLive(); return; }
     if(b.dataset.fs){ toggleBrowserFullscreen(); return; }
+    if(b.id === "mkproj"){ S.creating = S.lesson; renderFn(); return; }
     if(b.dataset.tab){ S.tab = b.dataset.tab; S.sub = null; renderFn(); pushLive(); return; }
     if(b.dataset.sub){ S.sub = b.dataset.sub; renderFn(); pushLive(); return; }
     if(b.id === "roomgo"){
