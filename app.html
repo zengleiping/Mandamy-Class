@@ -627,7 +627,7 @@ function tabsFor(open, teacher){
   var all = [["material","教材", ["vocab","grammar","text"]], ["slides","投影片",["slides"]], ["quiz","測驗與練習",["quiz"]], ["activities","活動",["activities"]]];
   return all.filter(function(t){ return teacher || t[2].some(function(k){ return open[k]; }); });
 }
-function lessonHtmlFrame(src){ return '<iframe class="frame" id="fr" src="' + esc(src + (S.focus ? "&focus=1" : "")) + '" allow="microphone; camera; autoplay; clipboard-write"></iframe>'; }
+function lessonHtmlFrame(src){ return '<iframe class="frame" id="fr" src="' + esc(src + (S.focus ? "&nochrome=1" : "")) + '" allow="microphone; camera; autoplay; clipboard-write"></iframe>'; }
 function renderLessonCommon(no, open, teacher, liveStudent){
   var tabs = tabsFor(open, teacher);
   if(!tabs.length){ return { html: '<div class="empty"><p class="note">這一課目前沒有開放任何內容。</p></div>', tabs: tabs }; }
@@ -656,7 +656,7 @@ function renderLessonCommon(no, open, teacher, liveStudent){
       else {
         if(!S.sub || pids.indexOf(S.sub) === -1) S.sub = pids[0];
         if(pids.length > 1) sub = '<div class="subbar">' + pids.map(function(p){ return '<button class="tab' + (p === S.sub ? ' on' : '') + '" data-sub="' + p + '" style="padding:5px 14px;font-size:13.5px;">' + esc(ps[p].title) + '</button>'; }).join("") + '</div>';
-        frame = lessonHtmlFrame("slides/practice.html?embed=1&project=" + encodeURIComponent(S.sub) + "&focus=" + kind);
+        frame = lessonHtmlFrame("slides/practice.html?embed=1&project=" + encodeURIComponent(S.sub) + "&focus=" + kind + ((S.live && S.live.on && S.live.room && S.live.roomProject === S.sub) ? "&room=" + encodeURIComponent(S.live.room) : ""));
       }
     } else if(liveStudent){
       frame = (S.live && S.live.room) ? lessonHtmlFrame("slides/practice.html?embed=1&room=" + encodeURIComponent(S.live.room) + "&role=student&name=" + encodeURIComponent(S.student ? S.student.name : "")) : '<div class="empty"><p class="note">老師還沒開始這一段，請稍候…</p></div>';
@@ -680,6 +680,23 @@ async function toggleLive(){
   cls.live = S.live;
   renderLesson(cls); setFocus(true); toggleBrowserFullscreenOn(); toast("已開始上課，學生會自動跟著你的畫面");
 }
+// 老師上課中、在簡報／測驗分頁：自動幫老師開房間（學生就會自動進來），並跳到這個分頁對應的第一份簡報／第一題
+var liveRoomTimer = null;
+function wireLiveRoom(){
+  if(liveRoomTimer){ clearInterval(liveRoomTimer); liveRoomTimer = null; }
+  if(!S.live || !S.live.on || (S.tab !== "slides" && S.tab !== "quiz")) return;
+  var tries = 0, jumped = false, kind = S.tab === "slides" ? "slides" : "quiz", sub = S.sub;
+  liveRoomTimer = setInterval(function(){
+    var fr = document.getElementById("fr");
+    if(!fr || !fr.contentWindow || S.sub !== sub || !S.live || !S.live.on || ++tries > 14){ clearInterval(liveRoomTimer); liveRoomTimer = null; return; }
+    if(S.live.room && S.live.roomProject === S.sub){
+      if(!jumped && tries >= 3){ fr.contentWindow.postMessage({ mm: "focusKind", kind: kind }, "*"); jumped = true; }
+      if(jumped){ clearInterval(liveRoomTimer); liveRoomTimer = null; }
+    } else if(tries >= 2){
+      fr.contentWindow.postMessage({ mm: "startRoom" }, "*");
+    }
+  }, 900);
+}
 function pushLive(clearLesson){
   if(!S.teacher || !S.live || !S.live.on || !S.sel) return;
   var patch = clearLesson ? { lesson: null, tab: null, sub: null, room: null } : { lesson: S.lesson || null, tab: S.tab || null, sub: S.sub || null };
@@ -689,7 +706,7 @@ function pushLive(clearLesson){
 // 簡報頁（iframe）裡老師開了房間：通知學生跟著進房
 window.addEventListener("message", function(e){
   if(!S.teacher || !e.data || e.data.mm !== "room" || !S.live || !S.live.on) return;
-  S.live.room = e.data.id || null; fbUpdate(liveRef(), { room: S.live.room }).catch(function(){});
+  S.live.room = e.data.id || null; S.live.roomProject = S.live.room ? S.sub : null; fbUpdate(liveRef(), { room: S.live.room }).catch(function(){});
 });
 function setFocus(on){
   S.focus = !!on;
@@ -729,6 +746,7 @@ function renderLesson(cls){
   setCrumb([schoolsOf()[S.sel.s].name, schoolsOf()[S.sel.s].terms[S.sel.t].name, cls.name, lessonTitle(no)]);
   saveHash();
   bindLessonNav(cls, function(){ S.lesson = null; S.tab = null; S.sub = null; render(); }, function(){ renderLesson(cls); });
+  wireLiveRoom();
 }
 
 // ---------- 學生 ----------

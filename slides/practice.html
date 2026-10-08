@@ -2346,9 +2346,10 @@
     var q0 = new URLSearchParams(location.search);
     if(!q0.get("embed")) return;
     document.body.classList.add("embed");
-    if(q0.get("focus")) document.body.classList.add("focus");
+    if(q0.get("nochrome")) document.body.classList.add("focus");
     window.addEventListener("message", function(ev){
-      if(ev.data && ev.data.mm === "focus"){ document.body.classList.toggle("focus", !!ev.data.on); setTimeout(function(){ window.dispatchEvent(new Event("resize")); }, 60); }
+      var d0 = ev.data; if(!d0) return;
+      if(d0.mm === "focus"){ document.body.classList.toggle("focus", !!d0.on); setTimeout(function(){ window.dispatchEvent(new Event("resize")); }, 60); }
     });
   })();
   var DB_NAME = "mandamy-offline", DB_VER = 2;
@@ -5971,7 +5972,7 @@
     fr.readAsText(file);
   };
 
-  async function createRoom(){
+  async function createRoom(silent){
     var rId = String(Math.floor(1000 + Math.random() * 9000));
     activeRoomId = rId; var currentProj = fsData.projects[activeProjectId];
     // 2026-10-01：媒體（音檔、圖片）還沒上傳到雲端的話，學生端拿不到：開房間前先試著補傳一次
@@ -6015,6 +6016,7 @@
     attachPresence(rId, "teacher", "老師"); startRoom(rId, "teacher");
     history.replaceState(null, "", "?room=" + rId); renderTopbar();
     var link = location.origin + location.pathname + "?room=" + rId + "&role=student";
+    if(silent === true) return; // 平台自動開房間：不複製連結、不跳提示
     navigator.clipboard.writeText(link).then(function(){ alert("✅ 房間已開好！學生連結已複製。\nRoom is ready! Student link copied." + (unsyncedAudio ? "\n\n⚠ 有 " + unsyncedAudio + " 個音檔還沒上傳到雲端（可能是離線、或雲端儲存無法使用），學生端會聽不到這些音檔；你自己的畫面可以正常播放。\n" + unsyncedAudio + " audio file(s) are not on the cloud yet — students won't hear them." : "")); });
   }
 
@@ -15695,6 +15697,26 @@
     });
   }
 
+  // 平台「開始上課」：自動幫老師開房間，學生就會自動進來；也可以要求跳到第一份簡報／第一題測驗
+  if(new URLSearchParams(location.search).get("embed")){
+    window.addEventListener("message", function(ev){
+      var d0 = ev.data; if(!d0) return;
+      if(d0.mm === "startRoom"){ if(!isStudent && activeProjectId && !inRoom() && !isOfflineMode) createRoom(true); }
+      else if(d0.mm === "focusKind"){ jumpToKind(d0.kind); }
+    });
+  }
+  // 跳到目前專案裡第一份簡報（slides）或第一題測驗（quiz）
+  function jumpToKind(focus){
+    var pj = getActiveProject(); if(!pj) return;
+    var target = null;
+    Object.keys(pj.sections || {}).sort(function(x, y){ return (pj.sections[x].order || 0) - (pj.sections[y].order || 0); }).some(function(sid){
+      var sc = pj.sections[sid], isDeck = sc.type === "board", want = focus === "slides" ? isDeck : !isDeck;
+      if(!want) return false;
+      var qk = Object.keys(sc.questions || {}).sort(function(x, y){ return (sc.questions[x].order || 0) - (sc.questions[y].order || 0); })[0];
+      if(qk){ target = qk; return true; } return false;
+    });
+    if(target) setCurrentQ(target);
+  }
   function enterAppAfterLogin(){
     setTimeout(slimLibraryInBackground, 2500);
     // 離線時沒有房間可以開（房間靠雲端即時同步）：網址帶著 ?room=… 也直接回大廳，不要去連雲端
@@ -15707,17 +15729,7 @@
       var wantProj = pq.get("project");
       if(wantProj && fsData.projects && fsData.projects[wantProj] && !urlRoom){
         openProject(wantProj);
-        var focus = pq.get("focus");
-        if(focus){
-          var pj = fsData.projects[wantProj], target = null;
-          Object.keys(pj.sections || {}).sort(function(x, y){ return (pj.sections[x].order || 0) - (pj.sections[y].order || 0); }).some(function(sid){
-            var sc = pj.sections[sid], isDeck = sc.type === "board", want = focus === "slides" ? isDeck : !isDeck;
-            if(!want) return false;
-            var qk = Object.keys(sc.questions || {}).sort(function(x, y){ return (sc.questions[x].order || 0) - (sc.questions[y].order || 0); })[0];
-            if(qk){ target = qk; return true; } return false;
-          });
-          if(target) setCurrentQ(target);
-        }
+        var focus = pq.get("focus"); if(focus) jumpToKind(focus);
       }
     }catch(errEmbed){ console.warn("embed init failed", errEmbed); }
   }
