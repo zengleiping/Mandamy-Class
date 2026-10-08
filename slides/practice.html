@@ -6019,6 +6019,7 @@
   }
 
   function leaveRoom(){
+    if(window.parent !== window){ try{ window.parent.postMessage({ mm: "room", id: null }, "*"); }catch(e){} }
     if(activeRoomId) set(ref(db, "rooms/" + activeRoomId + "/presence/" + myId), { online: false });
     stopStudentSnapshotLoop();
     activeRoomId = null; roomData = null; history.replaceState(null, "", location.pathname);
@@ -6036,6 +6037,7 @@
 
   function startRoom(rId, role){
     activeRoomId = rId; roomRole = role;
+    if(role === "teacher" && window.parent !== window){ try{ window.parent.postMessage({ mm: "room", id: rId }, "*"); }catch(e){} } // 平台嵌入：通知外殼，學生會自動進房
     if(role === "student") startStudentSnapshotLoop(); else startTeacherSnapshotListener(rId);
     onValue(ref(db, "rooms/" + rId), function(snap){
       roomData = snap.val() || {};
@@ -15685,8 +15687,12 @@
 
   /* ================== 啟動流程（大廳 / 學生加入房間） ================== */
   function joinAsStudent(){
-    attachPresence(urlRoom, myId, myName);
-    startRoom(urlRoom, "student");
+    // 網址已經帶著名字（平台學生直接進房）時，這裡會在雲端連線準備好之前就被呼叫，要先等 Firebase 就緒
+    waitForFirebase().then(function(ready){
+      if(!ready){ alert("無法連線到雲端服務，請檢查網路後重新整理。\nCan't reach the cloud service — check your connection and reload."); return; }
+      attachPresence(urlRoom, myId, myName);
+      startRoom(urlRoom, "student");
+    });
   }
 
   function enterAppAfterLogin(){

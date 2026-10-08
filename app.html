@@ -110,7 +110,7 @@
     ]);
     var fbApp = mods[0].initializeApp(window.FIREBASE_CONFIG);
     window.db = mods[1].getDatabase(fbApp);
-    window.ref = mods[1].ref; window.get = mods[1].get; window.set = mods[1].set; window.update = mods[1].update;
+    window.ref = mods[1].ref; window.get = mods[1].get; window.set = mods[1].set; window.update = mods[1].update; window.onValue = mods[1].onValue;
     window.auth = mods[2].getAuth(fbApp);
     await new Promise(function(resolve, reject){
       mods[2].onAuthStateChanged(window.auth, function(u){ if(u) resolve(u); });
@@ -348,6 +348,7 @@ async function newCode(){
 // ---------- 老師：渲染 ----------
 function render(){
   if(!S.teacher) return;
+  if(S.sel){ var c0 = getCls(S.sel); S.live = c0 && c0.live && c0.live.on ? c0.live : null; }
   saveHash();
   if(!S.sel){
     shell('<div class="empty"><h2 style="margin-bottom:8px;">歡迎，' + esc(S.teacher.name) + '</h2><p class="note">先在左邊建立「學校 › 學期 › 班級」，再選一個班級進來。<br>每個班級有自己的學生連結，可以各自決定每一課要開放哪些內容。</p></div>');
@@ -389,7 +390,7 @@ function renderClassHome(cls){
     div.innerHTML = '<div class="lh"><div class="lt">' + esc(lessonTitle(no)) + '</div><button class="btn sm" data-all="1">全部開放</button><button class="btn sm" data-all="0">全部關閉</button><button class="btn primary sm" data-go="1">進入課次 ›</button></div><div class="toggles" style="margin-top:10px;">' + tg + '</div>';
     div.onclick = async function(e){
       var b = e.target.closest("button"); if(!b) return;
-      if(b.dataset.go){ S.lesson = String(no); S.tab = null; S.sub = null; render(); return; }
+      if(b.dataset.go){ S.lesson = String(no); S.tab = null; S.sub = null; render(); pushLive(); return; }
       var cur = cls.lessonOpen = cls.lessonOpen || {}; var o = cur[no] = cur[no] || {};
       if(b.dataset.all != null){ OPEN_KEYS.forEach(function(k){ o[k[0]] = b.dataset.all === "1"; }); }
       else if(b.dataset.k){ o[b.dataset.k] = !o[b.dataset.k]; }
@@ -431,17 +432,20 @@ function tabsFor(open, teacher){
   return all.filter(function(t){ return teacher || t[2].some(function(k){ return open[k]; }); });
 }
 function lessonHtmlFrame(src){ return '<iframe class="frame" id="fr" src="' + esc(src + (S.focus ? "&focus=1" : "")) + '" allow="microphone; camera; autoplay; clipboard-write"></iframe>'; }
-function renderLessonCommon(no, open, teacher, ctx){
+function renderLessonCommon(no, open, teacher, liveStudent){
   var tabs = tabsFor(open, teacher);
   if(!tabs.length){ return { html: '<div class="empty"><p class="note">這一課目前沒有開放任何內容。</p></div>', tabs: tabs }; }
   if(!S.tab || !tabs.some(function(t){ return t[0] === S.tab; })) S.tab = tabs[0][0];
   var cur = tabs.filter(function(t){ return t[0] === S.tab; })[0];
-  var html = '<div class="tabs"><button class="tab" data-back="1">‹ 返回</button>' + tabs.map(function(t){ return '<button class="tab' + (t[0] === S.tab ? ' on' : '') + '" data-tab="' + t[0] + '">' + t[1] + '</button>'; }).join("") + '<button class="tab focus-btn" data-focus="1" title="隱藏上方與左側的欄位，把最大空間留給畫面（線上上課分享畫面時用）">' + (S.focus ? '✕ 離開上課模式' : '🎬 上課模式') + '</button></div>';
+  var live = S.live && S.live.on;
+  var html = '<div class="tabs">' + (liveStudent ? '' : '<button class="tab" data-back="1">‹ 返回</button>' + tabs.map(function(t){ return '<button class="tab' + (t[0] === S.tab ? ' on' : '') + '" data-tab="' + t[0] + '">' + t[1] + '</button>'; }).join("") +
+    (teacher ? ((live ? '<button class="tab focus-btn" data-focus="1" style="margin-left:auto;">' + (S.focus ? "顯示欄位" : "隱藏欄位") + '</button><button class="tab focus-btn" data-live="1" style="margin-left:6px;background:var(--seal);color:#fff;">⏹ 結束上課</button>' : '<button class="tab focus-btn" data-live="1" title="開始上課：學生會自動跟著你的畫面，並隱藏上方與左側欄位">🎬 開始上課</button>')) : '')) + '</div>';
   var sub = '', frame = '', role = teacher ? '' : '&role=student';
   if(S.tab === "material"){
     var subs = [["vocab","生詞"],["grammar","語法"],["text","課文"]].filter(function(s){ return teacher || open[s[0]]; });
+    if(liveStudent && S.sub && subs.some(function(s){ return s[0] === S.sub; })) subs = subs.filter(function(s){ return s[0] === S.sub; });
     if(!S.sub || !subs.some(function(s){ return s[0] === S.sub; })) S.sub = subs[0][0];
-    sub = '<div class="subbar">' + subs.map(function(s){ return '<button class="tab' + (s[0] === S.sub ? ' on' : '') + '" data-sub="' + s[0] + '" style="padding:5px 14px;font-size:13.5px;">' + s[1] + '</button>'; }).join("") + '</div>';
+    sub = liveStudent ? '' : '<div class="subbar">' + subs.map(function(s){ return '<button class="tab' + (s[0] === S.sub ? ' on' : '') + '" data-sub="' + s[0] + '" style="padding:5px 14px;font-size:13.5px;">' + s[1] + '</button>'; }).join("") + '</div>';
     frame = lessonHtmlFrame("index.html?embed=1&lesson=" + encodeURIComponent(no) + "&tab=" + S.sub + role);
   } else if(S.tab === "activities"){
     frame = lessonHtmlFrame("index.html?embed=1&lesson=" + encodeURIComponent(no) + "&tab=activities" + role);
@@ -456,16 +460,43 @@ function renderLessonCommon(no, open, teacher, ctx){
         if(pids.length > 1) sub = '<div class="subbar">' + pids.map(function(p){ return '<button class="tab' + (p === S.sub ? ' on' : '') + '" data-sub="' + p + '" style="padding:5px 14px;font-size:13.5px;">' + esc(ps[p].title) + '</button>'; }).join("") + '</div>';
         frame = lessonHtmlFrame("slides/practice.html?embed=1&project=" + encodeURIComponent(S.sub) + "&focus=" + kind);
       }
+    } else if(liveStudent){
+      frame = (S.live && S.live.room) ? lessonHtmlFrame("slides/practice.html?embed=1&room=" + encodeURIComponent(S.live.room) + "&role=student&name=" + encodeURIComponent(S.student ? S.student.name : "")) : '<div class="empty"><p class="note">老師還沒開始這一段，請稍候…</p></div>';
     } else {
       frame = '<div class="empty"><h3 style="margin-bottom:8px;">' + (kind === "slides" ? "投影片" : "測驗與練習") + '</h3><p class="note">上課時，老師會給你一組房間號碼。<br>輸入後就能和老師一起看投影片、作答。</p><div class="join" style="justify-content:center;"><input type="text" id="roomno" placeholder="房間號碼" inputmode="numeric" style="width:160px;"><button class="btn primary" id="roomgo">加入</button></div></div>';
     }
   }
   return { html: html + sub + frame, tabs: tabs };
 }
+// ---------- 上課（老師開始上課，學生跟著老師的畫面）----------
+function liveRef(){ return clsPath(S.sel) + "/live"; }
+async function toggleLive(){
+  var cls = getCls(S.sel); if(!cls) return;
+  if(S.live && S.live.on){
+    if(!confirm("結束上課？學生會回到自己的班級頁。")) return;
+    S.live = null; cls.live = null; try{ await fbSet(liveRef(), null); }catch(e){}
+    setFocus(false); renderLesson(cls); return;
+  }
+  S.live = { on: true, lesson: S.lesson, tab: S.tab, sub: S.sub || null, room: null, startedAt: Date.now() };
+  try{ await fbSet(liveRef(), S.live); }catch(e){ toast("開始上課失敗，請檢查網路或 Firebase 規則"); S.live = null; return; }
+  cls.live = S.live;
+  renderLesson(cls); setFocus(true); toast("已開始上課，學生會自動跟著你的畫面");
+}
+function pushLive(clearLesson){
+  if(!S.teacher || !S.live || !S.live.on || !S.sel) return;
+  var patch = clearLesson ? { lesson: null, tab: null, sub: null, room: null } : { lesson: S.lesson || null, tab: S.tab || null, sub: S.sub || null };
+  Object.keys(patch).forEach(function(k){ S.live[k] = patch[k]; });
+  fbUpdate(liveRef(), patch).catch(function(){});
+}
+// 簡報頁（iframe）裡老師開了房間：通知學生跟著進房
+window.addEventListener("message", function(e){
+  if(!S.teacher || !e.data || e.data.mm !== "room" || !S.live || !S.live.on) return;
+  S.live.room = e.data.id || null; fbUpdate(liveRef(), { room: S.live.room }).catch(function(){});
+});
 function setFocus(on){
   S.focus = !!on;
   var sh = document.querySelector(".shell"); if(sh) sh.classList.toggle("focus", S.focus);
-  var fb = document.querySelector(".focus-btn"); if(fb) fb.textContent = S.focus ? "✕ 離開上課模式" : "🎬 上課模式";
+  var fb = document.querySelector("[data-focus]"); if(fb) fb.textContent = S.focus ? "顯示欄位" : "隱藏欄位";
   var fr = document.getElementById("fr"); if(fr && fr.contentWindow) fr.contentWindow.postMessage({ mm: "focus", on: S.focus }, "*");
   try{
     if(S.focus && !document.fullscreenElement && document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(function(){});
@@ -478,10 +509,11 @@ function bindLessonNav(cls, backFn, renderFn){
   var m = document.getElementById("main");
   m.onclick = function(e){
     var b = e.target.closest("button"); if(!b) return;
-    if(b.dataset.back){ if(S.focus) setFocus(false); backFn(); return; }
+    if(b.dataset.back){ if(S.focus) setFocus(false); backFn(); if(S.teacher) pushLive(true); return; }
     if(b.dataset.focus){ setFocus(!S.focus); return; }
-    if(b.dataset.tab){ S.tab = b.dataset.tab; S.sub = null; renderFn(); return; }
-    if(b.dataset.sub){ S.sub = b.dataset.sub; renderFn(); return; }
+    if(b.dataset.live){ toggleLive(); return; }
+    if(b.dataset.tab){ S.tab = b.dataset.tab; S.sub = null; renderFn(); pushLive(); return; }
+    if(b.dataset.sub){ S.sub = b.dataset.sub; renderFn(); pushLive(); return; }
     if(b.id === "roomgo"){
       var v = (document.getElementById("roomno").value || "").replace(/\D/g, "");
       if(!v){ toast("請輸入房間號碼"); return; }
@@ -527,6 +559,8 @@ async function startStudent(code, name){
     var res = await Promise.all([fbGet(base + "/schools/" + idx.s + "/name"), fbGet(base + "/schools/" + idx.s + "/terms/" + idx.tm + "/name"), fbGet(base + "/schools/" + idx.s + "/terms/" + idx.tm + "/classes/" + idx.c), fbGet(base + "/lessons")]);
     if(!res[2]){ viewStudentEntry("這個班級已不存在。", code); return; }
     S.student = { name: name, code: code, idx: idx, school: res[0], term: res[1], cls: res[2] };
+    S.live = res[2].live && res[2].live.on ? res[2].live : null;
+    try{ window.onValue(window.ref(window.db, base + "/schools/" + idx.s + "/terms/" + idx.tm + "/classes/" + idx.c + "/live"), function(snap){ var v = snap.val(); var nv = v && v.on ? v : null; var key = JSON.stringify(nv); if(key === S.liveKey) return; S.liveKey = key; S.live = nv; S.liveRendered = null; if(S.student) renderStudent(); }); }catch(e){}
     S.plat = { lessons: res[3] || {} };
     S.lesson = null; S.tab = null; S.sub = null;
     var h = new URLSearchParams(location.hash.replace(/^#/, "")); if(h.get("l")) S.lesson = h.get("l"); if(h.get("tab")) S.tab = h.get("tab");
@@ -534,8 +568,10 @@ async function startStudent(code, name){
   }catch(e){ viewStudentEntry("連線失敗，請檢查網路後再試。", code); }
 }
 function renderStudent(){
-  if(!S.lesson) S.focus = false;
-  var st = S.student, cls = st.cls, openMap = cls.lessonOpen || {};
+  var st = S.student;
+  if(S.live && S.live.on) return renderStudentLive();
+  S.focus = false; S.liveRendered = null;
+  var cls = st.cls, openMap = cls.lessonOpen || {};
   history.replaceState(null, "", location.pathname + "?class=" + st.code + (S.lesson ? "#l=" + S.lesson + (S.tab ? "&tab=" + S.tab : "") : ""));
   if(S.lesson && openMap[S.lesson]){
     var r = renderLessonCommon(S.lesson, openMap[S.lesson], false);
@@ -562,6 +598,22 @@ function renderStudent(){
   if(rg) rg.onclick = function(){ var v = (document.getElementById("roomno").value || "").replace(/\D/g, ""); if(!v){ toast("請輸入房間號碼"); return; } location.href = "slides/practice.html?room=" + v + "&role=student&name=" + encodeURIComponent(st.name); };
 }
 
+// 老師開始上課：學生沒有選擇權，畫面完全跟著老師（哪一課、哪個分頁、簡報房間）
+function renderStudentLive(){
+  var live = S.live;
+  S.focus = true;
+  var key = [live.lesson, live.tab, live.sub, live.room].join("|");
+  if(S.liveRendered === key && document.getElementById("main")) return;
+  S.liveRendered = key;
+  if(!live.lesson){
+    shell('<div class="empty"><h2 style="margin-bottom:8px;">老師準備中</h2><p class="note">課程馬上開始，請稍候…</p></div>');
+    return;
+  }
+  S.lesson = String(live.lesson); S.tab = live.tab; S.sub = live.sub;
+  var all = { vocab: 1, grammar: 1, text: 1, slides: 1, quiz: 1, activities: 1 };
+  var r = renderLessonCommon(S.lesson, all, false, true);
+  shell(r.html, { flush: true });
+}
 // ---------- 啟動 ----------
 (async function boot(){
   root.innerHTML = '<div class="center-wrap"><div class="note">連線中…</div></div>';
