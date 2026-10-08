@@ -99,6 +99,7 @@
     border-bottom:1px solid var(--grid-line); gap:6px; flex-wrap:wrap;
   }
   body.embed .brand{ display:none; }
+  body.embed .student-mode .draw-toolbar-top{ display:none !important; }
   body.embed.focus .topbar, body.embed.focus .sidebar{ display:none !important; }
   body.embed.focus .layout{ grid-template-columns:1fr !important; }
   body.embed.focus .stage-wrap{ padding:4px !important; }
@@ -3909,10 +3910,17 @@
   }
 
   function isCanvasSec(sec){ return !!sec && (sec.type === "board" || sec.type === "whiteboard"); } // 投影片（board）與小白板（whiteboard）共用同一個畫布
+  // 平台嵌入時依分頁只顯示一種：slides＝投影片大題；quiz＝其餘（測驗、練習、小白板…）
+  window.__embedKind = null;
+  function kindAllows(sec){
+    var k = window.__embedKind; if(!k || isStudent) return true;
+    return k === "slides" ? sec.type === "board" : sec.type !== "board";
+  }
   function getAllQuestionsList(){
     var secs = getSections(); var secKeys = getSortedSectionKeys(); var list = [];
     secKeys.forEach(function(secId){
       var sec = secs[secId];
+      if(!kindAllows(sec)) return;
       getSortedQuestionKeys(sec).forEach(function(qId){ list.push({ section: sec, question: sec.questions[qId] }); });
     });
     return list;
@@ -7218,6 +7226,7 @@
 
     secKeys.forEach(function(secId){
       var sec = secs[secId];
+      if(!kindAllows(sec)) return;
       var qKeys = getSortedQuestionKeys(sec);
       var isCollapsed = !!sec.collapsed;
       var typeMeta = SEC_TYPE_META[sec.type] || { label: sec.type, color: "var(--seal)" };
@@ -15707,6 +15716,7 @@
   }
   // 跳到目前專案裡第一份簡報（slides）或第一題測驗（quiz）
   function jumpToKind(focus){
+    window.__embedKind = focus; try{ renderSidebar(); }catch(e){}
     var pj = getActiveProject(); if(!pj) return;
     var target = null;
     Object.keys(pj.sections || {}).sort(function(x, y){ return (pj.sections[x].order || 0) - (pj.sections[y].order || 0); }).some(function(sid){
@@ -15726,6 +15736,7 @@
     try{
       var pq = new URLSearchParams(location.search);
       if(pq.get("embed")) document.body.classList.add("embed");
+      if(pq.get("embed") && /^(slides|quiz)$/.test(pq.get("focus") || "")){ window.__embedKind = pq.get("focus"); try{ renderSidebar(); }catch(e0){} }
       var wantProj = pq.get("project");
       if(wantProj && fsData.projects && fsData.projects[wantProj] && !urlRoom){
         openProject(wantProj);
