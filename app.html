@@ -732,18 +732,21 @@ function newRecordDraft(slot){
 function openRecordFor(slot){ S.rec = { edit: null, draft: newRecordDraft(slot), shots: [] }; S.day = null; S.lib = null; S.sel = null; S.lesson = null; render(); }
 function renderRecords(){
   if(S.rec && S.rec.edit !== undefined) return renderRecEditor();
+  if(S.rec && S.rec.view === "trend") return renderTrend();
+  if(S.rec && S.rec.view === "review") return renderReview();
+  if(S.rec && S.rec.view === "comments") return renderComments();
   S.focus = false;
   var f = S.rec.filter || "all", m = recMap(), ids = Object.keys(m).filter(function(k){ return f === "all" || m[k].classLabel === f; }).sort(function(a, b){ var d = (m[b].date || "").localeCompare(m[a].date || ""); return d || ((m[b].seq || 0) - (m[a].seq || 0)); });
-  var html = '<div class="head-row"><div style="flex:1;"><h2>課堂記錄</h2><div class="note">' + (Object.keys(m).length ? '共 ' + Object.keys(m).length + ' 筆' : '還沒有任何記錄') + '</div></div><div><button class="btn" data-r="new">新增記錄</button> <button class="btn sm" data-r="import">匯入舊記錄…</button><input type="file" id="rec-imp" accept=".json,application/json" style="display:none;"></div></div>';
+  var html = '<div class="head-row"><div style="flex:1;"><h2>課堂記錄</h2><div class="note">' + (Object.keys(m).length ? '共 ' + Object.keys(m).length + ' 筆' : '還沒有任何記錄') + '</div></div><div><button class="btn" data-r="new">新增記錄</button> <button class="btn sm" data-r="trend">學生趨勢</button> <button class="btn sm" data-r="review">生詞複習</button> <button class="btn sm" data-r="comments">學期評語</button> <button class="btn sm" data-r="import">匯入舊記錄…</button><input type="file" id="rec-imp" accept=".json,application/json" style="display:none;"></div></div>';
   var labels = recLabels();
   if(labels.length) html += '<div class="tools" style="margin-bottom:12px;"><button class="btn sm' + (f === "all" ? ' primary' : '') + '" data-r="filter" data-f="all">全部 ' + Object.keys(m).length + '</button>' + labels.map(function(l){ return '<button class="btn sm' + (f === l.label ? ' primary' : '') + '" data-r="filter" data-f="' + esc(l.label) + '">' + esc(l.label) + ' ' + l.count + '</button>'; }).join("") + '</div>';
   if(f !== "all"){
     var real = ids.filter(function(k){ return !m[k].isAbsence; }), tot = [];
-    real.forEach(function(k){ (m[k].students || []).forEach(function(s){ tot.push(stTotal(s)); }); });
+    real.forEach(function(k){ (m[k].students || []).forEach(function(s){ if(!s.absent) tot.push(stTotal(s)); }); });
     html += '<div class="panel"><div class="tools" style="gap:28px;"><div><b style="font-size:20px;">' + ids.length + '</b><div class="note">已記錄堂數</div></div><div><b style="font-size:20px;">' + (tot.length ? (tot.reduce(function(a, b){ return a + b; }, 0) / tot.length).toFixed(1) : "—") + '</b><div class="note">平均總分</div></div><div><b style="font-size:20px;">' + (ids.length - real.length) + '</b><div class="note">請假／調課</div></div></div></div>';
   }
   html += '<div class="panel">' + (ids.length ? ids.map(function(k){
-    var r = m[k], sts = r.students || [], tot = r.isAbsence ? "—" : (sts.length <= 1 ? (sts.length ? stTotal(sts[0]) : "—") : Math.round(sts.reduce(function(a, s){ return a + stTotal(s); }, 0) / sts.length) + " 平均");
+    var r = m[k], sts = (r.students || []).filter(function(x){ return !x.absent; }), tot = r.isAbsence ? "—" : (sts.length <= 1 ? (sts.length ? stTotal(sts[0]) : "—") : Math.round(sts.reduce(function(a, s){ return a + stTotal(s); }, 0) / sts.length) + " 平均");
     return '<div class="slot" data-r="open" data-id="' + k + '" style="cursor:pointer;"><div class="slot-time">第 ' + esc(r.seq == null ? "?" : r.seq) + ' 次</div><div class="slot-main"><div><b>' + esc(r.date || "") + '</b>　' + esc(r.classLabel || "（未命名）") + (r.isAbsence ? '　<span class="note">請假／調課</span>' : '') + '</div><div class="note">' + esc(r.material || (r.isAbsence ? "（無上課內容）" : "")) + '</div></div><div style="font-weight:700;">' + tot + '</div></div>';
   }).join("") : '<p class="note">這裡還沒有記錄。上完課按「新增記錄」，或從課表的「填記錄」進來。</p>') + '</div>';
   shell(html); setCrumb([]);
@@ -753,6 +756,7 @@ function renderRecords(){
     if(a === "new"){ S.rec = { edit: null, draft: newRecordDraft(null), shots: [] }; render(); }
     else if(a === "open"){ openRecordEdit(b.dataset.id); }
     else if(a === "filter"){ S.rec.filter = b.dataset.f; render(); }
+    else if(a === "trend" || a === "review" || a === "comments"){ S.rec.view = a; render(); }
     else if(a === "import"){ document.getElementById("rec-imp").click(); }
   };
   document.getElementById("rec-imp").onchange = function(e){ var fl = e.target.files[0]; e.target.value = ""; if(fl) importRecords(fl); };
@@ -771,7 +775,7 @@ function recSync(){
   d.material = g("rf-material").value; d.notes = g("rf-notes").value; d.isAbsence = g("rf-abs").checked;
   document.querySelectorAll(".rstu").forEach(function(box){
     var st = d.students[Number(box.dataset.i)]; if(!st) return;
-    st.name = box.querySelector(".rname").value;
+    st.name = box.querySelector(".rname").value; var ab = box.querySelector(".rabs"); if(ab){ if(ab.checked) st.absent = true; else delete st.absent; }
     box.querySelectorAll(".rsc").forEach(function(inp){ st[inp.dataset.k] = inp.value === "" ? null : Math.max(0, Math.min(Number(inp.max), Number(inp.value))); });
   });
 }
@@ -790,7 +794,7 @@ function renderRecEditor(){
     '<label>本次教材進度</label><textarea id="rf-material" rows="2" placeholder="例如：第一冊第五課 生詞、語法">' + esc(d.material) + '</textarea>' +
     '<div id="rf-stu" style="' + (d.isAbsence ? 'opacity:.45;pointer-events:none;' : '') + '"><label>學生表現（聽力理解20／口語表達25／閱讀15／寫作20／課堂參與20＝總分100）</label>' +
     d.students.map(function(st, i){
-      return '<div class="rstu" data-i="' + i + '"><div style="display:flex;gap:8px;align-items:center;"><input type="text" class="rname" placeholder="學生姓名" value="' + esc(st.name) + '">' + (d.students.length > 1 ? '<button class="btn sm ghost" data-r="rmstu" data-i="' + i + '">移除</button>' : '') + '</div><div class="rgrid">' +
+      return '<div class="rstu" data-i="' + i + '"><div style="display:flex;gap:8px;align-items:center;"><input type="text" class="rname" placeholder="學生姓名" value="' + esc(st.name) + '"><label style="display:flex;align-items:center;gap:4px;white-space:nowrap;font-size:12.5px;margin:0;"><input type="checkbox" class="rabs"' + (st.absent ? ' checked' : '') + '> 缺席</label>' + (d.students.length > 1 ? '<button class="btn sm ghost" data-r="rmstu" data-i="' + i + '">移除</button>' : '') + '</div><div class="rgrid">' +
         RUBRIC.map(function(r){ return '<div><div class="note" style="font-size:11px;">' + r.label + ' /' + r.max + '</div><input type="number" class="rsc" data-k="' + r.key + '" min="0" max="' + r.max + '" value="' + (st[r.key] == null ? "" : st[r.key]) + '"></div>'; }).join("") +
         '</div><div class="note" style="text-align:right;">總分 <b class="rtot">' + stTotal(st) + '</b> / 100</div></div>';
     }).join("") + (d.mode === "group" ? '<button class="btn sm" data-r="addstu">新增學生</button>' : '') + '</div>' +
@@ -806,7 +810,7 @@ function renderRecEditor(){
     else recSync();
     recAutosave();
   };
-  main.onchange = function(e){ if(e.target.id === "rf-abs"){ recSync(); render(); } };
+  main.onchange = function(e){ if(e.target.id === "rf-abs"){ recSync(); render(); } else if(e.target.classList.contains("rabs")){ recSync(); recAutosave(); var bx = e.target.closest(".rstu"); if(bx) bx.style.opacity = e.target.checked ? ".5" : "1"; } };
   document.getElementById("rf-shot").onchange = async function(e){
     var fs = Array.prototype.slice.call(e.target.files); e.target.value = ""; recSync();
     for(var i = 0; i < fs.length; i++){ try{ S.rec.shots.push(await shrinkImage(fs[i])); }catch(er){ toast("有一張圖片讀取失敗"); } }
@@ -1164,19 +1168,19 @@ async function hwSummary(cls, items, roster){
   var keys = Object.keys(rows).sort(function(a, b){ return rows[a].localeCompare(rows[b], "zh-Hant"); });
   var data = keys.map(function(k){
     var c = { ok: 0, late: 0, missing: 0, exempt: 0 }; items.forEach(function(it){ var st = hwStatus(it, subsBy[it.id][k]); if(c[st] != null) c[st]++; });
-    var sc = []; real.forEach(function(r){ (r.students || []).forEach(function(s){ if((s.name || "").trim() === rows[k]) sc.push(stTotal(s)); }); });
+    var sc = [], att = { pres: 0, abs: 0 }; real.forEach(function(r){ (r.students || []).forEach(function(s){ if((s.name || "").trim() === rows[k]){ if(s.absent) att.abs++; else { att.pres++; sc.push(stTotal(s)); } } }); });
     var due = c.ok + c.late + c.missing;
-    return { name: rows[k], ok: c.ok, late: c.late, missing: c.missing, rate: due ? Math.round((c.ok + c.late) * 100 / due) + "%" : "—", n: sc.length, avg: sc.length ? (sc.reduce(function(a, b){ return a + b; }, 0) / sc.length).toFixed(1) : "—" };
+    return { name: rows[k], ok: c.ok, late: c.late, missing: c.missing, rate: due ? Math.round((c.ok + c.late) * 100 / due) + "%" : "—", n: sc.length, pres: att.pres, abs: att.abs, avg: sc.length ? (sc.reduce(function(a, b){ return a + b; }, 0) / sc.length).toFixed(1) : "—" };
   });
   var html = '<div class="head-row"><div style="flex:1;"><h2>學期總表</h2><div class="note">' + esc(cls.name) + '　作業 ' + items.length + ' 份　已記錄 ' + real.length + ' 堂（請假／調課 ' + abs + ' 堂）</div></div><div><button class="btn sm ghost" data-h="back">回聯絡簿</button></div></div>' +
-    '<div class="panel" style="overflow-x:auto;">' + (data.length ? '<table class="hw-table"><thead><tr><th>學生</th><th>作業準時</th><th>遲交</th><th>未交</th><th>繳交率</th><th>課堂記錄次數</th><th>平均總分</th></tr></thead><tbody>' + data.map(function(d){ return '<tr><td><b>' + esc(d.name) + '</b></td><td>' + d.ok + '</td><td>' + d.late + '</td><td>' + d.missing + '</td><td>' + d.rate + '</td><td>' + d.n + '</td><td>' + d.avg + '</td></tr>'; }).join("") + '</tbody></table><div style="margin-top:10px;"><button class="btn sm" data-h="csv">下載 CSV</button></div>' : '<p class="note">還沒有學生資料。先在聯絡簿貼上班級名單，或等學生交作業。</p>') + '</div>' +
+    '<div class="panel" style="overflow-x:auto;">' + (data.length ? '<table class="hw-table"><thead><tr><th>學生</th><th>作業準時</th><th>遲交</th><th>未交</th><th>繳交率</th><th>出席堂數</th><th>缺席堂數</th><th>平均總分</th></tr></thead><tbody>' + data.map(function(d){ return '<tr><td><b>' + esc(d.name) + '</b></td><td>' + d.ok + '</td><td>' + d.late + '</td><td>' + d.missing + '</td><td>' + d.rate + '</td><td>' + d.pres + '</td><td>' + d.abs + '</td><td>' + d.avg + '</td></tr>'; }).join("") + '</tbody></table><div style="margin-top:10px;"><button class="btn sm" data-h="csv">下載 CSV</button></div>' : '<p class="note">還沒有學生資料。先在聯絡簿貼上班級名單，或等學生交作業。</p>') + '</div>' +
     '<p class="note">課堂記錄的分數是用學生姓名對起來的，記錄表裡的學生名字要跟班級名單一樣才會算進去。</p>';
   shell(html); setCrumb([]);
   document.getElementById("main").onclick = function(e){
     var b = e.target.closest("[data-h]"); if(!b) return;
     if(b.dataset.h === "back"){ S.hw = { view: "list" }; render(); }
     else if(b.dataset.h === "csv"){
-      var csv = "﻿" + [["學生", "作業準時", "遲交", "未交", "繳交率", "課堂記錄次數", "平均總分"]].concat(data.map(function(d){ return [d.name, d.ok, d.late, d.missing, d.rate, d.n, d.avg]; })).map(function(r){ return r.map(function(c){ return '"' + String(c).replace(/"/g, '""') + '"'; }).join(","); }).join("\n");
+      var csv = "﻿" + [["學生", "作業準時", "遲交", "未交", "繳交率", "出席堂數", "缺席堂數", "平均總分"]].concat(data.map(function(d){ return [d.name, d.ok, d.late, d.missing, d.rate, d.pres, d.abs, d.avg]; })).map(function(r){ return r.map(function(c){ return '"' + String(c).replace(/"/g, '""') + '"'; }).join(","); }).join("\n");
       var el = document.createElement("a"); el.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" })); el.download = "學期總表_" + cls.name + ".csv"; document.body.appendChild(el); el.click(); setTimeout(function(){ URL.revokeObjectURL(el.href); el.remove(); }, 500);
     }
   };
@@ -1293,6 +1297,227 @@ function bindBulkOpen(cls){
     try{ await fbSet(clsPath(S.sel) + "/lessonOpen", next); }catch(er){ toast("儲存失敗"); return; }
     toast("已複製"); renderClassHome(cls);
   };
+}
+// ---------- 課堂記錄：學生趨勢圖／生詞複習／學期評語 ----------
+function recsOf(label){ var m = recMap(); return Object.keys(m).map(function(k){ return Object.assign({ id: k }, m[k]); }).filter(function(r){ return r.classLabel === label; }).sort(function(a, b){ return (a.date || "").localeCompare(b.date || ""); }); }
+function hasScore(st){ return RUBRIC.some(function(r){ return typeof st[r.key] === "number"; }); }
+function studentNames(label){ var set = {}; recsOf(label).forEach(function(r){ (r.students || []).forEach(function(s){ if((s.name || "").trim()) set[s.name.trim()] = 1; }); }); return Object.keys(set); }
+function studentSeries(label, name){
+  var out = [];
+  recsOf(label).forEach(function(r){
+    if(r.isAbsence) return;
+    (r.students || []).forEach(function(s){ if((s.name || "").trim() === name && !s.absent && hasScore(s)) out.push({ date: r.date, st: s, total: stTotal(s) }); });
+  });
+  return out;
+}
+function recSelectHtml(id, items, cur){ return '<select id="' + id + '" style="padding:7px 10px;border-radius:8px;border:1.5px solid var(--line);background:var(--surface-2);font:inherit;">' + items.map(function(x){ return '<option value="' + esc(x) + '"' + (x === cur ? ' selected' : '') + '>' + esc(x) + '</option>'; }).join("") + '</select>'; }
+function recViewShell(title, note, body){
+  var html = '<div class="head-row"><div style="flex:1;"><h2>' + title + '</h2><div class="note">' + note + '</div></div><div><button class="btn sm ghost" data-r="rback">回課堂記錄</button></div></div>' + body;
+  shell(html); setCrumb([]);
+}
+function recViewNav(handler){
+  var main = document.getElementById("main");
+  main.onclick = function(e){ var b = e.target.closest("[data-r]"); if(b && b.dataset.r === "rback"){ S.rec = { filter: S.rec.filter }; render(); return; } handler(e); };
+}
+// ----- 趨勢圖 -----
+function renderTrend(){
+  S.focus = false;
+  var labels = recLabels().map(function(l){ return l.label; });
+  if(!labels.length){ recViewShell("學生趨勢", "還沒有課堂記錄", '<div class="panel"><p class="note">先新增幾筆課堂記錄，才畫得出趨勢。</p></div>'); recViewNav(function(){}); return; }
+  var t = S.rec; t.label = labels.indexOf(t.label) === -1 ? (labels.indexOf(S.rec.filter) !== -1 ? S.rec.filter : labels[0]) : t.label;
+  var names = studentNames(t.label); if(names.indexOf(t.student) === -1) t.student = names[0];
+  t.on = t.on || { total: true };
+  var ser = t.student ? studentSeries(t.label, t.student) : [];
+  var COLORS = { total: "#B23B32", listening: "#3E7D68", speaking: "#2E75B6", reading: "#B4802A", writing: "#7B5EA7", participation: "#C0623A" };
+  var lines = [{ key: "total", label: "總分", f: function(p){ return p.total; } }].concat(RUBRIC.map(function(r){ return { key: r.key, label: r.label + "（%）", f: function(p){ return typeof p.st[r.key] === "number" ? p.st[r.key] / r.max * 100 : null; } }; }));
+  var W = 680, H = 300, L = 40, R = 14, T = 14, B = 34, svg = '';
+  if(ser.length){
+    var t0 = new Date(ser[0].date).getTime(), t1 = new Date(ser[ser.length - 1].date).getTime();
+    var X = function(d){ return ser.length === 1 || t1 === t0 ? (L + (W - L - R) / 2) : L + (new Date(d).getTime() - t0) / (t1 - t0) * (W - L - R); };
+    var Y = function(v){ return T + (100 - v) / 100 * (H - T - B); };
+    svg = '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;max-width:' + W + 'px;height:auto;background:var(--surface);border-radius:12px;">';
+    [0, 25, 50, 75, 100].forEach(function(g){ svg += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + Y(g) + '" y2="' + Y(g) + '" stroke="#ddd" stroke-width="1"/><text x="' + (L - 6) + '" y="' + (Y(g) + 4) + '" font-size="11" text-anchor="end" fill="#888">' + g + '</text>'; });
+    ser.forEach(function(p, i){ if(ser.length <= 12 || i % Math.ceil(ser.length / 12) === 0) svg += '<text x="' + X(p.date) + '" y="' + (H - 12) + '" font-size="11" text-anchor="middle" fill="#888">' + esc(p.date.slice(5).replace("-", "/")) + '</text>'; });
+    lines.forEach(function(ln){
+      if(!t.on[ln.key]) return;
+      var pts = ser.map(function(p){ return { x: X(p.date), v: ln.f(p), d: p.date }; }).filter(function(q){ return q.v != null; });
+      if(!pts.length) return;
+      svg += '<polyline fill="none" stroke="' + COLORS[ln.key] + '" stroke-width="' + (ln.key === "total" ? 3 : 2) + '" points="' + pts.map(function(q){ return q.x + "," + Y(q.v); }).join(" ") + '"/>';
+      pts.forEach(function(q){ svg += '<circle cx="' + q.x + '" cy="' + Y(q.v) + '" r="4" fill="' + COLORS[ln.key] + '"><title>' + esc(ln.label + " " + q.d + "：" + q.v.toFixed(0)) + '</title></circle>'; });
+    });
+    svg += '</svg>';
+  }
+  var body = '<div class="panel"><div class="tools" style="margin-bottom:10px;">班級／學生 ' + recSelectHtml("tr-l", labels, t.label) + ' ' + (names.length ? recSelectHtml("tr-s", names, t.student) : '<span class="note">這個班還沒有學生姓名</span>') + '</div>' +
+    '<div class="tools" style="margin-bottom:10px;">' + lines.map(function(ln){ return '<label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" data-ln="' + ln.key + '"' + (t.on[ln.key] ? ' checked' : '') + '><span style="color:' + COLORS[ln.key] + ';font-weight:700;">' + esc(ln.label) + '</span></label>'; }).join("") + '</div>' +
+    (ser.length ? svg + '<p class="note" style="margin-top:8px;">共 ' + ser.length + ' 次有分數的上課；各項分數以滿分的百分比顯示，總分是 0–100。點圓點可以看數字。缺席的課不計入。</p>' : '<p class="note">這位學生還沒有分數記錄。</p>') + '</div>';
+  recViewShell("學生趨勢", "看每位學生的分數隨時間的變化", body);
+  recViewNav(function(){});
+  document.getElementById("main").onchange = function(e){
+    if(e.target.id === "tr-l"){ t.label = e.target.value; t.student = null; renderTrend(); }
+    else if(e.target.id === "tr-s"){ t.student = e.target.value; renderTrend(); }
+    else if(e.target.dataset && e.target.dataset.ln){ t.on[e.target.dataset.ln] = e.target.checked; renderTrend(); }
+  };
+}
+// ----- 生詞複習 -----
+function reviewWords(label){
+  var today = new Date(ymd(new Date()) + "T00:00:00").getTime(), buckets = { a: [], b: [], c: [] }, seen = {};
+  recsOf(label).slice().reverse().forEach(function(r){
+    if(!r.date || r.isAbsence) return;
+    var age = Math.round((today - new Date(r.date + "T00:00:00").getTime()) / 86400000);
+    if(age < 0 || age > 30) return;
+    (r.vocab || []).forEach(function(v){
+      if(!v.word || seen[v.word]) return; seen[v.word] = 1;
+      (age <= 3 ? buckets.a : age <= 10 ? buckets.b : buckets.c).push({ word: v.word, sub: v.sub || "", date: r.date });
+    });
+  });
+  return buckets;
+}
+function renderReview(){
+  S.focus = false;
+  var labels = recLabels().map(function(l){ return l.label; });
+  if(!labels.length){ recViewShell("生詞複習", "還沒有課堂記錄", '<div class="panel"><p class="note">在課堂記錄裡加入「新生詞」後，這裡會幫你排複習。</p></div>'); recViewNav(function(){}); return; }
+  var t = S.rec; t.label = labels.indexOf(t.label) === -1 ? (labels.indexOf(S.rec.filter) !== -1 ? S.rec.filter : labels[0]) : t.label;
+  var bk = reviewWords(t.label), all = bk.a.concat(bk.b, bk.c);
+  function sec(title, hint, arr){ return '<div class="panel"><h3>' + title + ' <span class="note">' + hint + '</span></h3>' + (arr.length ? '<div class="tools">' + arr.map(function(w){ return '<span class="chip" title="' + esc(w.date) + '">' + esc(w.word) + (w.sub ? ' <span class="note">' + esc(w.sub) + '</span>' : '') + '</span>'; }).join("") + '</div>' : '<p class="note">沒有</p>') + '</div>'; }
+  var body = '<div class="panel"><div class="tools">班級／學生 ' + recSelectHtml("rv-l", labels, t.label) + '</div></div>' +
+    sec("今天一定要複習", "最近 3 天內學的，每天看一次", bk.a) + sec("本週複習", "4–10 天前學的", bk.b) + sec("偶爾抽考", "11–30 天前學的", bk.c) +
+    '<div class="panel"><div class="tools"><button class="btn" data-r="rvcopy"' + (all.length ? '' : ' disabled') + '>複製複習清單</button><button class="btn" data-r="rvquiz"' + (all.filter(function(w){ return w.sub; }).length >= 2 ? '' : ' disabled') + '>做成連連看測驗</button></div><p class="note" style="margin-top:8px;">測驗會用「生詞 ↔ 拼音／翻譯」配對（只用有填拼音或翻譯的詞），放進你選的課次的「測驗與練習」。</p></div>';
+  recViewShell("生詞複習", "依課堂記錄裡的新生詞，幫你排出這週要複習哪些", body);
+  document.getElementById("main").onchange = function(e){ if(e.target.id === "rv-l"){ t.label = e.target.value; renderReview(); } };
+  recViewNav(async function(e){
+    var b = e.target.closest("[data-r]"); if(!b) return;
+    if(b.dataset.r === "rvcopy"){
+      var txt = "【" + t.label + " 複習生詞】\n" + [["今天一定要複習", bk.a], ["本週複習", bk.b], ["偶爾抽考", bk.c]].filter(function(x){ return x[1].length; }).map(function(x){ return x[0] + "：" + x[1].map(function(w){ return w.word + (w.sub ? "（" + w.sub + "）" : ""); }).join("、"); }).join("\n");
+      try{ await navigator.clipboard.writeText(txt); toast("已複製"); }catch(er){ alert(txt); }
+    } else if(b.dataset.r === "rvquiz"){
+      var pairs = all.filter(function(w){ return w.sub; }).map(function(w){ return [w.word, w.sub]; });
+      var keys = lessonKeys(null); if(!keys.length){ alert("請先建立課次。"); return; }
+      var target = await askChoice("把這份複習測驗放進哪一課？", [{ label: "課次", items: keys.map(function(k){ return { v: k, t: lessonTitle(k) }; }) }], "建立");
+      if(!target) return;
+      toast("正在建立測驗…");
+      try{ await createReviewQuiz("複習：" + t.label + " " + ymd(new Date()), pairs, target); toast("已建立，在「" + lessonTitle(target) + "」的測驗與練習裡"); }catch(er){ alert("建立失敗：" + (er && er.message || er)); }
+    }
+  });
+}
+function createReviewQuiz(title, pairs, target){
+  return new Promise(function(resolve, reject){
+    var fr = document.createElement("iframe"); fr.style.cssText = "position:fixed;left:-9999px;top:0;width:900px;height:700px;border:0;"; fr.src = "slides/practice.html?embed=1&worker=1";
+    var to = setTimeout(function(){ cleanup(); reject(new Error("逾時，請稍後再試")); }, 45000);
+    function cleanup(){ clearTimeout(to); window.removeEventListener("message", onMsg); setTimeout(function(){ fr.remove(); }, 500); }
+    function onMsg(e){
+      if(!e.data) return;
+      if(e.data.mm === "workerReady") fr.contentWindow.postMessage({ mm: "makeMatch", title: title, pairs: pairs, target: target }, "*");
+      else if(e.data.mm === "projectCopied" && e.data.target === target && e.data.title === title){ cleanup(); resolve(e.data); }
+    }
+    window.addEventListener("message", onMsg); document.body.appendChild(fr);
+  });
+}
+// ----- 學期評語 -----
+var DIM_TIP = { listening: "平時多聽課文錄音、模仿語調", speaking: "鼓勵大聲開口，練習把話說成完整的句子", reading: "每天讀一小段課文，留意生字詞", writing: "多練習筆順與造句，寫完再檢查一遍", participation: "多舉手發言、主動提問，讓學習更有參與感" };
+function hashStr(s){ var h = 0; for(var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return h; }
+function pick(arr, seed, k){ return arr[(seed + (k || 0)) % arr.length]; }
+function levelWord(p){ return p >= 90 ? "非常優異" : p >= 80 ? "良好" : p >= 70 ? "穩定" : p >= 60 ? "尚可" : "還需要加強"; }
+function studentStats(label, name, range){
+  var recs = recsOf(label).filter(function(r){ return (!range.from || r.date >= range.from) && (!range.to || r.date <= range.to); });
+  var present = 0, absent = 0, scored = [], notes = [], words = {};
+  recs.forEach(function(r){
+    if(r.isAbsence) return;
+    (r.vocab || []).forEach(function(v){ if(v.word) words[v.word] = 1; });
+    var mine = (r.students || []).filter(function(s){ return (s.name || "").trim() === name; })[0];
+    if(!mine) return;
+    if(mine.absent){ absent++; return; }
+    present++;
+    if(hasScore(mine)) scored.push({ date: r.date, st: mine, total: stTotal(mine) });
+    if((r.students || []).length === 1 && (r.notes || "").trim()) notes.push({ date: r.date, text: r.notes.trim() });
+  });
+  var dims = {}; RUBRIC.forEach(function(rb){ var vs = scored.map(function(p){ return p.st[rb.key]; }).filter(function(v){ return typeof v === "number"; }); dims[rb.key] = vs.length ? vs.reduce(function(a, b){ return a + b; }, 0) / vs.length / rb.max * 100 : null; });
+  var tot = scored.length ? scored.reduce(function(a, p){ return a + p.total; }, 0) / scored.length : null, trend = null;
+  if(scored.length >= 4){ var k = Math.ceil(scored.length / 3), avg = function(a){ return a.reduce(function(x, p){ return x + p.total; }, 0) / a.length; }; trend = avg(scored.slice(-k)) - avg(scored.slice(0, k)); }
+  return { present: present, absent: absent, sessions: present + absent, rate: (present + absent) ? Math.round(present * 100 / (present + absent)) : null, dims: dims, total: tot, trend: trend, words: Object.keys(words), notes: notes, scored: scored.length };
+}
+function composeComment(name, st, o, hw){
+  var seed = hashStr(name), p = [];
+  if(st.sessions === 0 || st.total == null) return "（這段期間內，" + name + "的課堂記錄分數不足，無法產生評語。請確認記錄表裡的學生姓名跟這裡一樣，並且有填分數。）";
+  var warm = o.tone === "warm", formal = o.tone === "formal", short = o.length === "short", long = o.length === "long";
+  if(o.attend){
+    var a = st.rate >= 95 ? pick(["幾乎全勤，學習態度十分認真。", "出席非常穩定，值得肯定。"], seed) : st.rate >= 85 ? "出席狀況良好。" : "有幾堂課缺席，希望之後能盡量補上進度。";
+    p.push(name + "同學本學期共上了 " + st.sessions + " 堂課，出席率 " + st.rate + "%，" + a);
+  } else p.push(name + "同學本學期的學習表現如下。");
+  var dimArr = RUBRIC.map(function(rb){ return { key: rb.key, label: rb.label, pct: st.dims[rb.key] }; }).filter(function(x){ return x.pct != null; }).sort(function(a, b){ return b.pct - a.pct; });
+  p.push("整體表現" + levelWord(st.total) + "（課堂平均 " + st.total.toFixed(0) + " 分）。");
+  if(o.dims && dimArr.length >= 2){
+    var best = dimArr[0], worst = dimArr[dimArr.length - 1];
+    if(best.pct - worst.pct >= 8 || !short){
+      p.push(pick(["在" + best.label + "方面表現最為突出", "「" + best.label + "」是" + name + "目前最強的一項"], seed, 1) + "，平均達 " + best.pct.toFixed(0) + "%" + (worst.pct < 75 ? "；" + worst.label + "（平均 " + worst.pct.toFixed(0) + "%）還有成長空間，建議" + DIM_TIP[worst.key] + "。" : "。"));
+    }
+  }
+  if(o.trend && st.trend != null && !short){
+    p.push(st.trend >= 5 ? pick(["從學期初到學期末，進步幅度相當明顯，看得出平時的努力。", "學習曲線持續向上，這份進步很不容易。"], seed, 2) : st.trend <= -5 ? "學期後段的表現略有起伏，期待調整步調、穩定發揮。" : "整個學期的學習表現十分穩定。");
+  }
+  if(o.vocab && st.words.length && long){
+    p.push("本學期班上累積學習了 " + st.words.length + " 個生詞，例如「" + st.words.slice(0, 5).join("、") + "」等，建議持續複習。");
+  }
+  if(o.hw && hw && hw.total){
+    p.push("作業方面，共 " + hw.total + " 份，準時繳交 " + hw.ok + " 份" + (hw.late ? "、遲交 " + hw.late + " 份" : "") + (hw.missing ? "、未交 " + hw.missing + " 份" : "") + "，" + (hw.rate >= 90 ? "能按時完成，值得肯定。" : hw.rate >= 70 ? "大致能完成，希望更留意繳交時間。" : "繳交狀況需要多加留意。"));
+  }
+  if(o.notes && st.notes.length && !short){
+    p.push("老師的觀察：" + st.notes.slice(-3).map(function(n){ return n.text.replace(/[。\s]+$/, ""); }).join("；") + "。");
+  }
+  if(!short || warm){
+    p.push(warm ? pick(["期待" + name + "在下學期持續保持對中文的興趣，繼續加油！", "很高興陪著" + name + "一起學中文，下學期也一起努力！"], seed, 3) : formal ? "建議持續複習並多加練習，以穩固語言基礎。" : "請繼續保持，並多加練習。");
+  }
+  return p.join("");
+}
+async function commentHw(label, names, rng){
+  var ck = recsOf(label).map(function(r){ return r.classKey; }).filter(Boolean)[0]; if(!ck) return {};
+  var cid = ck.split("|")[2], items = objList(await fbGet(hwBase(S.teacher.id, cid) + "/items")).filter(function(it){ var d = (it.due || "").slice(0, 10); return d && (!rng.from || d >= rng.from) && (!rng.to || d <= rng.to); });
+  var subsBy = {}; await Promise.all(items.map(function(it){ return fbGet("teacherPlatform/" + S.teacher.id + "/hwSubs/" + cid + "/" + it.id).then(function(v){ subsBy[it.id] = v || {}; }); }));
+  var out = {};
+  names.forEach(function(n){ var c = { ok: 0, late: 0, missing: 0, total: 0 }, k = hwSkey(n); items.forEach(function(it){ var s = hwStatus(it, subsBy[it.id][k]); if(c[s] != null){ c[s]++; c.total++; } }); c.rate = c.total ? Math.round((c.ok + c.late) * 100 / c.total) : 0; out[n] = c; });
+  return out;
+}
+async function renderComments(){
+  S.focus = false;
+  var labels = recLabels().map(function(l){ return l.label; });
+  if(!labels.length){ recViewShell("學期評語", "還沒有課堂記錄", '<div class="panel"><p class="note">先累積一些課堂記錄，才產生得出評語。</p></div>'); recViewNav(function(){}); return; }
+  var t = S.rec; t.label = labels.indexOf(t.label) === -1 ? (labels.indexOf(S.rec.filter) !== -1 ? S.rec.filter : labels[0]) : t.label;
+  t.o = t.o || { tone: "warm", length: "std", attend: true, dims: true, trend: true, vocab: true, hw: true, notes: false }; t.from = t.from || ""; t.to = t.to || "";
+  var o = t.o, names = studentNames(t.label), rng = { from: t.from, to: t.to };
+  var hwBy = {}; if(o.hw){ try{ hwBy = await commentHw(t.label, names, rng); }catch(e){} }
+  t.texts = t.texts || {};
+  var cards = names.map(function(n){
+    var st = studentStats(t.label, n, rng), key = t.label + "|" + n; if(t.texts[key] == null) t.texts[key] = composeComment(n, st, o, hwBy[n]);
+    return '<div class="panel"><h3>' + esc(n) + ' <span class="note">出席 ' + st.present + (st.absent ? '、缺席 ' + st.absent : '') + '　有分數 ' + st.scored + ' 堂' + (st.total != null ? '　平均 ' + st.total.toFixed(0) : '') + '</span></h3><textarea class="cmt" data-n="' + esc(n) + '" rows="6" style="width:100%;padding:8px 10px;border-radius:8px;border:1.5px solid var(--line);background:var(--surface-2);font:inherit;line-height:1.7;">' + esc(t.texts[key]) + '</textarea><div class="tools" style="margin-top:6px;"><span class="note cc" data-n="' + esc(n) + '">' + t.texts[key].length + ' 字</span><button class="btn sm" data-r="cregen" data-n="' + esc(n) + '">重新產生這位</button><button class="btn sm" data-r="ccopy" data-n="' + esc(n) + '">複製</button></div></div>';
+  }).join("");
+  var chk = function(k, lab){ return '<label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" data-o="' + k + '"' + (o[k] ? ' checked' : '') + '>' + lab + '</label>'; };
+  var sel = 'padding:7px 10px;border-radius:8px;border:1.5px solid var(--line);background:var(--surface-2);font:inherit;';
+  var body = '<div class="panel"><div class="tools" style="margin-bottom:10px;">班級／學生 ' + recSelectHtml("cm-l", labels, t.label) + '<span class="note">期間</span><input type="date" id="cm-f" value="' + esc(t.from) + '"><span class="note">到</span><input type="date" id="cm-t" value="' + esc(t.to) + '"><span class="note">（不填＝全部）</span></div>' +
+    '<div class="tools" style="margin-bottom:10px;">語氣 <select id="cm-tone" style="' + sel + '"><option value="warm"' + (o.tone === "warm" ? ' selected' : '') + '>溫暖</option><option value="formal"' + (o.tone === "formal" ? ' selected' : '') + '>正式</option><option value="plain"' + (o.tone === "plain" ? ' selected' : '') + '>簡潔</option></select>　篇幅 <select id="cm-len" style="' + sel + '"><option value="short"' + (o.length === "short" ? ' selected' : '') + '>簡短</option><option value="std"' + (o.length === "std" ? ' selected' : '') + '>標準</option><option value="long"' + (o.length === "long" ? ' selected' : '') + '>詳細</option></select></div>' +
+    '<div class="tools" style="margin-bottom:10px;">包含：' + chk("attend", "出席") + chk("dims", "各項強弱") + chk("trend", "進步趨勢") + chk("vocab", "生詞") + chk("hw", "作業") + chk("notes", "老師備註（原文，請自行整理）") + '</div>' +
+    '<div class="tools"><button class="btn" data-r="cgen">重新產生全部</button><button class="btn" data-r="ccopyall">複製全部</button><button class="btn" data-r="cdl">下載文字檔</button></div>' +
+    '<p class="note" style="margin-top:8px;">這是依照你記錄的分數、出席、備註和作業「組合」出來的草稿，不是 AI 寫的；請你再看過、改成你自己的口吻。你改過的內容，在不按「重新產生」之前都會保留。</p></div>' + (cards || '<div class="panel"><p class="note">這個班的課堂記錄裡還沒有學生姓名。</p></div>');
+  recViewShell("學期評語", "依課堂記錄產生每位學生的中文評語草稿", body);
+  var main = document.getElementById("main");
+  main.oninput = function(e){ if(e.target.classList.contains("cmt")){ t.texts[t.label + "|" + e.target.dataset.n] = e.target.value; var cs = document.querySelectorAll(".cc"); cs.forEach(function(c){ if(c.dataset.n === e.target.dataset.n) c.textContent = e.target.value.length + " 字"; }); } };
+  main.onchange = function(e){
+    var id = e.target.id;
+    if(id === "cm-l"){ t.label = e.target.value; t.texts = {}; renderComments(); }
+    else if(id === "cm-f" || id === "cm-t"){ t.from = document.getElementById("cm-f").value; t.to = document.getElementById("cm-t").value; t.texts = {}; renderComments(); }
+    else if(id === "cm-tone"){ o.tone = e.target.value; t.texts = {}; renderComments(); }
+    else if(id === "cm-len"){ o.length = e.target.value; t.texts = {}; renderComments(); }
+    else if(e.target.dataset && e.target.dataset.o){ o[e.target.dataset.o] = e.target.checked; t.texts = {}; renderComments(); }
+  };
+  recViewNav(async function(e){
+    var b = e.target.closest("[data-r]"); if(!b) return; var a = b.dataset.r, n = b.dataset.n;
+    if(a === "cgen"){ if(!confirm("重新產生全部？你手動修改過的內容會被覆蓋。")) return; t.texts = {}; renderComments(); }
+    else if(a === "cregen"){ delete t.texts[t.label + "|" + n]; renderComments(); }
+    else if(a === "ccopy"){ try{ await navigator.clipboard.writeText(t.texts[t.label + "|" + n]); toast("已複製"); }catch(er){} }
+    else if(a === "ccopyall" || a === "cdl"){
+      var txt = names.map(function(x){ return "【" + x + "】\n" + t.texts[t.label + "|" + x]; }).join("\n\n");
+      if(a === "ccopyall"){ try{ await navigator.clipboard.writeText(txt); toast("已複製全部"); }catch(er){ alert("複製失敗，請改用下載。"); } }
+      else { var el = document.createElement("a"); el.href = URL.createObjectURL(new Blob(["﻿" + txt], { type: "text/plain;charset=utf-8" })); el.download = "學期評語_" + t.label + ".txt"; document.body.appendChild(el); el.click(); setTimeout(function(){ URL.revokeObjectURL(el.href); el.remove(); }, 500); }
+    }
+  });
 }
 function renderPlatformHome(){
   S.focus = false;

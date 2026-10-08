@@ -15720,6 +15720,18 @@
       var d0 = ev.data; if(!d0) return;
       if(d0.mm === "startRoom"){ if(!isStudent && activeProjectId && !inRoom() && !isOfflineMode) createRoom(true); }
       else if(d0.mm === "focusKind"){ jumpToKind(d0.kind); }
+      else if(d0.mm === "makeMatch" && !isStudent){
+        // 平台「生詞複習」：用一份生詞配對清單建立連連看測驗
+        var pairsIn = d0.pairs || [], np2 = { id: uid("proj"), folderId: null, title: d0.title || "複習", desc: "", currentQId: null, sections: {} };
+        var sid2 = uid("sec"), qs2 = {}, CH = 6, qi = 0;
+        for(var i2 = 0; i2 < pairsIn.length; i2 += CH){
+          var qid2 = uid("q"), prs = {}; pairsIn.slice(i2, i2 + CH).forEach(function(pr, j){ prs["p" + (j + 1)] = { id: "p" + (j + 1), left: pr[0], right: pr[1] }; });
+          qs2[qid2] = { id: qid2, title: "第 " + (qi + 1) + " 題", order: qi, leftLabel: "生詞", rightLabel: "拼音／翻譯", pairs: prs }; if(!np2.currentQId) np2.currentQId = qid2; qi++;
+        }
+        np2.sections[sid2] = { id: sid2, title: "複習連連看", type: "match", order: 0, collapsed: false, questions: qs2 };
+        fsData.projects[np2.id] = np2; saveFS();
+        try{ parent.postMessage({ mm: "projectCopied", pid: np2.id, title: np2.title, target: d0.target, slides: 0, quiz: qi }, "*"); }catch(e1){}
+      }
       else if(d0.mm === "copyTo" && !isStudent){
         var src = getActiveProject(); if(!src) return;
         var np = { id: uid("proj"), folderId: null, title: d0.title || (src.title + "（複製）"), desc: "", currentQId: null, sections: {} };
@@ -15760,6 +15772,7 @@
       var pq = new URLSearchParams(location.search);
       if(pq.get("embed")) document.body.classList.add("embed");
       if(pq.get("embed") && /^(slides|quiz)$/.test(pq.get("focus") || "")){ setEmbedKind(pq.get("focus")); try{ renderSidebar(); }catch(e0){} }
+      if(pq.get("worker")){ try{ parent.postMessage({ mm: "workerReady" }, "*"); }catch(e2){} }
       var newTitle = pq.get("newproject");
       if(newTitle && pq.get("embed") && !urlRoom && !isStudent){
         // 平台課次頁「為這一課建立」：建一個空專案，通知外層歸到這一課
