@@ -907,7 +907,7 @@ function hwDueTs(it){ return it && it.due ? new Date(it.due).getTime() : 0; }
 function hwStatus(it, sub){
   var due = hwDueTs(it);
   if(!sub || !sub.firstAt) return (due && nowMs() > due) ? "missing" : "pending";
-  return (due && sub.firstAt > due) ? "late" : "ok";
+  return (due && (sub.at || sub.firstAt) > due) ? "late" : "ok";   // 以最後一次送出的時間判斷準時或遲交
 }
 var HW_LABEL = { ok: "✓ 準時", late: "⏰ 遲交", missing: "✗ 未交", pending: "尚未繳交" };
 function objList(o){ return Object.keys(o || {}).map(function(k){ return Object.assign({ id: k }, o[k]); }); }
@@ -995,7 +995,7 @@ async function hwItemPage(items, roster){
     (it.body ? '<div class="panel"><div style="white-space:pre-wrap;">' + esc(it.body) + '</div></div>' : '') +
     '<div class="panel"><h3>繳交狀況</h3>' + (keys.length ? keys.sort(function(a, b){ return rows[a].name.localeCompare(rows[b].name, "zh-Hant"); }).map(function(k){
       var r = rows[k], st = hwStatus(it, r.sub);
-      return '<div class="slot"><div class="slot-time" style="min-width:90px;">' + esc(r.name) + '</div><div class="slot-main"><div><b>' + HW_LABEL[st] + '</b>' + (r.sub ? '　<span class="note">第一次 ' + hwFmt(r.sub.firstAt) + (r.sub.count > 1 ? '　最後更新 ' + hwFmt(r.sub.at) + '（共 ' + r.sub.count + ' 次）' : '') + ((r.sub.times || []).some(function(x){ return x.s === false; }) ? '　⚠ 有一次用的是裝置時間' : '') + '</span>' + (r.sub.count > 1 && r.sub.times ? '<div class="note">每次送出：' + r.sub.times.map(function(x, i){ return '第' + (i + 1) + '次 ' + hwFmt(x.t); }).join('；') + '</div>' : '') : '') + '</div>' + (r.sub && r.sub.fb ? '<div class="note">回饋：' + esc(r.sub.fb) + '</div>' : '') + '</div><div class="slot-act">' + (r.sub ? '<button class="btn sm" data-h="view" data-k="' + k + '">查看內容</button>' : '') + '</div></div><div id="det-' + k + '"></div>';
+      return '<div class="slot"><div class="slot-time" style="min-width:90px;">' + esc(r.name) + '</div><div class="slot-main"><div><b>' + HW_LABEL[st] + '</b>' + (r.sub ? '　<span class="note">最後送出 ' + hwFmt(r.sub.at) + (r.sub.count > 1 ? '（共 ' + r.sub.count + ' 次，第一次 ' + hwFmt(r.sub.firstAt) + '）' : '') + ((r.sub.times || []).some(function(x){ return x.s === false; }) ? '　⚠ 有一次用的是裝置時間' : '') + '</span>' + (r.sub.count > 1 && r.sub.times ? '<div class="note">每次送出：' + r.sub.times.map(function(x, i){ return '第' + (i + 1) + '次 ' + hwFmt(x.t); }).join('；') + '</div>' : '') : '') + '</div>' + (r.sub && r.sub.fb ? '<div class="note">回饋：' + esc(r.sub.fb) + '</div>' : '') + '</div><div class="slot-act">' + (r.sub ? '<button class="btn sm" data-h="view" data-k="' + k + '">查看內容</button>' : '') + '</div></div><div id="det-' + k + '"></div>';
     }).join("") : '<p class="note">還沒有名單，也還沒有人交。到聯絡簿首頁貼上班級名單，結算時才找得出沒交的人。</p>') + '</div>';
   shell(html); setCrumb([]);
   document.getElementById("main").onclick = async function(e){
@@ -1028,7 +1028,7 @@ async function hwSettle(items, roster){
   if(!sel.length) html += '<div class="panel"><p class="note">這段期間沒有截止的作業。</p></div>';
   else {
     html += '<div class="panel" style="overflow-x:auto;"><table class="hw-table"><thead><tr><th>學生</th>' + sel.map(function(it){ return '<th title="' + esc(it.title) + '">' + esc(it.due.slice(5, 10).replace("-", "/")) + '<div class="note" style="font-weight:400;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + esc(it.title) + '</div></th>'; }).join("") + '<th>準時</th><th>遲交</th><th>未交</th></tr></thead><tbody>' +
-      keys.map(function(k){ return '<tr><td><b>' + esc(rows[k]) + '</b></td>' + sel.map(function(it){ var st = hwStatus(it, subsBy[it.id][k]); return '<td class="st-' + st + '" title="' + (subsBy[it.id][k] ? hwFmt(subsBy[it.id][k].firstAt) : "") + '">' + SY[st] + '</td>'; }).join("") + '<td>' + tot[k].ok + '</td><td>' + tot[k].late + '</td><td>' + tot[k].missing + '</td></tr>'; }).join("") + '</tbody></table></div>';
+      keys.map(function(k){ return '<tr><td><b>' + esc(rows[k]) + '</b></td>' + sel.map(function(it){ var st = hwStatus(it, subsBy[it.id][k]); return '<td class="st-' + st + '" title="' + (subsBy[it.id][k] ? hwFmt(subsBy[it.id][k].at) : "") + '">' + SY[st] + '</td>'; }).join("") + '<td>' + tot[k].ok + '</td><td>' + tot[k].late + '</td><td>' + tot[k].missing + '</td></tr>'; }).join("") + '</tbody></table></div>';
     var lines = ["【" + cls.name + " 聯絡簿繳交狀況 " + from + " ～ " + to + "，共 " + sel.length + " 份作業】"];
     keys.forEach(function(k){
       var miss = sel.filter(function(it){ return hwStatus(it, subsBy[it.id][k]) === "missing"; }).map(function(it){ return it.title; }), late = sel.filter(function(it){ return hwStatus(it, subsBy[it.id][k]) === "late"; }).map(function(it){ return it.title; });
@@ -1036,7 +1036,7 @@ async function hwSettle(items, roster){
     });
     var text = lines.join("\n");
     html += '<div class="panel"><h3>文字摘要</h3><textarea id="hs-text" rows="' + Math.min(14, lines.length + 1) + '" readonly style="width:100%;padding:8px 10px;border-radius:8px;border:1.5px solid var(--line);background:var(--surface-2);font:inherit;">' + esc(text) + '</textarea><div style="margin-top:8px;"><button class="btn sm" data-h="copy">複製</button> <button class="btn sm" data-h="csv">下載 CSV</button></div></div>';
-    hw.csv = [["學生"].concat(sel.map(function(it){ return it.due.slice(0, 10) + " " + it.title; })).concat(["準時", "遲交", "未交"])].concat(keys.map(function(k){ return [rows[k]].concat(sel.map(function(it){ var st = hwStatus(it, subsBy[it.id][k]); return HW_LABEL[st] + (subsBy[it.id][k] ? " " + hwFmt(subsBy[it.id][k].firstAt) : ""); })).concat([tot[k].ok, tot[k].late, tot[k].missing]); }));
+    hw.csv = [["學生"].concat(sel.map(function(it){ return it.due.slice(0, 10) + " " + it.title; })).concat(["準時", "遲交", "未交"])].concat(keys.map(function(k){ return [rows[k]].concat(sel.map(function(it){ var st = hwStatus(it, subsBy[it.id][k]); return HW_LABEL[st] + (subsBy[it.id][k] ? " " + hwFmt(subsBy[it.id][k].at) : ""); })).concat([tot[k].ok, tot[k].late, tot[k].missing]); }));
   }
   shell(html); setCrumb([]);
   document.getElementById("main").onclick = function(e){
@@ -1061,13 +1061,13 @@ async function renderStudentHw(){
   var html = '<div class="head-row"><div style="flex:1;"><h2>聯絡簿</h2><div class="note">' + esc(st.name) + '</div></div><div><button class="btn sm ghost" data-h="home">回班級頁</button></div></div>';
   if(!it){
     html += '<div class="panel">' + (items.length ? items.map(function(x){
-      var s = hwStatus(x, mySubs[x.id]), lab = s === "ok" ? "✓ 已交 " + hwFmt(mySubs[x.id].firstAt) : s === "late" ? "⏰ 遲交 " + hwFmt(mySubs[x.id].firstAt) : s === "missing" ? "✗ 已過期未交" : "尚未繳交";
+      var s = hwStatus(x, mySubs[x.id]), lab = s === "ok" ? "✓ 已交，最後送出 " + hwFmt(mySubs[x.id].at) : s === "late" ? "⏰ 遲交，最後送出 " + hwFmt(mySubs[x.id].at) : s === "missing" ? "✗ 已過期未交" : "尚未繳交";
       return '<div class="slot" data-h="open" data-id="' + x.id + '" style="cursor:pointer;"><div class="slot-time" style="min-width:110px;">' + esc(x.due ? hwFmt(hwDueTs(x)) : "未設期限") + '<div class="note">截止</div></div><div class="slot-main"><div><b>' + esc(x.title) + '</b></div><div class="note">' + lab + '</div></div></div>';
     }).join("") : '<p class="note">老師還沒有公布作業。</p>') + '</div>';
   } else {
     var sub = mySubs[it.id], s2 = hwStatus(it, sub), existing = [];
     html += '<div class="panel"><h3>' + esc(it.title) + '</h3><div class="note" style="margin-bottom:8px;">截止 ' + esc(it.due ? hwFmt(hwDueTs(it)) : "未設期限") + '</div>' + (it.body ? '<div style="white-space:pre-wrap;margin-bottom:8px;">' + esc(it.body) + '</div>' : '') + '<div class="tools">' + (it.imgs || []).map(function(u){ return '<img src="' + u + '" data-h="zoom" style="max-width:240px;max-height:240px;border-radius:8px;border:1px solid var(--line);cursor:zoom-in;">'; }).join("") + '</div></div>' +
-      '<div class="panel rec-form"><h3>我的作業　<span class="note">' + (sub ? (s2 === "late" ? "⏰ 遲交，第一次繳交 " : "✓ 已繳交，第一次 ") + hwFmt(sub.firstAt) + (sub.count > 1 ? "，最後更新 " + hwFmt(sub.at) : "") : "尚未繳交") + '</span></h3>' + (sub && sub.fb ? '<div class="panel" style="background:#E3F1E8;">老師回饋：' + esc(sub.fb) + '</div>' : '') +
+      '<div class="panel rec-form"><h3>我的作業　<span class="note">' + (sub ? (s2 === "late" ? "⏰ 遲交，最後送出 " : "✓ 準時，最後送出 ") + hwFmt(sub.at) + (sub.count > 1 ? "（共送出 " + sub.count + " 次，第一次 " + hwFmt(sub.firstAt) + "）" : "") : "尚未繳交") + '</span></h3>' + (sub && sub.fb ? '<div class="panel" style="background:#E3F1E8;">老師回饋：' + esc(sub.fb) + '</div>' : '') +
       '<label>文字（選填）</label><textarea id="hs-text" rows="3" placeholder="可以打字寫作業，或補充說明">' + esc(sub ? sub.text || "" : "") + '</textarea>' +
       '<label>照片（可以拍作業，最多 6 張）</label><div class="tools" id="hs-shots" style="margin-bottom:6px;"></div><div><button class="btn sm" data-h="addphoto">拍照／選照片</button><input type="file" id="hs-file" accept="image/*" multiple style="display:none;"></div>' +
       '<div style="margin-top:14px;"><button class="btn primary" data-h="submit">' + (sub ? "重新送出" : "送出作業") + '</button> <button class="btn sm ghost" data-h="list">回作業列表</button></div></div>';
