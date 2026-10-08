@@ -99,6 +99,7 @@
     border-bottom:1px solid var(--grid-line); gap:6px; flex-wrap:wrap;
   }
   body.embed .brand{ display:none; }
+  body.embed #btn-narrow-sidebar{ display:none !important; }
   body.embed .student-mode .draw-toolbar-top{ display:none !important; }
   /* 平台課次頁：投影片分頁只給新增投影片，測驗與練習分頁只給新增大題／題庫 */
   body.kind-slides #btn-new-section, body.kind-slides #bank-menu-wrap{ display:none !important; }
@@ -15716,6 +15717,21 @@
       var d0 = ev.data; if(!d0) return;
       if(d0.mm === "startRoom"){ if(!isStudent && activeProjectId && !inRoom() && !isOfflineMode) createRoom(true); }
       else if(d0.mm === "focusKind"){ jumpToKind(d0.kind); }
+      else if(d0.mm === "copyTo" && !isStudent){
+        var src = getActiveProject(); if(!src) return;
+        var np = { id: uid("proj"), folderId: null, title: d0.title || (src.title + "（複製）"), desc: "", currentQId: null, sections: {} };
+        var cnt = 0, nQ = 0;
+        Object.keys(src.sections || {}).sort(function(x, y){ return (src.sections[x].order || 0) - (src.sections[y].order || 0); }).forEach(function(sid){
+          var sc = src.sections[sid], isDeck = sc.type === "board";
+          if((d0.kind === "slides") !== isDeck) return;
+          var cl = JSON.parse(JSON.stringify(sc)), nid = uid("sec"); cl.id = nid; cl.order = cnt++;
+          np.sections[nid] = cl; var qs = Object.keys(cl.questions || {}); nQ += qs.length;
+          if(!np.currentQId && qs.length) np.currentQId = qs[0];
+        });
+        if(!cnt){ alert("這一課目前沒有可以複製的內容。"); return; }
+        fsData.projects[np.id] = np; saveFS();
+        try{ parent.postMessage({ mm: "projectCopied", pid: np.id, title: np.title, target: d0.target, slides: d0.kind === "slides" ? nQ : 0, quiz: d0.kind === "slides" ? 0 : nQ }, "*"); }catch(e1){}
+      }
     });
   }
   // 跳到目前專案裡第一份簡報（slides）或第一題測驗（quiz）

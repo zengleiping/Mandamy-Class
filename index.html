@@ -5516,6 +5516,11 @@ render();
   var cmTextFormCancelBtnEl = document.getElementById("cmTextFormCancelBtn");
   var cmTextFormSaveBtnEl = document.getElementById("cmTextFormSaveBtn");
 
+  // 平台「教材庫」嵌入（?embed=1&manage=1&book=BID[&lesson=N]）：只顯示這一本教材的課次，新增的課次標上這一本
+  var cmQs = new URLSearchParams(location.search);
+  var cmManage = !!(cmQs.get("embed") && cmQs.get("manage"));
+  var cmBook = cmManage ? (cmQs.get("book") || "b1") : null;
+  function cmInBook(l){ return !cmBook || (l.book || "b1") === cmBook; }
   var cmLibrary = [];            // 目前正在編輯的完整課程資料（深拷貝；沒按「儲存並套用」不會真的存到雲端）
   var cmSelectedLessonIdx = -1;
   var cmActiveTab = "vocab";
@@ -5594,7 +5599,9 @@ render();
     }catch(e){
       cmLibrary = [];
     }
-    cmSelectedLessonIdx = cmLibrary.length ? 0 : -1;
+    cmSelectedLessonIdx = -1;
+    for(var ci = 0; ci < cmLibrary.length; ci++){ if(cmInBook(cmLibrary[ci]) && (!cmQs.get("lesson") || String(cmLibrary[ci].lesson) === cmQs.get("lesson"))){ cmSelectedLessonIdx = ci; break; } }
+    if(cmSelectedLessonIdx < 0) for(var cj = 0; cj < cmLibrary.length; cj++){ if(cmInBook(cmLibrary[cj])){ cmSelectedLessonIdx = cj; break; } }
     renderCmLessonList();
     renderCmLessonEditor();
   }
@@ -5606,7 +5613,7 @@ render();
 
   function renderCmLessonList(){
     cmLessonListEl.innerHTML = "";
-    if(!cmLibrary.length){
+    if(!cmLibrary.some(cmInBook)){
       var p = document.createElement("p");
       p.style.cssText = "font-size:12.5px; color:var(--ink-faint); line-height:1.6;";
       p.textContent = "還沒有課次，按下面「＋ 新增課次」開始建立你自己的教材。";
@@ -5614,6 +5621,7 @@ render();
       return;
     }
     cmLibrary.forEach(function(lesson, idx){
+      if(!cmInBook(lesson)) return;
       var row = document.createElement("div");
       row.className = "cm-lesson-item" + (idx === cmSelectedLessonIdx ? " active" : "");
       var label = document.createElement("span");
@@ -5627,7 +5635,7 @@ render();
         if(!confirm("確定要刪除「第" + lesson.lesson + "課" + (lesson.title ? "：" + lesson.title : "") + "」嗎？\n這一課底下的生詞、語法、課文都會一起刪除。")) return;
         cmLibrary.splice(idx, 1);
         cmDirty = true;
-        if(cmSelectedLessonIdx === idx) cmSelectedLessonIdx = cmLibrary.length ? 0 : -1;
+        if(cmSelectedLessonIdx === idx){ cmSelectedLessonIdx = cmLibrary.findIndex(cmInBook); }
         else if(cmSelectedLessonIdx > idx) cmSelectedLessonIdx--;
         renderCmLessonList(); renderCmLessonEditor();
       });
@@ -6204,7 +6212,8 @@ render();
   /* ---------- 課次新增／儲存整份教材庫 ---------- */
   cmAddLessonBtnEl.addEventListener("click", function(){
     cmAddLessonFormEl.style.display = "block";
-    var nextNum = cmLibrary.length ? Math.max.apply(null, cmLibrary.map(function(l){ return Number(l.lesson) || 0; })) + 1 : 1;
+    var inB = cmLibrary.filter(cmInBook);
+    var nextNum = inB.length ? Math.max.apply(null, inB.map(function(l){ return Number(l.lesson) || 0; })) + 1 : 1;
     cmNewLessonNumEl.value = nextNum;
     cmNewLessonTitleEl.value = "";
     setTimeout(function(){ cmNewLessonTitleEl.focus(); }, 30);
@@ -6214,9 +6223,12 @@ render();
     var num = Number(cmNewLessonNumEl.value);
     var title = cmNewLessonTitleEl.value.trim();
     if(!num){ alert("請輸入課次數字"); return; }
-    cmLibrary.push({ lesson: num, title: title, vocab: [], grammar: [], texts: [] });
+    if(cmLibrary.some(function(l){ return cmInBook(l) && Number(l.lesson) === num; })){ alert("這一本已經有第 " + num + " 課了，請換一個課次數字。"); return; }
+    var nl = { lesson: num, title: title, vocab: [], grammar: [], texts: [] };
+    if(cmBook && cmBook !== "b1") nl.book = cmBook;
+    cmLibrary.push(nl);
     cmLibrary.sort(function(a, b){ return (Number(a.lesson) || 0) - (Number(b.lesson) || 0); });
-    cmSelectedLessonIdx = cmLibrary.findIndex(function(l){ return l.lesson === num && l.title === title; });
+    cmSelectedLessonIdx = cmLibrary.indexOf(nl);
     cmDirty = true;
     cmAddLessonFormEl.style.display = "none";
     renderCmLessonList(); renderCmLessonEditor();
@@ -6230,9 +6242,15 @@ render();
       await saveCloudVocabBank(currentCloudTeacher.id, cmLibrary, currentCloudTeacher.displayName);
       try{ localStorage.setItem(CLOUD_VOCAB_CACHE_KEY, JSON.stringify(cmLibrary)); }catch(e){}
       cmDirty = false;
-      cmSaveMsgEl.textContent = "✅ 已儲存！即將重新整理頁面套用到課堂遊戲…";
       cmSaveMsgEl.style.color = "var(--accent)";
-      setTimeout(function(){ location.reload(); }, 1000);
+      if(cmManage){
+        cmSaveMsgEl.textContent = "✅ 已儲存";
+        cmSaveBtnEl.disabled = false; cmSaveBtnEl.textContent = originalText;
+        try{ parent.postMessage({ mm: "bankSaved" }, "*"); }catch(e){}
+      } else {
+        cmSaveMsgEl.textContent = "✅ 已儲存！即將重新整理頁面套用到課堂遊戲…";
+        setTimeout(function(){ location.reload(); }, 1000);
+      }
     }catch(e){
       cmSaveMsgEl.textContent = "儲存失敗，請檢查網路連線後再試一次。";
       cmSaveMsgEl.style.color = "var(--wrong)";
@@ -6242,6 +6260,18 @@ render();
   });
 
   document.getElementById("cloudSyncManageContentBtn").addEventListener("click", openContentManager);
+  async function cmEnsureLogin(){
+    if(currentCloudTeacher) return true;
+    var ready = await waitForFirebase(); if(!ready) return false;
+    var savedId = null; try{ savedId = localStorage.getItem(TEACHER_SESSION_KEY); }catch(e){}
+    if(!savedId) return false;
+    try{
+      var account = await fetchTeacherAccount(savedId);
+      if(account && !account.disabled){ currentCloudTeacher = { id: account.id || savedId, username: account.username, displayName: account.displayName || account.username }; window.__capsuleCurrentTeacherId = currentCloudTeacher.id; return true; }
+    }catch(e){}
+    return false;
+  }
+  window.__cmManage = { ready: function(){ return true; }, open: async function(){ if(await cmEnsureLogin()) openContentManager(); else alert("請先回平台重新登入。"); } };
   cmCloseBtnEl.addEventListener("click", closeContentManagerWithConfirm);
   cmOverlay.addEventListener("click", function(e){ if(e.target === cmOverlay) closeContentManagerWithConfirm(); });
 })();
@@ -8029,6 +8059,13 @@ render();
   var st = document.createElement('style');
   st.textContent = 'body.embed header, body.embed .quick-links, body.embed nav.tabs, body.embed #lessonFilter, body.embed .zoom-control, body.embed .lesson-chips:not(#textLessonChips){display:none !important;}';
   document.head.appendChild(st);
+  if(pp.get('manage')){
+    var ms = document.createElement('style');
+    ms.textContent = 'body.manage > *:not([id^="cm"]):not(#contentManagerOverlay):not(script):not(style){display:none !important;} body.manage #cmCloseBtn{display:none !important;} body.manage #contentManagerOverlay{background:var(--bg,#faf7f2) !important; align-items:flex-start !important; padding:0 !important;} body.manage #contentManagerOverlay .bell-card{max-width:none !important; width:100% !important; max-height:100vh !important; box-shadow:none !important; border-radius:0 !important; padding:20px 24px !important;}';
+    document.head.appendChild(ms); document.body.classList.add('manage');
+    var tries = 0, tm = setInterval(function(){ tries++; if(window.__cmManage && window.__cmManage.ready()){ clearInterval(tm); window.__cmManage.open(); } else if(tries > 80){ clearInterval(tm); } }, 250);
+    return;
+  }
   window.addEventListener('message', function(e){ if(e.data && e.data.mm === 'focus') document.body.classList.toggle('focus', !!e.data.on); });
   var lesson = pp.get('lesson'), tab = pp.get('tab');
   try{
