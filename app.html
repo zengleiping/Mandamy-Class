@@ -505,8 +505,38 @@ function renderPlatformHome(){
   var ys = sortedBy(schoolsOf(), true);
   var html = '<div class="head-row"><div style="flex:1;"><h2>歡迎，' + esc(S.teacher.name) + '</h2><div class="note">選一個年度，再選學校和班級（沒有班級也沒關係）。</div></div><div><button class="btn" data-a="add-s">新增年度</button></div></div><div class="panel"><h3>年度</h3>';
   html += ys.length ? '<div class="tools">' + ys.map(function(y){ return '<button class="btn" data-a="go" data-s="' + y + '">' + esc(schoolsOf()[y].name) + '</button>'; }).join("") + '</div>' : '<p class="note">還沒有年度。按右上角「新增年度」開始。</p>';
-  html += '</div>';
+  html += '</div><div class="panel"><h3>備份與還原</h3><p class="note" style="margin:0 0 8px;">把年度、學校、班級、開放設定、複習單元、教材分冊等平台資料存成一個檔案，萬一資料被改壞可以還原。（生詞教材請用教材庫、測驗簡報請用簡報頁各自備份。）</p><div class="tools"><button class="btn sm" id="bk-out">下載備份</button><button class="btn sm" id="bk-in">從備份還原…</button><input type="file" id="bk-file" accept=".json,application/json" style="display:none;"></div></div>';
   shell(html); setCrumb([]); bindListPage();
+  document.getElementById("bk-out").onclick = backupPlatform;
+  document.getElementById("bk-in").onclick = function(){ document.getElementById("bk-file").click(); };
+  document.getElementById("bk-file").onchange = function(e){ var f = e.target.files[0]; e.target.value = ""; if(f) restorePlatform(f); };
+}
+async function backupPlatform(){
+  var codes = {};
+  Object.keys(S.plat.schools || {}).forEach(function(y){ var ts = S.plat.schools[y].terms || {}; Object.keys(ts).forEach(function(t){ var cl = ts[t].classes || {}; Object.keys(cl).forEach(function(c){ if(cl[c].code) codes[cl[c].code] = { t: S.teacher.id, s: y, tm: t, c: c }; }); }); });
+  var data = { kind: "mandamy-platform-backup", version: 1, savedAt: new Date().toISOString(), teacher: S.teacher.id,
+    platform: { schools: S.plat.schools, lessonMap: S.plat.lessonMap, units: S.plat.units, books: S.plat.books, customLessons: S.plat.customLessons, hier: 2 }, classCodes: codes };
+  var blob = new Blob([JSON.stringify(data)], { type: "application/json" });
+  var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "mandamy-platform-backup-" + new Date().toISOString().slice(0, 10) + ".json";
+  document.body.appendChild(a); a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+  toast("已下載備份");
+}
+async function restorePlatform(file){
+  var data;
+  try{ data = JSON.parse(await file.text()); }catch(e){ alert("這不是有效的備份檔。"); return; }
+  if(!data || data.kind !== "mandamy-platform-backup" || !data.platform){ alert("這不是平台備份檔。"); return; }
+  if(data.teacher !== S.teacher.id){ alert("這份備份屬於另一個帳號（" + data.teacher + "），不能還原到這個帳號。"); return; }
+  var n = Object.keys(data.platform.schools || {}).length;
+  if(!confirm("用這份備份（" + (data.savedAt || "").slice(0, 10) + "，" + n + " 個年度）覆蓋目前的平台資料？\n目前的資料會先自動存一份在雲端 platformBeforeRestore，需要時可以找回。")) return;
+  var base = "teacherPlatform/" + S.teacher.id;
+  try{
+    await fbSet(base + "/platformBeforeRestore", { savedAt: new Date().toISOString(), schools: S.plat.schools, lessonMap: S.plat.lessonMap, units: S.plat.units, books: S.plat.books, customLessons: S.plat.customLessons });
+    var P = data.platform, keys = ["schools", "lessonMap", "units", "books", "customLessons"];
+    for(var i = 0; i < keys.length; i++){ await fbSet(base + "/" + keys[i], P[keys[i]] || null); S.plat[keys[i]] = P[keys[i]] || {}; }
+    await fbSet(base + "/hier", 2);
+    var cc = data.classCodes || {}; for(var code in cc){ await fbSet("classCodes/" + code, cc[code]); }
+  }catch(e){ alert("還原失敗，請檢查網路或 Firebase 規則。"); return; }
+  S.sel = null; S.lesson = null; await syncLessonIndex(); render(); toast("已還原");
 }
 function renderYearHome(){
   S.focus = false;
