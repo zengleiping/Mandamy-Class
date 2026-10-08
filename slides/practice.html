@@ -102,6 +102,8 @@
   body.embed #btn-narrow-sidebar{ display:none !important; }
   body.embed .student-mode .draw-toolbar-top{ display:none !important; }
   /* 平台課次頁：投影片分頁只給新增投影片，測驗與練習分頁只給新增大題／題庫 */
+  /* 學生自習：隱藏所有編輯、開房間、結算的功能，只留瀏覽與作答 */
+  body.solo .section-head-actions, body.solo .q-action-btns, body.solo #btn-new-section, body.solo #add-slide-menu-wrap, body.solo #bank-menu-wrap, body.solo .drag-handle-icon, body.solo .sidebar-collapse-btn, body.solo #topbar-right, body.solo .draw-toolbar-top{ display:none !important; }
   body.kind-slides #btn-new-section, body.kind-slides #bank-menu-wrap{ display:none !important; }
   body.kind-quiz #add-slide-menu-wrap{ display:none !important; }
   body.embed.focus .topbar, body.embed.focus .sidebar{ display:none !important; }
@@ -3802,6 +3804,7 @@
     alert("儲存到雲端失敗，剛剛的變更可能沒有真的存起來，請檢查網路連線。如果剛剛上傳了很大的圖片或匯入很多投影片，也可能是檔案太大，建議用較小的圖片再試一次。\nFailed to save to the cloud — your latest change may not be saved. Please check your connection. If you just uploaded a large image or imported many slides, try a smaller file.\n(" + (err && err.message ? err.message : err) + ")");
   }
   function saveFS(){
+    if(window.__solo) return; // 學生自習模式：只看、不存回老師的資料庫
     if(currentTeacher){
       try{
         pendingCloudUploads++;
@@ -9377,7 +9380,7 @@
     var deckStudent = !!(isStudent && slideSecInfo && slideSecInfo.sec.type === "board");
     // 老師按「放映」＝正式上課：放映前已經做好的文字／圖片／圖案／表格不能被選取、搬動、改字；只能用筆寫字、打字補充筆記、橡皮擦擦筆跡
     function isLiveItem(it){ if(!it || it.k !== "text") return false; var tt = texts.find(function(x){ return x.id === it.id; }); return !!(tt && tt.live); }
-    function presentLock(){ return !isStudent && !!(slideSecInfo && slideSecInfo.sec.type === "board") && container.classList.contains("canvas-fs-active") && !container.classList.contains("fs-edit"); }
+    function presentLock(){ if(window.__solo) return true; return !isStudent && !!(slideSecInfo && slideSecInfo.sec.type === "board") && container.classList.contains("canvas-fs-active") && !container.classList.contains("fs-edit"); }
     // 小白板：只留筆、文字、橡皮擦、清空、圖案（多媒體放在題目上方，由題目設定，不是浮在畫布上）
     var simpleBoard = !!(slideSecInfo && slideSecInfo.sec.type === "whiteboard");
     // 老師預設是「文字」：點空白處新增文字方塊；點到任何框框（文字／圖片／圖案／表格）就自動變成「選取」，Ctrl／Shift 可以加選；學生和小白板預設是筆
@@ -15847,8 +15850,25 @@
       fsData = freshDefaultFS();
       showLobby();
     }
+  } else if(new URLSearchParams(location.search).get("solo")){
+    soloStart();
   } else {
     initTeacherAuthAndStart();
+  }
+  // 學生自習：不用登入、不用房間，直接把老師開放的這份專案讀進來（唯讀，答題進度只留在這個畫面）
+  async function soloStart(){
+    var q = new URLSearchParams(location.search), pid = q.get("solo"), tid = q.get("tid"), focus = q.get("focus");
+    window.__solo = true; document.body.classList.add("embed", "solo");
+    if(/^(slides|quiz)$/.test(focus || "")) setEmbedKind(focus);
+    var ready = await waitForFirebase();
+    if(!ready){ document.body.innerHTML = '<p style="padding:30px;font-family:sans-serif;">連不上雲端，請檢查網路後重新整理。</p>'; return; }
+    try{
+      var snap = await get(ref(db, "teacherLibraries/" + tid + "/projects/" + pid));
+      var proj = snap.val();
+      if(!proj){ document.body.innerHTML = '<p style="padding:30px;font-family:sans-serif;">找不到這份內容，請請老師確認。</p>'; return; }
+      fsData = { projects: {}, folders: {} }; fsData.projects[pid] = proj;
+      openProject(pid); jumpToKind(focus);
+    }catch(e){ document.body.innerHTML = '<p style="padding:30px;font-family:sans-serif;">讀取失敗，可能是老師的雲端設定還沒開放學生讀取（Firebase 規則）。</p>'; console.warn(e); }
   }
 })();
 </script>

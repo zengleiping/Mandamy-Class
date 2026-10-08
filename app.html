@@ -1604,6 +1604,12 @@ function renderLessonCommon(no, open, teacher, liveStudent){
       }
     } else if(liveStudent){
       frame = (S.live && S.live.room) ? lessonHtmlFrame("slides/practice.html?embed=1&room=" + encodeURIComponent(S.live.room) + "&role=student&name=" + encodeURIComponent(S.student ? S.student.name : "")) : '<div class="empty"><p class="note">老師還沒開始這一段，請稍候…</p></div>';
+    } else if(pids.length && S.student){
+      // 學生自習：老師開放這一項後，不用房間號碼也能自己看、自己練習
+      if(!S.sub || pids.indexOf(S.sub) === -1) S.sub = pids[0];
+      sub = '<div class="subbar">' + (pids.length > 1 ? pids.map(function(p){ return '<button class="tab' + (p === S.sub ? ' on' : '') + '" data-sub="' + p + '" style="padding:5px 14px;font-size:13.5px;">' + esc(ps[p].title) + '</button>'; }).join("") : '') +
+        '<span style="margin-left:auto;display:flex;gap:6px;align-items:center;"><span class="note">上課中？</span><input type="text" id="roomno" placeholder="房間號碼" inputmode="numeric" style="width:110px;padding:5px 8px;border-radius:8px;border:1.5px solid var(--line);"><button class="btn sm primary" id="roomgo">加入</button></span></div>';
+      frame = lessonHtmlFrame("slides/practice.html?embed=1&solo=" + encodeURIComponent(S.sub) + "&tid=" + encodeURIComponent(S.student.idx.t) + "&focus=" + kind);
     } else {
       frame = '<div class="empty"><h3 style="margin-bottom:8px;">' + (kind === "slides" ? "投影片" : "測驗與練習") + '</h3><p class="note">上課時，老師會給你一組房間號碼。<br>輸入後就能和老師一起看投影片、作答。</p><div class="join" style="justify-content:center;"><input type="text" id="roomno" placeholder="房間號碼" inputmode="numeric" style="width:160px;"><button class="btn primary" id="roomgo">加入</button></div></div>';
     }
