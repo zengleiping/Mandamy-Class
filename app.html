@@ -506,7 +506,7 @@ function renderLessonCommon(no, open, teacher, liveStudent){
   var cur = tabs.filter(function(t){ return t[0] === S.tab; })[0];
   var live = S.live && S.live.on;
   var html = '<div class="tabs">' + (liveStudent ? '' : '<button class="tab" data-back="1">‹ 返回</button>' + tabs.map(function(t){ return '<button class="tab' + (t[0] === S.tab ? ' on' : '') + '" data-tab="' + t[0] + '">' + t[1] + '</button>'; }).join("") +
-    (teacher ? ((live ? '<button class="tab focus-btn" data-focus="1" style="margin-left:auto;">' + (S.focus ? "顯示欄位" : "隱藏欄位") + '</button><button class="tab focus-btn" data-live="1" style="margin-left:6px;background:var(--seal);color:#fff;">⏹ 結束上課</button>' : '<button class="tab focus-btn" data-live="1" title="開始上課：學生會自動跟著你的畫面，並隱藏上方與左側欄位">🎬 開始上課</button>')) : '')) + '</div>';
+    (teacher ? ((live ? '<button class="tab focus-btn" data-fs="1" style="margin-left:auto;" title="瀏覽器全螢幕（Esc 退出，不會結束上課）">⛶ 全螢幕</button><button class="tab focus-btn" data-focus="1" style="margin-left:6px;">' + (S.focus ? "顯示欄位" : "隱藏欄位") + '</button><button class="tab focus-btn" data-live="1" style="margin-left:6px;background:var(--seal);color:#fff;">⏹ 結束上課</button>' : '<button class="tab focus-btn" data-live="1" title="開始上課：學生會自動跟著你的畫面，並隱藏上方與左側欄位">🎬 開始上課</button>')) : '')) + '</div>';
   var sub = '', frame = '', role = teacher ? '' : '&role=student';
   if(S.tab === "material"){
     var subs = [["vocab","生詞"],["grammar","語法"],["text","課文"]].filter(function(s){ return teacher || open[s[0]]; });
@@ -542,12 +542,12 @@ async function toggleLive(){
   if(S.live && S.live.on){
     if(!confirm("結束上課？學生會回到自己的班級頁。")) return;
     S.live = null; cls.live = null; try{ await fbSet(liveRef(), null); }catch(e){}
-    setFocus(false); renderLesson(cls); return;
+    setFocus(false); try{ if(document.fullscreenElement) document.exitFullscreen().catch(function(){}); }catch(e){} renderLesson(cls); return;
   }
   S.live = { on: true, lesson: S.lesson, tab: S.tab, sub: S.sub || null, room: null, startedAt: Date.now() };
   try{ await fbSet(liveRef(), S.live); }catch(e){ toast("開始上課失敗，請檢查網路或 Firebase 規則"); S.live = null; return; }
   cls.live = S.live;
-  renderLesson(cls); setFocus(true); toast("已開始上課，學生會自動跟著你的畫面");
+  renderLesson(cls); setFocus(true); toggleBrowserFullscreenOn(); toast("已開始上課，學生會自動跟著你的畫面");
 }
 function pushLive(clearLesson){
   if(!S.teacher || !S.live || !S.live.on || !S.sel) return;
@@ -565,13 +565,15 @@ function setFocus(on){
   var sh = document.querySelector(".shell"); if(sh) sh.classList.toggle("focus", S.focus);
   var fb = document.querySelector("[data-focus]"); if(fb) fb.textContent = S.focus ? "顯示欄位" : "隱藏欄位";
   var fr = document.getElementById("fr"); if(fr && fr.contentWindow) fr.contentWindow.postMessage({ mm: "focus", on: S.focus }, "*");
+}
+// 退出瀏覽器全螢幕（Esc 或老師自己切出去看別的東西）不會結束上課，也不會改變欄位隱藏與否——只有按鈕才會改變
+function toggleBrowserFullscreenOn(){ try{ if(!document.fullscreenElement && document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(function(){}); }catch(e){} }
+function toggleBrowserFullscreen(){
   try{
-    if(S.focus && !document.fullscreenElement && document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(function(){});
-    if(!S.focus && document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(function(){});
+    if(document.fullscreenElement){ document.exitFullscreen().catch(function(){}); }
+    else if(document.documentElement.requestFullscreen){ document.documentElement.requestFullscreen().catch(function(){}); }
   }catch(e){}
 }
-document.addEventListener("fullscreenchange", function(){ if(!document.fullscreenElement && S.focus) setFocus(false); });
-document.addEventListener("keydown", function(e){ if(e.key === "Escape" && S.focus) setFocus(false); });
 function bindLessonNav(cls, backFn, renderFn){
   var m = document.getElementById("main");
   m.onclick = function(e){
@@ -579,6 +581,7 @@ function bindLessonNav(cls, backFn, renderFn){
     if(b.dataset.back){ if(S.focus) setFocus(false); backFn(); if(S.teacher) pushLive(true); return; }
     if(b.dataset.focus){ setFocus(!S.focus); return; }
     if(b.dataset.live){ toggleLive(); return; }
+    if(b.dataset.fs){ toggleBrowserFullscreen(); return; }
     if(b.dataset.tab){ S.tab = b.dataset.tab; S.sub = null; renderFn(); pushLive(); return; }
     if(b.dataset.sub){ S.sub = b.dataset.sub; renderFn(); pushLive(); return; }
     if(b.id === "roomgo"){
