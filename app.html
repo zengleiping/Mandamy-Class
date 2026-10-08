@@ -138,7 +138,7 @@ function askText(title, value, okLabel){
     var done = false;
     function fin(v){ if(done) return; done = true; try{ d.close(); }catch(e){} resolve(v); }
     document.getElementById("ask-no").onclick = function(){ fin(null); };
-    d.onclose = function(){ fin(null); };
+    d.oncancel = function(e){ e.preventDefault(); fin(null); };
     d.querySelector("form").onsubmit = function(e){ e.preventDefault(); var v = i.value.trim(); fin(v || null); };
     d.showModal(); setTimeout(function(){ i.focus(); i.select(); }, 30);
   });
@@ -360,7 +360,10 @@ function renderClassHome(cls){
   var sc = schoolsOf()[S.sel.s], tm = sc.terms[S.sel.t];
   var html = '<div class="head-row"><div style="flex:1;min-width:200px;"><div class="note">' + esc(sc.name) + '　›　' + esc(tm.name) + '</div><h2>' + esc(cls.name) + '</h2></div>' +
     '<div><div class="note">班級代碼</div><span class="code">' + esc(cls.code) + '</span> <button class="btn sm" id="cpy">複製學生連結</button> <button class="btn sm" id="ren">改班名</button> <button class="btn sm danger" id="del">刪除班級</button></div></div>';
-  html += '<div class="panel"><h3>班級功能</h3><div class="tools"><a class="btn" href="index.html" target="_blank">🎡 點名輪盤・⏳ 時空膠囊・班級工具（原教材頁）</a></div><p class="note" style="margin:8px 0 0;">班級工具目前先連到原本的教材頁；之後會直接整合到這裡。</p></div>';
+  html += '<div class="panel"><h3>班級功能</h3><div class="tools"><a class="btn" href="index.html" target="_blank">🎡 點名輪盤・⏳ 時空膠囊・班級工具（原教材頁）</a></div><p class="note" style="margin:8px 0 8px;">班級工具目前先連到原本的教材頁；之後會直接整合到這裡。</p>' +
+    '<div class="note" style="font-weight:700;margin-bottom:6px;">🔗 這個班的常用連結（Padlet、Google Meet 等）</div><div class="tools" id="linkbox">' +
+    (cls.links ? Object.keys(cls.links).map(function(k){ var L = cls.links[k]; return '<span class="chip" style="padding:0;"><a class="btn sm" style="border:none;" href="' + esc(L.url) + '" target="_blank" rel="noopener">' + esc(L.name) + '</a><button class="btn sm ghost" data-ren-link="' + k + '" title="改名／改網址">✏️</button><button class="btn sm ghost" data-del-link="' + k + '" title="刪除">✕</button></span>'; }).join("") : '') +
+    '<button class="btn sm" id="addlink">＋ 新增連結</button></div></div>';
   html += '<div class="panel"><h3>課次與開放設定</h3><p class="note" style="margin:0 0 10px;">綠色＝這個班的學生看得到；灰色＝關閉。預設全部關閉，你打開了學生才看得到。</p><div id="lessons"></div></div>';
   var un = S.unassigned || {}, ukeys = Object.keys(un);
   if(ukeys.length){
@@ -392,6 +395,15 @@ function renderClassHome(cls){
     };
     box.appendChild(div);
   });
+  document.getElementById("addlink").onclick = async function(){
+    var nm = await askText("連結名稱（例如 班級 Padlet）", ""); if(!nm) return;
+    var url = await askText("網址（https://…）", ""); if(!url) return;
+    if(!/^https?:\/\//i.test(url)) url = "https://" + url;
+    var id = uid("l_"); cls.links = cls.links || {}; cls.links[id] = { name: nm, url: url };
+    await fbSet(clsPath(S.sel) + "/links/" + id, cls.links[id]); renderClassHome(cls);
+  };
+  document.querySelectorAll("[data-del-link]").forEach(function(b){ b.onclick = async function(){ var k = b.dataset.delLink; if(!confirm("刪除這個連結？")) return; delete cls.links[k]; await fbSet(clsPath(S.sel) + "/links/" + k, null); renderClassHome(cls); }; });
+  document.querySelectorAll("[data-ren-link]").forEach(function(b){ b.onclick = async function(){ var k = b.dataset.renLink, L = cls.links[k]; var nm = await askText("連結名稱", L.name); if(!nm) return; var url = await askText("網址", L.url); if(!url) return; if(!/^https?:\/\//i.test(url)) url = "https://" + url; L.name = nm; L.url = url; await fbSet(clsPath(S.sel) + "/links/" + k, L); renderClassHome(cls); }; });
   document.getElementById("cpy").onclick = function(){ var l = studentLink(cls.code); (navigator.clipboard ? navigator.clipboard.writeText(l) : Promise.reject()).then(function(){ toast("學生連結已複製"); }, function(){ prompt("學生連結", l); }); };
   document.getElementById("ren").onclick = async function(){ var n = await askText("班級名稱", cls.name); if(!n) return; cls.name = n; await fbUpdate(clsPath(S.sel), { name: n }); render(); };
   document.getElementById("del").onclick = async function(){

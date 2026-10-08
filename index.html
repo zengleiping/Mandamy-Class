@@ -8025,7 +8025,7 @@ render();
   if(!pp.get('embed')) return;
   document.body.classList.add('embed');
   var st = document.createElement('style');
-  st.textContent = 'body.embed header{display:none !important;} body.embed #lessonFilter{display:none !important;} body.embed .zoom-control{top:6px !important;}';
+  st.textContent = 'body.embed header, body.embed .quick-links, body.embed nav.tabs, body.embed #lessonFilter, body.embed .zoom-control{display:none !important;}';
   document.head.appendChild(st);
   var lesson = pp.get('lesson'), tab = pp.get('tab');
   try{

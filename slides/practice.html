@@ -5364,6 +5364,11 @@
       setBtn.onclick = function(){ safeShowModal(document.getElementById("settings-dialog")); };
       topbarActions.appendChild(setBtn);
     }
+    // 平台嵌入時：登入／帳號／版本／回大廳這些由平台外殼負責，不在這裡重複顯示
+    if(document.body.classList.contains("embed")){
+      Array.prototype.forEach.call(topbarActions.children, function(el){ if(/登出|版本記錄|帳號管理|課次大廳|離線|已同步|連線登入/.test(el.textContent || "")) el.style.display = "none"; });
+      Array.prototype.forEach.call(topbarActions.querySelectorAll(".topbar-teacher-cluster"), function(el){ el.style.display = "none"; });
+    }
   }
 
   /* ================== 2026-10-01 離線就緒提示 ＋ 版本記錄 ================== */
