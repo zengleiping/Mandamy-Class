@@ -183,20 +183,60 @@ var S = { focus: false, teacher: null, plat: { schools: {}, lessonMap: {}, lesso
 function schoolsOf(){ return S.plat.schools || {}; }
 function clsPath(sel){ return "teacherPlatform/" + S.teacher.id + "/schools/" + sel.s + "/terms/" + sel.t + "/classes/" + sel.c; }
 function getCls(sel){ var sc = schoolsOf()[sel.s]; var tm = sc && sc.terms && sc.terms[sel.t]; return tm && tm.classes ? tm.classes[sel.c] : null; }
+var DEFAULT_BOOK = "b1";
+var DEFAULT_BOOK_TITLE = "《學華語向前走》第一冊";
+function lkey(book, no){ return book === DEFAULT_BOOK ? String(no) : book + "~" + no; }
+function parseKey(k){ k = String(k); if(k.indexOf("u_") === 0) return null; var i = k.indexOf("~"); return i < 0 ? { book: DEFAULT_BOOK, no: Number(k) } : { book: k.slice(0, i), no: Number(k.slice(i + 1)) }; }
+function booksObj(){ var b = S.plat.books || {}; if(!b[DEFAULT_BOOK]) b = Object.assign({ b1: { title: DEFAULT_BOOK_TITLE, order: 0 } }, b); return b; }
+function bookIds(){ var b = booksObj(); return Object.keys(b).sort(function(x, y){ return (b[x].order || 0) - (b[y].order || 0); }); }
+function bookTitle(id){ var b = booksObj()[id]; return b ? b.title : "（已刪除的教材）"; }
+function classBookIds(cls){ var all = bookIds(); if(!cls || !cls.books) return all; var sel = all.filter(function(b){ return cls.books[b]; }); return sel; }
+function multiBooks(){ return bookIds().length > 1; }
 function isUnit(no){ var l = (S.plat.lessons || {})[no]; return !!(l && l.unit); }
-function lessonKeys(){
-  var L = S.plat.lessons || {}, keys = Object.keys(L);
-  var nums = keys.filter(function(k){ return !L[k].unit; }).sort(function(a, b){ return Number(a) - Number(b); });
-  var units = keys.filter(function(k){ return L[k].unit; }).sort(function(a, b){ return (L[a].order || 0) - (L[b].order || 0); });
-  return nums.concat(units);
+function lessonsOfBook(bid){
+  var L = S.plat.lessons || {};
+  return Object.keys(L).filter(function(k){ return !L[k].unit && (L[k].book || DEFAULT_BOOK) === bid; }).sort(function(a, b){ return L[a].no - L[b].no; });
 }
-function memberRange(m){ m = (m || []).slice().sort(function(a, b){ return a - b; }); if(!m.length) return ""; var contiguous = m.every(function(x, i){ return i === 0 || x === m[i - 1] + 1; }); return contiguous && m.length > 1 ? "第 " + m[0] + "–" + m[m.length - 1] + " 課" : "第 " + m.join("、") + " 課"; }
-function lessonTitle(no){ var l = (S.plat.lessons || {})[no]; if(l && l.unit) return "📚 複習：" + (l.title || "") + "（" + memberRange(l.members) + "）"; return "第 " + no + " 課" + (l && l.title ? " " + l.title : ""); }
-function lessonParam(no){ var l = (S.plat.lessons || {})[no]; return (l && l.unit) ? "lessons=" + encodeURIComponent((l.members || []).join(",")) : "lesson=" + encodeURIComponent(no); }
+function unitKeys(){ var L = S.plat.lessons || {}; return Object.keys(L).filter(function(k){ return L[k].unit; }).sort(function(a, b){ return (L[a].order || 0) - (L[b].order || 0); }); }
+function lessonKeys(cls){
+  var out = [];
+  (cls ? classBookIds(cls) : bookIds()).forEach(function(b){ out = out.concat(lessonsOfBook(b)); });
+  return out.concat(unitKeys());
+}
+function memberRange(m){
+  var L = S.plat.lessons || {}, byBook = {};
+  (m || []).forEach(function(k){ var pk = parseKey(k); if(!pk) return; (byBook[pk.book] = byBook[pk.book] || []).push(pk.no); });
+  var bks = Object.keys(byBook);
+  if(!bks.length) return "";
+  if(bks.length > 1) return "跨 " + bks.length + " 本教材・共 " + (m || []).length + " 課";
+  var arr = byBook[bks[0]].sort(function(a, b){ return a - b; });
+  var contiguous = arr.every(function(x, i){ return i === 0 || x === arr[i - 1] + 1; });
+  var txt = contiguous && arr.length > 1 ? "第 " + arr[0] + "–" + arr[arr.length - 1] + " 課" : "第 " + arr.join("、") + " 課";
+  return (multiBooks() ? bookTitle(bks[0]) + " " : "") + txt;
+}
+function lessonTitle(key){
+  var l = (S.plat.lessons || {})[key];
+  if(l && l.unit) return "📚 複習：" + (l.title || "") + "（" + memberRange(l.members) + "）";
+  var pk = parseKey(key) || { book: DEFAULT_BOOK, no: key };
+  return (multiBooks() ? bookTitle(pk.book) + "　" : "") + "第 " + pk.no + " 課" + (l && l.title ? " " + l.title : "");
+}
+// 嵌入教材頁用的課次參數；目前只有預設教材（第一冊）有雲端生詞庫，其他教材回傳 null
+function lessonParam(key){
+  var l = (S.plat.lessons || {})[key];
+  if(l && l.unit){ var nums = (l.members || []).map(parseKey).filter(function(pk){ return pk && pk.book === DEFAULT_BOOK; }).map(function(pk){ return pk.no; }); return nums.length ? "lessons=" + encodeURIComponent(nums.join(",")) : null; }
+  var pk = parseKey(key); return pk && pk.book === DEFAULT_BOOK ? "lesson=" + encodeURIComponent(pk.no) : null;
+}
 function lessonCounts(no){
   var l = (S.plat.lessons || {})[no] || {}; var c = l.counts || {}, ps = l.projects || {}, sl = 0, qz = 0;
   Object.keys(ps).forEach(function(k){ sl += ps[k].slides || 0; qz += ps[k].quiz || 0; });
   return { vocab: c.vocab || 0, grammar: c.grammar || 0, text: c.text || 0, slides: sl, quiz: qz };
+}
+var BOOK_TOKEN = /第\s*([0-9零〇一二兩三四五六七八九十]+)\s*冊/;
+function bookFromTitle(title){
+  var m = BOOK_TOKEN.exec(title || ""); if(!m) return null;
+  var ids = bookIds();
+  for(var i = 0; i < ids.length; i++){ var bm = BOOK_TOKEN.exec(bookTitle(ids[i])); if(bm && cnNum(bm[1]) === cnNum(m[1])) return ids[i]; }
+  return null;
 }
 
 // ---------- 登入（老師）----------
@@ -229,7 +269,7 @@ async function startTeacher(acc){
   S.teacher = { id: acc.id, name: acc.displayName || acc.username, isAdmin: !!acc.isAdmin };
   root.innerHTML = '<div class="center-wrap"><div class="note">載入中…</div></div>';
   var plat = (await fbGet("teacherPlatform/" + S.teacher.id)) || {};
-  plat.schools = plat.schools || {}; plat.lessonMap = plat.lessonMap || {}; plat.lessons = plat.lessons || {}; plat.units = plat.units || {};
+  plat.schools = plat.schools || {}; plat.lessonMap = plat.lessonMap || {}; plat.lessons = plat.lessons || {}; plat.units = plat.units || {}; plat.books = plat.books || {}; plat.customLessons = plat.customLessons || {};
   S.plat = plat;
   await syncLessonIndex();
   restoreFromHash();
@@ -241,32 +281,44 @@ async function syncLessonIndex(){
   var t = S.teacher.id, bank = null, lib = null;
   try{ bank = await fbGet("teacherVocabBanks/" + t); }catch(e){}
   try{ lib = await fbGet("teacherLibraries/" + t); }catch(e){}
-  var lessons = {}, lm = S.plat.lessonMap || {}, changed = false;
+  var lessons = {}, lm = S.plat.lessonMap || {};
+  // 雲端生詞庫：沒有標「book」的課次都算預設教材（第一冊）
   if(bank && Array.isArray(bank.courseData)) bank.courseData.forEach(function(l){
-    lessons[l.lesson] = { title: l.title || "", counts: { vocab: (l.vocab || []).length, grammar: (l.grammar || []).length, text: (l.texts || []).length }, projects: {} };
+    var b = l.book || DEFAULT_BOOK, k = lkey(b, l.lesson);
+    lessons[k] = { book: b, no: Number(l.lesson), title: l.title || "", counts: { vocab: (l.vocab || []).length, grammar: (l.grammar || []).length, text: (l.texts || []).length }, projects: {} };
   });
-  // 複習單元：由老師挑選要包含哪幾課；生詞／語法／課文數量是成員課次的總和
+  // 老師自己新增的課次（例如其他教材、還沒有生詞也想先建好的課）
+  var cl = S.plat.customLessons || {};
+  Object.keys(cl).forEach(function(k){ if(!booksObj()[cl[k].book]) return; if(!lessons[k]) lessons[k] = { book: cl[k].book, no: Number(cl[k].no), title: cl[k].title || "", counts: {}, projects: {} }; else if(!lessons[k].title && cl[k].title) lessons[k].title = cl[k].title; });
+  // 複習單元：成員是課次的 key；生詞／語法／課文數量是成員的總和
   var units = S.plat.units || {};
   Object.keys(units).forEach(function(uk){
-    var u = units[uk], c = { vocab: 0, grammar: 0, text: 0 };
-    (u.lessons || []).forEach(function(n){ var ll = lessons[n]; if(ll && ll.counts){ c.vocab += ll.counts.vocab || 0; c.grammar += ll.counts.grammar || 0; c.text += ll.counts.text || 0; } });
-    lessons[uk] = { unit: true, title: u.title || "", members: (u.lessons || []).slice(), order: u.order || 0, counts: c, projects: {} };
+    var u = units[uk], c = { vocab: 0, grammar: 0, text: 0 }, mem = (u.lessons || []).map(String);
+    mem.forEach(function(k){ var ll = lessons[k]; if(ll && ll.counts){ c.vocab += ll.counts.vocab || 0; c.grammar += ll.counts.grammar || 0; c.text += ll.counts.text || 0; } });
+    lessons[uk] = { unit: true, title: u.title || "", members: mem, order: u.order || 0, counts: c, projects: {} };
   });
   var unassigned = {}, allProjects = {};
   if(lib && lib.projects) Object.keys(lib.projects).forEach(function(pid){
-    var p = lib.projects[pid], no = lm[pid];
-    if(no == null){ var guess = lessonFromTitle(p.title); if(guess != null){ no = guess; lm[pid] = guess; changed = true; } }
+    var p = lib.projects[pid], key = lm[pid] == null ? null : String(lm[pid]);
+    if(key == null){
+      var guess = lessonFromTitle(p.title);
+      if(guess != null){ var gb = bookFromTitle(p.title) || DEFAULT_BOOK; key = lkey(gb, guess); lm[pid] = key; }
+    }
     var slides = 0, quiz = 0;
     Object.keys(p.sections || {}).forEach(function(sid){ var sc = p.sections[sid], n = Object.keys(sc.questions || {}).length; if(sc.type === "board") slides += n; else quiz += n; });
     allProjects[pid] = { title: p.title, slides: slides, quiz: quiz };
-    if(no == null){ unassigned[pid] = { title: p.title, slides: slides, quiz: quiz }; return; }
-    if(typeof no === "string" && no.indexOf("u_") === 0 && !lessons[no]){ unassigned[pid] = { title: p.title, slides: slides, quiz: quiz }; return; } // 歸去的複習單元已被刪除
-    if(!lessons[no]) lessons[no] = { title: (p.title || "").replace(/^第\s*[0-9零〇一二兩三四五六七八九十]+\s*課\s*/, ""), counts: {}, projects: {} };
-    lessons[no].projects[pid] = { title: p.title, slides: slides, quiz: quiz };
+    if(key == null){ unassigned[pid] = { title: p.title, slides: slides, quiz: quiz }; return; }
+    if(key.indexOf("u_") === 0 && !lessons[key]){ unassigned[pid] = { title: p.title, slides: slides, quiz: quiz }; return; } // 歸去的複習單元已被刪除
+    if(!lessons[key]){
+      var pk = parseKey(key);
+      if(!pk || !booksObj()[pk.book]){ unassigned[pid] = { title: p.title, slides: slides, quiz: quiz }; return; }
+      lessons[key] = { book: pk.book, no: pk.no, title: (p.title || "").replace(/^第\s*[0-9零〇一二兩三四五六七八九十]+\s*課\s*/, ""), counts: {}, projects: {} };
+    }
+    lessons[key].projects[pid] = { title: p.title, slides: slides, quiz: quiz };
   });
   S.plat.lessons = lessons; S.plat.lessonMap = lm; S.unassigned = unassigned; S.allProjects = allProjects;
   var base = "teacherPlatform/" + t;
-  try{ await fbUpdate(base, { lessons: lessons, lessonMap: lm }); }catch(e){ console.error("寫入課次索引失敗（可能是 Firebase 規則還沒開放 teacherPlatform）", e); S.ruleErr = true; }
+  try{ await fbUpdate(base, { lessons: lessons, lessonMap: lm, books: booksObj() }); }catch(e){ console.error("寫入課次索引失敗（可能是 Firebase 規則還沒開放 teacherPlatform）", e); S.ruleErr = true; }
 }
 
 // ---------- 網址記憶 ----------
@@ -387,19 +439,26 @@ function renderClassHome(cls){
     '<div class="note" style="font-weight:700;margin-bottom:6px;">🔗 這個班的常用連結（Padlet、Google Meet 等）</div><div class="tools" id="linkbox">' +
     (cls.links ? Object.keys(cls.links).map(function(k){ var L = cls.links[k]; return '<span class="chip" style="padding:0;"><a class="btn sm" style="border:none;" href="' + esc(L.url) + '" target="_blank" rel="noopener">' + esc(L.name) + '</a><button class="btn sm ghost" data-ren-link="' + k + '" title="改名／改網址">✏️</button><button class="btn sm ghost" data-del-link="' + k + '" title="刪除">✕</button></span>'; }).join("") : '') +
     '<button class="btn sm" id="addlink">＋ 新增連結</button></div></div>';
+  html += '<div class="panel"><h3>這個班使用的教材</h3><p class="note" style="margin:0 0 8px;">勾選的教材才會出現在下面的課次清單，學生也只會看到這幾本。可以同時使用很多本。</p><div class="tools">' + bookIds().map(function(b){ var on = cls.books ? !!cls.books[b] : true; return '<span class="chip" style="padding:3px 4px 3px 10px;"><label style="cursor:pointer;"><input type="checkbox" data-usebook="' + esc(b) + '"' + (on ? ' checked' : '') + '> ' + esc(bookTitle(b)) + '</label> <button class="btn sm ghost" data-renbook="' + esc(b) + '" title="改名">✏️</button>' + (b === DEFAULT_BOOK ? '' : '<button class="btn sm ghost" data-delbook="' + esc(b) + '" title="刪除教材">🗑</button>') + '</span>'; }).join("") + '<button class="btn sm" id="addbook">＋ 新增教材</button></div></div>';
   html += '<div class="panel"><h3>課次與開放設定</h3><p class="note" style="margin:0 0 10px;">綠色＝這個班的學生看得到；灰色＝關閉。預設全部關閉，你打開了學生才看得到。</p><div id="lessons"></div><button class="btn sm" id="addunit" style="margin-top:6px;">＋ 新增複習單元（例如第 1–6 課複習）</button></div>';
   var ap = S.allProjects || {}, apk = Object.keys(ap), un = S.unassigned || {};
   if(apk.length){
-    var opts = function(sel){ return '<option value="">（還沒歸課）</option>' + lessonKeys().map(function(k){ return '<option value="' + esc(k) + '"' + (String(sel) === String(k) ? ' selected' : '') + '>' + esc(lessonTitle(k)) + '</option>'; }).join(""); };
+    var opts = function(sel){
+      var o = '<option value="">（還沒歸課）</option>';
+      bookIds().forEach(function(b){
+        o += '<optgroup label="' + esc(bookTitle(b)) + '">' + lessonsOfBook(b).map(function(k){ var l = S.plat.lessons[k]; return '<option value="' + esc(k) + '"' + (String(sel) === String(k) ? ' selected' : '') + '>第 ' + l.no + ' 課' + (l.title ? ' ' + esc(l.title) : '') + '</option>'; }).join("") + '<option value="__new:' + esc(b) + '">＋ 新增課次…</option></optgroup>';
+      });
+      var us = unitKeys(); if(us.length) o += '<optgroup label="複習單元">' + us.map(function(k){ return '<option value="' + esc(k) + '"' + (String(sel) === String(k) ? ' selected' : '') + '>📚 ' + esc(S.plat.lessons[k].title) + '</option>'; }).join("") + '</optgroup>';
+      return o;
+    };
     html += '<div class="panel"><h3>簡報與測驗歸課</h3><p class="note" style="margin:0 0 8px;">每一份簡報／測驗歸到一個課次或複習單元，就會出現在那裡的「投影片」「測驗與練習」分頁。標題有「第○課」的會自動歸課' + (Object.keys(un).length ? '；<b style="color:#B23B32;">標紅色的還沒歸課</b>' : '') + '。</p>';
     apk.forEach(function(pid){ var cur = S.plat.lessonMap[pid]; if(un[pid]) cur = ""; html += '<div class="join"><span style="min-width:180px;font-weight:700;' + (un[pid] ? 'color:#B23B32;' : '') + '">' + esc(ap[pid].title) + '</span><span class="note">投影片 ' + ap[pid].slides + '・題目 ' + ap[pid].quiz + '</span><select data-assign="' + pid + '" style="padding:6px 8px;border-radius:8px;border:1.5px solid var(--line);background:var(--surface-2);max-width:280px;">' + opts(cur) + '</select></div>'; });
     html += '</div>';
   }
   if(S.ruleErr) html += '<div class="panel" style="border-color:#C0392B;"><h3>⚠️ 需要更新 Firebase 規則</h3><p class="note" style="margin:0 0 8px;">平台資料寫不進去。請到 Firebase 主控台 › Realtime Database › 規則，在原有規則的 <code>"rules": {</code> 裡面加上下面這兩段（原本的不要刪），再按「發布」：</p><pre style="background:var(--surface-2);padding:10px;border-radius:10px;font-size:12px;overflow:auto;user-select:text;">"teacherPlatform": { "$teacherId": { ".read": "auth != null", ".write": "auth != null" } },\n"classCodes": { "$code": { ".read": "auth != null", ".write": "auth != null" } },</pre></div>';
   shell(html); setCrumb([sc.name, tm.name, cls.name]);
-  var box = document.getElementById("lessons"); var keys = lessonKeys();
-  if(!keys.length) box.innerHTML = '<p class="note">還沒有任何課次。雲端生詞庫或測驗庫有內容後會自動出現。</p>';
-  keys.forEach(function(no){
+  var box = document.getElementById("lessons");
+  function addCard(no){
     var cnt = lessonCounts(no), open = (cls.lessonOpen || {})[no] || {};
     var div = document.createElement("div"); div.className = "lesson";
     var tg = OPEN_KEYS.map(function(k){
@@ -420,7 +479,22 @@ function renderClassHome(cls){
       renderClassHome(cls);
     };
     box.appendChild(div);
+  }
+  var cbooks = classBookIds(cls);
+  if(!cbooks.length) box.innerHTML = '<p class="note">這個班還沒有選擇任何教材。請在上面「這個班使用的教材」勾選。</p>';
+  cbooks.forEach(function(bid){
+    var head = document.createElement("div"); head.style.cssText = "display:flex;align-items:center;gap:8px;margin:14px 0 8px;";
+    head.innerHTML = '<h3 style="font-size:16px;flex:1;">📖 ' + esc(bookTitle(bid)) + '</h3><button class="btn sm" data-newlesson="' + esc(bid) + '">＋ 新增課次</button>';
+    box.appendChild(head);
+    var ks = lessonsOfBook(bid);
+    if(!ks.length){ var em = document.createElement("p"); em.className = "note"; em.textContent = "這本教材還沒有課次。按右上角「＋ 新增課次」，或在下面「簡報與測驗歸課」把簡報歸進來。"; box.appendChild(em); }
+    ks.forEach(addCard);
   });
+  if(unitKeys().length){
+    var uh = document.createElement("h3"); uh.style.cssText = "font-size:16px;margin:16px 0 8px;"; uh.textContent = "📚 複習單元"; box.appendChild(uh);
+    unitKeys().forEach(addCard);
+  }
+  box.querySelectorAll("[data-newlesson]").forEach(function(btn){ btn.onclick = function(){ newLessonFlow(btn.dataset.newlesson).then(function(k){ if(k) render(); }); }; });
   document.getElementById("addlink").onclick = async function(){
     var nm = await askText("連結名稱（例如 班級 Padlet）", ""); if(!nm) return;
     var url = await askText("網址（https://…）", ""); if(!url) return;
@@ -440,35 +514,90 @@ function renderClassHome(cls){
   document.querySelectorAll("select[data-assign]").forEach(function(sel){
     sel.onchange = async function(){
       var pid = sel.dataset.assign, v = sel.value;
+      if(v.indexOf("__new:") === 0){ var nk = await newLessonFlow(v.slice(6)); if(!nk){ render(); return; } v = nk; }
       if(!v){ delete S.plat.lessonMap[pid]; await fbSet("teacherPlatform/" + S.teacher.id + "/lessonMap/" + pid, null); }
-      else { var val = isUnit(v) ? v : Number(v); S.plat.lessonMap[pid] = val; await fbSet("teacherPlatform/" + S.teacher.id + "/lessonMap/" + pid, val); }
+      else { S.plat.lessonMap[pid] = v; await fbSet("teacherPlatform/" + S.teacher.id + "/lessonMap/" + pid, v); }
       await syncLessonIndex(); render();
     };
   });
+  document.querySelectorAll("[data-usebook]").forEach(function(cb){
+    cb.onchange = async function(){
+      var cur = cls.books ? Object.assign({}, cls.books) : (function(){ var o = {}; bookIds().forEach(function(b){ o[b] = true; }); return o; })();
+      cur[cb.dataset.usebook] = cb.checked; if(!cb.checked) delete cur[cb.dataset.usebook];
+      cls.books = cur; await fbSet(clsPath(S.sel) + "/books", Object.keys(cur).length ? cur : { none: false });
+      if(!Object.keys(cur).length) cls.books = {};
+      renderClassHome(cls);
+    };
+  });
+  document.getElementById("addbook").onclick = async function(){
+    var n = await askText("教材名稱（例如 自編教材 A、《學華語向前走》第三冊）", ""); if(!n) return;
+    var id = uid("b_"); S.plat.books = S.plat.books || {}; S.plat.books[id] = { title: n, order: Date.now() };
+    await fbUpdate("teacherPlatform/" + S.teacher.id + "/books", (function(){ var o = {}; o[id] = S.plat.books[id]; if(!S.plat.books.b1) o.b1 = booksObj().b1; return o; })());
+    toast("已新增教材，記得到各班勾選要使用"); render();
+  };
+  document.querySelectorAll("[data-renbook]").forEach(function(b){ b.onclick = async function(){ var id = b.dataset.renbook, n = await askText("教材名稱", bookTitle(id)); if(!n) return; S.plat.books = S.plat.books || {}; S.plat.books[id] = Object.assign({}, booksObj()[id], { title: n }); await fbSet("teacherPlatform/" + S.teacher.id + "/books/" + id, S.plat.books[id]); await syncLessonIndex(); render(); }; });
+  document.querySelectorAll("[data-delbook]").forEach(function(b){ b.onclick = async function(){ await deleteBook(b.dataset.delbook); }; });
   document.getElementById("addunit").onclick = function(){ openUnitDialog(null); };
 }
 
+// ---------- 新增課次／刪除教材 ----------
+async function newLessonFlow(bid){
+  var ns = await askText("第幾課？（數字，例如 7）", ""); if(!ns) return null;
+  var no = cnNum(ns.replace(/[第課\s]/g, "")); if(!no || no < 1 || no > 999){ toast("請輸入課次數字"); return null; }
+  var key = lkey(bid, no);
+  if((S.plat.lessons || {})[key]){ toast("這本教材已經有第 " + no + " 課了"); return key; }
+  var title = await askText("這一課的名稱（可以留空，之後再補）", "") || "";
+  S.plat.customLessons = S.plat.customLessons || {};
+  S.plat.customLessons[key] = { book: bid, no: no, title: title };
+  try{ await fbSet("teacherPlatform/" + S.teacher.id + "/customLessons/" + key, S.plat.customLessons[key]); }catch(e){ toast("儲存失敗，請檢查網路或 Firebase 規則"); return null; }
+  await syncLessonIndex();
+  return key;
+}
+async function deleteBook(bid){
+  if(bid === DEFAULT_BOOK) return;
+  var ks = lessonsOfBook(bid);
+  if(!confirm("刪除教材「" + bookTitle(bid) + "」？\n這本教材底下的課次會從平台消失，歸在裡面的簡報和測驗會變成「還沒歸課」（簡報與測驗本身不會被刪除）。")) return;
+  var base = "teacherPlatform/" + S.teacher.id;
+  delete S.plat.books[bid]; await fbSet(base + "/books/" + bid, null);
+  var cl = S.plat.customLessons || {};
+  for(var k in cl){ if(cl[k].book === bid){ delete cl[k]; try{ await fbSet(base + "/customLessons/" + k, null); }catch(e){} } }
+  var lm = S.plat.lessonMap || {};
+  for(var pid in lm){ var pk = parseKey(lm[pid]); if(pk && pk.book === bid){ delete lm[pid]; try{ await fbSet(base + "/lessonMap/" + pid, null); }catch(e){} } }
+  // 各班：教材勾選與這些課次的開放設定一併清掉
+  try{
+    var schools = S.plat.schools || {};
+    for(var sid in schools){ var terms = schools[sid].terms || {}; for(var tid in terms){ var cls = terms[tid].classes || {}; for(var cid in cls){
+      var cp = base + "/schools/" + sid + "/terms/" + tid + "/classes/" + cid;
+      if(cls[cid].books && cls[cid].books[bid]){ delete cls[cid].books[bid]; await fbSet(cp + "/books/" + bid, null); }
+      ks.forEach(function(k){ if(cls[cid].lessonOpen && cls[cid].lessonOpen[k]){ delete cls[cid].lessonOpen[k]; fbSet(cp + "/lessonOpen/" + k, null); } });
+    } } }
+  }catch(e){}
+  await syncLessonIndex(); render();
+}
 // ---------- 複習單元 ----------
 function openUnitDialog(key){
   var d = document.getElementById("unitdlg"), L = S.plat.lessons || {}, units = S.plat.units || {}, u = key ? units[key] : null;
-  var nums = Object.keys(L).filter(function(k){ return !L[k].unit; }).map(Number).sort(function(a, b){ return a - b; });
+  var mem = u ? (u.lessons || []).map(String) : [];
   document.getElementById("unit-t").textContent = key ? "編輯複習單元" : "新增複習單元";
   document.getElementById("unit-name").value = u ? u.title : "";
   var box = document.getElementById("unit-lessons"); box.innerHTML = "";
-  nums.forEach(function(n){
-    var on = u ? (u.lessons || []).indexOf(n) !== -1 : false;
-    var lab = document.createElement("label"); lab.style.cssText = "display:inline-flex;align-items:center;gap:5px;border:1.5px solid var(--line);border-radius:99px;padding:5px 12px;cursor:pointer;font-weight:700;font-size:13.5px;background:var(--surface-2);";
-    lab.innerHTML = '<input type="checkbox" value="' + n + '"' + (on ? " checked" : "") + '> 第 ' + n + ' 課';
-    box.appendChild(lab);
+  bookIds().forEach(function(b){
+    var ks = lessonsOfBook(b); if(!ks.length) return;
+    if(multiBooks()){ var h = document.createElement("div"); h.style.cssText = "width:100%;font-size:12.5px;font-weight:700;color:var(--ink-soft);margin-top:4px;"; h.textContent = bookTitle(b); box.appendChild(h); }
+    ks.forEach(function(k){
+      var lab = document.createElement("label"); lab.style.cssText = "display:inline-flex;align-items:center;gap:5px;border:1.5px solid var(--line);border-radius:99px;padding:5px 12px;cursor:pointer;font-weight:700;font-size:13.5px;background:var(--surface-2);";
+      lab.innerHTML = '<input type="checkbox" value="' + esc(k) + '"' + (mem.indexOf(k) !== -1 ? " checked" : "") + '> 第 ' + L[k].no + ' 課';
+      box.appendChild(lab);
+    });
   });
   document.getElementById("unit-no").onclick = function(){ d.close(); };
   d.querySelector("form").onsubmit = async function(e){
     e.preventDefault();
     var title = document.getElementById("unit-name").value.trim();
-    var ls = Array.prototype.slice.call(box.querySelectorAll("input:checked")).map(function(i){ return Number(i.value); });
+    var ls = Array.prototype.slice.call(box.querySelectorAll("input:checked")).map(function(i){ return i.value; });
     if(!title){ toast("請輸入單元名稱"); return; }
     if(!ls.length){ toast("請至少勾選一課"); return; }
-    var id = key ? key.slice(0) : "u_" + uid("").slice(0);
+    var id = key ? key.slice(0) : "u_" + uid("");
     var rec = { title: title, lessons: ls, order: u ? (u.order || Date.now()) : Date.now() };
     S.plat.units = S.plat.units || {}; S.plat.units[id] = rec;
     d.close();
@@ -513,9 +642,11 @@ function renderLessonCommon(no, open, teacher, liveStudent){
     if(liveStudent && S.sub && subs.some(function(s){ return s[0] === S.sub; })) subs = subs.filter(function(s){ return s[0] === S.sub; });
     if(!S.sub || !subs.some(function(s){ return s[0] === S.sub; })) S.sub = subs[0][0];
     sub = liveStudent ? '' : '<div class="subbar">' + subs.map(function(s){ return '<button class="tab' + (s[0] === S.sub ? ' on' : '') + '" data-sub="' + s[0] + '" style="padding:5px 14px;font-size:13.5px;">' + s[1] + '</button>'; }).join("") + '</div>';
-    frame = lessonHtmlFrame("index.html?embed=1&" + lessonParam(no) + "&tab=" + S.sub + role);
+    var lp = lessonParam(no);
+    frame = lp ? lessonHtmlFrame("index.html?embed=1&" + lp + "&tab=" + S.sub + role) : '<div class="empty"><p class="note">這本教材還沒有生詞庫，所以這裡暫時沒有內容。<br>之後會開放你新增自己的教材內容。</p></div>';
   } else if(S.tab === "activities"){
-    frame = lessonHtmlFrame("index.html?embed=1&" + lessonParam(no) + "&tab=activities" + role);
+    var lp2 = lessonParam(no);
+    frame = lp2 ? lessonHtmlFrame("index.html?embed=1&" + lp2 + "&tab=activities" + role) : '<div class="empty"><p class="note">這本教材還沒有生詞庫，所以活動暫時沒有可用的生詞。</p></div>';
   } else {
     var ps = ((S.plat.lessons || {})[no] || {}).projects || {}, pids = Object.keys(ps);
     var kind = S.tab === "slides" ? "slides" : "quiz";
@@ -626,12 +757,12 @@ async function startStudent(code, name){
     var idx = await fbGet("classCodes/" + code);
     if(!idx){ viewStudentEntry("找不到這個班級代碼，請向老師確認。", code); return; }
     var base = "teacherPlatform/" + idx.t;
-    var res = await Promise.all([fbGet(base + "/schools/" + idx.s + "/name"), fbGet(base + "/schools/" + idx.s + "/terms/" + idx.tm + "/name"), fbGet(base + "/schools/" + idx.s + "/terms/" + idx.tm + "/classes/" + idx.c), fbGet(base + "/lessons")]);
+    var res = await Promise.all([fbGet(base + "/schools/" + idx.s + "/name"), fbGet(base + "/schools/" + idx.s + "/terms/" + idx.tm + "/name"), fbGet(base + "/schools/" + idx.s + "/terms/" + idx.tm + "/classes/" + idx.c), fbGet(base + "/lessons"), fbGet(base + "/books")]);
     if(!res[2]){ viewStudentEntry("這個班級已不存在。", code); return; }
     S.student = { name: name, code: code, idx: idx, school: res[0], term: res[1], cls: res[2] };
     S.live = res[2].live && res[2].live.on ? res[2].live : null;
     try{ window.onValue(window.ref(window.db, base + "/schools/" + idx.s + "/terms/" + idx.tm + "/classes/" + idx.c + "/live"), function(snap){ var v = snap.val(); var nv = v && v.on ? v : null; var key = JSON.stringify(nv); if(key === S.liveKey) return; S.liveKey = key; S.live = nv; S.liveRendered = null; if(S.student) renderStudent(); }); }catch(e){}
-    S.plat = { lessons: res[3] || {} };
+    S.plat = { lessons: res[3] || {}, books: res[4] || {} };
     S.lesson = null; S.tab = null; S.sub = null;
     var h = new URLSearchParams(location.hash.replace(/^#/, "")); if(h.get("l")) S.lesson = h.get("l"); if(h.get("tab")) S.tab = h.get("tab");
     renderStudent();
@@ -650,7 +781,7 @@ function renderStudent(){
     return;
   }
   S.lesson = null;
-  var keys = lessonKeys().filter(function(no){ var o = openMap[no]; return o && OPEN_KEYS.some(function(k){ return o[k[0]]; }); });
+  var keys = lessonKeys(cls).filter(function(no){ var o = openMap[no]; return o && OPEN_KEYS.some(function(k){ return o[k[0]]; }); });
   var html = '<div class="head-row"><div><div class="note">' + esc(st.school) + '　›　' + esc(st.term) + '</div><h2>' + esc(cls.name) + '</h2></div></div>';
   if(!keys.length) html += '<div class="empty"><p class="note">老師還沒有開放任何課次。<br>上課時請輸入老師給的房間號碼：</p><div class="join" style="justify-content:center;"><input type="text" id="roomno" placeholder="房間號碼" inputmode="numeric" style="width:160px;"><button class="btn primary" id="roomgo">加入</button></div></div>';
   else {
