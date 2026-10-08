@@ -8025,11 +8025,28 @@ render();
   if(!pp.get('embed')) return;
   document.body.classList.add('embed');
   var st = document.createElement('style');
-  st.textContent = 'body.embed header, body.embed .quick-links, body.embed nav.tabs, body.embed #lessonFilter, body.embed .zoom-control{display:none !important;}';
+  st.textContent = 'body.embed header, body.embed .quick-links, body.embed nav.tabs, body.embed #lessonFilter, body.embed .zoom-control, body.embed .lesson-chips{display:none !important;}';
   document.head.appendChild(st);
+  window.addEventListener('message', function(e){ if(e.data && e.data.mm === 'focus') document.body.classList.toggle('focus', !!e.data.on); });
   var lesson = pp.get('lesson'), tab = pp.get('tab');
   try{
-    if(lesson){ state.lesson = String(lesson); var lf = document.getElementById('lessonFilter'); if(lf) lf.value = String(lesson); }
+    document.documentElement.style.zoom = 1; // 嵌入時不套用「教材頁」自己記住的縮放，避免版面超出
+    if(lesson){
+      state.lesson = String(lesson); var lf = document.getElementById('lessonFilter'); if(lf) lf.value = String(lesson);
+      // 各個課堂活動的「課次」篩選：只留這一課（原本預設全選）
+      var L = Number(lesson);
+      [['lessonChips', selectedLessons], ['bingoLessonChips', selectedBingoLessons], ['flipLessonChips', selectedFlipLessons], ['writingLessonChips', selectedWritingLessons], ['qaLessonChips', selectedQaLessons]].forEach(function(pr){
+        pr[1].clear(); pr[1].add(L);
+        var w = document.getElementById(pr[0]);
+        if(w) w.querySelectorAll('button').forEach(function(b){ b.classList.toggle('active', !b.dataset.all && Number(b.dataset.lesson) === L); });
+      });
+      try{
+        bingoFilterMode = 'auto';
+        var am = document.querySelector('#bingoFilterModeToggle button[data-mode="auto"]'); if(am) am.click();
+        var ab = document.getElementById('bingoDateAllBtn'); if(ab) ab.click();
+        bingoBoards = null; bingoCallerWords = null; bingoSharedCard = null; flipCards = null; usedIndices = []; currentCard = null; qaUsedIndices = []; qaCurrentWord = null;
+      }catch(e2){ console.warn('embed activity filter', e2); }
+    }
     var tabMap = { vocab:'vocab', grammar:'grammar', text:'text', activities:'activities' };
     var tb = tab && document.querySelector('nav.tabs button[data-tab="' + (tabMap[tab] || tab) + '"]');
     if(tb) tb.click(); else render();

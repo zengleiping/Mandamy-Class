@@ -80,6 +80,9 @@
   .toast{ position:fixed; left:50%; bottom:24px; transform:translateX(-50%); background:var(--ink); color:#fff; padding:9px 16px; border-radius:99px; font-size:13px; z-index:9999; }
   @media (max-width:820px){ .side{ display:none; } .side.show{ display:block; position:fixed; z-index:50; top:48px; bottom:0; left:0; box-shadow:var(--shadow); } .menu-btn{ display:inline-block !important; } }
   .menu-btn{ display:none; }
+  .shell.focus .top, .shell.focus .side{ display:none; }
+  .shell.focus .main:not(.flush){ padding:12px; }
+  .tab.focus-btn{ margin-left:auto; color:var(--seal); border:1.5px solid var(--seal); border-radius:10px; padding:4px 12px; margin-bottom:5px; font-size:13px; }
 </style>
 </head>
 <body>
@@ -175,7 +178,7 @@ function lessonFromTitle(t){ var m = /第\s*([0-9]+|[零〇一二兩三四五六
 var OPEN_KEYS = [["vocab","生詞"],["grammar","語法"],["text","課文"],["slides","投影片"],["quiz","測驗與練習"],["activities","活動"]];
 
 // ---------- 狀態 ----------
-var S = { teacher: null, plat: { schools: {}, lessonMap: {}, lessons: {} }, sel: null, lesson: null, tab: null, sub: null, student: null, sideOpen: false };
+var S = { focus: false, teacher: null, plat: { schools: {}, lessonMap: {}, lessons: {} }, sel: null, lesson: null, tab: null, sub: null, student: null, sideOpen: false };
 function schoolsOf(){ return S.plat.schools || {}; }
 function clsPath(sel){ return "teacherPlatform/" + S.teacher.id + "/schools/" + sel.s + "/terms/" + sel.t + "/classes/" + sel.c; }
 function getCls(sel){ var sc = schoolsOf()[sel.s]; var tm = sc && sc.terms && sc.terms[sel.t]; return tm && tm.classes ? tm.classes[sel.c] : null; }
@@ -265,7 +268,7 @@ function saveHash(){
 function shell(inner, opts){
   opts = opts || {};
   var isT = !!S.teacher;
-  root.innerHTML = '<div class="shell"><div class="top">' +
+  root.innerHTML = '<div class="shell' + (S.focus ? ' focus' : '') + '"><div class="top">' +
     (isT ? '<button class="btn sm menu-btn" id="menu">☰</button>' : '') +
     '<div class="brand">曼米中文<small>' + (isT ? '平台' : '學生') + '</small></div><div class="crumb" id="crumb"></div><div class="grow"></div>' +
     (isT ? '<span class="crumb">👤 ' + esc(S.teacher.name) + '</span><a class="btn sm" href="index.html" target="_blank">原教材頁</a><a class="btn sm" href="slides/practice.html" target="_blank">原簡報頁</a><button class="btn sm" id="logout">登出</button>'
@@ -357,6 +360,7 @@ function render(){
 }
 function studentLink(code){ return location.origin + location.pathname + "?class=" + code; }
 function renderClassHome(cls){
+  S.focus = false;
   var sc = schoolsOf()[S.sel.s], tm = sc.terms[S.sel.t];
   var html = '<div class="head-row"><div style="flex:1;min-width:200px;"><div class="note">' + esc(sc.name) + '　›　' + esc(tm.name) + '</div><h2>' + esc(cls.name) + '</h2></div>' +
     '<div><div class="note">班級代碼</div><span class="code">' + esc(cls.code) + '</span> <button class="btn sm" id="cpy">複製學生連結</button> <button class="btn sm" id="ren">改班名</button> <button class="btn sm danger" id="del">刪除班級</button></div></div>';
@@ -426,13 +430,13 @@ function tabsFor(open, teacher){
   var all = [["material","教材", ["vocab","grammar","text"]], ["slides","投影片",["slides"]], ["quiz","測驗與練習",["quiz"]], ["activities","活動",["activities"]]];
   return all.filter(function(t){ return teacher || t[2].some(function(k){ return open[k]; }); });
 }
-function lessonHtmlFrame(src){ return '<iframe class="frame" id="fr" src="' + esc(src) + '" allow="microphone; camera; autoplay; clipboard-write"></iframe>'; }
+function lessonHtmlFrame(src){ return '<iframe class="frame" id="fr" src="' + esc(src + (S.focus ? "&focus=1" : "")) + '" allow="microphone; camera; autoplay; clipboard-write"></iframe>'; }
 function renderLessonCommon(no, open, teacher, ctx){
   var tabs = tabsFor(open, teacher);
   if(!tabs.length){ return { html: '<div class="empty"><p class="note">這一課目前沒有開放任何內容。</p></div>', tabs: tabs }; }
   if(!S.tab || !tabs.some(function(t){ return t[0] === S.tab; })) S.tab = tabs[0][0];
   var cur = tabs.filter(function(t){ return t[0] === S.tab; })[0];
-  var html = '<div class="tabs"><button class="tab" data-back="1">‹ 返回</button>' + tabs.map(function(t){ return '<button class="tab' + (t[0] === S.tab ? ' on' : '') + '" data-tab="' + t[0] + '">' + t[1] + '</button>'; }).join("") + '</div>';
+  var html = '<div class="tabs"><button class="tab" data-back="1">‹ 返回</button>' + tabs.map(function(t){ return '<button class="tab' + (t[0] === S.tab ? ' on' : '') + '" data-tab="' + t[0] + '">' + t[1] + '</button>'; }).join("") + '<button class="tab focus-btn" data-focus="1" title="隱藏上方與左側的欄位，把最大空間留給畫面（線上上課分享畫面時用）">' + (S.focus ? '✕ 離開上課模式' : '🎬 上課模式') + '</button></div>';
   var sub = '', frame = '', role = teacher ? '' : '&role=student';
   if(S.tab === "material"){
     var subs = [["vocab","生詞"],["grammar","語法"],["text","課文"]].filter(function(s){ return teacher || open[s[0]]; });
@@ -458,11 +462,24 @@ function renderLessonCommon(no, open, teacher, ctx){
   }
   return { html: html + sub + frame, tabs: tabs };
 }
+function setFocus(on){
+  S.focus = !!on;
+  var sh = document.querySelector(".shell"); if(sh) sh.classList.toggle("focus", S.focus);
+  var fb = document.querySelector(".focus-btn"); if(fb) fb.textContent = S.focus ? "✕ 離開上課模式" : "🎬 上課模式";
+  var fr = document.getElementById("fr"); if(fr && fr.contentWindow) fr.contentWindow.postMessage({ mm: "focus", on: S.focus }, "*");
+  try{
+    if(S.focus && !document.fullscreenElement && document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(function(){});
+    if(!S.focus && document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(function(){});
+  }catch(e){}
+}
+document.addEventListener("fullscreenchange", function(){ if(!document.fullscreenElement && S.focus) setFocus(false); });
+document.addEventListener("keydown", function(e){ if(e.key === "Escape" && S.focus) setFocus(false); });
 function bindLessonNav(cls, backFn, renderFn){
   var m = document.getElementById("main");
   m.onclick = function(e){
     var b = e.target.closest("button"); if(!b) return;
-    if(b.dataset.back){ backFn(); return; }
+    if(b.dataset.back){ if(S.focus) setFocus(false); backFn(); return; }
+    if(b.dataset.focus){ setFocus(!S.focus); return; }
     if(b.dataset.tab){ S.tab = b.dataset.tab; S.sub = null; renderFn(); return; }
     if(b.dataset.sub){ S.sub = b.dataset.sub; renderFn(); return; }
     if(b.id === "roomgo"){
@@ -517,6 +534,7 @@ async function startStudent(code, name){
   }catch(e){ viewStudentEntry("連線失敗，請檢查網路後再試。", code); }
 }
 function renderStudent(){
+  if(!S.lesson) S.focus = false;
   var st = S.student, cls = st.cls, openMap = cls.lessonOpen || {};
   history.replaceState(null, "", location.pathname + "?class=" + st.code + (S.lesson ? "#l=" + S.lesson + (S.tab ? "&tab=" + S.tab : "") : ""));
   if(S.lesson && openMap[S.lesson]){

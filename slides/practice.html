@@ -99,6 +99,9 @@
     border-bottom:1px solid var(--grid-line); gap:6px; flex-wrap:wrap;
   }
   body.embed .brand{ display:none; }
+  body.embed.focus .topbar, body.embed.focus .sidebar{ display:none !important; }
+  body.embed.focus .layout{ grid-template-columns:1fr !important; }
+  body.embed.focus .stage-wrap{ padding:4px !important; }
   .topbar > .timer-floating-widget{ padding:3px 6px 3px 12px; }
   .topbar > .timer-floating-widget .timer-ctrl-btn{ width:28px; height:28px; font-size:14px; }
   .topbar{ justify-content:flex-start; }
@@ -2338,6 +2341,16 @@
 <script>
 (function(){
   "use strict";
+  // 平台嵌入：最早就標記 embed／focus，並接收外殼送來的「上課模式」開關（隱藏頂欄與左側清單，把空間留給畫面）
+  (function(){
+    var q0 = new URLSearchParams(location.search);
+    if(!q0.get("embed")) return;
+    document.body.classList.add("embed");
+    if(q0.get("focus")) document.body.classList.add("focus");
+    window.addEventListener("message", function(ev){
+      if(ev.data && ev.data.mm === "focus"){ document.body.classList.toggle("focus", !!ev.data.on); setTimeout(function(){ window.dispatchEvent(new Event("resize")); }, 60); }
+    });
+  })();
   var DB_NAME = "mandamy-offline", DB_VER = 2;
   var dbPromise = null;
   var ok = !!window.indexedDB;
