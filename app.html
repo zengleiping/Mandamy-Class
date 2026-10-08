@@ -880,13 +880,33 @@ async function importRecords(file){
   toast("已匯入 " + n + " 筆"); render();
 }
 // ---------- 聯絡簿（老師公布作業、學生上傳、系統記錄繳交時間、結算）----------
+// 網路時間：優先用 Firebase 伺服器時間，取不到再用網站伺服器回應的時間，兩個都失敗才退回裝置時間（並在紀錄上標記）
+var TIME_OFF = 0, TIME_OK = false;
+async function syncTime(){
+  var off = null;
+  try{
+    off = await new Promise(function(res){
+      var done = false; var to = setTimeout(function(){ if(!done){ done = true; res(null); } }, 3000);
+      try{ window.onValue(window.ref(window.db, ".info/serverTimeOffset"), function(snap){ if(done) return; done = true; clearTimeout(to); var v = snap.val(); res(typeof v === "number" ? v : null); }); }catch(e){ done = true; clearTimeout(to); res(null); }
+    });
+  }catch(e){}
+  if(off == null){
+    try{
+      var t0 = Date.now(), r = await fetch(location.pathname + "?t=" + t0, { method: "HEAD", cache: "no-store" }), dh = r.headers.get("date");
+      if(dh){ off = new Date(dh).getTime() - (t0 + (Date.now() - t0) / 2); }
+    }catch(e){}
+  }
+  if(off != null){ TIME_OFF = off; TIME_OK = true; } else TIME_OK = false;
+  return TIME_OK;
+}
+function nowMs(){ return Date.now() + TIME_OFF; }
 function hwSkey(name){ return encodeURIComponent(String(name || "").trim()).replace(/\./g, "%2E"); }
 function hwBase(tid, cid){ return "teacherPlatform/" + tid + "/homework/" + cid; }
 function hwFmt(ts){ if(!ts) return ""; var d = new Date(ts); return (d.getMonth() + 1) + "/" + d.getDate() + " " + pad2(d.getHours()) + ":" + pad2(d.getMinutes()); }
 function hwDueTs(it){ return it && it.due ? new Date(it.due).getTime() : 0; }
 function hwStatus(it, sub){
   var due = hwDueTs(it);
-  if(!sub || !sub.firstAt) return (due && Date.now() > due) ? "missing" : "pending";
+  if(!sub || !sub.firstAt) return (due && nowMs() > due) ? "missing" : "pending";
   return (due && sub.firstAt > due) ? "late" : "ok";
 }
 var HW_LABEL = { ok: "✓ 準時", late: "⏰ 遲交", missing: "✗ 未交", pending: "尚未繳交" };
@@ -895,6 +915,7 @@ async function hwLoadItems(){ var cid = S.sel.c; var o = await fbGet(hwBase(S.te
 async function hwLoadRoster(){ var r = await fbGet(hwBase(S.teacher.id, S.sel.c) + "/roster"); return Array.isArray(r) ? r : (r ? Object.keys(r).map(function(k){ return r[k]; }) : []); }
 async function renderHomework(cls){
   S.focus = false;
+  syncTime();
   var hw = S.hw, tid = S.teacher.id, cid = S.sel.c, base = hwBase(tid, cid);
   shell('<div class="empty"><p class="note">載入中…</p></div>'); setCrumb([]);
   var main = document.getElementById("main");
@@ -974,7 +995,7 @@ async function hwItemPage(items, roster){
     (it.body ? '<div class="panel"><div style="white-space:pre-wrap;">' + esc(it.body) + '</div></div>' : '') +
     '<div class="panel"><h3>繳交狀況</h3>' + (keys.length ? keys.sort(function(a, b){ return rows[a].name.localeCompare(rows[b].name, "zh-Hant"); }).map(function(k){
       var r = rows[k], st = hwStatus(it, r.sub);
-      return '<div class="slot"><div class="slot-time" style="min-width:90px;">' + esc(r.name) + '</div><div class="slot-main"><div><b>' + HW_LABEL[st] + '</b>' + (r.sub ? '　<span class="note">第一次 ' + hwFmt(r.sub.firstAt) + (r.sub.count > 1 ? '　最後更新 ' + hwFmt(r.sub.at) + '（共 ' + r.sub.count + ' 次）' : '') + '</span>' : '') + '</div>' + (r.sub && r.sub.fb ? '<div class="note">回饋：' + esc(r.sub.fb) + '</div>' : '') + '</div><div class="slot-act">' + (r.sub ? '<button class="btn sm" data-h="view" data-k="' + k + '">查看內容</button>' : '') + '</div></div><div id="det-' + k + '"></div>';
+      return '<div class="slot"><div class="slot-time" style="min-width:90px;">' + esc(r.name) + '</div><div class="slot-main"><div><b>' + HW_LABEL[st] + '</b>' + (r.sub ? '　<span class="note">第一次 ' + hwFmt(r.sub.firstAt) + (r.sub.count > 1 ? '　最後更新 ' + hwFmt(r.sub.at) + '（共 ' + r.sub.count + ' 次）' : '') + ((r.sub.times || []).some(function(x){ return x.s === false; }) ? '　⚠ 有一次用的是裝置時間' : '') + '</span>' + (r.sub.count > 1 && r.sub.times ? '<div class="note">每次送出：' + r.sub.times.map(function(x, i){ return '第' + (i + 1) + '次 ' + hwFmt(x.t); }).join('；') + '</div>' : '') : '') + '</div>' + (r.sub && r.sub.fb ? '<div class="note">回饋：' + esc(r.sub.fb) + '</div>' : '') + '</div><div class="slot-act">' + (r.sub ? '<button class="btn sm" data-h="view" data-k="' + k + '">查看內容</button>' : '') + '</div></div><div id="det-' + k + '"></div>';
     }).join("") : '<p class="note">還沒有名單，也還沒有人交。到聯絡簿首頁貼上班級名單，結算時才找得出沒交的人。</p>') + '</div>';
   shell(html); setCrumb([]);
   document.getElementById("main").onclick = async function(e){
@@ -1033,7 +1054,7 @@ async function hwSettle(items, roster){
 async function renderStudentHw(){
   var st = S.student, tid = st.idx.t, cid = st.idx.c, base = hwBase(tid, cid), me = hwSkey(st.name);
   shell('<div class="empty"><p class="note">載入中…</p></div>'); setCrumb([st.school, st.term, st.cls.name, "聯絡簿"]);
-  var items;
+  var items; syncTime();
   try{ items = objList(await fbGet(base + "/items")).sort(function(a, b){ return (b.due || "9999").localeCompare(a.due || "9999"); }); }catch(e){ shell('<div class="empty"><p class="note">讀取失敗，請檢查網路。</p></div>'); return; }
   var mySubs = {}; await Promise.all(items.map(function(it){ return fbGet("teacherPlatform/" + tid + "/hwSubs/" + cid + "/" + it.id + "/" + me).then(function(v){ mySubs[it.id] = v; }); }));
   var openId = S.hwOpen && S.hwOpen !== "list" ? S.hwOpen : null, it = openId ? items.filter(function(x){ return x.id === openId; })[0] : null;
@@ -1073,8 +1094,10 @@ async function renderStudentHw(){
     else if(a === "submit"){
       var text = document.getElementById("hs-text").value.trim();
       if(!text && !S.hwShots.length){ alert("請至少打一點文字，或加一張照片。"); return; }
-      var prev = mySubs[it.id], now = Date.now();
-      var rec = { name: st.name, firstAt: prev ? prev.firstAt : now, at: now, count: (prev ? prev.count || 1 : 0) + 1, text: text || null, nimgs: S.hwShots.length };
+      var synced = await syncTime(), prev = mySubs[it.id], now = nowMs();
+      var times = prev ? (Array.isArray(prev.times) ? prev.times.slice() : (prev.firstAt ? [{ t: prev.firstAt, s: false }] : [])) : [];
+      times.push({ t: now, s: synced });
+      var rec = { name: st.name, firstAt: times[0].t, at: now, count: times.length, times: times, text: text || null, nimgs: S.hwShots.length };
       if(prev && prev.fb) { rec.fb = prev.fb; rec.fbAt = prev.fbAt; }
       try{
         await fbSet("teacherPlatform/" + tid + "/hwFiles/" + cid + "/" + it.id + "/" + me, S.hwShots.length ? S.hwShots : null);
