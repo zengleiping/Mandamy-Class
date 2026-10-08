@@ -2908,10 +2908,10 @@ function matchesQuery(item, q){
 }
 
 function getVocabFilteredList(){
-  return VOCAB.filter(v => (state.lesson==='all' || String(v['課別'])===String(state.lesson)) && matchesQuery(v, state.query));
+  return VOCAB.filter(v => ((state.lesson==='all' && (!state.lessonSet || state.lessonSet.has(Number(v['課別'])))) || (state.lesson!=='all' && String(v['課別'])===String(state.lesson))) && matchesQuery(v, state.query));
 }
 function getGrammarFilteredList(){
-  return GRAMMAR.filter(g => (state.lesson==='all' || String(g['課別'])===String(state.lesson)) && matchesQuery(g, state.query));
+  return GRAMMAR.filter(g => ((state.lesson==='all' && (!state.lessonSet || state.lessonSet.has(Number(g['課別'])))) || (state.lesson!=='all' && String(g['課別'])===String(state.lesson))) && matchesQuery(g, state.query));
 }
 function getWritingFilteredList(){
   return WRITING_CHARS.filter(c => selectedWritingLessons.has(c.lesson));
@@ -3212,7 +3212,8 @@ function renderTextLessonChips(){
   const wrap = document.getElementById('textLessonChips');
   if(!wrap) return;
   wrap.innerHTML = '';
-  const lessons = [...new Set(LESSON_TEXTS.map(t=>t.lesson))];
+  const lessons = [...new Set(LESSON_TEXTS.map(t=>t.lesson))].filter(l => !window.embedLessonSet || window.embedLessonSet.has(Number(l)));
+  if(window.embedLessonSet && lessons.length <= 1){ wrap.style.display = 'none'; }
   lessons.forEach(lesson=>{
     const btn = document.createElement('button');
     btn.className = 'chip' + (textLesson === lesson ? ' active' : '');
@@ -3230,6 +3231,7 @@ function renderTextLessonChips(){
 function renderTextView(){
   if('speechSynthesis' in window) speechSynthesis.cancel(); // 切換課次／篇章／注音顯示時，停止還在播放的課文語音
   const lessons = [...new Set(LESSON_TEXTS.map(t=>t.lesson))];
+  if(window.embedLessonSet){ const el = lessons.filter(l => window.embedLessonSet.has(Number(l))); if(el.length && !el.includes(textLesson)) textLesson = el[0]; }
   if(textLesson === null || !lessons.includes(textLesson)) textLesson = lessons[lessons.length-1];
   renderTextLessonChips();
   const wrap = document.getElementById('textView');
@@ -8025,20 +8027,24 @@ render();
   if(!pp.get('embed')) return;
   document.body.classList.add('embed');
   var st = document.createElement('style');
-  st.textContent = 'body.embed header, body.embed .quick-links, body.embed nav.tabs, body.embed #lessonFilter, body.embed .zoom-control, body.embed .lesson-chips{display:none !important;}';
+  st.textContent = 'body.embed header, body.embed .quick-links, body.embed nav.tabs, body.embed #lessonFilter, body.embed .zoom-control, body.embed .lesson-chips:not(#textLessonChips){display:none !important;}';
   document.head.appendChild(st);
   window.addEventListener('message', function(e){ if(e.data && e.data.mm === 'focus') document.body.classList.toggle('focus', !!e.data.on); });
   var lesson = pp.get('lesson'), tab = pp.get('tab');
   try{
     document.documentElement.style.zoom = 1; // 嵌入時不套用「教材頁」自己記住的縮放，避免版面超出
-    if(lesson){
-      state.lesson = String(lesson); var lf = document.getElementById('lessonFilter'); if(lf) lf.value = String(lesson);
-      // 各個課堂活動的「課次」篩選：只留這一課（原本預設全選）
-      var L = Number(lesson);
+    var lessonsParam = pp.get('lessons');
+    var ids = lessonsParam ? lessonsParam.split(',').map(Number).filter(function(n){ return isFinite(n); }) : (lesson ? [Number(lesson)] : []);
+    if(ids.length){
+      window.embedLessonSet = new Set(ids);
+      var lf = document.getElementById('lessonFilter');
+      if(ids.length === 1){ state.lesson = String(ids[0]); if(lf) lf.value = String(ids[0]); }
+      else { state.lesson = 'all'; state.lessonSet = new Set(ids); }
+      // 各個課堂活動的「課次」篩選：只留這一課／這幾課（原本預設全選）
       [['lessonChips', selectedLessons], ['bingoLessonChips', selectedBingoLessons], ['flipLessonChips', selectedFlipLessons], ['writingLessonChips', selectedWritingLessons], ['qaLessonChips', selectedQaLessons]].forEach(function(pr){
-        pr[1].clear(); pr[1].add(L);
+        pr[1].clear(); ids.forEach(function(n){ pr[1].add(n); });
         var w = document.getElementById(pr[0]);
-        if(w) w.querySelectorAll('button').forEach(function(b){ b.classList.toggle('active', !b.dataset.all && Number(b.dataset.lesson) === L); });
+        if(w) w.querySelectorAll('button').forEach(function(b){ b.classList.toggle('active', !b.dataset.all && window.embedLessonSet.has(Number(b.dataset.lesson))); });
       });
       try{
         bingoFilterMode = 'auto';
