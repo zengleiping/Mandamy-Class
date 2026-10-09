@@ -487,7 +487,7 @@ function navSnap(){
     return { k: "t", sel: S.sel ? { s: S.sel.s, t: S.sel.t || null, c: S.sel.c || null } : null, lesson: S.lesson || null, tab: S.tab || null, sub: S.sub || null,
       hw: S.hw ? { view: S.hw.view || "list", id: S.hw.id || null, from: S.hw.from || null, to: S.hw.to || null } : null,
       rec: S.rec ? { view: S.rec.edit !== undefined ? null : (S.rec.view || null), filter: S.rec.filter || null, label: S.rec.label || null, student: S.rec.student || null } : null,
-      lib: S.lib ? { book: S.lib.book || null, lesson: S.lib.lesson || null } : null, day: S.day || null };
+      lib: S.lib ? { book: S.lib.book || null, lesson: S.lib.lesson || null } : null, day: S.day || null, settings: !!S.settings };
   }
   return { k: "s", lesson: S.lesson || null, tab: S.tab || null, sub: S.sub || null, hwOpen: S.hwOpen || null, leaveOpen: !!S.leaveOpen };
 }
@@ -507,7 +507,7 @@ window.addEventListener("popstate", function(e){
     try{
       if(S.focus) S.focus = false;
       S.sel = st.sel; S.lesson = st.lesson; S.tab = st.tab; S.sub = st.sub;
-      S.hw = st.hw; S.rec = st.rec ? Object.assign({}, st.rec) : null; S.lib = st.lib; S.day = st.day;
+      S.hw = st.hw; S.rec = st.rec ? Object.assign({}, st.rec) : null; S.lib = st.lib; S.day = st.day; S.settings = !!st.settings;
       if(S.rec && !S.rec.view) delete S.rec.view;
       render();
     } finally { NAV.popping = false; }
@@ -521,13 +521,14 @@ window.addEventListener("popstate", function(e){
 // ---------- 畫面骨架 ----------
 // ---------- 「返回」：每個功能頁左上角都有，回到上一層 ----------
 function canBack(){
-  if(S.teacher) return !!(S.lib || S.rec || S.day || S.sel);
+  if(S.teacher) return !!(S.lib || S.rec || S.day || S.sel || S.settings);
   return !!(S.student && (S.hwOpen || S.leaveOpen || S.lesson));
 }
 function goBack(){
   if(S.teacher){
     if(S.focus) setFocus(false);
     if(S.lib){ S.lib = null; render(); return; }
+    if(S.settings && !S.sel && !S.rec && !S.day){ S.settings = false; render(); return; }
     if(S.rec){
       if(S.rec.edit !== undefined){ if(!confirm("不儲存就離開？目前填的內容會留在這台裝置，下次新增時可以救回來。")) return; S.rec = { filter: S.rec.filter }; }
       else if(S.rec.view) S.rec = { filter: S.rec.filter };
@@ -561,14 +562,15 @@ function shell(inner, opts){
   root.innerHTML = '<div class="shell' + (S.focus ? ' focus' : '') + '"><div class="top">' +
     (canBack() ? '<button class="btn sm" id="topback" style="font-size:14px;">‹ 返回</button>' : '') +
     '<div class="brand"><img src="icons/logo.svg" alt="" style="width:30px;height:30px;vertical-align:middle;margin-right:6px;">曼米中文' + (isT ? '' : '<small>學生</small>') + '</div><div class="crumb" id="crumb"></div><div class="grow"></div>' +
-    (isT ? '<span class="crumb">👤 ' + esc(S.teacher.name) + '</span><button class="btn sm" id="bell" title="新的繳交">🔔</button><button class="btn sm" id="recbtn">課堂記錄</button><button class="btn sm owner-only" id="libbtn">教材庫</button><button class="btn sm" id="logout">登出</button>'
+    (isT ? '<span class="crumb">👤 ' + esc(S.teacher.name) + '</span><button class="btn sm" id="bell" title="新的繳交">🔔</button><button class="btn sm" id="recbtn">課堂記錄</button><button class="btn sm owner-only" id="libbtn">教材庫</button><button class="btn sm owner-only" id="setbtn">設定</button><button class="btn sm" id="logout">登出</button>'
          : '<span class="crumb">👤 ' + esc(S.student ? S.student.name : "") + '</span><button class="btn sm" id="leave">離開</button>') +
     '</div><div class="body">' + '<main class="main' + (opts.flush ? ' flush' : '') + '" id="main">' + inner + '</main></div></div>';
   var tbk = document.getElementById("topback"); if(tbk) tbk.onclick = goBack;
   if(isT){
     document.getElementById("bell").onclick = openBell; updateBell();
-    document.getElementById("recbtn").onclick = function(){ if(S.focus) setFocus(false); S.rec = { filter: "all" }; S.lib = null; S.day = null; S.sel = null; S.lesson = null; render(); };
-    document.getElementById("libbtn").onclick = function(){ if(S.focus) setFocus(false); S.rec = null; S.lib = { book: S.lib ? S.lib.book : DEFAULT_BOOK }; render(); };
+    document.getElementById("recbtn").onclick = function(){ if(S.focus) setFocus(false); S.rec = { filter: "all" }; S.settings = false; S.lib = null; S.day = null; S.sel = null; S.lesson = null; render(); };
+    document.getElementById("setbtn").onclick = function(){ if(S.focus) setFocus(false); S.settings = true; S.lib = null; S.rec = null; S.day = null; S.sel = null; S.lesson = null; S.hw = null; render(); };
+    document.getElementById("libbtn").onclick = function(){ if(S.focus) setFocus(false); S.rec = null; S.settings = false; S.lib = { book: S.lib ? S.lib.book : DEFAULT_BOOK }; render(); };
     document.getElementById("logout").onclick = function(){ try{ localStorage.removeItem(SESSION_KEY); localStorage.removeItem("mm_ta_owner"); }catch(e){} S.teacher = null; S.sel = null; NAV.last = null; history.replaceState(null, "", location.pathname); viewLogin(); };
   } else {
     document.getElementById("leave").onclick = function(){ S.student = null; NAV.last = null; history.replaceState(null, "", location.pathname); viewStudentEntry(); };
@@ -579,6 +581,7 @@ function setCrumb(parts){
   if(!S.teacher){ c.textContent = parts.filter(Boolean).join("  ›  "); return; }
   var items = [{ t: "平台", go: "root" }];
   if(S.lib){ items.push({ t: "教材庫" }); }
+  else if(S.settings && !S.sel && !S.rec && !S.day){ items.push({ t: "設定" }); }
   else if(S.rec){ items.push({ t: "課堂記錄" }); }
   else if(S.day && !S.sel){ items.push({ t: "課表 " + S.day }); }
   else if(S.sel){
@@ -593,7 +596,7 @@ function setCrumb(parts){
   c.innerHTML = items.map(function(it, i){ return (it.go && i < last) ? '<a href="#" class="cr" data-go="' + it.go + '">' + esc(it.t) + '</a>' : '<span>' + esc(it.t) + '</span>'; }).join('<span style="margin:0 6px;opacity:.5;">›</span>');
   c.onclick = function(e){
     var a = e.target.closest("[data-go]"); if(!a) return; e.preventDefault();
-    var g = a.dataset.go, sel = S.sel; if(S.focus) setFocus(false); S.lib = null; S.day = null; S.rec = null; S.hw = null;
+    var g = a.dataset.go, sel = S.sel; if(S.focus) setFocus(false); S.lib = null; S.day = null; S.rec = null; S.hw = null; S.settings = false;
     if(g === "root") S.sel = null;
     else if(g === "year") S.sel = { s: sel.s, t: null, c: null };
     else if(g === "school") S.sel = { s: sel.s, t: sel.t, c: null };
@@ -2285,10 +2288,9 @@ async function renderStudentHw(){
   }
   draw();
 }
-function renderPlatformHome(){
+function renderSettings(){
   S.focus = false;
-  var ys = sortedBy(schoolsOf(), true);
-  var html = '<div class="head-row"><div style="flex:1;display:flex;gap:14px;align-items:center;"><img src="icons/logo.svg" alt="曼米中文" style="width:64px;height:64px;"><div><h2>歡迎，' + esc(S.teacher.name) + '</h2><div class="note">看課表，或從右上角選年度進入學校和班級。</div></div></div><div class="tools" style="justify-content:flex-end;">' + ys.map(function(y){ return '<button class="btn primary" data-a="go" data-s="' + y + '">' + esc(schoolsOf()[y].name) + ' ›</button>'; }).join("") + '<button class="btn" data-a="slot-new" data-d="' + ymd(new Date()) + '">新增排課</button> <button class="btn owner-only" data-a="add-s">新增年度</button></div></div>' + backupBannerHtml() + todayPanelHtml() + '<div class="panel"><h3>月課表</h3>' + calendarHtml() + '</div>';
+  var html = '<div class="head-row"><div style="flex:1;"><h2>設定</h2><div class="note">備份與還原、助教管理</div></div></div>';
   html += '<div class="panel owner-only"><h3>備份與還原</h3><p class="note" style="margin:0 0 8px;">把年度、學校、班級、開放設定、複習單元、教材分冊等平台資料存成一個檔案，萬一資料被改壞可以還原。「完整備份」另外包含聯絡簿（作業、學生繳交與照片）和課堂記錄截圖，檔案會比較大。生詞教材請用教材庫、測驗簡報請用簡報頁各自備份。</p><div class="tools"><button class="btn sm" id="bk-out">下載備份</button><button class="btn sm" id="bk-full">下載完整備份（含聯絡簿、截圖）</button><button class="btn sm" id="bk-in">從備份還原…</button><input type="file" id="bk-file" accept=".json,application/json" style="display:none;"></div></div>';
   html += assistantsPanelHtml(S.plat.assistants || {});
   shell(html); setCrumb([]); bindListPage();
@@ -2296,6 +2298,12 @@ function renderPlatformHome(){
   document.getElementById("bk-full").onclick = function(){ backupPlatform(true); };
   document.getElementById("bk-in").onclick = function(){ document.getElementById("bk-file").click(); };
   document.getElementById("bk-file").onchange = function(e){ var f = e.target.files[0]; e.target.value = ""; if(f) restorePlatform(f); };
+}
+function renderPlatformHome(){
+  S.focus = false;
+  var ys = sortedBy(schoolsOf(), true);
+  var html = '<div class="head-row"><div style="flex:1;display:flex;gap:14px;align-items:center;"><img src="icons/logo.svg" alt="曼米中文" style="width:64px;height:64px;"><div><h2>歡迎，' + esc(S.teacher.name) + '</h2><div class="note">看課表，或從右上角選年度進入學校和班級。</div></div></div><div class="tools" style="justify-content:flex-end;">' + ys.map(function(y){ return '<button class="btn primary" data-a="go" data-s="' + y + '">' + esc(schoolsOf()[y].name) + ' ›</button>'; }).join("") + '<button class="btn" data-a="slot-new" data-d="' + ymd(new Date()) + '">新增排課</button> <button class="btn owner-only" data-a="add-s">新增年度</button></div></div>' + backupBannerHtml() + todayPanelHtml() + '<div class="panel"><h3>月課表</h3>' + calendarHtml() + '</div>';
+  shell(html); setCrumb([]); bindListPage();
 }
 async function backupPlatform(full){
   if(!needOwner()) return;
@@ -2357,6 +2365,7 @@ function render(){
   if(!S.teacher) return;
   if(S.hw && (!S.sel || !S.sel.c)) S.hw = null;
   saveHash();
+  if(S.settings && !S.sel && !S.lib && !S.rec && !S.day) return renderSettings();
   if(S.lib) return renderLibrary();
   if(S.rec) return renderRecords();
   if(S.day && !S.sel) return renderDayPage();
