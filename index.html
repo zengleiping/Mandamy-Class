@@ -1,7 +1,13 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
+
 <meta charset="UTF-8">
+<script>
+// 舊的獨立教材頁：沒有帶任何用途參數時，直接進新平台（內嵌、時空膠囊、接力故事、小隊連結、?legacy=1 不受影響）
+(function(){ var q = new URLSearchParams(location.search); if(!q.get('embed') && !q.get('capsule') && !q.get('relay') && !q.get('squad') && !q.get('legacy')) location.replace('app.html' + location.hash); })();
+</script>
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>莉評老師的華語課</title>
 <link rel="icon" type="image/svg+xml" href="icons/logo.svg">

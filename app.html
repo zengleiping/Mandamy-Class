@@ -489,7 +489,7 @@ function navSnap(){
       rec: S.rec ? { view: S.rec.edit !== undefined ? null : (S.rec.view || null), filter: S.rec.filter || null, label: S.rec.label || null, student: S.rec.student || null } : null,
       lib: S.lib ? { book: S.lib.book || null, lesson: S.lib.lesson || null } : null, day: S.day || null, settings: !!S.settings };
   }
-  return { k: "s", lesson: S.lesson || null, tab: S.tab || null, sub: S.sub || null, hwOpen: S.hwOpen || null, leaveOpen: !!S.leaveOpen };
+  return { k: "s", lesson: S.lesson || null, tab: S.tab || null, sub: S.sub || null, hwOpen: S.hwOpen || null, leaveOpen: !!S.leaveOpen, roomJoin: S.roomJoin || null };
 }
 function navPush(url){
   if(NAV.popping) return;
@@ -513,7 +513,7 @@ window.addEventListener("popstate", function(e){
     } finally { NAV.popping = false; }
   } else if(st.k === "s" && S.student){
     NAV.popping = true;
-    try{ S.lesson = st.lesson; S.tab = st.tab; S.sub = st.sub; S.hwOpen = st.hwOpen; S.leaveOpen = st.leaveOpen; renderStudent(); }
+    try{ S.lesson = st.lesson; S.tab = st.tab; S.sub = st.sub; S.hwOpen = st.hwOpen; S.leaveOpen = st.leaveOpen; S.roomJoin = st.roomJoin || null; renderStudent(); }
     finally { NAV.popping = false; }
   }
 });
@@ -522,7 +522,7 @@ window.addEventListener("popstate", function(e){
 // ---------- 「返回」：每個功能頁左上角都有，回到上一層 ----------
 function canBack(){
   if(S.teacher) return !!(S.lib || S.rec || S.day || S.sel || S.settings);
-  return !!(S.student && (S.hwOpen || S.leaveOpen || S.lesson));
+  return !!(S.student && (S.hwOpen || S.leaveOpen || S.lesson || S.roomJoin));
 }
 function goBack(){
   if(S.teacher){
@@ -550,6 +550,7 @@ function goBack(){
   }
   if(S.student){
     if(S.focus) setFocus(false);
+    if(S.roomJoin){ S.roomJoin = null; renderStudent(); return; }
     if(S.leaveOpen){ S.leaveOpen = false; renderStudent(); return; }
     if(S.hwOpen){ S.hwOpen = (S.hwOpen !== "list") ? "list" : null; S.hwShotsFor = null; if(S.hwOpen) renderStudentHw(); else renderStudent(); return; }
     if(S.lesson){ S.lesson = null; S.tab = null; S.sub = null; renderStudent(); return; }
@@ -2308,6 +2309,12 @@ function renderSettings(){
   document.getElementById("bk-in").onclick = function(){ document.getElementById("bk-file").click(); };
   document.getElementById("bk-file").onchange = function(e){ var f = e.target.files[0]; e.target.value = ""; if(f) restorePlatform(f); };
 }
+// 學生自己輸入房間號碼加入：直接在平台裡開，不跳到舊的簡報網頁
+function renderStudentRoom(){
+  var st = S.student;
+  shell('<iframe class="frame" id="fr" src="' + esc("slides/practice.html?embed=1&room=" + encodeURIComponent(S.roomJoin) + "&role=student&name=" + encodeURIComponent(st.name)) + '" allow="microphone; camera; autoplay; clipboard-write" style="width:100%;height:calc(100vh - 56px);border:0;"></iframe>', { flush: true });
+  setCrumb([st.school, st.term, st.cls.name, "房間 " + S.roomJoin]);
+}
 function renderPlatformHome(){
   S.focus = false;
   var ys = sortedBy(schoolsOf(), true);
@@ -2736,7 +2743,7 @@ function bindLessonNav(cls, backFn, renderFn){
     if(b.id === "roomgo"){
       var v = (document.getElementById("roomno").value || "").replace(/\D/g, "");
       if(!v){ toast("請輸入房間號碼"); return; }
-      location.href = "slides/practice.html?room=" + v + "&role=student&name=" + encodeURIComponent(S.student ? S.student.name : "");
+      S.roomJoin = v; renderStudent(); return;
     }
   };
 }
@@ -2795,6 +2802,7 @@ async function startStudent(code, name, pw){
 function renderStudent(){
   var st = S.student;
   if(S.live && S.live.on) return renderStudentLive();
+  if(S.roomJoin) return renderStudentRoom();
   if(S.hwOpen) return renderStudentHw();
   if(S.leaveOpen) return renderStudentLeave();
   S.focus = false; S.liveRendered = null;
@@ -2827,7 +2835,7 @@ function renderStudent(){
     ls.appendChild(d);
   });
   var rg = document.getElementById("roomgo");
-  if(rg) rg.onclick = function(){ var v = (document.getElementById("roomno").value || "").replace(/\D/g, ""); if(!v){ toast("請輸入房間號碼"); return; } location.href = "slides/practice.html?room=" + v + "&role=student&name=" + encodeURIComponent(st.name); };
+  if(rg) rg.onclick = function(){ var v = (document.getElementById("roomno").value || "").replace(/\D/g, ""); if(!v){ toast("請輸入房間號碼"); return; } S.roomJoin = v; renderStudent(); };
 }
 
 // 老師開始上課：學生沒有選擇權，畫面完全跟著老師（哪一課、哪個分頁、簡報房間）

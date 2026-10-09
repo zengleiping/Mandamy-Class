@@ -1,7 +1,13 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
+
 <meta charset="UTF-8">
+<script>
+// 舊的獨立簡報頁：沒有帶任何用途參數時，直接進新平台（學生房間連結 ?room=、內嵌、?legacy=1 不受影響）
+(function(){ var q = new URLSearchParams(location.search); if(!q.get('embed') && !q.get('room') && !q.get('legacy')) location.replace('../app.html' + location.hash); })();
+</script>
+
 <!-- 2026-09-29：maximum-scale=1, user-scalable=no 讓 iPad 等觸控裝置的雙指縮放交給畫布自己的
      pinch-to-zoom（見 renderDrawBoard 裡的 activeTouchPointers／isPinching）處理，不會被系統
      整頁縮放搶走手勢、跟畫記/平移互相打架，畫布本身也已經用 touch-action:none 各自擋掉。 -->
@@ -4903,6 +4909,14 @@
   var classroomView = document.getElementById("classroom-view");
 
   function showLobby(){
+    // 平台內嵌時不顯示舊的「專案課次大廳」：回到這個畫面原本的專案，或顯示提示
+    if(document.body.classList.contains("embed") && !window.__worker){
+      var ep = window.__embedProject;
+      if(ep && fsData && fsData.projects && fsData.projects[ep]){ openProject(ep); if(window.__embedKind) jumpToKind(window.__embedKind); return; }
+      activeProjectId = null; lobbyView.style.display = "none"; classroomView.style.display = "none";
+      if(!document.getElementById("embed-msg")){ var em = document.createElement("div"); em.id = "embed-msg"; em.style.cssText = "padding:40px 20px;text-align:center;color:#7a6e5b;font-size:15px;"; em.textContent = "已離開。請回到平台，從課次頁重新進入。"; document.body.appendChild(em); }
+      return;
+    }
     activeProjectId = null; lobbyView.style.display = "block"; classroomView.style.display = "none";
     document.getElementById("brand-sub").textContent = "專案課次大廳 Course Lobby";
     // 離線時沒有「從雲端匯入生詞」「課堂遊戲」（都要連線）這兩個入口
@@ -4913,6 +4927,7 @@
   }
 
   function openProject(projId){
+    var em0 = document.getElementById("embed-msg"); if(em0) em0.remove();
     activeProjectId = projId; var proj = fsData.projects[projId];
     noteRecent(projId);
     lobbyView.style.display = "none"; classroomView.style.display = "grid";
@@ -15772,18 +15787,18 @@
       var pq = new URLSearchParams(location.search);
       if(pq.get("embed")) document.body.classList.add("embed");
       if(pq.get("embed") && /^(slides|quiz)$/.test(pq.get("focus") || "")){ setEmbedKind(pq.get("focus")); try{ renderSidebar(); }catch(e0){} }
-      if(pq.get("worker")){ try{ parent.postMessage({ mm: "workerReady" }, "*"); }catch(e2){} }
+      if(pq.get("worker")){ window.__worker = true; try{ parent.postMessage({ mm: "workerReady" }, "*"); }catch(e2){} }
       var newTitle = pq.get("newproject");
       if(newTitle && pq.get("embed") && !urlRoom && !isStudent){
         // 平台課次頁「為這一課建立」：建一個空專案，通知外層歸到這一課
         var np = { id: uid("proj"), folderId: null, title: newTitle, desc: "", currentQId: null, sections: {} };
-        fsData.projects[np.id] = np; saveFS(); openProject(np.id);
+        fsData.projects[np.id] = np; saveFS(); window.__embedProject = np.id; openProject(np.id);
         try{ parent.postMessage({ mm: "projectCreated", pid: np.id, title: newTitle }, "*"); }catch(e1){}
         pq.delete("newproject");
       }
       var wantProj = pq.get("project");
       if(wantProj && fsData.projects && fsData.projects[wantProj] && !urlRoom){
-        openProject(wantProj);
+        window.__embedProject = wantProj; openProject(wantProj);
         var focus = pq.get("focus"); if(focus) jumpToKind(focus);
       }
     }catch(errEmbed){ console.warn("embed init failed", errEmbed); }
@@ -15880,7 +15895,7 @@
       var proj = snap.val();
       if(!proj){ document.body.innerHTML = '<p style="padding:30px;font-family:sans-serif;">找不到這份內容，請請老師確認。</p>'; return; }
       fsData = { projects: {}, folders: {} }; fsData.projects[pid] = proj;
-      openProject(pid); jumpToKind(focus);
+      window.__embedProject = pid; openProject(pid); jumpToKind(focus);
     }catch(e){ document.body.innerHTML = '<p style="padding:30px;font-family:sans-serif;">讀取失敗，可能是老師的雲端設定還沒開放學生讀取（Firebase 規則）。</p>'; console.warn(e); }
   }
 })();
