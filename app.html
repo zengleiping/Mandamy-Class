@@ -861,7 +861,7 @@ function calendarHtml(){
   var m = S.month || (S.month = ymd(new Date()).slice(0, 7));
   var yy = Number(m.slice(0, 4)), mm = Number(m.slice(5, 7)) - 1;
   var first = new Date(yy, mm, 1), days = new Date(yy, mm + 1, 0).getDate(), today = ymd(new Date());
-  var html = '<div class="cal-head"><button class="btn sm" data-a="cal-prev">‹</button><button class="btn ghost cal-title" data-a="cp-open" title="選年份和月份">' + yy + ' 年 ' + (mm + 1) + ' 月 ▾</button><button class="btn sm" data-a="cal-next">›</button><button class="btn sm ghost" data-a="cal-today">回到今天</button><button class="btn sm ghost" data-a="cal-report" title="每個月、每間學校的上課節數">節數報表</button><button class="btn sm ghost" data-a="cal-import" title="匯入課表檔（.json）">匯入課表…</button></div>' + calPickHtml("data-a", m) + '<div class="cal-grid">';
+  var html = '<div class="cal-head"><button class="btn sm" data-a="cal-prev">‹</button><button class="btn ghost cal-title" data-a="cp-open" title="選年份和月份">' + yy + ' 年 ' + (mm + 1) + ' 月 ▾</button><button class="btn sm" data-a="cal-next">›</button><button class="btn sm ghost" data-a="cal-today">回到今天</button><button class="btn sm ghost" data-a="cal-report" title="每個月、每間學校的上課節數">節數報表</button><button class="btn sm ghost" data-a="cal-ics" title="下載成行事曆檔，匯入 Google／Apple 行事曆">匯出行事曆</button><button class="btn sm ghost" data-a="cal-import" title="匯入課表檔（.json）">匯入課表…</button></div>' + calPickHtml("data-a", m) + '<div class="cal-grid">';
   ["日", "一", "二", "三", "四", "五", "六"].forEach(function(w){ html += '<div class="cal-w">' + w + '</div>'; });
   for(var i = 0; i < first.getDay(); i++) html += '<div class="cal-d empty"></div>';
   for(var d = 1; d <= days; d++){
@@ -883,6 +883,26 @@ function todayPanelHtml(){
   var sl = slotsOn(ymd(new Date()));
   if(!sl.length) return '';
   return '<div class="panel"><h3>今天的課</h3>' + sl.map(function(x){ return slotRowHtml(x); }).join("") + '</div>';
+}
+// ---------- 匯出行事曆檔（.ics）：匯入 Google／Apple 行事曆；每堂課有固定編號，改完課表再匯一次會更新同一堂，不會重複 ----------
+function icsEsc(t){ return String(t == null ? "" : t).replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n"); }
+function exportIcs(){
+  var m = schedMap(), ids = Object.keys(m).filter(function(k){ return m[k].date && m[k].start; });
+  if(!ids.length){ alert("課表還沒有課可以匯出。"); return; }
+  var L = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Mandamy//Schedule//ZH", "CALSCALE:GREGORIAN", "X-WR-CALNAME:曼米中文課表", "X-WR-TIMEZONE:Asia/Taipei",
+    "BEGIN:VTIMEZONE", "TZID:Asia/Taipei", "BEGIN:STANDARD", "DTSTART:19700101T000000", "TZOFFSETFROM:+0800", "TZOFFSETTO:+0800", "TZNAME:CST", "END:STANDARD", "END:VTIMEZONE"], stamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d+/, "");
+  var fmt = function(d, t){ return d.replace(/-/g, "") + "T" + t.replace(":", "") + "00"; };
+  ids.forEach(function(k){
+    var sl = m[k], end = sl.end || (function(){ var h = sl.start.split(":"); return pad2(Math.min(23, Number(h[0]) + 1)) + ":" + h[1]; })(), les = sl.lesson && (S.plat.lessons || {})[sl.lesson] ? lessonTitle(sl.lesson) : "";
+    var desc = [slotLabel(sl), les, sl.note, safeUrl(sl.url)].filter(Boolean).join("\n");
+    L.push("BEGIN:VEVENT", "UID:" + k + "@mandamy-class", "DTSTAMP:" + stamp, "DTSTART;TZID=Asia/Taipei:" + fmt(sl.date, sl.start), "DTEND;TZID=Asia/Taipei:" + fmt(sl.date, end), "SUMMARY:" + icsEsc(slotText(sl)), "DESCRIPTION:" + icsEsc(desc));
+    if(safeUrl(sl.url)) L.push("URL:" + safeUrl(sl.url));
+    L.push("END:VEVENT");
+  });
+  L.push("END:VCALENDAR");
+  var blob = new Blob([L.join("\r\n")], { type: "text/calendar;charset=utf-8" }), el = document.createElement("a");
+  el.href = URL.createObjectURL(blob); el.download = "曼米中文課表.ics"; document.body.appendChild(el); el.click(); setTimeout(function(){ URL.revokeObjectURL(el.href); el.remove(); }, 500);
+  toast("已下載 " + ids.length + " 堂課。用 Google／Apple 行事曆匯入這個檔案即可；課表有更新時再下載匯入一次，會更新同一堂課。");
 }
 // ---------- 節數報表：每間學校、每個月的上課節數（含請假／調課扣除），可複製或匯出 ----------
 function slotPeriods(sl){
@@ -1060,6 +1080,7 @@ async function schedAct(a, ds){
   }
   if(a === "cal-today"){ S.month = ymd(new Date()).slice(0, 7); S.calPick = null; render(); return; }
   if(a === "cal-day"){ S.day = ds.d; render(); return; }
+  if(a === "cal-ics"){ exportIcs(); return; }
   if(a === "cal-report"){ var mm0 = S.month || ymd(new Date()).slice(0, 7); S.report = S.report || { from: mm0, to: mm0 }; S.day = "report"; render(); return; }
   if(a === "cal-import"){
     var inp = document.createElement("input"); inp.type = "file"; inp.accept = ".json,application/json";
