@@ -880,24 +880,31 @@ function newRecordDraft(slot){
     students: (prevNames.length ? prevNames : [""]).map(blankStudent), vocab: [], shots: [], notes: "", slotId: slotId };
 }
 function openRecordFor(slot){ S.rec = { edit: null, draft: newRecordDraft(slot), shots: [] }; S.day = null; S.lib = null; S.sel = null; S.lesson = null; render(); }
+function recBadge(r){
+  var st = function(bg, fg){ return 'display:inline-block;padding:2px 10px;border-radius:99px;font-size:12px;font-weight:700;background:' + bg + ';color:' + fg + ';white-space:nowrap;'; };
+  if(!r.isAbsence) return '<span style="' + st("#DCEEE6", "#3E7D68") + '">完成</span>';
+  var t = r.absType || "請假／調課";
+  return r.madeUp ? '<span style="' + st("#DCE8F6", "#2E75B6") + '">' + esc(t) + '・已補課</span>' : '<span style="' + st("#F7D9D5", "#B23B32") + '">' + esc(t) + '・待補課</span>';
+}
 function renderRecords(){
   if(S.rec && S.rec.edit !== undefined) return renderRecEditor();
   if(S.rec && S.rec.view === "trend") return renderTrend();
   if(S.rec && S.rec.view === "review") return renderReview();
   if(S.rec && S.rec.view === "comments") return renderComments();
   S.focus = false;
-  var f = S.rec.filter || "all", m = recMap(), ids = Object.keys(m).filter(function(k){ return f === "all" || m[k].classLabel === f; }).sort(function(a, b){ var d = (m[b].date || "").localeCompare(m[a].date || ""); return d || ((m[b].seq || 0) - (m[a].seq || 0)); });
+  var f = S.rec.filter || "all", m = recMap(), ids = Object.keys(m).filter(function(k){ return f === "all" || (f === "__makeup" ? (m[k].isAbsence && !m[k].madeUp) : m[k].classLabel === f); }).sort(function(a, b){ var d = (m[b].date || "").localeCompare(m[a].date || ""); return d || ((m[b].seq || 0) - (m[a].seq || 0)); });
   var html = '<div class="head-row"><div style="flex:1;"><h2>課堂記錄</h2><div class="note">' + (Object.keys(m).length ? '共 ' + Object.keys(m).length + ' 筆' : '還沒有任何記錄') + '</div></div><div><button class="btn" data-r="new">新增記錄</button> <button class="btn sm" data-r="trend">學生趨勢</button> <button class="btn sm" data-r="review">生詞複習</button> <button class="btn sm" data-r="comments">學期評語</button> <button class="btn sm" data-r="import">匯入舊記錄…</button><input type="file" id="rec-imp" accept=".json,application/json" style="display:none;"></div></div>';
   var labels = recLabels();
-  if(labels.length) html += '<div class="tools" style="margin-bottom:12px;"><button class="btn sm' + (f === "all" ? ' primary' : '') + '" data-r="filter" data-f="all">全部 ' + Object.keys(m).length + '</button>' + labels.map(function(l){ return '<button class="btn sm' + (f === l.label ? ' primary' : '') + '" data-r="filter" data-f="' + esc(l.label) + '">' + esc(l.label) + ' ' + l.count + '</button>'; }).join("") + '</div>';
-  if(f !== "all"){
+  var needMk = Object.keys(m).filter(function(k){ return m[k].isAbsence && !m[k].madeUp; }).length;
+  if(labels.length) html += '<div class="tools" style="margin-bottom:12px;"><button class="btn sm' + (f === "all" ? ' primary' : '') + '" data-r="filter" data-f="all">全部 ' + Object.keys(m).length + '</button>' + (needMk ? '<button class="btn sm' + (f === "__makeup" ? ' primary' : '') + '" data-r="filter" data-f="__makeup" style="' + (f === "__makeup" ? '' : 'background:#F7D9D5;color:#B23B32;') + '">待補課 ' + needMk + '</button>' : '') + labels.map(function(l){ return '<button class="btn sm' + (f === l.label ? ' primary' : '') + '" data-r="filter" data-f="' + esc(l.label) + '">' + esc(l.label) + ' ' + l.count + '</button>'; }).join("") + '</div>';
+  if(f !== "all" && f !== "__makeup"){
     var real = ids.filter(function(k){ return !m[k].isAbsence; }), tot = [];
     real.forEach(function(k){ (m[k].students || []).forEach(function(s){ if(!s.absent) tot.push(stTotal(s)); }); });
     html += '<div class="panel"><div class="tools" style="gap:28px;"><div><b style="font-size:20px;">' + ids.length + '</b><div class="note">已記錄堂數</div></div><div><b style="font-size:20px;">' + (tot.length ? (tot.reduce(function(a, b){ return a + b; }, 0) / tot.length).toFixed(1) : "—") + '</b><div class="note">平均總分</div></div><div><b style="font-size:20px;">' + (ids.length - real.length) + '</b><div class="note">請假／調課</div></div></div></div>';
   }
   html += '<div class="panel">' + (ids.length ? ids.map(function(k){
     var r = m[k], sts = (r.students || []).filter(function(x){ return !x.absent; }), tot = r.isAbsence ? "—" : (sts.length <= 1 ? (sts.length ? stTotal(sts[0]) : "—") : Math.round(sts.reduce(function(a, s){ return a + stTotal(s); }, 0) / sts.length) + " 平均");
-    return '<div class="slot" data-r="open" data-id="' + k + '" style="cursor:pointer;"><div class="slot-time">第 ' + esc(r.seq == null ? "?" : r.seq) + ' 次</div><div class="slot-main"><div><b>' + esc(r.date || "") + '</b>　' + esc(r.classLabel || "（未命名）") + (r.isAbsence ? '　<span class="note">請假／調課</span>' : '') + '</div><div class="note">' + esc(r.material || (r.isAbsence ? "（無上課內容）" : "")) + '</div></div><div style="font-weight:700;">' + tot + '</div></div>';
+    return '<div class="slot" data-r="open" data-id="' + k + '" style="cursor:pointer;"><div class="slot-time">第 ' + esc(r.seq == null ? "?" : r.seq) + ' 次</div><div class="slot-main"><div><b>' + esc(r.date || "") + '</b>　' + esc(r.classLabel || "（未命名）") + '　' + recBadge(r) + '</div><div class="note">' + esc(r.material || (r.isAbsence ? "（無上課內容）" : "")) + '</div></div><div style="font-weight:700;">' + tot + '</div></div>';
   }).join("") : '<p class="note">這裡還沒有記錄。上完課按「新增記錄」，或從課表的「填記錄」進來。</p>') + '</div>';
   shell(html); setCrumb([]);
   var main = document.getElementById("main");
@@ -923,6 +930,7 @@ function recSync(){
   d.classLabel = g("rf-class").value.trim(); d.date = g("rf-date").value || d.date;
   d.seq = g("rf-seq").value === "" ? null : Number(g("rf-seq").value); d.weekNo = g("rf-week").value === "" ? null : Number(g("rf-week").value);
   d.material = g("rf-material").value; d.notes = g("rf-notes").value; d.isAbsence = g("rf-abs").checked;
+  if(d.isAbsence){ if(g("rf-abst")) d.absType = g("rf-abst").value; if(g("rf-madeup")) d.madeUp = g("rf-madeup").checked; } else { delete d.absType; delete d.madeUp; }
   document.querySelectorAll(".rstu").forEach(function(box){
     var st = d.students[Number(box.dataset.i)]; if(!st) return;
     st.name = box.querySelector(".rname").value; var ab = box.querySelector(".rabs"); if(ab){ if(ab.checked) st.absent = true; else delete st.absent; }
@@ -941,6 +949,7 @@ function renderRecEditor(){
     '<div class="tools" style="margin:12px 0 0;"><button class="btn sm' + (d.mode === "single" ? ' primary' : '') + '" data-r="mode" data-m="single">單一學生</button><button class="btn sm' + (d.mode === "group" ? ' primary' : '') + '" data-r="mode" data-m="group">多位學生（小組／班級）</button></div>' +
     '<div style="display:flex;gap:12px;flex-wrap:wrap;"><div style="flex:1 1 150px;"><label>日期</label><input type="date" id="rf-date" value="' + esc(d.date) + '"></div><div style="flex:1 1 100px;"><label>第幾次</label><input type="number" id="rf-seq" min="1" placeholder="自動" value="' + (d.seq == null ? "" : d.seq) + '"></div><div style="flex:1 1 100px;"><label>第幾週</label><input type="number" id="rf-week" min="1" placeholder="自動" value="' + (d.weekNo == null ? "" : d.weekNo) + '"></div></div>' +
     '<label style="display:flex;align-items:center;gap:6px;margin-top:12px;"><input type="checkbox" id="rf-abs"' + (d.isAbsence ? ' checked' : '') + '> 這堂課請假／調課（沒有實際上課，不用打分數）</label>' +
+    (d.isAbsence ? '<div class="tools" style="margin:8px 0 0 22px;"><select id="rf-abst" style="padding:6px 10px;border-radius:8px;border:1.5px solid var(--line);background:var(--surface-2);"><option' + ((d.absType || "請假") === "請假" ? ' selected' : '') + '>請假</option><option' + (d.absType === "調課" ? ' selected' : '') + '>調課</option></select><label style="display:flex;align-items:center;gap:6px;margin:0;"><input type="checkbox" id="rf-madeup"' + (d.madeUp ? ' checked' : '') + '> 已經補課了</label></div>' : '') +
     '<label>本次教材進度</label><textarea id="rf-material" rows="2" placeholder="例如：第一冊第五課 生詞、語法">' + esc(d.material) + '</textarea>' +
     '<div id="rf-stu" style="' + (d.isAbsence ? 'opacity:.45;pointer-events:none;' : '') + '"><label>學生表現（聽力理解20／口語表達25／閱讀15／寫作20／課堂參與20＝總分100）</label>' +
     d.students.map(function(st, i){
