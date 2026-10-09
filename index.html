@@ -5,7 +5,17 @@
 <meta charset="UTF-8">
 <script>
 // 舊的獨立教材頁：沒有帶任何用途參數時，直接進新平台（內嵌、時空膠囊、接力故事、小隊連結、?legacy=1 不受影響）
-(function(){ var q = new URLSearchParams(location.search); if(!q.get('embed') && !q.get('capsule') && !q.get('relay') && !q.get('squad') && !q.get('legacy')) location.replace('app.html' + location.hash); })();
+(function(){
+  var q = new URLSearchParams(location.search);
+  if(!q.get('embed') && !q.get('capsule') && !q.get('relay') && !q.get('squad') && !q.get('legacy')) location.replace('app.html' + location.hash);
+  // 平台內嵌：整理好版面之前先藏起來，避免閃一下舊畫面
+  if(q.get('embed')){
+    var st = document.createElement('style'); st.textContent = 'html.embed-loading body{visibility:hidden !important;}'; document.head.appendChild(st);
+    document.documentElement.classList.add('embed-loading');
+    window.__embedReveal = function(){ document.documentElement.classList.remove('embed-loading'); };
+    setTimeout(window.__embedReveal, 7000);
+  }
+})();
 </script>
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8096,7 +8106,7 @@ render();
     var ms = document.createElement('style');
     ms.textContent = 'body.manage > *:not([id^="cm"]):not(#contentManagerOverlay):not(script):not(style){display:none !important;} body.manage #cmCloseBtn{display:none !important;} body.manage #contentManagerOverlay{background:var(--bg,#faf7f2) !important; align-items:flex-start !important; padding:0 !important;} body.manage #contentManagerOverlay .bell-card{max-width:none !important; width:100% !important; max-height:100vh !important; box-shadow:none !important; border-radius:0 !important; padding:20px 24px !important;}';
     document.head.appendChild(ms); document.body.classList.add('manage');
-    var tries = 0, tm = setInterval(function(){ tries++; if(window.__cmManage && window.__cmManage.ready()){ clearInterval(tm); window.__cmManage.open(); } else if(tries > 80){ clearInterval(tm); } }, 250);
+    var tries = 0, tm = setInterval(function(){ tries++; if(window.__cmManage && window.__cmManage.ready()){ clearInterval(tm); Promise.resolve(window.__cmManage.open()).then(function(){ setTimeout(window.__embedReveal, 150); }, window.__embedReveal); } else if(tries > 80){ clearInterval(tm); } }, 250);
     return;
   }
   window.addEventListener('message', function(e){ if(e.data && e.data.mm === 'focus') document.body.classList.toggle('focus', !!e.data.on); });
@@ -8127,6 +8137,7 @@ render();
     var tb = tab && document.querySelector('nav.tabs button[data-tab="' + (tabMap[tab] || tab) + '"]');
     if(tb) tb.click(); else render();
   }catch(e){ console.warn('embed init failed', e); }
+  setTimeout(function(){ if(window.__embedReveal) window.__embedReveal(); }, 120);
 })();
 </script>
 </body>

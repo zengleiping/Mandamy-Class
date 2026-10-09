@@ -5,7 +5,17 @@
 <meta charset="UTF-8">
 <script>
 // 舊的獨立簡報頁：沒有帶任何用途參數時，直接進新平台（學生房間連結 ?room=、內嵌、?legacy=1 不受影響）
-(function(){ var q = new URLSearchParams(location.search); if(!q.get('embed') && !q.get('room') && !q.get('legacy')) location.replace('../app.html' + location.hash); })();
+(function(){
+  var q = new URLSearchParams(location.search);
+  if(!q.get('embed') && !q.get('room') && !q.get('legacy')) location.replace('../app.html' + location.hash);
+  // 平台內嵌：專案或房間畫面準備好之前先藏起來，避免閃一下舊的登入／大廳畫面
+  if(q.get('embed') && !q.get('worker')){
+    var st = document.createElement('style'); st.textContent = 'html.embed-loading body{visibility:hidden !important;}'; document.head.appendChild(st);
+    document.documentElement.classList.add('embed-loading');
+    window.__embedReveal = function(){ document.documentElement.classList.remove('embed-loading'); };
+    setTimeout(window.__embedReveal, 9000);
+  }
+})();
 </script>
 
 <!-- 2026-09-29：maximum-scale=1, user-scalable=no 讓 iPad 等觸控裝置的雙指縮放交給畫布自己的
@@ -4914,6 +4924,7 @@
       var ep = window.__embedProject;
       if(ep && fsData && fsData.projects && fsData.projects[ep]){ openProject(ep); if(window.__embedKind) jumpToKind(window.__embedKind); return; }
       activeProjectId = null; lobbyView.style.display = "none"; classroomView.style.display = "none";
+      if(window.__embedReveal) window.__embedReveal();
       if(!document.getElementById("embed-msg")){ var em = document.createElement("div"); em.id = "embed-msg"; em.style.cssText = "padding:40px 20px;text-align:center;color:#7a6e5b;font-size:15px;"; em.textContent = "已離開。請回到平台，從課次頁重新進入。"; document.body.appendChild(em); }
       return;
     }
@@ -4928,7 +4939,8 @@
 
   function openProject(projId){
     var em0 = document.getElementById("embed-msg"); if(em0) em0.remove();
-    activeProjectId = projId; var proj = fsData.projects[projId];
+    activeProjectId = projId;
+    setTimeout(function(){ if(window.__embedReveal) window.__embedReveal(); }, 80); var proj = fsData.projects[projId];
     noteRecent(projId);
     lobbyView.style.display = "none"; classroomView.style.display = "grid";
     document.getElementById("brand-sub").textContent = proj.title;
@@ -6097,6 +6109,7 @@
       lobbyView.style.display = "none"; classroomView.style.display = "grid";
       if(roomData.project) document.getElementById("brand-sub").textContent = roomData.project.title;
       renderTopbar(); renderSidebar(); renderStage(); renderTimerWidget();
+      if(window.__embedReveal) setTimeout(window.__embedReveal, 80);
     });
     onValue(ref(db, "roomCursors/" + rId), function(snap){ renderMultiCursors(snap.val()); });
     // 「跟隨大師」邊錄邊即時廣播：只有目前畫面上真的是那一題寫字板時，liveTraceHandler 才會被設定，
@@ -15889,14 +15902,14 @@
     window.__solo = true; document.body.classList.add("embed", "solo");
     if(/^(slides|quiz)$/.test(focus || "")) setEmbedKind(focus);
     var ready = await waitForFirebase();
-    if(!ready){ document.body.innerHTML = '<p style="padding:30px;font-family:sans-serif;">連不上雲端，請檢查網路後重新整理。</p>'; return; }
+    if(!ready){ if(window.__embedReveal) window.__embedReveal(); document.body.innerHTML = '<p style="padding:30px;font-family:sans-serif;">連不上雲端，請檢查網路後重新整理。</p>'; return; }
     try{
       var snap = await get(ref(db, "teacherLibraries/" + tid + "/projects/" + pid));
       var proj = snap.val();
-      if(!proj){ document.body.innerHTML = '<p style="padding:30px;font-family:sans-serif;">找不到這份內容，請請老師確認。</p>'; return; }
+      if(!proj){ if(window.__embedReveal) window.__embedReveal(); document.body.innerHTML = '<p style="padding:30px;font-family:sans-serif;">找不到這份內容，請請老師確認。</p>'; return; }
       fsData = { projects: {}, folders: {} }; fsData.projects[pid] = proj;
       window.__embedProject = pid; openProject(pid); jumpToKind(focus);
-    }catch(e){ document.body.innerHTML = '<p style="padding:30px;font-family:sans-serif;">讀取失敗，可能是老師的雲端設定還沒開放學生讀取（Firebase 規則）。</p>'; console.warn(e); }
+    }catch(e){ if(window.__embedReveal) window.__embedReveal(); document.body.innerHTML = '<p style="padding:30px;font-family:sans-serif;">讀取失敗，可能是老師的雲端設定還沒開放學生讀取（Firebase 規則）。</p>'; console.warn(e); }
   }
 })();
 </script>
