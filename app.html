@@ -230,10 +230,15 @@
     window.db = mods[1].getDatabase(fbApp);
     window.ref = mods[1].ref; window.get = mods[1].get; window.set = mods[1].set; window.update = mods[1].update; window.onValue = mods[1].onValue;
     window.auth = mods[2].getAuth(fbApp);
-    await new Promise(function(resolve, reject){
-      mods[2].onAuthStateChanged(window.auth, function(u){ if(u) resolve(u); });
-      mods[2].signInAnonymously(window.auth).catch(reject);
-    });
+    window.googleApi = { GoogleAuthProvider: mods[2].GoogleAuthProvider, signInWithPopup: mods[2].signInWithPopup, signInWithRedirect: mods[2].signInWithRedirect, getRedirectResult: mods[2].getRedirectResult, signOut: mods[2].signOut, signInAnonymously: mods[2].signInAnonymously };
+    // 先看看有沒有上次留下來的登入（例如學生的 Google 帳號），有就沿用；沒有才用匿名登入
+    var first = await new Promise(function(resolve){ var un = mods[2].onAuthStateChanged(window.auth, function(u){ try{ if(un) un(); }catch(e){} resolve(u); }); });
+    if(!first){
+      await new Promise(function(resolve, reject){
+        mods[2].onAuthStateChanged(window.auth, function(u){ if(u) resolve(u); });
+        mods[2].signInAnonymously(window.auth).catch(reject);
+      });
+    }
     window.__firebaseReady = true;
     window.dispatchEvent(new Event("firebase-bridge-ready"));
   }catch(e){ console.error("Firebase 連線初始化失敗：", e); window.__firebaseFailed = true; window.dispatchEvent(new Event("firebase-bridge-ready")); }
@@ -624,7 +629,7 @@ function shell(inner, opts){
     document.getElementById("libbtn").onclick = function(){ if(S.focus) setFocus(false); S.rec = null; S.settings = false; S.lib = { book: S.lib ? S.lib.book : DEFAULT_BOOK }; render(); };
     document.getElementById("logout").onclick = function(){ try{ localStorage.removeItem(SESSION_KEY); localStorage.removeItem("mm_ta_owner"); }catch(e){} S.teacher = null; S.sel = null; NAV.last = null; history.replaceState(null, "", location.pathname); viewLogin(); };
   } else {
-    document.getElementById("leave").onclick = function(){ S.student = null; NAV.last = null; history.replaceState(null, "", location.pathname); viewStudentEntry(); };
+    document.getElementById("leave").onclick = async function(){ S.student = null; NAV.last = null; history.replaceState(null, "", location.pathname); if(googleUser()) await googleSignOut(); viewStudentEntry(); };
   }
 }
 function setCrumb(parts){
@@ -1390,10 +1395,10 @@ async function renderHomework(cls){
     if(hw.view === "summary") return hwSummary(cls, items, roster);
     try{ localStorage.setItem(hwSeenKey(cid), String(nowMs())); }catch(e){}
     var plinks = (await fbGet("teacherPlatform/" + tid + "/parentLinks")) || {}; Object.keys(plinks).forEach(function(t){ if(plinks[t].c !== cid) delete plinks[t]; });
-    var accs = (await fbGet(accPath(tid, cid))) || {}, accOn = !!(await fbGet("teacherPlatform/" + tid + "/accountsOn/" + cid));
+    var accs = (await fbGet(accPath(tid, cid))) || {}, accOn = !!(await fbGet("teacherPlatform/" + tid + "/accountsOn/" + cid)), glinks = (await fbGet(glPath(tid, cid))) || {};
     // 列表
     var html = '<div class="head-row"><div style="flex:1;"><h2>名單與帳號</h2><div class="note">' + esc(cls.name) + '　班級名單、學生帳號、家長連結、批次貼上作業</div></div><div><button class="btn sm ghost" data-h="list">回聯絡簿</button></div></div>';
-    html += '<div class="panel owner-only"><h3>班級名單</h3><p class="note" style="margin:0 0 8px;">一行一位學生，名字要跟學生進入時輸入的一樣。結算時沒交的人才找得出來。</p><textarea id="hw-roster" rows="5" style="width:100%;padding:8px 10px;border-radius:8px;border:1.5px solid var(--line);background:var(--surface-2);font:inherit;">' + esc(roster.join("\n")) + '</textarea><div style="margin-top:8px;"><button class="btn sm" data-h="roster">儲存名單</button></div>' + accPanelHtml(roster, accs, accOn) + parentPanelHtml(roster, plinks) + '</div>' + '<div class="panel owner-only"><h3>批次貼上作業</h3><p class="note" style="margin:0 0 8px;">一行一份：<code>日期 標題</code>，可以加 <code>| 說明</code>，也可以寫時間。例如：<br><code>10/15 第七課生詞抄寫 | 抄三遍</code><br><code>10/22 14:00 第八課造句</code></p><textarea id="hw-batch" rows="4" style="width:100%;padding:8px 10px;border-radius:8px;border:1.5px solid var(--line);background:var(--surface-2);font:inherit;"></textarea><div style="margin-top:8px;"><button class="btn sm" data-h="batch">建立這些作業</button></div></div>';
+    html += '<div class="panel owner-only"><h3>班級名單</h3><p class="note" style="margin:0 0 8px;">一行一位學生，名字要跟學生進入時輸入的一樣。結算時沒交的人才找得出來。</p><textarea id="hw-roster" rows="5" style="width:100%;padding:8px 10px;border-radius:8px;border:1.5px solid var(--line);background:var(--surface-2);font:inherit;">' + esc(roster.join("\n")) + '</textarea><div style="margin-top:8px;"><button class="btn sm" data-h="roster">儲存名單</button></div>' + accPanelHtml(roster, accs, accOn) + googlePanelHtml(glinks) + parentPanelHtml(roster, plinks) + '</div>' + '<div class="panel owner-only"><h3>批次貼上作業</h3><p class="note" style="margin:0 0 8px;">一行一份：<code>日期 標題</code>，可以加 <code>| 說明</code>，也可以寫時間。例如：<br><code>10/15 第七課生詞抄寫 | 抄三遍</code><br><code>10/22 14:00 第八課造句</code></p><textarea id="hw-batch" rows="4" style="width:100%;padding:8px 10px;border-radius:8px;border:1.5px solid var(--line);background:var(--surface-2);font:inherit;"></textarea><div style="margin-top:8px;"><button class="btn sm" data-h="batch">建立這些作業</button></div></div>';
     shell(html); setCrumb([]);
     document.getElementById("main").onclick = async function(e){
       var b = e.target.closest("[data-h]"); if(!b) return; var a = b.dataset.h;
@@ -1412,6 +1417,7 @@ async function renderHomework(cls){
       }
       else if(a.indexOf("plink-") === 0){ await parentAct(a, roster, plinks, b); }
       else if(a.indexOf("acc-") === 0){ await accAct(a, roster, accs, base, b.dataset.n); }
+      else if(a.indexOf("gl-") === 0){ await googleLinkAct(a, b.dataset.u, glinks, tid, cid); }
       else if(a === "roster"){
         var names = document.getElementById("hw-roster").value.split("\n").map(function(x){ return x.trim(); }).filter(Boolean);
         await fbSet(base + "/roster", names.length ? names : null); toast("已儲存名單"); render();
@@ -1614,6 +1620,20 @@ function accStatusLabel(a){
   if(!a) return "還沒有帳號";
   if(a.lockUntil && a.lockUntil > nowMs()) return "🔒 已鎖定（輸入錯太多次）";
   return a.mustChange ? "初始密碼（學生還沒改）" : "✓ 已自己設定密碼";
+}
+function googlePanelHtml(gl){
+  var ks = Object.keys(gl || {}).sort(function(a, b){ return (gl[a].status === "pending" ? 0 : 1) - (gl[b].status === "pending" ? 0 : 1) || (gl[b].at || 0) - (gl[a].at || 0); });
+  var rows = ks.map(function(k){ var g = gl[k], pend = g.status === "pending";
+    return '<tr><td><b>' + esc(g.name) + '</b></td><td>' + esc(g.email || "") + (g.gname ? '<div class="note">' + esc(g.gname) + '</div>' : '') + '</td><td>' + (pend ? '<span class="chip" style="background:#FBEBC8;">等你確認</span>' : '<span class="chip" style="background:#DCEEE6;">已連結</span>') + '</td><td>' +
+      (pend ? '<button class="btn sm primary" data-h="gl-ok" data-u="' + esc(k) + '">確認</button><button class="btn sm danger" data-h="gl-no" data-u="' + esc(k) + '">拒絕</button>' : '<button class="btn sm danger" data-h="gl-del" data-u="' + esc(k) + '">解除連結</button>') + '</td></tr>'; }).join("");
+  return '<h3 style="margin-top:16px;">Google 登入</h3><p class="note" style="margin:0 0 8px;">學生在入口按「用 Google 帳號登入」，選自己的名字送出申請，你確認後，之後同一個 Google 帳號就能直接進來（不用密碼）。名字和密碼登入照常可用。</p>' +
+    (ks.length ? '<div style="overflow-x:auto;"><table class="hw-table"><thead><tr><th>學生</th><th>Google 帳號</th><th>狀態</th><th>操作</th></tr></thead><tbody>' + rows + '</tbody></table></div>' : '<p class="note">目前還沒有人申請。</p>');
+}
+async function googleLinkAct(a, u, gl, tid, cid){
+  var g = gl[u]; if(!g) return;
+  if(a === "gl-ok"){ await fbUpdate(glPath(tid, cid, u), { status: "approved", approvedAt: Date.now() }); toast("已確認「" + g.name + "」的 Google 帳號"); }
+  else if(a === "gl-no" || a === "gl-del"){ if(!confirm((a === "gl-no" ? "拒絕" : "解除") + "「" + g.name + "」（" + (g.email || "") + "）的 Google 連結？")) return; await fbSet(glPath(tid, cid, u), null); toast("已移除"); }
+  render();
 }
 function accPanelHtml(roster, accs, on){
   var rows = roster.map(function(n){ var a = accs[hwSkey(n)]; return '<tr><td><b>' + esc(n) + '</b></td><td>' + accStatusLabel(a) + (a && a.lastLogin ? '<div class="note">最近登入 ' + esc(hwFmt(a.lastLogin)) + '</div>' : '') + '</td><td>' + (a ? '<button class="btn sm" data-h="acc-reset" data-n="' + esc(n) + '">重設密碼</button>' + (a.lockUntil && a.lockUntil > nowMs() ? '<button class="btn sm" data-h="acc-unlock" data-n="' + esc(n) + '">解鎖</button>' : '') : '<button class="btn sm" data-h="acc-reset" data-n="' + esc(n) + '">建立帳號</button>') + '</td></tr>'; }).join("");
@@ -2098,11 +2118,11 @@ function desktopNotify(n){
 }
 function openBell(){
   var d = document.getElementById("bell-d"), items = bellItems();
-  document.getElementById("bell-list").innerHTML = items.length ? items.map(function(x){ return '<div class="slot" data-n="' + x.id + '" style="cursor:pointer;"><div class="slot-time" style="min-width:80px;">' + esc(hwFmt(x.at)) + '</div><div class="slot-main"><b>' + esc(x.name) + '</b> ' + (x.kind === "leave" ? '申請' + esc(x.title) : '交了「' + esc(x.title) + '」') + '<div class="note">' + esc(x.cname || "") + '</div></div></div>'; }).join("") : '<p class="note">沒有新的繳交通知。</p>';
+  document.getElementById("bell-list").innerHTML = items.length ? items.map(function(x){ return '<div class="slot" data-n="' + x.id + '" style="cursor:pointer;"><div class="slot-time" style="min-width:80px;">' + esc(hwFmt(x.at)) + '</div><div class="slot-main"><b>' + esc(x.name) + '</b> ' + (x.kind === "leave" ? '申請' + esc(x.title) : x.kind === "google" ? '申請連結 Google 帳號' : '交了「' + esc(x.title) + '」') + '<div class="note">' + esc(x.cname || "") + '</div></div></div>'; }).join("") : '<p class="note">沒有新的繳交通知。</p>';
   document.getElementById("bell-perm").style.display = ("Notification" in window && Notification.permission === "default") ? "" : "none";
   document.getElementById("bell-list").onclick = function(e){
     var r = e.target.closest("[data-n]"); if(!r) return; var n = S.notify[r.dataset.n]; if(!n) return;
-    d.close(); S.day = null; S.lib = null; S.rec = null; S.sel = { s: n.s, t: n.tm, c: n.c }; S.lesson = null; S.hw = n.kind === "leave" ? { view: "leave" } : { view: "item", id: n.hwId }; render();
+    d.close(); S.day = null; S.lib = null; S.rec = null; S.sel = { s: n.s, t: n.tm, c: n.c }; S.lesson = null; S.hw = n.kind === "leave" ? { view: "leave" } : n.kind === "google" ? { view: "accounts" } : { view: "item", id: n.hwId }; render();
   };
   document.getElementById("bell-clear").onclick = async function(){ await fbSet("teacherPlatform/" + S.teacher.id + "/notify", null); S.notify = {}; updateBell(); d.close(); toast("已全部標為已讀"); };
   document.getElementById("bell-perm").onclick = function(){ try{ Notification.requestPermission().then(function(){ openBell(); }); }catch(e){} };
@@ -3110,6 +3130,65 @@ function renderLesson(cls){
 }
 
 // ---------- 學生 ----------
+// ---------- 學生用 Google 帳號登入（第一次要選自己是誰，由老師確認；之後同一個 Google 帳號自動認得）----------
+function googleUser(){ var u = window.auth && window.auth.currentUser; return (u && !u.isAnonymous && u.providerData && u.providerData.some(function(p){ return p && p.providerId === "google.com"; })) ? u : null; }
+async function googleSignIn(code){
+  var G = window.googleApi; if(!G || !G.GoogleAuthProvider) throw new Error("Google 登入功能還沒載入，請重新整理後再試。");
+  var provider = new G.GoogleAuthProvider(); provider.setCustomParameters({ prompt: "select_account" });
+  try{ var r = await G.signInWithPopup(window.auth, provider); return r.user; }
+  catch(e){
+    var c = e && e.code || "";
+    if(c === "auth/popup-blocked" || c === "auth/operation-not-supported-in-this-environment"){
+      try{ sessionStorage.setItem("mm_google_resume", code || ""); }catch(x){}
+      await G.signInWithRedirect(window.auth, provider); return null;
+    }
+    if(c === "auth/popup-closed-by-user" || c === "auth/cancelled-popup-request") throw new Error("已取消 Google 登入。");
+    if(c === "auth/unauthorized-domain") throw new Error("這個網站還沒有被允許使用 Google 登入（老師要到 Firebase 後台把網址加到「已授權網域」）。");
+    if(c === "auth/operation-not-allowed") throw new Error("老師還沒有在 Firebase 後台開啟 Google 登入。");
+    throw new Error("Google 登入失敗（" + (c || (e && e.message) || "未知錯誤") + "）");
+  }
+}
+async function googleSignOut(){
+  var G = window.googleApi; if(!G) return;
+  try{ await G.signOut(window.auth); }catch(e){}
+  try{ await G.signInAnonymously(window.auth); }catch(e){}   // 資料庫需要有登入狀態，登出 Google 後換回匿名
+}
+function glPath(tid, cid, uid2){ return "teacherPlatform/" + tid + "/googleLinks/" + cid + (uid2 ? "/" + uid2 : ""); }
+async function googleEntry(code, user, silent){
+  root.innerHTML = '<div class="center-wrap"><div class="note">檢查 Google 帳號…</div></div>';
+  var idx = await fbGet("classCodes/" + code);
+  if(!idx){ viewStudentEntry("找不到這個班級代碼，請向老師確認。", code); return; }
+  var link = await fbGet(glPath(idx.t, idx.c, user.uid));
+  if(link && link.status === "approved"){ try{ localStorage.setItem("mm_student_name", link.name); }catch(e){} await startStudent(code, link.name, null, { google: true }); return; }
+  if(silent && !link){ viewStudentEntry("", code); return; }
+  if(link && link.status === "pending"){ viewGooglePending(code, user, link); return; }
+  var roster = []; try{ var r = await fbGet(hwBase(idx.t, idx.c) + "/roster"); roster = Array.isArray(r) ? r : (r ? Object.keys(r).map(function(k){ return r[k]; }) : []); }catch(e){}
+  viewGooglePick(code, user, idx, roster);
+}
+function viewGooglePending(code, user, link){
+  root.innerHTML = '<div class="center-wrap"><div class="card"><h2 style="text-align:center;">等老師確認</h2><p class="sub" style="text-align:center;">你的 Google 帳號（' + esc(user.email || "") + '）已經申請連結到「<b>' + esc(link.name) + '</b>」。<br>老師確認後，下次就能直接用 Google 登入。</p><button class="btn primary" id="gre" style="width:100%;margin-top:14px;">重新檢查</button><p class="sub" style="margin-top:14px;"><a href="#" id="gback">改用名字登入</a>　<a href="#" id="gout">換一個 Google 帳號</a></p></div></div>';
+  document.getElementById("gre").onclick = function(){ googleEntry(code, user, false); };
+  document.getElementById("gback").onclick = function(e){ e.preventDefault(); viewStudentEntry("", code); };
+  document.getElementById("gout").onclick = async function(e){ e.preventDefault(); await googleSignOut(); viewStudentEntry("", code); };
+}
+function viewGooglePick(code, user, idx, roster){
+  root.innerHTML = '<div class="center-wrap"><div class="card"><h2 style="text-align:center;">這個 Google 帳號是誰？</h2><p class="sub" style="text-align:center;">' + esc(user.displayName || "") + '（' + esc(user.email || "") + '）<br>第一次使用，請選你在班上的名字，老師確認後就會連結起來。</p>' +
+    (roster.length ? '<label>我是</label><select id="gpn">' + roster.map(function(n){ return '<option value="' + esc(n) + '">' + esc(n) + '</option>'; }).join("") + '</select>' : '<label>你的名字</label><input type="text" id="gpt" autocomplete="off">') +
+    '<div class="err" id="gpe"></div><button class="btn primary" id="gpgo" style="width:100%;margin-top:14px;">送出申請</button><p class="sub" style="margin-top:14px;"><a href="#" id="gback">改用名字登入</a>　<a href="#" id="gout">換一個 Google 帳號</a></p></div></div>';
+  document.getElementById("gback").onclick = function(e){ e.preventDefault(); viewStudentEntry("", code); };
+  document.getElementById("gout").onclick = async function(e){ e.preventDefault(); await googleSignOut(); viewStudentEntry("", code); };
+  document.getElementById("gpgo").onclick = async function(){
+    var nm = (document.getElementById("gpn") ? document.getElementById("gpn").value : document.getElementById("gpt").value).trim(), er = document.getElementById("gpe");
+    if(!nm){ er.textContent = "請選或輸入名字"; er.style.display = "block"; return; }
+    var rec = { name: nm, email: user.email || "", gname: user.displayName || "", status: "pending", at: Date.now() };
+    try{
+      await fbSet(glPath(idx.t, idx.c, user.uid), rec);
+      var cname = ""; try{ cname = (await fbGet("teacherPlatform/" + idx.t + "/schools/" + idx.s + "/terms/" + idx.tm + "/classes/" + idx.c + "/name")) || ""; }catch(e2){}
+      await fbSet("teacherPlatform/" + idx.t + "/notify/" + uid("n_"), { kind: "google", name: nm, title: "Google 登入申請", cname: cname, s: idx.s, tm: idx.tm, c: idx.c, at: Date.now() });
+    }catch(e){ er.textContent = "送出失敗，請檢查網路後再試。"; er.style.display = "block"; return; }
+    viewGooglePending(code, user, rec);
+  };
+}
 function viewStudentEntry(msg, codeIn){
   var saved = ""; try{ saved = localStorage.getItem("mm_student_name") || ""; }catch(e){}
   root.innerHTML = '<div class="center-wrap"><div class="card"><img src="icons/logo.svg" alt="曼米中文" style="width:84px;height:84px;display:block;margin:0 auto 8px;"><h2 style="text-align:center;">曼米中文</h2><p class="sub" style="text-align:center;">學生入口</p>' +
@@ -3117,6 +3196,7 @@ function viewStudentEntry(msg, codeIn){
     '<label>你的名字</label><input type="text" id="sn" value="' + esc(saved) + '" autocomplete="off">' +
     '<label>密碼 <span class="note" style="font-weight:400;">（老師有設定才需要）</span></label><input type="password" id="spw" autocomplete="current-password">' +
     '<div class="err" id="se"></div><button class="btn primary" id="sgo" style="width:100%;margin-top:14px;padding:11px;">進入班級</button>' +
+    '<div style="text-align:center;margin:10px 0 2px;color:var(--ink-soft);font-size:13px;">或</div><button class="btn" id="sgg" style="width:100%;padding:11px;">🔑 用 Google 帳號登入</button>' +
     '<p class="sub" style="margin-top:16px;"><a href="#" id="tot">老師登入</a></p></div></div>';
   var se = document.getElementById("se"); if(msg){ se.textContent = msg; se.style.display = "block"; }
   document.getElementById("tot").onclick = function(e){ e.preventDefault(); history.replaceState(null, "", location.pathname); viewLogin(); };
@@ -3128,10 +3208,16 @@ function viewStudentEntry(msg, codeIn){
     await startStudent(code, name, document.getElementById("spw").value);
   }
   document.getElementById("sgo").onclick = go;
+  document.getElementById("sgg").onclick = async function(){
+    se.style.display = "none";
+    var code = document.getElementById("sc").value.trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
+    if(!code){ se.textContent = "請先輸入班級代碼"; se.style.display = "block"; return; }
+    try{ var u = await googleSignIn(code); if(u) await googleEntry(code, u, false); }catch(e){ se.textContent = e.message || "Google 登入失敗"; se.style.display = "block"; }
+  };
   document.getElementById("spw").addEventListener("keydown", function(e){ if(e.key === "Enter") go(); });
   document.getElementById("sn").addEventListener("keydown", function(e){ if(e.key === "Enter") go(); });
 }
-async function startStudent(code, name, pw){
+async function startStudent(code, name, pw, opts){
   root.innerHTML = '<div class="center-wrap"><div class="note">載入中…</div></div>';
   try{
     var idx = await fbGet("classCodes/" + code);
@@ -3141,7 +3227,7 @@ async function startStudent(code, name, pw){
     if(!res[2]){ viewStudentEntry("這個班級已不存在。", code); return; }
     try{ var sb = await fbGet("teacherVocabBanks/" + idx.t); S.bank = (sb && Array.isArray(sb.courseData)) ? sb.courseData : []; }catch(e){ S.bank = []; }
     var needAcct = !!(await fbGet(base + "/accountsOn/" + idx.c));
-    if(needAcct){ var au = await studentAuth(idx, name, pw); if(au !== true){ viewStudentEntry(au, code); return; } }
+    if(needAcct && !(opts && opts.google)){ var au = await studentAuth(idx, name, pw); if(au !== true){ viewStudentEntry(au, code); return; } }
     S.student = { name: name, code: code, idx: idx, school: res[0], term: res[1], cls: res[2], acct: needAcct };
     S.live = res[2].live && res[2].live.on ? res[2].live : null;
     try{ window.onValue(window.ref(window.db, base + "/schools/" + idx.s + "/terms/" + idx.tm + "/classes/" + idx.c + "/live"), function(snap){ var v = snap.val(); var nv = v && v.on ? v : null; var key = JSON.stringify(nv); if(key === S.liveKey) return; S.liveKey = key; S.live = nv; S.liveRendered = null; if(S.student) renderStudent(); }); }catch(e){}
@@ -3618,7 +3704,17 @@ window.__mm = { get S(){ return S; }, render: function(){ return render(); }, ne
   if(!ok){ root.innerHTML = '<div class="center-wrap"><div class="card"><h2>無法連線</h2><p class="sub">請檢查網路連線後重新整理。</p><button class="btn primary" style="width:100%" onclick="location.reload()">重試</button></div></div>'; return; }
   var ptok = params.get("parent"); if(ptok){ await viewParent(ptok); return; }
   var code = (params.get("class") || "").trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
+  try{
+    var gres = sessionStorage.getItem("mm_google_resume");
+    if(gres !== null && window.googleApi && window.googleApi.getRedirectResult){
+      sessionStorage.removeItem("mm_google_resume");
+      var rr = await window.googleApi.getRedirectResult(window.auth).catch(function(){ return null; });
+      if(rr && rr.user){ var c2 = (gres || code); if(c2){ await googleEntry(c2, rr.user, false); return; } }
+    }
+  }catch(e){}
   if(code){
+    var gu = googleUser();
+    if(gu){ await googleEntry(code, gu, true); return; }
     var saved = ""; try{ saved = localStorage.getItem("mm_student_name") || ""; }catch(e){}
     var qn = params.get("name"); var nm = qn || saved;
     if(nm){ await startStudent(code, nm); } else viewStudentEntry("", code);
