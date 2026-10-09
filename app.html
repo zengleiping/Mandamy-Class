@@ -821,7 +821,7 @@ function calendarHtml(){
   var m = S.month || (S.month = ymd(new Date()).slice(0, 7));
   var yy = Number(m.slice(0, 4)), mm = Number(m.slice(5, 7)) - 1;
   var first = new Date(yy, mm, 1), days = new Date(yy, mm + 1, 0).getDate(), today = ymd(new Date());
-  var html = '<div class="cal-head"><button class="btn sm" data-a="cal-prev">‹</button><button class="btn ghost cal-title" data-a="cp-open" title="選年份和月份">' + yy + ' 年 ' + (mm + 1) + ' 月 ▾</button><button class="btn sm" data-a="cal-next">›</button><button class="btn sm ghost" data-a="cal-today">回到今天</button></div>' + calPickHtml("data-a", m) + '<div class="cal-grid">';
+  var html = '<div class="cal-head"><button class="btn sm" data-a="cal-prev">‹</button><button class="btn ghost cal-title" data-a="cp-open" title="選年份和月份">' + yy + ' 年 ' + (mm + 1) + ' 月 ▾</button><button class="btn sm" data-a="cal-next">›</button><button class="btn sm ghost" data-a="cal-today">回到今天</button><button class="btn sm ghost" data-a="cal-import" title="匯入課表檔（.json）">匯入課表…</button></div>' + calPickHtml("data-a", m) + '<div class="cal-grid">';
   ["日", "一", "二", "三", "四", "五", "六"].forEach(function(w){ html += '<div class="cal-w">' + w + '</div>'; });
   for(var i = 0; i < first.getDay(); i++) html += '<div class="cal-d empty"></div>';
   for(var d = 1; d <= days; d++){
@@ -921,6 +921,25 @@ function openSlotDialog(id, date){
     d.showModal();
   });
 }
+// 匯入課表檔：{ slots: [{ date, start, end, title, note, bg, fg, url }] }；日期＋開始時間＋文字都相同的會略過，重複匯入不會變兩份
+async function importSchedule(file){
+  var data; try{ data = JSON.parse(await file.text()); }catch(e){ alert("這個檔案讀不出來，請確認是課表的 .json 檔。"); return; }
+  var list = Array.isArray(data) ? data : (data && data.slots);
+  if(!Array.isArray(list) || !list.length){ alert("檔案裡沒有課表資料。"); return; }
+  var m = schedMap(), base = "teacherPlatform/" + S.teacher.id + "/schedule", have = {};
+  Object.keys(m).forEach(function(k){ have[m[k].date + "|" + (m[k].start || "") + "|" + slotText(m[k])] = 1; });
+  var fresh = list.filter(function(x){ return x && /^\d{4}-\d{2}-\d{2}$/.test(x.date) && /^\d{2}:\d{2}$/.test(x.start || "") && (x.title || x.s); });
+  var todo = fresh.filter(function(x){ return !have[x.date + "|" + x.start + "|" + (x.title || "")]; });
+  if(!todo.length){ alert("這份課表裡的 " + fresh.length + " 堂課，行事曆上都已經有了，不需要再匯入。"); return; }
+  var first = todo.map(function(x){ return x.date; }).sort()[0], last = todo.map(function(x){ return x.date; }).sort().pop();
+  if(!confirm("要匯入 " + todo.length + " 堂課（" + first + " ～ " + last + "）" + (fresh.length > todo.length ? "，另有 " + (fresh.length - todo.length) + " 堂已存在會略過" : "") + "？")) return;
+  var series = uid("ser_");
+  for(var i = 0; i < todo.length; i++){
+    var x = todo[i], id = uid("sl_"), rec = { s: null, t: null, c: null, title: x.title || null, url: safeUrl(x.url) || null, bg: x.bg || null, fg: x.fg || null, date: x.date, start: x.start, end: x.end || "", lesson: null, note: x.note || "", series: series };
+    m[id] = rec; await fbSet(base + "/" + id, rec);
+  }
+  S.month = first.slice(0, 7); toast("已匯入 " + todo.length + " 堂課"); render();
+}
 async function schedAct(a, ds){
   var base = "teacherPlatform/" + S.teacher.id + "/schedule", m = schedMap();
   if(a.indexOf("cp-") === 0){ if(calPickAct(a, ds, S.month || ymd(new Date()).slice(0, 7), function(ym){ S.month = ym; })) render(); return; }
@@ -930,6 +949,11 @@ async function schedAct(a, ds){
   }
   if(a === "cal-today"){ S.month = ymd(new Date()).slice(0, 7); S.calPick = null; render(); return; }
   if(a === "cal-day"){ S.day = ds.d; render(); return; }
+  if(a === "cal-import"){
+    var inp = document.createElement("input"); inp.type = "file"; inp.accept = ".json,application/json";
+    inp.onchange = function(){ var fl = inp.files[0]; if(fl) importSchedule(fl); };
+    inp.click(); return;
+  }
   if(a === "cal-back"){ S.day = null; render(); return; }
   if(a === "slot-rec"){ if(m[ds.id]) openRecordFor(Object.assign({ id: ds.id }, m[ds.id])); return; }
   if(a === "slot-go"){
