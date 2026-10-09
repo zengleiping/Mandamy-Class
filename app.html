@@ -125,6 +125,8 @@
   .bg-ov-t{ font-size:clamp(34px,8vw,84px); font-weight:900; animation:bgpop .6s ease; }
   .bg-ov-n{ margin-top:18px; } .bg-ov-n .bg-chip{ font-size:clamp(22px,5vw,48px); padding:6px 26px; }
   @keyframes bgpop{ 0%{ transform:scale(.3); opacity:0; } 70%{ transform:scale(1.15); } 100%{ transform:scale(1); opacity:1; } }
+  .mine-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:10px; } .mine-grid b{ font-size:18px; }
+  .mine-row{ padding:6px 0; border-bottom:1px solid var(--line); } .mine-row.over{ color:#B23B32; }
   .sw-row{ display:flex; flex-wrap:wrap; gap:6px; margin-top:4px; }
   .sw{ width:26px; height:26px; border-radius:8px; border:2px solid rgba(0,0,0,.12); padding:0; cursor:pointer; }
   .sw.on{ outline:3px solid var(--ink); outline-offset:1px; }
@@ -1930,19 +1932,34 @@ async function fillClassStatus(cls){
   }catch(e){ if(box) box.innerHTML = '<span class="note">近況讀取失敗。</span>'; }
 }
 // ---------- 學生端：作業快到期提醒 ----------
+// 學生首頁的「我的」：快到期的作業和考卷、我的考卷成績、錯題、下次上課時間
 async function fillStudentHint(){
-  var el = document.getElementById("hwhint"); if(!el) return;
+  var el = document.getElementById("mine"); if(!el) return;
   try{
-    var st = S.student, tid = st.idx.t, cid = st.idx.c, me = hwSkey(st.name), items = objList(await fbGet(hwBase(tid, cid) + "/items")).filter(function(x){ return (x.kind || "hw") === "hw" && itemVisible(x); });
-    var subs = {}; await Promise.all(items.map(function(it){ return fbGet("teacherPlatform/" + tid + "/hwSubs/" + cid + "/" + it.id + "/" + me).then(function(v){ subs[it.id] = v; }); }));
-    await syncTime();
-    var soon = [], over = [];
-    items.forEach(function(it){ var s = hwStatus(it, subs[it.id]); if(s === "pending" && hwDueTs(it) && hwDueTs(it) - nowMs() < 48 * 3600000) soon.push(it); if(s === "missing") over.push(it); });
-    var h = '';
-    if(soon.length) h += '<div class="panel" style="background:#FBEBC8;margin:0 0 8px;">⏰ ' + soon.length + ' 份作業快到期：' + esc(soon.map(function(x){ return x.title; }).join("、")) + '</div>';
-    if(over.length) h += '<div class="panel" style="background:#F7D9D5;margin:0 0 8px;">✗ ' + over.length + ' 份作業已過期還沒交：' + esc(over.map(function(x){ return x.title; }).join("、")) + '（還是可以補交）</div>';
-    if(el) el.innerHTML = h;
-  }catch(e){}
+    var st = S.student, tid = st.idx.t, cid = st.idx.c, me = hwSkey(st.name), base = hwBase(tid, cid);
+    var items = objList(await fbGet(base + "/items")).filter(itemVisible).filter(function(x){ return examForMe(x, st.name); });
+    var hws = items.filter(function(x){ return (x.kind || "hw") === "hw"; }), exams = items.filter(function(x){ return x.kind === "exam"; });
+    var subs = {}, atts = {}, sched = null;
+    await Promise.all(hws.map(function(it){ return fbGet("teacherPlatform/" + tid + "/hwSubs/" + cid + "/" + it.id + "/" + me).then(function(v){ subs[it.id] = v; }); }).concat(
+      exams.map(function(it){ return fbGet(examAttPath(tid, cid, it.id, st.name)).then(function(v){ atts[it.id] = v; }); }),
+      [fbGet("teacherPlatform/" + tid + "/schedule").then(function(v){ sched = v || {}; }).catch(function(){ sched = {}; })]));
+    await syncTime(); var now = nowMs(), todo = [];
+    hws.forEach(function(it){ var s2 = hwStatus(it, subs[it.id]); if(s2 === "pending" || s2 === "missing") todo.push({ t: it.title, due: hwDueTs(it), over: s2 === "missing", kind: "作業" }); });
+    exams.forEach(function(it){ var a = atts[it.id]; if(a && (a.status === "submitted" || a.status === "graded")) return; var due = hwDueTs(it); todo.push({ t: it.title, due: due, over: !!(due && now > due), kind: "考卷", doing: !!a }); });
+    todo.sort(function(a, b){ return (a.due || 9e15) - (b.due || 9e15); });
+    function rel(ts){ if(!ts) return "沒有截止日"; var d = ts - now, day = Math.floor(Math.abs(d) / 86400000); return d < 0 ? "已過期 " + (day ? day + " 天" : "") : (d < 86400000 ? "今天 " + pad2(new Date(ts).getHours()) + ":" + pad2(new Date(ts).getMinutes()) + " 截止" : "還有 " + day + " 天（" + hwFmt(ts) + "）"); }
+    var next = null; Object.keys(sched).forEach(function(k){ var x = sched[k]; if(!x.date || !x.start) return; if(!(x.c === cid || (!x.c && x.s === st.idx.s && x.t === st.idx.tm))) return; var ts = new Date(x.date + "T" + x.end + ":00").getTime(); if(!x.end) ts = new Date(x.date + "T" + x.start + ":00").getTime() + 3600000; if(ts < now) return; if(!next || x.date + x.start < next.date + next.start) next = x; });
+    var results = exams.filter(function(it){ var a = atts[it.id]; return a && a.status === "graded" && a.released; });
+    var wrong = []; results.forEach(function(it){ (atts[it.id].wrong || []).forEach(function(w){ wrong.push({ exam: it.title, t: w.t, d: w.d, s: w.s }); }); });
+    var h = '<div class="panel mine-panel"><h3 style="margin:0 0 8px;">我的</h3>';
+    h += '<div class="mine-grid"><div><div class="note">下次上課</div><b>' + (next ? (function(){ var d = new Date(next.date + "T00:00:00"); return (d.getMonth() + 1) + "/" + d.getDate() + "（" + ["日", "一", "二", "三", "四", "五", "六"][d.getDay()] + "）" + esc(next.start + (next.end ? "–" + next.end : "")); })() : "老師還沒排") + '</b></div>' +
+      '<div><div class="note">待完成</div><b>' + todo.length + ' 項</b></div><div><div class="note">考卷成績</div><b>' + (results.length ? results.map(function(it){ return atts[it.id].final; }).join("、") : "—") + '</b></div></div>';
+    if(todo.length) h += '<div style="margin-top:10px;"><b>待完成</b>' + todo.slice(0, 6).map(function(x){ return '<div class="mine-row' + (x.over ? ' over' : '') + '"><span class="chip" style="background:' + (x.kind === "考卷" ? KIND_COLOR.exam : KIND_COLOR.hw) + ';color:#fff;">' + x.kind + '</span> ' + esc(x.t) + '<span class="note">　' + esc(x.doing ? "作答中・" : "") + rel(x.due) + '</span></div>'; }).join("") + '</div>';
+    else h += '<div class="note" style="margin-top:8px;">🎉 目前沒有待交的作業或考卷。</div>';
+    if(results.length) h += '<div style="margin-top:10px;"><b>考卷成績</b>' + results.map(function(it){ var a = atts[it.id]; return '<div class="mine-row"><b>' + a.final + ' 分</b>　' + esc(it.title) + (a.comment ? '<div class="note">老師：' + esc(a.comment) + '</div>' : '') + '</div>'; }).join("") + '</div>';
+    if(wrong.length) h += '<details style="margin-top:10px;"><summary><b>我的錯題（' + wrong.length + '）</b>　<span class="note">看看哪裡可以再加強</span></summary>' + wrong.slice(0, 20).map(function(w){ return '<div class="mine-row"><div>' + esc(w.t) + '</div><div class="note">' + esc(w.exam) + '：' + esc(w.d) + '</div></div>'; }).join("") + '</details>';
+    el.innerHTML = h + '</div>';
+  }catch(e){ console.warn(e); }
 }
 // ---------- 開放設定：整班一次套用／複製別班 ----------
 function bulkOpenHtml(){
@@ -2293,6 +2310,13 @@ async function parentAct(a, roster, links, b){
   if(a === "plink-refresh"){ for(var t2 in links) await refreshParentLink(t2); toast("已更新"); return; }
   if(a === "plink-scores"){ await fbUpdate(base + "/" + b.dataset.tok, { showScores: !!b.checked }); await refreshParentLink(b.dataset.tok); toast(b.checked ? "家長現在看得到分數" : "家長看不到分數了"); return; }
 }
+// 小折線圖：points = [{ v: 分數, t: 標籤 }]
+function sparkSvg(pts){
+  var W = 560, H = 140, L = 30, R = 10, T = 14, B = 26, n = pts.length, xs = function(i){ return L + (W - L - R) * (n === 1 ? .5 : i / (n - 1)); }, ys = function(v){ return T + (H - T - B) * (1 - Math.max(0, Math.min(100, v)) / 100); };
+  var path = pts.map(function(p, i){ return (i ? "L" : "M") + xs(i).toFixed(1) + " " + ys(p.v).toFixed(1); }).join(" ");
+  return '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;max-width:560px;height:auto;"><line x1="' + L + '" y1="' + ys(60) + '" x2="' + (W - R) + '" y2="' + ys(60) + '" stroke="#D9CFC4" stroke-dasharray="4 4"/><text x="2" y="' + (ys(60) + 4) + '" font-size="11" fill="#8A7F73">60</text><path d="' + path + '" fill="none" stroke="#C0623A" stroke-width="2.5"/>' +
+    pts.map(function(p, i){ return '<circle cx="' + xs(i).toFixed(1) + '" cy="' + ys(p.v).toFixed(1) + '" r="4" fill="#C0623A"/><text x="' + xs(i).toFixed(1) + '" y="' + (ys(p.v) - 8).toFixed(1) + '" font-size="12" text-anchor="middle" fill="#3B3228">' + p.v + '</text><text x="' + xs(i).toFixed(1) + '" y="' + (H - 8) + '" font-size="11" text-anchor="middle" fill="#8A7F73">' + esc(p.t) + '</text>'; }).join("") + '</svg>';
+}
 async function viewParent(tok){
   var ptokFull = tok;
   root.innerHTML = '<div class="center-wrap"><div class="note">載入中…</div></div>';
@@ -2312,7 +2336,24 @@ async function viewParent(tok){
     html += '<div class="panel"><h3>聯絡簿</h3><div class="note" style="margin-bottom:8px;">準時 ' + cnt.ok + '　遲交 ' + cnt.late + '　未交 ' + cnt.missing + '</div>' + (items.length ? items.map(function(it){ var s = hwStatus(it, subs[it.id]), sb = subs[it.id]; return '<div class="slot"><div class="slot-time" style="min-width:100px;">' + esc(it.due ? hwFmt(hwDueTs(it)) : "") + '<div class="note">截止</div></div><div class="slot-main"><div><b>' + esc(it.title) + '</b></div><div class="note">' + HW_LABEL[s] + (sb && sb.firstAt ? '　最後送出 ' + esc(hwFmt(sb.at)) : '') + '</div>' + (sb && sb.fb ? '<div style="margin-top:4px;">老師回饋：' + esc(sb.fb) + '</div>' : '') + '</div></div>'; }).join("") : '<p class="note">還沒有作業。</p>') + '</div>';
     html += '<div class="panel"><h3>上課記錄</h3>' + (recs.length ? recs.map(function(r){ return '<div class="slot"><div class="slot-time" style="min-width:100px;">' + esc(r.date || "") + '</div><div class="slot-main">' + (r.absent ? '<span class="note">缺席</span>' : '') + '<div>' + esc(r.material || "") + '</div>' + (r.scores ? '<div class="note">總分 ' + r.total + '　' + Object.keys(r.scores).map(function(k){ return esc(k) + " " + esc(r.scores[k]); }).join("　") + '</div>' : '') + '</div></div>'; }).join("") : '<p class="note">還沒有上課記錄。</p>') + '</div>';
     var lvAll = (await fbGet(base + "/leave/" + link.c)) || {}, myLv = objList(lvAll).filter(function(x){ return x.name === link.name; }).sort(function(a, b){ return (b.createdAt || 0) - (a.createdAt || 0); });
-    html += leaveFormHtml() + '<div class="panel"><h3>請假紀錄</h3>' + leaveListHtml(myLv) + '</div></div></div>';
+    // ---- 下次上課、考卷成績、通知、進步趨勢 ----
+    var extra = '';
+    try{
+      var allItems = objList(await fbGet(hwBase(tid, link.c) + "/items")).filter(itemVisible).filter(function(x){ return examForMe(x, link.name); }), sched = (await fbGet(base + "/schedule")) || {}, nowT = nowMs(), nxt = null;
+      Object.keys(sched).forEach(function(k){ var x = sched[k]; if(!x.date || !x.start) return; if(!(x.c === link.c || (!x.c && x.s === link.s && x.t === link.tm))) return; var ts = new Date(x.date + "T" + (x.end || x.start) + ":00").getTime(); if(ts < nowT) return; if(!nxt || x.date + x.start < nxt.date + nxt.start) nxt = x; });
+      if(nxt){ var nd = new Date(nxt.date + "T00:00:00"); extra += '<div class="panel"><h3>下次上課</h3><div style="font-size:18px;"><b>' + (nd.getMonth() + 1) + ' 月 ' + nd.getDate() + ' 日（' + ["日", "一", "二", "三", "四", "五", "六"][nd.getDay()] + '）' + esc(nxt.start + (nxt.end ? "–" + nxt.end : "")) + '</b></div>' + (nxt.note ? '<div class="note">' + esc(nxt.note) + '</div>' : '') + '</div>'; }
+      var exs = allItems.filter(function(x){ return x.kind === "exam"; }).sort(function(a, b){ return itemDay(b).localeCompare(itemDay(a)); }), atts = {};
+      await Promise.all(exs.map(function(it){ return fbGet(examAttPath(tid, link.c, it.id, link.name)).then(function(v){ atts[it.id] = v; }); }));
+      if(exs.length){
+        extra += '<div class="panel"><h3>線上考卷</h3>' + exs.map(function(it){ var a2 = atts[it.id], done = a2 && (a2.status === "submitted" || a2.status === "graded"), shown = link.showScores && a2 && a2.status === "graded" && a2.released;
+          return '<div class="slot"><div class="slot-time" style="min-width:100px;">' + esc(itemDay(it)) + '</div><div class="slot-main"><b>' + esc(it.title) + '</b>' + (shown && a2.comment ? '<div class="note">老師的話：' + esc(a2.comment) + '</div>' : '') + '</div><div style="font-weight:700;white-space:nowrap;">' + (shown ? a2.final + ' 分' : (done ? (a2.status === "graded" ? "已批改" : "已交卷") : (a2 ? "作答中" : "還沒開始"))) + '</div></div>'; }).join("") + (link.showScores ? '' : '<p class="note" style="margin-top:6px;">分數由老師決定是否公開。</p>') + '</div>';
+        var pts = exs.slice().reverse().filter(function(it){ var a3 = atts[it.id]; return link.showScores && a3 && a3.status === "graded" && a3.released; }).map(function(it){ return { v: atts[it.id].final, t: itemDay(it).slice(5) }; });
+        if(pts.length >= 2) extra += '<div class="panel"><h3>考卷進步趨勢</h3>' + sparkSvg(pts) + '</div>';
+      }
+      var notes = allItems.filter(function(x){ return x.kind === "notice" || x.kind === "plan"; }).sort(function(a, b){ return itemDay(b).localeCompare(itemDay(a)); }).slice(0, 5);
+      if(notes.length) extra += '<div class="panel"><h3>老師的通知</h3>' + notes.map(function(it){ return '<div style="margin:8px 0;"><span class="chip" style="background:' + KIND_COLOR[it.kind] + ';color:#fff;">' + KIND_LABEL[it.kind] + '</span> <b>' + esc(it.title) + '</b> <span class="note">' + esc(itemDay(it)) + '</span>' + (it.body ? '<div class="bd-body">' + richText(it.body) + '</div>' : '') + (it.progress ? '<div class="bd-plan"><b>教學進度／今日任務</b><div>' + richText(it.progress) + '</div></div>' : '') + '</div>'; }).join("") + '</div>';
+    }catch(ex){ console.warn(ex); }
+    html += extra + leaveFormHtml() + '<div class="panel"><h3>請假紀錄</h3>' + leaveListHtml(myLv) + '</div></div></div>';
     root.innerHTML = html;
     document.getElementById("lv-go").onclick = async function(){
       var d = document.getElementById("lv-d").value; if(!d){ alert("請選請假日期。"); return; }
@@ -3363,7 +3404,7 @@ function renderStudent(){
   S.lesson = null;
   var keys = lessonKeys(cls).filter(function(no){ var o = openMap[no]; return o && OPEN_KEYS.some(function(k){ return o[k[0]]; }); });
   var html = '<div class="head-row"><div><div class="note">' + esc(st.school) + '　›　' + esc(st.term) + '</div><h2>' + esc(cls.name) + '</h2></div>' + (st.acct ? '<div><button class="btn sm ghost" id="chpw">改密碼</button></div>' : '') + '</div>';
-  html += '<div class="panel"><h3>聯絡簿</h3><div id="hwhint"></div><button class="btn primary" id="hwopen">看作業／交作業</button> <button class="btn" id="lvopen">我要請假</button></div>';
+  html += '<div id="mine"></div>'; html += '<div class="panel"><h3>聯絡簿</h3><div id="hwhint"></div><button class="btn primary" id="hwopen">看作業／交作業</button> <button class="btn" id="lvopen">我要請假</button></div>';
   if(!keys.length) html += '<div class="empty"><p class="note">老師還沒有開放任何課次。<br>上課時請輸入老師給的房間號碼：</p><div class="join" style="justify-content:center;"><input type="text" id="roomno" placeholder="房間號碼" inputmode="numeric" style="width:160px;"><button class="btn primary" id="roomgo">加入</button></div></div>';
   else {
     html += '<div id="ls"></div><div class="panel"><h3>上課中？</h3><div class="join" style="margin:0;"><input type="text" id="roomno" placeholder="老師給的房間號碼" inputmode="numeric" style="width:200px;"><button class="btn primary" id="roomgo">加入房間</button></div></div>';

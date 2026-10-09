@@ -6260,7 +6260,8 @@
       var ap = gradeAttPath(), overall = bar.querySelector("#gb-all").value.trim(), now = Date.now();
       try{
         await update(ref(db, "rooms/" + activeRoomId), { released: true, graded: true, overallComment: overall || null });
-        if(ap) await update(ref(db, ap), { status: "graded", final: rp.finalScore, released: true, gradedAt: now, comment: overall || null });
+        var wrongList = []; rp.results.forEach(function(sec){ sec.questions.forEach(function(x){ if(!x.pending && x.isScoreable && x.score < 1) wrongList.push({ t: sec.title + "・" + x.title, s: Math.round(x.score * 100), d: String(x.detail || "").slice(0, 160) }); }); });
+        if(ap) await update(ref(db, ap), { status: "graded", final: rp.finalScore, released: true, gradedAt: now, comment: overall || null, wrong: wrongList.slice(0, 30) });
         try{ window.parent.postMessage({ mm: "examGraded" }, "*"); }catch(e){}
         alert("✅ 已公布成績：" + rp.finalScore + " 分");
       }catch(er){ console.error(er); alert("公布失敗，請檢查網路後再試。"); }
