@@ -438,7 +438,7 @@ function shell(inner, opts){
   var isT = !!S.teacher;
   root.innerHTML = '<div class="shell' + (S.focus ? ' focus' : '') + '"><div class="top">' +
     '<div class="brand">曼米中文' + (isT ? '' : '<small>學生</small>') + '</div><div class="crumb" id="crumb"></div><div class="grow"></div>' +
-    (isT ? '<span class="crumb">👤 ' + esc(S.teacher.name) + '</span><button class="btn sm" id="bell" title="新的繳交">🔔</button><button class="btn sm" id="recbtn">課堂記錄</button><button class="btn sm" id="libbtn">教材庫</button><a class="btn sm" href="index.html" target="_blank">原教材頁</a><a class="btn sm" href="slides/practice.html" target="_blank">原簡報頁</a><button class="btn sm" id="logout">登出</button>'
+    (isT ? '<span class="crumb">👤 ' + esc(S.teacher.name) + '</span><button class="btn sm" id="bell" title="新的繳交">🔔</button><button class="btn sm" id="recbtn">課堂記錄</button><button class="btn sm" id="libbtn">教材庫</button><button class="btn sm" id="logout">登出</button>'
          : '<span class="crumb">👤 ' + esc(S.student ? S.student.name : "") + '</span><button class="btn sm" id="leave">離開</button>') +
     '</div><div class="body">' + '<main class="main' + (opts.flush ? ' flush' : '') + '" id="main">' + inner + '</main></div></div>';
   if(isT){
