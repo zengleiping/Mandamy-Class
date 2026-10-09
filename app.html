@@ -393,6 +393,7 @@ function bookFromTitle(title){
 
 // ---------- 登入（老師）----------
 function viewLogin(msg){
+  i18nStart(false);
   root.innerHTML = '<div class="center-wrap"><div class="card"><img src="icons/logo.svg" alt="曼米中文" style="width:84px;height:84px;display:block;margin:0 auto 8px;"><h2 style="text-align:center;">曼米中文平台</h2><p class="sub">老師登入　Teacher login</p>' +
     '<label>帳號</label><input type="text" id="lu" autocomplete="username"><label>密碼</label><input type="password" id="lp" autocomplete="current-password" style="width:100%;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;font-size:15px;background:var(--surface-2);">' +
     '<label style="margin-top:10px;">助教登入（不是助教請留空）<span class="note" style="font-weight:400;"> 要協助哪位老師？填那位老師的帳號</span></label><input type="text" id="lo" autocomplete="off">' +
@@ -424,6 +425,7 @@ function viewLogin(msg){
 
 // ---------- 老師：載入平台資料 ----------
 async function startTeacher(acc, owner){
+  i18nStart(false);
   S.teacher = { id: acc.id, name: acc.displayName || acc.username, isAdmin: !!acc.isAdmin };
   if(owner){
     var ok = await fbGet("teacherPlatform/" + owner + "/assistants/" + acc.id);
@@ -2327,6 +2329,7 @@ function sparkSvg(pts){
     pts.map(function(p, i){ return '<circle cx="' + xs(i).toFixed(1) + '" cy="' + ys(p.v).toFixed(1) + '" r="4" fill="#C0623A"/><text x="' + xs(i).toFixed(1) + '" y="' + (ys(p.v) - 8).toFixed(1) + '" font-size="12" text-anchor="middle" fill="#3B3228">' + p.v + '</text><text x="' + xs(i).toFixed(1) + '" y="' + (H - 8) + '" font-size="11" text-anchor="middle" fill="#8A7F73">' + esc(p.t) + '</text>'; }).join("") + '</svg>';
 }
 async function viewParent(tok){
+  i18nStart(true);
   var ptokFull = tok;
   root.innerHTML = '<div class="center-wrap"><div class="note">載入中…</div></div>';
   try{
@@ -3379,12 +3382,14 @@ async function googleEntry(code, user, silent){
   viewGooglePick(code, user, idx, roster);
 }
 function viewGooglePending(code, user, link){
+  i18nStart(true);
   root.innerHTML = '<div class="center-wrap"><div class="card"><h2 style="text-align:center;">等老師確認</h2><p class="sub" style="text-align:center;">你的 Google 帳號（' + esc(user.email || "") + '）已經申請連結到「<b>' + esc(link.name) + '</b>」。<br>老師確認後，下次就能直接用 Google 登入。</p><button class="btn primary" id="gre" style="width:100%;margin-top:14px;">重新檢查</button><p class="sub" style="margin-top:14px;"><a href="#" id="gback">改用名字登入</a>　<a href="#" id="gout">換一個 Google 帳號</a></p></div></div>';
   document.getElementById("gre").onclick = function(){ googleEntry(code, user, false); };
   document.getElementById("gback").onclick = function(e){ e.preventDefault(); viewStudentEntry("", code); };
   document.getElementById("gout").onclick = async function(e){ e.preventDefault(); await googleSignOut(); viewStudentEntry("", code); };
 }
 function viewGooglePick(code, user, idx, roster){
+  i18nStart(true);
   root.innerHTML = '<div class="center-wrap"><div class="card"><h2 style="text-align:center;">這個 Google 帳號是誰？</h2><p class="sub" style="text-align:center;">' + esc(user.displayName || "") + '（' + esc(user.email || "") + '）<br>第一次使用，請選你在班上的名字，老師確認後就會連結起來。</p>' +
     (roster.length ? '<label>我是</label><select id="gpn">' + roster.map(function(n){ return '<option value="' + esc(n) + '">' + esc(n) + '</option>'; }).join("") + '</select>' : '<label>你的名字</label><input type="text" id="gpt" autocomplete="off">') +
     '<div class="err" id="gpe"></div><button class="btn primary" id="gpgo" style="width:100%;margin-top:14px;">送出申請</button><p class="sub" style="margin-top:14px;"><a href="#" id="gback">改用名字登入</a>　<a href="#" id="gout">換一個 Google 帳號</a></p></div></div>';
@@ -3403,6 +3408,7 @@ function viewGooglePick(code, user, idx, roster){
   };
 }
 function viewStudentEntry(msg, codeIn){
+  i18nStart(true);
   var saved = ""; try{ saved = localStorage.getItem("mm_student_name") || ""; }catch(e){}
   root.innerHTML = '<div class="center-wrap"><div class="card"><img src="icons/logo.svg" alt="曼米中文" style="width:84px;height:84px;display:block;margin:0 auto 8px;"><h2 style="text-align:center;">曼米中文</h2><p class="sub" style="text-align:center;">學生入口</p>' +
     '<label>班級代碼</label><input type="text" id="sc" value="' + esc(codeIn || "") + '" style="text-transform:uppercase;letter-spacing:.15em;" autocomplete="off">' +
@@ -3431,6 +3437,7 @@ function viewStudentEntry(msg, codeIn){
   document.getElementById("sn").addEventListener("keydown", function(e){ if(e.key === "Enter") go(); });
 }
 async function startStudent(code, name, pw, opts){
+  i18nStart(true);
   root.innerHTML = '<div class="center-wrap"><div class="note">載入中…</div></div>';
   try{
     var idx = await fbGet("classCodes/" + code);
@@ -3908,6 +3915,91 @@ async function bingoClick(e){
     }
     if(a === "close"){ if(!confirm("關閉賓果？學生會回到等待畫面。")) return; B.form = null; await fbSet(base, null); return; }
   }catch(er){ toast("操作失敗，請檢查網路"); }
+}
+// ---------- 介面語言（學生入口、學生頁、家長頁：中文／English／ไทย）----------
+// 做法：頁面畫好之後，把「整段文字剛好等於字典裡某個詞」的文字換成選定的語言；老師自己打的內容（標題、說明、評語）不會被動到。
+var I18N_LANG = (function(){ try{ return localStorage.getItem("mm_lang") || "zh"; }catch(e){ return "zh"; } })();
+var I18N_ON = false;
+var I18N_WK = { en: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"], th: ["อา.", "จ.", "อ.", "พ.", "พฤ.", "ศ.", "ส."] };
+var I18N_ZHWK = "日一二三四五六";
+var I18N_DICT = {
+  "曼米中文": ["Mandamy Chinese", "Mandamy ภาษาจีน"], "學生入口": ["Student Login", "ทางเข้านักเรียน"], "班級代碼": ["Class code", "รหัสห้องเรียน"], "你的名字": ["Your name", "ชื่อของคุณ"],
+  "密碼": ["Password", "รหัสผ่าน"], "（老師有設定才需要）": ["(only if your teacher set one)", "(ต้องใช้เมื่อครูตั้งไว้เท่านั้น)"], "進入班級": ["Enter class", "เข้าห้องเรียน"], "或": ["or", "หรือ"],
+  "🔑 用 Google 帳號登入": ["🔑 Sign in with Google", "🔑 เข้าสู่ระบบด้วย Google"], "老師登入": ["Teacher login", "ครูเข้าสู่ระบบ"], "請輸入班級代碼和名字": ["Please enter the class code and your name", "กรุณากรอกรหัสห้องเรียนและชื่อ"],
+  "請先輸入班級代碼": ["Please enter the class code first", "กรุณากรอกรหัสห้องเรียนก่อน"],
+  "這個 Google 帳號是誰？": ["Who is this Google account?", "บัญชี Google นี้คือใคร?"], "第一次使用，請選你在班上的名字，老師確認後就會連結起來。": ["First time here: pick your name in the class. Your teacher will confirm the link.", "ใช้ครั้งแรก: เลือกชื่อของคุณในห้อง ครูจะยืนยันการเชื่อมต่อ"],
+  "我是": ["I am", "ฉันคือ"], "送出申請": ["Send request", "ส่งคำขอ"], "改用名字登入": ["Use name login instead", "เข้าสู่ระบบด้วยชื่อแทน"], "換一個 Google 帳號": ["Use another Google account", "ใช้บัญชี Google อื่น"],
+  "等老師確認": ["Waiting for your teacher", "รอครูยืนยัน"], "重新檢查": ["Check again", "ตรวจสอบอีกครั้ง"], "老師確認後，下次就能直接用 Google 登入。": ["After your teacher confirms, you can sign in with Google directly next time.", "เมื่อครูยืนยันแล้ว ครั้งหน้าเข้าด้วย Google ได้เลย"],
+  "離開": ["Leave", "ออก"], "學生": ["Student", "นักเรียน"], "改密碼": ["Change password", "เปลี่ยนรหัสผ่าน"],
+  "聯絡簿": ["Contact Book", "สมุดติดต่อ"], "看作業／交作業": ["View / submit homework", "ดู/ส่งการบ้าน"], "我要請假": ["Request leave", "ขอลา"],
+  "我的": ["My Dashboard", "ของฉัน"], "下次上課": ["Next class", "คาบเรียนถัดไป"], "待完成": ["To do", "งานที่ต้องทำ"], "考卷成績": ["Exam scores", "คะแนนสอบ"], "老師還沒排": ["Not scheduled yet", "ครูยังไม่ได้จัด"],
+  "🎉 目前沒有待交的作業或考卷。": ["🎉 Nothing to hand in right now.", "🎉 ตอนนี้ไม่มีงานหรือข้อสอบที่ต้องส่ง"], "看看哪裡可以再加強": ["See what to improve", "ดูว่าควรปรับปรุงตรงไหน"],
+  "老師還沒有開放任何課次。": ["Your teacher hasn't opened any lessons yet.", "ครูยังไม่ได้เปิดบทเรียน"], "上課時請輸入老師給的房間號碼：": ["During class, enter the room number from your teacher:", "ตอนเรียน ให้ใส่หมายเลขห้องที่ครูให้:"],
+  "加入": ["Join", "เข้าร่วม"], "上課中？": ["In class?", "กำลังเรียนอยู่?"], "加入房間": ["Join room", "เข้าห้อง"], "進入 ›": ["Open ›", "เข้า ›"], "請輸入房間號碼": ["Enter the room number", "กรุณาใส่หมายเลขห้อง"],
+  "老師準備中": ["Your teacher is getting ready", "ครูกำลังเตรียมตัว"], "課程馬上開始，請稍候…": ["Class starts soon, please wait…", "คลาสกำลังจะเริ่ม โปรดรอสักครู่…"], "載入中…": ["Loading…", "กำลังโหลด…"], "讀取失敗，請檢查網路。": ["Failed to load. Please check your connection.", "โหลดไม่สำเร็จ กรุณาตรวจสอบอินเทอร์เน็ต"],
+  "這天沒有內容。": ["Nothing on this day.", "ไม่มีเนื้อหาในวันนี้"], "教學進度／今日任務": ["Lesson progress / today's task", "ความคืบหน้า/งานวันนี้"], "下載": ["Download", "ดาวน์โหลด"], "未設": ["Not set", "ไม่ได้กำหนด"], "我的作業": ["My homework", "การบ้านของฉัน"],
+  "＋ 選擇檔案／拍照": ["＋ Choose file / take photo", "＋ เลือกไฟล์/ถ่ายรูป"], "重新送出": ["Resubmit", "ส่งอีกครั้ง"], "送出作業": ["Submit homework", "ส่งการบ้าน"], "還沒有選檔案": ["No file chosen", "ยังไม่ได้เลือกไฟล์"], "已送出！": ["Submitted!", "ส่งแล้ว!"],
+  "✓ 準時": ["✓ On time", "✓ ตรงเวลา"], "⏰ 遲交": ["⏰ Late", "⏰ ส่งช้า"], "✗ 未交": ["✗ Missing", "✗ ยังไม่ส่ง"], "尚未繳交": ["Not handed in yet", "ยังไม่ได้ส่ง"], "－ 免交": ["– Exempt", "– ได้รับการยกเว้น"],
+  "－ 老師設為免交": ["– Exempted by your teacher", "– ครูยกเว้นให้"], "✗ 已過期還沒交（還是可以補交）": ["✗ Overdue, not handed in (you can still hand it in)", "✗ เลยกำหนดแล้วยังไม่ส่ง (ยังส่งได้)"],
+  "作業": ["Homework", "การบ้าน"], "通知": ["Notice", "ประกาศ"], "教學進度": ["Lesson progress", "ความคืบหน้าบทเรียน"], "線上考卷": ["Online exam", "ข้อสอบออนไลน์"], "考卷": ["Exam", "ข้อสอบ"],
+  "✓ 老師批改完了": ["✓ Graded by your teacher", "✓ ครูตรวจแล้ว"], "✓ 已交卷，等老師批改": ["✓ Submitted, waiting for grading", "✓ ส่งแล้ว รอครูตรวจ"], "作答中（還沒交卷）": ["In progress (not submitted yet)", "กำลังทำ (ยังไม่ส่ง)"], "還沒開始": ["Not started", "ยังไม่เริ่ม"],
+  "查看我的考卷": ["View my exam", "ดูข้อสอบของฉัน"], "繼續作答": ["Continue", "ทำต่อ"], "開始作答": ["Start", "เริ่มทำ"], "準備考卷中…": ["Preparing the exam…", "กำลังเตรียมข้อสอบ…"], "找不到這份考卷": ["Exam not found", "ไม่พบข้อสอบนี้"],
+  "請假申請": ["Leave request", "คำขอลา"], "請假日期": ["Leave date", "วันที่ลา"], "原因（選填）": ["Reason (optional)", "เหตุผล (ไม่บังคับ)"], "⏳ 等待老師回覆": ["⏳ Waiting for your teacher's reply", "⏳ รอครูตอบกลับ"], "✓ 老師已核准": ["✓ Approved", "✓ ครูอนุมัติแล้ว"],
+  "✗ 老師無法核准": ["✗ Not approved", "✗ ครูไม่สามารถอนุมัติได้"], "還沒有請假紀錄。": ["No leave records yet.", "ยังไม่มีบันทึกการลา"], "請假": ["Leave", "ลา"], "回班級頁": ["Back to class page", "กลับหน้าห้องเรียน"], "我的請假紀錄": ["My leave records", "บันทึกการลาของฉัน"], "請假紀錄": ["Leave records", "บันทึกการลา"],
+  "請選請假日期。": ["Please choose the leave date.", "กรุณาเลือกวันที่ลา"], "已送出，老師會盡快回覆": ["Sent. Your teacher will reply soon.", "ส่งแล้ว ครูจะตอบกลับโดยเร็ว"],
+  "連結無效": ["Invalid link", "ลิงก์ไม่ถูกต้อง"], "這個連結已停用或不正確，請向老師確認。": ["This link is disabled or incorrect. Please ask the teacher.", "ลิงก์นี้ถูกปิดหรือไม่ถูกต้อง กรุณาสอบถามครู"],
+  "（家長專屬頁面，只能查看）": ["(Parent page — view only)", "(หน้าสำหรับผู้ปกครอง ดูได้อย่างเดียว)"], "還沒有作業。": ["No homework yet.", "ยังไม่มีการบ้าน"], "上課記錄": ["Class records", "บันทึกการเรียน"], "缺席": ["Absent", "ขาดเรียน"], "還沒有上課記錄。": ["No class records yet.", "ยังไม่มีบันทึกการเรียน"],
+  "考卷進步趨勢": ["Exam progress", "แนวโน้มคะแนนสอบ"], "老師的通知": ["Notices from the teacher", "ประกาศจากครู"], "分數由老師決定是否公開。": ["Scores are shared at the teacher's discretion.", "คะแนนจะเปิดเผยตามดุลยพินิจของครู"], "已批改": ["Graded", "ตรวจแล้ว"], "已交卷": ["Submitted", "ส่งข้อสอบแล้ว"], "作答中": ["In progress", "กำลังทำ"],
+  "讀取失敗": ["Failed to load", "โหลดไม่สำเร็จ"], "請檢查網路後重新整理。": ["Please check your connection and refresh.", "กรุณาตรวจสอบอินเทอร์เน็ตแล้วรีเฟรช"], "送出": ["Send", "ส่ง"], "請假日期": ["Leave date", "วันที่ลา"], "原因": ["Reason", "เหตุผล"],
+  "⚠️ 網路中斷了：現在輸入的內容還沒有存到雲端，連回網路後會自動同步。請先不要關掉這個頁面。": ["⚠️ You're offline: what you typed isn't saved yet. It will sync when you reconnect — please keep this page open.", "⚠️ ออฟไลน์: สิ่งที่พิมพ์ยังไม่ถูกบันทึก จะซิงก์เมื่อเชื่อมต่อใหม่ โปรดอย่าปิดหน้านี้"]
+};
+var I18N_PREFIX = { "老師回饋：": ["Teacher feedback: ", "ความเห็นจากครู: "], "老師的話：": ["Teacher's note: ", "ข้อความจากครู: "], "老師回覆：": ["Teacher's reply: ", "ครูตอบกลับ: "], "原因：": ["Reason: ", "เหตุผล: "], "我的成績：": ["My score: ", "คะแนนของฉัน: "], "老師：": ["Teacher: ", "ครู: "], "截止 ": ["Due ", "กำหนดส่ง "], "總分 ": ["Total ", "คะแนนรวม "], "作答中・": ["In progress · ", "กำลังทำ · "] };
+function i18nIdx(){ return I18N_LANG === "en" ? 0 : 1; }
+function i18nWk(c){ var i = I18N_ZHWK.indexOf(c); return i < 0 ? c : I18N_WK[I18N_LANG === "en" ? "en" : "th"][i]; }
+var I18N_MON = { en: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"], th: ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."] };
+function i18nText(raw){
+  var t = raw.trim(); if(!t) return raw;
+  var lead = raw.slice(0, raw.indexOf(t)), tail = raw.slice(raw.indexOf(t) + t.length), ix = i18nIdx(), L = I18N_LANG === "en" ? "en" : "th", m, out = null;
+  if(I18N_DICT[t]) out = I18N_DICT[t][ix];
+  else if((m = /^(\d+) 月 (\d+) 日（(.)）(.*)$/.exec(t))) out = I18N_MON[L][Number(m[1]) - 1] + " " + m[2] + " (" + i18nWk(m[3]) + ") " + m[4];
+  else if((m = /^(\d+)\/(\d+)（(.)）(.*)$/.exec(t))) out = m[1] + "/" + m[2] + " (" + i18nWk(m[3]) + ") " + m[4];
+  else if((m = /^準時 (\d+)　遲交 (\d+)　未交 (\d+)$/.exec(t))) out = L === "en" ? "On time " + m[1] + "   Late " + m[2] + "   Missing " + m[3] : "ตรงเวลา " + m[1] + "   ส่งช้า " + m[2] + "   ยังไม่ส่ง " + m[3];
+  else if((m = /^(\d+) 項$/.exec(t))) out = L === "en" ? m[1] + (m[1] === "1" ? " task" : " tasks") : m[1] + " รายการ";
+  else if((m = /^(\d+) 分$/.exec(t))) out = L === "en" ? m[1] + " pts" : m[1] + " คะแนน";
+  else if((m = /^還有 (\d+) 天（(.+)）$/.exec(t))) out = L === "en" ? m[1] + " days left (" + m[2] + ")" : "เหลืออีก " + m[1] + " วัน (" + m[2] + ")";
+  else if((m = /^今天 (\d+:\d+) 截止$/.exec(t))) out = L === "en" ? "Due today " + m[1] : "ส่งวันนี้ภายใน " + m[1];
+  else if((m = /^已過期 ?(\d*)( 天)?$/.exec(t))) out = L === "en" ? "Overdue" + (m[1] ? " " + m[1] + " days" : "") : "เลยกำหนด" + (m[1] ? " " + m[1] + " วัน" : "");
+  else if(t === "沒有截止日") out = L === "en" ? "No due date" : "ไม่มีกำหนดส่ง";
+  else if((m = /^(.+) 的學習狀況$/.exec(t))) out = L === "en" ? m[1] + "'s learning progress" : "ความก้าวหน้าการเรียนของ " + m[1];
+  else if((m = /^你的 Google 帳號（(.*)）已經申請連結到「(.*)」。$/.exec(t))) out = L === "en" ? "Your Google account (" + m[1] + ") has asked to link to “" + m[2] + "”." : "บัญชี Google ของคุณ (" + m[1] + ") ขอเชื่อมกับ “" + m[2] + "” แล้ว";
+  else if((m = /^(.*)　（家長專屬頁面，只能查看）$/.exec(t))) out = m[1] + (L === "en" ? "  (Parent page — view only)" : "  (หน้าสำหรับผู้ปกครอง ดูได้อย่างเดียว)");
+  else if((m = /^(\d+) 月 (\d+) 日$/.exec(t))) out = I18N_MON[L][Number(m[1]) - 1] + " " + m[2];
+  else { for(var k in I18N_PREFIX){ if(t.indexOf(k) === 0){ var rest = t.slice(k.length); out = I18N_PREFIX[k][ix] + (I18N_DICT[rest] ? I18N_DICT[rest][ix] : (/^\d+ 分$/.test(rest) ? i18nText(rest) : rest)); break; } } }
+  return out == null ? raw : lead + out + tail;
+}
+function i18nWalk(rootEl){
+  if(I18N_LANG === "zh" || !I18N_ON || !rootEl) return;
+  var w = document.createTreeWalker(rootEl, NodeFilter.SHOW_TEXT, null), n, list = [];
+  while((n = w.nextNode())){ var p = n.parentNode && n.parentNode.nodeName; if(p === "SCRIPT" || p === "STYLE" || p === "TEXTAREA") continue; list.push(n); }
+  list.forEach(function(nd){ var v = nd.nodeValue, tv = i18nText(v); if(tv !== v) nd.nodeValue = tv; });
+  rootEl.querySelectorAll("[placeholder],[title]").forEach(function(el){ ["placeholder", "title"].forEach(function(a){ var v = el.getAttribute(a); if(v){ var tv = i18nText(v); if(tv !== v) el.setAttribute(a, tv); } }); });
+}
+function i18nStart(on){
+  I18N_ON = !!on;
+  var box = document.getElementById("langbox");
+  if(!on){ if(box) box.style.display = "none"; return; }
+  if(!box){
+    box = document.createElement("div"); box.id = "langbox"; box.style.cssText = "position:fixed;right:10px;bottom:10px;z-index:9990;background:var(--surface,#fff);border:1.5px solid var(--line,#ddd);border-radius:10px;padding:4px 8px;font-size:13px;box-shadow:0 2px 8px rgba(0,0,0,.12);";
+    box.innerHTML = '🌐 <select id="langsel" style="border:0;background:transparent;font:inherit;"><option value="zh">中文</option><option value="en">English</option><option value="th">ไทย</option></select>';
+    document.body.appendChild(box);
+    document.getElementById("langsel").onchange = function(){ try{ localStorage.setItem("mm_lang", this.value); }catch(e){} location.reload(); };
+  }
+  box.style.display = ""; document.getElementById("langsel").value = I18N_LANG;
+  if(I18N_LANG !== "zh" && !window.__i18nObs){
+    var tmr = null; window.__i18nObs = new MutationObserver(function(){ if(tmr) return; tmr = setTimeout(function(){ tmr = null; window.__i18nObs.disconnect(); try{ i18nWalk(document.body); }catch(e){} window.__i18nObs.observe(document.body, { childList: true, subtree: true, characterData: true }); }, 30); });
+    window.__i18nObs.observe(document.body, { childList: true, subtree: true, characterData: true });
+  }
+  if(I18N_LANG !== "zh") i18nWalk(document.body);
 }
 // ---------- 斷線提示：網路不通時，頂端出現提醒，避免學生以為答案已經存到雲端 ----------
 function startNetWatch(){
