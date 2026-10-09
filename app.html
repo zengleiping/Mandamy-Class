@@ -160,7 +160,7 @@
 <body>
 <div id="root"></div>
 <dialog id="unitdlg"><form method="dialog"><h3 id="unit-t">複習單元</h3><label style="display:block;font-size:12.5px;font-weight:700;color:var(--ink-soft);margin:4px 0 5px;">名稱</label><input type="text" id="unit-name" autocomplete="off" placeholder="例如：第一到六課複習"><label style="display:block;font-size:12.5px;font-weight:700;color:var(--ink-soft);margin:12px 0 5px;">包含哪幾課（教材與活動會合併這幾課的生詞）</label><div id="unit-lessons" style="display:flex;flex-wrap:wrap;gap:8px;"></div><div class="row"><button type="button" class="btn" id="unit-no">取消</button><button type="submit" class="btn primary">儲存</button></div></form></dialog>
-<dialog id="sch" style="width:min(460px,94vw);"><form method="dialog"><h3 id="sch-t"></h3><label>班級</label><select id="sch-c"></select><label>日期</label><input type="date" id="sch-d"><div style="display:flex;gap:10px;"><div style="flex:1;"><label>開始</label><input type="time" id="sch-s"></div><div style="flex:1;"><label>結束</label><input type="time" id="sch-e"></div></div><label>要上哪一課（可不選）</label><select id="sch-l"></select><label>備註（例如第二節改線上）</label><input type="text" id="sch-n"><div id="sch-rep" style="margin-top:12px;font-size:13px;"><label style="display:flex;align-items:center;gap:6px;font-weight:600;margin:0;"><input type="checkbox" id="sch-r"> 每週同一時間重複，共 <input type="number" id="sch-w" value="8" min="2" max="40" style="width:64px;"> 週</label></div><div class="row"><button type="button" class="btn" id="sch-no">取消</button><button type="submit" class="btn primary">儲存</button></div></form></dialog>
+<dialog id="sch" style="width:min(460px,94vw);"><form method="dialog"><h3 id="sch-t"></h3><label>學校／班級</label><select id="sch-c"></select><label>行事曆上顯示的字（不填就顯示學校名稱）</label><input type="text" id="sch-title" placeholder="例如：五結國中、開會、備課"><label>日期</label><input type="date" id="sch-d"><div style="display:flex;gap:10px;"><div style="flex:1;"><label>開始</label><input type="time" id="sch-s"></div><div style="flex:1;"><label>結束</label><input type="time" id="sch-e"></div></div><div id="sch-lw"><label>要上哪一課（可不選）</label><select id="sch-l"></select></div><label>備註（例如第二節改線上）</label><input type="text" id="sch-n"><label>超連結（可不填，例如線上教室或文件網址）</label><input type="text" id="sch-url" placeholder="https://..."><label>顏色</label><div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;"><label style="display:flex;align-items:center;gap:6px;margin:0;">底色 <input type="color" id="sch-bg" value="#2E75B6" style="width:44px;height:30px;padding:0;"></label><label style="display:flex;align-items:center;gap:6px;margin:0;">文字 <input type="color" id="sch-fg" value="#ffffff" style="width:44px;height:30px;padding:0;"></label><label style="display:flex;align-items:center;gap:6px;margin:0;font-weight:400;"><input type="checkbox" id="sch-auto" checked> 用預設顏色</label></div><div id="sch-prev" style="margin-top:8px;"></div><div id="sch-rep" style="margin-top:12px;font-size:13px;"><label style="display:flex;align-items:center;gap:6px;font-weight:600;margin:0;"><input type="checkbox" id="sch-r"> 每週同一時間重複，共 <input type="number" id="sch-w" value="8" min="2" max="40" style="width:64px;"> 週</label></div><div class="row"><button type="button" class="btn" id="sch-no">取消</button><button type="submit" class="btn primary">儲存</button></div></form></dialog>
 <dialog id="remind" style="width:min(420px,92vw);"><form method="dialog"><h3>📝 該填課堂記錄表了</h3><p id="remind-t" style="margin:6px 0 4px;font-weight:700;"></p><p class="note">趁記憶還新鮮，趕快記下今天的上課內容和學生表現吧。</p><div class="row" style="flex-wrap:wrap;"><button type="button" class="btn" id="remind-skip">今天不用提醒</button><button type="button" class="btn" id="remind-later">10 分鐘後再提醒</button><button type="button" class="btn primary" id="remind-go">填寫課堂記錄</button></div></form></dialog>
 <dialog id="bell-d" style="width:min(460px,94vw);"><form method="dialog" onsubmit="return false;"><h3>🔔 新的繳交</h3><div id="bell-list" style="max-height:50vh;overflow-y:auto;"></div><div class="row" style="flex-wrap:wrap;"><button type="button" class="btn sm" id="bell-perm" style="display:none;">開啟桌面通知</button><button type="button" class="btn" id="bell-clear">全部標為已讀</button><button type="button" class="btn primary" id="bell-close">關閉</button></div></form></dialog>
 <dialog id="hwed"></dialog>
@@ -693,6 +693,7 @@ function sortedBy(obj, desc){ return Object.keys(obj || {}).sort(function(a, b){
 function bindListPage(){
   var m = document.getElementById("main");
   m.onclick = function(e){
+    if(e.target.closest("a[href]")) return;
     var b = e.target.closest("[data-a]"); if(!b) return;
     var a = b.dataset.a, s = b.dataset.s, t = b.dataset.t, c = b.dataset.c;
     if(a.indexOf("ta-") === 0){ taAct(a, b.dataset); return; }
@@ -713,10 +714,42 @@ function slotsOn(date){
   return Object.keys(m).filter(function(k){ return m[k].date === date; }).map(function(k){ return Object.assign({ id: k }, m[k]); }).sort(function(a, b){ return (a.start || "").localeCompare(b.start || ""); });
 }
 function classInfo(sl){
+  if(!sl.s) return null;
   var yr = schoolsOf()[sl.s], sc = yr && yr.terms && yr.terms[sl.t], cl = sc && sc.classes && sc.classes[sl.c];
+  if(sc && !sl.c) return { year: yr.name, school: sc.name, cls: "", obj: null, schoolOnly: true };
   return cl ? { year: yr.name, school: sc.name, cls: cl.name, obj: cl } : null;
 }
-function slotLabel(sl){ var ci = classInfo(sl); return ci ? ci.school + " " + ci.cls : "（班級已刪除）"; }
+function slotLabel(sl){
+  if(!sl.s) return sl.title || "行程";
+  var ci = classInfo(sl); return ci ? (ci.cls ? ci.school + " " + ci.cls : ci.school) : "（學校或班級已刪除）";
+}
+// 行事曆上顯示的字：老師自己打的優先，否則用學校名稱
+function slotText(sl){ if(sl.title) return sl.title; if(!sl.s) return "行程"; var ci = classInfo(sl); return ci ? ci.school : "（已刪除）"; }
+function slotBg(sl){ return sl.bg || (sl.s ? schoolColor(slotSchoolName(sl)) : "#6B7280"); }
+function slotFg(sl){ return sl.fg || "#ffffff"; }
+function safeUrl(u){
+  u = String(u || "").trim(); if(!u) return "";
+  if(!/^[a-z][a-z0-9+.-]*:/i.test(u)) u = "https://" + u;
+  return /^https?:\/\//i.test(u) ? u : "";
+}
+function slotLink(sl, inner, cls, style, title){
+  var u = safeUrl(sl.url), ti = title ? ' title="' + esc(title) + '"' : '';
+  return u ? '<a class="' + cls + '" style="' + style + '"' + ti + ' href="' + esc(u) + '" target="_blank" rel="noopener noreferrer">' + inner + '</a>' : '<div class="' + cls + '" style="' + style + '"' + ti + '>' + inner + '</div>';
+}
+function slotTargetOptions(){
+  // 每間學校一個「只排學校」的選項（不必有班級），後面接該校的各班級，最後是「自訂行程」
+  var out = [];
+  sortedBy(schoolsOf(), true).forEach(function(y){
+    var yr = schoolsOf()[y];
+    sortedBy(yr.terms, false).forEach(function(t){
+      var sc = yr.terms[t];
+      out.push({ v: y + "|" + t + "|", t: yr.name + " · " + sc.name + "（只排學校）" });
+      sortedBy(sc.classes, false).forEach(function(c){ out.push({ v: y + "|" + t + "|" + c, t: yr.name + " · " + sc.name + " · " + sc.classes[c].name }); });
+    });
+  });
+  out.push({ v: "||", t: "自訂行程（不屬於任何學校）" });
+  return out;
+}
 function allClassOptions(){
   var out = [];
   sortedBy(schoolsOf(), true).forEach(function(y){
@@ -758,7 +791,7 @@ function calPickAct(a, ds, month, setMonth){
 // 每間學校一個固定顏色（用學校名稱決定，所以不同年度的同一間學校顏色一樣）
 var SCHOOL_COLORS = ["#C0623A", "#2E75B6", "#3E7D68", "#7B5EA7", "#B4802A", "#B23B32", "#4A7C8C", "#8A5A78", "#5B7F3A", "#A0527C"];
 function schoolColor(name){ var h = 0; String(name || "").split("").forEach(function(ch){ h = (h * 31 + ch.charCodeAt(0)) >>> 0; }); return SCHOOL_COLORS[h % SCHOOL_COLORS.length]; }
-function slotSchoolName(x){ var ci = classInfo(x); return ci ? ci.school : "（班級已刪除）"; }
+function slotSchoolName(x){ if(!x.s) return x.title || "行程"; var ci = classInfo(x); return ci ? ci.school : "（已刪除）"; }
 function calendarHtml(){
   var m = S.month || (S.month = ymd(new Date()).slice(0, 7));
   var yy = Number(m.slice(0, 4)), mm = Number(m.slice(5, 7)) - 1;
@@ -769,14 +802,17 @@ function calendarHtml(){
   for(var d = 1; d <= days; d++){
     var date = yy + "-" + pad2(mm + 1) + "-" + pad2(d), sl = slotsOn(date);
     html += '<div class="cal-d' + (date === today ? ' today' : '') + '" data-a="cal-day" data-d="' + date + '"><div class="cal-n">' + d + '</div>' +
-      (sl.length ? '<div class="cal-cnt">' + sl.length + ' 堂</div>' : '') + sl.slice(0, 3).map(function(x){ var sn = slotSchoolName(x); return '<div class="cal-s" style="background:' + schoolColor(sn) + ';" title="' + esc((x.start || "") + (x.end ? "–" + x.end : "") + " " + slotLabel(x)) + '">' + esc((x.start || "") + " " + sn) + '</div>'; }).join("") + (sl.length > 3 ? '<div class="cal-s" style="background:none;color:var(--ink-soft);padding:0 2px;">還有 ' + (sl.length - 3) + ' 堂…</div>' : '') + '</div>';
+      (sl.length ? '<div class="cal-cnt">' + sl.length + ' 堂</div>' : '') + sl.slice(0, 3).map(function(x){ return slotLink(x, esc((x.start || "") + " " + slotText(x)) + (safeUrl(x.url) ? " ↗" : ""), "cal-s", "background:" + slotBg(x) + ";color:" + slotFg(x) + ";display:block;text-decoration:none;", (x.start || "") + (x.end ? "–" + x.end : "") + " " + slotLabel(x)); }).join("") + (sl.length > 3 ? '<div class="cal-s" style="background:none;color:var(--ink-soft);padding:0 2px;">還有 ' + (sl.length - 3) + ' 堂…</div>' : '') + '</div>';
   }
   return html + '</div>';
 }
 function slotRowHtml(sl, withDate){
-  var ci = classInfo(sl), les = sl.lesson && (S.plat.lessons || {})[sl.lesson] ? lessonTitle(sl.lesson) : "";
-  return '<div class="slot"><div class="slot-time">' + esc((sl.start || "") + (sl.end ? "–" + sl.end : "")) + '</div><div class="slot-main"><div><b>' + esc(slotLabel(sl)) + '</b>' + (withDate ? '　<span class="note">' + esc(sl.date) + '</span>' : '') + '</div><div class="note">' + (les ? esc(les) : '未指定課次') + (sl.note ? '　・　' + esc(sl.note) : '') + '</div></div>' +
-    '<div class="slot-act">' + (ci ? '<button class="btn" data-a="slot-go" data-id="' + sl.id + '">進入上課</button>' : '') + (recSlotDone(sl.id) ? '<span class="note">✓已記錄</span>' : '<button class="btn sm" data-a="slot-rec" data-id="' + sl.id + '">填記錄</button>') + '<button class="btn sm" data-a="slot-edit" data-id="' + sl.id + '">修改</button><button class="btn sm danger" data-a="slot-del" data-id="' + sl.id + '">刪除</button></div></div>';
+  var ci = classInfo(sl), les = sl.lesson && (S.plat.lessons || {})[sl.lesson] ? lessonTitle(sl.lesson) : "", u = safeUrl(sl.url);
+  var chip = '<span style="display:inline-block;padding:2px 10px;border-radius:8px;font-weight:700;background:' + esc(slotBg(sl)) + ';color:' + esc(slotFg(sl)) + ';">' + esc(slotText(sl)) + '</span>';
+  var sub = (ci && ci.cls) ? ((sl.title ? esc(slotLabel(sl)) + '　・　' : esc(ci.cls) + '　・　') + (les ? esc(les) : '未指定課次')) : (les ? esc(les) : '');
+  var info = sub + (sl.note ? (sub ? '　・　' : '') + esc(sl.note) : '');
+  return '<div class="slot"><div class="slot-time">' + esc((sl.start || "") + (sl.end ? "–" + sl.end : "")) + '</div><div class="slot-main"><div>' + chip + (withDate ? '　<span class="note">' + esc(sl.date) + '</span>' : '') + '</div>' + (info ? '<div class="note">' + info + '</div>' : '') + '</div>' +
+    '<div class="slot-act">' + (u ? '<a class="btn sm" href="' + esc(u) + '" target="_blank" rel="noopener noreferrer">🔗 開啟連結</a>' : '') + (ci ? '<button class="btn" data-a="slot-go" data-id="' + sl.id + '">' + (ci.cls ? '進入上課' : '進入學校') + '</button>' : '') + (!sl.s ? '' : recSlotDone(sl.id) ? '<span class="note">✓已記錄</span>' : '<button class="btn sm" data-a="slot-rec" data-id="' + sl.id + '">填記錄</button>') + '<button class="btn sm" data-a="slot-edit" data-id="' + sl.id + '">修改</button><button class="btn sm danger" data-a="slot-del" data-id="' + sl.id + '">刪除</button></div></div>';
 }
 function todayPanelHtml(){
   var sl = slotsOn(ymd(new Date()));
@@ -791,13 +827,23 @@ function renderDayPage(){
   shell(html); setCrumb([]); bindListPage();
 }
 function openSlotDialog(id, date){
-  var m = schedMap(), cur = id ? m[id] : null, opts = allClassOptions();
-  if(!opts.length){ alert("請先建立年度、學校和班級，再排課。"); return Promise.resolve(null); }
+  var m = schedMap(), cur = id ? m[id] : null, opts = slotTargetOptions();
   return new Promise(function(resolve){
     var d = document.getElementById("sch"), csel = document.getElementById("sch-c"), lsel = document.getElementById("sch-l");
     document.getElementById("sch-t").textContent = cur ? "修改這堂課" : "新增一堂課";
     csel.innerHTML = opts.map(function(o){ return '<option value="' + esc(o.v) + '">' + esc(o.t) + '</option>'; }).join("");
-    if(cur) csel.value = cur.s + "|" + cur.t + "|" + cur.c; else if(S.sel && S.sel.c) csel.value = S.sel.s + "|" + S.sel.t + "|" + S.sel.c;
+    if(cur) csel.value = cur.s ? cur.s + "|" + cur.t + "|" + (cur.c || "") : "||"; else if(S.sel && S.sel.s) csel.value = S.sel.s + "|" + S.sel.t + "|" + (S.sel.c || "");
+    document.getElementById("sch-title").value = cur ? (cur.title || "") : "";
+    document.getElementById("sch-url").value = cur ? (cur.url || "") : "";
+    var auto = document.getElementById("sch-auto"), bgI = document.getElementById("sch-bg"), fgI = document.getElementById("sch-fg"), prev = document.getElementById("sch-prev");
+    auto.checked = !(cur && (cur.bg || cur.fg)); bgI.value = (cur && cur.bg) || "#2E75B6"; fgI.value = (cur && cur.fg) || "#ffffff";
+    function drawPrev(){
+      var p = csel.value.split("|"), tmp = { s: p[0] || null, t: p[1] || null, c: p[2] || null, title: document.getElementById("sch-title").value.trim() };
+      var bg = auto.checked ? slotBg(tmp) : bgI.value, fg = auto.checked ? "#ffffff" : fgI.value;
+      bgI.disabled = fgI.disabled = auto.checked;
+      prev.innerHTML = '<span style="display:inline-block;padding:2px 10px;border-radius:8px;font-weight:700;background:' + esc(bg) + ';color:' + esc(fg) + ';">' + esc((document.getElementById("sch-s").value || "") + " " + slotText(tmp)) + '</span>';
+    }
+    ["sch-title", "sch-s", "sch-bg", "sch-fg", "sch-auto"].forEach(function(i){ document.getElementById(i).oninput = document.getElementById(i).onchange = drawPrev; });
     document.getElementById("sch-d").value = cur ? cur.date : date;
     document.getElementById("sch-s").value = cur ? (cur.start || "") : "14:00";
     document.getElementById("sch-e").value = cur ? (cur.end || "") : "15:30";
@@ -805,21 +851,25 @@ function openSlotDialog(id, date){
     document.getElementById("sch-rep").style.display = cur ? "none" : "";
     document.getElementById("sch-r").checked = false; document.getElementById("sch-w").value = 8;
     function fillLessons(keep){
-      var p = csel.value.split("|"), cls = getCls({ s: p[0], t: p[1], c: p[2] });
+      var p = csel.value.split("|"), cls = p[2] ? getCls({ s: p[0], t: p[1], c: p[2] }) : null;
+      document.getElementById("sch-lw").style.display = p[2] ? "" : "none";
       var ks = cls ? lessonKeys(cls) : [];
       lsel.innerHTML = '<option value="">（不指定課次）</option>' + ks.map(function(k){ return '<option value="' + esc(k) + '">' + esc(lessonTitle(k)) + '</option>'; }).join("");
       if(keep && ks.indexOf(keep) !== -1) lsel.value = keep;
     }
-    fillLessons(cur && cur.lesson); csel.onchange = function(){ fillLessons(null); };
+    fillLessons(cur && cur.lesson); csel.onchange = function(){ fillLessons(null); drawPrev(); }; drawPrev();
     var done = false;
     function fin(v){ if(done) return; done = true; try{ d.close(); }catch(e){} resolve(v); }
     document.getElementById("sch-no").onclick = function(){ fin(null); };
     d.oncancel = function(e){ e.preventDefault(); fin(null); };
     d.querySelector("form").onsubmit = function(e){
       e.preventDefault();
-      var p = csel.value.split("|"), date = document.getElementById("sch-d").value, st = document.getElementById("sch-s").value;
+      var p = csel.value.split("|"), date = document.getElementById("sch-d").value, st = document.getElementById("sch-s").value, title = document.getElementById("sch-title").value.trim(), rawUrl = document.getElementById("sch-url").value.trim(), url = safeUrl(rawUrl);
       if(!date || !st){ alert("請填日期和開始時間。"); return; }
-      fin({ s: p[0], t: p[1], c: p[2], date: date, start: st, end: document.getElementById("sch-e").value, lesson: lsel.value || null, note: document.getElementById("sch-n").value.trim(),
+      if(!p[0] && !title){ alert("自訂行程請在「行事曆上顯示的字」填內容。"); return; }
+      if(rawUrl && !url){ alert("超連結只能是 http 或 https 開頭的網址。"); return; }
+      var autoC = document.getElementById("sch-auto").checked;
+      fin({ s: p[0] || null, t: p[1] || null, c: p[2] || null, title: title || null, url: url || null, bg: autoC ? null : bgI.value, fg: autoC ? null : fgI.value, date: date, start: st, end: document.getElementById("sch-e").value, lesson: p[2] ? (lsel.value || null) : null, note: document.getElementById("sch-n").value.trim(),
         repeat: !cur && document.getElementById("sch-r").checked ? Math.max(2, Math.min(40, Number(document.getElementById("sch-w").value) || 2)) : 0 });
     };
     d.showModal();
@@ -838,18 +888,18 @@ async function schedAct(a, ds){
   if(a === "slot-rec"){ if(m[ds.id]) openRecordFor(Object.assign({ id: ds.id }, m[ds.id])); return; }
   if(a === "slot-go"){
     var sl = m[ds.id]; if(!sl || !classInfo(sl)) return;
-    S.day = null; S.sel = { s: sl.s, t: sl.t, c: sl.c }; S.lesson = (sl.lesson && (S.plat.lessons || {})[sl.lesson]) ? sl.lesson : null; S.tab = null; S.sub = null; render(); return;
+    S.day = null; S.sel = { s: sl.s, t: sl.t, c: sl.c || null }; S.lesson = (sl.lesson && (S.plat.lessons || {})[sl.lesson]) ? sl.lesson : null; S.tab = null; S.sub = null; render(); return;
   }
   if(a === "slot-new" || a === "slot-edit"){
     var r = await openSlotDialog(a === "slot-edit" ? ds.id : null, ds.d); if(!r) return;
     if(a === "slot-edit"){
-      var rec = Object.assign({}, m[ds.id], { s: r.s, t: r.t, c: r.c, date: r.date, start: r.start, end: r.end, lesson: r.lesson, note: r.note });
+      var rec = Object.assign({}, m[ds.id], { s: r.s, t: r.t, c: r.c, title: r.title, url: r.url, bg: r.bg, fg: r.fg, date: r.date, start: r.start, end: r.end, lesson: r.lesson, note: r.note });
       m[ds.id] = rec; await fbSet(base + "/" + ds.id, rec);
     } else {
       var n = r.repeat || 1, series = n > 1 ? uid("ser_") : null, d0 = new Date(r.date + "T00:00:00");
       for(var i = 0; i < n; i++){
         var dd = new Date(d0); dd.setDate(d0.getDate() + 7 * i);
-        var id = uid("sl_"), rec2 = { s: r.s, t: r.t, c: r.c, date: ymd(dd), start: r.start, end: r.end, lesson: r.lesson, note: r.note, series: series };
+        var id = uid("sl_"), rec2 = { s: r.s, t: r.t, c: r.c, title: r.title, url: r.url, bg: r.bg, fg: r.fg, date: ymd(dd), start: r.start, end: r.end, lesson: r.lesson, note: r.note, series: series };
         m[id] = rec2; await fbSet(base + "/" + id, rec2);
       }
       if(n > 1) toast("已新增 " + n + " 週的課，之後可以逐天修改或刪除");
@@ -876,7 +926,7 @@ function checkReminders(force){
   var d = document.getElementById("remind"); if(d && d.open) return;
   var now = Date.now(), m = S.plat.schedule;
   for(var id in m){
-    var sl = m[id]; if(!sl.end || sl.date !== ymd(new Date())) continue;
+    var sl = m[id]; if(!sl.s || !sl.end || sl.date !== ymd(new Date())) continue;
     var endAt = new Date(sl.date + "T" + sl.end + ":00").getTime();
     var later = 0; try{ later = Number(localStorage.getItem("mm_rec_later_" + id)) || 0; }catch(e){}
     var dueAt = Math.max(endAt + REMIND_AFTER_MIN * 60000, later);
@@ -915,7 +965,7 @@ function recSlotDone(slotId){ var m = recMap(); return Object.keys(m).some(funct
 function newRecordDraft(slot){
   var label = "", classKey = "", date = ymd(new Date()), material = "", slotId = null;
   if(slot){
-    var ci = classInfo(slot); label = ci ? ci.school + " " + ci.cls : ""; classKey = slot.s + "|" + slot.t + "|" + slot.c; date = slot.date; slotId = slot.id;
+    var ci = classInfo(slot); label = ci ? (ci.cls ? ci.school + " " + ci.cls : ci.school) : ""; classKey = slot.s + "|" + slot.t + "|" + (slot.c || ""); date = slot.date; slotId = slot.id;
     material = slot.lesson && (S.plat.lessons || {})[slot.lesson] ? lessonTitle(slot.lesson) : "";
   } else {
     var last = Object.keys(recMap()).map(function(k){ return recMap()[k]; }).sort(function(a, b){ return (b.updatedAt || 0) - (a.updatedAt || 0); })[0];
