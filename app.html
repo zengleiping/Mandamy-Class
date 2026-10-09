@@ -719,6 +719,17 @@ function classInfo(sl){
   if(sc && !sl.c) return { year: yr.name, school: sc.name, cls: "", obj: null, schoolOnly: true };
   return cl ? { year: yr.name, school: sc.name, cls: cl.name, obj: cl } : null;
 }
+// 這個班在「課堂記錄」裡用的名稱：老師指定的優先，否則「學校 班級」（班名跟校名一樣時就是校名）
+function recLabelsOfClass(sel){
+  var ci = classInfo(sel); if(!ci || !ci.obj) return [];
+  var out = [ci.school + " " + ci.cls];
+  if(ci.cls === ci.school) out.push(ci.school);
+  if(ci.obj.recLabel) out.unshift(ci.obj.recLabel);
+  return out;
+}
+function recBelongsTo(r, sel){
+  return r.classKey === sel.s + "|" + sel.t + "|" + sel.c || recLabelsOfClass(sel).indexOf(r.classLabel) !== -1;
+}
 function slotLabel(sl){
   if(!sl.s) return sl.title || "行程";
   var ci = classInfo(sl); return ci ? (ci.cls ? ci.school + " " + ci.cls : ci.school) : "（學校或班級已刪除）";
@@ -1535,7 +1546,7 @@ async function hwSummary(cls, items, roster){
   var subsBy = {}; await Promise.all(items.map(function(it){ return fbGet("teacherPlatform/" + tid + "/hwSubs/" + cid + "/" + it.id).then(function(v){ subsBy[it.id] = v || {}; }); }));
   var rows = {}; roster.forEach(function(n){ rows[hwSkey(n)] = n; });
   items.forEach(function(it){ Object.keys(subsBy[it.id]).forEach(function(k){ if(!rows[k]) rows[k] = subsBy[it.id][k].name || decodeURIComponent(k); }); });
-  var recs = Object.keys(recMap()).map(function(k){ return recMap()[k]; }).filter(function(r){ return r.classKey === S.sel.s + "|" + S.sel.t + "|" + S.sel.c || (label && r.classLabel === label.school + " " + label.cls); });
+  var recs = Object.keys(recMap()).map(function(k){ return recMap()[k]; }).filter(function(r){ return recBelongsTo(r, S.sel); });
   var real = recs.filter(function(r){ return !r.isAbsence; }), abs = recs.length - real.length;
   var keys = Object.keys(rows).sort(function(a, b){ return rows[a].localeCompare(rows[b], "zh-Hant"); });
   var data = keys.map(function(k){
@@ -1616,16 +1627,23 @@ async function fillClassStatus(cls){
     top.forEach(function(it){ Object.keys(subsBy[it.id]).forEach(function(k){ if((subsBy[it.id][k].at || 0) > seen) newCount++; }); });
     html += '<div style="margin-bottom:10px;"><b>聯絡簿</b>' + (newCount ? '　<span class="chip" style="background:#FBEBC8;">有 ' + newCount + ' 筆新繳交</span>' : '') + (top.length ? top.map(function(it){ var n = Object.keys(subsBy[it.id]).filter(function(k){ return subsBy[it.id][k].firstAt; }).length; return '<div class="note" style="margin-top:4px;">' + esc(it.title) + '（截止 ' + esc(it.due ? hwFmt(hwDueTs(it)) : "未設") + '）已交 ' + n + ' / ' + Math.max(roster.length, n) + '</div>'; }).join("") : '<div class="note" style="margin-top:4px;">還沒有作業</div>') + '</div>';
     var label = classInfo({ s: S.sel.s, t: S.sel.t, c: S.sel.c }), key = S.sel.s + "|" + S.sel.t + "|" + S.sel.c;
-    var recs = Object.keys(recMap()).map(function(k){ return recMap()[k]; }).filter(function(r){ return r.classKey === key || (label && r.classLabel === label.school + " " + label.cls); }).sort(function(a, b){ return (b.date || "").localeCompare(a.date || ""); });
-    html += '<div><b>最近一次課堂記錄</b>　<span class="note">' + (recs.length ? esc(recs[0].date + "　" + (recs[0].material || (recs[0].isAbsence ? "請假／調課" : ""))) : '還沒有') + '</span></div>';
+    var recs = Object.keys(recMap()).map(function(k){ return recMap()[k]; }).filter(function(r){ return recBelongsTo(r, S.sel); }).sort(function(a, b){ return (b.date || "").localeCompare(a.date || ""); });
+    html += '<div><b>最近一次課堂記錄</b>　<span class="note">' + (recs.length ? esc(recs[0].date + "　" + (recs[0].material || (recs[0].isAbsence ? "請假／調課" : ""))) : '還沒有（對應的記錄名稱：' + esc(recLabelsOfClass(S.sel)[0] || "") + '）') + '</span> <button class="btn sm" data-x="reclink">連結記錄名稱…</button></div>';
     html += '<div class="tools" style="margin-top:10px;"><button class="btn sm" data-x="hw">聯絡簿</button><button class="btn sm" data-x="summary">學期總表</button><button class="btn sm" data-x="recs">課堂記錄</button></div>';
     box.innerHTML = html;
-    box.onclick = function(e){
+    box.onclick = async function(e){
       var b = e.target.closest("[data-x]"); if(!b) return; var a = b.dataset.x;
       if(a === "hw"){ S.hw = { view: "list" }; render(); }
       else if(a === "summary"){ S.hw = { view: "summary" }; render(); }
       else if(a === "leave"){ S.hw = { view: "leave" }; render(); }
-      else if(a === "recs"){ S.rec = { filter: label ? label.school + " " + label.cls : "all" }; S.sel = null; render(); }
+      else if(a === "recs"){ S.rec = { filter: recLabelsOfClass(S.sel)[0] || "all" }; S.sel = null; render(); }
+      else if(a === "reclink"){
+        var cur = getCls(S.sel), have = recLabels().map(function(l){ return l.label + "（" + l.count + "）"; }).join("、");
+        var v = await askText("這個班的課堂記錄用的是哪個名稱？（要跟課堂記錄裡的「班級」一字不差）\n目前有：" + (have || "（還沒有記錄）"), (cur && cur.recLabel) || recLabelsOfClass(S.sel)[0] || "", "儲存");
+        if(v == null) return; v = v.trim();
+        try{ await fbSet(clsPath(S.sel) + "/recLabel", v || null); }catch(er){ toast("儲存失敗"); return; }
+        if(cur){ if(v) cur.recLabel = v; else delete cur.recLabel; } toast("已連結"); render();
+      }
       else if(a === "rec"){ var m = schedMap()[b.dataset.id]; if(m) openRecordFor(Object.assign({ id: b.dataset.id }, m)); }
     };
   }catch(e){ if(box) box.innerHTML = '<span class="note">近況讀取失敗。</span>'; }
@@ -1945,7 +1963,7 @@ async function notifyTeacher(it, mySub){
 function parentUrl(tok){ return location.origin + location.pathname + "?parent=" + encodeURIComponent(S.teacher.id) + "~" + tok; }
 async function parentDigest(tid, link){
   // 只放這位學生自己的課堂記錄摘要（日期、教材進度、出缺席；分數看老師有沒有開放）
-  var label = classInfo({ s: link.s, t: link.tm, c: link.c }), recs = Object.keys(recMap()).map(function(k){ return recMap()[k]; }).filter(function(r){ return r.classKey === link.s + "|" + link.tm + "|" + link.c || (label && r.classLabel === label.school + " " + label.cls); }).sort(function(a, b){ return (b.date || "").localeCompare(a.date || ""); }), out = [];
+  var label = classInfo({ s: link.s, t: link.tm, c: link.c }), recs = Object.keys(recMap()).map(function(k){ return recMap()[k]; }).filter(function(r){ return recBelongsTo(r, { s: link.s, t: link.tm, c: link.c }); }).sort(function(a, b){ return (b.date || "").localeCompare(a.date || ""); }), out = [];
   recs.forEach(function(r){
     if(r.isAbsence) return;
     var mine = (r.students || []).filter(function(s){ return (s.name || "").trim() === link.name; })[0];
