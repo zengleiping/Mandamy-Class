@@ -105,6 +105,7 @@
   .hw-table td:first-child, .hw-table th:first-child{ text-align:left; }
   .hw-table .st-ok{ background:#E3F1E8; } .hw-table .st-late{ background:#FBEBC8; } .hw-table .st-missing{ background:#F7D9D5; }
   .cal-cnt{ display:none; }
+  body.ta .owner-only, body.ta .danger{ display:none !important; }
   @media (pointer:coarse), (max-width:1024px){
     .btn{ min-height:42px; } .btn.sm{ min-height:38px; padding:7px 12px; }
     input[type=text], input[type=password], input[type=date], input[type=time], input[type=number], select, textarea{ font-size:16px !important; }
@@ -320,6 +321,7 @@ function bookFromTitle(title){
 function viewLogin(msg){
   root.innerHTML = '<div class="center-wrap"><div class="card"><h2>曼米中文平台</h2><p class="sub">老師登入　Teacher login</p>' +
     '<label>帳號</label><input type="text" id="lu" autocomplete="username"><label>密碼</label><input type="password" id="lp" autocomplete="current-password" style="width:100%;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;font-size:15px;background:var(--surface-2);">' +
+    '<label style="margin-top:10px;">助教登入（不是助教請留空）<span class="note" style="font-weight:400;"> 要協助哪位老師？填那位老師的帳號</span></label><input type="text" id="lo" autocomplete="off">' +
     '<div class="err" id="le"></div><button class="btn primary" id="lgo" style="width:100%;margin-top:14px;padding:11px;">登入</button>' +
     '<p class="sub" style="margin-top:16px;">學生請使用老師給的班級連結，或 <a href="#" id="tostu">輸入班級代碼</a></p></div></div>';
   var le = document.getElementById("le"); if(msg){ le.textContent = msg; le.style.display = "block"; }
@@ -333,8 +335,13 @@ function viewLogin(msg){
       if(!acc){ le.textContent = "找不到這個帳號"; le.style.display = "block"; return; }
       if(acc.disabled){ le.textContent = "這個帳號已被停用"; le.style.display = "block"; return; }
       if((await pbkdf2(p, acc.saltHex)) !== acc.hashHex){ le.textContent = "密碼錯誤"; le.style.display = "block"; return; }
-      try{ localStorage.setItem(SESSION_KEY, acc.id); }catch(e){}
-      await startTeacher(acc);
+      var ow = sanitizeUser(document.getElementById("lo").value);
+      if(ow){
+        var asg = ow === acc.id ? null : await fbGet("teacherPlatform/" + ow + "/assistants/" + acc.id);
+        if(!asg){ le.textContent = "你還不是「" + ow + "」的助教，請請那位老師先在平台首頁把你加進助教名單。"; le.style.display = "block"; return; }
+      }
+      try{ localStorage.setItem(SESSION_KEY, acc.id); if(ow) localStorage.setItem("mm_ta_owner", ow); else localStorage.removeItem("mm_ta_owner"); }catch(e){}
+      await startTeacher(acc, ow || null);
     }catch(e){ le.textContent = "連線失敗，請檢查網路後再試"; le.style.display = "block"; }
   }
   document.getElementById("lgo").onclick = go;
@@ -342,10 +349,15 @@ function viewLogin(msg){
 }
 
 // ---------- 老師：載入平台資料 ----------
-async function startTeacher(acc){
+async function startTeacher(acc, owner){
   S.teacher = { id: acc.id, name: acc.displayName || acc.username, isAdmin: !!acc.isAdmin };
+  if(owner){
+    var ok = await fbGet("teacherPlatform/" + owner + "/assistants/" + acc.id);
+    if(!ok){ try{ localStorage.removeItem("mm_ta_owner"); }catch(e){} S.teacher = null; viewLogin("助教資格已被移除，請改用自己的帳號登入。"); return; }
+    S.teacher = { id: owner, name: (acc.displayName || acc.username) + "（助教）", role: "ta", me: acc.id };
+  }
   root.innerHTML = '<div class="center-wrap"><div class="note">載入中…</div></div>';
-  var plat = {}, pbase = "teacherPlatform/" + S.teacher.id, pkeys = ["schools", "lessonMap", "lessons", "units", "books", "customLessons", "hier", "schedule", "classRecords", "meta"];
+  var plat = {}, pbase = "teacherPlatform/" + S.teacher.id, pkeys = ["schools", "lessonMap", "lessons", "units", "books", "customLessons", "hier", "schedule", "classRecords", "meta", "assistants"];
   var pvals = await Promise.all(pkeys.map(function(k){ return fbGet(pbase + "/" + k).catch(function(){ return null; }); }));
   pkeys.forEach(function(k, i){ if(pvals[i] != null) plat[k] = pvals[i]; });
   plat.schools = plat.schools || {}; plat.lessonMap = plat.lessonMap || {}; plat.lessons = plat.lessons || {}; plat.units = plat.units || {}; plat.books = plat.books || {}; plat.customLessons = plat.customLessons || {};
@@ -450,16 +462,17 @@ function saveHash(){
 function shell(inner, opts){
   opts = opts || {};
   var isT = !!S.teacher;
+  document.body.classList.toggle("ta", isTA());
   root.innerHTML = '<div class="shell' + (S.focus ? ' focus' : '') + '"><div class="top">' +
     '<div class="brand">曼米中文' + (isT ? '' : '<small>學生</small>') + '</div><div class="crumb" id="crumb"></div><div class="grow"></div>' +
-    (isT ? '<span class="crumb">👤 ' + esc(S.teacher.name) + '</span><button class="btn sm" id="bell" title="新的繳交">🔔</button><button class="btn sm" id="recbtn">課堂記錄</button><button class="btn sm" id="libbtn">教材庫</button><button class="btn sm" id="logout">登出</button>'
+    (isT ? '<span class="crumb">👤 ' + esc(S.teacher.name) + '</span><button class="btn sm" id="bell" title="新的繳交">🔔</button><button class="btn sm" id="recbtn">課堂記錄</button><button class="btn sm owner-only" id="libbtn">教材庫</button><button class="btn sm" id="logout">登出</button>'
          : '<span class="crumb">👤 ' + esc(S.student ? S.student.name : "") + '</span><button class="btn sm" id="leave">離開</button>') +
     '</div><div class="body">' + '<main class="main' + (opts.flush ? ' flush' : '') + '" id="main">' + inner + '</main></div></div>';
   if(isT){
     document.getElementById("bell").onclick = openBell; updateBell();
     document.getElementById("recbtn").onclick = function(){ if(S.focus) setFocus(false); S.rec = { filter: "all" }; S.lib = null; S.day = null; S.sel = null; S.lesson = null; render(); };
     document.getElementById("libbtn").onclick = function(){ if(S.focus) setFocus(false); S.rec = null; S.lib = { book: S.lib ? S.lib.book : DEFAULT_BOOK }; render(); };
-    document.getElementById("logout").onclick = function(){ try{ localStorage.removeItem(SESSION_KEY); }catch(e){} S.teacher = null; S.sel = null; history.replaceState(null, "", location.pathname); viewLogin(); };
+    document.getElementById("logout").onclick = function(){ try{ localStorage.removeItem(SESSION_KEY); localStorage.removeItem("mm_ta_owner"); }catch(e){} S.teacher = null; S.sel = null; history.replaceState(null, "", location.pathname); viewLogin(); };
   } else {
     document.getElementById("leave").onclick = function(){ S.student = null; history.replaceState(null, "", location.pathname); viewStudentEntry(); };
   }
@@ -476,7 +489,7 @@ function setCrumb(parts){
     if(yr) items.push({ t: yr.name, go: "year" });
     if(sc) items.push({ t: sc.name, go: "school" });
     if(cl) items.push({ t: cl.name, go: "class" });
-    if(cl && S.hw) items.push({ t: S.hw.view === "wheel" ? "點名輪盤" : S.hw.view === "summary" ? "學期總表" : "聯絡簿" });
+    if(cl && S.hw) items.push({ t: S.hw.view === "wheel" ? "點名輪盤" : S.hw.view === "summary" ? "學期總表" : S.hw.view === "capsule" ? "時空膠囊" : S.hw.view === "leave" ? "請假申請" : "聯絡簿" });
     if(S.lesson) items.push({ t: lessonTitle(S.lesson) });
   }
   var last = items.length - 1;
@@ -494,6 +507,7 @@ function setCrumb(parts){
 
 // ---------- 老師：新增／改名／刪除（年度、學校、班級）----------
 async function platAct(a, s, t, c){
+  if(!needOwner()) return;
   var base = "teacherPlatform/" + S.teacher.id + "/schools";
   if(a === "add-s"){
     var n = await askText("年度名稱（例如 115 學年度上學期，或 115-1）", ""); if(!n) return;
@@ -566,6 +580,7 @@ function bindListPage(){
   m.onclick = function(e){
     var b = e.target.closest("[data-a]"); if(!b) return;
     var a = b.dataset.a, s = b.dataset.s, t = b.dataset.t, c = b.dataset.c;
+    if(a.indexOf("ta-") === 0){ taAct(a, b.dataset); return; }
     if(a === "bk-now"){ backupPlatform(true); return; }
     if(a === "bk-snooze"){ try{ localStorage.setItem("mm_backup_snooze", String(Date.now() + 3 * 86400000)); }catch(e){} render(); return; }
     if(a.indexOf("cal-") === 0 || a.indexOf("slot-") === 0){ schedAct(a, b.dataset); return; }
@@ -960,6 +975,8 @@ async function renderHomework(cls){
   syncTime();
   var hw = S.hw, tid = S.teacher.id, cid = S.sel.c, base = hwBase(tid, cid);
   if(hw.view === "wheel") return renderWheel(cls);
+  if(hw.view === "capsule") return renderCapsule(cls);
+  if(hw.view === "leave") return renderLeave(cls);
   shell('<div class="empty"><p class="note">載入中…</p></div>'); setCrumb([]);
   var main = document.getElementById("main");
   try{
@@ -974,12 +991,12 @@ async function renderHomework(cls){
     // 列表
     var subsAll = {};
     await Promise.all(items.map(function(it){ return fbGet(tid ? "teacherPlatform/" + tid + "/hwSubs/" + cid + "/" + it.id : null).then(function(v){ subsAll[it.id] = v || {}; }); }));
-    var html = '<div class="head-row"><div style="flex:1;"><h2>聯絡簿</h2><div class="note">' + esc(cls.name) + '　公布作業、收學生上傳、記錄繳交時間</div></div><div><button class="btn" data-h="new">公布作業</button> <button class="btn" data-h="settle">結算繳交狀況</button> <button class="btn" data-h="summary">學期總表</button></div></div>';
+    var html = '<div class="head-row"><div style="flex:1;"><h2>聯絡簿</h2><div class="note">' + esc(cls.name) + '　公布作業、收學生上傳、記錄繳交時間</div></div><div><button class="btn owner-only" data-h="new">公布作業</button> <button class="btn" data-h="settle">結算繳交狀況</button> <button class="btn" data-h="summary">學期總表</button></div></div>';
     html += '<div class="panel"><h3>作業</h3>' + (items.length ? items.map(function(it){
       var subs = subsAll[it.id], keys = Object.keys(subs).filter(function(k){ return subs[k].firstAt; }), late = keys.filter(function(k){ return hwStatus(it, subs[k]) === "late"; }).length, total = Math.max(roster.length, keys.length);
-      return '<div class="slot"><div class="slot-time" style="min-width:120px;">' + esc(it.due ? hwFmt(new Date(it.due).getTime()) : "未設期限") + '<div class="note">截止</div></div><div class="slot-main"><div><b>' + esc(it.title) + '</b></div><div class="note">已交 ' + keys.length + ' / ' + total + (late ? '（遲交 ' + late + '）' : '') + '</div></div><div class="slot-act"><button class="btn" data-h="item" data-id="' + it.id + '">查看繳交</button><button class="btn sm" data-h="edit" data-id="' + it.id + '">修改</button><button class="btn sm danger" data-h="del" data-id="' + it.id + '">刪除</button></div></div>';
+      return '<div class="slot"><div class="slot-time" style="min-width:120px;">' + esc(it.due ? hwFmt(new Date(it.due).getTime()) : "未設期限") + '<div class="note">截止</div></div><div class="slot-main"><div><b>' + esc(it.title) + '</b></div><div class="note">已交 ' + keys.length + ' / ' + total + (late ? '（遲交 ' + late + '）' : '') + '</div></div><div class="slot-act"><button class="btn" data-h="item" data-id="' + it.id + '">查看繳交</button><button class="btn sm owner-only" data-h="edit" data-id="' + it.id + '">修改</button><button class="btn sm danger" data-h="del" data-id="' + it.id + '">刪除</button></div></div>';
     }).join("") : '<p class="note">還沒有作業。按右上角「公布作業」。學生用班級代碼進來就會看到。</p>') + '</div>';
-    html += '<div class="panel"><h3>班級名單</h3><p class="note" style="margin:0 0 8px;">一行一位學生，名字要跟學生進入時輸入的一樣。結算時沒交的人才找得出來。</p><textarea id="hw-roster" rows="5" style="width:100%;padding:8px 10px;border-radius:8px;border:1.5px solid var(--line);background:var(--surface-2);font:inherit;">' + esc(roster.join("\n")) + '</textarea><div style="margin-top:8px;"><button class="btn sm" data-h="roster">儲存名單</button></div>' + accPanelHtml(roster, accs, accOn) + parentPanelHtml(roster, plinks) + '</div>' + '<div class="panel"><h3>批次貼上作業</h3><p class="note" style="margin:0 0 8px;">一行一份：<code>日期 標題</code>，可以加 <code>| 說明</code>，也可以寫時間。例如：<br><code>10/15 第七課生詞抄寫 | 抄三遍</code><br><code>10/22 14:00 第八課造句</code></p><textarea id="hw-batch" rows="4" style="width:100%;padding:8px 10px;border-radius:8px;border:1.5px solid var(--line);background:var(--surface-2);font:inherit;"></textarea><div style="margin-top:8px;"><button class="btn sm" data-h="batch">建立這些作業</button></div></div>';
+    html += '<div class="panel owner-only"><h3>班級名單</h3><p class="note" style="margin:0 0 8px;">一行一位學生，名字要跟學生進入時輸入的一樣。結算時沒交的人才找得出來。</p><textarea id="hw-roster" rows="5" style="width:100%;padding:8px 10px;border-radius:8px;border:1.5px solid var(--line);background:var(--surface-2);font:inherit;">' + esc(roster.join("\n")) + '</textarea><div style="margin-top:8px;"><button class="btn sm" data-h="roster">儲存名單</button></div>' + accPanelHtml(roster, accs, accOn) + parentPanelHtml(roster, plinks) + '</div>' + '<div class="panel owner-only"><h3>批次貼上作業</h3><p class="note" style="margin:0 0 8px;">一行一份：<code>日期 標題</code>，可以加 <code>| 說明</code>，也可以寫時間。例如：<br><code>10/15 第七課生詞抄寫 | 抄三遍</code><br><code>10/22 14:00 第八課造句</code></p><textarea id="hw-batch" rows="4" style="width:100%;padding:8px 10px;border-radius:8px;border:1.5px solid var(--line);background:var(--surface-2);font:inherit;"></textarea><div style="margin-top:8px;"><button class="btn sm" data-h="batch">建立這些作業</button></div></div>';
     shell(html); setCrumb([]);
     document.getElementById("main").onclick = async function(e){
       var b = e.target.closest("[data-h]"); if(!b) return; var a = b.dataset.h;
@@ -1360,6 +1377,8 @@ async function fillClassStatus(cls){
     await Promise.all(top.map(function(it){ return fbGet("teacherPlatform/" + tid + "/hwSubs/" + cid + "/" + it.id).then(function(v){ subsBy[it.id] = v || {}; }); }));
     var html = '', today = ymd(new Date()), sl = slotsOn(today).filter(function(x){ return x.s === S.sel.s && x.t === S.sel.t && x.c === S.sel.c; });
     if(sl.length) html += '<div style="margin-bottom:10px;"><b>今天這個班的課</b>' + sl.map(function(x){ return '<div class="slot"><div class="slot-time" style="min-width:110px;">' + esc((x.start || "") + (x.end ? "–" + x.end : "")) + '</div><div class="slot-main note">' + (x.lesson && (S.plat.lessons || {})[x.lesson] ? esc(lessonTitle(x.lesson)) : "未指定課次") + (x.note ? "　・　" + esc(x.note) : "") + '</div><div class="slot-act">' + (recSlotDone(x.id) ? '<span class="note">✓已記錄</span>' : '<button class="btn sm" data-x="rec" data-id="' + x.id + '">填記錄</button>') + '</div></div>'; }).join("") + '</div>';
+    var lvo = (await fbGet("teacherPlatform/" + tid + "/leave/" + cid)) || {}, lvPending = Object.keys(lvo).filter(function(k){ return lvo[k].status === "pending"; }).length;
+    if(lvPending) html += '<div style="margin-bottom:10px;"><b>請假申請</b>　<span class="chip" style="background:#FBEBC8;">' + lvPending + ' 筆待回覆</span> <button class="btn sm" data-x="leave">去看看</button></div>';
     var newCount = 0;
     top.forEach(function(it){ Object.keys(subsBy[it.id]).forEach(function(k){ if((subsBy[it.id][k].at || 0) > seen) newCount++; }); });
     html += '<div style="margin-bottom:10px;"><b>聯絡簿</b>' + (newCount ? '　<span class="chip" style="background:#FBEBC8;">有 ' + newCount + ' 筆新繳交</span>' : '') + (top.length ? top.map(function(it){ var n = Object.keys(subsBy[it.id]).filter(function(k){ return subsBy[it.id][k].firstAt; }).length; return '<div class="note" style="margin-top:4px;">' + esc(it.title) + '（截止 ' + esc(it.due ? hwFmt(hwDueTs(it)) : "未設") + '）已交 ' + n + ' / ' + Math.max(roster.length, n) + '</div>'; }).join("") : '<div class="note" style="margin-top:4px;">還沒有作業</div>') + '</div>';
@@ -1372,6 +1391,7 @@ async function fillClassStatus(cls){
       var b = e.target.closest("[data-x]"); if(!b) return; var a = b.dataset.x;
       if(a === "hw"){ S.hw = { view: "list" }; render(); }
       else if(a === "summary"){ S.hw = { view: "summary" }; render(); }
+      else if(a === "leave"){ S.hw = { view: "leave" }; render(); }
       else if(a === "recs"){ S.rec = { filter: label ? label.school + " " + label.cls : "all" }; S.sel = null; render(); }
       else if(a === "rec"){ var m = schedMap()[b.dataset.id]; if(m) openRecordFor(Object.assign({ id: b.dataset.id }, m)); }
     };
@@ -1609,14 +1629,14 @@ async function renderComments(){
   t.texts = t.texts || {};
   var cards = names.map(function(n){
     var st = studentStats(t.label, n, rng), key = t.label + "|" + n; if(t.texts[key] == null) t.texts[key] = composeComment(n, st, o, hwBy[n]);
-    return '<div class="panel"><h3>' + esc(n) + ' <span class="note">出席 ' + st.present + (st.absent ? '、缺席 ' + st.absent : '') + '　有分數 ' + st.scored + ' 堂' + (st.total != null ? '　平均 ' + st.total.toFixed(0) : '') + '</span></h3><textarea class="cmt" data-n="' + esc(n) + '" rows="6" style="width:100%;padding:8px 10px;border-radius:8px;border:1.5px solid var(--line);background:var(--surface-2);font:inherit;line-height:1.7;">' + esc(t.texts[key]) + '</textarea><div class="tools" style="margin-top:6px;"><span class="note cc" data-n="' + esc(n) + '">' + t.texts[key].length + ' 字</span><button class="btn sm" data-r="cregen" data-n="' + esc(n) + '">重新產生這位</button><button class="btn sm" data-r="ccopy" data-n="' + esc(n) + '">複製</button></div></div>';
+    return '<div class="panel"><h3>' + esc(n) + ' <span class="note">出席 ' + st.present + (st.absent ? '、缺席 ' + st.absent : '') + '　有分數 ' + st.scored + ' 堂' + (st.total != null ? '　平均 ' + st.total.toFixed(0) : '') + '</span></h3><textarea class="cmt" data-n="' + esc(n) + '" rows="6" style="width:100%;padding:8px 10px;border-radius:8px;border:1.5px solid var(--line);background:var(--surface-2);font:inherit;line-height:1.7;">' + esc(t.texts[key]) + '</textarea><div class="tools" style="margin-top:6px;"><span class="note cc" data-n="' + esc(n) + '">' + t.texts[key].length + ' 字</span><button class="btn sm" data-r="cregen" data-n="' + esc(n) + '">重新產生這位</button><button class="btn sm" data-r="ccopy" data-n="' + esc(n) + '">複製</button><button class="btn sm" data-r="cprint1" data-n="' + esc(n) + '">成績單</button></div></div>';
   }).join("");
   var chk = function(k, lab){ return '<label style="display:flex;align-items:center;gap:4px;"><input type="checkbox" data-o="' + k + '"' + (o[k] ? ' checked' : '') + '>' + lab + '</label>'; };
   var sel = 'padding:7px 10px;border-radius:8px;border:1.5px solid var(--line);background:var(--surface-2);font:inherit;';
   var body = '<div class="panel"><div class="tools" style="margin-bottom:10px;">班級／學生 ' + recSelectHtml("cm-l", labels, t.label) + '<span class="note">期間</span><input type="date" id="cm-f" value="' + esc(t.from) + '"><span class="note">到</span><input type="date" id="cm-t" value="' + esc(t.to) + '"><span class="note">（不填＝全部）</span></div>' +
     '<div class="tools" style="margin-bottom:10px;">語氣 <select id="cm-tone" style="' + sel + '"><option value="warm"' + (o.tone === "warm" ? ' selected' : '') + '>溫暖</option><option value="formal"' + (o.tone === "formal" ? ' selected' : '') + '>正式</option><option value="plain"' + (o.tone === "plain" ? ' selected' : '') + '>簡潔</option></select>　篇幅 <select id="cm-len" style="' + sel + '"><option value="short"' + (o.length === "short" ? ' selected' : '') + '>簡短</option><option value="std"' + (o.length === "std" ? ' selected' : '') + '>標準</option><option value="long"' + (o.length === "long" ? ' selected' : '') + '>詳細</option></select></div>' +
     '<div class="tools" style="margin-bottom:10px;">包含：' + chk("attend", "出席") + chk("dims", "各項強弱") + chk("trend", "進步趨勢") + chk("vocab", "生詞") + chk("hw", "作業") + chk("notes", "老師備註（原文，請自行整理）") + '</div>' +
-    '<div class="tools"><button class="btn" data-r="cgen">重新產生全部</button><button class="btn" data-r="ccopyall">複製全部</button><button class="btn" data-r="cdl">下載文字檔</button></div>' +
+    '<div class="tools"><button class="btn" data-r="cgen">重新產生全部</button><button class="btn" data-r="ccopyall">複製全部</button><button class="btn" data-r="cdl">下載文字檔</button><button class="btn" data-r="cprint">列印全部成績單（可存成 PDF）</button></div>' +
     '<p class="note" style="margin-top:8px;">這是依照你記錄的分數、出席、備註和作業「組合」出來的草稿，不是 AI 寫的；請你再看過、改成你自己的口吻。你改過的內容，在不按「重新產生」之前都會保留。</p></div>' + (cards || '<div class="panel"><p class="note">這個班的課堂記錄裡還沒有學生姓名。</p></div>');
   recViewShell("學期評語", "依課堂記錄產生每位學生的中文評語草稿", body);
   var main = document.getElementById("main");
@@ -1634,6 +1654,8 @@ async function renderComments(){
     if(a === "cgen"){ if(!confirm("重新產生全部？你手動修改過的內容會被覆蓋。")) return; t.texts = {}; renderComments(); }
     else if(a === "cregen"){ delete t.texts[t.label + "|" + n]; renderComments(); }
     else if(a === "ccopy"){ try{ await navigator.clipboard.writeText(t.texts[t.label + "|" + n]); toast("已複製"); }catch(er){} }
+    else if(a === "cprint"){ openReportCards(t.label, names, rng, t.texts, hwBy); }
+    else if(a === "cprint1"){ openReportCards(t.label, [n], rng, t.texts, hwBy); }
     else if(a === "ccopyall" || a === "cdl"){
       var txt = names.map(function(x){ return "【" + x + "】\n" + t.texts[t.label + "|" + x]; }).join("\n\n");
       if(a === "ccopyall"){ try{ await navigator.clipboard.writeText(txt); toast("已複製全部"); }catch(er){ alert("複製失敗，請改用下載。"); } }
@@ -1671,11 +1693,11 @@ function desktopNotify(n){
 }
 function openBell(){
   var d = document.getElementById("bell-d"), items = bellItems();
-  document.getElementById("bell-list").innerHTML = items.length ? items.map(function(x){ return '<div class="slot" data-n="' + x.id + '" style="cursor:pointer;"><div class="slot-time" style="min-width:80px;">' + esc(hwFmt(x.at)) + '</div><div class="slot-main"><b>' + esc(x.name) + '</b> 交了「' + esc(x.title) + '」<div class="note">' + esc(x.cname || "") + '</div></div></div>'; }).join("") : '<p class="note">沒有新的繳交通知。</p>';
+  document.getElementById("bell-list").innerHTML = items.length ? items.map(function(x){ return '<div class="slot" data-n="' + x.id + '" style="cursor:pointer;"><div class="slot-time" style="min-width:80px;">' + esc(hwFmt(x.at)) + '</div><div class="slot-main"><b>' + esc(x.name) + '</b> ' + (x.kind === "leave" ? '申請' + esc(x.title) : '交了「' + esc(x.title) + '」') + '<div class="note">' + esc(x.cname || "") + '</div></div></div>'; }).join("") : '<p class="note">沒有新的繳交通知。</p>';
   document.getElementById("bell-perm").style.display = ("Notification" in window && Notification.permission === "default") ? "" : "none";
   document.getElementById("bell-list").onclick = function(e){
     var r = e.target.closest("[data-n]"); if(!r) return; var n = S.notify[r.dataset.n]; if(!n) return;
-    d.close(); S.day = null; S.lib = null; S.rec = null; S.sel = { s: n.s, t: n.tm, c: n.c }; S.lesson = null; S.hw = { view: "item", id: n.hwId }; render();
+    d.close(); S.day = null; S.lib = null; S.rec = null; S.sel = { s: n.s, t: n.tm, c: n.c }; S.lesson = null; S.hw = n.kind === "leave" ? { view: "leave" } : { view: "item", id: n.hwId }; render();
   };
   document.getElementById("bell-clear").onclick = async function(){ await fbSet("teacherPlatform/" + S.teacher.id + "/notify", null); S.notify = {}; updateBell(); d.close(); toast("已全部標為已讀"); };
   document.getElementById("bell-perm").onclick = function(){ try{ Notification.requestPermission().then(function(){ openBell(); }); }catch(e){} };
@@ -1740,6 +1762,7 @@ async function parentAct(a, roster, links, b){
   if(a === "plink-scores"){ await fbUpdate(base + "/" + b.dataset.tok, { showScores: !!b.checked }); await refreshParentLink(b.dataset.tok); toast(b.checked ? "家長現在看得到分數" : "家長看不到分數了"); return; }
 }
 async function viewParent(tok){
+  var ptokFull = tok;
   root.innerHTML = '<div class="center-wrap"><div class="note">載入中…</div></div>';
   try{
     var cut = String(tok).indexOf("~"), tid = cut > 0 ? decodeURIComponent(tok.slice(0, cut)) : "", real = cut > 0 ? tok.slice(cut + 1) : "";
@@ -1755,8 +1778,16 @@ async function viewParent(tok){
     var html = '<div class="center-wrap" style="align-items:flex-start;"><div style="width:100%;max-width:720px;margin:0 auto;padding:16px;"><h2>' + esc(link.name) + ' 的學習狀況</h2><div class="note" style="margin-bottom:12px;">' + esc(cname || "") + '　（家長專屬頁面，只能查看）</div>';
     var cnt = { ok: 0, late: 0, missing: 0 }; items.forEach(function(it){ var s = hwStatus(it, subs[it.id]); if(cnt[s] != null) cnt[s]++; });
     html += '<div class="panel"><h3>聯絡簿</h3><div class="note" style="margin-bottom:8px;">準時 ' + cnt.ok + '　遲交 ' + cnt.late + '　未交 ' + cnt.missing + '</div>' + (items.length ? items.map(function(it){ var s = hwStatus(it, subs[it.id]), sb = subs[it.id]; return '<div class="slot"><div class="slot-time" style="min-width:100px;">' + esc(it.due ? hwFmt(hwDueTs(it)) : "") + '<div class="note">截止</div></div><div class="slot-main"><div><b>' + esc(it.title) + '</b></div><div class="note">' + HW_LABEL[s] + (sb && sb.firstAt ? '　最後送出 ' + esc(hwFmt(sb.at)) : '') + '</div>' + (sb && sb.fb ? '<div style="margin-top:4px;">老師回饋：' + esc(sb.fb) + '</div>' : '') + '</div></div>'; }).join("") : '<p class="note">還沒有作業。</p>') + '</div>';
-    html += '<div class="panel"><h3>上課記錄</h3>' + (recs.length ? recs.map(function(r){ return '<div class="slot"><div class="slot-time" style="min-width:100px;">' + esc(r.date || "") + '</div><div class="slot-main">' + (r.absent ? '<span class="note">缺席</span>' : '') + '<div>' + esc(r.material || "") + '</div>' + (r.scores ? '<div class="note">總分 ' + r.total + '　' + Object.keys(r.scores).map(function(k){ return esc(k) + " " + esc(r.scores[k]); }).join("　") + '</div>' : '') + '</div></div>'; }).join("") : '<p class="note">還沒有上課記錄。</p>') + '</div></div></div>';
+    html += '<div class="panel"><h3>上課記錄</h3>' + (recs.length ? recs.map(function(r){ return '<div class="slot"><div class="slot-time" style="min-width:100px;">' + esc(r.date || "") + '</div><div class="slot-main">' + (r.absent ? '<span class="note">缺席</span>' : '') + '<div>' + esc(r.material || "") + '</div>' + (r.scores ? '<div class="note">總分 ' + r.total + '　' + Object.keys(r.scores).map(function(k){ return esc(k) + " " + esc(r.scores[k]); }).join("　") + '</div>' : '') + '</div></div>'; }).join("") : '<p class="note">還沒有上課記錄。</p>') + '</div>';
+    var lvAll = (await fbGet(base + "/leave/" + link.c)) || {}, myLv = objList(lvAll).filter(function(x){ return x.name === link.name; }).sort(function(a, b){ return (b.createdAt || 0) - (a.createdAt || 0); });
+    html += leaveFormHtml() + '<div class="panel"><h3>請假紀錄</h3>' + leaveListHtml(myLv) + '</div></div></div>';
     root.innerHTML = html;
+    document.getElementById("lv-go").onclick = async function(){
+      var d = document.getElementById("lv-d").value; if(!d){ alert("請選請假日期。"); return; }
+      this.disabled = true;
+      try{ await leaveSubmit({ tid: tid, cid: link.c, s: link.s, tm: link.tm, name: link.name, date: d, reason: document.getElementById("lv-r").value.trim(), by: "parent", cname: cname }); toast("已送出，老師會盡快回覆"); viewParent(ptokFull); }
+      catch(e){ alert("送出失敗，請檢查網路後再試。"); this.disabled = false; }
+    };
   }catch(e){ root.innerHTML = '<div class="center-wrap"><div class="card"><h2>讀取失敗</h2><p class="sub">請檢查網路後重新整理。</p></div></div>'; }
 }
 function backupBannerHtml(){
@@ -1766,14 +1797,134 @@ function backupBannerHtml(){
   if(days != null && days < 7) return '';
   var hasData = Object.keys(S.plat.schools || {}).length || Object.keys(S.plat.classRecords || {}).length;
   if(!hasData) return '';
-  return '<div class="panel" style="background:#FBEBC8;"><b>💾 ' + (days == null ? '還沒備份過' : '上次備份是 ' + days + ' 天前') + '</b>　建議每週備份一次，萬一資料被改壞才救得回來。<div class="tools" style="margin-top:8px;"><button class="btn sm primary" data-a="bk-now">現在下載完整備份</button><button class="btn sm" data-a="bk-snooze">3 天後再提醒</button></div></div>';
+  return '<div class="panel owner-only" style="background:#FBEBC8;"><b>💾 ' + (days == null ? '還沒備份過' : '上次備份是 ' + days + ' 天前') + '</b>　建議每週備份一次，萬一資料被改壞才救得回來。<div class="tools" style="margin-top:8px;"><button class="btn sm primary" data-a="bk-now">現在下載完整備份</button><button class="btn sm" data-a="bk-snooze">3 天後再提醒</button></div></div>';
+}
+// ---------- 時空膠囊（內建；資料跟原本的時空膠囊共用，學生／家長開的連結照舊） ----------
+function capUrl(id){ return location.origin + location.pathname.replace(/[^\/]*$/, "") + "index.html?capsule=" + id; }
+function capRandId(){ var chars = "abcdefghijkmnopqrstuvwxyz23456789", a = new Uint8Array(8); crypto.getRandomValues(a); return Array.prototype.map.call(a, function(x){ return chars[x % chars.length]; }).join(""); }
+async function renderCapsule(cls){
+  S.focus = false;
+  var tid = S.teacher.id, cid = S.sel.c, roster = await hwLoadRoster(), links = (await fbGet("capsuleLinks/" + tid)) || {};
+  var mine = Object.keys(links).filter(function(id){ return links[id].cid === cid; }), loose = Object.keys(links).filter(function(id){ return !links[id].cid; });
+  var byName = {}; mine.forEach(function(id){ byName[links[id].studentName] = id; });
+  var names = roster.slice(); mine.forEach(function(id){ if(names.indexOf(links[id].studentName) === -1) names.push(links[id].studentName); });
+  function row(n){ var id = byName[n]; return '<tr><td><b>' + esc(n) + '</b></td><td>' + (id ? '<input type="text" readonly value="' + esc(capUrl(id)) + '" style="width:280px;max-width:60vw;font-size:12px;padding:5px 8px;border-radius:6px;border:1px solid var(--line);">' : '<span class="note">尚未建立</span>') + '</td><td>' + (id ? '<button class="btn sm" data-h="cap-copy" data-id="' + id + '">複製</button><button class="btn sm danger owner-only" data-h="cap-del" data-id="' + id + '">刪除</button>' : '<button class="btn sm" data-h="cap-new" data-n="' + esc(n) + '">建立連結</button>') + '</td></tr>'; }
+  var html = '<div class="head-row"><div style="flex:1;"><h2>時空膠囊</h2><div class="note">' + esc(cls.name) + '　每位學生一組專屬連結，學生和家長各用自己的裝置打開，在生詞／語法卡上圈選、留語音、互相回應（不用註冊登入）。</div></div><div><button class="btn sm ghost" data-h="back">回班級頁</button></div></div>' +
+    '<div class="panel"><h3>學生連結</h3>' + (names.length ? '<div style="overflow-x:auto;"><table class="hw-table"><thead><tr><th>學生</th><th>連結</th><th>操作</th></tr></thead><tbody>' + names.map(row).join("") + '</tbody></table></div><div class="tools" style="margin-top:8px;"><button class="btn sm" data-h="cap-all">為名單全部建立連結</button></div>' : '<p class="note">先到「聯絡簿」貼上班級名單，或在下面直接輸入名字。</p>') +
+    '<div class="tools" style="margin-top:10px;"><input type="text" id="cap-name" placeholder="其他學生名字／暱稱" style="max-width:240px;"><button class="btn sm" data-h="cap-add">新增</button></div></div>' +
+    (loose.length ? '<div class="panel"><h3>還沒歸到班級的連結</h3><p class="note" style="margin:0 0 8px;">這些是以前在原教材頁建立的連結。</p>' + loose.map(function(id){ return '<div class="slot"><div class="slot-time" style="min-width:100px;">' + esc(links[id].studentName || id) + '</div><div class="slot-main note">' + esc(capUrl(id)) + '</div><div class="slot-act"><button class="btn sm" data-h="cap-adopt" data-id="' + id + '">歸到這個班</button></div></div>'; }).join("") + '</div>' : '');
+  shell(html); setCrumb([]);
+  document.getElementById("main").onclick = async function(e){
+    var b = e.target.closest("[data-h]"); if(!b) return; var a = b.dataset.h;
+    async function mk(n){ var id = capRandId(); await fbSet("capsuleLinks/" + tid + "/" + id, { studentName: n, createdAt: Date.now(), cid: cid }); await fbSet("capsuleLinkOwners/" + id, tid); }
+    try{
+      if(a === "back"){ S.hw = null; render(); }
+      else if(a === "cap-copy"){ try{ await navigator.clipboard.writeText(capUrl(b.dataset.id)); toast("已複製連結"); }catch(er){ alert(capUrl(b.dataset.id)); } }
+      else if(a === "cap-new"){ await mk(b.dataset.n); render(); }
+      else if(a === "cap-all"){ var todo = names.filter(function(n){ return !byName[n]; }); for(var i = 0; i < todo.length; i++) await mk(todo[i]); toast("已建立 " + todo.length + " 組"); render(); }
+      else if(a === "cap-add"){ var nm = document.getElementById("cap-name").value.trim(); if(!nm) return; await mk(nm); render(); }
+      else if(a === "cap-adopt"){ await fbUpdate("capsuleLinks/" + tid + "/" + b.dataset.id, { cid: cid }); render(); }
+      else if(a === "cap-del"){
+        if(!needOwner()) return;
+        if(!confirm("刪除這個學生的時空膠囊連結？舊連結會失效，裡面留過的留言也會一併刪除，無法復原。")) return;
+        await fbSet("capsuleLinks/" + tid + "/" + b.dataset.id, null); await fbSet("capsuleLinkOwners/" + b.dataset.id, null); await fbSet("capsuleMarks/" + b.dataset.id, null); render();
+      }
+    }catch(er){ alert("操作失敗，請檢查網路或 Firebase 規則。"); }
+  };
+}
+// ---------- 請假申請 ----------
+async function leaveSubmit(rec){
+  // 家長頁或學生頁送出；同時通知老師
+  var tid = rec.tid, id = uid("lv_");
+  var data = { cid: rec.cid, s: rec.s, tm: rec.tm, c: rec.cid, name: rec.name, date: rec.date, reason: rec.reason || "", status: "pending", by: rec.by, createdAt: nowMs() };
+  await fbSet("teacherPlatform/" + tid + "/leave/" + rec.cid + "/" + id, data);
+  try{ await fbSet("teacherPlatform/" + tid + "/notify/" + uid("n_"), { kind: "leave", name: rec.name, title: "請假 " + rec.date, cname: rec.cname || "", s: rec.s, tm: rec.tm, c: rec.cid, at: data.createdAt }); }catch(e){}
+  return id;
+}
+function leaveFormHtml(){
+  return '<div class="panel rec-form"><h3>請假申請</h3><label>請假日期</label><input type="date" id="lv-d" value="' + ymd(new Date()) + '"><label>原因（選填）</label><textarea id="lv-r" rows="2" placeholder="例如：學校段考、身體不舒服"></textarea><div style="margin-top:10px;"><button class="btn primary" id="lv-go">送出申請</button></div></div>';
+}
+function leaveListHtml(list){
+  var L = { pending: "⏳ 等待老師回覆", approved: "✓ 老師已核准", declined: "✗ 老師無法核准" };
+  return list.length ? list.map(function(x){ return '<div class="slot"><div class="slot-time" style="min-width:100px;">' + esc(x.date) + '</div><div class="slot-main"><div><b>' + L[x.status] + '</b></div>' + (x.reason ? '<div class="note">原因：' + esc(x.reason) + '</div>' : '') + (x.reply ? '<div>老師回覆：' + esc(x.reply) + '</div>' : '') + '</div></div>'; }).join("") : '<p class="note">還沒有請假紀錄。</p>';
+}
+async function renderLeave(cls){
+  S.focus = false;
+  var tid = S.teacher.id, cid = S.sel.c, o = (await fbGet("teacherPlatform/" + tid + "/leave/" + cid)) || {};
+  var list = Object.keys(o).map(function(k){ return Object.assign({ id: k }, o[k]); }).sort(function(a, b){ return (a.status === "pending" ? 0 : 1) - (b.status === "pending" ? 0 : 1) || (b.createdAt || 0) - (a.createdAt || 0); });
+  var html = '<div class="head-row"><div style="flex:1;"><h2>請假申請</h2><div class="note">' + esc(cls.name) + '　家長或學生送出的請假，核准後可以自動在課表標註，並安排補課。</div></div><div><button class="btn sm ghost" data-h="back">回班級頁</button></div></div><div class="panel">' +
+    (list.length ? list.map(function(x){ return '<div class="slot"><div class="slot-time" style="min-width:100px;">' + esc(x.date) + '<div class="note">' + esc(hwFmt(x.createdAt)) + ' 申請</div></div><div class="slot-main"><div><b>' + esc(x.name) + '</b>　' + (x.status === "pending" ? '⏳ 待回覆' : x.status === "approved" ? '✓ 已核准' : '✗ 已婉拒') + (x.by === "student" ? '<span class="note">（學生申請）</span>' : '') + '</div>' + (x.reason ? '<div class="note">原因：' + esc(x.reason) + '</div>' : '') + (x.reply ? '<div class="note">已回覆：' + esc(x.reply) + '</div>' : '') + '</div><div class="slot-act">' + (x.status === "pending" ? '<button class="btn sm primary" data-h="lv-ok" data-id="' + x.id + '">核准</button><button class="btn sm" data-h="lv-no" data-id="' + x.id + '">婉拒</button>' : '') + (x.status === "approved" ? '<button class="btn sm" data-h="lv-makeup" data-id="' + x.id + '">安排補課</button>' : '') + '</div></div>'; }).join("") : '<p class="note">還沒有請假申請。家長在「家長連結」頁面、學生在班級頁都可以送出。</p>') + '</div>';
+  shell(html); setCrumb([]);
+  document.getElementById("main").onclick = async function(e){
+    var b = e.target.closest("[data-h]"); if(!b) return; var a = b.dataset.h, x = o[b.dataset.id], path = "teacherPlatform/" + tid + "/leave/" + cid + "/" + b.dataset.id;
+    if(a === "back"){ S.hw = null; render(); return; }
+    if(!x && a !== "back") return;
+    if(a === "lv-ok" || a === "lv-no"){
+      var reply = await askText(a === "lv-ok" ? "回覆（會顯示在家長頁面）" : "婉拒的原因（會顯示在家長頁面）", a === "lv-ok" ? "已核准，請好好休息。" : "這次無法請假，請聯絡老師。", "送出"); if(!reply) return;
+      await fbUpdate(path, { status: a === "lv-ok" ? "approved" : "declined", reply: reply, decidedAt: nowMs() });
+      if(a === "lv-ok"){
+        // 在課表那天這個班的課加上備註
+        var m = schedMap(), n = 0;
+        for(var k in m){ if(m[k].date === x.date && m[k].s === S.sel.s && m[k].t === S.sel.t && m[k].c === cid){ m[k].note = (m[k].note ? m[k].note + "；" : "") + x.name + "請假"; await fbSet("teacherPlatform/" + tid + "/schedule/" + k, m[k]); n++; } }
+        if(n) toast("已在課表標註 " + n + " 堂課");
+      }
+      render();
+    } else if(a === "lv-makeup"){ S.hw = null; S.sel = { s: S.sel.s, t: S.sel.t, c: null }; render(); setTimeout(function(){ schedAct("slot-new", { d: x.date }); }, 300); }
+  };
+}
+// ---------- 成績單（列印／存成 PDF） ----------
+function openReportCards(label, names, rng, texts, hwBy){
+  var w = window.open("", "_blank"); if(!w){ alert("瀏覽器擋住了新視窗，請允許這個網站開啟彈出視窗後再試一次。"); return; }
+  var period = (rng.from || rng.to) ? (rng.from || "") + " ～ " + (rng.to || "") : "整個學期";
+  var pages = names.map(function(n){
+    var st = studentStats(label, n, rng), hw = (hwBy || {})[n], txt = (texts || {})[label + "|" + n] || "";
+    var dimRows = RUBRIC.map(function(rb){ var p = st.dims[rb.key]; return '<tr><td>' + rb.label + '</td><td style="width:55%;"><div class="bar"><div style="width:' + (p == null ? 0 : Math.round(p)) + '%"></div></div></td><td style="text-align:right;">' + (p == null ? "—" : Math.round(p) + "%") + '</td></tr>'; }).join("");
+    return '<section><h1>學期學習報告</h1><div class="meta">' + esc(label) + '　｜　' + esc(period) + '</div><h2>' + esc(n) + ' 同學</h2>' +
+      '<table class="kv"><tr><td>上課堂數</td><td>' + st.sessions + ' 堂</td><td>出席率</td><td>' + (st.rate == null ? "—" : st.rate + "%") + '</td></tr><tr><td>缺席</td><td>' + st.absent + ' 堂</td><td>課堂平均分數</td><td>' + (st.total == null ? "—" : st.total.toFixed(0) + " / 100") + '</td></tr>' + (hw && hw.total ? '<tr><td>作業</td><td>' + hw.total + ' 份</td><td>準時 / 遲交 / 未交</td><td>' + hw.ok + ' / ' + hw.late + ' / ' + hw.missing + '</td></tr>' : '') + '</table>' +
+      '<h3>各項學習表現（佔滿分的百分比）</h3><table class="dims">' + dimRows + '</table>' +
+      '<h3>老師的話</h3><p class="cmt">' + esc(txt).replace(/\n/g, "<br>") + '</p><div class="sign">老師簽名：＿＿＿＿＿＿＿＿　　日期：＿＿＿＿＿＿＿＿</div></section>';
+  }).join("");
+  w.document.write('<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8"><title>學期學習報告 ' + esc(label) + '</title><style>body{font-family:"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;color:#222;margin:0}section{padding:28px 36px;page-break-after:always;max-width:720px;margin:0 auto}h1{font-size:24px;margin:0 0 4px}.meta{color:#666;margin-bottom:14px}h2{font-size:20px;border-bottom:2px solid #B23B32;padding-bottom:6px}h3{font-size:15px;margin:18px 0 6px;color:#B23B32}table{width:100%;border-collapse:collapse}.kv td{padding:6px 8px;border:1px solid #ddd}.kv td:nth-child(odd){background:#f6f1ea;width:18%;font-weight:700}.dims td{padding:5px 6px}.bar{background:#eee;border-radius:6px;height:12px;overflow:hidden}.bar div{background:#B23B32;height:100%}.cmt{line-height:1.9;white-space:normal}.sign{margin-top:36px;color:#444}@media print{section{padding:0}}</style></head><body>' + pages + '<script>setTimeout(function(){window.print();},400);<\/script></body></html>');
+  w.document.close();
+}
+// ---------- 助教 ----------
+function isTA(){ return !!(S.teacher && S.teacher.role === "ta"); }
+function needOwner(){ if(isTA()){ alert("這個操作只有老師本人可以做（助教不能刪除、改名單或改設定）。"); return false; } return true; }
+function assistantsPanelHtml(list){
+  var ids = Object.keys(list);
+  return '<div class="panel owner-only"><h3>助教</h3><p class="note" style="margin:0 0 8px;">讓另一位老師帳號當你的助教：可以看課表、進班級上課、批改聯絡簿、填課堂記錄；不能刪除、不能改名單與設定、不能備份還原。助教登入時，在登入頁的「助教登入」欄位填你的帳號。（這是介面上的限制，不是資料庫層級的權限。）</p>' +
+    (ids.length ? ids.map(function(k){ return '<div class="slot"><div class="slot-time" style="min-width:120px;">' + esc(list[k].name || k) + '</div><div class="slot-main note">帳號：' + esc(k) + '</div><div class="slot-act"><button class="btn sm danger" data-a="ta-del" data-id="' + esc(k) + '">移除</button></div></div>'; }).join("") : '<p class="note">目前沒有助教。</p>') +
+    '<div class="tools" style="margin-top:8px;"><input type="text" id="ta-user" placeholder="助教的帳號" style="max-width:220px;"><button class="btn sm" data-a="ta-add">新增助教</button></div></div>';
+}
+async function taAct(a, ds){
+  var base = "teacherPlatform/" + S.teacher.id + "/assistants";
+  if(a === "ta-add"){
+    var u = sanitizeUser(document.getElementById("ta-user").value); if(!u) return;
+    if(u === S.teacher.id){ alert("不能把自己設成助教。"); return; }
+    var acc = await fbGet("teacherAccounts/" + u); if(!acc || acc.disabled){ alert("找不到這個帳號，請確認助教已經有自己的老師帳號。"); return; }
+    var rec = { name: acc.displayName || acc.username || u, createdAt: Date.now() }; await fbSet(base + "/" + u, rec); S.plat.assistants = S.plat.assistants || {}; S.plat.assistants[u] = rec; toast("已新增助教"); render();
+  } else if(a === "ta-del"){ if(!confirm("移除這位助教？")) return; await fbSet(base + "/" + ds.id, null); if(S.plat.assistants) delete S.plat.assistants[ds.id]; render(); }
+}
+async function renderStudentLeave(){
+  var st = S.student, tid = st.idx.t, cid = st.idx.c;
+  shell('<div class="empty"><p class="note">載入中…</p></div>'); setCrumb([st.school, st.term, st.cls.name, "請假"]);
+  var all = (await fbGet("teacherPlatform/" + tid + "/leave/" + cid)) || {}, mine = objList(all).filter(function(x){ return x.name === st.name; }).sort(function(a, b){ return (b.createdAt || 0) - (a.createdAt || 0); });
+  shell('<div class="head-row"><div style="flex:1;"><h2>請假</h2><div class="note">' + esc(st.name) + '</div></div><div><button class="btn sm ghost" id="lvback">回班級頁</button></div></div>' + leaveFormHtml() + '<div class="panel"><h3>我的請假紀錄</h3>' + leaveListHtml(mine) + '</div>'); setCrumb([st.school, st.term, st.cls.name, "請假"]);
+  document.getElementById("lvback").onclick = function(){ S.leaveOpen = false; renderStudent(); };
+  document.getElementById("lv-go").onclick = async function(){
+    var d = document.getElementById("lv-d").value; if(!d){ alert("請選請假日期。"); return; }
+    this.disabled = true;
+    try{ await leaveSubmit({ tid: tid, cid: cid, s: st.idx.s, tm: st.idx.tm, name: st.name, date: d, reason: document.getElementById("lv-r").value.trim(), by: "student", cname: st.cls.name }); toast("已送出，老師會盡快回覆"); renderStudentLeave(); }
+    catch(e){ alert("送出失敗，請檢查網路後再試。"); this.disabled = false; }
+  };
 }
 function renderPlatformHome(){
   S.focus = false;
   var ys = sortedBy(schoolsOf(), true);
-  var html = '<div class="head-row"><div style="flex:1;"><h2>歡迎，' + esc(S.teacher.name) + '</h2><div class="note">看課表、或選一個年度進入學校和班級（沒有班級也沒關係）。</div></div><div><button class="btn" data-a="slot-new" data-d="' + ymd(new Date()) + '">新增排課</button> <button class="btn" data-a="add-s">新增年度</button></div></div>' + backupBannerHtml() + todayPanelHtml() + '<div class="panel"><h3>月課表</h3>' + calendarHtml() + '</div><div class="panel"><h3>年度</h3>';
+  var html = '<div class="head-row"><div style="flex:1;"><h2>歡迎，' + esc(S.teacher.name) + '</h2><div class="note">看課表、或選一個年度進入學校和班級（沒有班級也沒關係）。</div></div><div><button class="btn" data-a="slot-new" data-d="' + ymd(new Date()) + '">新增排課</button> <button class="btn owner-only" data-a="add-s">新增年度</button></div></div>' + backupBannerHtml() + todayPanelHtml() + '<div class="panel"><h3>月課表</h3>' + calendarHtml() + '</div><div class="panel"><h3>年度</h3>';
   html += ys.length ? '<div class="tools">' + ys.map(function(y){ return '<button class="btn" data-a="go" data-s="' + y + '">' + esc(schoolsOf()[y].name) + '</button>'; }).join("") + '</div>' : '<p class="note">還沒有年度。按右上角「新增年度」開始。</p>';
-  html += '</div><div class="panel"><h3>備份與還原</h3><p class="note" style="margin:0 0 8px;">把年度、學校、班級、開放設定、複習單元、教材分冊等平台資料存成一個檔案，萬一資料被改壞可以還原。「完整備份」另外包含聯絡簿（作業、學生繳交與照片）和課堂記錄截圖，檔案會比較大。生詞教材請用教材庫、測驗簡報請用簡報頁各自備份。</p><div class="tools"><button class="btn sm" id="bk-out">下載備份</button><button class="btn sm" id="bk-full">下載完整備份（含聯絡簿、截圖）</button><button class="btn sm" id="bk-in">從備份還原…</button><input type="file" id="bk-file" accept=".json,application/json" style="display:none;"></div></div>';
+  html += '</div><div class="panel owner-only"><h3>備份與還原</h3><p class="note" style="margin:0 0 8px;">把年度、學校、班級、開放設定、複習單元、教材分冊等平台資料存成一個檔案，萬一資料被改壞可以還原。「完整備份」另外包含聯絡簿（作業、學生繳交與照片）和課堂記錄截圖，檔案會比較大。生詞教材請用教材庫、測驗簡報請用簡報頁各自備份。</p><div class="tools"><button class="btn sm" id="bk-out">下載備份</button><button class="btn sm" id="bk-full">下載完整備份（含聯絡簿、截圖）</button><button class="btn sm" id="bk-in">從備份還原…</button><input type="file" id="bk-file" accept=".json,application/json" style="display:none;"></div></div>';
+  html += assistantsPanelHtml(S.plat.assistants || {});
   shell(html); setCrumb([]); bindListPage();
   document.getElementById("bk-out").onclick = function(){ backupPlatform(false); };
   document.getElementById("bk-full").onclick = function(){ backupPlatform(true); };
@@ -1781,6 +1932,7 @@ function renderPlatformHome(){
   document.getElementById("bk-file").onchange = function(e){ var f = e.target.files[0]; e.target.value = ""; if(f) restorePlatform(f); };
 }
 async function backupPlatform(full){
+  if(!needOwner()) return;
   var codes = {};
   Object.keys(S.plat.schools || {}).forEach(function(y){ var ts = S.plat.schools[y].terms || {}; Object.keys(ts).forEach(function(t){ var cl = ts[t].classes || {}; Object.keys(cl).forEach(function(c){ if(cl[c].code) codes[cl[c].code] = { t: S.teacher.id, s: y, tm: t, c: c }; }); }); });
   var data = { kind: "mandamy-platform-backup", version: 1, savedAt: new Date().toISOString(), teacher: S.teacher.id,
@@ -1799,6 +1951,7 @@ async function backupPlatform(full){
   toast("已下載備份"); if(!S.sel && !S.lib && !S.rec && !S.day) render();
 }
 async function restorePlatform(file){
+  if(!needOwner()) return;
   var data;
   try{ data = JSON.parse(await file.text()); }catch(e){ alert("這不是有效的備份檔。"); return; }
   if(!data || data.kind !== "mandamy-platform-backup" || !data.platform){ alert("這不是平台備份檔。"); return; }
@@ -1819,7 +1972,7 @@ async function restorePlatform(file){
 function renderYearHome(){
   S.focus = false;
   var yr = schoolsOf()[S.sel.s], ids = sortedBy(yr.terms, false);
-  var html = '<div class="head-row"><div style="flex:1;"><h2>' + esc(yr.name) + '</h2></div><div><button class="btn" data-a="add-t" data-s="' + S.sel.s + '">新增學校</button> <button class="btn sm" data-a="ren-s" data-s="' + S.sel.s + '">改名</button> <button class="btn sm danger" data-a="del-s" data-s="' + S.sel.s + '">刪除年度</button></div></div><div class="panel"><h3>學校</h3>';
+  var html = '<div class="head-row"><div style="flex:1;"><h2>' + esc(yr.name) + '</h2></div><div><button class="btn owner-only" data-a="add-t" data-s="' + S.sel.s + '">新增學校</button> <button class="btn sm owner-only" data-a="ren-s" data-s="' + S.sel.s + '">改名</button> <button class="btn sm danger owner-only" data-a="del-s" data-s="' + S.sel.s + '">刪除年度</button></div></div><div class="panel"><h3>學校</h3>';
   html += ids.length ? '<div class="tools">' + ids.map(function(k){ var n = Object.keys(yr.terms[k].classes || {}).length; return '<button class="btn" data-a="go" data-s="' + S.sel.s + '" data-t="' + k + '">' + esc(yr.terms[k].name) + (n ? '　<span class="note">' + n + ' 班</span>' : '') + '</button>'; }).join("") + '</div>' : '<p class="note">這個年度還沒有學校。按右上角「新增學校」。</p>';
   html += '</div>';
   shell(html); setCrumb([]); bindListPage();
@@ -1855,7 +2008,7 @@ function render(){
 function renderSchoolHome(){
   S.focus = false;
   var yr = schoolsOf()[S.sel.s], sc = yr.terms[S.sel.t], ids = sortedBy(sc.classes, false);
-  var html = '<div class="head-row"><div style="flex:1;"><h2>' + esc(sc.name) + '</h2></div><div><button class="btn" data-a="add-c" data-s="' + S.sel.s + '" data-t="' + S.sel.t + '">新增班級</button> <button class="btn sm" data-a="ren-t" data-s="' + S.sel.s + '" data-t="' + S.sel.t + '">改名</button> <button class="btn sm danger" data-a="del-t" data-s="' + S.sel.s + '" data-t="' + S.sel.t + '">刪除學校</button></div></div><div class="panel"><h3>班級</h3>';
+  var html = '<div class="head-row"><div style="flex:1;"><h2>' + esc(sc.name) + '</h2></div><div><button class="btn owner-only" data-a="add-c" data-s="' + S.sel.s + '" data-t="' + S.sel.t + '">新增班級</button> <button class="btn sm owner-only" data-a="ren-t" data-s="' + S.sel.s + '" data-t="' + S.sel.t + '">改名</button> <button class="btn sm danger owner-only" data-a="del-t" data-s="' + S.sel.s + '" data-t="' + S.sel.t + '">刪除學校</button></div></div><div class="panel"><h3>班級</h3>';
   html += ids.length ? '<div class="tools">' + ids.map(function(k){ return '<button class="btn" data-a="go" data-s="' + S.sel.s + '" data-t="' + S.sel.t + '" data-c="' + k + '">' + esc(sc.classes[k].name) + '　<span class="note">' + esc(sc.classes[k].code) + '</span></button>'; }).join("") + '</div>' : '<p class="note">這間學校在這個年度還沒有班級。需要的時候再按「新增班級」就可以。</p>';
   html += '</div>';
   shell(html); setCrumb([]); bindListPage();
@@ -1865,14 +2018,14 @@ function renderClassHome(cls){
   S.focus = false;
   var sc = schoolsOf()[S.sel.s], tm = sc.terms[S.sel.t];
   var html = '<div class="head-row"><div style="flex:1;min-width:200px;"><h2>' + esc(cls.name) + '</h2></div>' +
-    '<div><div class="note">班級代碼</div><span class="code">' + esc(cls.code) + '</span> <button class="btn sm" id="cpy">複製學生連結</button> <button class="btn sm" id="ren">改班名</button> <button class="btn sm danger" id="del">刪除班級</button></div></div>';
-  html += '<div class="panel"><h3>班級功能</h3><div class="tools"><button class="btn" id="hwbtn">聯絡簿</button><button class="btn" id="wheelbtn">🎡 點名輪盤</button><a class="btn" href="index.html" target="_blank">⏳ 時空膠囊・其他班級工具（原教材頁）</a></div>' +
+    '<div><div class="note">班級代碼</div><span class="code">' + esc(cls.code) + '</span> <button class="btn sm" id="cpy">複製學生連結</button> <button class="btn sm owner-only" id="ren">改班名</button> <button class="btn sm danger" id="del">刪除班級</button></div></div>';
+  html += '<div class="panel"><h3>班級功能</h3><div class="tools"><button class="btn" id="hwbtn">聯絡簿</button><button class="btn" id="wheelbtn">🎡 點名輪盤</button><button class="btn" id="capbtn">⏳ 時空膠囊</button><button class="btn" id="leavebtn">請假申請</button></div>' +
     '<div class="note" style="font-weight:700;margin-bottom:6px;">🔗 這個班的常用連結（Padlet、Google Meet 等）</div><div class="tools" id="linkbox">' +
     (cls.links ? Object.keys(cls.links).map(function(k){ var L = cls.links[k]; return '<span style="display:inline-flex;gap:4px;align-items:center;"><a class="btn" href="' + esc(L.url) + '" target="_blank" rel="noopener">' + esc(L.name) + '</a>' + (S.linkEdit ? '<button class="btn sm" data-ren-link="' + k + '">修改</button><button class="btn sm danger" data-del-link="' + k + '">刪除</button>' : '') + '</span>'; }).join("") : '') +
     (S.linkEdit ? '<button class="btn sm" id="addlink">新增</button>' : '') + '<button class="btn sm ghost" id="editlinks">' + (S.linkEdit ? '完成' : '編輯') + '</button></div></div>';
   html += '<div class="panel"><h3>這個班的近況</h3><div id="cstat"><span class="note">讀取中…</span></div></div>';
-  html += '<div class="panel"><h3>這個班使用的教材</h3><p class="note" style="margin:0 0 8px;">勾選的教材才會出現在下面的課次清單，學生也只會看到這幾本。可以同時使用很多本。</p><div class="tools">' + bookIds().map(function(b){ var on = cls.books ? !!cls.books[b] : true; return '<span class="chip" style="padding:3px 4px 3px 10px;"><label style="cursor:pointer;"><input type="checkbox" data-usebook="' + esc(b) + '"' + (on ? ' checked' : '') + '> ' + esc(bookTitle(b)) + '</label>' + '</span>'; }).join("") + '<button class="btn sm" id="managebooks">管理教材內容</button></div></div>';
-  html += '<div class="panel"><h3>課次與開放設定</h3><p class="note" style="margin:0 0 10px;">綠色＝這個班的學生看得到；灰色＝關閉。預設全部關閉，你打開了學生才看得到。</p>' + bulkOpenHtml() + '<div id="lessons"></div><button class="btn sm" id="addunit" style="margin-top:6px;">＋ 新增複習單元（例如第 1–6 課複習）</button></div>';
+  html += '<div class="panel owner-only"><h3>這個班使用的教材</h3><p class="note" style="margin:0 0 8px;">勾選的教材才會出現在下面的課次清單，學生也只會看到這幾本。可以同時使用很多本。</p><div class="tools">' + bookIds().map(function(b){ var on = cls.books ? !!cls.books[b] : true; return '<span class="chip" style="padding:3px 4px 3px 10px;"><label style="cursor:pointer;"><input type="checkbox" data-usebook="' + esc(b) + '"' + (on ? ' checked' : '') + '> ' + esc(bookTitle(b)) + '</label>' + '</span>'; }).join("") + '<button class="btn sm" id="managebooks">管理教材內容</button></div></div>';
+  html += '<div class="panel"><h3>課次與開放設定</h3><p class="note" style="margin:0 0 10px;">綠色＝這個班的學生看得到；灰色＝關閉。預設全部關閉，你打開了學生才看得到。</p>' + bulkOpenHtml().replace('class="tools"', 'class="tools owner-only"') + '<div id="lessons"></div><button class="btn sm owner-only" id="addunit" style="margin-top:6px;">＋ 新增複習單元（例如第 1–6 課複習）</button></div>';
   var ap = S.allProjects || {}, apk = Object.keys(ap), un = S.unassigned || {};
   if(S.ruleErr) html += '<div class="panel" style="border-color:#C0392B;"><h3>⚠️ 需要更新 Firebase 規則</h3><p class="note" style="margin:0 0 8px;">平台資料寫不進去。請到 Firebase 主控台 › Realtime Database › 規則，在原有規則的 <code>"rules": {</code> 裡面加上下面這兩段（原本的不要刪），再按「發布」：</p><pre style="background:var(--surface-2);padding:10px;border-radius:10px;font-size:12px;overflow:auto;user-select:text;">"teacherPlatform": { "$teacherId": { ".read": "auth != null", ".write": "auth != null" } },\n"classCodes": { "$code": { ".read": "auth != null", ".write": "auth != null" } },</pre></div>';
   shell(html); setCrumb([sc.name, tm.name, cls.name]);
@@ -1926,6 +2079,8 @@ function renderClassHome(cls){
   document.querySelectorAll("[data-ren-link]").forEach(function(b){ b.onclick = async function(){ var k = b.dataset.renLink, L = cls.links[k]; var nm = await askText("連結名稱", L.name); if(!nm) return; var url = await askText("網址", L.url); if(!url) return; if(!/^https?:\/\//i.test(url)) url = "https://" + url; L.name = nm; L.url = url; await fbSet(clsPath(S.sel) + "/links/" + k, L); renderClassHome(cls); }; });
   document.getElementById("hwbtn").onclick = function(){ S.hw = { view: "list" }; render(); };
   document.getElementById("wheelbtn").onclick = function(){ S.hw = { view: "wheel" }; render(); };
+  document.getElementById("capbtn").onclick = function(){ S.hw = { view: "capsule" }; render(); };
+  document.getElementById("leavebtn").onclick = function(){ S.hw = { view: "leave" }; render(); };
   bindBulkOpen(cls); fillClassStatus(cls);
   document.getElementById("cpy").onclick = function(){ var l = studentLink(cls.code); (navigator.clipboard ? navigator.clipboard.writeText(l) : Promise.reject()).then(function(){ toast("學生連結已複製"); }, function(){ prompt("學生連結", l); }); };
   document.getElementById("ren").onclick = async function(){ var n = await askText("班級名稱", cls.name); if(!n) return; cls.name = n; await fbUpdate(clsPath(S.sel), { name: n }); render(); };
@@ -2257,6 +2412,7 @@ function renderStudent(){
   var st = S.student;
   if(S.live && S.live.on) return renderStudentLive();
   if(S.hwOpen) return renderStudentHw();
+  if(S.leaveOpen) return renderStudentLeave();
   S.focus = false; S.liveRendered = null;
   var cls = st.cls, openMap = cls.lessonOpen || {};
   history.replaceState(null, "", location.pathname + "?class=" + st.code + (S.lesson ? "#l=" + S.lesson + (S.tab ? "&tab=" + S.tab : "") : ""));
@@ -2269,13 +2425,14 @@ function renderStudent(){
   S.lesson = null;
   var keys = lessonKeys(cls).filter(function(no){ var o = openMap[no]; return o && OPEN_KEYS.some(function(k){ return o[k[0]]; }); });
   var html = '<div class="head-row"><div><div class="note">' + esc(st.school) + '　›　' + esc(st.term) + '</div><h2>' + esc(cls.name) + '</h2></div>' + (st.acct ? '<div><button class="btn sm ghost" id="chpw">改密碼</button></div>' : '') + '</div>';
-  html += '<div class="panel"><h3>聯絡簿</h3><div id="hwhint"></div><button class="btn primary" id="hwopen">看作業／交作業</button></div>';
+  html += '<div class="panel"><h3>聯絡簿</h3><div id="hwhint"></div><button class="btn primary" id="hwopen">看作業／交作業</button> <button class="btn" id="lvopen">我要請假</button></div>';
   if(!keys.length) html += '<div class="empty"><p class="note">老師還沒有開放任何課次。<br>上課時請輸入老師給的房間號碼：</p><div class="join" style="justify-content:center;"><input type="text" id="roomno" placeholder="房間號碼" inputmode="numeric" style="width:160px;"><button class="btn primary" id="roomgo">加入</button></div></div>';
   else {
     html += '<div id="ls"></div><div class="panel"><h3>上課中？</h3><div class="join" style="margin:0;"><input type="text" id="roomno" placeholder="老師給的房間號碼" inputmode="numeric" style="width:200px;"><button class="btn primary" id="roomgo">加入房間</button></div></div>';
   }
   shell(html); setCrumb([st.school, st.term, cls.name]);
   document.getElementById("hwopen").onclick = function(){ S.hwOpen = "list"; renderStudent(); };
+  document.getElementById("lvopen").onclick = function(){ S.leaveOpen = true; renderStudent(); };
   fillStudentHint();
   var chpw = document.getElementById("chpw"); if(chpw) chpw.onclick = studentChangePassword;
   var ls = document.getElementById("ls");
@@ -2323,7 +2480,8 @@ window.__mm = { get S(){ return S; }, render: function(){ return render(); }, ne
   if(sid){
     try{
       var acc = await fbGet("teacherAccounts/" + sid);
-      if(acc && !acc.disabled){ await startTeacher(acc); return; }
+      var tow = null; try{ tow = localStorage.getItem("mm_ta_owner"); }catch(e){}
+      if(acc && !acc.disabled){ await startTeacher(acc, tow); return; }
     }catch(e){}
   }
   viewLogin();
