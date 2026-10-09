@@ -91,6 +91,9 @@
   .cal-d.empty{ background:transparent; cursor:default; } .cal-d.empty:hover{ outline:none; }
   .cal-d.today{ background:#F6DCCF; }
   .cal-n{ font-weight:700; font-size:13px; margin-bottom:2px; }
+  .sw-row{ display:flex; flex-wrap:wrap; gap:6px; margin-top:4px; }
+  .sw{ width:26px; height:26px; border-radius:8px; border:2px solid rgba(0,0,0,.12); padding:0; cursor:pointer; }
+  .sw.on{ outline:3px solid var(--ink); outline-offset:1px; }
   .cal-s{ font-size:11.5px; line-height:1.35; color:#fff; font-weight:600; padding:2px 7px; border-radius:8px; margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .slot{ display:flex; align-items:center; gap:14px; padding:10px 0; border-top:1px solid var(--line); flex-wrap:wrap; }
   .slot:first-of-type{ border-top:none; }
@@ -160,7 +163,7 @@
 <body>
 <div id="root"></div>
 <dialog id="unitdlg"><form method="dialog"><h3 id="unit-t">複習單元</h3><label style="display:block;font-size:12.5px;font-weight:700;color:var(--ink-soft);margin:4px 0 5px;">名稱</label><input type="text" id="unit-name" autocomplete="off" placeholder="例如：第一到六課複習"><label style="display:block;font-size:12.5px;font-weight:700;color:var(--ink-soft);margin:12px 0 5px;">包含哪幾課（教材與活動會合併這幾課的生詞）</label><div id="unit-lessons" style="display:flex;flex-wrap:wrap;gap:8px;"></div><div class="row"><button type="button" class="btn" id="unit-no">取消</button><button type="submit" class="btn primary">儲存</button></div></form></dialog>
-<dialog id="sch" style="width:min(460px,94vw);"><form method="dialog"><h3 id="sch-t"></h3><label>學校／班級</label><select id="sch-c"></select><label>行事曆上顯示的字（不填就顯示學校名稱）</label><input type="text" id="sch-title" placeholder="例如：五結國中、開會、備課"><label>日期</label><input type="date" id="sch-d"><div style="display:flex;gap:10px;"><div style="flex:1;"><label>開始</label><input type="time" id="sch-s"></div><div style="flex:1;"><label>結束</label><input type="time" id="sch-e"></div></div><div id="sch-lw"><label>要上哪一課（可不選）</label><select id="sch-l"></select></div><label>備註（例如第二節改線上）</label><input type="text" id="sch-n"><label>超連結（可不填，例如線上教室或文件網址）</label><input type="text" id="sch-url" placeholder="https://..."><label>顏色</label><div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;"><label style="display:flex;align-items:center;gap:6px;margin:0;">底色 <input type="color" id="sch-bg" value="#2E75B6" style="width:44px;height:30px;padding:0;"></label><label style="display:flex;align-items:center;gap:6px;margin:0;">文字 <input type="color" id="sch-fg" value="#ffffff" style="width:44px;height:30px;padding:0;"></label><label style="display:flex;align-items:center;gap:6px;margin:0;font-weight:400;"><input type="checkbox" id="sch-auto" checked> 用預設顏色</label></div><div id="sch-prev" style="margin-top:8px;"></div><div id="sch-rep" style="margin-top:12px;font-size:13px;"><label style="display:flex;align-items:center;gap:6px;font-weight:600;margin:0;"><input type="checkbox" id="sch-r"> 每週同一時間重複，共 <input type="number" id="sch-w" value="8" min="2" max="40" style="width:64px;"> 週</label></div><div class="row"><button type="button" class="btn" id="sch-no">取消</button><button type="submit" class="btn primary">儲存</button></div></form></dialog>
+<dialog id="sch" style="width:min(460px,94vw);"><form method="dialog"><h3 id="sch-t"></h3><label>學校／班級</label><select id="sch-c"></select><label>行事曆上顯示的字（不填就顯示學校名稱）</label><input type="text" id="sch-title" placeholder="例如：五結國中、開會、備課"><label>日期</label><input type="date" id="sch-d"><div style="display:flex;gap:10px;"><div style="flex:1;"><label>開始</label><input type="time" id="sch-s"></div><div style="flex:1;"><label>結束</label><input type="time" id="sch-e"></div></div><div id="sch-lw"><label>要上哪一課（可不選）</label><select id="sch-l"></select></div><label>備註（例如第二節改線上）</label><input type="text" id="sch-n"><label>超連結（可不填，例如線上教室或文件網址）</label><input type="text" id="sch-url" placeholder="https://..."><label>顏色</label><div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;"><label style="display:flex;align-items:center;gap:6px;margin:0;">底色 <input type="color" id="sch-bg" value="#2E75B6" style="width:44px;height:30px;padding:0;"></label><label style="display:flex;align-items:center;gap:6px;margin:0;">文字 <input type="color" id="sch-fg" value="#ffffff" style="width:44px;height:30px;padding:0;"></label><label style="display:flex;align-items:center;gap:6px;margin:0;font-weight:400;"><input type="checkbox" id="sch-auto" checked> 用預設顏色</label></div><div style="margin-top:8px;font-size:12px;color:var(--ink-soft);">點色塊直接選底色：</div><div id="sch-swb" class="sw-row"></div><div style="margin-top:6px;font-size:12px;color:var(--ink-soft);">文字顏色：</div><div id="sch-swf" class="sw-row"></div><div id="sch-sug" style="margin-top:8px;"></div><div id="sch-prev" style="margin-top:8px;"></div><div id="sch-rep" style="margin-top:12px;font-size:13px;"><label style="display:flex;align-items:center;gap:6px;font-weight:600;margin:0;flex-wrap:wrap;"><input type="checkbox" id="sch-r"> <span id="sch-rt">每週同一時間重複，共</span> <input type="number" id="sch-w" value="8" min="2" max="40" style="width:64px;"> 週</label></div><div id="sch-serw" style="margin-top:8px;font-size:13px;display:none;"><label style="display:flex;align-items:center;gap:6px;font-weight:600;margin:0;"><input type="checkbox" id="sch-ser"> 同系列「之後」的課也套用這次修改（班級、文字、顏色、連結、時間）</label></div><div class="row"><button type="button" class="btn" id="sch-no">取消</button><button type="submit" class="btn primary">儲存</button></div></form></dialog>
 <dialog id="remind" style="width:min(420px,92vw);"><form method="dialog"><h3>📝 該填課堂記錄表了</h3><p id="remind-t" style="margin:6px 0 4px;font-weight:700;"></p><p class="note">趁記憶還新鮮，趕快記下今天的上課內容和學生表現吧。</p><div class="row" style="flex-wrap:wrap;"><button type="button" class="btn" id="remind-skip">今天不用提醒</button><button type="button" class="btn" id="remind-later">10 分鐘後再提醒</button><button type="button" class="btn primary" id="remind-go">填寫課堂記錄</button></div></form></dialog>
 <dialog id="bell-d" style="width:min(460px,94vw);"><form method="dialog" onsubmit="return false;"><h3>🔔 新的繳交</h3><div id="bell-list" style="max-height:50vh;overflow-y:auto;"></div><div class="row" style="flex-wrap:wrap;"><button type="button" class="btn sm" id="bell-perm" style="display:none;">開啟桌面通知</button><button type="button" class="btn" id="bell-clear">全部標為已讀</button><button type="button" class="btn primary" id="bell-close">關閉</button></div></form></dialog>
 <dialog id="hwed"></dialog>
@@ -802,6 +805,17 @@ function calPickAct(a, ds, month, setMonth){
 // 每間學校一個固定顏色（用學校名稱決定，所以不同年度的同一間學校顏色一樣）
 var SCHOOL_COLORS = ["#C0623A", "#2E75B6", "#3E7D68", "#7B5EA7", "#B4802A", "#B23B32", "#4A7C8C", "#8A5A78", "#5B7F3A", "#A0527C"];
 function schoolColor(name){ var h = 0; String(name || "").split("").forEach(function(ch){ h = (h * 31 + ch.charCodeAt(0)) >>> 0; }); return SCHOOL_COLORS[h % SCHOOL_COLORS.length]; }
+var BG_SWATCHES = ["#C0623A", "#E0864A", "#E8B04A", "#B4802A", "#8DAA4B", "#5B7F3A", "#3E7D68", "#4A7C8C", "#2E75B6", "#4F63C9", "#7B5EA7", "#A0527C", "#B23B32", "#D96C8C", "#6B7280", "#1F2937", "#F7D9D5", "#FBEBC8", "#DCEEE6", "#DCE8F6"];
+var FG_SWATCHES = ["#ffffff", "#1F2937", "#000000", "#FBEBC8", "#FFEE00", "#F7D9D5", "#DCE8F6", "#DCEEE6"];
+// 同樣名稱（或同一間學校）之前用過的顏色：拿最近一次有設定顏色的排課
+function colorUsedFor(text, exceptId){
+  var m = schedMap(), best = null;
+  Object.keys(m).forEach(function(k){
+    var x = m[k]; if(k === exceptId || !(x.bg || x.fg) || slotText(x) !== text) return;
+    if(!best || (x.date || "") > (best.date || "")) best = x;
+  });
+  return best ? { bg: best.bg || null, fg: best.fg || null } : null;
+}
 function slotSchoolName(x){ if(!x.s) return x.title || "行程"; var ci = classInfo(x); return ci ? ci.school : "（已刪除）"; }
 function calendarHtml(){
   var m = S.month || (S.month = ymd(new Date()).slice(0, 7));
@@ -854,13 +868,33 @@ function openSlotDialog(id, date){
       bgI.disabled = fgI.disabled = auto.checked;
       prev.innerHTML = '<span style="display:inline-block;padding:2px 10px;border-radius:8px;font-weight:700;background:' + esc(bg) + ';color:' + esc(fg) + ';">' + esc((document.getElementById("sch-s").value || "") + " " + slotText(tmp)) + '</span>';
     }
+    var swb = document.getElementById("sch-swb"), swf = document.getElementById("sch-swf"), sug = document.getElementById("sch-sug");
+    function swHtml(list, kind){ return list.map(function(c){ return '<button type="button" class="sw" data-sw="' + kind + '" data-c="' + c + '" style="background:' + c + ';" title="' + c + '"></button>'; }).join(""); }
+    swb.innerHTML = swHtml(BG_SWATCHES, "bg"); swf.innerHTML = swHtml(FG_SWATCHES, "fg");
+    function pickSw(e){
+      var b = e.target.closest("[data-sw]"); if(!b) return;
+      (b.dataset.sw === "bg" ? bgI : fgI).value = b.dataset.c; auto.checked = false; drawPrev();
+    }
+    swb.onclick = swf.onclick = pickSw;
+    function drawSug(){
+      var p = csel.value.split("|"), tmp = { s: p[0] || null, t: p[1] || null, c: p[2] || null, title: document.getElementById("sch-title").value.trim() }, txt = slotText(tmp), u = colorUsedFor(txt, id);
+      var same = u && !auto.checked && (u.bg || "").toLowerCase() === bgI.value.toLowerCase() && (u.fg || "#ffffff").toLowerCase() === fgI.value.toLowerCase();
+      if(!u || same){ sug.innerHTML = ""; sug.dataset.k = ""; return; }
+      var sk = txt + "|" + u.bg + "|" + u.fg; if(sug.dataset.k === sk && document.getElementById("sch-usug")) return; sug.dataset.k = sk;
+      sug.innerHTML = '<button type="button" class="btn sm" id="sch-usug">🎨 之前「' + esc(txt) + '」用過這組顏色，套用 <span style="display:inline-block;padding:0 8px;border-radius:6px;background:' + esc(u.bg || schoolColor(txt)) + ';color:' + esc(u.fg || "#fff") + ';">' + esc(txt) + '</span></button>';
+      document.getElementById("sch-usug").onclick = function(){ if(u.bg) bgI.value = u.bg; fgI.value = u.fg || "#ffffff"; auto.checked = false; drawPrev(); };
+    }
+    var drawPrev0 = drawPrev;
+    drawPrev = function(){ drawPrev0(); document.querySelectorAll("#sch .sw").forEach(function(b){ b.classList.toggle("on", !auto.checked && b.dataset.c.toLowerCase() === (b.dataset.sw === "bg" ? bgI : fgI).value.toLowerCase()); }); drawSug(); };
     ["sch-title", "sch-s", "sch-bg", "sch-fg", "sch-auto"].forEach(function(i){ document.getElementById(i).oninput = document.getElementById(i).onchange = drawPrev; });
     document.getElementById("sch-d").value = cur ? cur.date : date;
     document.getElementById("sch-s").value = cur ? (cur.start || "") : "14:00";
     document.getElementById("sch-e").value = cur ? (cur.end || "") : "15:30";
     document.getElementById("sch-n").value = cur ? (cur.note || "") : "";
-    document.getElementById("sch-rep").style.display = cur ? "none" : "";
+    document.getElementById("sch-rt").textContent = cur ? "從這堂開始，再往後每週同一時間新增，總共" : "每週同一時間重複，共";
     document.getElementById("sch-r").checked = false; document.getElementById("sch-w").value = 8;
+    var hasLater = !!(cur && cur.series && Object.keys(m).some(function(k){ return k !== id && m[k].series === cur.series && m[k].date > cur.date; }));
+    document.getElementById("sch-serw").style.display = hasLater ? "" : "none"; document.getElementById("sch-ser").checked = false;
     function fillLessons(keep){
       var p = csel.value.split("|"), cls = p[2] ? getCls({ s: p[0], t: p[1], c: p[2] }) : null;
       document.getElementById("sch-lw").style.display = p[2] ? "" : "none";
@@ -881,7 +915,8 @@ function openSlotDialog(id, date){
       if(rawUrl && !url){ alert("超連結只能是 http 或 https 開頭的網址。"); return; }
       var autoC = document.getElementById("sch-auto").checked;
       fin({ s: p[0] || null, t: p[1] || null, c: p[2] || null, title: title || null, url: url || null, bg: autoC ? null : bgI.value, fg: autoC ? null : fgI.value, date: date, start: st, end: document.getElementById("sch-e").value, lesson: p[2] ? (lsel.value || null) : null, note: document.getElementById("sch-n").value.trim(),
-        repeat: !cur && document.getElementById("sch-r").checked ? Math.max(2, Math.min(40, Number(document.getElementById("sch-w").value) || 2)) : 0 });
+        seriesApply: hasLater && document.getElementById("sch-ser").checked,
+        repeat: document.getElementById("sch-r").checked ? Math.max(2, Math.min(40, Number(document.getElementById("sch-w").value) || 2)) : 0 });
     };
     d.showModal();
   });
@@ -904,8 +939,24 @@ async function schedAct(a, ds){
   if(a === "slot-new" || a === "slot-edit"){
     var r = await openSlotDialog(a === "slot-edit" ? ds.id : null, ds.d); if(!r) return;
     if(a === "slot-edit"){
+      var origDate = m[ds.id].date;
       var rec = Object.assign({}, m[ds.id], { s: r.s, t: r.t, c: r.c, title: r.title, url: r.url, bg: r.bg, fg: r.fg, date: r.date, start: r.start, end: r.end, lesson: r.lesson, note: r.note });
+      var n0 = r.repeat || 1;
+      if(n0 > 1 && !rec.series) rec.series = uid("ser_");
       m[ds.id] = rec; await fbSet(base + "/" + ds.id, rec);
+      if(r.seriesApply && rec.series){
+        for(var k in m){ if(k !== ds.id && m[k].series === rec.series && m[k].date > origDate){ var nx = Object.assign({}, m[k], { s: r.s, t: r.t, c: r.c, title: r.title, url: r.url, bg: r.bg, fg: r.fg, start: r.start, end: r.end }); m[k] = nx; await fbSet(base + "/" + k, nx); } }
+      }
+      if(n0 > 1){
+        var have = {}; Object.keys(m).forEach(function(k){ if(m[k].series === rec.series) have[m[k].date] = 1; });
+        var d1 = new Date(rec.date + "T00:00:00"), added = 0;
+        for(var q = 1; q < n0; q++){
+          var d2 = new Date(d1); d2.setDate(d1.getDate() + 7 * q); var ds2 = ymd(d2); if(have[ds2]) continue;
+          var id3 = uid("sl_"), rec3 = { s: r.s, t: r.t, c: r.c, title: r.title, url: r.url, bg: r.bg, fg: r.fg, date: ds2, start: r.start, end: r.end, lesson: r.lesson, note: r.note, series: rec.series };
+          m[id3] = rec3; await fbSet(base + "/" + id3, rec3); added++;
+        }
+        if(added) toast("已再新增 " + added + " 週的課");
+      }
     } else {
       var n = r.repeat || 1, series = n > 1 ? uid("ser_") : null, d0 = new Date(r.date + "T00:00:00");
       for(var i = 0; i < n; i++){
