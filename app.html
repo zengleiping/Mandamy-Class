@@ -533,7 +533,7 @@ function navSnap(){
       rec: S.rec ? { view: S.rec.edit !== undefined ? null : (S.rec.view || null), filter: S.rec.filter || null, label: S.rec.label || null, student: S.rec.student || null } : null,
       lib: S.lib ? { book: S.lib.book || null, lesson: S.lib.lesson || null } : null, day: S.day || null, settings: !!S.settings };
   }
-  return { k: "s", lesson: S.lesson || null, tab: S.tab || null, sub: S.sub || null, hwOpen: S.hwOpen || null, leaveOpen: !!S.leaveOpen, roomJoin: S.roomJoin || null };
+  return { k: "s", lesson: S.lesson || null, tab: S.tab || null, sub: S.sub || null, hwOpen: S.hwOpen || null, leaveOpen: !!S.leaveOpen, roomJoin: S.roomJoin || null, examOpen: S.examOpen || null };
 }
 function navPush(url){
   if(NAV.popping) return;
@@ -557,7 +557,7 @@ window.addEventListener("popstate", function(e){
     } finally { NAV.popping = false; }
   } else if(st.k === "s" && S.student){
     NAV.popping = true;
-    try{ S.lesson = st.lesson; S.tab = st.tab; S.sub = st.sub; S.hwOpen = st.hwOpen; S.leaveOpen = st.leaveOpen; S.roomJoin = st.roomJoin || null; renderStudent(); }
+    try{ S.lesson = st.lesson; S.tab = st.tab; S.sub = st.sub; S.hwOpen = st.hwOpen; S.leaveOpen = st.leaveOpen; S.roomJoin = st.roomJoin || null; S.examOpen = st.examOpen || null; renderStudent(); }
     finally { NAV.popping = false; }
   }
 });
@@ -566,7 +566,7 @@ window.addEventListener("popstate", function(e){
 // ---------- 「返回」：每個功能頁左上角都有，回到上一層 ----------
 function canBack(){
   if(S.teacher) return !!(S.lib || S.rec || S.day || S.sel || S.settings);
-  return !!(S.student && (S.hwOpen || S.leaveOpen || S.lesson || S.roomJoin));
+  return !!(S.student && (S.hwOpen || S.leaveOpen || S.lesson || S.roomJoin || S.examOpen));
 }
 function goBack(){
   if(S.teacher){
@@ -594,6 +594,7 @@ function goBack(){
   }
   if(S.student){
     if(S.focus) setFocus(false);
+    if(S.examOpen){ S.examOpen = null; renderStudentHw(); return; }
     if(S.roomJoin){ S.roomJoin = null; renderStudent(); return; }
     if(S.leaveOpen){ S.leaveOpen = false; renderStudent(); return; }
     if(S.hwOpen){ S.hwOpen = (S.hwOpen !== "list") ? "list" : null; S.hwShotsFor = null; if(S.hwOpen) renderStudentHw(); else renderStudent(); return; }
@@ -614,7 +615,7 @@ function shell(inner, opts){
     e.preventDefault();
     if(S.focus) setFocus(false);
     if(S.teacher){ S.sel = null; S.lesson = null; S.tab = null; S.sub = null; S.hw = null; S.rec = null; S.lib = null; S.day = null; S.settings = false; if(S.live && S.live.on) pushLive(true); render(); }
-    else if(S.student){ S.lesson = null; S.tab = null; S.sub = null; S.hwOpen = null; S.leaveOpen = false; S.roomJoin = null; renderStudent(); }
+    else if(S.student){ S.lesson = null; S.tab = null; S.sub = null; S.hwOpen = null; S.leaveOpen = false; S.roomJoin = null; S.examOpen = null; renderStudent(); }
   };
   if(isT){
     document.getElementById("bell").onclick = openBell; updateBell();
@@ -1326,6 +1327,49 @@ var HW_LABEL = { ok: "✓ 準時", late: "⏰ 遲交", missing: "✗ 未交", pe
 function objList(o){ return Object.keys(o || {}).map(function(k){ return Object.assign({ id: k }, o[k]); }); }
 async function hwLoadItems(){ var cid = S.sel.c; var o = await fbGet(hwBase(S.teacher.id, cid) + "/items"); return objList(o).sort(function(a, b){ return (b.due || "").localeCompare(a.due || ""); }); }
 async function hwLoadRoster(){ var r = await fbGet(hwBase(S.teacher.id, S.sel.c) + "/roster"); return Array.isArray(r) ? r : (r ? Object.keys(r).map(function(k){ return r[k]; }) : []); }
+// ---------- 線上考卷（聯絡簿裡的一種內容：學生各自作答，交卷後老師批改）----------
+function examRoomId(itemId, name){ var h = 5381, k = hwSkey(name); for(var i = 0; i < k.length; i++) h = ((h * 33) ^ k.charCodeAt(i)) >>> 0; return "ex_" + itemId + "_" + h.toString(36); }
+function examForMe(it, name){ if((it.kind || "hw") !== "exam") return true; var a = it.exam && it.exam.assignees; return !a || !a.length || a.indexOf(name) !== -1; }
+function examAttPath(tid, cid, itemId, name){ return "teacherPlatform/" + tid + "/examAttempts/" + cid + "/" + itemId + (name != null ? "/" + hwSkey(name) : ""); }
+function examStatusLabel(a){
+  if(!a) return "未開始"; if(a.status === "graded") return "已批改"; if(a.status === "submitted") return "已交卷"; return "作答中";
+}
+// 為這位學生建立（或沿用）他自己的作答房間：把老師題庫裡那份測驗複製一份進去，學生答的東西只存在這個房間
+async function examEnsureRoom(tid, it, name){
+  var rid = examRoomId(it.id, name), ex = await fbGet("rooms/" + rid);
+  if(ex && ex.project) return rid;
+  var src = await fbGet("teacherLibraries/" + tid + "/projects/" + it.exam.pid);
+  if(!src) throw new Error("找不到這份考卷內容，可能已被老師刪除。");
+  var seeded = {}, srcProg = src.progress || {};
+  Object.keys(srcProg).forEach(function(qid){
+    var pp = srcProg[qid] || {}, one = {};
+    ["texts", "images", "shapes", "tables", "groups", "medias", "mediaData", "gridType", "canvasRatio", "bgColor", "bgOp", "bgImage"].forEach(function(k){ if(pp[k] !== undefined && pp[k] !== null && !(Array.isArray(pp[k]) && !pp[k].length)) one[k] = pp[k]; });
+    if(Object.keys(one).length) seeded[qid] = JSON.parse(JSON.stringify(one));
+  });
+  var proj = JSON.parse(JSON.stringify(src)); delete proj.progress;
+  await fbSet("rooms/" + rid, { project: proj, sharedProgress: seeded, isOpen: true, classMode: (it.exam.mode === "practice" ? "practice" : "test"), theme: { bgMode: "light", accent: "seal" }, attempt: { item: it.id, name: name, tid: tid, cid: S.student ? S.student.idx.c : S.sel.c } });
+  return rid;
+}
+async function renderStudentExam(){
+  var st = S.student, tid = st.idx.t, cid = st.idx.c, base = hwBase(tid, cid), id = S.examOpen;
+  shell('<div class="empty"><p class="note">準備考卷中…</p></div>'); setCrumb([st.school, st.term, st.cls.name, "線上考卷"]);
+  var it = null;
+  try{ it = await fbGet(base + "/items/" + id); if(it) it.id = id; }catch(e){}
+  if(!it || (it.kind || "") !== "exam" || !examForMe(it, st.name) || !it.exam){ S.examOpen = null; toast("找不到這份考卷"); S.hwOpen = "list"; return renderStudentHw(); }
+  try{
+    var rid = await examEnsureRoom(tid, it, st.name), prev = await fbGet(examAttPath(tid, cid, id, st.name));
+    if(!prev) await fbSet(examAttPath(tid, cid, id, st.name), { name: st.name, room: rid, status: "doing", startedAt: nowMs() });
+    shell('<iframe class="frame" id="fr" src="' + esc("slides/practice.html?embed=1&room=" + encodeURIComponent(rid) + "&role=student&name=" + encodeURIComponent(st.name) + "&attempt=1&tid=" + encodeURIComponent(tid) + "&cid=" + encodeURIComponent(cid) + "&item=" + encodeURIComponent(id)) + '" allow="microphone; camera; autoplay; clipboard-write" style="width:100%;height:calc(100vh - 56px);border:0;"></iframe>', { flush: true });
+    setCrumb([st.school, st.term, st.cls.name, it.title]);
+  }catch(er){ shell('<div class="empty"><p class="note">' + esc(er && er.message ? er.message : "打不開考卷，請檢查網路後再試。") + '</p></div>'); }
+}
+async function renderExamReview(cls){
+  var hw = S.hw, tid = S.teacher.id, cid = S.sel.c, rid = hw.room;
+  var html = '<div class="head-row"><div style="flex:1;"><h2>批改：' + esc(hw.name) + '</h2><div class="note">' + esc(hw.title || "") + '</div></div><div><button class="btn sm ghost" data-h="back">回聯絡簿</button></div></div>' +
+    '<iframe class="frame" id="fr" src="' + esc("slides/practice.html?embed=1&room=" + encodeURIComponent(rid) + "&grade=1&name=" + encodeURIComponent(hw.name)) + '" allow="microphone; camera; autoplay; clipboard-write" style="width:100%;height:calc(100vh - 150px);border:0;border-radius:12px;background:#fff;"></iframe>';
+  shell(html); setCrumb([]);
+  document.getElementById("main").onclick = function(e){ var b = e.target.closest("[data-h]"); if(b){ S.hw = { view: "list" }; render(); } };
+}
 async function renderHomework(cls){
   S.focus = false;
   syncTime();
@@ -1334,6 +1378,7 @@ async function renderHomework(cls){
   if(hw.view === "wheel") return renderWheel(cls);
   if(hw.view === "capsule") return renderCapsule(cls);
   if(hw.view === "leave") return renderLeave(cls);
+  if(hw.view === "exam") return renderExamReview(cls);
   shell('<div class="empty"><p class="note">載入中…</p></div>'); setCrumb([]);
   var main = document.getElementById("main");
   try{
@@ -2311,7 +2356,7 @@ function richText(s){
 }
 function itemDay(it){ return it.day || (it.due || "").slice(0, 10) || ymd(new Date(it.createdAt || Date.now())); }
 function itemVisible(it){ return !it.publishAt || it.publishAt <= nowMs(); }
-var KIND_LABEL = { hw: "作業", notice: "通知", plan: "教學進度" }, KIND_COLOR = { hw: "#C0392B", notice: "#2E75B6", plan: "#3E7D68" };
+var KIND_LABEL = { hw: "作業", notice: "通知", plan: "教學進度", exam: "線上考卷" }, KIND_COLOR = { hw: "#C0392B", notice: "#2E75B6", plan: "#3E7D68", exam: "#6B4EA6" };
 function filesHtml(files, label){
   if(!files || !files.length) return "";
   return '<div class="tools" style="margin:6px 0;">' + files.map(function(f){
@@ -2329,7 +2374,7 @@ function miniCalHtml(month, items, sel, forTeacher){
     var date = yy + "-" + pad2(mm + 1) + "-" + pad2(d), its = by[date] || [];
     h += '<button class="mc-d' + (date === sel ? ' sel' : '') + (date === today ? ' today' : '') + '" data-b="mc-day" data-d="' + date + '"><span>' + d + '</span><span class="mc-dots">' + its.slice(0, 4).map(function(it){ return '<i style="background:' + KIND_COLOR[it.kind || "hw"] + ';' + (!itemVisible(it) ? 'opacity:.35;' : '') + '"></i>'; }).join("") + '</span></button>';
   }
-  return h + '</div><div class="note" style="margin-top:6px;"><i class="dot" style="background:' + KIND_COLOR.hw + '"></i>作業　<i class="dot" style="background:' + KIND_COLOR.notice + '"></i>通知　<i class="dot" style="background:' + KIND_COLOR.plan + '"></i>教學進度' + (forTeacher ? '　（淡色＝排程中）' : '') + '</div>';
+  return h + '</div><div class="note" style="margin-top:6px;"><i class="dot" style="background:' + KIND_COLOR.hw + '"></i>作業　<i class="dot" style="background:' + KIND_COLOR.notice + '"></i>通知　<i class="dot" style="background:' + KIND_COLOR.plan + '"></i>教學進度　<i class="dot" style="background:' + KIND_COLOR.exam + '"></i>考卷' + (forTeacher ? '　（淡色＝排程中）' : '') + '</div>';
 }
 async function loadComments(cidv, ids){
   var out = {}; await Promise.all(ids.map(function(id){ return fbGet(hwBase(S.teacher ? S.teacher.id : S.student.idx.t, cidv) + "/comments/" + id).then(function(v){ out[id] = objList(v).sort(function(a, b){ return (a.at || 0) - (b.at || 0); }); }).catch(function(){ out[id] = []; }); }));
@@ -2355,6 +2400,7 @@ async function renderBoard(cls){
     var day = S.hwv.day, todays = items.filter(function(it){ return itemDay(it) === day; }).sort(function(a, b){ return (a.createdAt || 0) - (b.createdAt || 0); });
     var cm = await loadComments(cid, todays.map(function(it){ return it.id; })); B.cm = cm;
     await Promise.all(todays.filter(function(it){ return (it.kind || "hw") === "hw"; }).map(function(it){ return fbGet("teacherPlatform/" + tid + "/hwSubs/" + cid + "/" + it.id).then(function(v){ B.subs[it.id] = v || {}; }); }));
+    B.att = B.att || {}; await Promise.all(todays.filter(function(it){ return it.kind === "exam"; }).map(function(it){ return fbGet(examAttPath(tid, cid, it.id)).then(function(v){ B.att[it.id] = v || {}; }); }));
     var d = new Date(day + "T00:00:00"), wk = ["日", "一", "二", "三", "四", "五", "六"][d.getDay()];
     var slots = slotsOn(day).filter(function(x){ return x.s === S.sel.s && x.t === S.sel.t && x.c === S.sel.c; });
     var html = '<div class="head-row"><div style="flex:1;"><h2>聯絡簿</h2><div class="note">' + esc(cls.name) + '　選日期看當天的作業、通知和教學進度</div></div><div class="tools"><button class="btn owner-only" data-b="new">＋ 新增這天的內容</button><button class="btn" data-h="settle">結算繳交狀況</button><button class="btn" data-h="summary">學期總表</button><button class="btn owner-only" data-h="manage">名單與帳號</button></div></div>' +
@@ -2370,7 +2416,21 @@ async function renderBoard(cls){
       (it.body ? '<div class="bd-body">' + richText(it.body) + '</div>' : '') + (it.progress ? '<div class="bd-plan"><b>教學進度／今日任務</b><div>' + richText(it.progress) + '</div></div>' : '') +
       ((it.links || []).length ? '<div class="tools" style="margin:6px 0;">' + it.links.map(function(l){ return '<a class="btn sm" href="' + esc(l.url) + '" target="_blank" rel="noopener">🔗 ' + esc(l.name || l.url) + '</a>'; }).join("") + '</div>' : '') + filesHtml(it.files) +
       (kind === "hw" ? '<div class="note" style="margin-top:6px;">截止 ' + esc(it.due ? hwFmt(hwDueTs(it)) : "未設") + '　<b>已交 ' + nsub + ' / ' + total + '</b>　<button class="btn sm" data-b="subs" data-id="' + it.id + '">' + (B.open[it.id] ? "收起繳交" : "看繳交") + '</button></div><div class="bd-subs" id="subs-' + it.id + '">' + (B.open[it.id] ? teacherSubsHtml(it, B) : "") + '</div>' : '') +
+      (kind === "exam" ? examTeacherHtml(it, B) : '') +
       commentsHtml(it, (B.cm || {})[it.id] || [], true) + '</div>';
+  }
+  function examTeacherHtml(it, B){
+    var att = (B.att || {})[it.id] || {}, ex = it.exam || {}, names = (ex.assignees && ex.assignees.length) ? ex.assignees : B.roster.slice();
+    Object.keys(att).forEach(function(k){ var n = att[k].name || decodeURIComponent(k); if(names.indexOf(n) === -1) names.push(n); });
+    var done = names.filter(function(n){ var a = att[hwSkey(n)]; return a && (a.status === "submitted" || a.status === "graded"); }).length;
+    var h = '<div class="note" style="margin-top:6px;">考卷：<b>' + esc(ex.ptitle || "") + '</b>　' + (ex.mode === "practice" ? "練習模式（作答時顯示對錯）" : "測驗模式（交卷後才知道對錯）") + '　對象：' + ((ex.assignees && ex.assignees.length) ? esc(ex.assignees.join("、")) : "全班") + '　截止 ' + esc(it.due ? hwFmt(hwDueTs(it)) : "未設") + '　<b>已交卷 ' + done + ' / ' + names.length + '</b>　<button class="btn sm" data-b="subs" data-id="' + it.id + '">' + (B.open[it.id] ? "收起名單" : "看名單與成績") + '</button></div>';
+    if(!B.open[it.id]) return h;
+    names.sort(function(a, b){ return a.localeCompare(b, "zh-Hant"); });
+    return h + '<div style="margin-top:8px;">' + (names.length ? names.map(function(n){
+      var a = att[hwSkey(n)], pct = a && a.auto ? a.auto.pct : null, pend = a && a.auto ? a.auto.pending : 0;
+      var sc = a && a.status === "graded" && a.final != null ? '<b>' + a.final + ' 分</b>（已批改）' : (a && a.auto ? '自動 <b>' + pct + ' 分</b>' + (pend ? '＋<span style="color:#B23B32;">' + pend + ' 題待批改</span>' : '') : '');
+      return '<div class="slot"><div class="slot-time" style="min-width:90px;"><b>' + esc(n) + '</b></div><div class="slot-main"><span class="chip" style="background:' + (a && (a.status === "submitted" || a.status === "graded") ? '#DCEEE6' : '#F1E6DA') + ';">' + examStatusLabel(a) + '</span> ' + sc + (a && a.submittedAt ? '　<span class="note">' + esc(hwFmt(a.submittedAt)) + ' 交卷</span>' : '') + '</div><div class="slot-act">' + (a && a.room ? '<button class="btn sm' + (a.status === "submitted" ? ' primary' : '') + '" data-b="exam-open" data-id="' + it.id + '" data-n="' + esc(n) + '">' + (a.status === "submitted" || a.status === "graded" ? '批改／查看' : '看作答') + '</button>' : '') + '</div></div>';
+    }).join("") : '<p class="note">還沒有名單。到「名單與帳號」貼上班級名單。</p>') + '</div>';
   }
   function teacherSubsHtml(it, B){
     var subs = B.subs[it.id] || {}, rows = {}; B.roster.forEach(function(n){ rows[hwSkey(n)] = { name: n, sub: null }; });
@@ -2405,6 +2465,7 @@ async function renderBoard(cls){
           await fbSet(base + "/items/" + uid("hw_"), cp); items = await hwLoadItems(); S.hwv.day = nd2; S.hwv.month = nd2.slice(0, 7); toast("已複製"); draw();
         }
         else if(a === "subs"){ B.open[id] = !B.open[id]; draw(); }
+        else if(a === "exam-open"){ var ea = ((B.att || {})[id] || {})[hwSkey(b.dataset.n)]; if(!ea || !ea.room) return; S.hw = { view: "exam", item: id, name: b.dataset.n, room: ea.room, title: it.title }; render(); }
         else if(a === "fb"){ var v = document.getElementById("fb-" + id + "-" + b.dataset.k).value.trim(); await fbUpdate("teacherPlatform/" + tid + "/hwSubs/" + cid + "/" + id + "/" + b.dataset.k, { fb: v || null, fbAt: nowMs() }); toast("已儲存回饋"); }
         else if(a === "ov"){
           var k = b.dataset.k, sub = B.subs[id][k] || { name: decodeURIComponent(k) }, vv = b.dataset.v, pth = "teacherPlatform/" + tid + "/hwSubs/" + cid + "/" + id + "/" + k;
@@ -2425,6 +2486,23 @@ async function renderBoard(cls){
   }
   draw();
 }
+var EXAM_ROSTER = [];
+function examProjectOptions(selected){
+  var all = S.allProjects || {}, lm = S.plat.lessonMap || {};
+  return Object.keys(all).filter(function(pid){ return (all[pid].quiz || 0) > 0; }).map(function(pid){
+    var t = all[pid].title || "測驗", lk = lm[pid] != null ? String(lm[pid]) : null, lab = (lk && (S.plat.lessons || {})[lk] ? lessonTitle(lk) + "　" : "") + t + "（" + all[pid].quiz + " 題）";
+    return '<option value="' + esc(pid) + '" data-t="' + esc(t) + '"' + (pid === selected ? " selected" : "") + '>' + esc(lab) + '</option>';
+  }).join("");
+}
+function examEditorHtml(st){
+  if(st.kind !== "exam") return '';
+  var ex = st.exam || { pid: "", mode: "test", assignees: null }, all = !ex.assignees || !ex.assignees.length;
+  var opts = examProjectOptions(ex.pid);
+  return '<div class="panel" style="background:var(--surface-2);margin:10px 0;"><label style="margin-top:0;">要出哪一份考卷（來自各課「測驗與練習」）</label>' + (opts ? '<select id="ed-proj">' + opts + '</select>' : '<p class="note">還沒有可以出的考卷。先到某一課的「測驗與練習」建立題目。</p>') +
+    '<label>作答模式</label><select id="ed-exmode"><option value="test"' + (ex.mode !== "practice" ? " selected" : "") + '>測驗模式（交卷後才知道對錯）</option><option value="practice"' + (ex.mode === "practice" ? " selected" : "") + '>練習模式（填完立刻顯示對錯）</option></select>' +
+    '<label>出給誰</label><label style="display:flex;align-items:center;gap:6px;margin:0 0 6px;font-weight:600;"><input type="checkbox" id="ed-exall"' + (all ? " checked" : "") + '> 全班</label>' +
+    '<div id="ed-exwho" style="' + (all ? "display:none;" : "") + '">' + (EXAM_ROSTER.length ? EXAM_ROSTER.map(function(n){ return '<label style="display:inline-flex;align-items:center;gap:4px;margin:2px 10px 2px 0;font-weight:400;"><input type="checkbox" class="ed-exn" value="' + esc(n) + '"' + (ex.assignees && ex.assignees.indexOf(n) !== -1 ? " checked" : "") + '> ' + esc(n) + '</label>'; }).join("") : '<span class="note">班級名單是空的，先到「名單與帳號」貼上名單。</span>') + '</div></div>';
+}
 function openItemEditor(it, day, done){
   var d = document.getElementById("hwed"), st = it ? JSON.parse(JSON.stringify(it)) : { kind: "hw", day: day, title: "", body: "", progress: "", links: [], files: [], due: day + "T23:59", publishAt: null };
   var cid = S.sel.c, tid = S.teacher.id, busy = false;
@@ -2432,11 +2510,12 @@ function openItemEditor(it, day, done){
   function draw(){
     var sched = !!st.publishAt, pd = sched ? ymd(new Date(st.publishAt)) : "", pt = sched ? pad2(new Date(st.publishAt).getHours()) + ":" + pad2(new Date(st.publishAt).getMinutes()) : "07:00";
     d.innerHTML = '<form method="dialog" onsubmit="return false;" class="rec-form"><h3>' + (it ? "修改內容" : "新增內容") + '</h3>' +
-      '<label>類型</label><select id="ed-kind"><option value="hw"' + (st.kind === "hw" ? " selected" : "") + '>作業（學生要繳交）</option><option value="notice"' + (st.kind === "notice" ? " selected" : "") + '>通知</option><option value="plan"' + (st.kind === "plan" ? " selected" : "") + '>教學進度／教材</option></select>' +
+      '<label>類型</label><select id="ed-kind"><option value="hw"' + (st.kind === "hw" ? " selected" : "") + '>作業（學生要繳交）</option><option value="notice"' + (st.kind === "notice" ? " selected" : "") + '>通知</option><option value="plan"' + (st.kind === "plan" ? " selected" : "") + '>教學進度／教材</option><option value="exam"' + (st.kind === "exam" ? " selected" : "") + '>線上考卷（學生各自作答）</option></select>' +
+      examEditorHtml(st) +
       '<label>日期</label><input type="date" id="ed-day" value="' + esc(st.day) + '"><label>標題</label><input type="text" id="ed-title" value="' + esc(st.title) + '" placeholder="例如：第六課生詞抄寫">' +
       '<label>說明（可以用 - 開頭做條列、**粗體**，網址會自動變連結）</label><textarea id="ed-body" rows="5">' + esc(st.body) + '</textarea>' +
       '<label>教學進度／今日任務（選填）</label><textarea id="ed-plan" rows="2" placeholder="例如：第六課 生詞、課文朗讀">' + esc(st.progress || "") + '</textarea>' +
-      '<div id="ed-due" style="' + (st.kind === "hw" ? "" : "display:none;") + '"><label>截止時間</label><div style="display:flex;gap:8px;"><input type="date" id="ed-dd" value="' + esc((st.due || "").slice(0, 10)) + '"><input type="time" id="ed-dt" value="' + esc((st.due || "T23:59").slice(11, 16)) + '"></div></div>' +
+      '<div id="ed-due" style="' + ((st.kind === "hw" || st.kind === "exam") ? "" : "display:none;") + '"><label>截止時間</label><div style="display:flex;gap:8px;"><input type="date" id="ed-dd" value="' + esc((st.due || "").slice(0, 10)) + '"><input type="time" id="ed-dt" value="' + esc((st.due || "T23:59").slice(11, 16)) + '"></div></div>' +
       '<label>連結（例如 Google Meet、Padlet）</label>' + st.links.map(function(l, i){ return '<div style="display:flex;gap:6px;margin-bottom:4px;"><input type="text" class="lk-n" data-i="' + i + '" value="' + esc(l.name) + '" placeholder="名稱" style="max-width:160px;"><input type="text" class="lk-u" data-i="' + i + '" value="' + esc(l.url) + '" placeholder="https://…"><button class="btn sm" data-e="lk-del" data-i="' + i + '">移除</button></div>'; }).join("") + '<button class="btn sm" data-e="lk-add">＋ 加連結</button>' +
       '<label>附件（PDF、簡報、Word、圖片、音檔…，每個最多 30 MB）</label><div id="ed-files">' + filesHtml(st.files) + st.files.map(function(f, i){ return '<button class="btn sm danger" data-e="f-del" data-i="' + i + '">移除 ' + esc(f.name) + '</button> '; }).join("") + '</div><div style="margin-top:6px;"><button class="btn sm" data-e="f-add">＋ 上傳檔案</button><input type="file" id="ed-file" multiple style="display:none;"> <span class="note" id="ed-prog"></span></div>' +
       '<label>發布時間</label><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;"><label style="display:flex;align-items:center;gap:4px;margin:0;"><input type="radio" name="ed-pub" value="now"' + (sched ? "" : " checked") + '> 儲存後立刻發布</label><label style="display:flex;align-items:center;gap:4px;margin:0;"><input type="radio" name="ed-pub" value="later"' + (sched ? " checked" : "") + '> 排程發布</label><input type="date" id="ed-pd" value="' + esc(pd) + '"><input type="time" id="ed-pt" value="' + esc(pt) + '"></div><div class="note">排程前，學生看不到這份內容。</div>' +
@@ -2446,11 +2525,13 @@ function openItemEditor(it, day, done){
     var g = function(i){ return document.getElementById(i); }; if(!g("ed-kind")) return;
     st.kind = g("ed-kind").value; st.day = g("ed-day").value || st.day; st.title = g("ed-title").value; st.body = g("ed-body").value; st.progress = g("ed-plan").value;
     st.links = Array.prototype.map.call(document.querySelectorAll(".lk-u"), function(u, i){ return { name: document.querySelectorAll(".lk-n")[i].value.trim(), url: u.value.trim() }; });
-    st.due = st.kind === "hw" ? ((g("ed-dd").value || st.day) + "T" + (g("ed-dt").value || "23:59")) : "";
+    if(st.kind === "exam" && g("ed-proj")){ var pj = g("ed-proj"); st.exam = { pid: pj.value, ptitle: pj.options[pj.selectedIndex] ? pj.options[pj.selectedIndex].dataset.t || pj.options[pj.selectedIndex].textContent : "", mode: g("ed-exmode").value, assignees: g("ed-exall").checked ? null : Array.prototype.map.call(document.querySelectorAll(".ed-exn:checked"), function(x){ return x.value; }) }; }
+    st.due = (st.kind === "hw" || st.kind === "exam") ? ((g("ed-dd").value || st.day) + "T" + (g("ed-dt").value || "23:59")) : "";
     var later = document.querySelector('input[name="ed-pub"]:checked').value === "later"; st.publishAt = later && g("ed-pd").value ? new Date(g("ed-pd").value + "T" + (g("ed-pt").value || "07:00") + ":00").getTime() : null;
     st._later = later;
   }
   draw(); d.style.width = "min(640px,96vw)";
+  hwLoadRoster().then(function(r){ EXAM_ROSTER = r; if(st.kind === "exam" && document.getElementById("ed-kind")){ sync(); draw(); } }).catch(function(){});
   d.onclick = async function(e){
     var b = e.target.closest("[data-e]"); if(!b) return; var a = b.dataset.e; sync();
     if(a === "cancel"){ d.close(); return; }
@@ -2462,7 +2543,11 @@ function openItemEditor(it, day, done){
       if(busy) return; if(!st.title.trim()){ alert("請填標題。"); return; }
       if(st._later && !st.publishAt){ alert("請選排程的日期。"); return; }
       st.links = st.links.filter(function(l){ return l.url; }).map(function(l){ return { name: l.name || l.url, url: /^https?:\/\//i.test(l.url) ? l.url : "https://" + l.url }; });
-      var rec = { kind: st.kind, day: st.day, title: st.title.trim(), body: st.body, progress: st.progress || "", links: st.links, files: st.files, due: st.due || "", publishAt: st.publishAt || null, createdAt: (it && it.createdAt) || Date.now(), updatedAt: Date.now() };
+      if(st.kind === "exam"){
+        if(!st.exam || !st.exam.pid){ alert("請選一份要出的考卷（要先在課次的「測驗與練習」建立）。"); return; }
+        if(st.exam.assignees && !st.exam.assignees.length){ alert("請至少勾選一位學生，或選「全班」。"); return; }
+      }
+      var rec = { exam: st.kind === "exam" ? st.exam : null, kind: st.kind, day: st.day, title: st.title.trim(), body: st.body, progress: st.progress || "", links: st.links, files: st.files, due: st.due || "", publishAt: st.publishAt || null, createdAt: (it && it.createdAt) || Date.now(), updatedAt: Date.now() };
       busy = true;
       try{ await fbSet(hwBase(tid, cid) + "/items/" + (it ? it.id : uid("hw_")), rec); }catch(er){ busy = false; alert("儲存失敗，請檢查網路或 Firebase 規則。"); return; }
       busy = false; d.close(); S.hwv.day = st.day; S.hwv.month = st.day.slice(0, 7); toast(st.publishAt && st.publishAt > Date.now() ? "已儲存，排程發布" : "已發布"); done();
@@ -2470,6 +2555,7 @@ function openItemEditor(it, day, done){
   };
   d.onchange = async function(e){
     if(e.target.id === "ed-kind"){ sync(); draw(); return; }
+    if(e.target.id === "ed-exall"){ var w = document.getElementById("ed-exwho"); if(w) w.style.display = e.target.checked ? "none" : ""; return; }
     if(e.target.id !== "ed-file") return;
     var fs = Array.prototype.slice.call(e.target.files); e.target.value = ""; sync();
     for(var i = 0; i < fs.length; i++){
@@ -2490,7 +2576,8 @@ async function renderStudentHw(){
   shell('<div class="empty"><p class="note">載入中…</p></div>'); setCrumb([st.school, st.term, st.cls.name, "聯絡簿"]);
   await syncTime();
   var items;
-  try{ items = objList(await fbGet(base + "/items")).filter(itemVisible); }catch(e){ shell('<div class="empty"><p class="note">讀取失敗，請檢查網路。</p></div>'); return; }
+  try{ items = objList(await fbGet(base + "/items")).filter(itemVisible).filter(function(it){ return examForMe(it, st.name); }); }catch(e){ shell('<div class="empty"><p class="note">讀取失敗，請檢查網路。</p></div>'); return; }
+  var myAtt = {}; await Promise.all(items.filter(function(it){ return it.kind === "exam"; }).map(function(it){ return fbGet(examAttPath(tid, cid, it.id, st.name)).then(function(v){ myAtt[it.id] = v; }); }));
   var mySubs = {}; await Promise.all(items.filter(function(it){ return (it.kind || "hw") === "hw"; }).map(function(it){ return fbGet("teacherPlatform/" + tid + "/hwSubs/" + cid + "/" + it.id + "/" + me).then(function(v){ mySubs[it.id] = v; }); }));
   var pend = {};   // 每份作業待上傳的檔案：{ existing:[...], add:[File] }
   async function draw(){
@@ -2512,6 +2599,12 @@ async function renderStudentHw(){
         (sub && sub.fb ? '<div class="panel" style="background:#E3F1E8;margin:6px 0;">老師回饋：' + esc(sub.fb) + '</div>' : '') +
         (s === "exempt" ? '' : '<div class="rec-form"><label>我的作業</label><textarea id="st-' + it.id + '" rows="3" placeholder="可以打字，或上傳檔案／照片">' + esc(hasSub ? sub.text || "" : "") + '</textarea><div id="sf-' + it.id + '" class="tools" style="margin:6px 0;"></div><button class="btn sm" data-b="pick" data-id="' + it.id + '">＋ 選擇檔案／拍照</button><input type="file" id="sfile-' + it.id + '" multiple style="display:none;"> <span class="note" id="sp-' + it.id + '"></span><div style="margin-top:10px;"><button class="btn primary" data-b="submit" data-id="' + it.id + '">' + (hasSub ? "重新送出" : "送出作業") + '</button></div></div>') + '</div>';
     }
+    if(kind === "exam"){
+      var at = myAtt[it.id], dn = at && (at.status === "submitted" || at.status === "graded"), ex = it.exam || {};
+      h += '<div class="bd-mine"><div class="note" style="margin:8px 0 4px;">截止 ' + esc(it.due ? hwFmt(hwDueTs(it)) : "未設") + '　<b>' + (at && at.status === "graded" ? "✓ 老師批改完了" : dn ? "✓ 已交卷，等老師批改" : at ? "作答中（還沒交卷）" : "還沒開始") + '</b></div>' +
+        (at && at.status === "graded" && at.final != null && at.released ? '<div class="panel" style="background:#E3F1E8;margin:6px 0;"><b>我的成績：' + at.final + ' 分</b>' + (at.comment ? '<div>' + esc(at.comment) + '</div>' : '') + '</div>' : '') +
+        '<button class="btn primary" data-b="exam-go" data-id="' + it.id + '">' + (dn ? '查看我的考卷' : at ? '繼續作答' : '開始作答') + '</button></div>';
+    }
     return h + commentsHtml(it, list, false) + '</div>';
   }
   function drawPending(it){
@@ -2529,6 +2622,7 @@ async function renderStudentHw(){
         else if(a === "mc-prev" || a === "mc-next"){ var yy = Number(S.hwv.month.slice(0, 4)), mm = Number(S.hwv.month.slice(5, 7)) - 1 + (a === "mc-next" ? 1 : -1), nd = new Date(yy, mm, 1); S.hwv.month = nd.getFullYear() + "-" + pad2(nd.getMonth() + 1); S.calPick = null; draw(); }
         else if(a === "mc-today"){ S.hwv.month = ymd(new Date()).slice(0, 7); S.hwv.day = ymd(new Date()); S.calPick = null; draw(); }
         else if(a === "mc-day"){ S.hwv.day = b.dataset.d; draw(); }
+        else if(a === "exam-go"){ S.examOpen = id; renderStudent(); }
         else if(a === "pick"){ document.getElementById("sfile-" + id).click(); }
         else if(a === "rm-ex"){ pend[id].existing.splice(Number(b.dataset.i), 1); drawPending(it); }
         else if(a === "rm-add"){ pend[id].add.splice(Number(b.dataset.i), 1); drawPending(it); }
@@ -3060,6 +3154,7 @@ async function startStudent(code, name, pw){
 function renderStudent(){
   var st = S.student;
   if(S.live && S.live.on) return renderStudentLive();
+  if(S.examOpen) return renderStudentExam();
   if(S.roomJoin) return renderStudentRoom();
   if(S.hwOpen) return renderStudentHw();
   if(S.leaveOpen) return renderStudentLeave();

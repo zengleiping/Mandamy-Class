@@ -120,6 +120,7 @@
   /* 平台課次頁：投影片分頁只給新增投影片，測驗與練習分頁只給新增大題／題庫 */
   /* 學生自習：隱藏所有編輯、開房間、結算的功能，只留瀏覽與作答 */
   body.solo .section-head-actions, body.solo .q-action-btns, body.solo #btn-new-section, body.solo #add-slide-menu-wrap, body.solo #bank-menu-wrap, body.solo .drag-handle-icon, body.solo .sidebar-collapse-btn, body.solo #topbar-right, body.solo .draw-toolbar-top{ display:none !important; }
+  html.grading .section-head-actions, html.grading .q-action-btns, html.grading #btn-new-section, html.grading #add-slide-menu-wrap, html.grading #bank-menu-wrap, html.grading .drag-handle-icon, html.grading #topbar-right, html.grading .chat-bubble-btn, html.grading #timer-widget, html.grading .stage-actions, html.grading .sidebar-collapse-btn{ display:none !important; }
   body.kind-slides #btn-new-section, body.kind-slides #bank-menu-wrap{ display:none !important; }
   body.kind-quiz #add-slide-menu-wrap{ display:none !important; }
   body.embed.focus .topbar, body.embed.focus .sidebar{ display:none !important; }
@@ -485,6 +486,10 @@
   #attempt-bar{position:fixed;left:0;right:0;bottom:0;z-index:60;display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap;padding:10px 14px;background:var(--surface);border-top:2px solid var(--seal);box-shadow:0 -4px 14px rgba(0,0,0,.08);font-size:14px;}
   #attempt-bar .attempt-t{font-weight:700;} #attempt-bar .attempt-done{color:var(--bamboo);font-weight:700;} #attempt-bar .attempt-wait{color:var(--ink-soft);}
   html.attempt .stage-wrap, html.attempt #stage{padding-bottom:70px;}
+  #grade-bar{position:fixed;left:0;right:0;bottom:0;z-index:60;padding:8px 14px;background:var(--surface);border-top:3px solid #6B4EA6;box-shadow:0 -4px 14px rgba(0,0,0,.1);font-size:13.5px;display:flex;flex-direction:column;gap:6px;}
+  #grade-bar .gb-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;} #grade-bar .gb-st{color:var(--ink-soft);} #grade-bar .gb-q{color:var(--ink-soft);}
+  #grade-bar input[type=text],#grade-bar input[type=number]{padding:5px 8px;border:1.5px solid var(--grid-line);border-radius:8px;font:inherit;}
+  html.grading .stage-wrap, html.grading #stage{padding-bottom:150px;}
   .fill-line{font-size:22px;line-height:2.4;max-width:840px;margin:0 auto;padding:10px 4px;}
   .fill-input{font:inherit;font-size:20px;text-align:center;border:0;border-bottom:2.5px solid var(--seal);background:var(--seal-soft);border-radius:6px 6px 0 0;padding:2px 6px;margin:0 4px;min-width:4em;}
   .fill-input:focus{outline:none;background:#fff;}
@@ -3891,6 +3896,9 @@
   // 線上考卷（個別作答）：每位學生一個獨立房間，只有他自己作答；交卷後把分數記到老師的考卷名單
   window.__attempt = params.get("attempt") === "1" ? { tid: params.get("tid"), cid: params.get("cid"), item: params.get("item"), name: urlName || "" } : null;
   if(window.__attempt) document.documentElement.classList.add("attempt");
+  // 老師批改：用老師身分打開某位學生的作答房間（唯讀，不會改到學生的答案），在底下的批改列給分、寫評語
+  window.__grade = (params.get("grade") === "1" && !isStudent) ? { name: urlName || "" } : null;
+  if(window.__grade) document.documentElement.classList.add("attempt", "grading");
   var app_ = document.getElementById("app");
   if(isStudent) app_.classList.add("student-mode");
 
@@ -4314,7 +4322,7 @@
   }
 
   function isOpenForStudent(){ return inRoom() ? (roomData && roomData.isOpen !== undefined ? !!roomData.isOpen : true) : true; }
-  function canInteract(){ if(!inRoom() || roomRole === "teacher") return true; return isOpenForStudent(); }
+  function canInteract(){ if(window.__grade) return false; if(!inRoom() || roomRole === "teacher") return true; return isOpenForStudent(); }
 
   function getProgress(qId){
     if(inRoom()) return (roomData && roomData.sharedProgress && roomData.sharedProgress[qId]) || {};
@@ -6177,6 +6185,7 @@
       if(roomData.project) document.getElementById("brand-sub").textContent = roomData.project.title;
       renderTopbar(); renderSidebar(); renderStage(); renderTimerWidget();
       if(window.__attempt) attemptBarRender();
+      if(window.__grade) gradeBarRender();
       if(window.__embedReveal) setTimeout(window.__embedReveal, 80);
     });
     onValue(ref(db, "roomCursors/" + rId), function(snap){ renderMultiCursors(snap.val()); });
@@ -6198,6 +6207,53 @@
     var sb = document.getElementById("attempt-submit"); if(sb) sb.onclick = attemptSubmit;
     var rb = document.getElementById("attempt-result"); if(rb) rb.onclick = function(){ showScoreModal(calculateScoreReport()); };
     document.body.classList.toggle("attempt-submitted", done);
+  }
+  /* ================== 老師批改列 ================== */
+  function gradeAttPath(){ var A = roomData && roomData.attempt; if(!A) return null; return "teacherPlatform/" + A.tid + "/examAttempts/" + A.cid + "/" + A.item + "/" + encodeURIComponent(A.name).replace(/\./g, "%2E"); }
+  function gradeBarRender(){
+    if(!roomData || !roomData.project) return;
+    var info = getCurrentQInfo(); if(!info) return;
+    var q = info.question, bar = document.getElementById("grade-bar");
+    if(!bar){ bar = document.createElement("div"); bar.id = "grade-bar"; document.body.appendChild(bar); }
+    if(bar.dataset.q === q.id && bar.dataset.sub === String(!!roomData.submitted) + String(!!roomData.released) && bar.contains(document.activeElement)) return;
+    bar.dataset.q = q.id; bar.dataset.sub = String(!!roomData.submitted) + String(!!roomData.released);
+    var report = calculateScoreReport(), qr = null, pend = 0;
+    report.results.forEach(function(sec){ sec.questions.forEach(function(x){ if(x.id === q.id) qr = x; if(x.pending) pend++; }); });
+    var g = (getProgress(q.id) || {}).grade || null, cur = g ? Math.round((g.score || 0) * 100) : null;
+    var st = roomData.released ? "✅ 已公布成績" : (roomData.submitted ? "已交卷" : "學生還沒交卷");
+    bar.innerHTML = '<div class="gb-row"><b>' + escapeHtml(roomData.attempt && roomData.attempt.name || "") + '</b><span class="gb-st">' + st + '</span><span>目前總分 <b>' + report.finalScore + '</b> 分' + (pend ? '（還有 <b style="color:#B23B32;">' + pend + '</b> 題待批改）' : '') + '</span></div>' +
+      '<div class="gb-row"><span class="gb-q">本題：' + escapeHtml(qr ? qr.detail : "") + '</span></div>' +
+      '<div class="gb-row"><span>給分：</span>' + [0, 25, 50, 75, 100].map(function(v){ return '<button type="button" class="btn btn-sm gb-pct' + (cur === v ? ' btn-primary' : '') + '" data-v="' + v + '">' + v + '%</button>'; }).join("") +
+      '<input type="number" id="gb-num" min="0" max="100" step="5" placeholder="自訂%" value="' + (cur == null ? "" : cur) + '" style="width:80px;"><input type="text" id="gb-cmt" placeholder="這題的評語（學生看得到）" value="' + escapeHtml(g && g.comment || "") + '" style="flex:1;min-width:160px;"><button type="button" class="btn btn-sm btn-primary" id="gb-save">儲存本題</button></div>' +
+      '<div class="gb-row"><input type="text" id="gb-all" placeholder="整份考卷的總評語（選填）" value="' + escapeHtml(roomData.overallComment || "") + '" style="flex:1;min-width:200px;"><button type="button" class="btn btn-sm btn-primary" id="gb-finish">' + (roomData.released ? '更新成績' : '完成批改・公布成績') + '</button><button type="button" class="btn btn-sm" id="gb-reopen">退回重寫</button></div>';
+    var numEl = bar.querySelector("#gb-num");
+    bar.querySelectorAll(".gb-pct").forEach(function(b){ b.onclick = function(){ numEl.value = b.dataset.v; bar.querySelectorAll(".gb-pct").forEach(function(x){ x.classList.remove("btn-primary"); }); b.classList.add("btn-primary"); }; });
+    bar.querySelector("#gb-save").onclick = function(){
+      var v = numEl.value; if(v === ""){ alert("請先選或輸入分數（0～100）。"); return; }
+      var sc = Math.max(0, Math.min(100, Number(v))) / 100;
+      writeProgress(q.id, { grade: { score: sc, comment: bar.querySelector("#gb-cmt").value.trim() } });
+      var nxt = bar.querySelector("#gb-save"); nxt.textContent = "已儲存 ✓"; setTimeout(function(){ nxt.textContent = "儲存本題"; }, 1200);
+    };
+    bar.querySelector("#gb-finish").onclick = async function(){
+      var rp = calculateScoreReport(), pd = 0; rp.results.forEach(function(sec){ sec.questions.forEach(function(x){ if(x.pending) pd++; }); });
+      if(pd && !confirm("還有 " + pd + " 題沒有批改（簡答／造句要給分才會計入）。\n要現在就公布成績嗎？")) return;
+      var ap = gradeAttPath(), overall = bar.querySelector("#gb-all").value.trim(), now = Date.now();
+      try{
+        await update(ref(db, "rooms/" + activeRoomId), { released: true, graded: true, overallComment: overall || null });
+        if(ap) await update(ref(db, ap), { status: "graded", final: rp.finalScore, released: true, gradedAt: now, comment: overall || null });
+        try{ window.parent.postMessage({ mm: "examGraded" }, "*"); }catch(e){}
+        alert("✅ 已公布成績：" + rp.finalScore + " 分");
+      }catch(er){ console.error(er); alert("公布失敗，請檢查網路後再試。"); }
+    };
+    bar.querySelector("#gb-reopen").onclick = async function(){
+      if(!confirm("退回重寫？學生會回到「作答中」，可以修改答案後再交一次。")) return;
+      var ap = gradeAttPath();
+      try{
+        await update(ref(db, "rooms/" + activeRoomId), { isOpen: true, submitted: false, released: false });
+        if(ap) await update(ref(db, ap), { status: "doing", released: false, final: null, submittedAt: null });
+        alert("已退回，學生可以重新作答。");
+      }catch(er){ alert("退回失敗，請檢查網路。"); }
+    };
   }
   async function attemptSubmit(){
     var A = window.__attempt; if(!A || !activeRoomId) return;
