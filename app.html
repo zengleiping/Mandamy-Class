@@ -1132,7 +1132,7 @@ async function recDeleteSelected(){
   S.recSel = null; toast("已刪除 " + ids.length + " 筆"); render();
 }
 async function openRecordEdit(id){
-  var r = JSON.parse(JSON.stringify(recMap()[id])); if(!r.students || !r.students.length) r.students = [blankStudent("")];
+  var r = JSON.parse(JSON.stringify(recMap()[id])); if(!r.students || !r.students.length) r.students = [blankStudent("")]; r.vocab = Array.isArray(r.vocab) ? r.vocab : (r.vocab ? Object.keys(r.vocab).map(function(k){ return r.vocab[k]; }) : []); if(!Array.isArray(r.students)) r.students = Object.keys(r.students).map(function(k){ return r.students[k]; });
   var shots = []; try{ shots = (await fbGet("teacherPlatform/" + S.teacher.id + "/recordShots/" + id)) || []; }catch(e){}
   if(!Array.isArray(shots)) shots = Object.keys(shots).map(function(k){ return shots[k]; });
   S.rec = { edit: id, draft: r, shots: shots, filter: S.rec && S.rec.filter }; render();
