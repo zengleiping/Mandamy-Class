@@ -6216,7 +6216,17 @@
   }
 
   /* ================== 線上考卷：交卷列 ================== */
+  function attemptNetWatch(){
+    if(document.getElementById("netbar")) return;
+    var bar = document.createElement("div"); bar.id = "netbar"; bar.style.cssText = "display:none;position:fixed;top:0;left:0;right:0;z-index:99998;background:#B23B32;color:#fff;text-align:center;padding:8px 12px;font-size:14px;font-weight:700;";
+    bar.textContent = "⚠️ 網路中斷了：剛剛的答案還沒有存到雲端，連回網路後會自動同步，請不要關掉頁面。 / Offline — answers will sync when you reconnect."; document.body.appendChild(bar);
+    var conn = true, online = navigator.onLine !== false;
+    function upd(){ bar.style.display = (!online || !conn) ? "block" : "none"; }
+    window.addEventListener("online", function(){ online = true; upd(); }); window.addEventListener("offline", function(){ online = false; upd(); });
+    try{ onValue(ref(db, ".info/connected"), function(snap){ conn = snap.val() !== false; upd(); }); }catch(e){}
+  }
   function attemptBarRender(){
+    attemptNetWatch();
     var A = window.__attempt; if(!A || !roomData) return;
     var bar = document.getElementById("attempt-bar");
     if(!bar){ bar = document.createElement("div"); bar.id = "attempt-bar"; document.body.appendChild(bar); }
