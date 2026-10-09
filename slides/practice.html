@@ -482,6 +482,17 @@
   .stage.stage-edit-compact{ padding:6px; min-height:0; border-radius:12px; max-width:none; }
 
   /* 句子重組專屬樣式 */
+  #attempt-bar{position:fixed;left:0;right:0;bottom:0;z-index:60;display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap;padding:10px 14px;background:var(--surface);border-top:2px solid var(--seal);box-shadow:0 -4px 14px rgba(0,0,0,.08);font-size:14px;}
+  #attempt-bar .attempt-t{font-weight:700;} #attempt-bar .attempt-done{color:var(--bamboo);font-weight:700;} #attempt-bar .attempt-wait{color:var(--ink-soft);}
+  html.attempt .stage-wrap, html.attempt #stage{padding-bottom:70px;}
+  .fill-line{font-size:22px;line-height:2.4;max-width:840px;margin:0 auto;padding:10px 4px;}
+  .fill-input{font:inherit;font-size:20px;text-align:center;border:0;border-bottom:2.5px solid var(--seal);background:var(--seal-soft);border-radius:6px 6px 0 0;padding:2px 6px;margin:0 4px;min-width:4em;}
+  .fill-input:focus{outline:none;background:#fff;}
+  .fill-input.fill-ok{border-bottom-color:var(--bamboo);background:var(--bamboo-soft);}
+  .fill-input.fill-bad{border-bottom-color:#E63946;background:rgba(230,57,70,.1);}
+  .open-text{display:block;width:100%;max-width:840px;margin:10px auto;font-size:19px;line-height:1.7;padding:12px 14px;border:2px solid var(--grid-line);border-radius:12px;background:var(--surface);resize:vertical;}
+  .open-text:focus{outline:none;border-color:var(--seal);}
+  .open-grade{max-width:840px;margin:8px auto;padding:10px 14px;border-radius:12px;background:var(--bamboo-soft);color:var(--ink);}
   .reorder-container{display:flex;flex-direction:column;gap:24px;max-width:840px;margin:0 auto;}
   .reorder-slot-zone{
     display:flex;flex-wrap:wrap;gap:12px;min-height:76px;padding:16px;
@@ -2142,6 +2153,8 @@
         <button type="button" data-type="match" class="active">🔗 連連看 Match</button>
         <button type="button" data-type="choice">🔘 選擇題 Choice</button>
         <button type="button" data-type="reorder">🔤 句子重組 Reorder</button>
+        <button type="button" data-type="fill">✏️ 填空 Fill-in</button>
+        <button type="button" data-type="open">📝 簡答／造句 Open Answer</button>
         <button type="button" data-type="board">🖼 投影片 Slides</button>
         <button type="button" data-type="whiteboard">🖊️ 小白板 Whiteboard</button>
         <button type="button" data-type="hanzi">🖋️ 生字練習 Character Practice</button>
@@ -2208,6 +2221,21 @@
         <textarea id="f-reorder-prompt" rows="2" placeholder="例如：請將下列詞語重組為正確句子"></textarea>
         <label>正確句子語序（請用空格隔開每個詞語；如果句子裡有逗號、句號等標點，也要用空格把它獨立隔開，當作一個詞語）</label>
         <input type="text" id="f-reorder-answer" placeholder="例如：早飯 有 麵包 ， 還有 牛奶 。">
+      </div>
+
+      <div id="fill-fields" style="display:none;">
+        <label>題目（用 { } 框起來的地方，就是學生要填的答案；同一格有好幾個可接受的答案，用 | 隔開）</label>
+        <textarea id="f-fill-text" rows="3" placeholder="例如：我{喜歡|愛}喝{咖啡}。"></textarea>
+        <label>提示／說明（選填）</label>
+        <input type="text" id="f-fill-hint" placeholder="例如：請填入適當的詞語">
+      </div>
+
+      <div id="open-fields" style="display:none;">
+        <label>題目</label>
+        <textarea id="f-open-prompt" rows="3" placeholder="例如：請用「因為……所以……」造一個句子。"></textarea>
+        <label>參考答案／評分重點（選填，只有老師看得到）</label>
+        <textarea id="f-open-ref" rows="2" placeholder="例如：句子要有因果關係、語序正確"></textarea>
+        <p class="teacher-note-hint">💡 學生在文字框裡作答，交卷後由老師逐題給分與評語。</p>
       </div>
 
       <div id="board-fields" style="display:none;">
@@ -3860,6 +3888,9 @@
   var params = new URLSearchParams(location.search);
   var urlRoom = params.get("room"); var urlRole = params.get("role"); var urlName = params.get("name");
   var isStudent = (urlRole === "student");
+  // 線上考卷（個別作答）：每位學生一個獨立房間，只有他自己作答；交卷後把分數記到老師的考卷名單
+  window.__attempt = params.get("attempt") === "1" ? { tid: params.get("tid"), cid: params.get("cid"), item: params.get("item"), name: urlName || "" } : null;
+  if(window.__attempt) document.documentElement.classList.add("attempt");
   var app_ = document.getElementById("app");
   if(isStudent) app_.classList.add("student-mode");
 
@@ -4379,6 +4410,21 @@
     return { items: items, totalWeight: totalWeight };
   }
 
+  /* ================== 填空／簡答題型 ================== */
+  function normalizeFillTemplate(t){ return String(t || "").replace(/｛/g, "{").replace(/｝/g, "}").trim(); }
+  function parseFillTemplate(t){
+    var parts = [], re = /\{([^{}]+)\}/g, last = 0, m, idx = 0; t = normalizeFillTemplate(t);
+    while((m = re.exec(t))){
+      if(m.index > last) parts.push({ t: t.slice(last, m.index) });
+      parts.push({ b: idx++, answers: m[1].split("|").map(function(x){ return x.trim(); }).filter(Boolean) });
+      last = re.lastIndex;
+    }
+    if(last < t.length) parts.push({ t: t.slice(last) });
+    return { parts: parts, count: idx };
+  }
+  function normFillAns(x){ return String(x == null ? "" : x).normalize("NFKC").replace(/\s+/g, "").toLowerCase(); }
+  function fillBlankOk(part, val){ var v = normFillAns(val); return !!v && part.answers.some(function(a){ return normFillAns(a) === v; }); }
+
   /* ================== 成績與錯題結算引擎 ================== */
   function calculateScoreReport(){
     var secs = getSections();
@@ -4449,6 +4495,18 @@
           } else {
             qRes.score = 0; qRes.status = "wrong"; qRes.detail = `語序未完成或有誤 Incorrect (正解 Answer: ${correctWords.join(" ")})`;
           }
+        } else if(sec.type === "fill"){
+          totalScoreable += weight;
+          var fp = parseFillTemplate(q.template), fills = progress.fills || {}, fOk = 0, fShow = [];
+          fp.parts.forEach(function(pt){ if(pt.b === undefined) return; var ok = fillBlankOk(pt, fills[pt.b]); if(ok) fOk++; fShow.push((ok ? "✔ " : "✘ ") + (fills[pt.b] || "（空白）") + (ok ? "" : "（正解：" + pt.answers[0] + "）")); });
+          qRes.score = fp.count ? fOk / fp.count : 0;
+          qRes.status = fOk === fp.count && fp.count > 0 ? "correct" : (fOk > 0 ? "partial" : "wrong");
+          qRes.detail = "填對 " + fOk + "/" + fp.count + "：" + fShow.join("　"); totalEarned += qRes.score * weight;
+        } else if(sec.type === "open"){
+          qRes.isScoreable = false; qRes.pending = true;
+          var otext = (progress.text || "").trim();
+          qRes.status = otext ? "pending" : "empty";
+          qRes.detail = otext ? "作答：" + otext.slice(0, 60) + (otext.length > 60 ? "…" : "") + "（等老師批改）" : "尚未作答";
         } else if(sec.type === "board" || sec.type === "whiteboard"){
           qRes.isScoreable = false;
           var strokes = progress.strokes || [];
@@ -4463,6 +4521,14 @@
           qRes.detail = hanziStrokes.length > 0 ? `已練習書寫「${q.char || ""}」 Practiced (${hanziStrokes.length} 筆畫 strokes)` : `尚未練習書寫「${q.char || ""}」 Not practiced yet`;
         }
 
+        // 老師批改：progress.grade = { score: 0~1, comment }，可以覆蓋任何題型（開放題、手寫題一定要靠這個才計分）
+        var gr = progress.grade;
+        if(gr && typeof gr.score === "number"){
+          if(qRes.isScoreable) totalEarned -= qRes.score * weight; else { qRes.isScoreable = true; totalScoreable += weight; }
+          qRes.pending = false; qRes.score = Math.max(0, Math.min(1, gr.score)); totalEarned += qRes.score * weight;
+          qRes.status = qRes.score >= 1 ? "correct" : (qRes.score > 0 ? "partial" : "wrong"); qRes.comment = gr.comment || ""; qRes.graded = true;
+          qRes.detail = "老師給分 " + Math.round(qRes.score * 100) + "%" + (gr.comment ? "：" + gr.comment : "");
+        }
         secRes.questions.push(qRes);
       });
       results.push(secRes);
@@ -6083,7 +6149,8 @@
   function startRoom(rId, role){
     activeRoomId = rId; roomRole = role;
     if(role === "teacher" && window.parent !== window){ try{ window.parent.postMessage({ mm: "room", id: rId }, "*"); }catch(e){} } // 平台嵌入：通知外殼，學生會自動進房
-    if(role === "student") startStudentSnapshotLoop(); else startTeacherSnapshotListener(rId);
+    if(window.__attempt){ /* 個別作答：不需要老師即時監看學生畫面 */ }
+    else if(role === "student") startStudentSnapshotLoop(); else startTeacherSnapshotListener(rId);
     onValue(ref(db, "rooms/" + rId), function(snap){
       roomData = snap.val() || {};
       if(roomData.theme) applyTheme(roomData.theme.bgMode || "light", roomData.theme.accent || "seal", false);
@@ -6109,14 +6176,41 @@
       lobbyView.style.display = "none"; classroomView.style.display = "grid";
       if(roomData.project) document.getElementById("brand-sub").textContent = roomData.project.title;
       renderTopbar(); renderSidebar(); renderStage(); renderTimerWidget();
+      if(window.__attempt) attemptBarRender();
       if(window.__embedReveal) setTimeout(window.__embedReveal, 80);
     });
     onValue(ref(db, "roomCursors/" + rId), function(snap){ renderMultiCursors(snap.val()); });
     // 「跟隨大師」邊錄邊即時廣播：只有目前畫面上真的是那一題寫字板時，liveTraceHandler 才會被設定，
     // 不然就什麼都不用做（例如老師在錄別的題目，或大家還在別的題型畫面）。
     onValue(ref(db, "roomMasterTraceLive/" + rId), function(snap){ if(liveTraceHandler) liveTraceHandler(snap.val()); });
-    ensureReactionUI();
-    startChatListener(rId);
+    if(!window.__attempt){ ensureReactionUI(); startChatListener(rId); }
+  }
+
+  /* ================== 線上考卷：交卷列 ================== */
+  function attemptBarRender(){
+    var A = window.__attempt; if(!A || !roomData) return;
+    var bar = document.getElementById("attempt-bar");
+    if(!bar){ bar = document.createElement("div"); bar.id = "attempt-bar"; document.body.appendChild(bar); }
+    var done = !!roomData.submitted, title = (roomData.project && roomData.project.title) || "考卷";
+    bar.innerHTML = '<span class="attempt-t">📝 ' + escapeHtml(title) + '　' + escapeHtml(A.name) + '</span>' +
+      (done ? '<span class="attempt-done">✅ 已交卷（' + new Date(roomData.submittedAt || Date.now()).toLocaleString() + '）</span>' + (roomData.released ? '<button type="button" class="btn btn-sm btn-primary" id="attempt-result">看成績</button>' : '<span class="attempt-wait">等老師批改</span>') :
+        '<button type="button" class="btn btn-primary" id="attempt-submit">📮 交卷</button>');
+    var sb = document.getElementById("attempt-submit"); if(sb) sb.onclick = attemptSubmit;
+    var rb = document.getElementById("attempt-result"); if(rb) rb.onclick = function(){ showScoreModal(calculateScoreReport()); };
+    document.body.classList.toggle("attempt-submitted", done);
+  }
+  async function attemptSubmit(){
+    var A = window.__attempt; if(!A || !activeRoomId) return;
+    if(!confirm("確定要交卷嗎？交卷後就不能再修改答案了。\nSubmit now? You can't change your answers afterwards.")) return;
+    var report = calculateScoreReport(), pend = 0;
+    report.results.forEach(function(sec){ sec.questions.forEach(function(q){ if(q.pending) pend++; }); });
+    var key = encodeURIComponent(A.name).replace(/\./g, "%2E"), now = Date.now();
+    var rec = { name: A.name, room: activeRoomId, status: "submitted", submittedAt: now, auto: { pct: report.finalScore, earned: report.totalEarned, total: report.totalScoreable, pending: pend } };
+    try{
+      await update(ref(db, "rooms/" + activeRoomId), { isOpen: false, submitted: true, submittedAt: now });
+      await update(ref(db, "teacherPlatform/" + A.tid + "/examAttempts/" + A.cid + "/" + A.item + "/" + key), rec);
+      try{ window.parent.postMessage({ mm: "examSubmitted", item: A.item }, "*"); }catch(e){}
+    }catch(er){ console.error(er); alert("交卷失敗，請檢查網路後再按一次。你的答案都還在。\nSubmit failed — please check your connection and try again."); }
   }
 
   /* ================== 課堂對話 Class Chat ================== */
@@ -7255,6 +7349,8 @@
       match:   { label: "連連看 Match",   color: "#4C7A5E" },
       choice:  { label: "選擇題 Choice",  color: "#B8763D" },
       reorder: { label: "句子重組 Reorder", color: "#6B5B95" },
+      fill:    { label: "填空 Fill-in", color: "#2F7D8C" },
+      open:    { label: "簡答／造句 Open", color: "#8C5A2F" },
       board:   { label: "投影片 Slides", color: "#A83232" },
       whiteboard: { label: "小白板 Whiteboard", color: "#C0623A" },
       hanzi:   { label: "生字練習 Character", color: "#3A7CA5" }
@@ -7578,7 +7674,7 @@
     var secs = getSections();
     var title = document.getElementById("f-sec-title").value.trim();
     var desc = document.getElementById("f-sec-desc").value.trim();
-    var typeNames = { match: "連連看", choice: "選擇題", reorder: "句子重組", board: "投影片", whiteboard: "小白板", hanzi: "生字練習" };
+    var typeNames = { match: "連連看", choice: "選擇題", reorder: "句子重組", fill: "填空", open: "簡答／造句", board: "投影片", whiteboard: "小白板", hanzi: "生字練習" };
     if(editingSectionId && secs[editingSectionId]){
       secs[editingSectionId].title = title || secs[editingSectionId].title;
       secs[editingSectionId].desc = desc;
@@ -8113,6 +8209,8 @@
     document.getElementById("match-fields").style.display = type === "match" ? "block" : "none";
     document.getElementById("choice-fields").style.display = type === "choice" ? "block" : "none";
     document.getElementById("reorder-fields").style.display = type === "reorder" ? "block" : "none";
+    document.getElementById("fill-fields").style.display = type === "fill" ? "block" : "none";
+    document.getElementById("open-fields").style.display = type === "open" ? "block" : "none";
     document.getElementById("board-fields").style.display = (type === "board" || type === "whiteboard") ? "block" : "none";
     document.getElementById("hanzi-fields").style.display = type === "hanzi" ? "block" : "none";
 
@@ -8130,6 +8228,12 @@
         ? Object.keys(q.choices).map(function(k){ return { text: q.choices[k].text, correct: answerIds.indexOf(k) !== -1 }; })
         : [{text:"",correct:false},{text:"",correct:false}];
       choices.forEach(function(c){ choiceOptRowsEl.appendChild(makeChoiceRow(c.text, c.correct)); });
+    } else if(type === "fill"){
+      document.getElementById("f-fill-text").value = q ? (q.template || "") : "";
+      document.getElementById("f-fill-hint").value = q ? (q.prompt || "") : "";
+    } else if(type === "open"){
+      document.getElementById("f-open-prompt").value = q ? (q.prompt || "") : "";
+      document.getElementById("f-open-ref").value = q ? (q.reference || "") : "";
     } else if(type === "reorder"){
       document.getElementById("f-reorder-prompt").value = q ? (q.prompt || "") : "";
       document.getElementById("f-reorder-answer").value = q && q.words ? q.words.join(" ") : "";
@@ -8203,6 +8307,16 @@
       if(answerIds.length === 0){ alert("請至少勾選一個正確答案！Please select at least one correct answer."); return; }
       qObj.title = titleInput || ("第 " + (order + 1) + " 題");
       qObj.prompt = promptText; qObj.choices = choices; qObj.answerIds = answerIds;
+    } else if(sec.type === "fill"){
+      var fTpl = normalizeFillTemplate(document.getElementById("f-fill-text").value);
+      if(parseFillTemplate(fTpl).count < 1){ alert("請用 { } 框出至少一個要學生填的答案！例如：我{喜歡}喝咖啡。\nPut at least one answer in { }."); return; }
+      qObj.title = titleInput || ("第 " + (order + 1) + " 題");
+      qObj.template = fTpl; qObj.prompt = document.getElementById("f-fill-hint").value.trim();
+    } else if(sec.type === "open"){
+      var oPrompt = document.getElementById("f-open-prompt").value.trim();
+      if(!oPrompt){ alert("請輸入題目！Please enter the question."); return; }
+      qObj.title = titleInput || ("第 " + (order + 1) + " 題");
+      qObj.prompt = oPrompt; qObj.reference = document.getElementById("f-open-ref").value.trim();
     } else if(sec.type === "reorder"){
       var rPrompt = document.getElementById("f-reorder-prompt").value.trim();
       var rawAnswer = document.getElementById("f-reorder-answer").value.trim();
@@ -8767,6 +8881,8 @@
     var mediaFingerprint = (sec.media || []).map(function(m){ return m.id; }).join(",") + "|" + (q.media || []).map(function(m){ return m.id; }).join(",");
     var stageSignature = JSON.stringify([q.id, sec.type, sec.title, sec.desc || "", q.title, q.desc || "", currentIndex, allList.length, currentClassMode, !!isStudent, mediaFingerprint, (isCanvasSec(sec) ? "" : (q.teacherNote || ""))]);
 
+    // 填空／簡答：正在打字時，別因為雲端回傳自己剛寫的資料就整個重畫（會讓游標跑掉、輸入法中斷）
+    if((sec.type === "fill" || sec.type === "open") && stageSignature === lastStageSignature && stageEl.contains(document.activeElement) && /^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)) return;
     if((isCanvasSec(sec) || sec.type === "hanzi") && liveBoardQId === q.id && stageSignature === lastStageSignature && liveBoardRefresh && liveBoardRefresh()){
       return; // 局部刷新成功：只更新畫布內容（筆畫／文字／格線／底圖），不重建整個舞台
     }
@@ -8822,7 +8938,7 @@
     if(!isStudent){
       var resetBtn = document.createElement("button"); resetBtn.className = "btn btn-sm"; resetBtn.textContent = "🔄 重新開始 Restart";
       resetBtn.onclick = function(){
-        var resetPatch = { matched:{}, selected:{}, choicePick:null, choiceStatus:null, multiPicks:{}, userPairs:{}, userWords:[], revealed:false, strokes:[], texts:[], selection:null, wrongFlash:null, lastEvent:null };
+        var resetPatch = { fills:{}, text:"", grade:null, matched:{}, selected:{}, choicePick:null, choiceStatus:null, multiPicks:{}, userPairs:{}, userWords:[], revealed:false, strokes:[], texts:[], selection:null, wrongFlash:null, lastEvent:null };
         resetPatch.poolWords = (sec.type === "reorder") ? seededShuffle(q.words || [], q.id + "|reorder-pool") : [];
         writeProgress(q.id, resetPatch);
       };
@@ -8851,6 +8967,8 @@
     if(sec.type === "match") renderMatchBoard(q, boardArea);
     else if(sec.type === "choice") renderChoiceBoard(q, boardArea);
     else if(sec.type === "reorder") renderReorderBoard(q, boardArea);
+    else if(sec.type === "fill") renderFillBoard(q, boardArea);
+    else if(sec.type === "open") renderOpenBoard(q, boardArea);
     else if(isCanvasSec(sec)) renderDrawBoard(q, boardArea);
     else if(sec.type === "hanzi") renderHanziBoard(q, boardArea);
 
@@ -9052,6 +9170,50 @@
     });
 
     wrap.appendChild(cBox);
+    container.appendChild(wrap);
+  }
+
+  /* 填空題 */
+  function renderFillBoard(q, container){
+    var progress = getProgress(q.id), interactive = canInteract() && !(progress.grade), isTest = currentClassMode === 'test';
+    var fills = Object.assign({}, progress.fills || {}), fp = parseFillTemplate(q.template);
+    var wrap = document.createElement("div");
+    wrap.innerHTML = (q.prompt ? '<p class="circle-prompt zh">' + escapeHtml(q.prompt) + '</p>' : '');
+    var line = document.createElement("div"); line.className = "fill-line zh";
+    fp.parts.forEach(function(pt){
+      if(pt.b === undefined){ var sp = document.createElement("span"); sp.textContent = pt.t; line.appendChild(sp); return; }
+      var inp = document.createElement("input"); inp.type = "text"; inp.className = "fill-input"; inp.autocomplete = "off"; inp.setAttribute("autocapitalize", "off");
+      inp.value = fills[pt.b] || ""; inp.style.width = Math.max(4, (pt.answers[0] || "").length * 1.4 + 2) + "em";
+      if(!interactive) inp.disabled = true;
+      if(!isTest && inp.value) inp.classList.add(fillBlankOk(pt, inp.value) ? "fill-ok" : "fill-bad");
+      inp.onchange = function(){ fills[pt.b] = inp.value; writeProgress(q.id, { fills: fills }); };
+      line.appendChild(inp);
+    });
+    wrap.appendChild(line);
+    container.appendChild(wrap);
+  }
+
+  /* 簡答／造句題 */
+  function renderOpenBoard(q, container){
+    var progress = getProgress(q.id), interactive = canInteract() && !(progress.grade);
+    var wrap = document.createElement("div");
+    wrap.innerHTML = '<p class="circle-prompt zh">' + escapeHtml(q.prompt || q.title).replace(/\n/g, "<br>") + '</p>';
+    var ta = document.createElement("textarea"); ta.className = "open-text zh"; ta.rows = 6; ta.placeholder = "在這裡作答…"; ta.value = progress.text || "";
+    if(!interactive) ta.disabled = true;
+    var tm = null;
+    ta.onchange = function(){ if(tm){ clearTimeout(tm); tm = null; } writeProgress(q.id, { text: ta.value }); };
+    ta.oninput = function(){ if(tm) clearTimeout(tm); tm = setTimeout(function(){ tm = null; writeProgress(q.id, { text: ta.value }); }, 1500); };
+    wrap.appendChild(ta);
+    if(progress.grade){
+      var g = progress.grade, fb = document.createElement("div"); fb.className = "open-grade";
+      fb.innerHTML = '<b>老師給分：' + Math.round((g.score || 0) * 100) + '%</b>' + (g.comment ? '<div>' + escapeHtml(g.comment) + '</div>' : '');
+      wrap.appendChild(fb);
+    }
+    if(!isStudent && q.reference){
+      var rf = document.createElement("div"); rf.className = "teacher-note-block";
+      rf.innerHTML = '<div class="tn-icon">🔒</div><div class="tn-body"><div class="tn-label">參考答案／評分重點（僅老師可見）</div><div class="tn-text"></div></div>';
+      rf.querySelector(".tn-text").textContent = q.reference; wrap.appendChild(rf);
+    }
     container.appendChild(wrap);
   }
 
