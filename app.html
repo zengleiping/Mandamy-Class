@@ -91,7 +91,7 @@
   .cal-d.empty{ background:transparent; cursor:default; } .cal-d.empty:hover{ outline:none; }
   .cal-d.today{ background:#F6DCCF; }
   .cal-n{ font-weight:700; font-size:13px; margin-bottom:2px; }
-  .cal-s{ font-size:11px; line-height:1.35; color:var(--seal); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .cal-s{ font-size:11.5px; line-height:1.35; color:#fff; font-weight:600; padding:2px 7px; border-radius:8px; margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .slot{ display:flex; align-items:center; gap:14px; padding:10px 0; border-top:1px solid var(--line); flex-wrap:wrap; }
   .slot:first-of-type{ border-top:none; }
   .slot-time{ font-weight:700; min-width:110px; font-variant-numeric:tabular-nums; }
@@ -755,6 +755,10 @@ function calPickAct(a, ds, month, setMonth){
   if(a === "cp-month"){ var ym = S.calPick.year + "-" + pad2(Number(ds.m)); S.calPick = null; setMonth(ym); return true; }
   return false;
 }
+// 每間學校一個固定顏色（用學校名稱決定，所以不同年度的同一間學校顏色一樣）
+var SCHOOL_COLORS = ["#C0623A", "#2E75B6", "#3E7D68", "#7B5EA7", "#B4802A", "#B23B32", "#4A7C8C", "#8A5A78", "#5B7F3A", "#A0527C"];
+function schoolColor(name){ var h = 0; String(name || "").split("").forEach(function(ch){ h = (h * 31 + ch.charCodeAt(0)) >>> 0; }); return SCHOOL_COLORS[h % SCHOOL_COLORS.length]; }
+function slotSchoolName(x){ var ci = classInfo(x); return ci ? ci.school : "（班級已刪除）"; }
 function calendarHtml(){
   var m = S.month || (S.month = ymd(new Date()).slice(0, 7));
   var yy = Number(m.slice(0, 4)), mm = Number(m.slice(5, 7)) - 1;
@@ -765,7 +769,7 @@ function calendarHtml(){
   for(var d = 1; d <= days; d++){
     var date = yy + "-" + pad2(mm + 1) + "-" + pad2(d), sl = slotsOn(date);
     html += '<div class="cal-d' + (date === today ? ' today' : '') + '" data-a="cal-day" data-d="' + date + '"><div class="cal-n">' + d + '</div>' +
-      (sl.length ? '<div class="cal-cnt">' + sl.length + ' 堂</div>' : '') + sl.slice(0, 3).map(function(x){ return '<div class="cal-s">' + esc((x.start || "") + " " + slotLabel(x)) + '</div>'; }).join("") + (sl.length > 3 ? '<div class="cal-s">還有 ' + (sl.length - 3) + ' 堂…</div>' : '') + '</div>';
+      (sl.length ? '<div class="cal-cnt">' + sl.length + ' 堂</div>' : '') + sl.slice(0, 3).map(function(x){ var sn = slotSchoolName(x); return '<div class="cal-s" style="background:' + schoolColor(sn) + ';" title="' + esc((x.start || "") + (x.end ? "–" + x.end : "") + " " + slotLabel(x)) + '">' + esc((x.start || "") + " " + sn) + '</div>'; }).join("") + (sl.length > 3 ? '<div class="cal-s" style="background:none;color:var(--ink-soft);padding:0 2px;">還有 ' + (sl.length - 3) + ' 堂…</div>' : '') + '</div>';
   }
   return html + '</div>';
 }
