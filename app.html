@@ -197,7 +197,7 @@
 <body>
 <div id="root"></div>
 <dialog id="unitdlg"><form method="dialog"><h3 id="unit-t">複習單元</h3><label style="display:block;font-size:12.5px;font-weight:700;color:var(--ink-soft);margin:4px 0 5px;">名稱</label><input type="text" id="unit-name" autocomplete="off" placeholder="例如：第一到六課複習"><label style="display:block;font-size:12.5px;font-weight:700;color:var(--ink-soft);margin:12px 0 5px;">包含哪幾課（教材與活動會合併這幾課的生詞）</label><div id="unit-lessons" style="display:flex;flex-wrap:wrap;gap:8px;"></div><div class="row"><button type="button" class="btn" id="unit-no">取消</button><button type="submit" class="btn primary">儲存</button></div></form></dialog>
-<dialog id="sch" style="width:min(460px,94vw);"><form method="dialog"><h3 id="sch-t"></h3><label>學校／班級</label><select id="sch-c"></select><label>行事曆上顯示的字（不填就顯示學校名稱）</label><input type="text" id="sch-title" placeholder="例如：五結國中、開會、備課"><label>日期</label><input type="date" id="sch-d"><div style="display:flex;gap:10px;"><div style="flex:1;"><label>開始</label><input type="time" id="sch-s"></div><div style="flex:1;"><label>結束</label><input type="time" id="sch-e"></div></div><div id="sch-lw"><label>要上哪一課（可不選）</label><select id="sch-l"></select></div><label>備註（例如第二節改線上）</label><input type="text" id="sch-n"><label>超連結（可不填，例如線上教室或文件網址）</label><input type="text" id="sch-url" placeholder="https://..."><label>顏色</label><div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;"><label style="display:flex;align-items:center;gap:6px;margin:0;">底色 <input type="color" id="sch-bg" value="#2E75B6" style="width:44px;height:30px;padding:0;"></label><label style="display:flex;align-items:center;gap:6px;margin:0;">文字 <input type="color" id="sch-fg" value="#ffffff" style="width:44px;height:30px;padding:0;"></label><label style="display:flex;align-items:center;gap:6px;margin:0;font-weight:400;"><input type="checkbox" id="sch-auto" checked> 用預設顏色</label></div><div style="margin-top:8px;font-size:12px;color:var(--ink-soft);">點色塊直接選底色：</div><div id="sch-swb" class="sw-row"></div><div style="margin-top:6px;font-size:12px;color:var(--ink-soft);">文字顏色：</div><div id="sch-swf" class="sw-row"></div><div id="sch-sug" style="margin-top:8px;"></div><div id="sch-prev" style="margin-top:8px;"></div><div id="sch-rep" style="margin-top:12px;font-size:13px;"><label style="display:flex;align-items:center;gap:6px;font-weight:600;margin:0;flex-wrap:wrap;"><input type="checkbox" id="sch-r"> <span id="sch-rt">每週同一時間重複，共</span> <input type="number" id="sch-w" value="8" min="2" max="40" style="width:64px;"> 週</label></div><div id="sch-serw" style="margin-top:8px;font-size:13px;display:none;"><label style="display:flex;align-items:center;gap:6px;font-weight:600;margin:0;"><input type="checkbox" id="sch-ser"> 同系列「之後」的課也套用這次修改（班級、文字、顏色、連結、時間）</label></div><div class="row"><button type="button" class="btn" id="sch-no">取消</button><button type="submit" class="btn primary">儲存</button></div></form></dialog>
+<dialog id="sch" style="width:min(460px,94vw);"><form method="dialog"><h3 id="sch-t"></h3><label>學校／班級</label><select id="sch-c"></select><label>行事曆上顯示的字（不填就顯示學校名稱）</label><input type="text" id="sch-title" placeholder="例如：五結國中、開會、備課"><label>日期</label><input type="date" id="sch-d"><div style="display:flex;gap:10px;"><div style="flex:1;"><label>開始</label><input type="time" id="sch-s"></div><div style="flex:1;"><label>結束</label><input type="time" id="sch-e"></div></div><label>節數（不填就依時間自動推算，一節約 50 分鐘）</label><input type="number" id="sch-p" min="0" max="12" step="1" placeholder="例如 2"><div id="sch-lw"><label>要上哪一課（可不選）</label><select id="sch-l"></select></div><label>備註（例如第二節改線上）</label><input type="text" id="sch-n"><label>超連結（可不填，例如線上教室或文件網址）</label><input type="text" id="sch-url" placeholder="https://..."><label>顏色</label><div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;"><label style="display:flex;align-items:center;gap:6px;margin:0;">底色 <input type="color" id="sch-bg" value="#2E75B6" style="width:44px;height:30px;padding:0;"></label><label style="display:flex;align-items:center;gap:6px;margin:0;">文字 <input type="color" id="sch-fg" value="#ffffff" style="width:44px;height:30px;padding:0;"></label><label style="display:flex;align-items:center;gap:6px;margin:0;font-weight:400;"><input type="checkbox" id="sch-auto" checked> 用預設顏色</label></div><div style="margin-top:8px;font-size:12px;color:var(--ink-soft);">點色塊直接選底色：</div><div id="sch-swb" class="sw-row"></div><div style="margin-top:6px;font-size:12px;color:var(--ink-soft);">文字顏色：</div><div id="sch-swf" class="sw-row"></div><div id="sch-sug" style="margin-top:8px;"></div><div id="sch-prev" style="margin-top:8px;"></div><div id="sch-rep" style="margin-top:12px;font-size:13px;"><label style="display:flex;align-items:center;gap:6px;font-weight:600;margin:0;flex-wrap:wrap;"><input type="checkbox" id="sch-r"> <span id="sch-rt">每週同一時間重複，共</span> <input type="number" id="sch-w" value="8" min="2" max="40" style="width:64px;"> 週</label></div><div id="sch-serw" style="margin-top:8px;font-size:13px;display:none;"><label style="display:flex;align-items:center;gap:6px;font-weight:600;margin:0;"><input type="checkbox" id="sch-ser"> 同系列「之後」的課也套用這次修改（班級、文字、顏色、連結、時間）</label></div><div class="row"><button type="button" class="btn" id="sch-no">取消</button><button type="submit" class="btn primary">儲存</button></div></form></dialog>
 <dialog id="remind" style="width:min(420px,92vw);"><form method="dialog"><h3>📝 該填課堂記錄表了</h3><p id="remind-t" style="margin:6px 0 4px;font-weight:700;"></p><p class="note">趁記憶還新鮮，趕快記下今天的上課內容和學生表現吧。</p><div class="row" style="flex-wrap:wrap;"><button type="button" class="btn" id="remind-skip">今天不用提醒</button><button type="button" class="btn" id="remind-later">10 分鐘後再提醒</button><button type="button" class="btn primary" id="remind-go">填寫課堂記錄</button></div></form></dialog>
 <dialog id="bell-d" style="width:min(460px,94vw);"><form method="dialog" onsubmit="return false;"><h3>🔔 新的繳交</h3><div id="bell-list" style="max-height:50vh;overflow-y:auto;"></div><div class="row" style="flex-wrap:wrap;"><button type="button" class="btn sm" id="bell-perm" style="display:none;">開啟桌面通知</button><button type="button" class="btn" id="bell-clear">全部標為已讀</button><button type="button" class="btn primary" id="bell-close">關閉</button></div></form></dialog>
 <dialog id="hwed"></dialog>
@@ -861,7 +861,7 @@ function calendarHtml(){
   var m = S.month || (S.month = ymd(new Date()).slice(0, 7));
   var yy = Number(m.slice(0, 4)), mm = Number(m.slice(5, 7)) - 1;
   var first = new Date(yy, mm, 1), days = new Date(yy, mm + 1, 0).getDate(), today = ymd(new Date());
-  var html = '<div class="cal-head"><button class="btn sm" data-a="cal-prev">‹</button><button class="btn ghost cal-title" data-a="cp-open" title="選年份和月份">' + yy + ' 年 ' + (mm + 1) + ' 月 ▾</button><button class="btn sm" data-a="cal-next">›</button><button class="btn sm ghost" data-a="cal-today">回到今天</button><button class="btn sm ghost" data-a="cal-import" title="匯入課表檔（.json）">匯入課表…</button></div>' + calPickHtml("data-a", m) + '<div class="cal-grid">';
+  var html = '<div class="cal-head"><button class="btn sm" data-a="cal-prev">‹</button><button class="btn ghost cal-title" data-a="cp-open" title="選年份和月份">' + yy + ' 年 ' + (mm + 1) + ' 月 ▾</button><button class="btn sm" data-a="cal-next">›</button><button class="btn sm ghost" data-a="cal-today">回到今天</button><button class="btn sm ghost" data-a="cal-report" title="每個月、每間學校的上課節數">節數報表</button><button class="btn sm ghost" data-a="cal-import" title="匯入課表檔（.json）">匯入課表…</button></div>' + calPickHtml("data-a", m) + '<div class="cal-grid">';
   ["日", "一", "二", "三", "四", "五", "六"].forEach(function(w){ html += '<div class="cal-w">' + w + '</div>'; });
   for(var i = 0; i < first.getDay(); i++) html += '<div class="cal-d empty"></div>';
   for(var d = 1; d <= days; d++){
@@ -877,14 +877,69 @@ function slotRowHtml(sl, withDate){
   var sub = (ci && ci.cls) ? ((sl.title ? esc(slotLabel(sl)) + '　・　' : esc(ci.cls) + '　・　') + (les ? esc(les) : '未指定課次')) : (les ? esc(les) : '');
   var info = sub + (sl.note ? (sub ? '　・　' : '') + esc(sl.note) : '');
   return '<div class="slot"><div class="slot-time">' + esc((sl.start || "") + (sl.end ? "–" + sl.end : "")) + '</div><div class="slot-main"><div>' + chip + (withDate ? '　<span class="note">' + esc(sl.date) + '</span>' : '') + '</div>' + (info ? '<div class="note">' + info + '</div>' : '') + '</div>' +
-    '<div class="slot-act">' + (u ? '<a class="btn sm" href="' + esc(u) + '" target="_blank" rel="noopener noreferrer">🔗 開啟連結</a>' : '') + (ci ? '<button class="btn" data-a="slot-go" data-id="' + sl.id + '">' + (ci.cls ? '進入上課' : '進入學校') + '</button>' : '') + (!sl.s ? '' : recSlotDone(sl.id) ? '<span class="note">✓已記錄</span>' : '<button class="btn sm" data-a="slot-rec" data-id="' + sl.id + '">填記錄</button>') + '<button class="btn sm" data-a="slot-edit" data-id="' + sl.id + '">修改</button><button class="btn sm danger" data-a="slot-del" data-id="' + sl.id + '">刪除</button></div></div>';
+    '<div class="slot-act">' + (u ? '<a class="btn sm" href="' + esc(u) + '" target="_blank" rel="noopener noreferrer">🔗 開啟連結</a>' : '') + (ci ? '<button class="btn" data-a="slot-go" data-id="' + sl.id + '">' + '進入上課' + '</button>' : '') + (!sl.s ? '' : recSlotDone(sl.id) ? '<span class="note">✓已記錄</span>' : '<button class="btn sm" data-a="slot-rec" data-id="' + sl.id + '">填記錄</button>') + '<button class="btn sm" data-a="slot-edit" data-id="' + sl.id + '">修改</button><button class="btn sm danger" data-a="slot-del" data-id="' + sl.id + '">刪除</button></div></div>';
 }
 function todayPanelHtml(){
   var sl = slotsOn(ymd(new Date()));
   if(!sl.length) return '';
   return '<div class="panel"><h3>今天的課</h3>' + sl.map(function(x){ return slotRowHtml(x); }).join("") + '</div>';
 }
+// ---------- 節數報表：每間學校、每個月的上課節數（含請假／調課扣除），可複製或匯出 ----------
+function slotPeriods(sl){
+  if(sl.periods != null && sl.periods !== "") return Number(sl.periods) || 0;
+  var a = (sl.start || "").split(":"), b = (sl.end || "").split(":"); if(a.length < 2 || b.length < 2) return 1;
+  var mins = (Number(b[0]) * 60 + Number(b[1])) - (Number(a[0]) * 60 + Number(a[1])); if(mins <= 0) return 1;
+  return Math.max(1, Math.round((mins + 5) / 55));
+}
+function monthsBetween(from, to){
+  var out = [], y = Number(from.slice(0, 4)), m = Number(from.slice(5, 7)), ty = Number(to.slice(0, 4)), tm = Number(to.slice(5, 7)), n = 0;
+  while((y < ty || (y === ty && m <= tm)) && n++ < 60){ out.push(y + "-" + pad2(m)); m++; if(m > 12){ m = 1; y++; } }
+  return out;
+}
+function reportData(from, to){
+  var months = monthsBetween(from, to), m = schedMap(), absBy = {};
+  Object.keys(recMap()).forEach(function(k){ var r = recMap()[k]; if(r.slotId && r.isAbsence) absBy[r.slotId] = r; });
+  var rows = {}, list = [];
+  Object.keys(m).forEach(function(id){
+    var sl = m[id], mo = (sl.date || "").slice(0, 7); if(months.indexOf(mo) === -1) return;
+    var name = slotSchoolName(sl), p = slotPeriods(sl), ab = absBy[id];
+    var r = rows[name] = rows[name] || { name: name, bySch: {}, byAbs: {}, sch: 0, abs: 0, n: 0 };
+    r.bySch[mo] = (r.bySch[mo] || 0) + p; r.sch += p; r.n++;
+    if(ab){ r.byAbs[mo] = (r.byAbs[mo] || 0) + p; r.abs += p; }
+    list.push({ id: id, date: sl.date, start: sl.start || "", end: sl.end || "", name: name, p: p, abs: ab ? (ab.absType || "請假／調課") : "", note: sl.note || "" });
+  });
+  list.sort(function(a, b){ return (a.date + a.start).localeCompare(b.date + b.start); });
+  return { months: months, rows: Object.keys(rows).sort().map(function(k){ return rows[k]; }), list: list };
+}
+function renderSchedReport(){
+  S.focus = false; var rp = S.report = S.report || { from: ymd(new Date()).slice(0, 7), to: ymd(new Date()).slice(0, 7) };
+  if(rp.to < rp.from) rp.to = rp.from;
+  var d = reportData(rp.from, rp.to), months = d.months, tot = { sch: 0, abs: 0 }, byMo = {}, absMo = {};
+  d.rows.forEach(function(r){ tot.sch += r.sch; tot.abs += r.abs; months.forEach(function(mo){ byMo[mo] = (byMo[mo] || 0) + ((r.bySch[mo] || 0) - (r.byAbs[mo] || 0)); absMo[mo] = (absMo[mo] || 0) + (r.byAbs[mo] || 0); }); });
+  var html = '<div class="head-row"><div style="flex:1;"><h2>節數報表</h2><div class="note">依課表統計每間學校的上課節數。請假／調課（有填課堂記錄並標成請假的課）會從實際節數扣掉。一節約 50 分鐘，需要時可在排課視窗手動改節數。</div></div><div><button class="btn sm ghost" data-a="cal-back">回月曆</button></div></div>' +
+    '<div class="panel"><div class="tools"><label style="display:flex;align-items:center;gap:6px;margin:0;">從 <input type="month" id="rp-f" value="' + rp.from + '"></label><label style="display:flex;align-items:center;gap:6px;margin:0;">到 <input type="month" id="rp-t" value="' + rp.to + '"></label><button class="btn sm" data-r="thism">只看本月</button><button class="btn sm" data-r="csv">下載 CSV</button><button class="btn sm" data-r="copy">複製表格文字</button></div></div>';
+  html += '<div class="panel" style="overflow-x:auto;">' + (d.rows.length ? '<table class="hw-table"><thead><tr><th>學校</th>' + months.map(function(mo){ return '<th>' + Number(mo.slice(5)) + ' 月</th>'; }).join("") + '<th>合計（實際）</th><th>請假／調課</th></tr></thead><tbody>' +
+    d.rows.map(function(r){ return '<tr><td><b>' + esc(r.name) + '</b></td>' + months.map(function(mo){ var a = (r.bySch[mo] || 0) - (r.byAbs[mo] || 0); return '<td>' + (r.bySch[mo] ? '<b>' + a + '</b>' + (r.byAbs[mo] ? '<div class="note" style="color:#B23B32;">−' + r.byAbs[mo] + '</div>' : '') : '—') + '</td>'; }).join("") + '<td><b>' + (r.sch - r.abs) + '</b> 節</td><td>' + (r.abs || "—") + '</td></tr>'; }).join("") +
+    '<tr style="background:var(--surface-2);"><td><b>全部合計</b></td>' + months.map(function(mo){ return '<td><b>' + (byMo[mo] || 0) + '</b></td>'; }).join("") + '<td><b>' + (tot.sch - tot.abs) + '</b> 節</td><td>' + (tot.abs || "—") + '</td></tr></tbody></table>' : '<p class="note">這段期間沒有排課。</p>') + '</div>';
+  html += '<div class="panel"><h3>明細（' + d.list.length + ' 堂）</h3>' + (d.list.length ? d.list.map(function(x){ return '<div class="slot"><div class="slot-time" style="min-width:150px;">' + esc(x.date) + '　' + esc(x.start + (x.end ? "–" + x.end : "")) + '</div><div class="slot-main"><b>' + esc(x.name) + '</b>' + (x.abs ? '　<span class="chip" style="background:#F7D9D5;color:#B23B32;">' + esc(x.abs) + '</span>' : '') + (x.note ? '　<span class="note">' + esc(x.note) + '</span>' : '') + '</div><div style="font-weight:700;">' + x.p + ' 節</div></div>'; }).join("") : '<p class="note">沒有資料。</p>') + '</div>';
+  shell(html); setCrumb([]);
+  var main = document.getElementById("main");
+  function tableText(){ var lines = [["學校"].concat(months.map(function(mo){ return Number(mo.slice(5)) + "月"; }), ["合計（實際）", "請假／調課"])]; d.rows.forEach(function(r){ lines.push([r.name].concat(months.map(function(mo){ return (r.bySch[mo] || 0) - (r.byAbs[mo] || 0); }), [r.sch - r.abs, r.abs])); }); lines.push(["全部合計"].concat(months.map(function(mo){ return byMo[mo] || 0; }), [tot.sch - tot.abs, tot.abs])); return lines; }
+  main.onchange = function(e){ if(e.target.id === "rp-f" || e.target.id === "rp-t"){ var f = document.getElementById("rp-f").value, t = document.getElementById("rp-t").value; if(f && t){ rp.from = f; rp.to = t < f ? f : t; render(); } } };
+  main.onclick = async function(e){
+    var b = e.target.closest("[data-a],[data-r]"); if(!b) return;
+    if(b.dataset.a === "cal-back"){ S.day = null; render(); return; }
+    if(b.dataset.r === "thism"){ var mm = ymd(new Date()).slice(0, 7); rp.from = rp.to = mm; render(); return; }
+    if(b.dataset.r === "copy"){ var tx = tableText().map(function(r){ return r.join("\t"); }).join("\n"); try{ await navigator.clipboard.writeText(tx); toast("已複製，可以貼到 Excel 或文件"); }catch(er){ alert(tx); } return; }
+    if(b.dataset.r === "csv"){
+      var rows = tableText().concat([[], ["日期", "時間", "學校", "節數", "狀態", "備註"]], d.list.map(function(x){ return [x.date, x.start + (x.end ? "-" + x.end : ""), x.name, x.p, x.abs, x.note]; }));
+      var csv = "﻿" + rows.map(function(r){ return r.map(function(c){ return '"' + String(c).replace(/"/g, '""') + '"'; }).join(","); }).join("\n");
+      var el = document.createElement("a"); el.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" })); el.download = "節數報表_" + rp.from + (rp.to !== rp.from ? "_" + rp.to : "") + ".csv"; document.body.appendChild(el); el.click(); setTimeout(function(){ URL.revokeObjectURL(el.href); el.remove(); }, 500);
+    }
+  };
+}
 function renderDayPage(){
+  if(S.day === "report") return renderSchedReport();
   S.focus = false;
   var sl = slotsOn(S.day), d = new Date(S.day + "T00:00:00"), wk = ["日", "一", "二", "三", "四", "五", "六"][d.getDay()];
   var html = '<div class="head-row"><div style="flex:1;"><h2>' + (d.getMonth() + 1) + ' 月 ' + d.getDate() + ' 日（' + wk + '）</h2></div><div><button class="btn" data-a="slot-new" data-d="' + S.day + '">新增這天的課</button> <button class="btn sm ghost" data-a="cal-back">回月曆</button></div></div><div class="panel"><h3>當天課表</h3>' +
@@ -931,6 +986,7 @@ function openSlotDialog(id, date){
     document.getElementById("sch-s").value = cur ? (cur.start || "") : "14:00";
     document.getElementById("sch-e").value = cur ? (cur.end || "") : "15:30";
     document.getElementById("sch-n").value = cur ? (cur.note || "") : "";
+    document.getElementById("sch-p").value = cur && cur.periods != null ? cur.periods : "";
     document.getElementById("sch-rt").textContent = cur ? "從這堂開始，再往後每週同一時間新增，總共" : "每週同一時間重複，共";
     document.getElementById("sch-r").checked = false; document.getElementById("sch-w").value = 8;
     var hasLater = !!(cur && cur.series && Object.keys(m).some(function(k){ return k !== id && m[k].series === cur.series && m[k].date > cur.date; }));
@@ -954,7 +1010,7 @@ function openSlotDialog(id, date){
       if(!p[0] && !title){ alert("自訂行程請在「行事曆上顯示的字」填內容。"); return; }
       if(rawUrl && !url){ alert("超連結只能是 http 或 https 開頭的網址。"); return; }
       var autoC = document.getElementById("sch-auto").checked;
-      fin({ s: p[0] || null, t: p[1] || null, c: p[2] || null, title: title || null, url: url || null, bg: autoC ? null : bgI.value, fg: autoC ? null : fgI.value, date: date, start: st, end: document.getElementById("sch-e").value, lesson: p[2] ? (lsel.value || null) : null, note: document.getElementById("sch-n").value.trim(),
+      fin({ s: p[0] || null, t: p[1] || null, c: p[2] || null, title: title || null, url: url || null, bg: autoC ? null : bgI.value, fg: autoC ? null : fgI.value, date: date, start: st, end: document.getElementById("sch-e").value, lesson: p[2] ? (lsel.value || null) : null, note: document.getElementById("sch-n").value.trim(), periods: document.getElementById("sch-p").value === "" ? null : Math.max(0, Math.min(12, Math.round(Number(document.getElementById("sch-p").value) || 0))),
         seriesApply: hasLater && document.getElementById("sch-ser").checked,
         repeat: document.getElementById("sch-r").checked ? Math.max(2, Math.min(40, Number(document.getElementById("sch-w").value) || 2)) : 0 });
     };
@@ -980,6 +1036,21 @@ async function importSchedule(file){
   }
   S.month = first.slice(0, 7); toast("已匯入 " + todo.length + " 堂課"); render();
 }
+// 這間學校（只排學校的課）要進入哪個班級：沒有就自動建一個「上課」，只有一個就用它，有好幾個就問老師
+async function slotClassFor(sl){
+  var tm = schoolsOf()[sl.s].terms[sl.t], ks = sortedBy(tm.classes || {}, false);
+  if(ks.length === 1) return ks[0];
+  if(ks.length > 1){
+    var pick = await askChoice("這堂課要進入哪個班級？", [{ label: tm.name, items: ks.map(function(k){ return { v: k, t: tm.classes[k].name }; }) }], "進入");
+    return pick || null;
+  }
+  var code = await newCode(), cid = uid("c_"), cls = { name: "上課", order: Date.now(), code: code, lessonOpen: {} };
+  tm.classes = tm.classes || {}; tm.classes[cid] = cls;
+  await fbSet("teacherPlatform/" + S.teacher.id + "/schools/" + sl.s + "/terms/" + sl.t + "/classes/" + cid, cls);
+  await fbSet("classCodes/" + code, { t: S.teacher.id, s: sl.s, tm: sl.t, c: cid });
+  toast("已幫「" + tm.name + "」建立班級「上課」（之後可以改名），學生代碼 " + code);
+  return cid;
+}
 async function schedAct(a, ds){
   var base = "teacherPlatform/" + S.teacher.id + "/schedule", m = schedMap();
   if(a.indexOf("cp-") === 0){ if(calPickAct(a, ds, S.month || ymd(new Date()).slice(0, 7), function(ym){ S.month = ym; })) render(); return; }
@@ -989,6 +1060,7 @@ async function schedAct(a, ds){
   }
   if(a === "cal-today"){ S.month = ymd(new Date()).slice(0, 7); S.calPick = null; render(); return; }
   if(a === "cal-day"){ S.day = ds.d; render(); return; }
+  if(a === "cal-report"){ var mm0 = S.month || ymd(new Date()).slice(0, 7); S.report = S.report || { from: mm0, to: mm0 }; S.day = "report"; render(); return; }
   if(a === "cal-import"){
     var inp = document.createElement("input"); inp.type = "file"; inp.accept = ".json,application/json";
     inp.onchange = function(){ var fl = inp.files[0]; if(fl) importSchedule(fl); };
@@ -998,25 +1070,32 @@ async function schedAct(a, ds){
   if(a === "slot-rec"){ if(m[ds.id]) openRecordFor(Object.assign({ id: ds.id }, m[ds.id])); return; }
   if(a === "slot-go"){
     var sl = m[ds.id]; if(!sl || !classInfo(sl)) return;
+    if(classInfo(sl).schoolOnly){
+      // 只排學校的課：課程、作業、考卷都綁在班級上，所以第一次進入時幫這間學校準備好班級，並把這堂（和同系列之後的課）連到班級
+      var cid0 = await slotClassFor(sl); if(!cid0) return;
+      var targets = [ds.id]; if(sl.series) Object.keys(m).forEach(function(k){ if(k !== ds.id && m[k].series === sl.series && m[k].date > sl.date && m[k].s === sl.s && m[k].t === sl.t && !m[k].c) targets.push(k); });
+      for(var ti = 0; ti < targets.length; ti++){ m[targets[ti]].c = cid0; await fbUpdate(base + "/" + targets[ti], { c: cid0 }); }
+      sl = m[ds.id];
+    }
     S.day = null; S.sel = { s: sl.s, t: sl.t, c: sl.c || null }; S.lesson = (sl.lesson && (S.plat.lessons || {})[sl.lesson]) ? sl.lesson : null; S.tab = null; S.sub = null; render(); return;
   }
   if(a === "slot-new" || a === "slot-edit"){
     var r = await openSlotDialog(a === "slot-edit" ? ds.id : null, ds.d); if(!r) return;
     if(a === "slot-edit"){
       var origDate = m[ds.id].date;
-      var rec = Object.assign({}, m[ds.id], { s: r.s, t: r.t, c: r.c, title: r.title, url: r.url, bg: r.bg, fg: r.fg, date: r.date, start: r.start, end: r.end, lesson: r.lesson, note: r.note });
+      var rec = Object.assign({}, m[ds.id], { s: r.s, t: r.t, c: r.c, title: r.title, url: r.url, bg: r.bg, fg: r.fg, date: r.date, start: r.start, end: r.end, lesson: r.lesson, note: r.note, periods: r.periods });
       var n0 = r.repeat || 1;
       if(n0 > 1 && !rec.series) rec.series = uid("ser_");
       m[ds.id] = rec; await fbSet(base + "/" + ds.id, rec);
       if(r.seriesApply && rec.series){
-        for(var k in m){ if(k !== ds.id && m[k].series === rec.series && m[k].date > origDate){ var nx = Object.assign({}, m[k], { s: r.s, t: r.t, c: r.c, title: r.title, url: r.url, bg: r.bg, fg: r.fg, start: r.start, end: r.end }); m[k] = nx; await fbSet(base + "/" + k, nx); } }
+        for(var k in m){ if(k !== ds.id && m[k].series === rec.series && m[k].date > origDate){ var nx = Object.assign({}, m[k], { s: r.s, t: r.t, c: r.c, title: r.title, url: r.url, bg: r.bg, fg: r.fg, start: r.start, end: r.end, periods: r.periods }); m[k] = nx; await fbSet(base + "/" + k, nx); } }
       }
       if(n0 > 1){
         var have = {}; Object.keys(m).forEach(function(k){ if(m[k].series === rec.series) have[m[k].date] = 1; });
         var d1 = new Date(rec.date + "T00:00:00"), added = 0;
         for(var q = 1; q < n0; q++){
           var d2 = new Date(d1); d2.setDate(d1.getDate() + 7 * q); var ds2 = ymd(d2); if(have[ds2]) continue;
-          var id3 = uid("sl_"), rec3 = { s: r.s, t: r.t, c: r.c, title: r.title, url: r.url, bg: r.bg, fg: r.fg, date: ds2, start: r.start, end: r.end, lesson: r.lesson, note: r.note, series: rec.series };
+          var id3 = uid("sl_"), rec3 = { s: r.s, t: r.t, c: r.c, title: r.title, url: r.url, bg: r.bg, fg: r.fg, date: ds2, start: r.start, end: r.end, lesson: r.lesson, note: r.note, periods: r.periods, series: rec.series };
           m[id3] = rec3; await fbSet(base + "/" + id3, rec3); added++;
         }
         if(added) toast("已再新增 " + added + " 週的課");
@@ -1025,7 +1104,7 @@ async function schedAct(a, ds){
       var n = r.repeat || 1, series = n > 1 ? uid("ser_") : null, d0 = new Date(r.date + "T00:00:00");
       for(var i = 0; i < n; i++){
         var dd = new Date(d0); dd.setDate(d0.getDate() + 7 * i);
-        var id = uid("sl_"), rec2 = { s: r.s, t: r.t, c: r.c, title: r.title, url: r.url, bg: r.bg, fg: r.fg, date: ymd(dd), start: r.start, end: r.end, lesson: r.lesson, note: r.note, series: series };
+        var id = uid("sl_"), rec2 = { s: r.s, t: r.t, c: r.c, title: r.title, url: r.url, bg: r.bg, fg: r.fg, date: ymd(dd), start: r.start, end: r.end, lesson: r.lesson, note: r.note, periods: r.periods, series: series };
         m[id] = rec2; await fbSet(base + "/" + id, rec2);
       }
       if(n > 1) toast("已新增 " + n + " 週的課，之後可以逐天修改或刪除");
@@ -1352,7 +1431,7 @@ async function examEnsureRoom(tid, it, name){
     if(Object.keys(one).length) seeded[qid] = JSON.parse(JSON.stringify(one));
   });
   var proj = JSON.parse(JSON.stringify(src)); delete proj.progress;
-  await fbSet("rooms/" + rid, { project: proj, sharedProgress: seeded, isOpen: true, classMode: (it.exam.mode === "practice" ? "practice" : "test"), theme: { bgMode: "light", accent: "seal" }, attempt: { item: it.id, name: name, tid: tid, cid: S.student ? S.student.idx.c : S.sel.c } });
+  await fbSet("rooms/" + rid, { project: proj, sharedProgress: seeded, isOpen: true, classMode: (it.exam.mode === "practice" ? "practice" : "test"), theme: { bgMode: "light", accent: "seal" }, attempt: { item: it.id, name: name, tid: tid, cid: S.student ? S.student.idx.c : S.sel.c, s: S.student ? S.student.idx.s : null, tm: S.student ? S.student.idx.tm : null, cname: S.student ? S.student.cls.name : "", title: it.title } });
   return rid;
 }
 async function renderStudentExam(){
@@ -1723,21 +1802,28 @@ async function hwSummary(cls, items, roster){
   var recs = Object.keys(recMap()).map(function(k){ return recMap()[k]; }).filter(function(r){ return recBelongsTo(r, S.sel); });
   var real = recs.filter(function(r){ return !r.isAbsence; }), abs = recs.length - real.length;
   var keys = Object.keys(rows).sort(function(a, b){ return rows[a].localeCompare(rows[b], "zh-Hant"); });
+  var exams = (await hwLoadItems()).filter(function(x){ return x.kind === "exam" && itemVisible(x); }).sort(function(a, b){ return itemDay(a).localeCompare(itemDay(b)); }), attBy = {};
+  await Promise.all(exams.map(function(it){ return fbGet(examAttPath(tid, cid, it.id)).then(function(v){ attBy[it.id] = v || {}; }); }));
+  keys.forEach(function(k){ exams.forEach(function(it){ var a = (attBy[it.id] || {})[k]; if(a && a.name && !rows[k]) rows[k] = a.name; }); });
+  function examScore(it, k){ var a = (attBy[it.id] || {})[k]; if(!a) return null; if(a.status === "graded" && a.final != null) return a.final; if(a.auto && a.status === "submitted" && a.auto.pct != null) return a.auto.pct; return null; }
+  function examCell(it, k){ var a = (attBy[it.id] || {})[k]; if(!a) return "—"; if(a.status === "graded" && a.final != null) return String(a.final); if(a.status === "submitted" && a.auto) return (a.auto.pct == null ? "待批改" : a.auto.pct + "（待批改）"); return a.status === "doing" ? "作答中" : "—"; }
   var data = keys.map(function(k){
     var c = { ok: 0, late: 0, missing: 0, exempt: 0 }; items.forEach(function(it){ var st = hwStatus(it, subsBy[it.id][k]); if(c[st] != null) c[st]++; });
     var sc = [], att = { pres: 0, abs: 0 }; real.forEach(function(r){ (r.students || []).forEach(function(s){ if((s.name || "").trim() === rows[k]){ if(s.absent) att.abs++; else { att.pres++; sc.push(stTotal(s)); } } }); });
     var due = c.ok + c.late + c.missing;
-    return { name: rows[k], ok: c.ok, late: c.late, missing: c.missing, rate: due ? Math.round((c.ok + c.late) * 100 / due) + "%" : "—", n: sc.length, pres: att.pres, abs: att.abs, avg: sc.length ? (sc.reduce(function(a, b){ return a + b; }, 0) / sc.length).toFixed(1) : "—" };
+    var es = exams.map(function(it){ return examScore(it, k); }).filter(function(v){ return v != null; });
+    return { exAvg: es.length ? Math.round(es.reduce(function(a, b){ return a + b; }, 0) / es.length) : "—", exCells: exams.map(function(it){ return examCell(it, k); }), name: rows[k], ok: c.ok, late: c.late, missing: c.missing, rate: due ? Math.round((c.ok + c.late) * 100 / due) + "%" : "—", n: sc.length, pres: att.pres, abs: att.abs, avg: sc.length ? (sc.reduce(function(a, b){ return a + b; }, 0) / sc.length).toFixed(1) : "—" };
   });
   var html = '<div class="head-row"><div style="flex:1;"><h2>學期總表</h2><div class="note">' + esc(cls.name) + '　作業 ' + items.length + ' 份　已記錄 ' + real.length + ' 堂（請假／調課 ' + abs + ' 堂）</div></div><div><button class="btn sm ghost" data-h="back">回聯絡簿</button></div></div>' +
     '<div class="panel" style="overflow-x:auto;">' + (data.length ? '<table class="hw-table"><thead><tr><th>學生</th><th>作業準時</th><th>遲交</th><th>未交</th><th>繳交率</th><th>出席堂數</th><th>缺席堂數</th><th>平均總分</th></tr></thead><tbody>' + data.map(function(d){ return '<tr><td><b>' + esc(d.name) + '</b></td><td>' + d.ok + '</td><td>' + d.late + '</td><td>' + d.missing + '</td><td>' + d.rate + '</td><td>' + d.pres + '</td><td>' + d.abs + '</td><td>' + d.avg + '</td></tr>'; }).join("") + '</tbody></table><div style="margin-top:10px;"><button class="btn sm" data-h="csv">下載 CSV</button></div>' : '<p class="note">還沒有學生資料。先在聯絡簿貼上班級名單，或等學生交作業。</p>') + '</div>' +
+    (exams.length ? '<div class="panel" style="overflow-x:auto;"><h3>線上考卷成績</h3><table class="hw-table"><thead><tr><th>學生</th>' + exams.map(function(it){ return '<th>' + esc(it.title) + '<div class="note">' + esc(itemDay(it).slice(5)) + '</div></th>'; }).join("") + '<th>平均</th></tr></thead><tbody>' + data.map(function(d){ return '<tr><td><b>' + esc(d.name) + '</b></td>' + d.exCells.map(function(c){ return '<td>' + esc(c) + '</td>'; }).join("") + '<td><b>' + d.exAvg + '</b></td></tr>'; }).join("") + '</tbody></table><p class="note" style="margin-top:6px;">有「待批改」的是系統自動算的分數，還沒計入簡答／手寫；批改公布後才是正式成績。</p></div>' : '') +
     '<p class="note">課堂記錄的分數是用學生姓名對起來的，記錄表裡的學生名字要跟班級名單一樣才會算進去。</p>';
   shell(html); setCrumb([]);
   document.getElementById("main").onclick = function(e){
     var b = e.target.closest("[data-h]"); if(!b) return;
     if(b.dataset.h === "back"){ S.hw = { view: "list" }; render(); }
     else if(b.dataset.h === "csv"){
-      var csv = "﻿" + [["學生", "作業準時", "遲交", "未交", "繳交率", "出席堂數", "缺席堂數", "平均總分"]].concat(data.map(function(d){ return [d.name, d.ok, d.late, d.missing, d.rate, d.pres, d.abs, d.avg]; })).map(function(r){ return r.map(function(c){ return '"' + String(c).replace(/"/g, '""') + '"'; }).join(","); }).join("\n");
+      var csv = "﻿" + [["學生", "作業準時", "遲交", "未交", "繳交率", "出席堂數", "缺席堂數", "平均總分"].concat(exams.map(function(it){ return it.title; }), ["考卷平均"])].concat(data.map(function(d){ return [d.name, d.ok, d.late, d.missing, d.rate, d.pres, d.abs, d.avg].concat(d.exCells, [d.exAvg]); })).map(function(r){ return r.map(function(c){ return '"' + String(c).replace(/"/g, '""') + '"'; }).join(","); }).join("\n");
       var el = document.createElement("a"); el.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" })); el.download = "學期總表_" + cls.name + ".csv"; document.body.appendChild(el); el.click(); setTimeout(function(){ URL.revokeObjectURL(el.href); el.remove(); }, 500);
     }
   };
@@ -2118,11 +2204,11 @@ function desktopNotify(n){
 }
 function openBell(){
   var d = document.getElementById("bell-d"), items = bellItems();
-  document.getElementById("bell-list").innerHTML = items.length ? items.map(function(x){ return '<div class="slot" data-n="' + x.id + '" style="cursor:pointer;"><div class="slot-time" style="min-width:80px;">' + esc(hwFmt(x.at)) + '</div><div class="slot-main"><b>' + esc(x.name) + '</b> ' + (x.kind === "leave" ? '申請' + esc(x.title) : x.kind === "google" ? '申請連結 Google 帳號' : '交了「' + esc(x.title) + '」') + '<div class="note">' + esc(x.cname || "") + '</div></div></div>'; }).join("") : '<p class="note">沒有新的繳交通知。</p>';
+  document.getElementById("bell-list").innerHTML = items.length ? items.map(function(x){ return '<div class="slot" data-n="' + x.id + '" style="cursor:pointer;"><div class="slot-time" style="min-width:80px;">' + esc(hwFmt(x.at)) + '</div><div class="slot-main"><b>' + esc(x.name) + '</b> ' + (x.kind === "leave" ? '申請' + esc(x.title) : x.kind === "google" ? '申請連結 Google 帳號' : x.kind === "exam" ? '交卷了「' + esc(x.title) + '」' : '交了「' + esc(x.title) + '」') + '<div class="note">' + esc(x.cname || "") + '</div></div></div>'; }).join("") : '<p class="note">沒有新的繳交通知。</p>';
   document.getElementById("bell-perm").style.display = ("Notification" in window && Notification.permission === "default") ? "" : "none";
   document.getElementById("bell-list").onclick = function(e){
     var r = e.target.closest("[data-n]"); if(!r) return; var n = S.notify[r.dataset.n]; if(!n) return;
-    d.close(); S.day = null; S.lib = null; S.rec = null; S.sel = { s: n.s, t: n.tm, c: n.c }; S.lesson = null; S.hw = n.kind === "leave" ? { view: "leave" } : n.kind === "google" ? { view: "accounts" } : { view: "item", id: n.hwId }; render();
+    d.close(); S.day = null; S.lib = null; S.rec = null; S.sel = { s: n.s, t: n.tm, c: n.c }; S.lesson = null; S.hw = n.kind === "leave" ? { view: "leave" } : n.kind === "google" ? { view: "accounts" } : n.kind === "exam" ? { view: "exam", item: n.hwId, name: n.name, room: n.room, title: n.title } : { view: "item", id: n.hwId }; render();
   };
   document.getElementById("bell-clear").onclick = async function(){ await fbSet("teacherPlatform/" + S.teacher.id + "/notify", null); S.notify = {}; updateBell(); d.close(); toast("已全部標為已讀"); };
   document.getElementById("bell-perm").onclick = function(){ try{ Notification.requestPermission().then(function(){ openBell(); }); }catch(e){} };
@@ -2448,7 +2534,7 @@ async function renderBoard(cls){
     names.sort(function(a, b){ return a.localeCompare(b, "zh-Hant"); });
     return h + '<div style="margin-top:8px;">' + (names.length ? names.map(function(n){
       var a = att[hwSkey(n)], pct = a && a.auto ? a.auto.pct : null, pend = a && a.auto ? a.auto.pending : 0;
-      var sc = a && a.status === "graded" && a.final != null ? '<b>' + a.final + ' 分</b>（已批改）' : (a && a.auto ? '自動 <b>' + pct + ' 分</b>' + (pend ? '＋<span style="color:#B23B32;">' + pend + ' 題待批改</span>' : '') : '');
+      var sc = a && a.status === "graded" && a.final != null ? '<b>' + a.final + ' 分</b>（已批改）' : (a && a.auto ? (pct == null ? '自動分數 —' : '自動 <b>' + pct + ' 分</b>') + (pend ? '＋<span style="color:#B23B32;">' + pend + ' 題待批改</span>' : '') : '');
       return '<div class="slot"><div class="slot-time" style="min-width:90px;"><b>' + esc(n) + '</b></div><div class="slot-main"><span class="chip" style="background:' + (a && (a.status === "submitted" || a.status === "graded") ? '#DCEEE6' : '#F1E6DA') + ';">' + examStatusLabel(a) + '</span> ' + sc + (a && a.submittedAt ? '　<span class="note">' + esc(hwFmt(a.submittedAt)) + ' 交卷</span>' : '') + '</div><div class="slot-act">' + (a && a.room ? '<button class="btn sm' + (a.status === "submitted" ? ' primary' : '') + '" data-b="exam-open" data-id="' + it.id + '" data-n="' + esc(n) + '">' + (a.status === "submitted" || a.status === "graded" ? '批改／查看' : '看作答') + '</button>' : '') + '</div></div>';
     }).join("") : '<p class="note">還沒有名單。到「名單與帳號」貼上班級名單。</p>') + '</div>';
   }
