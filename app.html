@@ -455,8 +455,45 @@ function saveHash(){
   var h = new URLSearchParams();
   if(S.sel) h.set("c", S.sel.s + "." + (S.sel.t || "") + "." + (S.sel.c || ""));
   if(S.lesson) h.set("l", S.lesson); if(S.tab) h.set("tab", S.tab); if(S.sub) h.set("sub", S.sub);
-  history.replaceState(null, "", location.pathname + location.search + (h.toString() ? "#" + h.toString() : ""));
+  navPush(location.pathname + location.search + (h.toString() ? "#" + h.toString() : ""));
 }
+// ---------- 瀏覽器的「上一頁／下一頁」：平台內的每個畫面都記成一個歷史紀錄 ----------
+var NAV = { popping: false, last: null };
+function navSnap(){
+  if(S.teacher){
+    return { k: "t", sel: S.sel ? { s: S.sel.s, t: S.sel.t || null, c: S.sel.c || null } : null, lesson: S.lesson || null, tab: S.tab || null, sub: S.sub || null,
+      hw: S.hw ? { view: S.hw.view || "list", id: S.hw.id || null, from: S.hw.from || null, to: S.hw.to || null } : null,
+      rec: S.rec ? { view: S.rec.edit !== undefined ? null : (S.rec.view || null), filter: S.rec.filter || null, label: S.rec.label || null, student: S.rec.student || null } : null,
+      lib: S.lib ? { book: S.lib.book || null, lesson: S.lib.lesson || null } : null, day: S.day || null };
+  }
+  return { k: "s", lesson: S.lesson || null, tab: S.tab || null, sub: S.sub || null, hwOpen: S.hwOpen || null, leaveOpen: !!S.leaveOpen };
+}
+function navPush(url){
+  if(NAV.popping) return;
+  var snap = navSnap(), key = JSON.stringify(snap);
+  try{
+    if(NAV.last === null || key === NAV.last) history.replaceState(snap, "", url); else history.pushState(snap, "", url);
+  }catch(e){}
+  NAV.last = key;
+}
+window.addEventListener("popstate", function(e){
+  var st = e.state; if(!st || !st.k) return;
+  NAV.last = JSON.stringify(st);
+  if(st.k === "t" && S.teacher){
+    NAV.popping = true;
+    try{
+      if(S.focus) S.focus = false;
+      S.sel = st.sel; S.lesson = st.lesson; S.tab = st.tab; S.sub = st.sub;
+      S.hw = st.hw; S.rec = st.rec ? Object.assign({}, st.rec) : null; S.lib = st.lib; S.day = st.day;
+      if(S.rec && !S.rec.view) delete S.rec.view;
+      render();
+    } finally { NAV.popping = false; }
+  } else if(st.k === "s" && S.student){
+    NAV.popping = true;
+    try{ S.lesson = st.lesson; S.tab = st.tab; S.sub = st.sub; S.hwOpen = st.hwOpen; S.leaveOpen = st.leaveOpen; renderStudent(); }
+    finally { NAV.popping = false; }
+  }
+});
 
 // ---------- 畫面骨架 ----------
 // ---------- 「返回」：每個功能頁左上角都有，回到上一層 ----------
@@ -509,9 +546,9 @@ function shell(inner, opts){
     document.getElementById("bell").onclick = openBell; updateBell();
     document.getElementById("recbtn").onclick = function(){ if(S.focus) setFocus(false); S.rec = { filter: "all" }; S.lib = null; S.day = null; S.sel = null; S.lesson = null; render(); };
     document.getElementById("libbtn").onclick = function(){ if(S.focus) setFocus(false); S.rec = null; S.lib = { book: S.lib ? S.lib.book : DEFAULT_BOOK }; render(); };
-    document.getElementById("logout").onclick = function(){ try{ localStorage.removeItem(SESSION_KEY); localStorage.removeItem("mm_ta_owner"); }catch(e){} S.teacher = null; S.sel = null; history.replaceState(null, "", location.pathname); viewLogin(); };
+    document.getElementById("logout").onclick = function(){ try{ localStorage.removeItem(SESSION_KEY); localStorage.removeItem("mm_ta_owner"); }catch(e){} S.teacher = null; S.sel = null; NAV.last = null; history.replaceState(null, "", location.pathname); viewLogin(); };
   } else {
-    document.getElementById("leave").onclick = function(){ S.student = null; history.replaceState(null, "", location.pathname); viewStudentEntry(); };
+    document.getElementById("leave").onclick = function(){ S.student = null; NAV.last = null; history.replaceState(null, "", location.pathname); viewStudentEntry(); };
   }
 }
 function setCrumb(parts){
@@ -2026,11 +2063,11 @@ async function newCode(){
 function render(){
   if(!S.teacher) return;
   if(S.hw && (!S.sel || !S.sel.c)) S.hw = null;
+  saveHash();
   if(S.lib) return renderLibrary();
   if(S.rec) return renderRecords();
   if(S.day && !S.sel) return renderDayPage();
   if(S.sel){ var c0 = getCls(S.sel); S.live = c0 && c0.live && c0.live.on ? c0.live : null; }
-  saveHash();
   if(!S.sel){ return renderPlatformHome(); }
   if(!schoolsOf()[S.sel.s]){ S.sel = null; return render(); }
   if(!S.sel.t){ return renderYearHome(); }
@@ -2451,7 +2488,7 @@ function renderStudent(){
   if(S.leaveOpen) return renderStudentLeave();
   S.focus = false; S.liveRendered = null;
   var cls = st.cls, openMap = cls.lessonOpen || {};
-  history.replaceState(null, "", location.pathname + "?class=" + st.code + (S.lesson ? "#l=" + S.lesson + (S.tab ? "&tab=" + S.tab : "") : ""));
+  navPush(location.pathname + "?class=" + st.code + (S.lesson ? "#l=" + S.lesson + (S.tab ? "&tab=" + S.tab : "") : ""));
   if(S.lesson && openMap[S.lesson]){
     var r = renderLessonCommon(S.lesson, openMap[S.lesson], false);
     shell(r.html, { flush: true }); setCrumb([st.school, st.term, cls.name, lessonTitle(S.lesson)]);
