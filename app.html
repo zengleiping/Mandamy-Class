@@ -990,7 +990,7 @@ function renderRecords(){
   if(S.rec && S.rec.view === "comments") return renderComments();
   S.focus = false;
   var f = S.rec.filter || "all", m = recMap(), ids = Object.keys(m).filter(function(k){ return f === "all" || (f === "__makeup" ? (m[k].isAbsence && !m[k].madeUp) : m[k].classLabel === f); }).sort(function(a, b){ var d = (m[b].date || "").localeCompare(m[a].date || ""); return d || ((m[b].seq || 0) - (m[a].seq || 0)); });
-  var html = '<div class="head-row"><div style="flex:1;"><h2>課堂記錄</h2><div class="note">' + (Object.keys(m).length ? '共 ' + Object.keys(m).length + ' 筆' : '還沒有任何記錄') + '</div></div><div><button class="btn" data-r="new">新增記錄</button> <button class="btn sm" data-r="trend">學生趨勢</button> <button class="btn sm" data-r="review">生詞複習</button> <button class="btn sm" data-r="comments">學期評語</button> <button class="btn sm" data-r="import">匯入舊記錄…</button><input type="file" id="rec-imp" accept=".json,application/json" style="display:none;"></div></div>';
+  var html = '<div class="head-row"><div style="flex:1;"><h2>課堂記錄</h2><div class="note">' + (Object.keys(m).length ? '共 ' + Object.keys(m).length + ' 筆' : '還沒有任何記錄') + '</div></div><div><button class="btn" data-r="new">新增記錄</button> <button class="btn sm" data-r="trend">學生趨勢</button> <button class="btn sm" data-r="review">生詞複習</button> <button class="btn sm" data-r="comments">學期評語</button> <button class="btn sm" data-r="import">匯入舊記錄…</button> <button class="btn sm' + (S.recSel ? ' primary' : '') + '" data-r="selmode">' + (S.recSel ? '結束選取' : '選取刪除') + '</button><input type="file" id="rec-imp" accept=".json,application/json" style="display:none;"></div></div>';
   var labels = recLabels();
   var needMk = Object.keys(m).filter(function(k){ return m[k].isAbsence && !m[k].madeUp; }).length;
   if(labels.length) html += '<div class="tools" style="margin-bottom:12px;"><button class="btn sm' + (f === "all" ? ' primary' : '') + '" data-r="filter" data-f="all">全部 ' + Object.keys(m).length + '</button>' + (needMk ? '<button class="btn sm' + (f === "__makeup" ? ' primary' : '') + '" data-r="filter" data-f="__makeup" style="' + (f === "__makeup" ? '' : 'background:#F7D9D5;color:#B23B32;') + '">待補課 ' + needMk + '</button>' : '') + labels.map(function(l){ return '<button class="btn sm' + (f === l.label ? ' primary' : '') + '" data-r="filter" data-f="' + esc(l.label) + '">' + esc(l.label) + ' ' + l.count + '</button>'; }).join("") + '</div>';
@@ -999,21 +999,51 @@ function renderRecords(){
     real.forEach(function(k){ (m[k].students || []).forEach(function(s){ if(!s.absent) tot.push(stTotal(s)); }); });
     html += '<div class="panel"><div class="tools" style="gap:28px;"><div><b style="font-size:20px;">' + ids.length + '</b><div class="note">已記錄堂數</div></div><div><b style="font-size:20px;">' + (tot.length ? (tot.reduce(function(a, b){ return a + b; }, 0) / tot.length).toFixed(1) : "—") + '</b><div class="note">平均總分</div></div><div><b style="font-size:20px;">' + (ids.length - real.length) + '</b><div class="note">請假／調課</div></div></div></div>';
   }
+  var sel = S.recSel ? S.recSel.ids : null, selN = sel ? ids.filter(function(k){ return sel[k]; }).length : 0, dupN = sel ? recDupIds().length : 0;
+  if(sel) html += '<div class="panel" style="background:var(--surface-2);"><div class="tools"><b>選取模式：已選 ' + selN + ' 筆</b><button class="btn sm" data-r="selall">全選目前清單（' + ids.length + '）</button><button class="btn sm" data-r="selnone">全部取消</button><button class="btn sm" data-r="seldup">自動選出重複的（' + dupN + ' 筆）</button><button class="btn sm danger" data-r="seldel"' + (selN ? '' : ' disabled') + '>刪除已選的 ' + selN + ' 筆</button></div><div class="note" style="margin-top:6px;">「重複」＝日期、班級、第幾次、內容、學生分數都一模一樣；每組會保留最早建立的那一筆，只選出多的。刪除前建議先到首頁「現在下載完整備份」。</div></div>';
   html += '<div class="panel">' + (ids.length ? ids.map(function(k){
     var r = m[k], sts = (r.students || []).filter(function(x){ return !x.absent; }), tot = r.isAbsence ? "—" : (sts.length <= 1 ? (sts.length ? stTotal(sts[0]) : "—") : Math.round(sts.reduce(function(a, s){ return a + stTotal(s); }, 0) / sts.length) + " 平均");
-    return '<div class="slot" data-r="open" data-id="' + k + '" style="cursor:pointer;"><div class="slot-time">第 ' + esc(r.seq == null ? "?" : r.seq) + ' 次</div><div class="slot-main"><div><b>' + esc(r.date || "") + '</b>　' + esc(r.classLabel || "（未命名）") + '　' + recBadge(r) + '</div><div class="note">' + esc(r.material || (r.isAbsence ? "（無上課內容）" : "")) + '</div></div><div style="font-weight:700;">' + tot + '</div></div>';
+    return '<div class="slot" data-r="open" data-id="' + k + '" style="cursor:pointer;' + (sel && sel[k] ? 'background:#F7D9D5;' : '') + '">' + (sel ? '<input type="checkbox" ' + (sel[k] ? 'checked ' : '') + 'style="margin:0 10px 0 0;width:20px;height:20px;pointer-events:none;">' : '') + '<div class="slot-time">第 ' + esc(r.seq == null ? "?" : r.seq) + ' 次</div><div class="slot-main"><div><b>' + esc(r.date || "") + '</b>　' + esc(r.classLabel || "（未命名）") + '　' + recBadge(r) + '</div><div class="note">' + esc(r.material || (r.isAbsence ? "（無上課內容）" : "")) + '</div></div><div style="font-weight:700;">' + tot + '</div></div>';
   }).join("") : '<p class="note">這裡還沒有記錄。上完課按「新增記錄」，或從課表的「填記錄」進來。</p>') + '</div>';
   shell(html); setCrumb([]);
   var main = document.getElementById("main");
   main.onclick = function(e){
     var b = e.target.closest("[data-r]"); if(!b) return; var a = b.dataset.r;
     if(a === "new"){ S.rec = { edit: null, draft: newRecordDraft(null), shots: [] }; render(); }
-    else if(a === "open"){ openRecordEdit(b.dataset.id); }
+    else if(a === "open"){ if(S.recSel){ S.recSel.ids[b.dataset.id] = !S.recSel.ids[b.dataset.id]; render(); } else openRecordEdit(b.dataset.id); }
+    else if(a === "selmode"){ S.recSel = S.recSel ? null : { ids: {} }; render(); }
+    else if(a === "selall"){ ids.forEach(function(k){ S.recSel.ids[k] = true; }); render(); }
+    else if(a === "selnone"){ S.recSel.ids = {}; render(); }
+    else if(a === "seldup"){ S.recSel.ids = {}; recDupIds().forEach(function(k){ S.recSel.ids[k] = true; }); f = "all"; S.rec.filter = "all"; render(); if(!recDupIds().length) toast("沒有找到重複的記錄"); }
+    else if(a === "seldel"){ recDeleteSelected(); }
     else if(a === "filter"){ S.rec.filter = b.dataset.f; render(); }
     else if(a === "trend" || a === "review" || a === "comments"){ S.rec.view = a; render(); }
     else if(a === "import"){ document.getElementById("rec-imp").click(); }
   };
   document.getElementById("rec-imp").onchange = function(e){ var fl = e.target.files[0]; e.target.value = ""; if(fl) importRecords(fl); };
+}
+// 找出內容完全相同的重複記錄：每組保留最早建立的一筆，回傳多出來的那些 id
+function recSig(r){ return JSON.stringify([r.date, r.classLabel, r.seq, r.weekNo, r.material, !!r.isAbsence, r.absType || "", r.notes || "", (r.students || []).map(function(x){ return JSON.stringify(x); })]); }
+function recDupIds(){
+  var m = recMap(), groups = {}, out = [];
+  Object.keys(m).forEach(function(k){ (groups[recSig(m[k])] = groups[recSig(m[k])] || []).push(k); });
+  Object.keys(groups).forEach(function(g){
+    var ks = groups[g]; if(ks.length < 2) return;
+    ks.sort(function(a, b){ return ((m[a].createdAt || m[a].updatedAt || 0) - (m[b].createdAt || m[b].updatedAt || 0)) || a.localeCompare(b); });
+    out = out.concat(ks.slice(1));
+  });
+  return out;
+}
+async function recDeleteSelected(){
+  var m = recMap(), ids = Object.keys(S.recSel.ids).filter(function(k){ return S.recSel.ids[k] && m[k]; });
+  if(!ids.length) return;
+  if(!confirm("確定刪除選取的 " + ids.length + " 筆課堂記錄？刪除後無法復原（除非你有下載過備份）。")) return;
+  var base = "teacherPlatform/" + S.teacher.id;
+  for(var i = 0; i < ids.length; i++){
+    delete m[ids[i]]; await fbSet(base + "/classRecords/" + ids[i], null);
+    try{ await fbSet(base + "/recordShots/" + ids[i], null); }catch(er){}
+  }
+  S.recSel = null; toast("已刪除 " + ids.length + " 筆"); render();
 }
 async function openRecordEdit(id){
   var r = JSON.parse(JSON.stringify(recMap()[id])); if(!r.students || !r.students.length) r.students = [blankStudent("")];
