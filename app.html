@@ -123,6 +123,13 @@
   .bd-plan{ background:#E8F3EC; border-radius:10px; padding:8px 12px; margin:8px 0; }
   .cmt-row{ padding:6px 0; border-top:1px solid var(--line); }
   #hwed{ max-height:92vh; overflow-y:auto; } #hwed select, #hwed input[type=date], #hwed input[type=time], #hwed input[type=text], #hwed textarea{ width:100%; padding:8px 10px; border-radius:8px; border:1.5px solid var(--line); background:var(--surface-2); font:inherit; }
+  .cal-title{ font-size:16px; font-weight:800; padding:6px 12px; }
+  .cal-pick{ background:var(--surface); border:1.5px solid var(--line); border-radius:14px; padding:10px; margin:0 0 10px; box-shadow:var(--shadow); max-width:360px; }
+  .cp-head{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px; } .cp-head b{ flex:1; text-align:center; }
+  .cp-year{ font-size:15px; font-weight:800; flex:1; }
+  .cp-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:6px; }
+  .cp-b{ border:1.5px solid var(--line); background:var(--surface-2); border-radius:10px; padding:10px 0; font-weight:700; font-size:14px; color:var(--ink); cursor:pointer; }
+  .cp-b.cur{ outline:2px solid var(--line); } .cp-b.sel{ background:var(--seal); border-color:var(--seal); color:#fff; }
   .cal-cnt{ display:none; }
   body.ta .owner-only, body.ta .danger{ display:none !important; }
   @media (pointer:coarse), (max-width:1024px){
@@ -561,12 +568,17 @@ function shell(inner, opts){
   var isT = !!S.teacher;
   document.body.classList.toggle("ta", isTA());
   root.innerHTML = '<div class="shell' + (S.focus ? ' focus' : '') + '"><div class="top">' +
-    (canBack() ? '<button class="btn sm" id="topback" style="font-size:14px;">‹ 返回</button>' : '') +
-    '<div class="brand"><img src="icons/logo.svg" alt="" style="width:30px;height:30px;vertical-align:middle;margin-right:6px;">曼米中文' + (isT ? '' : '<small>學生</small>') + '</div><div class="crumb" id="crumb"></div><div class="grow"></div>' +
+    '<a href="#" class="brand" id="brandhome" title="回到首頁" style="text-decoration:none;color:inherit;cursor:pointer;"><img src="icons/logo.svg" alt="" style="width:30px;height:30px;vertical-align:middle;margin-right:6px;">曼米中文' + (isT ? '' : '<small>學生</small>') + '</a><div class="crumb" id="crumb"></div><div class="grow"></div>' +
     (isT ? '<span class="crumb">👤 ' + esc(S.teacher.name) + '</span><button class="btn sm" id="bell" title="新的繳交">🔔</button><button class="btn sm" id="recbtn">課堂記錄</button><button class="btn sm owner-only" id="libbtn">教材庫</button><button class="btn sm owner-only" id="setbtn">設定</button><button class="btn sm" id="logout">登出</button>'
          : '<span class="crumb">👤 ' + esc(S.student ? S.student.name : "") + '</span><button class="btn sm" id="leave">離開</button>') +
     '</div><div class="body">' + '<main class="main' + (opts.flush ? ' flush' : '') + '" id="main">' + inner + '</main></div></div>';
-  var tbk = document.getElementById("topback"); if(tbk) tbk.onclick = goBack;
+  var bh = document.getElementById("brandhome");
+  if(bh) bh.onclick = function(e){
+    e.preventDefault();
+    if(S.focus) setFocus(false);
+    if(S.teacher){ S.sel = null; S.lesson = null; S.tab = null; S.sub = null; S.hw = null; S.rec = null; S.lib = null; S.day = null; S.settings = false; if(S.live && S.live.on) pushLive(true); render(); }
+    else if(S.student){ S.lesson = null; S.tab = null; S.sub = null; S.hwOpen = null; S.leaveOpen = false; S.roomJoin = null; renderStudent(); }
+  };
   if(isT){
     document.getElementById("bell").onclick = openBell; updateBell();
     document.getElementById("recbtn").onclick = function(){ if(S.focus) setFocus(false); S.rec = { filter: "all" }; S.settings = false; S.lib = null; S.day = null; S.sel = null; S.lesson = null; render(); };
@@ -580,7 +592,9 @@ function shell(inner, opts){
 function setCrumb(parts){
   var c = document.getElementById("crumb"); if(!c) return;
   if(!S.teacher){ c.textContent = parts.filter(Boolean).join("  ›  "); return; }
-  var items = [{ t: "平台", go: "root" }];
+  var items = [{ t: "首頁", go: "root" }];
+  var atHome = !S.lib && !S.rec && !S.day && !S.sel && !S.settings;
+  if(atHome){ c.innerHTML = ""; return; }
   if(S.lib){ items.push({ t: "教材庫" }); }
   else if(S.settings && !S.sel && !S.rec && !S.day){ items.push({ t: "設定" }); }
   else if(S.rec){ items.push({ t: "課堂記錄" }); }
@@ -684,7 +698,7 @@ function bindListPage(){
     if(a.indexOf("ta-") === 0){ taAct(a, b.dataset); return; }
     if(a === "bk-now"){ backupPlatform(true); return; }
     if(a === "bk-snooze"){ try{ localStorage.setItem("mm_backup_snooze", String(Date.now() + 3 * 86400000)); }catch(e){} render(); return; }
-    if(a.indexOf("cal-") === 0 || a.indexOf("slot-") === 0){ schedAct(a, b.dataset); return; }
+    if(a.indexOf("cal-") === 0 || a.indexOf("slot-") === 0 || a.indexOf("cp-") === 0){ schedAct(a, b.dataset); return; }
     if(a === "go"){ S.sel = (s ? { s: s, t: t || null, c: c || null } : null); S.lesson = null; render(); return; }
     platAct(a, s, t, c);
   };
@@ -714,11 +728,38 @@ function allClassOptions(){
   });
   return out;
 }
+// ---------- 月曆的「選年／月」：點一下標題就能直接選月份，再點年份可以選年（可往前往後翻） ----------
+function calPickHtml(attr, month){
+  var cp = S.calPick; if(!cp) return '';
+  var cy = Number(month.slice(0, 4)), cm = Number(month.slice(5, 7)), A = function(act, x){ return attr + '="' + act + '"' + (x || ''); }, h = '<div class="cal-pick">';
+  if(cp.mode === "year"){
+    h += '<div class="cp-head"><button class="btn sm" ' + A("cp-rprev") + '>‹</button><b>' + cp.start + ' – ' + (cp.start + 11) + '</b><button class="btn sm" ' + A("cp-rnext") + '>›</button></div><div class="cp-grid">';
+    for(var y = cp.start; y < cp.start + 12; y++) h += '<button class="cp-b' + (y === cp.year ? ' sel' : '') + (y === cy ? ' cur' : '') + '" ' + A("cp-year", ' data-y="' + y + '"') + '>' + y + '</button>';
+  } else {
+    h += '<div class="cp-head"><button class="btn sm" ' + A("cp-yprev") + '>‹</button><button class="btn ghost cp-year" ' + A("cp-ymode") + ' title="選年份">' + cp.year + ' 年 ▾</button><button class="btn sm" ' + A("cp-ynext") + '>›</button></div><div class="cp-grid">';
+    for(var m = 1; m <= 12; m++) h += '<button class="cp-b' + (cp.year === cy && m === cm ? ' sel' : '') + '" ' + A("cp-month", ' data-m="' + m + '"') + '>' + m + ' 月</button>';
+  }
+  return h + '</div></div>';
+}
+function calPickAct(a, ds, month, setMonth){
+  // 處理選年月的按鈕；回傳 true 代表已處理（呼叫端要重畫）
+  var cy = Number(month.slice(0, 4));
+  if(a === "cp-open"){ S.calPick = S.calPick ? null : { mode: "month", year: cy, start: Math.floor(cy / 12) * 12 }; return true; }
+  if(!S.calPick) return false;
+  if(a === "cp-yprev"){ S.calPick.year--; return true; }
+  if(a === "cp-ynext"){ S.calPick.year++; return true; }
+  if(a === "cp-ymode"){ S.calPick.mode = "year"; S.calPick.start = Math.floor(S.calPick.year / 12) * 12; return true; }
+  if(a === "cp-rprev"){ S.calPick.start -= 12; return true; }
+  if(a === "cp-rnext"){ S.calPick.start += 12; return true; }
+  if(a === "cp-year"){ S.calPick.year = Number(ds.y); S.calPick.mode = "month"; return true; }
+  if(a === "cp-month"){ var ym = S.calPick.year + "-" + pad2(Number(ds.m)); S.calPick = null; setMonth(ym); return true; }
+  return false;
+}
 function calendarHtml(){
   var m = S.month || (S.month = ymd(new Date()).slice(0, 7));
   var yy = Number(m.slice(0, 4)), mm = Number(m.slice(5, 7)) - 1;
   var first = new Date(yy, mm, 1), days = new Date(yy, mm + 1, 0).getDate(), today = ymd(new Date());
-  var html = '<div class="cal-head"><button class="btn sm" data-a="cal-prev">‹</button><b style="font-size:16px;">' + yy + ' 年 ' + (mm + 1) + ' 月</b><button class="btn sm" data-a="cal-next">›</button><button class="btn sm ghost" data-a="cal-today">回到今天</button></div><div class="cal-grid">';
+  var html = '<div class="cal-head"><button class="btn sm" data-a="cal-prev">‹</button><button class="btn ghost cal-title" data-a="cp-open" title="選年份和月份">' + yy + ' 年 ' + (mm + 1) + ' 月 ▾</button><button class="btn sm" data-a="cal-next">›</button><button class="btn sm ghost" data-a="cal-today">回到今天</button></div>' + calPickHtml("data-a", m) + '<div class="cal-grid">';
   ["日", "一", "二", "三", "四", "五", "六"].forEach(function(w){ html += '<div class="cal-w">' + w + '</div>'; });
   for(var i = 0; i < first.getDay(); i++) html += '<div class="cal-d empty"></div>';
   for(var d = 1; d <= days; d++){
@@ -782,11 +823,12 @@ function openSlotDialog(id, date){
 }
 async function schedAct(a, ds){
   var base = "teacherPlatform/" + S.teacher.id + "/schedule", m = schedMap();
+  if(a.indexOf("cp-") === 0){ if(calPickAct(a, ds, S.month || ymd(new Date()).slice(0, 7), function(ym){ S.month = ym; })) render(); return; }
   if(a === "cal-prev" || a === "cal-next"){
     var yy = Number(S.month.slice(0, 4)), mm = Number(S.month.slice(5, 7)) - 1 + (a === "cal-next" ? 1 : -1), nd = new Date(yy, mm, 1);
-    S.month = nd.getFullYear() + "-" + pad2(nd.getMonth() + 1); render(); return;
+    S.month = nd.getFullYear() + "-" + pad2(nd.getMonth() + 1); S.calPick = null; render(); return;
   }
-  if(a === "cal-today"){ S.month = ymd(new Date()).slice(0, 7); render(); return; }
+  if(a === "cal-today"){ S.month = ymd(new Date()).slice(0, 7); S.calPick = null; render(); return; }
   if(a === "cal-day"){ S.day = ds.d; render(); return; }
   if(a === "cal-back"){ S.day = null; render(); return; }
   if(a === "slot-rec"){ if(m[ds.id]) openRecordFor(Object.assign({ id: ds.id }, m[ds.id])); return; }
@@ -2069,7 +2111,7 @@ function filesHtml(files, label){
 function miniCalHtml(month, items, sel, forTeacher){
   var yy = Number(month.slice(0, 4)), mm = Number(month.slice(5, 7)) - 1, first = new Date(yy, mm, 1), days = new Date(yy, mm + 1, 0).getDate(), today = ymd(new Date()), by = {};
   items.forEach(function(it){ if(!forTeacher && !itemVisible(it)) return; var d = itemDay(it); (by[d] = by[d] || []).push(it); });
-  var h = '<div class="mc-head"><button class="btn sm" data-b="mc-prev">‹</button><b>' + yy + ' 年 ' + (mm + 1) + ' 月</b><button class="btn sm" data-b="mc-next">›</button><button class="btn sm ghost" data-b="mc-today">今天</button></div><div class="mc-grid">';
+  var h = '<div class="mc-head"><button class="btn sm" data-b="mc-prev">‹</button><button class="btn ghost cal-title" style="flex:1;" data-b="cp-open" title="選年份和月份">' + yy + ' 年 ' + (mm + 1) + ' 月 ▾</button><button class="btn sm" data-b="mc-next">›</button><button class="btn sm ghost" data-b="mc-today">今天</button></div>' + calPickHtml("data-b", month) + '<div class="mc-grid">';
   ["日", "一", "二", "三", "四", "五", "六"].forEach(function(w){ h += '<div class="mc-w">' + w + '</div>'; });
   for(var i = 0; i < first.getDay(); i++) h += '<div></div>';
   for(var d = 1; d <= days; d++){
@@ -2138,8 +2180,9 @@ async function renderBoard(cls){
       var hb = e.target.closest("[data-h]"); if(hb && !e.target.closest("[data-b]")){ S.hw = { view: hb.dataset.h }; render(); return; }
       var b = e.target.closest("[data-b]"); if(!b) return; var a = b.dataset.b, id = b.dataset.id, it = items.filter(function(x){ return x.id === id; })[0];
       try{
-        if(a === "mc-prev" || a === "mc-next"){ var yy = Number(S.hwv.month.slice(0, 4)), mm = Number(S.hwv.month.slice(5, 7)) - 1 + (a === "mc-next" ? 1 : -1), nd = new Date(yy, mm, 1); S.hwv.month = nd.getFullYear() + "-" + pad2(nd.getMonth() + 1); draw(); }
-        else if(a === "mc-today"){ S.hwv.month = ymd(new Date()).slice(0, 7); S.hwv.day = ymd(new Date()); draw(); }
+        if(a.indexOf("cp-") === 0){ if(calPickAct(a, b.dataset, S.hwv.month, function(ym){ S.hwv.month = ym; })) draw(); }
+        else if(a === "mc-prev" || a === "mc-next"){ var yy = Number(S.hwv.month.slice(0, 4)), mm = Number(S.hwv.month.slice(5, 7)) - 1 + (a === "mc-next" ? 1 : -1), nd = new Date(yy, mm, 1); S.hwv.month = nd.getFullYear() + "-" + pad2(nd.getMonth() + 1); S.calPick = null; draw(); }
+        else if(a === "mc-today"){ S.hwv.month = ymd(new Date()).slice(0, 7); S.hwv.day = ymd(new Date()); S.calPick = null; draw(); }
         else if(a === "mc-day"){ S.hwv.day = b.dataset.d; draw(); }
         else if(a === "new"){ if(!needOwner()) return; openItemEditor(null, S.hwv.day, async function(){ items = await hwLoadItems(); B.items = items; draw(); }); }
         else if(a === "edit"){ if(!needOwner()) return; openItemEditor(it, itemDay(it), async function(){ items = await hwLoadItems(); draw(); }); }
@@ -2271,8 +2314,9 @@ async function renderStudentHw(){
     document.getElementById("main").onclick = async function(e){
       var b = e.target.closest("[data-b]"); if(!b) return; var a = b.dataset.b, id = b.dataset.id, it = items.filter(function(x){ return x.id === id; })[0];
       try{
-        if(a === "mc-prev" || a === "mc-next"){ var yy = Number(S.hwv.month.slice(0, 4)), mm = Number(S.hwv.month.slice(5, 7)) - 1 + (a === "mc-next" ? 1 : -1), nd = new Date(yy, mm, 1); S.hwv.month = nd.getFullYear() + "-" + pad2(nd.getMonth() + 1); draw(); }
-        else if(a === "mc-today"){ S.hwv.month = ymd(new Date()).slice(0, 7); S.hwv.day = ymd(new Date()); draw(); }
+        if(a.indexOf("cp-") === 0){ if(calPickAct(a, b.dataset, S.hwv.month, function(ym){ S.hwv.month = ym; })) draw(); }
+        else if(a === "mc-prev" || a === "mc-next"){ var yy = Number(S.hwv.month.slice(0, 4)), mm = Number(S.hwv.month.slice(5, 7)) - 1 + (a === "mc-next" ? 1 : -1), nd = new Date(yy, mm, 1); S.hwv.month = nd.getFullYear() + "-" + pad2(nd.getMonth() + 1); S.calPick = null; draw(); }
+        else if(a === "mc-today"){ S.hwv.month = ymd(new Date()).slice(0, 7); S.hwv.day = ymd(new Date()); S.calPick = null; draw(); }
         else if(a === "mc-day"){ S.hwv.day = b.dataset.d; draw(); }
         else if(a === "pick"){ document.getElementById("sfile-" + id).click(); }
         else if(a === "rm-ex"){ pend[id].existing.splice(Number(b.dataset.i), 1); drawPending(it); }
@@ -2318,7 +2362,7 @@ function renderStudentRoom(){
 function renderPlatformHome(){
   S.focus = false;
   var ys = sortedBy(schoolsOf(), true);
-  var html = '<div class="head-row"><div style="flex:1;display:flex;gap:14px;align-items:center;"><img src="icons/logo.svg" alt="曼米中文" style="width:64px;height:64px;"><div><h2>歡迎，' + esc(S.teacher.name) + '</h2><div class="note">看課表，或從右上角選年度進入學校和班級。</div></div></div><div class="tools" style="justify-content:flex-end;">' + ys.map(function(y){ return '<button class="btn primary" data-a="go" data-s="' + y + '">' + esc(schoolsOf()[y].name) + ' ›</button>'; }).join("") + '<button class="btn" data-a="slot-new" data-d="' + ymd(new Date()) + '">新增排課</button> <button class="btn owner-only" data-a="add-s">新增年度</button></div></div>' + backupBannerHtml() + todayPanelHtml() + '<div class="panel"><h3>月課表</h3>' + calendarHtml() + '</div>';
+  var html = '<div class="head-row"><div style="flex:1;"><h2>歡迎，' + esc(S.teacher.name) + '</h2></div><div class="tools" style="justify-content:flex-end;">' + ys.map(function(y){ return '<button class="btn primary" data-a="go" data-s="' + y + '">' + esc(schoolsOf()[y].name) + ' ›</button>'; }).join("") + '<button class="btn" data-a="slot-new" data-d="' + ymd(new Date()) + '">新增排課</button> <button class="btn owner-only" data-a="add-s">新增年度</button></div></div>' + backupBannerHtml() + todayPanelHtml() + '<div class="panel"><h3>月課表</h3>' + calendarHtml() + '</div>';
   shell(html); setCrumb([]); bindListPage();
 }
 async function backupPlatform(full){
