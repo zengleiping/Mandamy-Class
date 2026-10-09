@@ -1,0 +1,59 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+
+    "rooms":                 { "$roomId": { ".read": "auth != null", ".write": "auth != null" } },
+    "roomReactions":         { "$roomId": { ".read": "auth != null", ".write": "auth != null" } },
+    "roomCursors":           { "$roomId": { ".read": "auth != null", ".write": "auth != null" } },
+    "roomMasterTraceLive":   { "$roomId": { ".read": "auth != null", ".write": "auth != null" } },
+    "roomStudentSnapshots":  { "$roomId": { ".read": "auth != null", ".write": "auth != null" } },
+
+    "teacherAccounts": {
+      ".read": "auth != null",
+      "$accountId": { ".write": "auth != null" }
+    },
+    "teacherLibraries":   { "$teacherId": { ".read": "auth != null", ".write": "auth != null" } },
+    "teacherVocabBanks":  { "$teacherId": { ".read": "auth != null", ".write": "auth != null" } },
+
+    "classCodes": {
+      "$code": {
+        ".read": "auth != null",
+        ".write": "auth != null",
+        ".validate": "newData.hasChildren(['t','s','tm','c']) && $code.matches(/^[A-Z0-9]{4,10}$/)"
+      }
+    },
+
+    "capsuleLinks":       { "$teacherId": { ".read": "auth != null", ".write": "auth != null" } },
+    "capsuleLinkOwners":  { "$linkId":    { ".read": "auth != null", ".write": "auth != null" } },
+    "capsuleMarks":       { "$linkId":    { ".read": "auth != null", ".write": "auth != null" } },
+
+    "classStories":       { "$teacherId": { ".read": "auth != null", ".write": "auth != null" } },
+    "relayStories":       { "$teacherId": { ".read": "auth != null", ".write": "auth != null" } },
+    "classLinkOwners":    { "$linkId":    { ".read": "auth != null", ".write": "auth != null" } },
+    "relayLinkOwners":    { "$linkId":    { ".read": "auth != null", ".write": "auth != null" } },
+
+    "teacherPlatform": {
+      "$teacherId": {
+        ".read": "auth != null",
+        ".write": "auth != null",
+
+        "hwFiles": { "$classId": { "$hwId": { "$studentKey": { "$i": {
+          ".validate": "newData.isString() && newData.val().length < 900000"
+        } } } } },
+        "recordShots": { "$recordId": { "$i": {
+          ".validate": "newData.isString() && newData.val().length < 900000"
+        } } },
+        "homework": { "$classId": { "items": { "$hwId": { "imgs": { "$i": {
+          ".validate": "newData.isString() && newData.val().length < 900000"
+        } } } } } },
+        "hwSubs": { "$classId": { "$hwId": { "$studentKey": {
+          "text": { ".validate": "newData.isString() && newData.val().length <= 8000" }
+        } } } },
+        "leave": { "$classId": { "$leaveId": {
+          "reason": { ".validate": "newData.isString() && newData.val().length <= 1000" }
+        } } }
+      }
+    }
+  }
+}
