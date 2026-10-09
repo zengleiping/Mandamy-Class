@@ -459,15 +459,52 @@ function saveHash(){
 }
 
 // ---------- 畫面骨架 ----------
+// ---------- 「返回」：每個功能頁左上角都有，回到上一層 ----------
+function canBack(){
+  if(S.teacher) return !!(S.lib || S.rec || S.day || S.sel);
+  return !!(S.student && (S.hwOpen || S.leaveOpen || S.lesson));
+}
+function goBack(){
+  if(S.teacher){
+    if(S.focus) setFocus(false);
+    if(S.lib){ S.lib = null; render(); return; }
+    if(S.rec){
+      if(S.rec.edit !== undefined){ if(!confirm("不儲存就離開？目前填的內容會留在這台裝置，下次新增時可以救回來。")) return; S.rec = { filter: S.rec.filter }; }
+      else if(S.rec.view) S.rec = { filter: S.rec.filter };
+      else S.rec = null;
+      render(); return;
+    }
+    if(S.day && !S.sel){ S.day = null; render(); return; }
+    if(S.hw && S.sel && S.sel.c){
+      var v = S.hw.view; S.hw = (v === "item" || v === "settle" || v === "new" || v === "edit") ? { view: "list" } : null; render(); return;
+    }
+    if(S.lesson){ S.lesson = null; S.tab = null; S.sub = null; if(S.live && S.live.on) pushLive(true); render(); return; }
+    if(S.sel){
+      if(S.sel.c) S.sel = { s: S.sel.s, t: S.sel.t, c: null };
+      else if(S.sel.t) S.sel = { s: S.sel.s, t: null, c: null };
+      else S.sel = null;
+      render(); return;
+    }
+    return;
+  }
+  if(S.student){
+    if(S.focus) setFocus(false);
+    if(S.leaveOpen){ S.leaveOpen = false; renderStudent(); return; }
+    if(S.hwOpen){ S.hwOpen = (S.hwOpen !== "list") ? "list" : null; S.hwShotsFor = null; if(S.hwOpen) renderStudentHw(); else renderStudent(); return; }
+    if(S.lesson){ S.lesson = null; S.tab = null; S.sub = null; renderStudent(); return; }
+  }
+}
 function shell(inner, opts){
   opts = opts || {};
   var isT = !!S.teacher;
   document.body.classList.toggle("ta", isTA());
   root.innerHTML = '<div class="shell' + (S.focus ? ' focus' : '') + '"><div class="top">' +
+    (canBack() ? '<button class="btn sm" id="topback" style="font-size:14px;">‹ 返回</button>' : '') +
     '<div class="brand">曼米中文' + (isT ? '' : '<small>學生</small>') + '</div><div class="crumb" id="crumb"></div><div class="grow"></div>' +
     (isT ? '<span class="crumb">👤 ' + esc(S.teacher.name) + '</span><button class="btn sm" id="bell" title="新的繳交">🔔</button><button class="btn sm" id="recbtn">課堂記錄</button><button class="btn sm owner-only" id="libbtn">教材庫</button><button class="btn sm" id="logout">登出</button>'
          : '<span class="crumb">👤 ' + esc(S.student ? S.student.name : "") + '</span><button class="btn sm" id="leave">離開</button>') +
     '</div><div class="body">' + '<main class="main' + (opts.flush ? ' flush' : '') + '" id="main">' + inner + '</main></div></div>';
+  var tbk = document.getElementById("topback"); if(tbk) tbk.onclick = goBack;
   if(isT){
     document.getElementById("bell").onclick = openBell; updateBell();
     document.getElementById("recbtn").onclick = function(){ if(S.focus) setFocus(false); S.rec = { filter: "all" }; S.lib = null; S.day = null; S.sel = null; S.lesson = null; render(); };
