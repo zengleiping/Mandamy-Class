@@ -165,13 +165,13 @@ var params = new URLSearchParams(location.search);
 function esc(s){ return String(s == null ? "" : s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
 function uid(p){ return p + Math.random().toString(36).slice(2, 9); }
 function toast(msg){ var t = document.createElement("div"); t.className = "toast"; t.textContent = msg; document.body.appendChild(t); setTimeout(function(){ t.remove(); }, 2200); }
-function askText(title, value, okLabel){
+function askText(title, value, okLabel, type){
   return new Promise(function(resolve){
-    var d = document.getElementById("ask"), i = document.getElementById("ask-i");
+    var d = document.getElementById("ask"), i = document.getElementById("ask-i"); i.type = type || "text";
     document.getElementById("ask-t").textContent = title; i.value = value || "";
     document.getElementById("ask-ok").textContent = okLabel || "確定";
     var done = false;
-    function fin(v){ if(done) return; done = true; try{ d.close(); }catch(e){} resolve(v); }
+    function fin(v){ if(done) return; done = true; i.type = "text"; try{ d.close(); }catch(e){} resolve(v); }
     document.getElementById("ask-no").onclick = function(){ fin(null); };
     d.oncancel = function(e){ e.preventDefault(); fin(null); };
     d.querySelector("form").onsubmit = function(e){ e.preventDefault(); var v = i.value.trim(); fin(v || null); };
@@ -933,7 +933,7 @@ async function renderHomework(cls){
     if(hw.view === "settle") return hwSettle(items, roster);
     if(hw.view === "summary") return hwSummary(cls, items, roster);
     try{ localStorage.setItem(hwSeenKey(cid), String(nowMs())); }catch(e){}
-    var pinsOn = !!(await fbGet(base + "/pins"));
+    var accs = (await fbGet(accPath(tid, cid))) || {}, accOn = !!(await fbGet("teacherPlatform/" + tid + "/accountsOn/" + cid));
     // 列表
     var subsAll = {};
     await Promise.all(items.map(function(it){ return fbGet(tid ? "teacherPlatform/" + tid + "/hwSubs/" + cid + "/" + it.id : null).then(function(v){ subsAll[it.id] = v || {}; }); }));
@@ -942,7 +942,7 @@ async function renderHomework(cls){
       var subs = subsAll[it.id], keys = Object.keys(subs).filter(function(k){ return subs[k].firstAt; }), late = keys.filter(function(k){ return hwStatus(it, subs[k]) === "late"; }).length, total = Math.max(roster.length, keys.length);
       return '<div class="slot"><div class="slot-time" style="min-width:120px;">' + esc(it.due ? hwFmt(new Date(it.due).getTime()) : "未設期限") + '<div class="note">截止</div></div><div class="slot-main"><div><b>' + esc(it.title) + '</b></div><div class="note">已交 ' + keys.length + ' / ' + total + (late ? '（遲交 ' + late + '）' : '') + '</div></div><div class="slot-act"><button class="btn" data-h="item" data-id="' + it.id + '">查看繳交</button><button class="btn sm" data-h="edit" data-id="' + it.id + '">修改</button><button class="btn sm danger" data-h="del" data-id="' + it.id + '">刪除</button></div></div>';
     }).join("") : '<p class="note">還沒有作業。按右上角「公布作業」。學生用班級代碼進來就會看到。</p>') + '</div>';
-    html += '<div class="panel"><h3>班級名單</h3><p class="note" style="margin:0 0 8px;">一行一位學生，名字要跟學生進入時輸入的一樣。結算時沒交的人才找得出來。</p><textarea id="hw-roster" rows="5" style="width:100%;padding:8px 10px;border-radius:8px;border:1.5px solid var(--line);background:var(--surface-2);font:inherit;">' + esc(roster.join("\n")) + '</textarea><div style="margin-top:8px;"><button class="btn sm" data-h="roster">儲存名單</button></div><h3 style="margin-top:16px;">學生密碼（選用）</h3><p class="note" style="margin:0 0 8px;">開啟後，學生交作業要輸入自己的 4 位數密碼，可以防同學冒名。這不是真正的帳號，只擋一般情況。目前：<b>' + (pinsOn ? '已開啟' : '未開啟') + '</b></p><div class="tools"><button class="btn sm" data-h="pins">' + (pinsOn ? '重新產生密碼' : '產生學生密碼') + '</button>' + (pinsOn ? '<button class="btn sm danger" data-h="pinoff">關閉學生密碼</button>' : '') + '</div><div id="pinout"></div></div>';
+    html += '<div class="panel"><h3>班級名單</h3><p class="note" style="margin:0 0 8px;">一行一位學生，名字要跟學生進入時輸入的一樣。結算時沒交的人才找得出來。</p><textarea id="hw-roster" rows="5" style="width:100%;padding:8px 10px;border-radius:8px;border:1.5px solid var(--line);background:var(--surface-2);font:inherit;">' + esc(roster.join("\n")) + '</textarea><div style="margin-top:8px;"><button class="btn sm" data-h="roster">儲存名單</button></div>' + accPanelHtml(roster, accs, accOn) + '</div>';
     shell(html); setCrumb([]);
     document.getElementById("main").onclick = async function(e){
       var b = e.target.closest("[data-h]"); if(!b) return; var a = b.dataset.h;
@@ -951,14 +951,7 @@ async function renderHomework(cls){
       else if(a === "item"){ S.hw = { view: "item", id: b.dataset.id }; render(); }
       else if(a === "settle"){ S.hw = { view: "settle" }; render(); }
       else if(a === "summary"){ S.hw = { view: "summary" }; render(); }
-      else if(a === "pins"){
-        if(!roster.length){ alert("請先貼上並儲存班級名單。"); return; }
-        if(!confirm("為名單上的 " + roster.length + " 位學生產生新密碼？（舊密碼會失效）")) return;
-        var out = await hwMakePins(roster); S.pinText = out.map(function(r){ return r[0] + "：" + r[1]; }).join("\n");
-        document.getElementById("pinout").innerHTML = '<div class="panel" style="background:var(--surface-2);margin-top:10px;"><b>請抄下來發給學生（離開這個畫面後就看不到了）</b><pre style="margin:8px 0;font:inherit;">' + esc(S.pinText) + '</pre><button class="btn sm" data-h="pincopy">複製</button></div>';
-      }
-      else if(a === "pincopy"){ try{ navigator.clipboard.writeText(S.pinText); toast("已複製"); }catch(er){} }
-      else if(a === "pinoff"){ if(!confirm("關閉學生密碼？之後學生不用密碼就能交作業。")) return; await fbSet(base + "/pins", null); toast("已關閉"); render(); }
+      else if(a.indexOf("acc-") === 0){ await accAct(a, roster, accs, base, b.dataset.n); }
       else if(a === "roster"){
         var names = document.getElementById("hw-roster").value.split("\n").map(function(x){ return x.trim(); }).filter(Boolean);
         await fbSet(base + "/roster", names.length ? names : null); toast("已儲存名單"); render();
@@ -1119,7 +1112,6 @@ async function renderStudentHw(){
     else if(a === "submit"){
       var text = document.getElementById("hs-text").value.trim();
       if(!text && !S.hwShots.length){ alert("請至少打一點文字，或加一張照片。"); return; }
-      if(!(await hwCheckPin())) return;
       var synced = await syncTime(), prev = mySubs[it.id], now = nowMs();
       var times = prev ? (Array.isArray(prev.times) ? prev.times.slice() : (prev.firstAt ? [{ t: prev.firstAt, s: false }] : [])) : [];
       times.push({ t: now, s: synced });
@@ -1134,28 +1126,99 @@ async function renderStudentHw(){
     }
   };
 }
-// ---------- 學生簡易密碼（防同學冒名交作業；不是真正的帳號） ----------
 async function sha256hex(str){ var b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str)); return Array.prototype.map.call(new Uint8Array(b), function(x){ return ("0" + x.toString(16)).slice(-2); }).join(""); }
-async function hwMakePins(roster){
-  var base = hwBase(S.teacher.id, S.sel.c), out = [], obj = {};
-  for(var i = 0; i < roster.length; i++){
-    var pin = String(Math.floor(1000 + Math.random() * 9000)), salt = Math.random().toString(36).slice(2, 10);
-    obj[hwSkey(roster[i])] = { h: await sha256hex(salt + pin), salt: salt }; out.push([roster[i], pin]);
-  }
-  await fbSet(base + "/pins", obj); return out;
+// ---------- 學生帳號（班級名單上的學生，用密碼登入；密碼存的是加鹽後的雜湊，不是明碼） ----------
+var ACC_ALPHA = "abcdefghjkmnpqrstuvwxyz23456789";
+function accRandPw(){ var a = new Uint8Array(6); crypto.getRandomValues(a); return Array.prototype.map.call(a, function(x){ return ACC_ALPHA[x % ACC_ALPHA.length]; }).join(""); }
+function accPath(tid, cid, name){ return "teacherPlatform/" + tid + "/studentAccounts/" + cid + (name != null ? "/" + hwSkey(name) : ""); }
+async function accSetPassword(tid, cid, name, pw, mustChange, keep){
+  var salt = hex(crypto.getRandomValues(new Uint8Array(16))), h = await pbkdf2(pw, salt), rec = Object.assign({}, keep || {}, { name: name, saltHex: salt, hashHex: h, mustChange: !!mustChange, fails: 0, lockUntil: null, updatedAt: nowMs() });
+  if(!rec.createdAt) rec.createdAt = nowMs();
+  await fbSet(accPath(tid, cid, name), rec); return rec;
 }
-async function hwCheckPin(){
-  // 回傳 true＝可以送出。班級有設密碼時，學生要輸入自己的密碼
-  var st = S.student, base = hwBase(st.idx.t, st.idx.c), me = hwSkey(st.name);
-  S.pinOK = S.pinOK || {};
-  if(S.pinOK[st.idx.c + me]) return true;
-  var pins = await fbGet(base + "/pins");
-  if(!pins) return true;
-  if(!pins[me]){ alert("名單上找不到「" + st.name + "」，請確認名字跟老師給的一樣，或請老師確認名單。"); return false; }
-  var v = await askText("請輸入老師給你的 4 位數密碼", "", "確定");
-  if(!v) return false;
-  if(await sha256hex(pins[me].salt + v.trim()) !== pins[me].h){ alert("密碼不對。"); return false; }
-  S.pinOK[st.idx.c + me] = true; return true;
+function accStatusLabel(a){
+  if(!a) return "還沒有帳號";
+  if(a.lockUntil && a.lockUntil > nowMs()) return "🔒 已鎖定（輸入錯太多次）";
+  return a.mustChange ? "初始密碼（學生還沒改）" : "✓ 已自己設定密碼";
+}
+function accPanelHtml(roster, accs, on){
+  var rows = roster.map(function(n){ var a = accs[hwSkey(n)]; return '<tr><td><b>' + esc(n) + '</b></td><td>' + accStatusLabel(a) + (a && a.lastLogin ? '<div class="note">最近登入 ' + esc(hwFmt(a.lastLogin)) + '</div>' : '') + '</td><td>' + (a ? '<button class="btn sm" data-h="acc-reset" data-n="' + esc(n) + '">重設密碼</button>' + (a.lockUntil && a.lockUntil > nowMs() ? '<button class="btn sm" data-h="acc-unlock" data-n="' + esc(n) + '">解鎖</button>' : '') : '<button class="btn sm" data-h="acc-reset" data-n="' + esc(n) + '">建立帳號</button>') + '</td></tr>'; }).join("");
+  return '<h3 style="margin-top:16px;">學生帳號</h3><p class="note" style="margin:0 0 8px;">為名單上的學生建立帳號後，開啟「要求學生登入」，學生要輸入自己的密碼才進得了這個班。學生第一次登入會被要求改成自己的密碼。目前：<b>' + (on ? '要求登入' : '不要求登入') + '</b></p>' +
+    '<div class="tools" style="margin-bottom:8px;"><button class="btn sm" data-h="acc-all">為名單全部建立帳號</button><button class="btn sm' + (on ? ' danger' : ' primary') + '" data-h="acc-toggle">' + (on ? '關閉「要求學生登入」' : '開啟「要求學生登入」') + '</button></div>' +
+    (roster.length ? '<div style="overflow-x:auto;"><table class="hw-table"><thead><tr><th>學生</th><th>狀態</th><th>操作</th></tr></thead><tbody>' + rows + '</tbody></table></div>' : '<p class="note">先在上面貼上班級名單並儲存。</p>') +
+    '<div id="accout"></div><p class="note" style="margin-top:8px;">提醒：這是「應用程式層級」的登入，能擋掉一般情況下的冒名；但資料庫本身沒有分學生權限，懂技術的人還是可能直接讀寫資料。要真正防護，需要改用 Firebase 登入並設定規則，那是另一個階段。</p>';
+}
+async function accAct(a, roster, accs, base, name){
+  var tid = S.teacher.id, cid = S.sel.c;
+  if(a === "acc-toggle"){
+    var on = !!(await fbGet("teacherPlatform/" + tid + "/accountsOn/" + cid));
+    accs = (await fbGet(accPath(tid, cid))) || {};
+    if(!on && !Object.keys(accs).length){ alert("還沒有任何學生帳號。請先按「為名單全部建立帳號」。"); return; }
+    if(!on && !confirm("開啟後，學生一定要輸入密碼才能進這個班。沒有帳號的學生會進不來。確定開啟？")) return;
+    await fbSet("teacherPlatform/" + tid + "/accountsOn/" + cid, on ? null : true); toast(on ? "已關閉" : "已開啟"); render(); return;
+  }
+  if(a === "acc-all" || (a === "acc-reset" && name)){
+    var targets = a === "acc-all" ? roster.filter(function(n){ return !accs[hwSkey(n)]; }) : [name];
+    if(!targets.length){ toast("名單上的學生都已經有帳號了"); return; }
+    if(a === "acc-reset" && accs[hwSkey(name)] && !confirm("重設「" + name + "」的密碼？舊密碼會失效，並產生新的初始密碼。")) return;
+    var out = []; for(var i = 0; i < targets.length; i++){ var pw = accRandPw(); await accSetPassword(tid, cid, targets[i], pw, true, accs[hwSkey(targets[i])] ? { createdAt: accs[hwSkey(targets[i])].createdAt, lastLogin: accs[hwSkey(targets[i])].lastLogin } : null); out.push([targets[i], pw]); }
+    S.accText = out.map(function(r){ return r[0] + "：" + r[1]; }).join("\n");
+    document.getElementById("accout").innerHTML = '<div class="panel" style="background:var(--surface-2);margin-top:10px;"><b>初始密碼（只會顯示這一次，請抄下來發給學生）</b><pre style="margin:8px 0;font:inherit;">' + esc(S.accText) + '</pre><div class="tools"><button class="btn sm" data-h="acc-copy">複製</button><button class="btn sm" data-h="acc-csv">下載 CSV</button></div></div>';
+    return;
+  }
+  if(a === "acc-copy"){ try{ await navigator.clipboard.writeText(S.accText); toast("已複製"); }catch(er){} return; }
+  if(a === "acc-csv"){
+    var csv = "﻿學生,初始密碼\n" + S.accText.split("\n").map(function(l){ var i = l.lastIndexOf("："); return '"' + l.slice(0, i).replace(/"/g, '""') + '","' + l.slice(i + 1) + '"'; }).join("\n");
+    var el = document.createElement("a"); el.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" })); el.download = "學生初始密碼.csv"; document.body.appendChild(el); el.click(); setTimeout(function(){ URL.revokeObjectURL(el.href); el.remove(); }, 500); return;
+  }
+  if(a === "acc-unlock"){ await fbUpdate(accPath(tid, cid, name), { fails: 0, lockUntil: null }); toast("已解鎖"); render(); return; }
+}
+// ----- 學生端登入 -----
+async function studentAuth(idx, name, pw){
+  // 回傳 true＝通過；字串＝要顯示給學生的錯誤訊息
+  var tid = idx.t, cid = idx.c, path = accPath(tid, cid, name);
+  var acct = await fbGet(path);
+  if(!acct) return "找不到「" + name + "」的帳號。請確認名字跟老師給的一樣，或請老師建立帳號。";
+  await syncTime(); var now = nowMs();
+  if(acct.lockUntil && acct.lockUntil > now) return "密碼輸入錯太多次了，請 " + Math.ceil((acct.lockUntil - now) / 60000) + " 分鐘後再試，或請老師幫你解鎖。";
+  var sessKey = "mm_stu_" + cid + "_" + hwSkey(name), sess = null; try{ sess = localStorage.getItem(sessKey); }catch(e){}
+  if(!pw){ if(sess && sess === acct.hashHex && !acct.mustChange) return true; return "這個班需要密碼，請輸入你的密碼。"; }
+  var ok = (await pbkdf2(pw, acct.saltHex)) === acct.hashHex;
+  if(!ok){
+    var fails = (acct.fails || 0) + 1, patch = { fails: fails };
+    if(fails >= 5){ patch.lockUntil = now + 10 * 60000; patch.fails = 0; }
+    try{ await fbUpdate(path, patch); }catch(e){}
+    return fails >= 5 ? "密碼錯太多次，已暫時鎖定 10 分鐘。" : "密碼不對（再錯 " + (5 - fails) + " 次會暫時鎖定）。";
+  }
+  var cur = acct;
+  if(acct.mustChange){
+    var np = null;
+    for(var tries = 0; tries < 5; tries++){
+      var a1 = await askText("第一次登入，請設定你自己的新密碼（至少 6 個字）", "", "下一步", "password"); if(!a1) return "需要先設定新密碼才能進入。";
+      if(a1.length < 6){ alert("密碼至少要 6 個字。"); continue; }
+      if(a1 === pw){ alert("新密碼不能跟初始密碼一樣。"); continue; }
+      var a2 = await askText("再輸入一次新密碼", "", "確定", "password"); if(!a2) return "需要先設定新密碼才能進入。";
+      if(a1 !== a2){ alert("兩次輸入不一樣，請再試一次。"); continue; }
+      np = a1; break;
+    }
+    if(!np) return "新密碼沒有設定成功，請重試。";
+    cur = await accSetPassword(tid, cid, name, np, false, { createdAt: acct.createdAt });
+  } else if(acct.fails){ try{ await fbUpdate(path, { fails: 0 }); }catch(e){} }
+  try{ await fbUpdate(path, { lastLogin: now }); localStorage.setItem(sessKey, cur.hashHex); }catch(e){}
+  return true;
+}
+async function studentChangePassword(){
+  var st = S.student, tid = st.idx.t, cid = st.idx.c, acct = await fbGet(accPath(tid, cid, st.name));
+  if(!acct){ alert("找不到你的帳號。"); return; }
+  var old = await askText("請輸入目前的密碼", "", "下一步", "password"); if(!old) return;
+  if((await pbkdf2(old, acct.saltHex)) !== acct.hashHex){ alert("目前的密碼不對。"); return; }
+  var a1 = await askText("新密碼（至少 6 個字）", "", "下一步", "password"); if(!a1) return;
+  if(a1.length < 6){ alert("密碼至少要 6 個字。"); return; }
+  var a2 = await askText("再輸入一次新密碼", "", "確定", "password"); if(!a2) return;
+  if(a1 !== a2){ alert("兩次輸入不一樣。"); return; }
+  var rec = await accSetPassword(tid, cid, st.name, a1, false, { createdAt: acct.createdAt, lastLogin: acct.lastLogin });
+  try{ localStorage.setItem("mm_stu_" + cid + "_" + hwSkey(st.name), rec.hashHex); }catch(e){}
+  toast("已更新密碼");
 }
 // ---------- 學期總表 ----------
 async function hwSummary(cls, items, roster){
@@ -1966,6 +2029,7 @@ function viewStudentEntry(msg, codeIn){
   root.innerHTML = '<div class="center-wrap"><div class="card"><h2>曼米中文</h2><p class="sub">學生入口</p>' +
     '<label>班級代碼</label><input type="text" id="sc" value="' + esc(codeIn || "") + '" style="text-transform:uppercase;letter-spacing:.15em;" autocomplete="off">' +
     '<label>你的名字</label><input type="text" id="sn" value="' + esc(saved) + '" autocomplete="off">' +
+    '<label>密碼 <span class="note" style="font-weight:400;">（老師有設定才需要）</span></label><input type="password" id="spw" autocomplete="current-password">' +
     '<div class="err" id="se"></div><button class="btn primary" id="sgo" style="width:100%;margin-top:14px;padding:11px;">進入班級</button>' +
     '<p class="sub" style="margin-top:16px;"><a href="#" id="tot">老師登入</a></p></div></div>';
   var se = document.getElementById("se"); if(msg){ se.textContent = msg; se.style.display = "block"; }
@@ -1975,12 +2039,13 @@ function viewStudentEntry(msg, codeIn){
     var code = document.getElementById("sc").value.trim().toUpperCase().replace(/[^A-Z0-9]/g, ""), name = document.getElementById("sn").value.trim();
     if(!code || !name){ se.textContent = "請輸入班級代碼和名字"; se.style.display = "block"; return; }
     try{ localStorage.setItem("mm_student_name", name); }catch(e){}
-    await startStudent(code, name);
+    await startStudent(code, name, document.getElementById("spw").value);
   }
   document.getElementById("sgo").onclick = go;
+  document.getElementById("spw").addEventListener("keydown", function(e){ if(e.key === "Enter") go(); });
   document.getElementById("sn").addEventListener("keydown", function(e){ if(e.key === "Enter") go(); });
 }
-async function startStudent(code, name){
+async function startStudent(code, name, pw){
   root.innerHTML = '<div class="center-wrap"><div class="note">載入中…</div></div>';
   try{
     var idx = await fbGet("classCodes/" + code);
@@ -1988,7 +2053,9 @@ async function startStudent(code, name){
     var base = "teacherPlatform/" + idx.t;
     var res = await Promise.all([fbGet(base + "/schools/" + idx.s + "/name"), fbGet(base + "/schools/" + idx.s + "/terms/" + idx.tm + "/name"), fbGet(base + "/schools/" + idx.s + "/terms/" + idx.tm + "/classes/" + idx.c), fbGet(base + "/lessons"), fbGet(base + "/books")]);
     if(!res[2]){ viewStudentEntry("這個班級已不存在。", code); return; }
-    S.student = { name: name, code: code, idx: idx, school: res[0], term: res[1], cls: res[2] };
+    var needAcct = !!(await fbGet(base + "/accountsOn/" + idx.c));
+    if(needAcct){ var au = await studentAuth(idx, name, pw); if(au !== true){ viewStudentEntry(au, code); return; } }
+    S.student = { name: name, code: code, idx: idx, school: res[0], term: res[1], cls: res[2], acct: needAcct };
     S.live = res[2].live && res[2].live.on ? res[2].live : null;
     try{ window.onValue(window.ref(window.db, base + "/schools/" + idx.s + "/terms/" + idx.tm + "/classes/" + idx.c + "/live"), function(snap){ var v = snap.val(); var nv = v && v.on ? v : null; var key = JSON.stringify(nv); if(key === S.liveKey) return; S.liveKey = key; S.live = nv; S.liveRendered = null; if(S.student) renderStudent(); }); }catch(e){}
     S.plat = { lessons: res[3] || {}, books: res[4] || {} };
@@ -2012,7 +2079,7 @@ function renderStudent(){
   }
   S.lesson = null;
   var keys = lessonKeys(cls).filter(function(no){ var o = openMap[no]; return o && OPEN_KEYS.some(function(k){ return o[k[0]]; }); });
-  var html = '<div class="head-row"><div><div class="note">' + esc(st.school) + '　›　' + esc(st.term) + '</div><h2>' + esc(cls.name) + '</h2></div></div>';
+  var html = '<div class="head-row"><div><div class="note">' + esc(st.school) + '　›　' + esc(st.term) + '</div><h2>' + esc(cls.name) + '</h2></div>' + (st.acct ? '<div><button class="btn sm ghost" id="chpw">改密碼</button></div>' : '') + '</div>';
   html += '<div class="panel"><h3>聯絡簿</h3><div id="hwhint"></div><button class="btn primary" id="hwopen">看作業／交作業</button></div>';
   if(!keys.length) html += '<div class="empty"><p class="note">老師還沒有開放任何課次。<br>上課時請輸入老師給的房間號碼：</p><div class="join" style="justify-content:center;"><input type="text" id="roomno" placeholder="房間號碼" inputmode="numeric" style="width:160px;"><button class="btn primary" id="roomgo">加入</button></div></div>';
   else {
@@ -2021,6 +2088,7 @@ function renderStudent(){
   shell(html); setCrumb([st.school, st.term, cls.name]);
   document.getElementById("hwopen").onclick = function(){ S.hwOpen = "list"; renderStudent(); };
   fillStudentHint();
+  var chpw = document.getElementById("chpw"); if(chpw) chpw.onclick = studentChangePassword;
   var ls = document.getElementById("ls");
   keys.forEach(function(no){
     var o = openMap[no], d = document.createElement("div"); d.className = "lesson";
