@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>曼米中文平台</title>
+<link rel="icon" type="image/svg+xml" href="icons/logo.svg">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="曼米中文">
+
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap">
 <style>
   :root{ --paper:#FAF7F2; --surface:#fff; --surface-2:#F2EAE0; --ink:#2B2320; --ink-soft:#6B5F55; --line:rgba(43,35,32,.12); --seal:#E8825A; --seal-soft:#FBE8DE; --bamboo:#4C8577; --bamboo-soft:#E3F0EC; --shadow:0 8px 24px -10px rgba(28,33,30,.18); }
@@ -336,7 +342,7 @@ function bookFromTitle(title){
 
 // ---------- 登入（老師）----------
 function viewLogin(msg){
-  root.innerHTML = '<div class="center-wrap"><div class="card"><h2>曼米中文平台</h2><p class="sub">老師登入　Teacher login</p>' +
+  root.innerHTML = '<div class="center-wrap"><div class="card"><img src="icons/logo.svg" alt="曼米中文" style="width:84px;height:84px;display:block;margin:0 auto 8px;"><h2 style="text-align:center;">曼米中文平台</h2><p class="sub">老師登入　Teacher login</p>' +
     '<label>帳號</label><input type="text" id="lu" autocomplete="username"><label>密碼</label><input type="password" id="lp" autocomplete="current-password" style="width:100%;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;font-size:15px;background:var(--surface-2);">' +
     '<label style="margin-top:10px;">助教登入（不是助教請留空）<span class="note" style="font-weight:400;"> 要協助哪位老師？填那位老師的帳號</span></label><input type="text" id="lo" autocomplete="off">' +
     '<div class="err" id="le"></div><button class="btn primary" id="lgo" style="width:100%;margin-top:14px;padding:11px;">登入</button>' +
@@ -554,7 +560,7 @@ function shell(inner, opts){
   document.body.classList.toggle("ta", isTA());
   root.innerHTML = '<div class="shell' + (S.focus ? ' focus' : '') + '"><div class="top">' +
     (canBack() ? '<button class="btn sm" id="topback" style="font-size:14px;">‹ 返回</button>' : '') +
-    '<div class="brand">曼米中文' + (isT ? '' : '<small>學生</small>') + '</div><div class="crumb" id="crumb"></div><div class="grow"></div>' +
+    '<div class="brand"><img src="icons/logo.svg" alt="" style="width:30px;height:30px;vertical-align:middle;margin-right:6px;">曼米中文' + (isT ? '' : '<small>學生</small>') + '</div><div class="crumb" id="crumb"></div><div class="grow"></div>' +
     (isT ? '<span class="crumb">👤 ' + esc(S.teacher.name) + '</span><button class="btn sm" id="bell" title="新的繳交">🔔</button><button class="btn sm" id="recbtn">課堂記錄</button><button class="btn sm owner-only" id="libbtn">教材庫</button><button class="btn sm" id="logout">登出</button>'
          : '<span class="crumb">👤 ' + esc(S.student ? S.student.name : "") + '</span><button class="btn sm" id="leave">離開</button>') +
     '</div><div class="body">' + '<main class="main' + (opts.flush ? ' flush' : '') + '" id="main">' + inner + '</main></div></div>';
@@ -2282,7 +2288,7 @@ async function renderStudentHw(){
 function renderPlatformHome(){
   S.focus = false;
   var ys = sortedBy(schoolsOf(), true);
-  var html = '<div class="head-row"><div style="flex:1;"><h2>歡迎，' + esc(S.teacher.name) + '</h2><div class="note">看課表，或從右上角選年度進入學校和班級。</div></div><div class="tools" style="justify-content:flex-end;">' + ys.map(function(y){ return '<button class="btn primary" data-a="go" data-s="' + y + '">' + esc(schoolsOf()[y].name) + ' ›</button>'; }).join("") + '<button class="btn" data-a="slot-new" data-d="' + ymd(new Date()) + '">新增排課</button> <button class="btn owner-only" data-a="add-s">新增年度</button></div></div>' + backupBannerHtml() + todayPanelHtml() + '<div class="panel"><h3>月課表</h3>' + calendarHtml() + '</div>';
+  var html = '<div class="head-row"><div style="flex:1;display:flex;gap:14px;align-items:center;"><img src="icons/logo.svg" alt="曼米中文" style="width:64px;height:64px;"><div><h2>歡迎，' + esc(S.teacher.name) + '</h2><div class="note">看課表，或從右上角選年度進入學校和班級。</div></div></div><div class="tools" style="justify-content:flex-end;">' + ys.map(function(y){ return '<button class="btn primary" data-a="go" data-s="' + y + '">' + esc(schoolsOf()[y].name) + ' ›</button>'; }).join("") + '<button class="btn" data-a="slot-new" data-d="' + ymd(new Date()) + '">新增排課</button> <button class="btn owner-only" data-a="add-s">新增年度</button></div></div>' + backupBannerHtml() + todayPanelHtml() + '<div class="panel"><h3>月課表</h3>' + calendarHtml() + '</div>';
   html += '<div class="panel owner-only"><h3>備份與還原</h3><p class="note" style="margin:0 0 8px;">把年度、學校、班級、開放設定、複習單元、教材分冊等平台資料存成一個檔案，萬一資料被改壞可以還原。「完整備份」另外包含聯絡簿（作業、學生繳交與照片）和課堂記錄截圖，檔案會比較大。生詞教材請用教材庫、測驗簡報請用簡報頁各自備份。</p><div class="tools"><button class="btn sm" id="bk-out">下載備份</button><button class="btn sm" id="bk-full">下載完整備份（含聯絡簿、截圖）</button><button class="btn sm" id="bk-in">從備份還原…</button><input type="file" id="bk-file" accept=".json,application/json" style="display:none;"></div></div>';
   html += assistantsPanelHtml(S.plat.assistants || {});
   shell(html); setCrumb([]); bindListPage();
@@ -2729,7 +2735,7 @@ function renderLesson(cls){
 // ---------- 學生 ----------
 function viewStudentEntry(msg, codeIn){
   var saved = ""; try{ saved = localStorage.getItem("mm_student_name") || ""; }catch(e){}
-  root.innerHTML = '<div class="center-wrap"><div class="card"><h2>曼米中文</h2><p class="sub">學生入口</p>' +
+  root.innerHTML = '<div class="center-wrap"><div class="card"><img src="icons/logo.svg" alt="曼米中文" style="width:84px;height:84px;display:block;margin:0 auto 8px;"><h2 style="text-align:center;">曼米中文</h2><p class="sub" style="text-align:center;">學生入口</p>' +
     '<label>班級代碼</label><input type="text" id="sc" value="' + esc(codeIn || "") + '" style="text-transform:uppercase;letter-spacing:.15em;" autocomplete="off">' +
     '<label>你的名字</label><input type="text" id="sn" value="' + esc(saved) + '" autocomplete="off">' +
     '<label>密碼 <span class="note" style="font-weight:400;">（老師有設定才需要）</span></label><input type="password" id="spw" autocomplete="current-password">' +

@@ -1,0 +1,14 @@
+{
+  "name": "曼米中文平台",
+  "short_name": "曼米中文",
+  "description": "曼米中文教學平台：教材、投影片、測驗、聯絡簿、課表",
+  "start_url": "app.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#FAF7F2",
+  "theme_color": "#FAF7F2",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
