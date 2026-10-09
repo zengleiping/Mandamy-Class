@@ -1472,6 +1472,7 @@
           </div>
         </div>
         <button type="button" class="back-btn" id="cmAddLessonBtn" style="width:100%; display:flex; justify-content:center; box-sizing:border-box;">＋ 新增課次</button>
+        <button type="button" class="back-btn" id="cmImportBuiltinBtn" style="width:100%; display:none; justify-content:center; box-sizing:border-box; margin-top:8px;" title="把內建的舊教材（data.js）裡還沒在你的教材庫的課次補進來">匯入內建舊教材</button>
       </div>
 
       <div style="flex:1 1 420px; min-width:280px;">
@@ -2132,6 +2133,13 @@ const EMBEDDED_SAMPLE_DATA = [
 ];
 const CLOUD_VOCAB_CACHE_KEY = 'mandamy_cloud_coursedata_v1';
 function readCloudVocabCache(){
+  // 平台內嵌：外殼已經把這本教材的資料放進 sessionStorage，直接用（不碰老師自己的雲端快取）
+  try{
+    if(new URLSearchParams(location.search).get('embed')){
+      var eb = sessionStorage.getItem('mm_embed_bank');
+      if(eb){ var ep = JSON.parse(eb); if(Array.isArray(ep) && ep.length) return ep; }
+    }
+  }catch(e){}
   try{
     var cached = localStorage.getItem(CLOUD_VOCAB_CACHE_KEY);
     if(cached){
@@ -6234,6 +6242,19 @@ render();
     renderCmLessonList(); renderCmLessonEditor();
   });
 
+  var cmImpBtn = document.getElementById("cmImportBuiltinBtn");
+  if(cmImpBtn && cmManage && cmBook === "b1" && typeof courseData !== "undefined" && Array.isArray(courseData) && courseData.length){
+    cmImpBtn.style.display = "flex";
+    cmImpBtn.addEventListener("click", function(){
+      var missing = courseData.filter(function(l){ return !cmLibrary.some(function(x){ return cmInBook(x) && Number(x.lesson) === Number(l.lesson); }); });
+      if(!missing.length){ alert("內建的舊教材（第 " + courseData.map(function(l){ return l.lesson; }).join("、") + " 課）都已經在你的教材庫裡了。"); return; }
+      if(!confirm("把內建的舊教材補進教材庫？\n會新增：" + missing.map(function(l){ return "第" + l.lesson + "課" + (l.title ? "（" + l.title + "）" : ""); }).join("、") + "\n（已經有的課次不會被覆蓋；按「儲存並套用」才會真的存。）")) return;
+      missing.forEach(function(l){ cmLibrary.push(JSON.parse(JSON.stringify(l))); });
+      cmLibrary.sort(function(a, b){ return (Number(a.lesson) || 0) - (Number(b.lesson) || 0); });
+      cmDirty = true; if(cmSelectedLessonIdx < 0) cmSelectedLessonIdx = cmLibrary.findIndex(cmInBook);
+      renderCmLessonList(); renderCmLessonEditor();
+    });
+  }
   cmSaveBtnEl.addEventListener("click", async function(){
     cmSaveBtnEl.disabled = true;
     var originalText = cmSaveBtnEl.textContent;

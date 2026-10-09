@@ -285,10 +285,23 @@ function lessonTitle(key){
   return (multiBooks() ? bookTitle(pk.book) + "　" : "") + "第 " + pk.no + " 課" + (l && l.title ? " " + l.title : "");
 }
 // 嵌入教材頁用的課次參數；目前只有預設教材（第一冊）有雲端生詞庫，其他教材回傳 null
-function lessonParam(key){
+function lessonBookOf(key){
   var l = (S.plat.lessons || {})[key];
-  if(l && l.unit){ var nums = (l.members || []).map(parseKey).filter(function(pk){ return pk && pk.book === DEFAULT_BOOK; }).map(function(pk){ return pk.no; }); return nums.length ? "lessons=" + encodeURIComponent(nums.join(",")) : null; }
-  var pk = parseKey(key); return pk && pk.book === DEFAULT_BOOK ? "lesson=" + encodeURIComponent(pk.no) : null;
+  if(l && l.unit){ var cnt = {}, best = null; (l.members || []).forEach(function(k){ var pk = parseKey(k); if(pk) cnt[pk.book] = (cnt[pk.book] || 0) + 1; }); Object.keys(cnt).forEach(function(b){ if(!best || cnt[b] > cnt[best]) best = b; }); return best; }
+  var pk = parseKey(key); return pk ? pk.book : null;
+}
+function lessonParam(key){
+  var l = (S.plat.lessons || {})[key], book = lessonBookOf(key); if(!book) return null;
+  var hasBank = bankFor(book).length > 0;
+  if(book !== DEFAULT_BOOK && !hasBank) return null;
+  if(l && l.unit){ var nums = (l.members || []).map(parseKey).filter(function(pk){ return pk && pk.book === book; }).map(function(pk){ return pk.no; }); return nums.length ? "lessons=" + encodeURIComponent(nums.join(",")) + "&book=" + encodeURIComponent(book) : null; }
+  var pk = parseKey(key); return pk ? "lesson=" + encodeURIComponent(pk.no) + "&book=" + encodeURIComponent(book) : null;
+}
+// 教材資料：老師雲端的生詞庫（依「教材」分冊）。放進 sessionStorage 給內嵌的教材頁讀；沒有資料時，第一冊會退回內建的 data.js
+function bankFor(book){ return (S.bank || []).filter(function(l){ return (l.book || DEFAULT_BOOK) === book; }); }
+function embedBankSet(book){
+  var arr = bankFor(book);
+  try{ if(arr.length) sessionStorage.setItem("mm_embed_bank", JSON.stringify(arr)); else sessionStorage.removeItem("mm_embed_bank"); }catch(e){}
 }
 function lessonCounts(no){
   var l = (S.plat.lessons || {})[no] || {}; var c = l.counts || {}, ps = l.projects || {}, sl = 0, qz = 0;
@@ -378,6 +391,7 @@ async function migrateHier(){
 async function syncLessonIndex(){
   var t = S.teacher.id, bank = null, lib = null;
   try{ bank = await fbGet("teacherVocabBanks/" + t); }catch(e){}
+  S.bank = (bank && Array.isArray(bank.courseData)) ? bank.courseData : [];
   try{ lib = await fbGet("teacherLibraries/" + t); }catch(e){}
   var lessons = {}, lm = S.plat.lessonMap || {};
   // 雲端生詞庫：沒有標「book」的課次都算預設教材（第一冊）
@@ -2044,10 +2058,10 @@ function renderLessonCommon(no, open, teacher, liveStudent){
     if(liveStudent && S.sub && subs.some(function(s){ return s[0] === S.sub; })) subs = subs.filter(function(s){ return s[0] === S.sub; });
     if(!S.sub || !subs.some(function(s){ return s[0] === S.sub; })) S.sub = subs[0][0];
     sub = liveStudent ? '' : '<div class="subbar">' + subs.map(function(s){ return '<button class="tab' + (s[0] === S.sub ? ' on' : '') + '" data-sub="' + s[0] + '" style="padding:5px 14px;font-size:13.5px;">' + s[1] + '</button>'; }).join("") + (teacher && parseKey(no) ? '<button class="tab" data-editlib="1" style="padding:5px 14px;font-size:13.5px;margin-left:auto;">編輯這一課教材</button>' : '') + '</div>';
-    var lp = lessonParam(no);
+    var lp = lessonParam(no); embedBankSet(lessonBookOf(no));
     frame = lp ? lessonHtmlFrame("index.html?embed=1&" + lp + "&tab=" + S.sub + role) : '<div class="empty"><p class="note">這本教材還沒有生詞庫，所以這裡暫時沒有內容。<br>之後會開放你新增自己的教材內容。</p></div>';
   } else if(S.tab === "activities"){
-    var lp2 = lessonParam(no);
+    var lp2 = lessonParam(no); embedBankSet(lessonBookOf(no));
     frame = lp2 ? lessonHtmlFrame("index.html?embed=1&" + lp2 + "&tab=activities" + role) : '<div class="empty"><p class="note">這本教材還沒有生詞庫，所以活動暫時沒有可用的生詞。</p></div>';
   } else {
     var ps = ((S.plat.lessons || {})[no] || {}).projects || {}, pids = Object.keys(ps);
@@ -2227,6 +2241,7 @@ async function startStudent(code, name, pw){
     var base = "teacherPlatform/" + idx.t;
     var res = await Promise.all([fbGet(base + "/schools/" + idx.s + "/name"), fbGet(base + "/schools/" + idx.s + "/terms/" + idx.tm + "/name"), fbGet(base + "/schools/" + idx.s + "/terms/" + idx.tm + "/classes/" + idx.c), fbGet(base + "/lessons"), fbGet(base + "/books")]);
     if(!res[2]){ viewStudentEntry("這個班級已不存在。", code); return; }
+    try{ var sb = await fbGet("teacherVocabBanks/" + idx.t); S.bank = (sb && Array.isArray(sb.courseData)) ? sb.courseData : []; }catch(e){ S.bank = []; }
     var needAcct = !!(await fbGet(base + "/accountsOn/" + idx.c));
     if(needAcct){ var au = await studentAuth(idx, name, pw); if(au !== true){ viewStudentEntry(au, code); return; } }
     S.student = { name: name, code: code, idx: idx, school: res[0], term: res[1], cls: res[2], acct: needAcct };
