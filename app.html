@@ -104,6 +104,23 @@
   .hw-table th, .hw-table td{ border:1px solid var(--line); padding:6px 10px; text-align:center; white-space:nowrap; }
   .hw-table td:first-child, .hw-table th:first-child{ text-align:left; }
   .hw-table .st-ok{ background:#E3F1E8; } .hw-table .st-late{ background:#FBEBC8; } .hw-table .st-missing{ background:#F7D9D5; }
+  .cal-cnt{ display:none; }
+  @media (pointer:coarse), (max-width:1024px){
+    .btn{ min-height:42px; } .btn.sm{ min-height:38px; padding:7px 12px; }
+    input[type=text], input[type=password], input[type=date], input[type=time], input[type=number], select, textarea{ font-size:16px !important; }
+    .tab{ padding:11px 14px; }
+  }
+  @media (max-width:640px){
+    .top{ padding:6px 10px; gap:6px; } .top .crumb{ order:3; width:100%; }
+    .head-row > div{ min-width:100%; }
+    .slot{ gap:8px; } .slot-time{ min-width:0 !important; }
+    .slot-act{ width:100%; flex-wrap:wrap; }
+    .cal-s{ display:none; } .cal-cnt{ display:block; font-size:11px; color:var(--seal); font-weight:700; }
+    .hw-table th, .hw-table td{ padding:5px 6px; font-size:12px; }
+    .main{ padding:12px 10px; }
+    .tabs{ overflow-x:auto; flex-wrap:nowrap; } .tab{ white-space:nowrap; }
+    dialog{ width:94vw !important; }
+  }
   .toast{ position:fixed; left:50%; bottom:24px; transform:translateX(-50%); background:var(--ink); color:#fff; padding:9px 16px; border-radius:99px; font-size:13px; z-index:9999; }
   @media (max-width:820px){ .side{ display:none; } .side.show{ display:block; position:fixed; z-index:50; top:48px; bottom:0; left:0; box-shadow:var(--shadow); } .menu-btn{ display:inline-block !important; } }
   .menu-btn{ display:none; }
@@ -315,7 +332,7 @@ function viewLogin(msg){
 async function startTeacher(acc){
   S.teacher = { id: acc.id, name: acc.displayName || acc.username, isAdmin: !!acc.isAdmin };
   root.innerHTML = '<div class="center-wrap"><div class="note">載入中…</div></div>';
-  var plat = {}, pbase = "teacherPlatform/" + S.teacher.id, pkeys = ["schools", "lessonMap", "lessons", "units", "books", "customLessons", "hier", "schedule", "classRecords"];
+  var plat = {}, pbase = "teacherPlatform/" + S.teacher.id, pkeys = ["schools", "lessonMap", "lessons", "units", "books", "customLessons", "hier", "schedule", "classRecords", "meta"];
   var pvals = await Promise.all(pkeys.map(function(k){ return fbGet(pbase + "/" + k).catch(function(){ return null; }); }));
   pkeys.forEach(function(k, i){ if(pvals[i] != null) plat[k] = pvals[i]; });
   plat.schools = plat.schools || {}; plat.lessonMap = plat.lessonMap || {}; plat.lessons = plat.lessons || {}; plat.units = plat.units || {}; plat.books = plat.books || {}; plat.customLessons = plat.customLessons || {};
@@ -535,6 +552,8 @@ function bindListPage(){
   m.onclick = function(e){
     var b = e.target.closest("[data-a]"); if(!b) return;
     var a = b.dataset.a, s = b.dataset.s, t = b.dataset.t, c = b.dataset.c;
+    if(a === "bk-now"){ backupPlatform(true); return; }
+    if(a === "bk-snooze"){ try{ localStorage.setItem("mm_backup_snooze", String(Date.now() + 3 * 86400000)); }catch(e){} render(); return; }
     if(a.indexOf("cal-") === 0 || a.indexOf("slot-") === 0){ schedAct(a, b.dataset); return; }
     if(a === "go"){ S.sel = (s ? { s: s, t: t || null, c: c || null } : null); S.lesson = null; render(); return; }
     platAct(a, s, t, c);
@@ -575,7 +594,7 @@ function calendarHtml(){
   for(var d = 1; d <= days; d++){
     var date = yy + "-" + pad2(mm + 1) + "-" + pad2(d), sl = slotsOn(date);
     html += '<div class="cal-d' + (date === today ? ' today' : '') + '" data-a="cal-day" data-d="' + date + '"><div class="cal-n">' + d + '</div>' +
-      sl.slice(0, 3).map(function(x){ return '<div class="cal-s">' + esc((x.start || "") + " " + slotLabel(x)) + '</div>'; }).join("") + (sl.length > 3 ? '<div class="cal-s">還有 ' + (sl.length - 3) + ' 堂…</div>' : '') + '</div>';
+      (sl.length ? '<div class="cal-cnt">' + sl.length + ' 堂</div>' : '') + sl.slice(0, 3).map(function(x){ return '<div class="cal-s">' + esc((x.start || "") + " " + slotLabel(x)) + '</div>'; }).join("") + (sl.length > 3 ? '<div class="cal-s">還有 ' + (sl.length - 3) + ' 堂…</div>' : '') + '</div>';
   }
   return html + '</div>';
 }
@@ -1726,10 +1745,19 @@ async function viewParent(tok){
     root.innerHTML = html;
   }catch(e){ root.innerHTML = '<div class="center-wrap"><div class="card"><h2>讀取失敗</h2><p class="sub">請檢查網路後重新整理。</p></div></div>'; }
 }
+function backupBannerHtml(){
+  var last = (S.plat.meta || {}).lastBackupAt || 0, days = last ? Math.floor((Date.now() - last) / 86400000) : null, snooze = 0;
+  try{ snooze = Number(localStorage.getItem("mm_backup_snooze")) || 0; }catch(e){}
+  if(Date.now() < snooze) return '';
+  if(days != null && days < 7) return '';
+  var hasData = Object.keys(S.plat.schools || {}).length || Object.keys(S.plat.classRecords || {}).length;
+  if(!hasData) return '';
+  return '<div class="panel" style="background:#FBEBC8;"><b>💾 ' + (days == null ? '還沒備份過' : '上次備份是 ' + days + ' 天前') + '</b>　建議每週備份一次，萬一資料被改壞才救得回來。<div class="tools" style="margin-top:8px;"><button class="btn sm primary" data-a="bk-now">現在下載完整備份</button><button class="btn sm" data-a="bk-snooze">3 天後再提醒</button></div></div>';
+}
 function renderPlatformHome(){
   S.focus = false;
   var ys = sortedBy(schoolsOf(), true);
-  var html = '<div class="head-row"><div style="flex:1;"><h2>歡迎，' + esc(S.teacher.name) + '</h2><div class="note">看課表、或選一個年度進入學校和班級（沒有班級也沒關係）。</div></div><div><button class="btn" data-a="slot-new" data-d="' + ymd(new Date()) + '">新增排課</button> <button class="btn" data-a="add-s">新增年度</button></div></div>' + todayPanelHtml() + '<div class="panel"><h3>月課表</h3>' + calendarHtml() + '</div><div class="panel"><h3>年度</h3>';
+  var html = '<div class="head-row"><div style="flex:1;"><h2>歡迎，' + esc(S.teacher.name) + '</h2><div class="note">看課表、或選一個年度進入學校和班級（沒有班級也沒關係）。</div></div><div><button class="btn" data-a="slot-new" data-d="' + ymd(new Date()) + '">新增排課</button> <button class="btn" data-a="add-s">新增年度</button></div></div>' + backupBannerHtml() + todayPanelHtml() + '<div class="panel"><h3>月課表</h3>' + calendarHtml() + '</div><div class="panel"><h3>年度</h3>';
   html += ys.length ? '<div class="tools">' + ys.map(function(y){ return '<button class="btn" data-a="go" data-s="' + y + '">' + esc(schoolsOf()[y].name) + '</button>'; }).join("") + '</div>' : '<p class="note">還沒有年度。按右上角「新增年度」開始。</p>';
   html += '</div><div class="panel"><h3>備份與還原</h3><p class="note" style="margin:0 0 8px;">把年度、學校、班級、開放設定、複習單元、教材分冊等平台資料存成一個檔案，萬一資料被改壞可以還原。「完整備份」另外包含聯絡簿（作業、學生繳交與照片）和課堂記錄截圖，檔案會比較大。生詞教材請用教材庫、測驗簡報請用簡報頁各自備份。</p><div class="tools"><button class="btn sm" id="bk-out">下載備份</button><button class="btn sm" id="bk-full">下載完整備份（含聯絡簿、截圖）</button><button class="btn sm" id="bk-in">從備份還原…</button><input type="file" id="bk-file" accept=".json,application/json" style="display:none;"></div></div>';
   shell(html); setCrumb([]); bindListPage();
@@ -1752,7 +1780,9 @@ async function backupPlatform(full){
   var blob = new Blob([JSON.stringify(data)], { type: "application/json" });
   var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "mandamy-platform-backup" + (full ? "-full-" : "-") + new Date().toISOString().slice(0, 10) + ".json";
   document.body.appendChild(a); a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 500);
-  toast("已下載備份");
+  S.plat.meta = S.plat.meta || {}; S.plat.meta.lastBackupAt = Date.now();
+  try{ await fbSet("teacherPlatform/" + S.teacher.id + "/meta/lastBackupAt", S.plat.meta.lastBackupAt); }catch(e){}
+  toast("已下載備份"); if(!S.sel && !S.lib && !S.rec && !S.day) render();
 }
 async function restorePlatform(file){
   var data;
@@ -2261,6 +2291,7 @@ function renderStudentLive(){
   shell(r.html, { flush: true });
 }
 // ---------- 啟動 ----------
+window.__mm = { get S(){ return S; }, render: function(){ return render(); }, newRecordDraft: newRecordDraft, ymd: ymd };
 (async function boot(){
   root.innerHTML = '<div class="center-wrap"><div class="note">連線中…</div></div>';
   var ok = await waitFirebase();
