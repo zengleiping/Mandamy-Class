@@ -118,6 +118,7 @@
 <dialog id="unitdlg"><form method="dialog"><h3 id="unit-t">複習單元</h3><label style="display:block;font-size:12.5px;font-weight:700;color:var(--ink-soft);margin:4px 0 5px;">名稱</label><input type="text" id="unit-name" autocomplete="off" placeholder="例如：第一到六課複習"><label style="display:block;font-size:12.5px;font-weight:700;color:var(--ink-soft);margin:12px 0 5px;">包含哪幾課（教材與活動會合併這幾課的生詞）</label><div id="unit-lessons" style="display:flex;flex-wrap:wrap;gap:8px;"></div><div class="row"><button type="button" class="btn" id="unit-no">取消</button><button type="submit" class="btn primary">儲存</button></div></form></dialog>
 <dialog id="sch" style="width:min(460px,94vw);"><form method="dialog"><h3 id="sch-t"></h3><label>班級</label><select id="sch-c"></select><label>日期</label><input type="date" id="sch-d"><div style="display:flex;gap:10px;"><div style="flex:1;"><label>開始</label><input type="time" id="sch-s"></div><div style="flex:1;"><label>結束</label><input type="time" id="sch-e"></div></div><label>要上哪一課（可不選）</label><select id="sch-l"></select><label>備註（例如第二節改線上）</label><input type="text" id="sch-n"><div id="sch-rep" style="margin-top:12px;font-size:13px;"><label style="display:flex;align-items:center;gap:6px;font-weight:600;margin:0;"><input type="checkbox" id="sch-r"> 每週同一時間重複，共 <input type="number" id="sch-w" value="8" min="2" max="40" style="width:64px;"> 週</label></div><div class="row"><button type="button" class="btn" id="sch-no">取消</button><button type="submit" class="btn primary">儲存</button></div></form></dialog>
 <dialog id="remind" style="width:min(420px,92vw);"><form method="dialog"><h3>📝 該填課堂記錄表了</h3><p id="remind-t" style="margin:6px 0 4px;font-weight:700;"></p><p class="note">趁記憶還新鮮，趕快記下今天的上課內容和學生表現吧。</p><div class="row" style="flex-wrap:wrap;"><button type="button" class="btn" id="remind-skip">今天不用提醒</button><button type="button" class="btn" id="remind-later">10 分鐘後再提醒</button><button type="button" class="btn primary" id="remind-go">填寫課堂記錄</button></div></form></dialog>
+<dialog id="bell-d" style="width:min(460px,94vw);"><form method="dialog" onsubmit="return false;"><h3>🔔 新的繳交</h3><div id="bell-list" style="max-height:50vh;overflow-y:auto;"></div><div class="row" style="flex-wrap:wrap;"><button type="button" class="btn sm" id="bell-perm" style="display:none;">開啟桌面通知</button><button type="button" class="btn" id="bell-clear">全部標為已讀</button><button type="button" class="btn primary" id="bell-close">關閉</button></div></form></dialog>
 <dialog id="pick"><form method="dialog"><h3 id="pick-t"></h3><select id="pick-s" style="width:100%;padding:10px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface-2);font:inherit;"></select><div class="row"><button type="button" class="btn" id="pick-no">取消</button><button type="submit" class="btn primary" id="pick-ok">確定</button></div></form></dialog>
 <dialog id="ask"><form method="dialog"><h3 id="ask-t"></h3><input type="text" id="ask-i" autocomplete="off"><div class="row"><button type="button" class="btn" id="ask-no">取消</button><button type="submit" class="btn primary" id="ask-ok">確定</button></div></form></dialog>
 
@@ -322,7 +323,7 @@ async function startTeacher(acc){
   await migrateHier();
   S.plat.schedule = S.plat.schedule || {};
   await syncLessonIndex();
-  startReminders();
+  startReminders(); startNotify();
   restoreFromHash();
   render();
 }
@@ -420,10 +421,11 @@ function shell(inner, opts){
   var isT = !!S.teacher;
   root.innerHTML = '<div class="shell' + (S.focus ? ' focus' : '') + '"><div class="top">' +
     '<div class="brand">曼米中文' + (isT ? '' : '<small>學生</small>') + '</div><div class="crumb" id="crumb"></div><div class="grow"></div>' +
-    (isT ? '<span class="crumb">👤 ' + esc(S.teacher.name) + '</span><button class="btn sm" id="recbtn">課堂記錄</button><button class="btn sm" id="libbtn">教材庫</button><a class="btn sm" href="index.html" target="_blank">原教材頁</a><a class="btn sm" href="slides/practice.html" target="_blank">原簡報頁</a><button class="btn sm" id="logout">登出</button>'
+    (isT ? '<span class="crumb">👤 ' + esc(S.teacher.name) + '</span><button class="btn sm" id="bell" title="新的繳交">🔔</button><button class="btn sm" id="recbtn">課堂記錄</button><button class="btn sm" id="libbtn">教材庫</button><a class="btn sm" href="index.html" target="_blank">原教材頁</a><a class="btn sm" href="slides/practice.html" target="_blank">原簡報頁</a><button class="btn sm" id="logout">登出</button>'
          : '<span class="crumb">👤 ' + esc(S.student ? S.student.name : "") + '</span><button class="btn sm" id="leave">離開</button>') +
     '</div><div class="body">' + '<main class="main' + (opts.flush ? ' flush' : '') + '" id="main">' + inner + '</main></div></div>';
   if(isT){
+    document.getElementById("bell").onclick = openBell; updateBell();
     document.getElementById("recbtn").onclick = function(){ if(S.focus) setFocus(false); S.rec = { filter: "all" }; S.lib = null; S.day = null; S.sel = null; S.lesson = null; render(); };
     document.getElementById("libbtn").onclick = function(){ if(S.focus) setFocus(false); S.rec = null; S.lib = { book: S.lib ? S.lib.book : DEFAULT_BOOK }; render(); };
     document.getElementById("logout").onclick = function(){ try{ localStorage.removeItem(SESSION_KEY); }catch(e){} S.teacher = null; S.sel = null; history.replaceState(null, "", location.pathname); viewLogin(); };
@@ -866,6 +868,7 @@ async function saveRecord(){
     await fbSet(base + "/recordShots/" + id, S.rec.shots && S.rec.shots.length ? S.rec.shots : null);
   }catch(e){ alert("儲存失敗，請檢查網路或 Firebase 規則。內容還留在畫面上。"); return; }
   m[id] = rec; try{ localStorage.removeItem(recBackupKey()); }catch(e){}
+  refreshParentLinksFor(d.classLabel);
   toast("已儲存"); S.rec = { filter: d.classLabel }; render();
 }
 async function importRecords(file){
@@ -933,6 +936,7 @@ async function renderHomework(cls){
     if(hw.view === "settle") return hwSettle(items, roster);
     if(hw.view === "summary") return hwSummary(cls, items, roster);
     try{ localStorage.setItem(hwSeenKey(cid), String(nowMs())); }catch(e){}
+    var plinks = (await fbGet("teacherPlatform/" + tid + "/parentLinks")) || {}; Object.keys(plinks).forEach(function(t){ if(plinks[t].c !== cid) delete plinks[t]; });
     var accs = (await fbGet(accPath(tid, cid))) || {}, accOn = !!(await fbGet("teacherPlatform/" + tid + "/accountsOn/" + cid));
     // 列表
     var subsAll = {};
@@ -942,7 +946,7 @@ async function renderHomework(cls){
       var subs = subsAll[it.id], keys = Object.keys(subs).filter(function(k){ return subs[k].firstAt; }), late = keys.filter(function(k){ return hwStatus(it, subs[k]) === "late"; }).length, total = Math.max(roster.length, keys.length);
       return '<div class="slot"><div class="slot-time" style="min-width:120px;">' + esc(it.due ? hwFmt(new Date(it.due).getTime()) : "未設期限") + '<div class="note">截止</div></div><div class="slot-main"><div><b>' + esc(it.title) + '</b></div><div class="note">已交 ' + keys.length + ' / ' + total + (late ? '（遲交 ' + late + '）' : '') + '</div></div><div class="slot-act"><button class="btn" data-h="item" data-id="' + it.id + '">查看繳交</button><button class="btn sm" data-h="edit" data-id="' + it.id + '">修改</button><button class="btn sm danger" data-h="del" data-id="' + it.id + '">刪除</button></div></div>';
     }).join("") : '<p class="note">還沒有作業。按右上角「公布作業」。學生用班級代碼進來就會看到。</p>') + '</div>';
-    html += '<div class="panel"><h3>班級名單</h3><p class="note" style="margin:0 0 8px;">一行一位學生，名字要跟學生進入時輸入的一樣。結算時沒交的人才找得出來。</p><textarea id="hw-roster" rows="5" style="width:100%;padding:8px 10px;border-radius:8px;border:1.5px solid var(--line);background:var(--surface-2);font:inherit;">' + esc(roster.join("\n")) + '</textarea><div style="margin-top:8px;"><button class="btn sm" data-h="roster">儲存名單</button></div>' + accPanelHtml(roster, accs, accOn) + '</div>';
+    html += '<div class="panel"><h3>班級名單</h3><p class="note" style="margin:0 0 8px;">一行一位學生，名字要跟學生進入時輸入的一樣。結算時沒交的人才找得出來。</p><textarea id="hw-roster" rows="5" style="width:100%;padding:8px 10px;border-radius:8px;border:1.5px solid var(--line);background:var(--surface-2);font:inherit;">' + esc(roster.join("\n")) + '</textarea><div style="margin-top:8px;"><button class="btn sm" data-h="roster">儲存名單</button></div>' + accPanelHtml(roster, accs, accOn) + parentPanelHtml(roster, plinks) + '</div>' + '<div class="panel"><h3>批次貼上作業</h3><p class="note" style="margin:0 0 8px;">一行一份：<code>日期 標題</code>，可以加 <code>| 說明</code>，也可以寫時間。例如：<br><code>10/15 第七課生詞抄寫 | 抄三遍</code><br><code>10/22 14:00 第八課造句</code></p><textarea id="hw-batch" rows="4" style="width:100%;padding:8px 10px;border-radius:8px;border:1.5px solid var(--line);background:var(--surface-2);font:inherit;"></textarea><div style="margin-top:8px;"><button class="btn sm" data-h="batch">建立這些作業</button></div></div>';
     shell(html); setCrumb([]);
     document.getElementById("main").onclick = async function(e){
       var b = e.target.closest("[data-h]"); if(!b) return; var a = b.dataset.h;
@@ -951,6 +955,14 @@ async function renderHomework(cls){
       else if(a === "item"){ S.hw = { view: "item", id: b.dataset.id }; render(); }
       else if(a === "settle"){ S.hw = { view: "settle" }; render(); }
       else if(a === "summary"){ S.hw = { view: "summary" }; render(); }
+      else if(a === "batch"){
+        var list = parseBatchHw(document.getElementById("hw-batch").value);
+        if(!list.length){ alert("沒有看到可以建立的作業。格式：日期 標題（例如：10/15 第七課生詞抄寫）"); return; }
+        if(!confirm("建立 " + list.length + " 份作業？\n" + list.map(function(x){ return x.due.slice(0, 10) + " " + x.title; }).join("\n"))) return;
+        for(var bi = 0; bi < list.length; bi++){ await fbSet(base + "/items/" + uid("hw_"), Object.assign({}, list[bi], { imgs: [], createdAt: Date.now(), updatedAt: Date.now() })); }
+        toast("已建立 " + list.length + " 份"); render();
+      }
+      else if(a.indexOf("plink-") === 0){ await parentAct(a, roster, plinks, b); }
       else if(a.indexOf("acc-") === 0){ await accAct(a, roster, accs, base, b.dataset.n); }
       else if(a === "roster"){
         var names = document.getElementById("hw-roster").value.split("\n").map(function(x){ return x.trim(); }).filter(Boolean);
@@ -1005,12 +1017,13 @@ async function hwItemPage(items, roster){
   keys.forEach(function(k){ cnt[hwStatus(it, rows[k].sub)]++; });
   var html = '<div class="head-row"><div style="flex:1;"><h2>' + esc(it.title) + '</h2><div class="note">截止 ' + esc(it.due ? hwFmt(hwDueTs(it)) : "未設") + '　・　準時 ' + cnt.ok + '　遲交 ' + cnt.late + '　未交 ' + (cnt.missing + cnt.pending) + (cnt.exempt ? '　免交 ' + cnt.exempt : '') + '</div></div><div><button class="btn sm ghost" data-h="back">回聯絡簿</button></div></div>' +
     (it.body ? '<div class="panel"><div style="white-space:pre-wrap;">' + esc(it.body) + '</div></div>' : '') +
-    '<div class="panel"><h3>繳交狀況</h3>' + (keys.length ? keys.sort(function(a, b){ return rows[a].name.localeCompare(rows[b].name, "zh-Hant"); }).map(function(k){
+    '<div class="panel"><h3>繳交狀況</h3>' + (keys.length ? '<div class="tools" style="margin-bottom:8px;"><label style="display:flex;align-items:center;gap:6px;"><input type="checkbox" id="bsel-all"> 全選</label><span class="note">選取的：</span><button class="btn sm" data-h="bov" data-v="ok">改為準時</button><button class="btn sm" data-h="bov" data-v="exempt">免交</button><button class="btn sm" data-h="bov" data-v="">取消調整</button></div>' : '') + (keys.length ? keys.sort(function(a, b){ return rows[a].name.localeCompare(rows[b].name, "zh-Hant"); }).map(function(k){
       var r = rows[k], st = hwStatus(it, r.sub);
-      return '<div class="slot"><div class="slot-time" style="min-width:90px;">' + esc(r.name) + '</div><div class="slot-main"><div><b>' + HW_LABEL[st] + '</b>' + (r.sub && r.sub.firstAt ? '　<span class="note">最後送出 ' + hwFmt(r.sub.at) + (r.sub.count > 1 ? '（共 ' + r.sub.count + ' 次，第一次 ' + hwFmt(r.sub.firstAt) + '）' : '') + ((r.sub.times || []).some(function(x){ return x.s === false; }) ? '　⚠ 有一次用的是裝置時間' : '') + '</span>' + (r.sub.count > 1 && r.sub.times ? '<div class="note">每次送出：' + r.sub.times.map(function(x, i){ return '第' + (i + 1) + '次 ' + hwFmt(x.t); }).join('；') + '</div>' : '') : '') + '</div>' + (r.sub && r.sub.fb ? '<div class="note">回饋：' + esc(r.sub.fb) + '</div>' : '') + '</div><div class="slot-act">' + (r.sub && r.sub.firstAt ? '<button class="btn sm" data-h="view" data-k="' + k + '">查看內容</button>' : '') + (r.sub && r.sub.ov ? '<button class="btn sm" data-h="ov" data-k="' + k + '" data-v="">取消調整</button>' : '<button class="btn sm" data-h="ov" data-k="' + k + '" data-v="ok">改為準時</button><button class="btn sm" data-h="ov" data-k="' + k + '" data-v="exempt">免交</button>') + '</div></div><div id="det-' + k + '"></div>';
+      return '<div class="slot"><div class="slot-time" style="min-width:90px;"><label style="display:flex;align-items:center;gap:6px;"><input type="checkbox" class="bsel" data-k="' + k + '">' + esc(r.name) + '</label></div><div class="slot-main"><div><b>' + HW_LABEL[st] + '</b>' + (r.sub && r.sub.firstAt ? '　<span class="note">最後送出 ' + hwFmt(r.sub.at) + (r.sub.count > 1 ? '（共 ' + r.sub.count + ' 次，第一次 ' + hwFmt(r.sub.firstAt) + '）' : '') + ((r.sub.times || []).some(function(x){ return x.s === false; }) ? '　⚠ 有一次用的是裝置時間' : '') + '</span>' + (r.sub.count > 1 && r.sub.times ? '<div class="note">每次送出：' + r.sub.times.map(function(x, i){ return '第' + (i + 1) + '次 ' + hwFmt(x.t); }).join('；') + '</div>' : '') : '') + '</div>' + (r.sub && r.sub.fb ? '<div class="note">回饋：' + esc(r.sub.fb) + '</div>' : '') + '</div><div class="slot-act">' + (r.sub && r.sub.firstAt ? '<button class="btn sm" data-h="view" data-k="' + k + '">查看內容</button>' : '') + (r.sub && r.sub.ov ? '<button class="btn sm" data-h="ov" data-k="' + k + '" data-v="">取消調整</button>' : '<button class="btn sm" data-h="ov" data-k="' + k + '" data-v="ok">改為準時</button><button class="btn sm" data-h="ov" data-k="' + k + '" data-v="exempt">免交</button>') + '</div></div><div id="det-' + k + '"></div>';
     }).join("") : '<p class="note">還沒有名單，也還沒有人交。到聯絡簿首頁貼上班級名單，結算時才找得出沒交的人。</p>') + '</div>';
   shell(html); setCrumb([]);
   document.getElementById("main").onclick = async function(e){
+    if(e.target.id === "bsel-all"){ document.querySelectorAll(".bsel").forEach(function(x){ x.checked = e.target.checked; }); return; }
     var b = e.target.closest("[data-h]"); if(!b) return; var a = b.dataset.h;
     if(a === "back"){ S.hw = { view: "list" }; render(); return; }
     if(a === "view"){
@@ -1019,6 +1032,18 @@ async function hwItemPage(items, roster){
       var files = (await fbGet("teacherPlatform/" + tid + "/hwFiles/" + cid + "/" + it.id + "/" + k)) || []; if(!Array.isArray(files)) files = Object.keys(files).map(function(x){ return files[x]; });
       box.innerHTML = '<div class="panel" style="background:var(--surface-2);">' + (sub.text ? '<div style="white-space:pre-wrap;margin-bottom:8px;">' + esc(sub.text) + '</div>' : '') + '<div class="tools" style="margin-bottom:8px;">' + files.map(function(u){ return '<img src="' + u + '" data-h="zoom" style="max-width:220px;max-height:220px;border-radius:8px;cursor:zoom-in;border:1px solid var(--line);">'; }).join("") + '</div><div style="display:flex;gap:6px;"><input type="text" id="fb-' + k + '" placeholder="給學生的回饋（選填）" value="' + esc(sub.fb || "") + '" style="flex:1;padding:8px 10px;border-radius:8px;border:1.5px solid var(--line);font:inherit;"><button class="btn sm" data-h="fb" data-k="' + k + '">儲存回饋</button></div></div>';
     } else if(a === "zoom"){ var w = window.open(); if(w) w.document.write('<img src="' + b.src + '" style="max-width:100%;">'); }
+    else if(a === "bov"){
+      var sel = Array.prototype.slice.call(document.querySelectorAll(".bsel:checked")).map(function(x){ return x.dataset.k; });
+      if(!sel.length){ toast("請先勾選學生"); return; }
+      var bv = b.dataset.v;
+      if(!confirm("把選取的 " + sel.length + " 位學生" + (bv === "ok" ? "改為準時" : bv === "exempt" ? "設為免交" : "取消調整") + "？")) return;
+      for(var bi = 0; bi < sel.length; bi++){
+        var kk = sel[bi], pth2 = "teacherPlatform/" + tid + "/hwSubs/" + cid + "/" + it.id + "/" + kk, cur3 = subs[kk] || { name: rows[kk].name };
+        if(bv) cur3.ov = bv; else delete cur3.ov;
+        if(!cur3.firstAt && !cur3.ov) await fbSet(pth2, null); else await fbSet(pth2, Object.assign({}, cur3, { name: cur3.name || rows[kk].name }));
+      }
+      render(); return;
+    }
     else if(a === "ov"){
       var ok2 = b.dataset.k, v2 = b.dataset.v, pth = "teacherPlatform/" + tid + "/hwSubs/" + cid + "/" + it.id + "/" + ok2, cur2 = subs[ok2] || { name: rows[ok2].name };
       if(v2) cur2.ov = v2; else delete cur2.ov;
@@ -1122,6 +1147,7 @@ async function renderStudentHw(){
         await fbSet("teacherPlatform/" + tid + "/hwFiles/" + cid + "/" + it.id + "/" + me, S.hwShots.length ? S.hwShots : null);
         await fbSet("teacherPlatform/" + tid + "/hwSubs/" + cid + "/" + it.id + "/" + me, rec);
       }catch(er){ alert("送出失敗，請檢查網路後再試一次。你填的內容還在畫面上。"); return; }
+      notifyTeacher(it, rec);
       toast("已送出！"); S.hwOpen = "list"; S.hwShotsFor = null; renderStudentHw();
     }
   };
@@ -1581,6 +1607,124 @@ async function renderComments(){
       else { var el = document.createElement("a"); el.href = URL.createObjectURL(new Blob(["﻿" + txt], { type: "text/plain;charset=utf-8" })); el.download = "學期評語_" + t.label + ".txt"; document.body.appendChild(el); el.click(); setTimeout(function(){ URL.revokeObjectURL(el.href); el.remove(); }, 500); }
     }
   });
+}
+// ---------- 批次貼上作業 ----------
+function parseBatchHw(text){
+  var out = [], now = new Date(), yy = now.getFullYear();
+  text.split("\n").forEach(function(line){
+    line = line.trim(); if(!line) return;
+    var m = /^(?:(\d{4})[-\/])?(\d{1,2})[-\/](\d{1,2})\s*(?:(\d{1,2}):(\d{2}))?\s+(.+)$/.exec(line); if(!m) return;
+    var rest = m[6].split("|"), title = rest[0].trim(), body = (rest[1] || "").trim(); if(!title) return;
+    out.push({ title: title, body: body, due: (m[1] || yy) + "-" + pad2(Number(m[2])) + "-" + pad2(Number(m[3])) + "T" + (m[4] ? pad2(Number(m[4])) + ":" + m[5] : "23:59") });
+  });
+  return out;
+}
+// ---------- 老師端：新繳交通知（鈴鐺） ----------
+var NOTIFY_READY = false;
+function bellItems(){ var n = S.notify || {}; return Object.keys(n).map(function(k){ return Object.assign({ id: k }, n[k]); }).sort(function(a, b){ return (b.at || 0) - (a.at || 0); }); }
+function updateBell(){ var b = document.getElementById("bell"); if(!b) return; var n = bellItems().length; b.textContent = "🔔" + (n ? " " + n : ""); b.style.background = n ? "#FBEBC8" : ""; }
+function startNotify(){
+  if(S.notifyOn) return; S.notifyOn = true; S.notify = {};
+  try{
+    window.onValue(window.ref(window.db, "teacherPlatform/" + S.teacher.id + "/notify"), function(snap){
+      var v = snap.val() || {}, old = S.notify || {};
+      if(NOTIFY_READY){ Object.keys(v).forEach(function(k){ if(!old[k]) desktopNotify(v[k]); }); }
+      S.notify = v; NOTIFY_READY = true; updateBell();
+    });
+  }catch(e){}
+}
+function desktopNotify(n){
+  try{ if("Notification" in window && Notification.permission === "granted") new Notification("聯絡簿有新繳交", { body: n.name + " 交了「" + n.title + "」（" + (n.cname || "") + "）" }); }catch(e){}
+}
+function openBell(){
+  var d = document.getElementById("bell-d"), items = bellItems();
+  document.getElementById("bell-list").innerHTML = items.length ? items.map(function(x){ return '<div class="slot" data-n="' + x.id + '" style="cursor:pointer;"><div class="slot-time" style="min-width:80px;">' + esc(hwFmt(x.at)) + '</div><div class="slot-main"><b>' + esc(x.name) + '</b> 交了「' + esc(x.title) + '」<div class="note">' + esc(x.cname || "") + '</div></div></div>'; }).join("") : '<p class="note">沒有新的繳交通知。</p>';
+  document.getElementById("bell-perm").style.display = ("Notification" in window && Notification.permission === "default") ? "" : "none";
+  document.getElementById("bell-list").onclick = function(e){
+    var r = e.target.closest("[data-n]"); if(!r) return; var n = S.notify[r.dataset.n]; if(!n) return;
+    d.close(); S.day = null; S.lib = null; S.rec = null; S.sel = { s: n.s, t: n.tm, c: n.c }; S.lesson = null; S.hw = { view: "item", id: n.hwId }; render();
+  };
+  document.getElementById("bell-clear").onclick = async function(){ await fbSet("teacherPlatform/" + S.teacher.id + "/notify", null); S.notify = {}; updateBell(); d.close(); toast("已全部標為已讀"); };
+  document.getElementById("bell-perm").onclick = function(){ try{ Notification.requestPermission().then(function(){ openBell(); }); }catch(e){} };
+  document.getElementById("bell-close").onclick = function(){ d.close(); };
+  d.showModal();
+}
+async function notifyTeacher(it, mySub){
+  var st = S.student;
+  try{ await fbSet("teacherPlatform/" + st.idx.t + "/notify/" + uid("n_"), { name: st.name, title: it.title, hwId: it.id, cname: st.cls.name, s: st.idx.s, tm: st.idx.tm, c: st.idx.c, at: mySub.at }); }catch(e){}
+}
+// ---------- 家長查看連結 ----------
+function parentUrl(tok){ return location.origin + location.pathname + "?parent=" + encodeURIComponent(S.teacher.id) + "~" + tok; }
+async function parentDigest(tid, link){
+  // 只放這位學生自己的課堂記錄摘要（日期、教材進度、出缺席；分數看老師有沒有開放）
+  var label = classInfo({ s: link.s, t: link.tm, c: link.c }), recs = Object.keys(recMap()).map(function(k){ return recMap()[k]; }).filter(function(r){ return r.classKey === link.s + "|" + link.tm + "|" + link.c || (label && r.classLabel === label.school + " " + label.cls); }).sort(function(a, b){ return (b.date || "").localeCompare(a.date || ""); }), out = [];
+  recs.forEach(function(r){
+    if(r.isAbsence) return;
+    var mine = (r.students || []).filter(function(s){ return (s.name || "").trim() === link.name; })[0];
+    if(!mine) return;
+    var e = { date: r.date, material: r.material || "", absent: !!mine.absent };
+    if(!mine.absent && link.showScores && hasScore(mine)){ e.total = stTotal(mine); e.scores = {}; RUBRIC.forEach(function(rb){ if(typeof mine[rb.key] === "number") e.scores[rb.label] = mine[rb.key] + "/" + rb.max; }); }
+    out.push(e);
+  });
+  return out.slice(0, 40);
+}
+async function refreshParentLink(tok){
+  var tid = S.teacher.id, link = await fbGet("teacherPlatform/" + tid + "/parentLinks/" + tok); if(!link) return;
+  await fbSet("teacherPlatform/" + tid + "/parentRecords/" + tok, await parentDigest(tid, link));
+}
+async function refreshParentLinksFor(label){
+  // 存課堂記錄後，更新這個班所有家長頁面
+  try{
+    var links = (await fbGet("teacherPlatform/" + S.teacher.id + "/parentLinks")) || {};
+    for(var tok in links){ var L = links[tok], ci = classInfo({ s: L.s, t: L.tm, c: L.c }); if(ci && (ci.school + " " + ci.cls === label || label === "")) await refreshParentLink(tok); }
+  }catch(e){}
+}
+function parentPanelHtml(roster, links){
+  var byName = {}; Object.keys(links).forEach(function(t){ byName[links[t].name] = Object.assign({ tok: t }, links[t]); });
+  var rows = roster.map(function(n){ var L = byName[n]; return '<tr><td><b>' + esc(n) + '</b></td><td>' + (L ? '<input type="text" readonly value="' + esc(parentUrl(L.tok)) + '" style="width:260px;max-width:60vw;font-size:12px;padding:5px 8px;border-radius:6px;border:1px solid var(--line);"> <label style="white-space:nowrap;"><input type="checkbox" data-h="plink-scores" data-tok="' + L.tok + '"' + (L.showScores ? ' checked' : '') + '> 顯示分數</label>' : '<span class="note">尚未建立</span>') + '</td><td>' + (L ? '<button class="btn sm" data-h="plink-copy" data-tok="' + L.tok + '">複製</button><button class="btn sm" data-h="plink-new" data-n="' + esc(n) + '">換新連結</button><button class="btn sm danger" data-h="plink-del" data-tok="' + L.tok + '">停用</button>' : '<button class="btn sm" data-h="plink-new" data-n="' + esc(n) + '">建立連結</button>') + '</td></tr>'; }).join("");
+  return '<h3 style="margin-top:16px;">家長查看連結</h3><p class="note" style="margin:0 0 8px;">每位學生一個專屬連結（不用登入）。家長可以看到孩子的作業繳交狀況、你的回饋，和每堂課的教材進度與出缺席；「顯示分數」打勾才會讓家長看到課堂分數。連結外洩時，按「換新連結」舊的就會失效。</p>' +
+    (roster.length ? '<div style="overflow-x:auto;"><table class="hw-table"><thead><tr><th>學生</th><th>連結</th><th>操作</th></tr></thead><tbody>' + rows + '</tbody></table></div><div class="tools" style="margin-top:8px;"><button class="btn sm" data-h="plink-all">為名單全部建立連結</button><button class="btn sm" data-h="plink-refresh">更新家長頁面內容</button></div>' : '<p class="note">先貼上班級名單。</p>');
+}
+async function parentAct(a, roster, links, b){
+  var tid = S.teacher.id, cid = S.sel.c, base = "teacherPlatform/" + tid + "/parentLinks";
+  function tok(){ var x = new Uint8Array(15); crypto.getRandomValues(x); return Array.prototype.map.call(x, function(v){ return ACC_ALPHA[v % ACC_ALPHA.length]; }).join(""); }
+  async function make(n){ var t = tok(); var L = { name: n, cid: cid, c: S.sel.c, s: S.sel.s, tm: S.sel.t, tid: tid, showScores: false, createdAt: nowMs() }; await fbSet(base + "/" + t, L); await refreshParentLink(t); return t; }
+  if(a === "plink-copy"){ try{ await navigator.clipboard.writeText(parentUrl(b.dataset.tok)); toast("已複製家長連結"); }catch(e){ alert(parentUrl(b.dataset.tok)); } return; }
+  if(a === "plink-new"){
+    var n = b.dataset.n, old = Object.keys(links).filter(function(t){ return links[t].name === n; });
+    if(old.length && !confirm("換新連結？舊的連結會立刻失效。")) return;
+    for(var i = 0; i < old.length; i++){ await fbSet(base + "/" + old[i], null); await fbSet("teacherPlatform/" + tid + "/parentRecords/" + old[i], null); }
+    await make(n); render(); return;
+  }
+  if(a === "plink-del"){ if(!confirm("停用這個家長連結？")) return; await fbSet(base + "/" + b.dataset.tok, null); await fbSet("teacherPlatform/" + tid + "/parentRecords/" + b.dataset.tok, null); render(); return; }
+  if(a === "plink-all"){
+    var have = {}; Object.keys(links).forEach(function(t){ have[links[t].name] = 1; });
+    var todo = roster.filter(function(n){ return !have[n]; }); if(!todo.length){ toast("名單上的學生都有連結了"); return; }
+    for(var j = 0; j < todo.length; j++) await make(todo[j]);
+    render(); return;
+  }
+  if(a === "plink-refresh"){ for(var t2 in links) await refreshParentLink(t2); toast("已更新"); return; }
+  if(a === "plink-scores"){ await fbUpdate(base + "/" + b.dataset.tok, { showScores: !!b.checked }); await refreshParentLink(b.dataset.tok); toast(b.checked ? "家長現在看得到分數" : "家長看不到分數了"); return; }
+}
+async function viewParent(tok){
+  root.innerHTML = '<div class="center-wrap"><div class="note">載入中…</div></div>';
+  try{
+    var cut = String(tok).indexOf("~"), tid = cut > 0 ? decodeURIComponent(tok.slice(0, cut)) : "", real = cut > 0 ? tok.slice(cut + 1) : "";
+    var link = tid && real ? await fbGet("teacherPlatform/" + tid + "/parentLinks/" + real) : null;
+    if(!link){ root.innerHTML = '<div class="center-wrap"><div class="card"><h2>連結無效</h2><p class="sub">這個連結已停用或不正確，請向老師確認。</p></div></div>'; return; }
+    tok = real;
+    var base = "teacherPlatform/" + tid, me = hwSkey(link.name);
+    var cname = await fbGet(base + "/schools/" + link.s + "/terms/" + link.tm + "/classes/" + link.c + "/name");
+    var items = objList(await fbGet(hwBase(tid, link.c) + "/items")).sort(function(a, b){ return (b.due || "").localeCompare(a.due || ""); });
+    var subs = {}; await Promise.all(items.map(function(it){ return fbGet(base + "/hwSubs/" + link.c + "/" + it.id + "/" + me).then(function(v){ subs[it.id] = v; }); }));
+    var recs = (await fbGet(base + "/parentRecords/" + tok)) || []; if(!Array.isArray(recs)) recs = Object.keys(recs).map(function(k){ return recs[k]; });
+    await syncTime();
+    var html = '<div class="center-wrap" style="align-items:flex-start;"><div style="width:100%;max-width:720px;margin:0 auto;padding:16px;"><h2>' + esc(link.name) + ' 的學習狀況</h2><div class="note" style="margin-bottom:12px;">' + esc(cname || "") + '　（家長專屬頁面，只能查看）</div>';
+    var cnt = { ok: 0, late: 0, missing: 0 }; items.forEach(function(it){ var s = hwStatus(it, subs[it.id]); if(cnt[s] != null) cnt[s]++; });
+    html += '<div class="panel"><h3>聯絡簿</h3><div class="note" style="margin-bottom:8px;">準時 ' + cnt.ok + '　遲交 ' + cnt.late + '　未交 ' + cnt.missing + '</div>' + (items.length ? items.map(function(it){ var s = hwStatus(it, subs[it.id]), sb = subs[it.id]; return '<div class="slot"><div class="slot-time" style="min-width:100px;">' + esc(it.due ? hwFmt(hwDueTs(it)) : "") + '<div class="note">截止</div></div><div class="slot-main"><div><b>' + esc(it.title) + '</b></div><div class="note">' + HW_LABEL[s] + (sb && sb.firstAt ? '　最後送出 ' + esc(hwFmt(sb.at)) : '') + '</div>' + (sb && sb.fb ? '<div style="margin-top:4px;">老師回饋：' + esc(sb.fb) + '</div>' : '') + '</div></div>'; }).join("") : '<p class="note">還沒有作業。</p>') + '</div>';
+    html += '<div class="panel"><h3>上課記錄</h3>' + (recs.length ? recs.map(function(r){ return '<div class="slot"><div class="slot-time" style="min-width:100px;">' + esc(r.date || "") + '</div><div class="slot-main">' + (r.absent ? '<span class="note">缺席</span>' : '') + '<div>' + esc(r.material || "") + '</div>' + (r.scores ? '<div class="note">總分 ' + r.total + '　' + Object.keys(r.scores).map(function(k){ return esc(k) + " " + esc(r.scores[k]); }).join("　") + '</div>' : '') + '</div></div>'; }).join("") : '<p class="note">還沒有上課記錄。</p>') + '</div></div></div>';
+    root.innerHTML = html;
+  }catch(e){ root.innerHTML = '<div class="center-wrap"><div class="card"><h2>讀取失敗</h2><p class="sub">請檢查網路後重新整理。</p></div></div>'; }
 }
 function renderPlatformHome(){
   S.focus = false;
@@ -2121,6 +2265,7 @@ function renderStudentLive(){
   root.innerHTML = '<div class="center-wrap"><div class="note">連線中…</div></div>';
   var ok = await waitFirebase();
   if(!ok){ root.innerHTML = '<div class="center-wrap"><div class="card"><h2>無法連線</h2><p class="sub">請檢查網路連線後重新整理。</p><button class="btn primary" style="width:100%" onclick="location.reload()">重試</button></div></div>'; return; }
+  var ptok = params.get("parent"); if(ptok){ await viewParent(ptok); return; }
   var code = (params.get("class") || "").trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
   if(code){
     var saved = ""; try{ saved = localStorage.getItem("mm_student_name") || ""; }catch(e){}
