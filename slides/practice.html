@@ -4335,7 +4335,7 @@
   }
 
   function isOpenForStudent(){ return inRoom() ? (roomData && roomData.isOpen !== undefined ? !!roomData.isOpen : true) : true; }
-  function canInteract(){ if(window.__grade) return false; if(!inRoom() || roomRole === "teacher") return true; return isOpenForStudent(); }
+  function canInteract(){ if(window.__grade){ var gi = getCurrentQInfo(); return !!(gi && (gi.section.type === "board" || gi.section.type === "whiteboard")); } if(!inRoom() || roomRole === "teacher") return true; return isOpenForStudent(); }
 
   function getProgress(qId){
     if(inRoom()) return (roomData && roomData.sharedProgress && roomData.sharedProgress[qId]) || {};
