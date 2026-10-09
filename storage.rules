@@ -1,0 +1,25 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // 原本就有的：簡報／教材頁的老師媒體
+    match /teacherMedia/{teacherId}/{file} {
+      allow read: if true;
+      allow write: if request.auth != null && request.resource.size < 30 * 1024 * 1024;
+    }
+
+    // 聯絡簿：老師附的教材檔案
+    match /hwTeacher/{teacherId}/{classId}/{itemId}/{file} {
+      allow read: if true;
+      allow write: if request.auth != null && request.resource.size < 30 * 1024 * 1024;
+      allow delete: if request.auth != null;
+    }
+
+    // 聯絡簿：學生繳交的檔案
+    match /hw/{teacherId}/{classId}/{hwId}/{studentKey}/{file} {
+      allow read: if true;
+      allow write: if request.auth != null && request.resource.size < 30 * 1024 * 1024;
+      allow delete: if request.auth != null;
+    }
+  }
+}

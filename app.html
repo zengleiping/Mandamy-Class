@@ -104,6 +104,19 @@
   .hw-table th, .hw-table td{ border:1px solid var(--line); padding:6px 10px; text-align:center; white-space:nowrap; }
   .hw-table td:first-child, .hw-table th:first-child{ text-align:left; }
   .hw-table .st-ok{ background:#E3F1E8; } .hw-table .st-late{ background:#FBEBC8; } .hw-table .st-missing{ background:#F7D9D5; }
+  .bd-wrap{ display:grid; grid-template-columns:300px 1fr; gap:16px; align-items:start; }
+  .bd-cal{ position:sticky; top:8px; }
+  @media (max-width:820px){ .bd-wrap{ grid-template-columns:1fr; } .bd-cal{ position:static; } }
+  .mc-head{ display:flex; align-items:center; gap:6px; margin-bottom:8px; } .mc-head b{ flex:1; text-align:center; }
+  .mc-grid{ display:grid; grid-template-columns:repeat(7,1fr); gap:3px; }
+  .mc-w{ text-align:center; font-size:11px; color:var(--ink-soft); font-weight:700; }
+  .mc-d{ border:none; background:var(--surface-2); border-radius:8px; padding:4px 0 3px; min-height:40px; display:flex; flex-direction:column; align-items:center; gap:2px; font-size:13px; font-weight:700; color:var(--ink); cursor:pointer; }
+  .mc-d.today{ background:#F6DCCF; } .mc-d.sel{ outline:2.5px solid var(--seal); background:#fff; }
+  .mc-dots{ display:flex; gap:2px; min-height:7px; } .mc-dots i, i.dot{ display:inline-block; width:6px; height:6px; border-radius:50%; }
+  .bd-card h3{ font-size:17px; } .bd-body{ line-height:1.75; } .bd-body ul{ margin:4px 0 4px 20px; }
+  .bd-plan{ background:#E8F3EC; border-radius:10px; padding:8px 12px; margin:8px 0; }
+  .cmt-row{ padding:6px 0; border-top:1px solid var(--line); }
+  #hwed{ max-height:92vh; overflow-y:auto; } #hwed select, #hwed input[type=date], #hwed input[type=time], #hwed input[type=text], #hwed textarea{ width:100%; padding:8px 10px; border-radius:8px; border:1.5px solid var(--line); background:var(--surface-2); font:inherit; }
   .cal-cnt{ display:none; }
   body.ta .owner-only, body.ta .danger{ display:none !important; }
   @media (pointer:coarse), (max-width:1024px){
@@ -137,6 +150,7 @@
 <dialog id="sch" style="width:min(460px,94vw);"><form method="dialog"><h3 id="sch-t"></h3><label>班級</label><select id="sch-c"></select><label>日期</label><input type="date" id="sch-d"><div style="display:flex;gap:10px;"><div style="flex:1;"><label>開始</label><input type="time" id="sch-s"></div><div style="flex:1;"><label>結束</label><input type="time" id="sch-e"></div></div><label>要上哪一課（可不選）</label><select id="sch-l"></select><label>備註（例如第二節改線上）</label><input type="text" id="sch-n"><div id="sch-rep" style="margin-top:12px;font-size:13px;"><label style="display:flex;align-items:center;gap:6px;font-weight:600;margin:0;"><input type="checkbox" id="sch-r"> 每週同一時間重複，共 <input type="number" id="sch-w" value="8" min="2" max="40" style="width:64px;"> 週</label></div><div class="row"><button type="button" class="btn" id="sch-no">取消</button><button type="submit" class="btn primary">儲存</button></div></form></dialog>
 <dialog id="remind" style="width:min(420px,92vw);"><form method="dialog"><h3>📝 該填課堂記錄表了</h3><p id="remind-t" style="margin:6px 0 4px;font-weight:700;"></p><p class="note">趁記憶還新鮮，趕快記下今天的上課內容和學生表現吧。</p><div class="row" style="flex-wrap:wrap;"><button type="button" class="btn" id="remind-skip">今天不用提醒</button><button type="button" class="btn" id="remind-later">10 分鐘後再提醒</button><button type="button" class="btn primary" id="remind-go">填寫課堂記錄</button></div></form></dialog>
 <dialog id="bell-d" style="width:min(460px,94vw);"><form method="dialog" onsubmit="return false;"><h3>🔔 新的繳交</h3><div id="bell-list" style="max-height:50vh;overflow-y:auto;"></div><div class="row" style="flex-wrap:wrap;"><button type="button" class="btn sm" id="bell-perm" style="display:none;">開啟桌面通知</button><button type="button" class="btn" id="bell-clear">全部標為已讀</button><button type="button" class="btn primary" id="bell-close">關閉</button></div></form></dialog>
+<dialog id="hwed"></dialog>
 <dialog id="pick"><form method="dialog"><h3 id="pick-t"></h3><select id="pick-s" style="width:100%;padding:10px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface-2);font:inherit;"></select><div class="row"><button type="button" class="btn" id="pick-no">取消</button><button type="submit" class="btn primary" id="pick-ok">確定</button></div></form></dialog>
 <dialog id="ask"><form method="dialog"><h3 id="ask-t"></h3><input type="text" id="ask-i" autocomplete="off"><div class="row"><button type="button" class="btn" id="ask-no">取消</button><button type="submit" class="btn primary" id="ask-ok">確定</button></div></form></dialog>
 
@@ -159,6 +173,9 @@
       import("https://www.gstatic.com/firebasejs/12.18.0/firebase-database.js"),
       import("https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js")
     ]);
+    import("https://www.gstatic.com/firebasejs/12.18.0/firebase-storage.js").then(function(sm){
+      window.storageApi = { storage: sm.getStorage(mods[0].getApp()), ref: sm.ref, uploadBytes: sm.uploadBytes, uploadBytesResumable: sm.uploadBytesResumable, getDownloadURL: sm.getDownloadURL, deleteObject: sm.deleteObject };
+    }).catch(function(e){ console.warn("檔案儲存（Firebase Storage）載入失敗", e); });
     var fbApp = mods[0].initializeApp(window.FIREBASE_CONFIG);
     window.db = mods[1].getDatabase(fbApp);
     window.ref = mods[1].ref; window.get = mods[1].get; window.set = mods[1].set; window.update = mods[1].update; window.onValue = mods[1].onValue;
@@ -513,7 +530,7 @@ function goBack(){
     }
     if(S.day && !S.sel){ S.day = null; render(); return; }
     if(S.hw && S.sel && S.sel.c){
-      var v = S.hw.view; S.hw = (v === "item" || v === "settle" || v === "new" || v === "edit") ? { view: "list" } : null; render(); return;
+      var v = S.hw.view; S.hw = (v === "item" || v === "settle" || v === "new" || v === "edit" || v === "manage" || v === "summary") ? { view: "list" } : null; render(); return;
     }
     if(S.lesson){ S.lesson = null; S.tab = null; S.sub = null; if(S.live && S.live.on) pushLive(true); render(); return; }
     if(S.sel){
@@ -1048,6 +1065,7 @@ async function renderHomework(cls){
   S.focus = false;
   syncTime();
   var hw = S.hw, tid = S.teacher.id, cid = S.sel.c, base = hwBase(tid, cid);
+  if(hw.view === "list") return renderBoard(cls);
   if(hw.view === "wheel") return renderWheel(cls);
   if(hw.view === "capsule") return renderCapsule(cls);
   if(hw.view === "leave") return renderLeave(cls);
@@ -1057,24 +1075,20 @@ async function renderHomework(cls){
     if(hw.view === "new" || hw.view === "edit") return hwForm(cls);
     var items = await hwLoadItems(), roster = await hwLoadRoster();
     if(hw.view === "item") return hwItemPage(items, roster);
+    items = items.filter(function(x){ return (x.kind || "hw") === "hw"; });
     if(hw.view === "settle") return hwSettle(items, roster);
     if(hw.view === "summary") return hwSummary(cls, items, roster);
     try{ localStorage.setItem(hwSeenKey(cid), String(nowMs())); }catch(e){}
     var plinks = (await fbGet("teacherPlatform/" + tid + "/parentLinks")) || {}; Object.keys(plinks).forEach(function(t){ if(plinks[t].c !== cid) delete plinks[t]; });
     var accs = (await fbGet(accPath(tid, cid))) || {}, accOn = !!(await fbGet("teacherPlatform/" + tid + "/accountsOn/" + cid));
     // 列表
-    var subsAll = {};
-    await Promise.all(items.map(function(it){ return fbGet(tid ? "teacherPlatform/" + tid + "/hwSubs/" + cid + "/" + it.id : null).then(function(v){ subsAll[it.id] = v || {}; }); }));
-    var html = '<div class="head-row"><div style="flex:1;"><h2>聯絡簿</h2><div class="note">' + esc(cls.name) + '　公布作業、收學生上傳、記錄繳交時間</div></div><div><button class="btn owner-only" data-h="new">公布作業</button> <button class="btn" data-h="settle">結算繳交狀況</button> <button class="btn" data-h="summary">學期總表</button></div></div>';
-    html += '<div class="panel"><h3>作業</h3>' + (items.length ? items.map(function(it){
-      var subs = subsAll[it.id], keys = Object.keys(subs).filter(function(k){ return subs[k].firstAt; }), late = keys.filter(function(k){ return hwStatus(it, subs[k]) === "late"; }).length, total = Math.max(roster.length, keys.length);
-      return '<div class="slot"><div class="slot-time" style="min-width:120px;">' + esc(it.due ? hwFmt(new Date(it.due).getTime()) : "未設期限") + '<div class="note">截止</div></div><div class="slot-main"><div><b>' + esc(it.title) + '</b></div><div class="note">已交 ' + keys.length + ' / ' + total + (late ? '（遲交 ' + late + '）' : '') + '</div></div><div class="slot-act"><button class="btn" data-h="item" data-id="' + it.id + '">查看繳交</button><button class="btn sm owner-only" data-h="edit" data-id="' + it.id + '">修改</button><button class="btn sm danger" data-h="del" data-id="' + it.id + '">刪除</button></div></div>';
-    }).join("") : '<p class="note">還沒有作業。按右上角「公布作業」。學生用班級代碼進來就會看到。</p>') + '</div>';
+    var html = '<div class="head-row"><div style="flex:1;"><h2>名單與帳號</h2><div class="note">' + esc(cls.name) + '　班級名單、學生帳號、家長連結、批次貼上作業</div></div><div><button class="btn sm ghost" data-h="list">回聯絡簿</button></div></div>';
     html += '<div class="panel owner-only"><h3>班級名單</h3><p class="note" style="margin:0 0 8px;">一行一位學生，名字要跟學生進入時輸入的一樣。結算時沒交的人才找得出來。</p><textarea id="hw-roster" rows="5" style="width:100%;padding:8px 10px;border-radius:8px;border:1.5px solid var(--line);background:var(--surface-2);font:inherit;">' + esc(roster.join("\n")) + '</textarea><div style="margin-top:8px;"><button class="btn sm" data-h="roster">儲存名單</button></div>' + accPanelHtml(roster, accs, accOn) + parentPanelHtml(roster, plinks) + '</div>' + '<div class="panel owner-only"><h3>批次貼上作業</h3><p class="note" style="margin:0 0 8px;">一行一份：<code>日期 標題</code>，可以加 <code>| 說明</code>，也可以寫時間。例如：<br><code>10/15 第七課生詞抄寫 | 抄三遍</code><br><code>10/22 14:00 第八課造句</code></p><textarea id="hw-batch" rows="4" style="width:100%;padding:8px 10px;border-radius:8px;border:1.5px solid var(--line);background:var(--surface-2);font:inherit;"></textarea><div style="margin-top:8px;"><button class="btn sm" data-h="batch">建立這些作業</button></div></div>';
     shell(html); setCrumb([]);
     document.getElementById("main").onclick = async function(e){
       var b = e.target.closest("[data-h]"); if(!b) return; var a = b.dataset.h;
-      if(a === "new"){ S.hw = { view: "new" }; render(); }
+      if(a === "list"){ S.hw = { view: "list" }; render(); }
+      else if(a === "new"){ S.hw = { view: "new" }; render(); }
       else if(a === "edit"){ S.hw = { view: "edit", id: b.dataset.id }; render(); }
       else if(a === "item"){ S.hw = { view: "item", id: b.dataset.id }; render(); }
       else if(a === "settle"){ S.hw = { view: "settle" }; render(); }
@@ -1154,7 +1168,7 @@ async function hwItemPage(items, roster){
       var k = b.dataset.k, box = document.getElementById("det-" + k), sub = subs[k];
       if(box.innerHTML){ box.innerHTML = ""; return; }
       var files = (await fbGet("teacherPlatform/" + tid + "/hwFiles/" + cid + "/" + it.id + "/" + k)) || []; if(!Array.isArray(files)) files = Object.keys(files).map(function(x){ return files[x]; });
-      box.innerHTML = '<div class="panel" style="background:var(--surface-2);">' + (sub.text ? '<div style="white-space:pre-wrap;margin-bottom:8px;">' + esc(sub.text) + '</div>' : '') + '<div class="tools" style="margin-bottom:8px;">' + files.map(function(u){ return '<img src="' + u + '" data-h="zoom" style="max-width:220px;max-height:220px;border-radius:8px;cursor:zoom-in;border:1px solid var(--line);">'; }).join("") + '</div><div style="display:flex;gap:6px;"><input type="text" id="fb-' + k + '" placeholder="給學生的回饋（選填）" value="' + esc(sub.fb || "") + '" style="flex:1;padding:8px 10px;border-radius:8px;border:1.5px solid var(--line);font:inherit;"><button class="btn sm" data-h="fb" data-k="' + k + '">儲存回饋</button></div></div>';
+      box.innerHTML = '<div class="panel" style="background:var(--surface-2);">' + filesHtml(sub.files) + (sub.text ? '<div style="white-space:pre-wrap;margin-bottom:8px;">' + esc(sub.text) + '</div>' : '') + '<div class="tools" style="margin-bottom:8px;">' + files.map(function(u){ return '<img src="' + u + '" data-h="zoom" style="max-width:220px;max-height:220px;border-radius:8px;cursor:zoom-in;border:1px solid var(--line);">'; }).join("") + '</div><div style="display:flex;gap:6px;"><input type="text" id="fb-' + k + '" placeholder="給學生的回饋（選填）" value="' + esc(sub.fb || "") + '" style="flex:1;padding:8px 10px;border-radius:8px;border:1.5px solid var(--line);font:inherit;"><button class="btn sm" data-h="fb" data-k="' + k + '">儲存回饋</button></div></div>';
     } else if(a === "zoom"){ var w = window.open(); if(w) w.document.write('<img src="' + b.src + '" style="max-width:100%;">'); }
     else if(a === "bov"){
       var sel = Array.prototype.slice.call(document.querySelectorAll(".bsel:checked")).map(function(x){ return x.dataset.k; });
@@ -1218,7 +1232,7 @@ async function hwSettle(items, roster){
   };
 }
 // ---------- 學生端 ----------
-async function renderStudentHw(){
+async function renderStudentHwOld(){
   var st = S.student, tid = st.idx.t, cid = st.idx.c, base = hwBase(tid, cid), me = hwSkey(st.name);
   shell('<div class="empty"><p class="note">載入中…</p></div>'); setCrumb([st.school, st.term, st.cls.name, "聯絡簿"]);
   var items; syncTime();
@@ -1445,7 +1459,7 @@ async function fillClassStatus(cls){
   var box = document.getElementById("cstat"); if(!box) return;
   var tid = S.teacher.id, cid = S.sel.c, sel0 = S.sel;
   try{
-    var items = await hwLoadItems(), roster = await hwLoadRoster(), seen = 0; try{ seen = Number(localStorage.getItem(hwSeenKey(cid))) || 0; }catch(e){}
+    var items = (await hwLoadItems()).filter(function(x){ return (x.kind || "hw") === "hw"; }), roster = await hwLoadRoster(), seen = 0; try{ seen = Number(localStorage.getItem(hwSeenKey(cid))) || 0; }catch(e){}
     if(!document.getElementById("cstat") || S.sel !== sel0) return;
     var top = items.slice(0, 3), subsBy = {};
     await Promise.all(top.map(function(it){ return fbGet("teacherPlatform/" + tid + "/hwSubs/" + cid + "/" + it.id).then(function(v){ subsBy[it.id] = v || {}; }); }));
@@ -1475,7 +1489,7 @@ async function fillClassStatus(cls){
 async function fillStudentHint(){
   var el = document.getElementById("hwhint"); if(!el) return;
   try{
-    var st = S.student, tid = st.idx.t, cid = st.idx.c, me = hwSkey(st.name), items = objList(await fbGet(hwBase(tid, cid) + "/items"));
+    var st = S.student, tid = st.idx.t, cid = st.idx.c, me = hwSkey(st.name), items = objList(await fbGet(hwBase(tid, cid) + "/items")).filter(function(x){ return (x.kind || "hw") === "hw" && itemVisible(x); });
     var subs = {}; await Promise.all(items.map(function(it){ return fbGet("teacherPlatform/" + tid + "/hwSubs/" + cid + "/" + it.id + "/" + me).then(function(v){ subs[it.id] = v; }); }));
     await syncTime();
     var soon = [], over = [];
@@ -1845,7 +1859,7 @@ async function viewParent(tok){
     tok = real;
     var base = "teacherPlatform/" + tid, me = hwSkey(link.name);
     var cname = await fbGet(base + "/schools/" + link.s + "/terms/" + link.tm + "/classes/" + link.c + "/name");
-    var items = objList(await fbGet(hwBase(tid, link.c) + "/items")).sort(function(a, b){ return (b.due || "").localeCompare(a.due || ""); });
+    var items = objList(await fbGet(hwBase(tid, link.c) + "/items")).filter(function(x){ return (x.kind || "hw") === "hw" && itemVisible(x); }).sort(function(a, b){ return (b.due || "").localeCompare(a.due || ""); });
     var subs = {}; await Promise.all(items.map(function(it){ return fbGet(base + "/hwSubs/" + link.c + "/" + it.id + "/" + me).then(function(v){ subs[it.id] = v; }); }));
     var recs = (await fbGet(base + "/parentRecords/" + tok)) || []; if(!Array.isArray(recs)) recs = Object.keys(recs).map(function(k){ return recs[k]; });
     await syncTime();
@@ -1991,6 +2005,279 @@ async function renderStudentLeave(){
     try{ await leaveSubmit({ tid: tid, cid: cid, s: st.idx.s, tm: st.idx.tm, name: st.name, date: d, reason: document.getElementById("lv-r").value.trim(), by: "student", cname: st.cls.name }); toast("已送出，老師會盡快回覆"); renderStudentLeave(); }
     catch(e){ alert("送出失敗，請檢查網路後再試。"); this.disabled = false; }
   };
+}
+// ---------- 聯絡簿 2.0：小日曆＋當天內容（作業／通知／教學進度）、檔案上傳、留言、排程發布 ----------
+var HW_MAXFILE = 30 * 1024 * 1024, HW_MAXFILES = 6, BD_TIMER = null;
+function safeFileName(n){ return String(n || "file").replace(/[^\w.\-一-鿿]+/g, "_").slice(-80); }
+function fmtSize(n){ return n > 1048576 ? (n / 1048576).toFixed(1) + " MB" : Math.max(1, Math.round(n / 1024)) + " KB"; }
+function shrinkImageBlob(file){
+  return new Promise(function(resolve, reject){
+    var fr = new FileReader();
+    fr.onload = function(){ var im = new Image(); im.onload = function(){ var sc = Math.min(1, 1600 / Math.max(im.width, im.height)), c = document.createElement("canvas"); c.width = Math.round(im.width * sc); c.height = Math.round(im.height * sc); c.getContext("2d").drawImage(im, 0, 0, c.width, c.height); c.toBlob(function(b){ b ? resolve(b) : reject(new Error("img")); }, "image/jpeg", 0.82); }; im.onerror = reject; im.src = fr.result; };
+    fr.onerror = reject; fr.readAsDataURL(file);
+  });
+}
+async function uploadFile(path, file, onProg){
+  if(!window.storageApi) throw new Error("檔案儲存還沒準備好，請稍後再試");
+  var blob = file;
+  if(/^image\//.test(file.type) && file.size > 1500000){ try{ blob = await shrinkImageBlob(file); }catch(e){ blob = file; } }
+  if(blob.size > HW_MAXFILE) throw new Error("「" + file.name + "」超過 30 MB");
+  var A = window.storageApi, sr = A.ref(A.storage, path), task = A.uploadBytesResumable(sr, blob, { contentType: blob.type || file.type || "application/octet-stream" });
+  await new Promise(function(res, rej){ task.on("state_changed", function(s){ if(onProg) onProg(s.bytesTransferred / s.totalBytes); }, rej, res); });
+  return { name: file.name, size: blob.size, type: blob.type || file.type || "", url: await A.getDownloadURL(sr), path: path };
+}
+function richText(s){
+  var lines = esc(s || "").split("\n"), out = [], inList = false;
+  function inline(t){ return t.replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>").replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>'); }
+  lines.forEach(function(l){
+    var m = /^\s*[-•・]\s+(.*)$/.exec(l);
+    if(m){ if(!inList){ out.push("<ul>"); inList = true; } out.push("<li>" + inline(m[1]) + "</li>"); }
+    else { if(inList){ out.push("</ul>"); inList = false; } out.push(l.trim() ? inline(l) + "<br>" : "<br>"); }
+  });
+  if(inList) out.push("</ul>");
+  return out.join("");
+}
+function itemDay(it){ return it.day || (it.due || "").slice(0, 10) || ymd(new Date(it.createdAt || Date.now())); }
+function itemVisible(it){ return !it.publishAt || it.publishAt <= nowMs(); }
+var KIND_LABEL = { hw: "作業", notice: "通知", plan: "教學進度" }, KIND_COLOR = { hw: "#C0392B", notice: "#2E75B6", plan: "#3E7D68" };
+function filesHtml(files, label){
+  if(!files || !files.length) return "";
+  return '<div class="tools" style="margin:6px 0;">' + files.map(function(f){
+    var img = /^image\//.test(f.type || "");
+    return '<a class="btn sm" href="' + esc(f.url) + '" target="_blank" rel="noopener" download="' + esc(f.name) + '">' + (img ? "🖼️ " : "📎 ") + esc(label ? label + " " : "") + esc(f.name) + ' <span class="note">' + fmtSize(f.size || 0) + '</span></a>';
+  }).join("") + '</div>' + files.filter(function(f){ return /^image\//.test(f.type || ""); }).map(function(f){ return '<a href="' + esc(f.url) + '" target="_blank" rel="noopener"><img src="' + esc(f.url) + '" style="max-width:220px;max-height:160px;border-radius:8px;margin:2px 6px 6px 0;border:1px solid var(--line);"></a>'; }).join("");
+}
+function miniCalHtml(month, items, sel, forTeacher){
+  var yy = Number(month.slice(0, 4)), mm = Number(month.slice(5, 7)) - 1, first = new Date(yy, mm, 1), days = new Date(yy, mm + 1, 0).getDate(), today = ymd(new Date()), by = {};
+  items.forEach(function(it){ if(!forTeacher && !itemVisible(it)) return; var d = itemDay(it); (by[d] = by[d] || []).push(it); });
+  var h = '<div class="mc-head"><button class="btn sm" data-b="mc-prev">‹</button><b>' + yy + ' 年 ' + (mm + 1) + ' 月</b><button class="btn sm" data-b="mc-next">›</button><button class="btn sm ghost" data-b="mc-today">今天</button></div><div class="mc-grid">';
+  ["日", "一", "二", "三", "四", "五", "六"].forEach(function(w){ h += '<div class="mc-w">' + w + '</div>'; });
+  for(var i = 0; i < first.getDay(); i++) h += '<div></div>';
+  for(var d = 1; d <= days; d++){
+    var date = yy + "-" + pad2(mm + 1) + "-" + pad2(d), its = by[date] || [];
+    h += '<button class="mc-d' + (date === sel ? ' sel' : '') + (date === today ? ' today' : '') + '" data-b="mc-day" data-d="' + date + '"><span>' + d + '</span><span class="mc-dots">' + its.slice(0, 4).map(function(it){ return '<i style="background:' + KIND_COLOR[it.kind || "hw"] + ';' + (!itemVisible(it) ? 'opacity:.35;' : '') + '"></i>'; }).join("") + '</span></button>';
+  }
+  return h + '</div><div class="note" style="margin-top:6px;"><i class="dot" style="background:' + KIND_COLOR.hw + '"></i>作業　<i class="dot" style="background:' + KIND_COLOR.notice + '"></i>通知　<i class="dot" style="background:' + KIND_COLOR.plan + '"></i>教學進度' + (forTeacher ? '　（淡色＝排程中）' : '') + '</div>';
+}
+async function loadComments(cidv, ids){
+  var out = {}; await Promise.all(ids.map(function(id){ return fbGet(hwBase(S.teacher ? S.teacher.id : S.student.idx.t, cidv) + "/comments/" + id).then(function(v){ out[id] = objList(v).sort(function(a, b){ return (a.at || 0) - (b.at || 0); }); }).catch(function(){ out[id] = []; }); }));
+  return out;
+}
+function commentsHtml(it, list, canDel){
+  return '<div class="cmts" data-id="' + it.id + '"><div class="note" style="font-weight:700;margin:8px 0 4px;">留言（全班都看得到）</div>' + (list.length ? list.map(function(c){ return '<div class="cmt-row"><b>' + esc(c.name) + '</b>' + (c.role === "teacher" ? ' <span class="chip" style="padding:0 6px;background:#E3F1E8;">老師</span>' : '') + ' <span class="note">' + esc(hwFmt(c.at)) + '</span>' + (canDel ? ' <button class="btn sm ghost" data-b="cmt-del" data-id="' + it.id + '" data-c="' + c.id + '">刪除</button>' : '') + '<div>' + esc(c.text).replace(/\n/g, "<br>") + '</div></div>'; }).join("") : '<div class="note">還沒有留言。</div>') + '</div>' +
+    '<div class="cmt-in" style="display:flex;gap:6px;margin-top:6px;"><input type="text" id="ci-' + it.id + '" placeholder="寫下你的問題或想法…" maxlength="500" style="flex:1;"><button class="btn sm" data-b="cmt-send" data-id="' + it.id + '">送出</button></div>';
+}
+function boardCss(){ /* 樣式在主 CSS */ }
+// ================= 老師端 =================
+async function renderBoard(cls){
+  S.focus = false;
+  var tid = S.teacher.id, cid = S.sel.c, base = hwBase(tid, cid);
+  S.hwv = S.hwv || {}; if(!S.hwv.month){ S.hwv.month = ymd(new Date()).slice(0, 7); S.hwv.day = ymd(new Date()); }
+  shell('<div class="empty"><p class="note">載入中…</p></div>'); setCrumb([]);
+  syncTime();
+  var items, roster;
+  try{ items = await hwLoadItems(); roster = await hwLoadRoster(); }catch(e){ shell('<div class="empty"><p class="note">讀取失敗，請檢查網路或 Firebase 規則。</p></div>'); setCrumb([]); return; }
+  try{ localStorage.setItem(hwSeenKey(cid), String(nowMs())); }catch(e){}
+  var B = { items: items, roster: roster, subs: {}, open: {} };
+  async function draw(){
+    var day = S.hwv.day, todays = items.filter(function(it){ return itemDay(it) === day; }).sort(function(a, b){ return (a.createdAt || 0) - (b.createdAt || 0); });
+    var cm = await loadComments(cid, todays.map(function(it){ return it.id; })); B.cm = cm;
+    await Promise.all(todays.filter(function(it){ return (it.kind || "hw") === "hw"; }).map(function(it){ return fbGet("teacherPlatform/" + tid + "/hwSubs/" + cid + "/" + it.id).then(function(v){ B.subs[it.id] = v || {}; }); }));
+    var d = new Date(day + "T00:00:00"), wk = ["日", "一", "二", "三", "四", "五", "六"][d.getDay()];
+    var slots = slotsOn(day).filter(function(x){ return x.s === S.sel.s && x.t === S.sel.t && x.c === S.sel.c; });
+    var html = '<div class="head-row"><div style="flex:1;"><h2>聯絡簿</h2><div class="note">' + esc(cls.name) + '　選日期看當天的作業、通知和教學進度</div></div><div class="tools"><button class="btn owner-only" data-b="new">＋ 新增這天的內容</button><button class="btn" data-h="settle">結算繳交狀況</button><button class="btn" data-h="summary">學期總表</button><button class="btn owner-only" data-h="manage">名單與帳號</button></div></div>' +
+      '<div class="bd-wrap"><div class="bd-cal panel">' + miniCalHtml(S.hwv.month, items, day, true) + '</div><div class="bd-day" id="bd-day"><div class="panel"><h3 style="margin:0;">' + (d.getMonth() + 1) + ' 月 ' + d.getDate() + ' 日（' + wk + '）' + (day === ymd(new Date()) ? ' <span class="chip" style="background:#F6DCCF;">今天</span>' : '') + '</h3>' + (slots.length ? '<div class="note" style="margin-top:4px;">今天的課：' + slots.map(function(x){ return esc((x.start || "") + (x.end ? "–" + x.end : "") + (x.lesson && (S.plat.lessons || {})[x.lesson] ? "　" + lessonTitle(x.lesson) : "")); }).join("；") + '</div>' : '') + '</div>' +
+      (todays.length ? todays.map(function(it){ return teacherCardHtml(it, B); }).join("") : '<div class="panel"><p class="note">這天還沒有內容。按右上角「＋ 新增這天的內容」。</p></div>') + '</div></div>';
+    shell(html); setCrumb([]);
+    bind();
+  }
+  function teacherCardHtml(it, B){
+    var kind = it.kind || "hw", subs = B.subs[it.id] || {}, nsub = Object.keys(subs).filter(function(k){ return subs[k].firstAt; }).length, total = Math.max(B.roster.length, nsub);
+    var sched = it.publishAt && it.publishAt > nowMs();
+    return '<div class="panel bd-card" data-id="' + it.id + '"><div style="display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap;"><div style="flex:1;min-width:200px;"><span class="chip" style="background:' + KIND_COLOR[kind] + ';color:#fff;">' + KIND_LABEL[kind] + '</span>' + (sched ? ' <span class="chip" style="background:#FBEBC8;">⏰ ' + esc(hwFmt(it.publishAt)) + ' 才會發布</span>' : '') + '<h3 style="margin:6px 0 4px;">' + esc(it.title) + '</h3></div><div class="tools owner-only"><button class="btn sm" data-b="edit" data-id="' + it.id + '">修改</button><button class="btn sm" data-b="copy" data-id="' + it.id + '">複製到其他天</button><button class="btn sm danger" data-b="del" data-id="' + it.id + '">刪除</button></div></div>' +
+      (it.body ? '<div class="bd-body">' + richText(it.body) + '</div>' : '') + (it.progress ? '<div class="bd-plan"><b>教學進度／今日任務</b><div>' + richText(it.progress) + '</div></div>' : '') +
+      ((it.links || []).length ? '<div class="tools" style="margin:6px 0;">' + it.links.map(function(l){ return '<a class="btn sm" href="' + esc(l.url) + '" target="_blank" rel="noopener">🔗 ' + esc(l.name || l.url) + '</a>'; }).join("") + '</div>' : '') + filesHtml(it.files) +
+      (kind === "hw" ? '<div class="note" style="margin-top:6px;">截止 ' + esc(it.due ? hwFmt(hwDueTs(it)) : "未設") + '　<b>已交 ' + nsub + ' / ' + total + '</b>　<button class="btn sm" data-b="subs" data-id="' + it.id + '">' + (B.open[it.id] ? "收起繳交" : "看繳交") + '</button></div><div class="bd-subs" id="subs-' + it.id + '">' + (B.open[it.id] ? teacherSubsHtml(it, B) : "") + '</div>' : '') +
+      commentsHtml(it, (B.cm || {})[it.id] || [], true) + '</div>';
+  }
+  function teacherSubsHtml(it, B){
+    var subs = B.subs[it.id] || {}, rows = {}; B.roster.forEach(function(n){ rows[hwSkey(n)] = { name: n, sub: null }; });
+    Object.keys(subs).forEach(function(k){ rows[k] = { name: subs[k].name || decodeURIComponent(k), sub: subs[k] }; });
+    var keys = Object.keys(rows).sort(function(a, b){ return rows[a].name.localeCompare(rows[b].name, "zh-Hant"); });
+    if(!keys.length) return '<p class="note">還沒有名單，也還沒有人交。到「名單與帳號」貼上班級名單。</p>';
+    return '<div style="margin-top:8px;">' + keys.map(function(k){
+      var r = rows[k], st = hwStatus(it, r.sub), sb = r.sub;
+      return '<div class="slot" style="align-items:flex-start;"><div class="slot-time" style="min-width:80px;"><b>' + esc(r.name) + '</b></div><div class="slot-main"><div><b>' + HW_LABEL[st] + '</b>' + (sb && sb.firstAt ? '　<span class="note">最後送出 ' + esc(hwFmt(sb.at)) + (sb.count > 1 ? '（共 ' + sb.count + ' 次）' : '') + '</span>' : '') + '</div>' +
+        (sb && sb.text ? '<div style="white-space:pre-wrap;margin:4px 0;">' + esc(sb.text) + '</div>' : '') + (sb && sb.files ? filesHtml(sb.files) : '') + (sb && sb.nimgs ? '<div class="note">（舊版附的 ' + sb.nimgs + ' 張照片，請到名單與帳號旁的進階檢視查看）</div>' : '') +
+        (sb && sb.firstAt ? '<div style="display:flex;gap:6px;margin-top:4px;"><input type="text" id="fb-' + it.id + '-' + k + '" placeholder="給學生的回饋" value="' + esc(sb.fb || "") + '" style="flex:1;"><button class="btn sm" data-b="fb" data-id="' + it.id + '" data-k="' + k + '">儲存回饋</button></div>' : '') +
+        '</div><div class="slot-act">' + (sb && sb.ov ? '<button class="btn sm" data-b="ov" data-id="' + it.id + '" data-k="' + k + '" data-v="">取消調整</button>' : '<button class="btn sm" data-b="ov" data-id="' + it.id + '" data-k="' + k + '" data-v="ok">改為準時</button><button class="btn sm" data-b="ov" data-id="' + it.id + '" data-k="' + k + '" data-v="exempt">免交</button>') + '</div></div>';
+    }).join("") + '</div>';
+  }
+  function bind(){
+    var main = document.getElementById("main");
+    main.onclick = async function(e){
+      var hb = e.target.closest("[data-h]"); if(hb && !e.target.closest("[data-b]")){ S.hw = { view: hb.dataset.h }; render(); return; }
+      var b = e.target.closest("[data-b]"); if(!b) return; var a = b.dataset.b, id = b.dataset.id, it = items.filter(function(x){ return x.id === id; })[0];
+      try{
+        if(a === "mc-prev" || a === "mc-next"){ var yy = Number(S.hwv.month.slice(0, 4)), mm = Number(S.hwv.month.slice(5, 7)) - 1 + (a === "mc-next" ? 1 : -1), nd = new Date(yy, mm, 1); S.hwv.month = nd.getFullYear() + "-" + pad2(nd.getMonth() + 1); draw(); }
+        else if(a === "mc-today"){ S.hwv.month = ymd(new Date()).slice(0, 7); S.hwv.day = ymd(new Date()); draw(); }
+        else if(a === "mc-day"){ S.hwv.day = b.dataset.d; draw(); }
+        else if(a === "new"){ if(!needOwner()) return; openItemEditor(null, S.hwv.day, async function(){ items = await hwLoadItems(); B.items = items; draw(); }); }
+        else if(a === "edit"){ if(!needOwner()) return; openItemEditor(it, itemDay(it), async function(){ items = await hwLoadItems(); draw(); }); }
+        else if(a === "del"){ if(!needOwner()) return; if(!confirm("刪除這份內容？學生已繳交的作業和留言也會一併刪除。")) return; await fbSet(base + "/items/" + id, null); await fbSet("teacherPlatform/" + tid + "/hwSubs/" + cid + "/" + id, null); await fbSet(base + "/comments/" + id, null); await fbSet("teacherPlatform/" + tid + "/hwFiles/" + cid + "/" + id, null); items = await hwLoadItems(); draw(); }
+        else if(a === "copy"){
+          if(!needOwner()) return; var nd2 = await askText("複製到哪一天？（格式 2026-10-15）", ymd(new Date(new Date(itemDay(it) + "T00:00:00").getTime() + 86400000))); if(!nd2) return;
+          if(!/^\d{4}-\d{2}-\d{2}$/.test(nd2)){ alert("日期格式要像 2026-10-15"); return; }
+          var cp = JSON.parse(JSON.stringify(it)); delete cp.id; cp.day = nd2; cp.createdAt = Date.now(); if(cp.due) cp.due = nd2 + cp.due.slice(10); cp.publishAt = null;
+          await fbSet(base + "/items/" + uid("hw_"), cp); items = await hwLoadItems(); S.hwv.day = nd2; S.hwv.month = nd2.slice(0, 7); toast("已複製"); draw();
+        }
+        else if(a === "subs"){ B.open[id] = !B.open[id]; draw(); }
+        else if(a === "fb"){ var v = document.getElementById("fb-" + id + "-" + b.dataset.k).value.trim(); await fbUpdate("teacherPlatform/" + tid + "/hwSubs/" + cid + "/" + id + "/" + b.dataset.k, { fb: v || null, fbAt: nowMs() }); toast("已儲存回饋"); }
+        else if(a === "ov"){
+          var k = b.dataset.k, sub = B.subs[id][k] || { name: decodeURIComponent(k) }, vv = b.dataset.v, pth = "teacherPlatform/" + tid + "/hwSubs/" + cid + "/" + id + "/" + k;
+          if(vv) sub.ov = vv; else delete sub.ov;
+          if(!sub.firstAt && !sub.ov) await fbSet(pth, null); else await fbSet(pth, sub); draw();
+        }
+        else if(a === "cmt-send"){ var inp = document.getElementById("ci-" + id), txt = inp.value.trim(); if(!txt) return; await fbSet(base + "/comments/" + id + "/" + uid("c_"), { name: S.teacher.name, role: "teacher", text: txt, at: nowMs() }); inp.value = ""; draw(); }
+        else if(a === "cmt-del"){ if(!confirm("刪除這則留言？")) return; await fbSet(base + "/comments/" + id + "/" + b.dataset.c, null); draw(); }
+      }catch(er){ console.warn(er); alert("操作失敗，請檢查網路或 Firebase 規則。"); }
+    };
+    if(BD_TIMER) clearInterval(BD_TIMER);
+    BD_TIMER = setInterval(async function(){
+      if(!document.getElementById("bd-day")){ clearInterval(BD_TIMER); BD_TIMER = null; return; }
+      var ae = document.activeElement; if(ae && ae.tagName === "INPUT") return;
+      var ids = Array.prototype.map.call(document.querySelectorAll(".bd-card"), function(x){ return x.dataset.id; }); var cm = await loadComments(cid, ids);
+      ids.forEach(function(id){ var box = document.querySelector('.cmts[data-id="' + id + '"]'); if(box && JSON.stringify(cm[id].map(function(c){ return c.id; })) !== JSON.stringify(((B.cm || {})[id] || []).map(function(c){ return c.id; }))){ B.cm = cm; draw(); } });
+    }, 25000);
+  }
+  draw();
+}
+function openItemEditor(it, day, done){
+  var d = document.getElementById("hwed"), st = it ? JSON.parse(JSON.stringify(it)) : { kind: "hw", day: day, title: "", body: "", progress: "", links: [], files: [], due: day + "T23:59", publishAt: null };
+  var cid = S.sel.c, tid = S.teacher.id, busy = false;
+  st.links = st.links || []; st.files = st.files || [];
+  function draw(){
+    var sched = !!st.publishAt, pd = sched ? ymd(new Date(st.publishAt)) : "", pt = sched ? pad2(new Date(st.publishAt).getHours()) + ":" + pad2(new Date(st.publishAt).getMinutes()) : "07:00";
+    d.innerHTML = '<form method="dialog" onsubmit="return false;" class="rec-form"><h3>' + (it ? "修改內容" : "新增內容") + '</h3>' +
+      '<label>類型</label><select id="ed-kind"><option value="hw"' + (st.kind === "hw" ? " selected" : "") + '>作業（學生要繳交）</option><option value="notice"' + (st.kind === "notice" ? " selected" : "") + '>通知</option><option value="plan"' + (st.kind === "plan" ? " selected" : "") + '>教學進度／教材</option></select>' +
+      '<label>日期</label><input type="date" id="ed-day" value="' + esc(st.day) + '"><label>標題</label><input type="text" id="ed-title" value="' + esc(st.title) + '" placeholder="例如：第六課生詞抄寫">' +
+      '<label>說明（可以用 - 開頭做條列、**粗體**，網址會自動變連結）</label><textarea id="ed-body" rows="5">' + esc(st.body) + '</textarea>' +
+      '<label>教學進度／今日任務（選填）</label><textarea id="ed-plan" rows="2" placeholder="例如：第六課 生詞、課文朗讀">' + esc(st.progress || "") + '</textarea>' +
+      '<div id="ed-due" style="' + (st.kind === "hw" ? "" : "display:none;") + '"><label>截止時間</label><div style="display:flex;gap:8px;"><input type="date" id="ed-dd" value="' + esc((st.due || "").slice(0, 10)) + '"><input type="time" id="ed-dt" value="' + esc((st.due || "T23:59").slice(11, 16)) + '"></div></div>' +
+      '<label>連結（例如 Google Meet、Padlet）</label>' + st.links.map(function(l, i){ return '<div style="display:flex;gap:6px;margin-bottom:4px;"><input type="text" class="lk-n" data-i="' + i + '" value="' + esc(l.name) + '" placeholder="名稱" style="max-width:160px;"><input type="text" class="lk-u" data-i="' + i + '" value="' + esc(l.url) + '" placeholder="https://…"><button class="btn sm" data-e="lk-del" data-i="' + i + '">移除</button></div>'; }).join("") + '<button class="btn sm" data-e="lk-add">＋ 加連結</button>' +
+      '<label>附件（PDF、簡報、Word、圖片、音檔…，每個最多 30 MB）</label><div id="ed-files">' + filesHtml(st.files) + st.files.map(function(f, i){ return '<button class="btn sm danger" data-e="f-del" data-i="' + i + '">移除 ' + esc(f.name) + '</button> '; }).join("") + '</div><div style="margin-top:6px;"><button class="btn sm" data-e="f-add">＋ 上傳檔案</button><input type="file" id="ed-file" multiple style="display:none;"> <span class="note" id="ed-prog"></span></div>' +
+      '<label>發布時間</label><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;"><label style="display:flex;align-items:center;gap:4px;margin:0;"><input type="radio" name="ed-pub" value="now"' + (sched ? "" : " checked") + '> 儲存後立刻發布</label><label style="display:flex;align-items:center;gap:4px;margin:0;"><input type="radio" name="ed-pub" value="later"' + (sched ? " checked" : "") + '> 排程發布</label><input type="date" id="ed-pd" value="' + esc(pd) + '"><input type="time" id="ed-pt" value="' + esc(pt) + '"></div><div class="note">排程前，學生看不到這份內容。</div>' +
+      '<div class="row"><button type="button" class="btn" data-e="cancel">取消</button><button type="button" class="btn primary" data-e="save">儲存</button></div></form>';
+  }
+  function sync(){
+    var g = function(i){ return document.getElementById(i); }; if(!g("ed-kind")) return;
+    st.kind = g("ed-kind").value; st.day = g("ed-day").value || st.day; st.title = g("ed-title").value; st.body = g("ed-body").value; st.progress = g("ed-plan").value;
+    st.links = Array.prototype.map.call(document.querySelectorAll(".lk-u"), function(u, i){ return { name: document.querySelectorAll(".lk-n")[i].value.trim(), url: u.value.trim() }; });
+    st.due = st.kind === "hw" ? ((g("ed-dd").value || st.day) + "T" + (g("ed-dt").value || "23:59")) : "";
+    var later = document.querySelector('input[name="ed-pub"]:checked').value === "later"; st.publishAt = later && g("ed-pd").value ? new Date(g("ed-pd").value + "T" + (g("ed-pt").value || "07:00") + ":00").getTime() : null;
+    st._later = later;
+  }
+  draw(); d.style.width = "min(640px,96vw)";
+  d.onclick = async function(e){
+    var b = e.target.closest("[data-e]"); if(!b) return; var a = b.dataset.e; sync();
+    if(a === "cancel"){ d.close(); return; }
+    if(a === "lk-add"){ st.links.push({ name: "", url: "" }); draw(); }
+    else if(a === "lk-del"){ st.links.splice(Number(b.dataset.i), 1); draw(); }
+    else if(a === "f-del"){ st.files.splice(Number(b.dataset.i), 1); draw(); }
+    else if(a === "f-add"){ document.getElementById("ed-file").click(); }
+    else if(a === "save"){
+      if(busy) return; if(!st.title.trim()){ alert("請填標題。"); return; }
+      if(st._later && !st.publishAt){ alert("請選排程的日期。"); return; }
+      st.links = st.links.filter(function(l){ return l.url; }).map(function(l){ return { name: l.name || l.url, url: /^https?:\/\//i.test(l.url) ? l.url : "https://" + l.url }; });
+      var rec = { kind: st.kind, day: st.day, title: st.title.trim(), body: st.body, progress: st.progress || "", links: st.links, files: st.files, due: st.due || "", publishAt: st.publishAt || null, createdAt: (it && it.createdAt) || Date.now(), updatedAt: Date.now() };
+      busy = true;
+      try{ await fbSet(hwBase(tid, cid) + "/items/" + (it ? it.id : uid("hw_")), rec); }catch(er){ busy = false; alert("儲存失敗，請檢查網路或 Firebase 規則。"); return; }
+      busy = false; d.close(); S.hwv.day = st.day; S.hwv.month = st.day.slice(0, 7); toast(st.publishAt && st.publishAt > Date.now() ? "已儲存，排程發布" : "已發布"); done();
+    }
+  };
+  d.onchange = async function(e){
+    if(e.target.id === "ed-kind"){ sync(); draw(); return; }
+    if(e.target.id !== "ed-file") return;
+    var fs = Array.prototype.slice.call(e.target.files); e.target.value = ""; sync();
+    for(var i = 0; i < fs.length; i++){
+      if(fs[i].size > HW_MAXFILE){ alert("「" + fs[i].name + "」超過 30 MB，無法上傳。"); continue; }
+      var prog = document.getElementById("ed-prog"); if(prog) prog.textContent = "上傳中：" + fs[i].name + " 0%";
+      try{ var f = await uploadFile("hwTeacher/" + tid + "/" + cid + "/" + (it ? it.id : "new") + "/" + Date.now() + "_" + safeFileName(fs[i].name), fs[i], function(p){ var pg = document.getElementById("ed-prog"); if(pg) pg.textContent = "上傳中：" + Math.round(p * 100) + "%"; }); st.files.push(f); }
+      catch(er){ alert(er && er.message ? er.message : "上傳失敗"); }
+    }
+    draw();
+  };
+  d.oncancel = function(e){ e.preventDefault(); d.close(); };
+  d.showModal();
+}
+// ================= 學生端 =================
+async function renderStudentHw(){
+  var st = S.student, tid = st.idx.t, cid = st.idx.c, base = hwBase(tid, cid), me = hwSkey(st.name);
+  S.hwv = S.hwv || {}; if(!S.hwv.month){ S.hwv.month = ymd(new Date()).slice(0, 7); S.hwv.day = ymd(new Date()); }
+  shell('<div class="empty"><p class="note">載入中…</p></div>'); setCrumb([st.school, st.term, st.cls.name, "聯絡簿"]);
+  await syncTime();
+  var items;
+  try{ items = objList(await fbGet(base + "/items")).filter(itemVisible); }catch(e){ shell('<div class="empty"><p class="note">讀取失敗，請檢查網路。</p></div>'); return; }
+  var mySubs = {}; await Promise.all(items.filter(function(it){ return (it.kind || "hw") === "hw"; }).map(function(it){ return fbGet("teacherPlatform/" + tid + "/hwSubs/" + cid + "/" + it.id + "/" + me).then(function(v){ mySubs[it.id] = v; }); }));
+  var pend = {};   // 每份作業待上傳的檔案：{ existing:[...], add:[File] }
+  async function draw(){
+    var day = S.hwv.day, todays = items.filter(function(it){ return itemDay(it) === day; }).sort(function(a, b){ return (a.createdAt || 0) - (b.createdAt || 0); }), cm = await loadComments(cid, todays.map(function(it){ return it.id; }));
+    var d = new Date(day + "T00:00:00"), wk = ["日", "一", "二", "三", "四", "五", "六"][d.getDay()];
+    var html = '<div class="head-row"><div style="flex:1;"><h2>聯絡簿</h2><div class="note">' + esc(st.name) + '</div></div></div><div class="bd-wrap"><div class="bd-cal panel">' + miniCalHtml(S.hwv.month, items, day, false) + '</div><div class="bd-day" id="bd-day"><div class="panel"><h3 style="margin:0;">' + (d.getMonth() + 1) + ' 月 ' + d.getDate() + ' 日（' + wk + '）' + (day === ymd(new Date()) ? ' <span class="chip" style="background:#F6DCCF;">今天</span>' : '') + '</h3></div>' +
+      (todays.length ? todays.map(function(it){ return studentCardHtml(it, cm[it.id] || []); }).join("") : '<div class="panel"><p class="note">這天沒有內容。</p></div>') + '</div></div>';
+    shell(html); setCrumb([st.school, st.term, st.cls.name, "聯絡簿"]);
+    todays.forEach(function(it){ if((it.kind || "hw") === "hw") drawPending(it); });
+    bind(todays);
+  }
+  function studentCardHtml(it, list){
+    var kind = it.kind || "hw", sub = mySubs[it.id], s = kind === "hw" ? hwStatus(it, sub) : null, hasSub = sub && sub.firstAt;
+    var h = '<div class="panel bd-card" data-id="' + it.id + '"><span class="chip" style="background:' + KIND_COLOR[kind] + ';color:#fff;">' + KIND_LABEL[kind] + '</span><h3 style="margin:6px 0 4px;">' + esc(it.title) + '</h3>' +
+      (it.body ? '<div class="bd-body">' + richText(it.body) + '</div>' : '') + (it.progress ? '<div class="bd-plan"><b>教學進度／今日任務</b><div>' + richText(it.progress) + '</div></div>' : '') +
+      ((it.links || []).length ? '<div class="tools" style="margin:6px 0;">' + it.links.map(function(l){ return '<a class="btn sm" href="' + esc(l.url) + '" target="_blank" rel="noopener">🔗 ' + esc(l.name || l.url) + '</a>'; }).join("") + '</div>' : '') + filesHtml(it.files, "下載");
+    if(kind === "hw"){
+      h += '<div class="bd-mine"><div class="note" style="margin:8px 0 4px;">截止 ' + esc(it.due ? hwFmt(hwDueTs(it)) : "未設") + '　<b>' + (s === "exempt" ? "－ 老師設為免交" : hasSub ? (s === "late" ? "⏰ 遲交，最後送出 " : "✓ 已交，最後送出 ") + esc(hwFmt(sub.at)) + (sub.count > 1 ? "（共 " + sub.count + " 次）" : "") : (s === "missing" ? "✗ 已過期還沒交（還是可以補交）" : "尚未繳交")) + '</b></div>' +
+        (sub && sub.fb ? '<div class="panel" style="background:#E3F1E8;margin:6px 0;">老師回饋：' + esc(sub.fb) + '</div>' : '') +
+        (s === "exempt" ? '' : '<div class="rec-form"><label>我的作業</label><textarea id="st-' + it.id + '" rows="3" placeholder="可以打字，或上傳檔案／照片">' + esc(hasSub ? sub.text || "" : "") + '</textarea><div id="sf-' + it.id + '" class="tools" style="margin:6px 0;"></div><button class="btn sm" data-b="pick" data-id="' + it.id + '">＋ 選擇檔案／拍照</button><input type="file" id="sfile-' + it.id + '" multiple style="display:none;"> <span class="note" id="sp-' + it.id + '"></span><div style="margin-top:10px;"><button class="btn primary" data-b="submit" data-id="' + it.id + '">' + (hasSub ? "重新送出" : "送出作業") + '</button></div></div>') + '</div>';
+    }
+    return h + commentsHtml(it, list, false) + '</div>';
+  }
+  function drawPending(it){
+    var p = pend[it.id]; if(!p){ var sub = mySubs[it.id]; p = pend[it.id] = { existing: (sub && sub.files ? sub.files.slice() : []), add: [] }; }
+    var box = document.getElementById("sf-" + it.id); if(!box) return;
+    box.innerHTML = p.existing.map(function(f, i){ return '<span class="chip" style="padding:3px 4px 3px 10px;">📎 ' + esc(f.name) + ' <button class="btn sm ghost" data-b="rm-ex" data-id="' + it.id + '" data-i="' + i + '">✕</button></span>'; }).join("") + p.add.map(function(f, i){ return '<span class="chip" style="padding:3px 4px 3px 10px;background:#FBEBC8;">⬆ ' + esc(f.name) + ' <button class="btn sm ghost" data-b="rm-add" data-id="' + it.id + '" data-i="' + i + '">✕</button></span>'; }).join("") || '<span class="note">還沒有選檔案</span>';
+    var inp = document.getElementById("sfile-" + it.id);
+    if(inp) inp.onchange = function(e){ Array.prototype.slice.call(e.target.files).forEach(function(f){ if(f.size > HW_MAXFILE){ alert("「" + f.name + "」超過 30 MB，無法上傳。"); return; } if(p.existing.length + p.add.length >= HW_MAXFILES){ alert("最多 " + HW_MAXFILES + " 個檔案。"); return; } p.add.push(f); }); e.target.value = ""; drawPending(it); };
+  }
+  function bind(todays){
+    document.getElementById("main").onclick = async function(e){
+      var b = e.target.closest("[data-b]"); if(!b) return; var a = b.dataset.b, id = b.dataset.id, it = items.filter(function(x){ return x.id === id; })[0];
+      try{
+        if(a === "mc-prev" || a === "mc-next"){ var yy = Number(S.hwv.month.slice(0, 4)), mm = Number(S.hwv.month.slice(5, 7)) - 1 + (a === "mc-next" ? 1 : -1), nd = new Date(yy, mm, 1); S.hwv.month = nd.getFullYear() + "-" + pad2(nd.getMonth() + 1); draw(); }
+        else if(a === "mc-today"){ S.hwv.month = ymd(new Date()).slice(0, 7); S.hwv.day = ymd(new Date()); draw(); }
+        else if(a === "mc-day"){ S.hwv.day = b.dataset.d; draw(); }
+        else if(a === "pick"){ document.getElementById("sfile-" + id).click(); }
+        else if(a === "rm-ex"){ pend[id].existing.splice(Number(b.dataset.i), 1); drawPending(it); }
+        else if(a === "rm-add"){ pend[id].add.splice(Number(b.dataset.i), 1); drawPending(it); }
+        else if(a === "cmt-send"){ var inp = document.getElementById("ci-" + id), txt = inp.value.trim(); if(!txt) return; await fbSet(base + "/comments/" + id + "/" + uid("c_"), { name: st.name, role: "student", text: txt, at: nowMs() }); inp.value = ""; draw(); }
+        else if(a === "submit"){
+          var text = document.getElementById("st-" + id).value.trim(), p = pend[id];
+          if(!text && !p.existing.length && !p.add.length){ alert("請至少打一點文字，或選一個檔案。"); return; }
+          b.disabled = true; var sp = document.getElementById("sp-" + id), files = p.existing.slice();
+          try{
+            for(var i = 0; i < p.add.length; i++){ sp.textContent = "上傳中 " + (i + 1) + "/" + p.add.length + "…"; files.push(await uploadFile("hw/" + tid + "/" + cid + "/" + id + "/" + me + "/" + Date.now() + "_" + safeFileName(p.add[i].name), p.add[i], function(pr){ sp.textContent = "上傳中 " + (i + 1) + "/" + p.add.length + "　" + Math.round(pr * 100) + "%"; })); }
+            var synced = await syncTime(), prev = mySubs[id], now = nowMs();
+            var times = prev ? (Array.isArray(prev.times) ? prev.times.slice() : (prev.firstAt ? [{ t: prev.firstAt, s: false }] : [])) : [];
+            times.push({ t: now, s: synced });
+            var rec = { name: st.name, firstAt: times[0].t, at: now, count: times.length, times: times, text: text || null, files: files };
+            if(prev && prev.fb){ rec.fb = prev.fb; rec.fbAt = prev.fbAt; } if(prev && prev.ov) rec.ov = prev.ov;
+            await fbSet("teacherPlatform/" + tid + "/hwSubs/" + cid + "/" + id + "/" + me, rec);
+            mySubs[id] = rec; pend[id] = null; notifyTeacher(it, rec); toast("已送出！"); draw();
+          }catch(er){ b.disabled = false; sp.textContent = ""; alert((er && er.message) ? er.message : "送出失敗，請檢查網路後再試一次。你填的內容還在畫面上。"); }
+        }
+      }catch(er){ console.warn(er); }
+    };
+  }
+  draw();
 }
 function renderPlatformHome(){
   S.focus = false;
