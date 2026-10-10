@@ -1450,11 +1450,12 @@ function examRoomId(itemId, name){ var h = 5381, k = hwSkey(name); for(var i = 0
 function examForMe(it, name){ if((it.kind || "hw") !== "exam") return true; var a = it.exam && it.exam.assignees; return !a || !a.length || a.indexOf(name) !== -1; }
 function examAttPath(tid, cid, itemId, name){ return "teacherPlatform/" + tid + "/examAttempts/" + cid + "/" + itemId + (name != null ? "/" + hwSkey(name) : ""); }
 function examStatusLabel(a){
-  if(!a) return "未開始"; if(a.status === "graded") return "已批改"; if(a.status === "submitted") return "已交卷"; return "作答中";
+  if(!a) return "未開始"; if(a.status === "graded") return "已批改"; if(a.status === "submitted") return "已交卷"; if(a.status === "retake") return "可重考（還沒開始）"; return "作答中";
 }
+function bAHist(h){ return !h ? [] : (Array.isArray(h) ? h.slice() : Object.keys(h).sort(function(x, y){ return x - y; }).map(function(k){ return h[k]; })); }
 // 為這位學生建立（或沿用）他自己的作答房間：把老師題庫裡那份測驗複製一份進去，學生答的東西只存在這個房間
-async function examEnsureRoom(tid, it, name){
-  var rid = examRoomId(it.id, name), ex = await fbGet("rooms/" + rid);
+async function examEnsureRoom(tid, it, name, ridOverride){
+  var rid = ridOverride || examRoomId(it.id, name), ex = await fbGet("rooms/" + rid);
   if(ex && ex.project) return rid;
   var src = await fbGet("teacherLibraries/" + tid + "/projects/" + it.exam.pid);
   if(!src) throw new Error("找不到這份考卷內容，可能已被老師刪除。");
@@ -1475,9 +1476,13 @@ async function renderStudentExam(){
   try{ it = await fbGet(base + "/items/" + id); if(it) it.id = id; }catch(e){}
   if(!it || (it.kind || "") !== "exam" || !examForMe(it, st.name) || !it.exam){ S.examOpen = null; toast("找不到這份考卷"); S.hwOpen = "list"; return renderStudentHw(); }
   try{
-    var rid = await examEnsureRoom(tid, it, st.name), prev = await fbGet(examAttPath(tid, cid, id, st.name));
-    if(!prev) await fbSet(examAttPath(tid, cid, id, st.name), { name: st.name, room: rid, status: "doing", startedAt: nowMs() });
-    shell('<iframe class="frame" id="fr" src="' + esc("slides/practice.html?embed=1&room=" + encodeURIComponent(rid) + "&role=student&name=" + encodeURIComponent(st.name) + "&attempt=1&tid=" + encodeURIComponent(tid) + "&cid=" + encodeURIComponent(cid) + "&item=" + encodeURIComponent(id)) + '" allow="microphone; camera; autoplay; clipboard-write" style="width:100%;height:calc(100vh - 56px);border:0;"></iframe>', { flush: true });
+    var prev = await fbGet(examAttPath(tid, cid, id, st.name)), rid = await examEnsureRoom(tid, it, st.name, prev && prev.room ? prev.room : null), started = prev && prev.startedAt ? prev.startedAt : nowMs();
+    if(!prev || prev.status === "retake"){
+      started = nowMs(); var keep = prev && prev.history ? { history: prev.history } : {};
+      await fbSet(examAttPath(tid, cid, id, st.name), Object.assign({ name: st.name, room: rid, status: "doing", startedAt: started }, keep));
+    }
+    var lim = (it.exam && it.exam.minutes) || 0;
+    shell('<iframe class="frame" id="fr" src="' + esc("slides/practice.html?embed=1&room=" + encodeURIComponent(rid) + "&role=student&name=" + encodeURIComponent(st.name) + "&attempt=1&tid=" + encodeURIComponent(tid) + "&cid=" + encodeURIComponent(cid) + "&item=" + encodeURIComponent(id) + (lim ? "&limit=" + lim + "&started=" + started : "")) + '" allow="microphone; camera; autoplay; clipboard-write" style="width:100%;height:calc(100vh - 56px);border:0;"></iframe>', { flush: true });
     setCrumb([st.school, st.term, st.cls.name, it.title]);
   }catch(er){ shell('<div class="empty"><p class="note">' + esc(er && er.message ? er.message : "打不開考卷，請檢查網路後再試。") + '</p></div>'); }
 }
@@ -1956,7 +1961,7 @@ async function fillStudentHint(){
       [fbGet("teacherPlatform/" + tid + "/schedule").then(function(v){ sched = v || {}; }).catch(function(){ sched = {}; })]));
     await syncTime(); var now = nowMs(), todo = [];
     hws.forEach(function(it){ var s2 = hwStatus(it, subs[it.id]); if(s2 === "pending" || s2 === "missing") todo.push({ t: it.title, due: hwDueTs(it), over: s2 === "missing", kind: "作業" }); });
-    exams.forEach(function(it){ var a = atts[it.id]; if(a && (a.status === "submitted" || a.status === "graded")) return; var due = hwDueTs(it); todo.push({ t: it.title, due: due, over: !!(due && now > due), kind: "考卷", doing: !!a }); });
+    exams.forEach(function(it){ var a = atts[it.id]; if(a && (a.status === "submitted" || a.status === "graded")) return; var due = hwDueTs(it); todo.push({ t: it.title, due: due, over: !!(due && now > due), kind: "考卷", doing: !!a && a.status === "doing" }); });
     todo.sort(function(a, b){ return (a.due || 9e15) - (b.due || 9e15); });
     function rel(ts){ if(!ts) return "沒有截止日"; var d = ts - now, day = Math.floor(Math.abs(d) / 86400000); return d < 0 ? "已過期 " + (day ? day + " 天" : "") : (d < 86400000 ? "今天 " + pad2(new Date(ts).getHours()) + ":" + pad2(new Date(ts).getMinutes()) + " 截止" : "還有 " + day + " 天（" + hwFmt(ts) + "）"); }
     var next = null; Object.keys(sched).forEach(function(k){ var x = sched[k]; if(!x.date || !x.start) return; if(!(x.c === cid || (!x.c && x.s === st.idx.s && x.t === st.idx.tm))) return; var ts = new Date(x.date + "T" + x.end + ":00").getTime(); if(!x.end) ts = new Date(x.date + "T" + x.start + ":00").getTime() + 3600000; if(ts < now) return; if(!next || x.date + x.start < next.date + next.start) next = x; });
@@ -2585,7 +2590,7 @@ async function renderBoard(cls){
     B.att = B.att || {}; await Promise.all(todays.filter(function(it){ return it.kind === "exam"; }).map(function(it){ return fbGet(examAttPath(tid, cid, it.id)).then(function(v){ B.att[it.id] = v || {}; }); }));
     var d = new Date(day + "T00:00:00"), wk = ["日", "一", "二", "三", "四", "五", "六"][d.getDay()];
     var slots = slotsOn(day).filter(function(x){ return x.s === S.sel.s && x.t === S.sel.t && x.c === S.sel.c; });
-    var html = '<div class="head-row"><div style="flex:1;"><h2>聯絡簿</h2><div class="note">' + esc(cls.name) + '　選日期看當天的作業、通知和教學進度</div></div><div class="tools"><button class="btn owner-only" data-b="new">＋ 新增這天的內容</button><button class="btn" data-h="settle">結算繳交狀況</button><button class="btn" data-h="summary">學期總表</button><button class="btn owner-only" data-h="manage">名單與帳號</button></div></div>' +
+    var html = '<div class="head-row"><div style="flex:1;"><h2>聯絡簿</h2><div class="note">' + esc(cls.name) + '　選日期看當天的作業、通知和教學進度</div></div><div class="tools"><button class="btn owner-only" data-b="new">＋ 新增這天的內容</button><button class="btn owner-only" data-b="tpl-use">從範本新增</button><button class="btn" data-h="settle">結算繳交狀況</button><button class="btn" data-h="summary">學期總表</button><button class="btn owner-only" data-h="manage">名單與帳號</button></div></div>' +
       '<div class="bd-wrap"><div class="bd-cal panel">' + miniCalHtml(S.hwv.month, items, day, true) + '</div><div class="bd-day" id="bd-day"><div class="panel"><h3 style="margin:0;">' + (d.getMonth() + 1) + ' 月 ' + d.getDate() + ' 日（' + wk + '）' + (day === ymd(new Date()) ? ' <span class="chip" style="background:#F6DCCF;">今天</span>' : '') + '</h3>' + (slots.length ? '<div class="note" style="margin-top:4px;">今天的課：' + slots.map(function(x){ return esc((x.start || "") + (x.end ? "–" + x.end : "") + (x.lesson && (S.plat.lessons || {})[x.lesson] ? "　" + lessonTitle(x.lesson) : "")); }).join("；") + '</div>' : '') + '</div>' +
       (todays.length ? todays.map(function(it){ return teacherCardHtml(it, B); }).join("") : '<div class="panel"><p class="note">這天還沒有內容。按右上角「＋ 新增這天的內容」。</p></div>') + '</div></div>';
     shell(html); setCrumb([]);
@@ -2594,7 +2599,7 @@ async function renderBoard(cls){
   function teacherCardHtml(it, B){
     var kind = it.kind || "hw", subs = B.subs[it.id] || {}, nsub = Object.keys(subs).filter(function(k){ return subs[k].firstAt; }).length, total = Math.max(B.roster.length, nsub);
     var sched = it.publishAt && it.publishAt > nowMs();
-    return '<div class="panel bd-card" data-id="' + it.id + '"><div style="display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap;"><div style="flex:1;min-width:200px;"><span class="chip" style="background:' + KIND_COLOR[kind] + ';color:#fff;">' + KIND_LABEL[kind] + '</span>' + (sched ? ' <span class="chip" style="background:#FBEBC8;">⏰ ' + esc(hwFmt(it.publishAt)) + ' 才會發布</span>' : '') + '<h3 style="margin:6px 0 4px;">' + esc(it.title) + '</h3></div><div class="tools owner-only"><button class="btn sm" data-b="edit" data-id="' + it.id + '">修改</button><button class="btn sm" data-b="copy" data-id="' + it.id + '">複製到其他天</button><button class="btn sm danger" data-b="del" data-id="' + it.id + '">刪除</button></div></div>' +
+    return '<div class="panel bd-card" data-id="' + it.id + '"><div style="display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap;"><div style="flex:1;min-width:200px;"><span class="chip" style="background:' + KIND_COLOR[kind] + ';color:#fff;">' + KIND_LABEL[kind] + '</span>' + (sched ? ' <span class="chip" style="background:#FBEBC8;">⏰ ' + esc(hwFmt(it.publishAt)) + ' 才會發布</span>' : '') + '<h3 style="margin:6px 0 4px;">' + esc(it.title) + '</h3></div><div class="tools owner-only"><button class="btn sm" data-b="edit" data-id="' + it.id + '">修改</button><button class="btn sm" data-b="copy" data-id="' + it.id + '">複製到其他天</button><button class="btn sm" data-b="tpl-save" data-id="' + it.id + '">存成範本</button><button class="btn sm danger" data-b="del" data-id="' + it.id + '">刪除</button></div></div>' +
       (it.body ? '<div class="bd-body">' + richText(it.body) + '</div>' : '') + (it.progress ? '<div class="bd-plan"><b>教學進度／今日任務</b><div>' + richText(it.progress) + '</div></div>' : '') +
       ((it.links || []).length ? '<div class="tools" style="margin:6px 0;">' + it.links.map(function(l){ return '<a class="btn sm" href="' + esc(l.url) + '" target="_blank" rel="noopener">🔗 ' + esc(l.name || l.url) + '</a>'; }).join("") + '</div>' : '') + filesHtml(it.files) +
       (kind === "hw" ? '<div class="note" style="margin-top:6px;">截止 ' + esc(it.due ? hwFmt(hwDueTs(it)) : "未設") + '　<b>已交 ' + nsub + ' / ' + total + '</b>　<button class="btn sm" data-b="subs" data-id="' + it.id + '">' + (B.open[it.id] ? "收起繳交" : "看繳交") + '</button></div><div class="bd-subs" id="subs-' + it.id + '">' + (B.open[it.id] ? teacherSubsHtml(it, B) : "") + '</div>' : '') +
@@ -2605,7 +2610,7 @@ async function renderBoard(cls){
     var att = (B.att || {})[it.id] || {}, ex = it.exam || {}, names = (ex.assignees && ex.assignees.length) ? ex.assignees : B.roster.slice();
     Object.keys(att).forEach(function(k){ var n = att[k].name || decodeURIComponent(k); if(names.indexOf(n) === -1) names.push(n); });
     var done = names.filter(function(n){ var a = att[hwSkey(n)]; return a && (a.status === "submitted" || a.status === "graded"); }).length;
-    var h = '<div class="note" style="margin-top:6px;">考卷：<b>' + esc(ex.ptitle || "") + '</b>　' + (ex.mode === "practice" ? "練習模式（作答時顯示對錯）" : "測驗模式（交卷後才知道對錯）") + '　對象：' + ((ex.assignees && ex.assignees.length) ? esc(ex.assignees.join("、")) : "全班") + '　截止 ' + esc(it.due ? hwFmt(hwDueTs(it)) : "未設") + '　<b>已交卷 ' + done + ' / ' + names.length + '</b>　<button class="btn sm" data-b="subs" data-id="' + it.id + '">' + (B.open[it.id] ? "收起名單" : "看名單與成績") + '</button></div>';
+    var h = '<div class="note" style="margin-top:6px;">考卷：<b>' + esc(ex.ptitle || "") + '</b>　' + (ex.mode === "practice" ? "練習模式（作答時顯示對錯）" : "測驗模式（交卷後才知道對錯）") + (ex.minutes ? '　限時 ' + ex.minutes + ' 分鐘' : '') + '　對象：' + ((ex.assignees && ex.assignees.length) ? esc(ex.assignees.join("、")) : "全班") + '　截止 ' + esc(it.due ? hwFmt(hwDueTs(it)) : "未設") + '　<b>已交卷 ' + done + ' / ' + names.length + '</b>　<button class="btn sm" data-b="subs" data-id="' + it.id + '">' + (B.open[it.id] ? "收起名單" : "看名單與成績") + '</button></div>';
     if(!B.open[it.id]) return h;
     names.sort(function(a, b){ return a.localeCompare(b, "zh-Hant"); });
     var wc = {}, gradedN = 0; Object.keys(att).forEach(function(k){ var a = att[k]; if(a.status !== "graded") return; gradedN++; (a.wrong || []).forEach(function(w){ var r = wc[w.t] = wc[w.t] || { t: w.t, n: 0, who: [] }; r.n++; r.who.push(a.name || decodeURIComponent(k)); }); });
@@ -2614,7 +2619,7 @@ async function renderBoard(cls){
     return h + '<div style="margin-top:8px;">' + (names.length ? names.map(function(n){
       var a = att[hwSkey(n)], pct = a && a.auto ? a.auto.pct : null, pend = a && a.auto ? a.auto.pending : 0;
       var sc = a && a.status === "graded" && a.final != null ? '<b>' + a.final + ' 分</b>（已批改）' : (a && a.auto ? (pct == null ? '自動分數 —' : '自動 <b>' + pct + ' 分</b>') + (pend ? '＋<span style="color:#B23B32;">' + pend + ' 題待批改</span>' : '') : '');
-      return '<div class="slot"><div class="slot-time" style="min-width:90px;"><b>' + esc(n) + '</b></div><div class="slot-main"><span class="chip" style="background:' + (a && (a.status === "submitted" || a.status === "graded") ? '#DCEEE6' : '#F1E6DA') + ';">' + examStatusLabel(a) + '</span> ' + sc + (a && a.submittedAt ? '　<span class="note">' + esc(hwFmt(a.submittedAt)) + ' 交卷</span>' : '') + '</div><div class="slot-act">' + (a && a.room ? '<button class="btn sm' + (a.status === "submitted" ? ' primary' : '') + '" data-b="exam-open" data-id="' + it.id + '" data-n="' + esc(n) + '">' + (a.status === "submitted" || a.status === "graded" ? '批改／查看' : '看作答') + '</button>' : '') + '</div></div>';
+      return '<div class="slot"><div class="slot-time" style="min-width:90px;"><b>' + esc(n) + '</b></div><div class="slot-main"><span class="chip" style="background:' + (a && (a.status === "submitted" || a.status === "graded") ? '#DCEEE6' : '#F1E6DA') + ';">' + examStatusLabel(a) + '</span> ' + sc + (a && a.submittedAt ? '　<span class="note">' + esc(hwFmt(a.submittedAt)) + ' 交卷</span>' : '') + (a && a.timeUp ? ' <span class="chip" style="background:#F7D9D5;color:#B23B32;">時間到自動交卷</span>' : '') + (a && a.history ? ' <span class="note">（第 ' + (bAHist(a.history).length + 1) + ' 次作答，之前：' + bAHist(a.history).map(function(h){ return h.final != null ? h.final + ' 分' : (h.pct != null ? '自動 ' + h.pct + ' 分' : '—'); }).join("、") + '）</span>' : '') + '</div><div class="slot-act">' + (a && (a.status === "submitted" || a.status === "graded") ? '<button class="btn sm" data-b="exam-retake" data-id="' + it.id + '" data-n="' + esc(n) + '">讓他重考</button>' : '') + (a && a.room && a.status !== "retake" ? '<button class="btn sm' + (a.status === "submitted" ? ' primary' : '') + '" data-b="exam-open" data-id="' + it.id + '" data-n="' + esc(n) + '">' + (a.status === "submitted" || a.status === "graded" ? '批改／查看' : '看作答') + '</button>' : '') + '</div></div>';
     }).join("") : '<p class="note">還沒有名單。到「名單與帳號」貼上班級名單。</p>') + '</div>';
   }
   function teacherSubsHtml(it, B){
@@ -2641,6 +2646,15 @@ async function renderBoard(cls){
         else if(a === "mc-today"){ S.hwv.month = ymd(new Date()).slice(0, 7); S.hwv.day = ymd(new Date()); S.calPick = null; draw(); }
         else if(a === "mc-day"){ S.hwv.day = b.dataset.d; draw(); }
         else if(a === "new"){ if(!needOwner()) return; openItemEditor(null, S.hwv.day, async function(){ items = await hwLoadItems(); B.items = items; draw(); }); }
+        else if(a === "tpl-save"){
+          if(!needOwner()) return; var tn = await askText("範本名稱", it.title); if(!tn) return;
+          var tp = { name: tn, kind: it.kind || "hw", title: it.title, body: it.body || "", progress: it.progress || "", links: it.links || [], files: it.files || [], exam: it.exam ? { pid: it.exam.pid, ptitle: it.exam.ptitle, mode: it.exam.mode, minutes: it.exam.minutes || 0, assignees: null } : null, dueTime: it.due ? it.due.slice(11, 16) : "23:59", createdAt: Date.now() };
+          await fbSet("teacherPlatform/" + tid + "/templates/" + uid("tp_"), tp); toast("已存成範本「" + tn + "」，之後用「從範本新增」");
+        }
+        else if(a === "tpl-use"){
+          if(!needOwner()) return; var picked = await pickTemplate(tid); if(!picked) return;
+          openItemEditor(null, S.hwv.day, async function(){ items = await hwLoadItems(); draw(); }, picked);
+        }
         else if(a === "edit"){ if(!needOwner()) return; openItemEditor(it, itemDay(it), async function(){ items = await hwLoadItems(); draw(); }); }
         else if(a === "del"){ if(!needOwner()) return; if(!confirm("刪除這份內容？學生已繳交的作業和留言也會一併刪除。")) return; await fbSet(base + "/items/" + id, null); await fbSet("teacherPlatform/" + tid + "/hwSubs/" + cid + "/" + id, null); await fbSet(base + "/comments/" + id, null); await fbSet("teacherPlatform/" + tid + "/hwFiles/" + cid + "/" + id, null); items = await hwLoadItems(); draw(); }
         else if(a === "copy"){
@@ -2655,6 +2669,13 @@ async function renderBoard(cls){
           box.innerHTML = '<span class="note">載入中…</span>';
           var lf = (await fbGet("teacherPlatform/" + tid + "/hwFiles/" + cid + "/" + id + "/" + b.dataset.k)) || []; if(!Array.isArray(lf)) lf = Object.keys(lf).map(function(x){ return lf[x]; });
           box.dataset.on = "1"; box.innerHTML = lf.length ? lf.map(function(u){ return typeof u === "string" && /^data:image\//.test(u) ? '<a href="' + u + '" target="_blank" rel="noopener"><img src="' + u + '" style="max-width:220px;max-height:220px;border-radius:8px;border:1px solid var(--line);"></a>' : ''; }).join("") : '<span class="note">找不到照片資料。</span>';
+        }
+        else if(a === "exam-retake"){
+          var nmr = b.dataset.n, pth = examAttPath(tid, cid, id, nmr), cur = await fbGet(pth); if(!cur) return;
+          if(!confirm("讓「" + nmr + "」重考一次？\n目前的成績會保留在「之前」的紀錄，他會有一份全新的空白考卷。")) return;
+          var hist = bAHist(cur.history); hist.push({ room: cur.room, final: cur.final != null ? cur.final : null, pct: cur.auto && cur.auto.pct != null ? cur.auto.pct : null, submittedAt: cur.submittedAt || null, gradedAt: cur.gradedAt || null });
+          await fbSet(pth, { name: nmr, room: examRoomId(id, nmr) + "_r" + (hist.length + 1), status: "retake", history: hist });
+          toast("已讓「" + nmr + "」可以重考"); draw();
         }
         else if(a === "exam-open"){ var ea = ((B.att || {})[id] || {})[hwSkey(b.dataset.n)]; if(!ea || !ea.room) return; S.hw = { view: "exam", item: id, name: b.dataset.n, room: ea.room, title: it.title }; render(); }
         else if(a === "fb"){ var v = document.getElementById("fb-" + id + "-" + b.dataset.k).value.trim(); await fbUpdate("teacherPlatform/" + tid + "/hwSubs/" + cid + "/" + id + "/" + b.dataset.k, { fb: v || null, fbAt: nowMs() }); toast("已儲存回饋"); }
@@ -2677,6 +2698,24 @@ async function renderBoard(cls){
   }
   draw();
 }
+// 範本清單視窗：點「使用」帶入編輯器，也可以刪除不要的範本
+function pickTemplate(tid){
+  return new Promise(async function(resolve){
+    var tpls = (await fbGet("teacherPlatform/" + tid + "/templates")) || {}, ov = document.createElement("div");
+    ov.style.cssText = "position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:16px;";
+    function draw(){
+      var ks = Object.keys(tpls).sort(function(a, b){ return (tpls[b].createdAt || 0) - (tpls[a].createdAt || 0); });
+      ov.innerHTML = '<div class="card" style="max-width:520px;width:100%;max-height:80vh;overflow:auto;"><h3 style="margin-top:0;">從範本新增</h3>' + (ks.length ? ks.map(function(k){ var t = tpls[k]; return '<div class="slot"><div class="slot-main"><span class="chip" style="background:' + (KIND_COLOR[t.kind] || "#888") + ';color:#fff;">' + esc(KIND_LABEL[t.kind] || "") + '</span> <b>' + esc(t.name) + '</b>' + (t.exam && t.exam.minutes ? '<span class="note">　限時 ' + t.exam.minutes + ' 分</span>' : '') + '</div><div class="slot-act"><button class="btn sm primary" data-u="' + k + '">使用</button><button class="btn sm danger" data-d="' + k + '">刪除</button></div></div>'; }).join("") : '<p class="note">還沒有範本。到作業或考卷卡片按「存成範本」。</p>') + '<div class="row" style="margin-top:12px;"><button class="btn" data-c="1">關閉</button></div></div>';
+    }
+    draw(); document.body.appendChild(ov);
+    ov.onclick = async function(e){
+      var b = e.target.closest("button"); if(!b){ if(e.target === ov){ ov.remove(); resolve(null); } return; }
+      if(b.dataset.c){ ov.remove(); resolve(null); }
+      else if(b.dataset.u){ var t = Object.assign({}, tpls[b.dataset.u]); ov.remove(); resolve(t); }
+      else if(b.dataset.d){ if(!confirm("刪除這個範本？")) return; await fbSet("teacherPlatform/" + tid + "/templates/" + b.dataset.d, null); delete tpls[b.dataset.d]; draw(); }
+    };
+  });
+}
 var EXAM_ROSTER = [];
 function examProjectOptions(selected){
   var all = S.allProjects || {}, lm = S.plat.lessonMap || {};
@@ -2690,12 +2729,14 @@ function examEditorHtml(st){
   var ex = st.exam || { pid: "", mode: "test", assignees: null }, all = !ex.assignees || !ex.assignees.length;
   var opts = examProjectOptions(ex.pid);
   return '<div class="panel" style="background:var(--surface-2);margin:10px 0;"><label style="margin-top:0;">要出哪一份考卷（來自各課「測驗與練習」）</label>' + (opts ? '<select id="ed-proj">' + opts + '</select>' : '<p class="note">還沒有可以出的考卷。先到某一課的「測驗與練習」建立題目。</p>') +
+    '<label>限時作答（分鐘，0＝不限時）</label><input type="number" id="ed-exmin" min="0" max="300" value="' + (ex.minutes || 0) + '" style="width:100px;"><span class="note">　學生按「開始作答」才開始倒數，時間到自動交卷</span>' +
     '<label>作答模式</label><select id="ed-exmode"><option value="test"' + (ex.mode !== "practice" ? " selected" : "") + '>測驗模式（交卷後才知道對錯）</option><option value="practice"' + (ex.mode === "practice" ? " selected" : "") + '>練習模式（填完立刻顯示對錯）</option></select>' +
     '<label>出給誰</label><label style="display:flex;align-items:center;gap:6px;margin:0 0 6px;font-weight:600;"><input type="checkbox" id="ed-exall"' + (all ? " checked" : "") + '> 全班</label>' +
     '<div id="ed-exwho" style="' + (all ? "display:none;" : "") + '">' + (EXAM_ROSTER.length ? EXAM_ROSTER.map(function(n){ return '<label style="display:inline-flex;align-items:center;gap:4px;margin:2px 10px 2px 0;font-weight:400;"><input type="checkbox" class="ed-exn" value="' + esc(n) + '"' + (ex.assignees && ex.assignees.indexOf(n) !== -1 ? " checked" : "") + '> ' + esc(n) + '</label>'; }).join("") : '<span class="note">班級名單是空的，先到「名單與帳號」貼上名單。</span>') + '</div></div>';
 }
-function openItemEditor(it, day, done){
-  var d = document.getElementById("hwed"), st = it ? JSON.parse(JSON.stringify(it)) : { kind: "hw", day: day, title: "", body: "", progress: "", links: [], files: [], due: day + "T23:59", publishAt: null };
+function openItemEditor(it, day, done, preset){
+  var d = document.getElementById("hwed"), st = it ? JSON.parse(JSON.stringify(it)) : Object.assign({ kind: "hw", day: day, title: "", body: "", progress: "", links: [], files: [], due: day + "T23:59", publishAt: null }, preset ? JSON.parse(JSON.stringify(preset)) : {});
+  if(!it && preset){ st.day = day; st.due = (st.kind === "hw" || st.kind === "exam") ? day + "T" + (preset.dueTime || "23:59") : ""; delete st.dueTime; delete st.name; }
   var cid = S.sel.c, tid = S.teacher.id, busy = false;
   st.links = st.links || []; st.files = st.files || [];
   function draw(){
@@ -2717,7 +2758,7 @@ function openItemEditor(it, day, done){
     var g = function(i){ return document.getElementById(i); }; if(!g("ed-kind")) return;
     st.kind = g("ed-kind").value; st.day = g("ed-day").value || st.day; st.title = g("ed-title").value; st.body = g("ed-body").value; st.progress = g("ed-plan").value;
     st.links = Array.prototype.map.call(document.querySelectorAll(".lk-u"), function(u, i){ return { name: document.querySelectorAll(".lk-n")[i].value.trim(), url: u.value.trim() }; });
-    if(st.kind === "exam" && g("ed-proj")){ var pj = g("ed-proj"); st.exam = { pid: pj.value, ptitle: pj.options[pj.selectedIndex] ? pj.options[pj.selectedIndex].dataset.t || pj.options[pj.selectedIndex].textContent : "", mode: g("ed-exmode").value, assignees: g("ed-exall").checked ? null : Array.prototype.map.call(document.querySelectorAll(".ed-exn:checked"), function(x){ return x.value; }) }; }
+    if(st.kind === "exam" && g("ed-proj")){ var pj = g("ed-proj"); st.exam = { pid: pj.value, ptitle: pj.options[pj.selectedIndex] ? pj.options[pj.selectedIndex].dataset.t || pj.options[pj.selectedIndex].textContent : "", mode: g("ed-exmode").value, minutes: Math.max(0, Math.min(300, Number(g("ed-exmin").value) || 0)), assignees: g("ed-exall").checked ? null : Array.prototype.map.call(document.querySelectorAll(".ed-exn:checked"), function(x){ return x.value; }) }; }
     st.due = (st.kind === "hw" || st.kind === "exam") ? ((g("ed-dd").value || st.day) + "T" + (g("ed-dt").value || "23:59")) : "";
     var later = document.querySelector('input[name="ed-pub"]:checked').value === "later"; st.publishAt = later && g("ed-pd").value ? new Date(g("ed-pd").value + "T" + (g("ed-pt").value || "07:00") + ":00").getTime() : null;
     st._later = later;
@@ -2804,9 +2845,9 @@ async function renderStudentHw(){
     }
     if(kind === "exam"){
       var at = myAtt[it.id], dn = at && (at.status === "submitted" || at.status === "graded"), ex = it.exam || {};
-      h += '<div class="bd-mine"><div class="note" style="margin:8px 0 4px;">截止 ' + esc(it.due ? hwFmt(hwDueTs(it)) : "未設") + '　<b>' + (at && at.status === "graded" ? "✓ 老師批改完了" : dn ? "✓ 已交卷，等老師批改" : at ? "作答中（還沒交卷）" : "還沒開始") + '</b></div>' +
+      h += '<div class="bd-mine"><div class="note" style="margin:8px 0 4px;">截止 ' + esc(it.due ? hwFmt(hwDueTs(it)) : "未設") + '　<b>' + (at && at.status === "graded" ? "✓ 老師批改完了" : dn ? "✓ 已交卷，等老師批改" : at && at.status === "retake" ? "老師讓你重考一次" : at ? "作答中（還沒交卷）" : "還沒開始") + '</b>' + (ex.minutes ? '　<span class="note">限時 ' + ex.minutes + ' 分鐘</span>' : '') + '</div>' +
         (at && at.status === "graded" && at.final != null && at.released ? '<div class="panel" style="background:#E3F1E8;margin:6px 0;"><b>我的成績：' + at.final + ' 分</b>' + (at.comment ? '<div>' + esc(at.comment) + '</div>' : '') + '</div>' : '') +
-        '<button class="btn primary" data-b="exam-go" data-id="' + it.id + '">' + (dn ? '查看我的考卷' : at ? '繼續作答' : '開始作答') + '</button></div>';
+        '<button class="btn primary" data-b="exam-go" data-id="' + it.id + '">' + (dn ? '查看我的考卷' : at && at.status === "retake" ? '開始重考' : at ? '繼續作答' : '開始作答') + '</button></div>';
     }
     return h + commentsHtml(it, list, false) + '</div>';
   }
@@ -3958,7 +3999,7 @@ var I18N_DICT = {
   "✓ 準時": ["✓ On time", "✓ ตรงเวลา"], "⏰ 遲交": ["⏰ Late", "⏰ ส่งช้า"], "✗ 未交": ["✗ Missing", "✗ ยังไม่ส่ง"], "尚未繳交": ["Not handed in yet", "ยังไม่ได้ส่ง"], "－ 免交": ["– Exempt", "– ได้รับการยกเว้น"],
   "－ 老師設為免交": ["– Exempted by your teacher", "– ครูยกเว้นให้"], "✗ 已過期還沒交（還是可以補交）": ["✗ Overdue, not handed in (you can still hand it in)", "✗ เลยกำหนดแล้วยังไม่ส่ง (ยังส่งได้)"],
   "作業": ["Homework", "การบ้าน"], "通知": ["Notice", "ประกาศ"], "教學進度": ["Lesson progress", "ความคืบหน้าบทเรียน"], "線上考卷": ["Online exam", "ข้อสอบออนไลน์"], "考卷": ["Exam", "ข้อสอบ"],
-  "✓ 老師批改完了": ["✓ Graded by your teacher", "✓ ครูตรวจแล้ว"], "✓ 已交卷，等老師批改": ["✓ Submitted, waiting for grading", "✓ ส่งแล้ว รอครูตรวจ"], "作答中（還沒交卷）": ["In progress (not submitted yet)", "กำลังทำ (ยังไม่ส่ง)"], "還沒開始": ["Not started", "ยังไม่เริ่ม"],
+  "✓ 老師批改完了": ["✓ Graded by your teacher", "✓ ครูตรวจแล้ว"], "✓ 已交卷，等老師批改": ["✓ Submitted, waiting for grading", "✓ ส่งแล้ว รอครูตรวจ"], "老師讓你重考一次": ["Your teacher is letting you retake this exam", "ครูให้คุณสอบใหม่อีกครั้ง"], "開始重考": ["Start retake", "เริ่มสอบใหม่"], "作答中（還沒交卷）": ["In progress (not submitted yet)", "กำลังทำ (ยังไม่ส่ง)"], "還沒開始": ["Not started", "ยังไม่เริ่ม"],
   "查看我的考卷": ["View my exam", "ดูข้อสอบของฉัน"], "繼續作答": ["Continue", "ทำต่อ"], "開始作答": ["Start", "เริ่มทำ"], "準備考卷中…": ["Preparing the exam…", "กำลังเตรียมข้อสอบ…"], "找不到這份考卷": ["Exam not found", "ไม่พบข้อสอบนี้"],
   "請假申請": ["Leave request", "คำขอลา"], "請假日期": ["Leave date", "วันที่ลา"], "原因（選填）": ["Reason (optional)", "เหตุผล (ไม่บังคับ)"], "⏳ 等待老師回覆": ["⏳ Waiting for your teacher's reply", "⏳ รอครูตอบกลับ"], "✓ 老師已核准": ["✓ Approved", "✓ ครูอนุมัติแล้ว"],
   "✗ 老師無法核准": ["✗ Not approved", "✗ ครูไม่สามารถอนุมัติได้"], "還沒有請假紀錄。": ["No leave records yet.", "ยังไม่มีบันทึกการลา"], "請假": ["Leave", "ลา"], "回班級頁": ["Back to class page", "กลับหน้าห้องเรียน"], "我的請假紀錄": ["My leave records", "บันทึกการลาของฉัน"], "請假紀錄": ["Leave records", "บันทึกการลา"],
@@ -3980,6 +4021,7 @@ function i18nText(raw){
   else if((m = /^(\d+) 月 (\d+) 日（(.)）(.*)$/.exec(t))) out = I18N_MON[L][Number(m[1]) - 1] + " " + m[2] + " (" + i18nWk(m[3]) + ") " + m[4];
   else if((m = /^(\d+)\/(\d+)（(.)）(.*)$/.exec(t))) out = m[1] + "/" + m[2] + " (" + i18nWk(m[3]) + ") " + m[4];
   else if((m = /^準時 (\d+)　遲交 (\d+)　未交 (\d+)$/.exec(t))) out = L === "en" ? "On time " + m[1] + "   Late " + m[2] + "   Missing " + m[3] : "ตรงเวลา " + m[1] + "   ส่งช้า " + m[2] + "   ยังไม่ส่ง " + m[3];
+  else if((m = /^限時 (\d+) 分鐘$/.exec(t))) out = L === "en" ? "Time limit: " + m[1] + " min" : "จำกัดเวลา " + m[1] + " นาที";
   else if((m = /^(\d+) 項$/.exec(t))) out = L === "en" ? m[1] + (m[1] === "1" ? " task" : " tasks") : m[1] + " รายการ";
   else if((m = /^(\d+) 分$/.exec(t))) out = L === "en" ? m[1] + " pts" : m[1] + " คะแนน";
   else if((m = /^還有 (\d+) 天（(.+)）$/.exec(t))) out = L === "en" ? m[1] + " days left (" + m[2] + ")" : "เหลืออีก " + m[1] + " วัน (" + m[2] + ")";

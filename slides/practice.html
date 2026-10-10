@@ -484,7 +484,7 @@
 
   /* 句子重組專屬樣式 */
   #attempt-bar{position:fixed;left:0;right:0;bottom:0;z-index:60;display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap;padding:10px 14px;background:var(--surface);border-top:2px solid var(--seal);box-shadow:0 -4px 14px rgba(0,0,0,.08);font-size:14px;}
-  #attempt-bar .attempt-t{font-weight:700;} #attempt-bar .attempt-done{color:var(--bamboo);font-weight:700;} #attempt-bar .attempt-wait{color:var(--ink-soft);}
+  #attempt-bar .attempt-timer{font-weight:800;font-size:16px;font-variant-numeric:tabular-nums;} #attempt-bar .attempt-t{font-weight:700;} #attempt-bar .attempt-done{color:var(--bamboo);font-weight:700;} #attempt-bar .attempt-wait{color:var(--ink-soft);}
   html.attempt .stage-wrap, html.attempt #stage{padding-bottom:70px;}
   #grade-bar{position:fixed;left:0;right:0;bottom:0;z-index:60;padding:8px 14px;background:var(--surface);border-top:3px solid #6B4EA6;box-shadow:0 -4px 14px rgba(0,0,0,.1);font-size:13.5px;display:flex;flex-direction:column;gap:6px;}
   #grade-bar .gb-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;} #grade-bar .gb-st{color:var(--ink-soft);} #grade-bar .gb-q{color:var(--ink-soft);}
@@ -3907,7 +3907,7 @@
   var urlRoom = params.get("room"); var urlRole = params.get("role"); var urlName = params.get("name");
   var isStudent = (urlRole === "student");
   // 線上考卷（個別作答）：每位學生一個獨立房間，只有他自己作答；交卷後把分數記到老師的考卷名單
-  window.__attempt = params.get("attempt") === "1" ? { tid: params.get("tid"), cid: params.get("cid"), item: params.get("item"), name: urlName || "" } : null;
+  window.__attempt = params.get("attempt") === "1" ? { tid: params.get("tid"), cid: params.get("cid"), item: params.get("item"), name: urlName || "", limitMin: Number(params.get("limit")) || 0, startedAt: Number(params.get("started")) || 0 } : null;
   if(window.__attempt) document.documentElement.classList.add("attempt");
   // 老師批改：用老師身分打開某位學生的作答房間（唯讀，不會改到學生的答案），在底下的批改列給分、寫評語
   window.__grade = (params.get("grade") === "1" && !isStudent) ? { name: urlName || "" } : null;
@@ -6233,7 +6233,8 @@
     var done = !!roomData.submitted, title = (roomData.project && roomData.project.title) || "考卷";
     bar.innerHTML = '<span class="attempt-t">📝 ' + escapeHtml(title) + '　' + escapeHtml(A.name) + '</span>' +
       (done ? '<span class="attempt-done">✅ 已交卷（' + new Date(roomData.submittedAt || Date.now()).toLocaleString() + '）</span>' + (roomData.released ? '<button type="button" class="btn btn-sm btn-primary" id="attempt-result">看成績</button>' : '<span class="attempt-wait">等老師批改</span>') :
-        '<button type="button" class="btn btn-primary" id="attempt-submit">📮 交卷</button>');
+        (A.limitMin ? '<span class="attempt-timer" id="attempt-timer">⏱ --:--</span>' : '') + '<button type="button" class="btn btn-primary" id="attempt-submit">📮 交卷</button>');
+    attemptTimerStart();
     var sb = document.getElementById("attempt-submit"); if(sb) sb.onclick = attemptSubmit;
     var rb = document.getElementById("attempt-result"); if(rb) rb.onclick = function(){ showScoreModal(calculateScoreReport()); };
     document.body.classList.toggle("attempt-submitted", done);
@@ -6286,13 +6287,25 @@
       }catch(er){ alert("退回失敗，請檢查網路。"); }
     };
   }
-  async function attemptSubmit(){
+  var attemptTimerId = null;
+  function attemptTimerStart(){
+    var A = window.__attempt; if(!A || !A.limitMin || !A.startedAt || attemptTimerId || !roomData || roomData.submitted) return;
+    var endAt = A.startedAt + A.limitMin * 60000;
+    function tick(){
+      var el = document.getElementById("attempt-timer"); if(roomData && roomData.submitted){ clearInterval(attemptTimerId); attemptTimerId = null; return; }
+      var left = Math.max(0, endAt - Date.now()), m = Math.floor(left / 60000), sec = Math.floor(left % 60000 / 1000);
+      if(el){ el.textContent = "⏱ 剩 " + m + ":" + (sec < 10 ? "0" : "") + sec; el.style.color = left < 60000 ? "#B23B32" : ""; }
+      if(left <= 0){ clearInterval(attemptTimerId); attemptTimerId = null; alert("時間到！系統會自動幫你交卷。\nTime is up — your exam will be submitted automatically."); attemptSubmit("time"); }
+    }
+    attemptTimerId = setInterval(tick, 1000); tick();
+  }
+  async function attemptSubmit(mode){
     var A = window.__attempt; if(!A || !activeRoomId) return;
-    if(!confirm("確定要交卷嗎？交卷後就不能再修改答案了。\nSubmit now? You can't change your answers afterwards.")) return;
+    if(mode !== "time" && !confirm("確定要交卷嗎？交卷後就不能再修改答案了。\nSubmit now? You can't change your answers afterwards.")) return;
     var report = calculateScoreReport(), pend = 0;
     report.results.forEach(function(sec){ sec.questions.forEach(function(q){ if(q.pending) pend++; }); });
     var key = encodeURIComponent(A.name).replace(/\./g, "%2E"), now = Date.now();
-    var rec = { name: A.name, room: activeRoomId, status: "submitted", submittedAt: now, auto: { pct: report.totalScoreable > 0 ? report.finalScore : null, earned: report.totalEarned, total: report.totalScoreable, pending: pend } };
+    var rec = { name: A.name, room: activeRoomId, status: "submitted", submittedAt: now, timeUp: mode === "time" ? true : null, auto: { pct: report.totalScoreable > 0 ? report.finalScore : null, earned: report.totalEarned, total: report.totalScoreable, pending: pend } };
     try{
       await update(ref(db, "rooms/" + activeRoomId), { isOpen: false, submitted: true, submittedAt: now });
       await update(ref(db, "teacherPlatform/" + A.tid + "/examAttempts/" + A.cid + "/" + A.item + "/" + key), rec);
