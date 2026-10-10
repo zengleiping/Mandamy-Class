@@ -232,6 +232,7 @@
     window.db = mods[1].getDatabase(fbApp);
     window.ref = mods[1].ref; window.get = mods[1].get; window.set = mods[1].set; window.update = mods[1].update; window.onValue = mods[1].onValue;
     window.auth = mods[2].getAuth(fbApp);
+    window.mmAuthApi = mods[2];
     window.googleApi = { GoogleAuthProvider: mods[2].GoogleAuthProvider, signInWithPopup: mods[2].signInWithPopup, signInWithRedirect: mods[2].signInWithRedirect, getRedirectResult: mods[2].getRedirectResult, signOut: mods[2].signOut, signInAnonymously: mods[2].signInAnonymously };
     // 先看看有沒有上次留下來的登入（例如學生的 Google 帳號），有就沿用；沒有才用匿名登入
     var first = await new Promise(function(resolve){ var un = mods[2].onAuthStateChanged(window.auth, function(u){ try{ if(un) un(); }catch(e){} resolve(u); }); });
@@ -244,6 +245,74 @@
     window.__firebaseReady = true;
     window.dispatchEvent(new Event("firebase-bridge-ready"));
   }catch(e){ console.error("Firebase 連線初始化失敗：", e); window.__firebaseFailed = true; window.dispatchEvent(new Event("firebase-bridge-ready")); }
+})();
+</script>
+<script>
+/* 老師的 Firebase 安全登入（Email/密碼）。老師輸入的還是原本的帳號密碼，程式在背後幫忙：
+   ① 先用 Firebase 帳號登入；② 第一次（還沒有 Firebase 帳號）就用舊的密碼雜湊驗證，通過後建立 Firebase 帳號並「認領」這個老師帳號。
+   資料庫規則 v2 啟用後，只有認領過的 Firebase 身分才能讀寫老師資料。三個頁面共用同一份邏輯（複製貼上），登入一次三邊都通。 */
+window.mmTA = (function(){
+  var DOM = "@teacher.mandamy.app";
+  function A(){ return window.mmAuthApi; }
+  function dbRef(p){ return window.ref(window.db, p); }
+  async function rd(p){ var s = await window.get(dbRef(p)); return s.exists() ? s.val() : null; }
+  function emailOf(id, gen){ return id + (gen ? ".g" + gen : "") + DOM; }
+  function pwUser(){ var u = window.auth && window.auth.currentUser; if(!u || u.isAnonymous) return null; var pd = u.providerData || []; for(var i = 0; i < pd.length; i++) if(pd[i].providerId === "password") return u; return null; }
+  // 目前登入的 Firebase 老師身分對應哪個老師帳號（沒有就回 null）
+  async function who(){ var u = pwUser(); if(!u) return null; try{ return await rd("uidMap/" + u.uid); }catch(e){ return null; } }
+  // 這個老師帳號是否已被認領（讀不到也當作已認領——規則 v2 只允許讀未認領的帳號）
+  async function claimed(id){ try{ var a = await rd("teacherAccounts/" + id); return !!(a && a.uid); }catch(e){ return true; } }
+  async function claim(id, u){
+    var cur = null; try{ cur = await rd("teacherAccounts/" + id + "/uid"); }catch(e){}
+    if(cur && cur !== u.uid) return false;
+    if(!cur) await window.set(dbRef("teacherAccounts/" + id + "/uid"), u.uid);
+    await window.set(dbRef("uidMap/" + u.uid), id);
+    return true;
+  }
+  /* legacy(): 回傳 "ok"｜"none"（沒有這個帳號）｜"disabled"｜"wrong"，用舊雜湊驗證
+     結果：{ ok:true, fb:true/false } 或 { ok:false, why:"none"|"disabled"|"wrong"|"conflict"|"weak" } */
+  async function login(id, pw, legacy){
+    var api = A();
+    if(!api || !api.signInWithEmailAndPassword){ var l0 = await legacy(); return l0 === "ok" ? { ok: true, fb: false } : { ok: false, why: l0 }; }
+    var gen = null; try{ gen = await rd("teacherAccounts/" + id + "/authGen"); }catch(e){}
+    var email = emailOf(id, gen), cred = null, code = "";
+    try{ cred = await api.signInWithEmailAndPassword(window.auth, email, pw); }catch(e){ code = (e && e.code) || ""; }
+    if(cred && cred.user){
+      var okc = await claim(id, cred.user).catch(function(){ return false; });
+      if(!okc){ try{ await api.signOut(window.auth); await api.signInAnonymously(window.auth); }catch(e){} return { ok: false, why: "conflict" }; }
+      return { ok: true, fb: true };
+    }
+    if(code === "auth/operation-not-allowed" || code === "auth/network-request-failed" || code === "auth/too-many-requests" || code === "auth/internal-error" || code === "auth/configuration-not-found"){
+      var l1 = await legacy(); return l1 === "ok" ? { ok: true, fb: false } : { ok: false, why: l1 };
+    }
+    var l = await legacy();
+    if(l !== "ok") return { ok: false, why: l };
+    try{
+      cred = await api.createUserWithEmailAndPassword(window.auth, email, pw);
+    }catch(e){
+      var c2 = (e && e.code) || "";
+      if(c2 === "auth/email-already-in-use") return { ok: false, why: "conflict" };
+      if(c2 === "auth/weak-password") return { ok: true, fb: false, weak: true };
+      return { ok: true, fb: false };
+    }
+    var okc2 = await claim(id, cred.user).catch(function(){ return false; });
+    if(!okc2){ try{ await api.signOut(window.auth); await api.signInAnonymously(window.auth); }catch(e){} return { ok: false, why: "conflict" }; }
+    return { ok: true, fb: true };
+  }
+  async function logout(){
+    var api = A(); if(!api) return;
+    try{ if(pwUser()){ await api.signOut(window.auth); await api.signInAnonymously(window.auth); } }catch(e){}
+  }
+  // 自動登入判斷：已有 Firebase 老師身分且對得上 → "fb"；帳號還沒被認領（舊模式）→ "legacy"；否則 "login"
+  async function resume(id){
+    if(!id) return "login";
+    var u = pwUser();
+    if(u){ try{ if((await rd("teacherAccounts/" + id + "/uid")) === u.uid) return "fb"; }catch(e){} }
+    if(!(await claimed(id))) return "legacy";
+    return "login";
+  }
+  var WHY = { none: "找不到這個帳號", disabled: "這個帳號已被停用", wrong: "帳號或密碼錯誤", conflict: "這個帳號的安全登入密碼和目前密碼不一致，請聯絡管理員重設密碼。" };
+  return { login: login, logout: logout, resume: resume, who: who, claimed: claimed, firebaseUser: pwUser, WHY: WHY, DOM: DOM };
 })();
 </script>
 <script>
@@ -406,16 +475,24 @@ function viewLogin(msg){
     var u = sanitizeUser(document.getElementById("lu").value), p = document.getElementById("lp").value;
     if(!u || !p){ le.textContent = "請輸入帳號與密碼"; le.style.display = "block"; return; }
     try{
+      var legacyAcc = null;
+      var lr = await window.mmTA.login(u, p, async function(){
+        try{ legacyAcc = await fbGet("teacherAccounts/" + u); }catch(e){ return "wrong"; }
+        if(!legacyAcc) return "none";
+        if(legacyAcc.disabled) return "disabled";
+        return (await pbkdf2(p, legacyAcc.saltHex)) === legacyAcc.hashHex ? "ok" : "wrong";
+      });
+      if(!lr.ok){ le.textContent = window.mmTA.WHY[lr.why] || "登入失敗"; le.style.display = "block"; return; }
       var acc = await fbGet("teacherAccounts/" + u);
       if(!acc){ le.textContent = "找不到這個帳號"; le.style.display = "block"; return; }
-      if(acc.disabled){ le.textContent = "這個帳號已被停用"; le.style.display = "block"; return; }
-      if((await pbkdf2(p, acc.saltHex)) !== acc.hashHex){ le.textContent = "密碼錯誤"; le.style.display = "block"; return; }
+      if(acc.disabled){ await window.mmTA.logout(); le.textContent = "這個帳號已被停用"; le.style.display = "block"; return; }
       var ow = sanitizeUser(document.getElementById("lo").value);
       if(ow){
-        var asg = ow === acc.id ? null : await fbGet("teacherPlatform/" + ow + "/assistants/" + acc.id);
-        if(!asg){ le.textContent = "你還不是「" + ow + "」的助教，請請那位老師先在平台首頁把你加進助教名單。"; le.style.display = "block"; return; }
+        var asg = ow === acc.id ? null : await fbGet("teacherPlatform/" + ow + "/assistants/" + acc.id).catch(function(){ return null; });
+        if(!asg){ await window.mmTA.logout(); le.textContent = "你還不是「" + ow + "」的助教，請請那位老師先在平台首頁把你加進助教名單。"; le.style.display = "block"; return; }
       }
       try{ localStorage.setItem(SESSION_KEY, acc.id); if(ow) localStorage.setItem("mm_ta_owner", ow); else localStorage.removeItem("mm_ta_owner"); }catch(e){}
+      if(lr.weak) toast("提醒：密碼少於 6 個字，無法啟用安全登入，請請管理員改成 6 個字以上的密碼。");
       await startTeacher(acc, ow || null);
     }catch(e){ le.textContent = "連線失敗，請檢查網路後再試"; le.style.display = "block"; }
   }
@@ -631,7 +708,7 @@ function shell(inner, opts){
     document.getElementById("recbtn").onclick = function(){ if(S.focus) setFocus(false); S.rec = { filter: "all" }; S.settings = false; S.lib = null; S.day = null; S.sel = null; S.lesson = null; render(); };
     document.getElementById("setbtn").onclick = function(){ if(S.focus) setFocus(false); S.settings = true; S.lib = null; S.rec = null; S.day = null; S.sel = null; S.lesson = null; S.hw = null; render(); };
     document.getElementById("libbtn").onclick = function(){ if(S.focus) setFocus(false); S.rec = null; S.settings = false; S.lib = { book: S.lib ? S.lib.book : DEFAULT_BOOK }; render(); };
-    document.getElementById("logout").onclick = function(){ try{ localStorage.removeItem(SESSION_KEY); localStorage.removeItem("mm_ta_owner"); }catch(e){} S.teacher = null; S.sel = null; NAV.last = null; history.replaceState(null, "", location.pathname); viewLogin(); };
+    document.getElementById("logout").onclick = async function(){ try{ localStorage.removeItem(SESSION_KEY); localStorage.removeItem("mm_ta_owner"); }catch(e){} try{ await window.mmTA.logout(); }catch(e){} S.teacher = null; S.sel = null; NAV.last = null; history.replaceState(null, "", location.pathname); viewLogin(); };
   } else {
     document.getElementById("leave").onclick = async function(){ S.student = null; NAV.last = null; history.replaceState(null, "", location.pathname); if(googleUser()) await googleSignOut(); viewStudentEntry(); };
   }
@@ -1717,7 +1794,7 @@ async function renderStudentHwOld(){
       if(prev && prev.ov) rec.ov = prev.ov;
       try{
         await fbSet("teacherPlatform/" + tid + "/hwFiles/" + cid + "/" + it.id + "/" + me, S.hwShots.length ? S.hwShots : null);
-        await fbSet("teacherPlatform/" + tid + "/hwSubs/" + cid + "/" + it.id + "/" + me, rec);
+        await fbUpdate("teacherPlatform/" + tid + "/hwSubs/" + cid + "/" + it.id + "/" + me, hwSubFields(rec));
       }catch(er){ alert("送出失敗，請檢查網路後再試一次。你填的內容還在畫面上。"); return; }
       notifyTeacher(it, rec);
       toast("已送出！"); S.hwOpen = "list"; S.hwShotsFor = null; renderStudentHw();
@@ -2414,6 +2491,8 @@ async function renderCapsule(cls){
     }catch(er){ alert("操作失敗，請檢查網路或 Firebase 規則。"); }
   };
 }
+// 學生只能寫自己的繳交內容；老師的回饋（fb）與調整（ov）不由學生端寫入，資料庫規則也不允許
+function hwSubFields(rec){ var o = Object.assign({}, rec); delete o.fb; delete o.fbAt; delete o.ov; return o; }
 // ---------- 請假申請 ----------
 async function leaveSubmit(rec){
   // 家長頁或學生頁送出；同時通知老師
@@ -2882,7 +2961,7 @@ async function renderStudentHw(){
             times.push({ t: now, s: synced });
             var rec = { name: st.name, firstAt: times[0].t, at: now, count: times.length, times: times, text: text || null, files: files };
             if(prev && prev.fb){ rec.fb = prev.fb; rec.fbAt = prev.fbAt; } if(prev && prev.ov) rec.ov = prev.ov;
-            await fbSet("teacherPlatform/" + tid + "/hwSubs/" + cid + "/" + id + "/" + me, rec);
+            await fbUpdate("teacherPlatform/" + tid + "/hwSubs/" + cid + "/" + id + "/" + me, hwSubFields(rec));
             mySubs[id] = rec; pend[id] = null; notifyTeacher(it, rec); toast("已送出！"); draw();
           }catch(er){ b.disabled = false; sp.textContent = ""; alert((er && er.message) ? er.message : "送出失敗，請檢查網路後再試一次。你填的內容還在畫面上。"); }
         }
@@ -3512,7 +3591,7 @@ async function startStudent(code, name, pw, opts){
     S.lesson = null; S.tab = null; S.sub = null;
     var h = new URLSearchParams(location.hash.replace(/^#/, "")); if(h.get("l")) S.lesson = h.get("l"); if(h.get("tab")) S.tab = h.get("tab");
     renderStudent();
-  }catch(e){ viewStudentEntry("連線失敗，請檢查網路後再試。", code); }
+  }catch(e){ console.warn("startStudent", e); viewStudentEntry("連線失敗，請檢查網路後再試。", code); }
 }
 function renderStudent(){
   var st = S.student;
@@ -4098,7 +4177,8 @@ window.__mm = { get S(){ return S; }, render: function(){ return render(); }, ne
   var sid = null; try{ sid = localStorage.getItem(SESSION_KEY); }catch(e){}
   if(sid){
     try{
-      var acc = await fbGet("teacherAccounts/" + sid);
+      var mode = await window.mmTA.resume(sid);
+      var acc = mode === "login" ? null : await fbGet("teacherAccounts/" + sid);
       var tow = null; try{ tow = localStorage.getItem("mm_ta_owner"); }catch(e){}
       if(acc && !acc.disabled){ await startTeacher(acc, tow); return; }
     }catch(e){}

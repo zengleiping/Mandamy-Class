@@ -1,0 +1,264 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "teacherAccounts": {
+      ".read": "auth != null && auth.token.firebase.sign_in_provider == 'password' && root.child('uidMap/'+auth.uid).exists() && root.child('teacherAccounts/'+root.child('uidMap/'+auth.uid).val()+'/disabled').val() != true && root.child('uidMap/'+auth.uid).val() != null && root.child('teacherAccounts/'+root.child('uidMap/'+auth.uid).val()+'/isAdmin').val() == true",
+      "$id": {
+        ".read": "auth != null && (!data.child('uid').exists() || root.child('uidMap/'+auth.uid).val() == $id || (auth != null && auth.token.firebase.sign_in_provider == 'password' && root.child('uidMap/'+auth.uid).exists() && root.child('teacherAccounts/'+root.child('uidMap/'+auth.uid).val()+'/disabled').val() != true && root.child('uidMap/'+auth.uid).val() != null && root.child('teacherAccounts/'+root.child('uidMap/'+auth.uid).val()+'/isAdmin').val() == true))",
+        ".write": "auth != null && auth.token.firebase.sign_in_provider == 'password' && root.child('uidMap/'+auth.uid).exists() && root.child('teacherAccounts/'+root.child('uidMap/'+auth.uid).val()+'/disabled').val() != true && root.child('uidMap/'+auth.uid).val() != null && root.child('teacherAccounts/'+root.child('uidMap/'+auth.uid).val()+'/isAdmin').val() == true",
+        "uid": {
+          ".write": "auth != null && !data.exists() && newData.val() == auth.uid && auth.token.email == $id + (root.child('teacherAccounts/'+$id+'/authGen').exists() ? '.g' + root.child('teacherAccounts/'+$id+'/authGen').val() : '') + '@teacher.mandamy.app'"
+        },
+        "authGen": {
+          ".read": "auth != null"
+        },
+        "isAdmin": {
+          ".read": "auth != null"
+        },
+        "disabled": {
+          ".read": "auth != null"
+        }
+      }
+    },
+    "uidMap": {
+      "$uid": {
+        ".read": "auth != null && auth.uid == $uid",
+        ".write": "auth != null && ((auth.uid == $uid && !data.exists() && root.child('teacherAccounts/'+newData.val()+'/uid').val() == auth.uid) || (auth != null && auth.token.firebase.sign_in_provider == 'password' && root.child('uidMap/'+auth.uid).exists() && root.child('teacherAccounts/'+root.child('uidMap/'+auth.uid).val()+'/disabled').val() != true && root.child('uidMap/'+auth.uid).val() != null && root.child('teacherAccounts/'+root.child('uidMap/'+auth.uid).val()+'/isAdmin').val() == true))"
+      }
+    },
+    "rooms": {
+      "$roomId": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+    },
+    "roomReactions": {
+      "$roomId": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+    },
+    "roomCursors": {
+      "$roomId": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+    },
+    "roomMasterTraceLive": {
+      "$roomId": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+    },
+    "roomStudentSnapshots": {
+      "$roomId": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+    },
+    "teacherLibraries": {
+      "$t": {
+        ".read": "auth != null && auth.token.firebase.sign_in_provider == 'password' && root.child('uidMap/'+auth.uid).exists() && root.child('teacherAccounts/'+root.child('uidMap/'+auth.uid).val()+'/disabled').val() != true && root.child('uidMap/'+auth.uid).val() != null && (root.child('uidMap/'+auth.uid).val() == $t || root.child('teacherPlatform/'+$t+'/assistants/'+root.child('uidMap/'+auth.uid).val()).exists())",
+        ".write": "auth != null && auth.token.firebase.sign_in_provider == 'password' && root.child('uidMap/'+auth.uid).exists() && root.child('teacherAccounts/'+root.child('uidMap/'+auth.uid).val()+'/disabled').val() != true && root.child('uidMap/'+auth.uid).val() != null && (root.child('uidMap/'+auth.uid).val() == $t || root.child('teacherPlatform/'+$t+'/assistants/'+root.child('uidMap/'+auth.uid).val()).exists())",
+        "projects": {
+          "$pid": {
+            ".read": "auth != null"
+          }
+        }
+      }
+    },
+    "teacherVocabBanks": {
+      "$t": {
+        ".read": "auth != null",
+        ".write": "auth != null && auth.token.firebase.sign_in_provider == 'password' && root.child('uidMap/'+auth.uid).exists() && root.child('teacherAccounts/'+root.child('uidMap/'+auth.uid).val()+'/disabled').val() != true && root.child('uidMap/'+auth.uid).val() != null && (root.child('uidMap/'+auth.uid).val() == $t || root.child('teacherPlatform/'+$t+'/assistants/'+root.child('uidMap/'+auth.uid).val()).exists())"
+      }
+    },
+    "classCodes": {
+      "$code": {
+        ".read": "auth != null",
+        ".write": "(newData.exists() && (auth != null && auth.token.firebase.sign_in_provider == 'password' && root.child('uidMap/'+auth.uid).exists() && root.child('teacherAccounts/'+root.child('uidMap/'+auth.uid).val()+'/disabled').val() != true && root.child('uidMap/'+auth.uid).val() != null && (root.child('uidMap/'+auth.uid).val() == newData.child('t').val() || root.child('teacherPlatform/'+newData.child('t').val()+'/assistants/'+root.child('uidMap/'+auth.uid).val()).exists()))) || (!newData.exists() && data.exists() && (auth != null && auth.token.firebase.sign_in_provider == 'password' && root.child('uidMap/'+auth.uid).exists() && root.child('teacherAccounts/'+root.child('uidMap/'+auth.uid).val()+'/disabled').val() != true && root.child('uidMap/'+auth.uid).val() != null && (root.child('uidMap/'+auth.uid).val() == data.child('t').val() || root.child('teacherPlatform/'+data.child('t').val()+'/assistants/'+root.child('uidMap/'+auth.uid).val()).exists())))",
+        ".validate": "newData.hasChildren(['t','s','tm','c']) && $code.matches(/^[A-Z0-9]{4,10}$/)"
+      }
+    },
+    "capsuleLinks": {
+      "$t": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+    },
+    "classStories": {
+      "$t": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+    },
+    "relayStories": {
+      "$t": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+    },
+    "capsuleLinkOwners": {
+      "$l": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+    },
+    "capsuleMarks": {
+      "$l": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+    },
+    "classLinkOwners": {
+      "$l": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+    },
+    "relayLinkOwners": {
+      "$l": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+    },
+    "teacherPlatform": {
+      "$t": {
+        ".read": "auth != null && auth.token.firebase.sign_in_provider == 'password' && root.child('uidMap/'+auth.uid).exists() && root.child('teacherAccounts/'+root.child('uidMap/'+auth.uid).val()+'/disabled').val() != true && root.child('uidMap/'+auth.uid).val() != null && (root.child('uidMap/'+auth.uid).val() == $t || root.child('teacherPlatform/'+$t+'/assistants/'+root.child('uidMap/'+auth.uid).val()).exists())",
+        ".write": "auth != null && auth.token.firebase.sign_in_provider == 'password' && root.child('uidMap/'+auth.uid).exists() && root.child('teacherAccounts/'+root.child('uidMap/'+auth.uid).val()+'/disabled').val() != true && root.child('uidMap/'+auth.uid).val() != null && (root.child('uidMap/'+auth.uid).val() == $t || root.child('teacherPlatform/'+$t+'/assistants/'+root.child('uidMap/'+auth.uid).val()).exists())",
+        "schools": {
+          "$s": {
+            "name": {
+              ".read": "auth != null"
+            },
+            "terms": {
+              "$tm": {
+                "name": {
+                  ".read": "auth != null"
+                },
+                "classes": {
+                  "$c": {
+                    ".read": "auth != null"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "lessons": {
+          ".read": "auth != null"
+        },
+        "books": {
+          ".read": "auth != null"
+        },
+        "accountsOn": {
+          "$c": {
+            ".read": "auth != null"
+          }
+        },
+        "schedule": {
+          ".read": "auth != null"
+        },
+        "parentLinks": {
+          "$tok": {
+            ".read": "auth != null"
+          }
+        },
+        "parentRecords": {
+          "$tok": {
+            ".read": "auth != null"
+          }
+        },
+        "homework": {
+          "$c": {
+            "items": {
+              ".read": "auth != null"
+            },
+            "roster": {
+              ".read": "auth != null"
+            },
+            "comments": {
+              "$item": {
+                ".read": "auth != null",
+                "$cm": {
+                  ".write": "auth != null && !data.exists()"
+                }
+              }
+            }
+          }
+        },
+        "studentAccounts": {
+          "$c": {
+            "$key": {
+              ".read": "auth != null",
+              ".write": "auth != null"
+            }
+          }
+        },
+        "googleLinks": {
+          "$c": {
+            "$u": {
+              ".read": "auth != null && auth.uid == $u",
+              ".write": "auth != null && auth.uid == $u && newData.child('status').val() != 'approved' && data.child('status').val() != 'approved'"
+            }
+          }
+        },
+        "hwSubs": {
+          "$c": {
+            "$hw": {
+              "$key": {
+                ".read": "auth != null",
+                "$f": {
+                  ".write": "auth != null && $f != 'fb' && $f != 'fbAt' && $f != 'ov'"
+                }
+              }
+            }
+          }
+        },
+        "hwFiles": {
+          "$c": {
+            "$hw": {
+              "$key": {
+                ".read": "auth != null",
+                ".write": "auth != null",
+                "$i": {
+                  ".validate": "newData.isString() && newData.val().length < 900000"
+                }
+              }
+            }
+          }
+        },
+        "leave": {
+          "$c": {
+            ".read": "auth != null",
+            "$id": {
+              ".write": "auth != null && !data.exists() && newData.child('status').val() == 'pending'"
+            }
+          }
+        },
+        "notify": {
+          "$n": {
+            ".write": "auth != null && !data.exists()"
+          }
+        },
+        "examAttempts": {
+          "$c": {
+            "$item": {
+              "$key": {
+                ".read": "auth != null",
+                ".write": "auth != null && (!data.exists() || data.child('status').val() == 'doing' || data.child('status').val() == 'retake') && (!newData.exists() ? false : (newData.child('status').val() == 'doing' || newData.child('status').val() == 'submitted'))"
+              }
+            }
+          }
+        },
+        "bingo": {
+          "$c": {
+            ".read": "auth != null",
+            ".write": "auth != null"
+          }
+        }
+      }
+    }
+  }
+}

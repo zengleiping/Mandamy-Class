@@ -5228,15 +5228,88 @@ render();
     window.ref = dbMod.ref; window.get = dbMod.get; window.set = dbMod.set;
     window.serverTimestamp = dbMod.serverTimestamp;
     window.auth = authMod.getAuth(fbApp);
-    await new Promise(function(resolve, reject){
-      authMod.onAuthStateChanged(window.auth, function(user){ if(user) resolve(user); });
-      authMod.signInAnonymously(window.auth).catch(reject);
-    });
+    window.mmAuthApi = authMod;
+    // 先看看有沒有上次留下來的登入（例如老師的 Firebase 帳號），有就沿用；沒有才用匿名登入
+    var firstUser = await new Promise(function(resolve){ var un = authMod.onAuthStateChanged(window.auth, function(u){ try{ if(un) un(); }catch(e){} resolve(u); }); });
+    if(!firstUser){
+      await new Promise(function(resolve, reject){
+        authMod.onAuthStateChanged(window.auth, function(user){ if(user) resolve(user); });
+        authMod.signInAnonymously(window.auth).catch(reject);
+      });
+    }
     window.__firebaseReady = true;
     window.dispatchEvent(new Event("firebase-bridge-ready"));
   }catch(e){
     console.error("Firebase 連線初始化失敗：", e);
   }
+})();
+</script>
+<script>
+/* 老師的 Firebase 安全登入（Email/密碼）。老師輸入的還是原本的帳號密碼，程式在背後幫忙：
+   ① 先用 Firebase 帳號登入；② 第一次（還沒有 Firebase 帳號）就用舊的密碼雜湊驗證，通過後建立 Firebase 帳號並「認領」這個老師帳號。
+   資料庫規則 v2 啟用後，只有認領過的 Firebase 身分才能讀寫老師資料。三個頁面共用同一份邏輯（複製貼上），登入一次三邊都通。 */
+window.mmTA = (function(){
+  var DOM = "@teacher.mandamy.app";
+  function A(){ return window.mmAuthApi; }
+  function dbRef(p){ return window.ref(window.db, p); }
+  async function rd(p){ var s = await window.get(dbRef(p)); return s.exists() ? s.val() : null; }
+  function emailOf(id, gen){ return id + (gen ? ".g" + gen : "") + DOM; }
+  function pwUser(){ var u = window.auth && window.auth.currentUser; if(!u || u.isAnonymous) return null; var pd = u.providerData || []; for(var i = 0; i < pd.length; i++) if(pd[i].providerId === "password") return u; return null; }
+  // 目前登入的 Firebase 老師身分對應哪個老師帳號（沒有就回 null）
+  async function who(){ var u = pwUser(); if(!u) return null; try{ return await rd("uidMap/" + u.uid); }catch(e){ return null; } }
+  // 這個老師帳號是否已被認領（讀不到也當作已認領——規則 v2 只允許讀未認領的帳號）
+  async function claimed(id){ try{ var a = await rd("teacherAccounts/" + id); return !!(a && a.uid); }catch(e){ return true; } }
+  async function claim(id, u){
+    var cur = null; try{ cur = await rd("teacherAccounts/" + id + "/uid"); }catch(e){}
+    if(cur && cur !== u.uid) return false;
+    if(!cur) await window.set(dbRef("teacherAccounts/" + id + "/uid"), u.uid);
+    await window.set(dbRef("uidMap/" + u.uid), id);
+    return true;
+  }
+  /* legacy(): 回傳 "ok"｜"none"（沒有這個帳號）｜"disabled"｜"wrong"，用舊雜湊驗證
+     結果：{ ok:true, fb:true/false } 或 { ok:false, why:"none"|"disabled"|"wrong"|"conflict"|"weak" } */
+  async function login(id, pw, legacy){
+    var api = A();
+    if(!api || !api.signInWithEmailAndPassword){ var l0 = await legacy(); return l0 === "ok" ? { ok: true, fb: false } : { ok: false, why: l0 }; }
+    var gen = null; try{ gen = await rd("teacherAccounts/" + id + "/authGen"); }catch(e){}
+    var email = emailOf(id, gen), cred = null, code = "";
+    try{ cred = await api.signInWithEmailAndPassword(window.auth, email, pw); }catch(e){ code = (e && e.code) || ""; }
+    if(cred && cred.user){
+      var okc = await claim(id, cred.user).catch(function(){ return false; });
+      if(!okc){ try{ await api.signOut(window.auth); await api.signInAnonymously(window.auth); }catch(e){} return { ok: false, why: "conflict" }; }
+      return { ok: true, fb: true };
+    }
+    if(code === "auth/operation-not-allowed" || code === "auth/network-request-failed" || code === "auth/too-many-requests" || code === "auth/internal-error" || code === "auth/configuration-not-found"){
+      var l1 = await legacy(); return l1 === "ok" ? { ok: true, fb: false } : { ok: false, why: l1 };
+    }
+    var l = await legacy();
+    if(l !== "ok") return { ok: false, why: l };
+    try{
+      cred = await api.createUserWithEmailAndPassword(window.auth, email, pw);
+    }catch(e){
+      var c2 = (e && e.code) || "";
+      if(c2 === "auth/email-already-in-use") return { ok: false, why: "conflict" };
+      if(c2 === "auth/weak-password") return { ok: true, fb: false, weak: true };
+      return { ok: true, fb: false };
+    }
+    var okc2 = await claim(id, cred.user).catch(function(){ return false; });
+    if(!okc2){ try{ await api.signOut(window.auth); await api.signInAnonymously(window.auth); }catch(e){} return { ok: false, why: "conflict" }; }
+    return { ok: true, fb: true };
+  }
+  async function logout(){
+    var api = A(); if(!api) return;
+    try{ if(pwUser()){ await api.signOut(window.auth); await api.signInAnonymously(window.auth); } }catch(e){}
+  }
+  // 自動登入判斷：已有 Firebase 老師身分且對得上 → "fb"；帳號還沒被認領（舊模式）→ "legacy"；否則 "login"
+  async function resume(id){
+    if(!id) return "login";
+    var u = pwUser();
+    if(u){ try{ if((await rd("teacherAccounts/" + id + "/uid")) === u.uid) return "fb"; }catch(e){} }
+    if(!(await claimed(id))) return "legacy";
+    return "login";
+  }
+  var WHY = { none: "找不到這個帳號", disabled: "這個帳號已被停用", wrong: "帳號或密碼錯誤", conflict: "這個帳號的安全登入密碼和目前密碼不一致，請聯絡管理員重設密碼。" };
+  return { login: login, logout: logout, resume: resume, who: who, claimed: claimed, firebaseUser: pwUser, WHY: WHY, DOM: DOM };
 })();
 </script>
 <script>
@@ -5390,7 +5463,8 @@ render();
     try{ savedId = localStorage.getItem(TEACHER_SESSION_KEY); }catch(e){}
     if(savedId){
       try{
-        var account = await fetchTeacherAccount(savedId);
+        var resumeMode = await window.mmTA.resume(savedId);
+        var account = resumeMode === "login" ? null : await fetchTeacherAccount(savedId);
         if(account && !account.disabled){
           currentCloudTeacher = { id: account.id || savedId, username: account.username, displayName: account.displayName || account.username };
           window.__capsuleCurrentTeacherId = currentCloudTeacher.id;
@@ -5414,11 +5488,15 @@ render();
     var originalText = loginBtn.textContent;
     loginBtn.textContent = "登入中…";
     try{
+      var lr = await window.mmTA.login(username, password, async function(){
+        var la = null; try{ la = await fetchTeacherAccount(username); }catch(e){ return "wrong"; }
+        if(!la) return "none"; if(la.disabled) return "disabled";
+        return (await verifyPassword(password, la.saltHex, la.hashHex)) ? "ok" : "wrong";
+      });
+      if(!lr.ok){ showError({ none: "找不到這個帳號，請確認帳號是否正確，或先到「曼米中文 測驗平台」建立帳號。", disabled: "這個帳號已被停用。", wrong: "帳號或密碼不正確。", conflict: window.mmTA.WHY.conflict }[lr.why] || "登入失敗。"); return; }
       var account = await fetchTeacherAccount(username);
-      if(!account){ showError("找不到這個帳號，請確認帳號是否正確，或先到「曼米中文 測驗平台」建立帳號。"); return; }
-      if(account.disabled){ showError("這個帳號已被停用。"); return; }
-      var ok = await verifyPassword(password, account.saltHex, account.hashHex);
-      if(!ok){ showError("密碼不正確。"); return; }
+      if(!account){ showError("找不到這個帳號。"); return; }
+      if(account.disabled){ await window.mmTA.logout(); showError("這個帳號已被停用。"); return; }
       currentCloudTeacher = { id: account.id || username, username: account.username, displayName: account.displayName || account.username };
       window.__capsuleCurrentTeacherId = currentCloudTeacher.id;
       try{ localStorage.setItem(TEACHER_SESSION_KEY, currentCloudTeacher.id); }catch(e){}
@@ -5481,6 +5559,7 @@ render();
     currentCloudTeacher = null;
     window.__capsuleCurrentTeacherId = null;
     try{ localStorage.removeItem(TEACHER_SESSION_KEY); }catch(e){}
+    try{ window.mmTA.logout(); }catch(e){}
     usernameInput.value = ""; passwordInput.value = "";
     clearActionMsg();
     showStage("login");
@@ -6309,7 +6388,8 @@ render();
     var savedId = null; try{ savedId = localStorage.getItem(TEACHER_SESSION_KEY); }catch(e){}
     if(!savedId) return false;
     try{
-      var account = await fetchTeacherAccount(savedId);
+      var resumeMode2 = await window.mmTA.resume(savedId);
+      var account = resumeMode2 === "login" ? null : await fetchTeacherAccount(savedId);
       if(account && !account.disabled){ currentCloudTeacher = { id: account.id || savedId, username: account.username, displayName: account.displayName || account.username }; window.__capsuleCurrentTeacherId = currentCloudTeacher.id; return true; }
     }catch(e){}
     return false;

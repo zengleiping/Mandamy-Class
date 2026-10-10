@@ -2688,10 +2688,15 @@
     window.serverTimestamp = dbMod.serverTimestamp; window.get = dbMod.get;
     window.push = dbMod.push; window.remove = dbMod.remove;
     window.auth = authMod.getAuth(fbApp);
-    await new Promise(function(resolve, reject){
-      authMod.onAuthStateChanged(window.auth, function(user){ if(user) resolve(user); });
-      authMod.signInAnonymously(window.auth).catch(reject);
-    });
+    window.mmAuthApi = authMod;
+    // 先看看有沒有上次留下來的登入（例如老師的 Firebase 帳號），有就沿用；沒有才用匿名登入
+    var firstUser = await new Promise(function(resolve){ var un = authMod.onAuthStateChanged(window.auth, function(u){ try{ if(un) un(); }catch(e){} resolve(u); }); });
+    if(!firstUser){
+      await new Promise(function(resolve, reject){
+        authMod.onAuthStateChanged(window.auth, function(user){ if(user) resolve(user); });
+        authMod.signInAnonymously(window.auth).catch(reject);
+      });
+    }
     window.__firebaseReady = true;
     window.dispatchEvent(new Event("firebase-bridge-ready"));
     // 2026-10-01：Firebase Storage（存大型媒體，例如匯入簡報裡的音檔）。不影響主流程：載不到（離線、或專案沒開 Storage）
@@ -2708,6 +2713,74 @@
     window.__firebaseFailed = true;
     window.dispatchEvent(new Event("firebase-bridge-failed"));
   }
+})();
+</script>
+<script>
+/* 老師的 Firebase 安全登入（Email/密碼）。老師輸入的還是原本的帳號密碼，程式在背後幫忙：
+   ① 先用 Firebase 帳號登入；② 第一次（還沒有 Firebase 帳號）就用舊的密碼雜湊驗證，通過後建立 Firebase 帳號並「認領」這個老師帳號。
+   資料庫規則 v2 啟用後，只有認領過的 Firebase 身分才能讀寫老師資料。三個頁面共用同一份邏輯（複製貼上），登入一次三邊都通。 */
+window.mmTA = (function(){
+  var DOM = "@teacher.mandamy.app";
+  function A(){ return window.mmAuthApi; }
+  function dbRef(p){ return window.ref(window.db, p); }
+  async function rd(p){ var s = await window.get(dbRef(p)); return s.exists() ? s.val() : null; }
+  function emailOf(id, gen){ return id + (gen ? ".g" + gen : "") + DOM; }
+  function pwUser(){ var u = window.auth && window.auth.currentUser; if(!u || u.isAnonymous) return null; var pd = u.providerData || []; for(var i = 0; i < pd.length; i++) if(pd[i].providerId === "password") return u; return null; }
+  // 目前登入的 Firebase 老師身分對應哪個老師帳號（沒有就回 null）
+  async function who(){ var u = pwUser(); if(!u) return null; try{ return await rd("uidMap/" + u.uid); }catch(e){ return null; } }
+  // 這個老師帳號是否已被認領（讀不到也當作已認領——規則 v2 只允許讀未認領的帳號）
+  async function claimed(id){ try{ var a = await rd("teacherAccounts/" + id); return !!(a && a.uid); }catch(e){ return true; } }
+  async function claim(id, u){
+    var cur = null; try{ cur = await rd("teacherAccounts/" + id + "/uid"); }catch(e){}
+    if(cur && cur !== u.uid) return false;
+    if(!cur) await window.set(dbRef("teacherAccounts/" + id + "/uid"), u.uid);
+    await window.set(dbRef("uidMap/" + u.uid), id);
+    return true;
+  }
+  /* legacy(): 回傳 "ok"｜"none"（沒有這個帳號）｜"disabled"｜"wrong"，用舊雜湊驗證
+     結果：{ ok:true, fb:true/false } 或 { ok:false, why:"none"|"disabled"|"wrong"|"conflict"|"weak" } */
+  async function login(id, pw, legacy){
+    var api = A();
+    if(!api || !api.signInWithEmailAndPassword){ var l0 = await legacy(); return l0 === "ok" ? { ok: true, fb: false } : { ok: false, why: l0 }; }
+    var gen = null; try{ gen = await rd("teacherAccounts/" + id + "/authGen"); }catch(e){}
+    var email = emailOf(id, gen), cred = null, code = "";
+    try{ cred = await api.signInWithEmailAndPassword(window.auth, email, pw); }catch(e){ code = (e && e.code) || ""; }
+    if(cred && cred.user){
+      var okc = await claim(id, cred.user).catch(function(){ return false; });
+      if(!okc){ try{ await api.signOut(window.auth); await api.signInAnonymously(window.auth); }catch(e){} return { ok: false, why: "conflict" }; }
+      return { ok: true, fb: true };
+    }
+    if(code === "auth/operation-not-allowed" || code === "auth/network-request-failed" || code === "auth/too-many-requests" || code === "auth/internal-error" || code === "auth/configuration-not-found"){
+      var l1 = await legacy(); return l1 === "ok" ? { ok: true, fb: false } : { ok: false, why: l1 };
+    }
+    var l = await legacy();
+    if(l !== "ok") return { ok: false, why: l };
+    try{
+      cred = await api.createUserWithEmailAndPassword(window.auth, email, pw);
+    }catch(e){
+      var c2 = (e && e.code) || "";
+      if(c2 === "auth/email-already-in-use") return { ok: false, why: "conflict" };
+      if(c2 === "auth/weak-password") return { ok: true, fb: false, weak: true };
+      return { ok: true, fb: false };
+    }
+    var okc2 = await claim(id, cred.user).catch(function(){ return false; });
+    if(!okc2){ try{ await api.signOut(window.auth); await api.signInAnonymously(window.auth); }catch(e){} return { ok: false, why: "conflict" }; }
+    return { ok: true, fb: true };
+  }
+  async function logout(){
+    var api = A(); if(!api) return;
+    try{ if(pwUser()){ await api.signOut(window.auth); await api.signInAnonymously(window.auth); } }catch(e){}
+  }
+  // 自動登入判斷：已有 Firebase 老師身分且對得上 → "fb"；帳號還沒被認領（舊模式）→ "legacy"；否則 "login"
+  async function resume(id){
+    if(!id) return "login";
+    var u = pwUser();
+    if(u){ try{ if((await rd("teacherAccounts/" + id + "/uid")) === u.uid) return "fb"; }catch(e){} }
+    if(!(await claimed(id))) return "legacy";
+    return "login";
+  }
+  var WHY = { none: "找不到這個帳號", disabled: "這個帳號已被停用", wrong: "帳號或密碼錯誤", conflict: "這個帳號的安全登入密碼和目前密碼不一致，請聯絡管理員重設密碼。" };
+  return { login: login, logout: logout, resume: resume, who: who, claimed: claimed, firebaseUser: pwUser, WHY: WHY, DOM: DOM };
 })();
 </script>
 
@@ -15863,13 +15936,21 @@
         var h = await hashPassword(password);
         var account = { id: username, username: username, displayName: username, isAdmin: true, disabled: false, createdAt: Date.now(), saltHex: h.saltHex, hashHex: h.hashHex, iterations: h.iterations };
         await set(ref(db, "teacherAccounts/" + username), account);
+        try{ await window.mmTA.login(username, password, async function(){ return "ok"; }); }catch(e){}
         await completeLogin(account, { seedFromLocal: true });
       } else {
+        var lr = await window.mmTA.login(username, password, async function(){
+          var la = null; try{ la = await fetchTeacherAccount(username); }catch(e){ return "wrong"; }
+          if(!la) return "none"; if(la.disabled) return "disabled";
+          return (await verifyPassword(password, la.saltHex, la.hashHex)) ? "ok" : "wrong";
+        });
+        if(!lr.ok){
+          showAuthError({ none: "找不到這個帳號。Account not found.", disabled: "這個帳號已被管理員停用，請聯絡管理員。This account has been disabled by an admin.", wrong: "帳號或密碼錯誤。Incorrect username or password.", conflict: window.mmTA.WHY.conflict }[lr.why] || "登入失敗。Login failed.");
+          return;
+        }
         var acc = await fetchTeacherAccount(username);
         if(!acc){ showAuthError("找不到這個帳號。Account not found."); return; }
-        if(acc.disabled){ showAuthError("這個帳號已被管理員停用，請聯絡管理員。This account has been disabled by an admin."); return; }
-        var ok = await verifyPassword(password, acc.saltHex, acc.hashHex);
-        if(!ok){ showAuthError("密碼錯誤。Incorrect password."); return; }
+        if(acc.disabled){ await window.mmTA.logout(); showAuthError("這個帳號已被管理員停用，請聯絡管理員。This account has been disabled by an admin."); return; }
         await completeLogin(acc, { seedFromLocal: false });
       }
     }catch(e){
@@ -15949,6 +16030,7 @@
     currentTeacher = null; isOfflineMode = false; offlineTeacher = null;
     pendingCloudUploads = 0; cloudUploadFailed = false;
     try{ localStorage.removeItem(TEACHER_SESSION_KEY); }catch(e){}
+    try{ window.mmTA.logout(); }catch(e){}
     fsData = { folders: {}, projects: {} };
     activeProjectId = null; activeRoomId = null; roomData = null;
     history.replaceState(null, "", location.pathname);
@@ -16004,6 +16086,7 @@
           var remainingAdmins = ids.filter(function(otherId){ return otherId !== acc.id && accounts[otherId].isAdmin && !accounts[otherId].disabled; });
           if(acc.isAdmin && remainingAdmins.length === 0){ alert("至少要保留一位可用的管理員帳號！Keep at least one active admin account."); return; }
           if(!confirm(`確定要刪除教師帳號「${acc.displayName || acc.username}」(@${acc.username})？這會一併刪除該老師的所有測驗資料，且無法復原！\nDelete this teacher account and ALL of their test data? This cannot be undone.`)) return;
+          try{ if(acc.uid) await set(ref(db, "uidMap/" + acc.uid), null); }catch(e){}
           await set(ref(db, "teacherAccounts/" + acc.id), null);
           await set(ref(db, "teacherLibraries/" + acc.id), null);
           refreshTeacherAdminList();
@@ -16053,6 +16136,21 @@
         if(password.length < 6){ alert("密碼至少需要 6 個字元。Password needs at least 6 characters."); return; }
         var h2 = await hashPassword(password);
         patch.saltHex = h2.saltHex; patch.hashHex = h2.hashHex; patch.iterations = h2.iterations;
+        if(editingTeacherAccountId === currentTeacher.id){
+          // 改自己的密碼：同步更新 Firebase 登入密碼（需要是剛登入不久；不行的話請登出再登入後重試）
+          var fu = window.mmTA.firebaseUser && window.mmTA.firebaseUser();
+          if(fu && window.mmAuthApi && window.mmAuthApi.updatePassword){
+            try{ await window.mmAuthApi.updatePassword(fu, password); }
+            catch(er){ alert("為了安全，請先登出再重新登入一次，然後再改密碼。\nFor security, please log out and log back in, then change the password again."); return; }
+          }
+        } else {
+          // 改別人的密碼：舊的 Firebase 身分作廢，對方下次登入會用新密碼重新建立（authGen +1）
+          var curAcc = await fetchTeacherAccount(editingTeacherAccountId);
+          if(curAcc && (curAcc.uid || curAcc.authGen != null)){
+            patch.authGen = (curAcc.authGen || 0) + 1; patch.uid = null;
+            try{ if(curAcc.uid) await set(ref(db, "uidMap/" + curAcc.uid), null); }catch(e){}
+          }
+        }
       }
       await update(ref(db, "teacherAccounts/" + editingTeacherAccountId), patch);
       if(editingTeacherAccountId === currentTeacher.id){ currentTeacher.displayName = patch.displayName; currentTeacher.isAdmin = patch.isAdmin; renderTopbar(); }
@@ -16169,15 +16267,20 @@
     }
     try{
       setAuthStep("② 讀取教師帳號");
-      var accounts = await withTimeout(fetchAllTeacherAccounts(), navigator.onLine === false ? 2000 : 10000);
+      var accounts = null, listDenied = false;
+      try{ accounts = await withTimeout(fetchAllTeacherAccounts(), navigator.onLine === false ? 2000 : 10000); }
+      catch(e){ if(e && (e.code === "PERMISSION_DENIED" || /permission/i.test(String(e.message || "")))) listDenied = true; else throw e; }
       if(myRun !== authRunId) return;
-      var hasAnyAccount = accounts && Object.keys(accounts).length > 0;
+      // 資料庫規則 v2：只有管理員讀得到全部帳號；其他人讀不到就當作「已經有帳號」，一樣要登入
+      var hasAnyAccount = listDenied || (accounts && Object.keys(accounts).length > 0);
       if(!hasAnyAccount){ renderAuthView("setup"); return; }
 
       var savedId = null;
       try{ savedId = localStorage.getItem(TEACHER_SESSION_KEY); }catch(e){}
-      if(savedId && accounts[savedId] && !accounts[savedId].disabled){
-        var acc = accounts[savedId];
+      var resumeMode = savedId ? await window.mmTA.resume(savedId) : "login";
+      var acc = null;
+      if(resumeMode !== "login"){ acc = (accounts && accounts[savedId]) || await fetchTeacherAccount(savedId).catch(function(){ return null; }); }
+      if(acc && !acc.disabled){
         currentTeacher = { id: acc.id, username: acc.username, displayName: acc.displayName || acc.username, isAdmin: !!acc.isAdmin };
         isOfflineMode = false; offlineTeacher = null;
         setAuthStep("③ 讀取你的課程庫（課程多、圖片多時會比較久）");
