@@ -2375,15 +2375,7 @@ async function viewParent(tok){
     };
   }catch(e){ root.innerHTML = '<div class="center-wrap"><div class="card"><h2>讀取失敗</h2><p class="sub">請檢查網路後重新整理。</p></div></div>'; }
 }
-function backupBannerHtml(){
-  var last = (S.plat.meta || {}).lastBackupAt || 0, days = last ? Math.floor((Date.now() - last) / 86400000) : null, snooze = 0;
-  try{ snooze = Number(localStorage.getItem("mm_backup_snooze")) || 0; }catch(e){}
-  if(Date.now() < snooze) return '';
-  if(days != null && days < 7) return '';
-  var hasData = Object.keys(S.plat.schools || {}).length || Object.keys(S.plat.classRecords || {}).length;
-  if(!hasData) return '';
-  return '<div class="panel owner-only" style="background:#FBEBC8;"><b>💾 ' + (days == null ? '還沒備份過' : '上次備份是 ' + days + ' 天前') + '</b>　建議每週備份一次，萬一資料被改壞才救得回來。<div class="tools" style="margin-top:8px;"><button class="btn sm primary" data-a="bk-now">現在下載完整備份</button><button class="btn sm" data-a="bk-snooze">3 天後再提醒</button></div></div>';
-}
+function backupBannerHtml(){ return ''; }
 // ---------- 時空膠囊（內建；資料跟原本的時空膠囊共用，學生／家長開的連結照舊） ----------
 function capUrl(id){ return location.origin + location.pathname.replace(/[^\/]*$/, "") + "index.html?capsule=" + id; }
 function capRandId(){ var chars = "abcdefghijkmnopqrstuvwxyz23456789", a = new Uint8Array(8); crypto.getRandomValues(a); return Array.prototype.map.call(a, function(x){ return chars[x % chars.length]; }).join(""); }
@@ -2880,7 +2872,7 @@ async function setSchoolColor(name, color){
 function renderSettings(){
   S.focus = false;
   var html = '<div class="head-row"><div style="flex:1;"><h2>設定</h2><div class="note">備份與還原、助教管理</div></div></div>';
-  html += '<div class="panel owner-only"><h3>備份與還原</h3><p class="note" style="margin:0 0 8px;">把年度、學校、班級、開放設定、複習單元、教材分冊等平台資料存成一個檔案，萬一資料被改壞可以還原。「完整備份」另外包含聯絡簿（作業、學生繳交與照片）和課堂記錄截圖，檔案會比較大。生詞教材請用教材庫、測驗簡報請用簡報頁各自備份。</p><div class="tools"><button class="btn sm" id="bk-out">下載備份</button><button class="btn sm" id="bk-full">下載完整備份（含聯絡簿、截圖）</button><button class="btn sm" id="bk-in">從備份還原…</button><input type="file" id="bk-file" accept=".json,application/json" style="display:none;"></div></div>';
+  html += '<div class="panel owner-only"><h3>備份與還原</h3><p class="note" style="margin:0 0 8px;">把年度、學校、班級、開放設定、複習單元、教材分冊等平台資料存成一個檔案，萬一資料被改壞可以還原。「完整備份」另外包含聯絡簿（作業、學生繳交與照片）和課堂記錄截圖，檔案會比較大。生詞教材請用教材庫、測驗簡報請用簡報頁各自備份。</p><div class="tools"><button class="btn sm" id="bk-out">下載備份</button><button class="btn sm" id="bk-full">下載完整備份（含聯絡簿、截圖）</button><button class="btn sm" id="bk-in">從備份還原…</button><label style="display:flex;align-items:center;gap:6px;margin:0;">自動備份 <select id="bk-days"><option value="0">關閉</option><option value="1">每天</option><option value="3">每 3 天</option><option value="7">每週</option><option value="14">每 2 週</option></select></label><input type="file" id="bk-file" accept=".json,application/json" style="display:none;"></div></div>';
   html += schoolColorPanelHtml();
   html += assistantsPanelHtml(S.plat.assistants || {});
   shell(html); setCrumb([]); bindListPage();
@@ -2889,6 +2881,8 @@ function renderSettings(){
     scp.onchange = async function(e){ var i = e.target.closest("[data-sc]"); if(!i) return; await setSchoolColor(i.dataset.sc, i.value); };
     scp.onclick = async function(e){ var b = e.target.closest("[data-scr]"); if(b){ await setSchoolColor(b.dataset.scr, null); return; } var sw = e.target.closest("[data-scs]"); if(sw) await setSchoolColor(sw.dataset.scs, sw.dataset.c); };
   }
+  var bkd = document.getElementById("bk-days"); bkd.value = String(autoBackupDays());
+  bkd.onchange = async function(){ S.plat.meta = S.plat.meta || {}; S.plat.meta.autoBackupDays = Number(bkd.value); try{ await fbSet("teacherPlatform/" + S.teacher.id + "/meta/autoBackupDays", Number(bkd.value)); }catch(e){} toast(Number(bkd.value) ? "好的，到期時我會自動幫你下載備份檔" : "已關閉自動備份"); };
   document.getElementById("bk-out").onclick = function(){ backupPlatform(false); };
   document.getElementById("bk-full").onclick = function(){ backupPlatform(true); };
   document.getElementById("bk-in").onclick = function(){ document.getElementById("bk-file").click(); };
@@ -2904,26 +2898,48 @@ function renderPlatformHome(){
   S.focus = false;
   var ys = sortedBy(schoolsOf(), true);
   var html = '<div class="head-row"><div style="flex:1;"><h2>歡迎，' + esc(S.teacher.name) + '</h2></div><div class="tools" style="justify-content:flex-end;">' + ys.map(function(y){ return '<button class="btn primary" data-a="go" data-s="' + y + '">' + esc(schoolsOf()[y].name) + ' ›</button>'; }).join("") + '<button class="btn" data-a="slot-new" data-d="' + ymd(new Date()) + '">新增排課</button> <button class="btn owner-only" data-a="add-s">新增年度</button></div></div>' + backupBannerHtml() + todayPanelHtml() + '<div class="panel"><h3>月課表</h3>' + calendarHtml() + '</div>';
-  shell(html); setCrumb([]); bindListPage();
+  shell(html); setCrumb([]); bindListPage(); autoBackupArm();
 }
-async function backupPlatform(full){
-  if(!needOwner()) return;
+async function buildBackup(full){
   var codes = {};
   Object.keys(S.plat.schools || {}).forEach(function(y){ var ts = S.plat.schools[y].terms || {}; Object.keys(ts).forEach(function(t){ var cl = ts[t].classes || {}; Object.keys(cl).forEach(function(c){ if(cl[c].code) codes[cl[c].code] = { t: S.teacher.id, s: y, tm: t, c: c }; }); }); });
   var data = { kind: "mandamy-platform-backup", version: 1, savedAt: new Date().toISOString(), teacher: S.teacher.id,
     platform: { schools: S.plat.schools, lessonMap: S.plat.lessonMap, units: S.plat.units, books: S.plat.books, customLessons: S.plat.customLessons, schedule: S.plat.schedule || {}, classRecords: S.plat.classRecords || {}, hier: 2 }, classCodes: codes };
   if(full){
-    toast("正在整理完整備份，可能要幾秒…");
     data.extra = {};
-    var ks = ["homework", "hwSubs", "hwFiles", "recordShots"];
+    var ks = ["homework", "hwSubs", "hwFiles", "recordShots", "examAttempts", "googleLinks", "parentLinks"];
     for(var i = 0; i < ks.length; i++){ try{ data.extra[ks[i]] = await fbGet("teacherPlatform/" + S.teacher.id + "/" + ks[i]); }catch(e){} }
   }
-  var blob = new Blob([JSON.stringify(data)], { type: "application/json" });
-  var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "mandamy-platform-backup" + (full ? "-full-" : "-") + new Date().toISOString().slice(0, 10) + ".json";
+  return { blob: new Blob([JSON.stringify(data)], { type: "application/json" }), name: "mandamy-platform-backup" + (full ? "-full-" : "-") + new Date().toISOString().slice(0, 10) + ".json" };
+}
+function downloadBlobFile(blob, name){
+  var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name;
   document.body.appendChild(a); a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+async function markBackupDone(){
   S.plat.meta = S.plat.meta || {}; S.plat.meta.lastBackupAt = Date.now();
   try{ await fbSet("teacherPlatform/" + S.teacher.id + "/meta/lastBackupAt", S.plat.meta.lastBackupAt); }catch(e){}
+}
+async function backupPlatform(full){
+  if(!needOwner()) return;
+  if(full) toast("正在整理完整備份，可能要幾秒…");
+  var bk = await buildBackup(full); downloadBlobFile(bk.blob, bk.name); await markBackupDone();
   toast("已下載備份"); if(!S.sel && !S.lib && !S.rec && !S.day) render();
+}
+// ---------- 自動備份：到期時先在背景整理好完整備份，老師在畫面上點第一下時就自動下載（瀏覽器只允許在點擊當下下載） ----------
+function autoBackupDays(){ var d = (S.plat.meta || {}).autoBackupDays; return d == null ? 7 : Number(d); }
+async function autoBackupArm(){
+  if(S.autoBkArmed || !S.teacher || isTA()) return;
+  var days = autoBackupDays(); if(!days) return;
+  var hasData = Object.keys(S.plat.schools || {}).length || Object.keys(S.plat.classRecords || {}).length; if(!hasData) return;
+  var last = (S.plat.meta || {}).lastBackupAt || 0; if(last && Date.now() - last < days * 86400000) return;
+  S.autoBkArmed = true;
+  var bk; try{ bk = await buildBackup(true); }catch(e){ S.autoBkArmed = false; return; }
+  var fire = function(){
+    document.removeEventListener("pointerup", fire, true);
+    try{ downloadBlobFile(bk.blob, bk.name); markBackupDone(); toast("已自動下載備份（" + bk.name + "）"); }catch(e){}
+  };
+  document.addEventListener("pointerup", fire, true);
 }
 async function restorePlatform(file){
   if(!needOwner()) return;
