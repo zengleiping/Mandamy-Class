@@ -605,7 +605,7 @@ function trDrawList(){
     var e = TR.list[id];
     return '<div class="tr-row" data-id="' + id + '"><div class="tr-zh">' + trWordHtml(e) + '<button class="tr-x" data-del="' + id + '" title="刪除">🗑</button></div><div class="tr-ts">' +
       TR_LANGS.filter(function(l){ return TR.langs.indexOf(l[0]) !== -1; }).map(function(l){ return '<input type="text" class="tr-t tr-t-' + l[0] + '" data-id="' + id + '" data-lang="' + l[0] + '" value="' + esc((e.tr || {})[l[0]] || "") + '" placeholder="' + esc(l[1].split(" ")[0]) + '（可手動輸入）" size="' + Math.max(8, ((e.tr || {})[l[0]] || "").length + 2) + '">'; }).join("") +
-      '</div><div class="tr-time">' + trTime(e.at || Date.now()) + '</div></div>';
+      '</div><div class="tr-time">' + trTime(e.at || Date.now()) + (e.imp ? '　✓ 已加入課堂記錄' : '') + '</div></div>';
   }).join("") : '<p class="tr-empty">還沒有記錄。輸入中文按 Enter，就會翻譯並記下來。</p>';
 }
 function trCopyAll(){
@@ -664,7 +664,7 @@ function trBuild(){
     '<div class="tr-opts"><span>顯示：</span><span class="tr-seg"><button type="button" data-mode="zy">注音</button><button type="button" data-mode="py">拼音</button></span></div>' +
     '<div class="tr-opts"><span>翻譯成：</span>' + TR_LANGS.map(function(l){ return '<button type="button" class="tr-chip" data-lang="' + l[0] + '">' + l[1] + '</button>'; }).join("") + '</div></div>' +
     '<div id="tr-list"></div></div>' +
-    '<div id="tr-foot"><span id="tr-count"></span><span id="tr-sync" style="flex:1;"></span><button id="tr-copy" type="button">複製全部</button><button class="danger" id="tr-clear" type="button">清空</button></div><div id="tr-rs" title="拖曳調整大小">⤡</div>';
+    '<div id="tr-foot"><span id="tr-count"></span><span id="tr-sync" style="flex:1;"></span><button id="tr-imp" type="button" title="把今天課堂上記的詞放進對應的課堂記錄（每天 17:00 後也會自動做）">加入課堂記錄</button><button id="tr-cfg" type="button" title="自動加入的時間">⏰</button><button id="tr-copy" type="button">複製全部</button><button class="danger" id="tr-clear" type="button">清空</button></div><div id="tr-rs" title="拖曳調整大小">⤡</div>';
   document.body.appendChild(btn); document.body.appendChild(box); TR.btn = btn; TR.box = box;
   // 拖曳移動（標題列）與調整大小（右下角）：用 pointer capture，滑到簡報 iframe 上也不會斷
   function drag(handle, onMove){
@@ -693,11 +693,60 @@ function trBuild(){
   box.querySelectorAll(".tr-chip").forEach(function(c){ c.onclick = function(){ var k = c.dataset.lang, i = TR.langs.indexOf(k); if(i === -1) TR.langs.push(k); else TR.langs.splice(i, 1); trSaveCfg(); syncOpts(); trDrawList(); }; });
   box.querySelectorAll(".tr-seg button").forEach(function(c){ c.onclick = function(){ TR.show.mode = c.dataset.mode; trSaveCfg(); syncOpts(); trDrawList(); }; });
   box.querySelector("#tr-copy").onclick = trCopyAll;
+  box.querySelector("#tr-imp").onclick = function(){ trImportToRecords(true); };
+  box.querySelector("#tr-cfg").onclick = async function(){ var v = await askText("每天幾點以後，自動把翻譯機的生詞加進課堂記錄？（格式 17:00）", trTimeCfg()); if(!v) return; if(!/^\d{1,2}:\d{2}$/.test(v.trim())){ toast("請輸入像 17:00 這樣的時間"); return; } try{ localStorage.setItem("mm_tr_time", v.trim()); }catch(e){} toast("已設定：每天 " + v.trim() + " 之後自動加入"); };
   box.querySelector("#tr-clear").onclick = function(){ if(!Object.keys(TR.list).length) return; if(!confirm("清空全部記錄？（下課後整理完再清比較保險，建議先按「複製全部」）")) return; var ids = Object.keys(TR.list); TR.list = {}; trDrawList(); try{ localStorage.removeItem("mm_tr_list_" + S.teacher.id); }catch(e){} fbSet(trPath(), null).then(function(){ trSetStatus("ok"); }).catch(function(){ trSetStatus("local"); }); };
   box.addEventListener("click", function(e){ var d = e.target.closest("[data-del]"); if(!d) return; var id = d.dataset.del; delete TR.list[id]; trDrawList(); trPersist(id); });
   box.addEventListener("change", function(e){ var t = e.target; if(t.tagName !== "INPUT" || t.type !== "text" || !t.dataset.id) return; var ent = TR.list[t.dataset.id]; if(!ent) return; ent.tr = ent.tr || {}; ent.tr[t.dataset.lang] = t.value.trim(); trPersist(t.dataset.id); });
   box.addEventListener("keydown", function(e){ e.stopPropagation(); });
   window.addEventListener("resize", function(){ if(TR.open) trApplyGeo(); });
+}
+
+// ----- 每天傍晚把翻譯機記的生詞，依課表時間分進對應的課堂記錄 -----
+function trTimeCfg(){ var v = ""; try{ v = localStorage.getItem("mm_tr_time") || ""; }catch(e){} return /^\d{1,2}:\d{2}$/.test(v) ? v : "17:00"; }
+function trMin(hhmm){ var m = /^(\d{1,2}):(\d{2})/.exec(hhmm || ""); return m ? Number(m[1]) * 60 + Number(m[2]) : null; }
+// 找出這個詞是在哪一堂課記的：先看記錄時間落在哪堂課前後 20 分鐘內；沒有就歸給當天它之前最近結束的那堂
+function trFindSlot(at){
+  var d = new Date(at), day = ymd(d), mins = d.getHours() * 60 + d.getMinutes(), sched = S.plat.schedule || {}, best = null, bestScore = 1e9;
+  Object.keys(sched).forEach(function(id){
+    var sl = sched[id]; if(!sl || sl.date !== day || !sl.s || !classInfo(sl)) return;
+    var a = trMin(sl.start), b = trMin(sl.end); if(a == null) return; if(b == null) b = a + 50;
+    var score;
+    if(mins >= a - 20 && mins <= b + 20) score = 0; else if(mins > b + 20) score = 1000 + (mins - b); else return;
+    if(score < bestScore){ bestScore = score; best = Object.assign({ id: id }, sl); }
+  });
+  return best;
+}
+function trVocabSub(e){ return [e.py, e.zy].concat(["en", "th", "ja"].map(function(k){ return (e.tr || {})[k]; })).filter(Boolean).join(" · "); }
+async function trImportToRecords(manual){
+  if(!S.teacher || !S.plat) return 0;
+  var ids = trSortedIds().filter(function(id){ return !TR.list[id].imp; }).reverse(), by = {}, none = 0;
+  ids.forEach(function(id){ var sl = trFindSlot(TR.list[id].at || 0); if(!sl){ none++; return; } (by[sl.id] = by[sl.id] || { slot: sl, ids: [] }).ids.push(id); });
+  var total = 0, labels = [], base = "teacherPlatform/" + S.teacher.id, m = recMap();
+  for(var sid in by){
+    var g = by[sid], recId = Object.keys(m).filter(function(k){ return m[k].slotId === sid; })[0], rec;
+    if(recId){ rec = m[recId]; }
+    else {
+      rec = JSON.parse(JSON.stringify(newRecordDraft(Object.assign({ id: sid }, g.slot)))); recId = uid("rec_");
+      var mx = 0; Object.keys(m).forEach(function(k){ if(m[k].classLabel === rec.classLabel && (m[k].seq || 0) > mx) mx = m[k].seq; }); rec.seq = mx + 1; rec.weekNo = recWeekNo(rec.date, rec.classLabel); rec.createdAt = Date.now(); rec.students = rec.students && rec.students.length ? rec.students : [];
+    }
+    var vocab = (rec.vocab || []).slice(), have = {}; vocab.forEach(function(v){ have[v.word] = 1; });
+    var added = 0;
+    g.ids.forEach(function(id){ var e = TR.list[id]; if(!have[e.zh]){ vocab.push({ word: e.zh, sub: trVocabSub(e) }); have[e.zh] = 1; added++; } e.imp = { rec: recId, at: Date.now() }; });
+    rec.vocab = vocab; rec.updatedAt = Date.now();
+    try{ await fbSet(base + "/classRecords/" + recId, rec); m[recId] = rec; }catch(er){ g.ids.forEach(function(id){ delete TR.list[id].imp; }); continue; }
+    g.ids.forEach(function(id){ trPersist(id); });
+    total += added; labels.push((rec.classLabel || "") + " " + (rec.date || "").slice(5).replace("-", "/"));
+  }
+  trDrawList();
+  if(total || manual){ toast(total ? "已把 " + total + " 個生詞加進課堂記錄：" + labels.join("、") : (none ? "有 " + none + " 個詞找不到對應的課堂（那天課表上沒有課），先留在清單裡" : "沒有需要匯入的新生詞")); }
+  return total;
+}
+var TR_TICK = null;
+function trTickStart(){
+  if(TR_TICK) clearInterval(TR_TICK);
+  var run = function(){ if(!S.teacher || !S.plat || !S.plat.schedule) return; var now = new Date(); if(now.getHours() * 60 + now.getMinutes() < trMin(trTimeCfg())) return; trImportToRecords(false).catch(function(){}); };
+  setTimeout(run, 4000); TR_TICK = setInterval(run, 60000);
 }
 function trStart(){
   if(!S.teacher) return;
@@ -713,8 +762,10 @@ function trStart(){
     }, function(){ trSetStatus("local"); });
   }catch(e){ trSetStatus("local"); }
   TR.btn.style.display = TR.open ? "none" : "flex";
+  trTickStart();
 }
 function trStop(){
+  if(TR_TICK){ clearInterval(TR_TICK); TR_TICK = null; }
   if(TR.un){ try{ TR.un(); }catch(e){} TR.un = null; }
   if(TR.box){ TR.box.remove(); TR.box = null; } if(TR.btn){ TR.btn.remove(); TR.btn = null; }
   var st = document.getElementById("tr-style"); if(st) st.remove(); TR.open = false; TR.list = {};
