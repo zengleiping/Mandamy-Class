@@ -557,25 +557,48 @@ async function trTranslate(zh, code){
       var out = await Promise.race([TR.tCache[key].translate(zh), new Promise(function(r){ setTimeout(function(){ r(null); }, 6000); })]); if(out) return out;
     }
   }catch(e){ TR.tCache[code] = null; }
+  // 網路翻譯：先用 Google 翻譯（短詞、單字準確很多），失敗才用 MyMemory（只收可信度夠高的結果，避免出現「記得→that.」這種亂配的句子）
+  var codeG = code === "ja" ? "ja" : code;
   try{
     var ctl = new AbortController(), to = setTimeout(function(){ ctl.abort(); }, 8000);
-    var r = await fetch("https://api.mymemory.translated.net/get?q=" + encodeURIComponent(zh) + "&langpair=" + encodeURIComponent("zh-TW|" + code), { signal: ctl.signal }); clearTimeout(to);
-    var j = await r.json(); var t = j && j.responseData && j.responseData.translatedText;
-    if(t && !/MYMEMORY WARNING|INVALID/i.test(t)) return t.replace(/&#39;/g, "'").replace(/&quot;/g, '"').replace(/&amp;/g, "&");
+    var r = await fetch("https://translate.googleapis.com/translate_a/single?client=gtx&sl=zh-TW&tl=" + encodeURIComponent(codeG) + "&dt=t&q=" + encodeURIComponent(zh), { signal: ctl.signal }); clearTimeout(to);
+    var j = await r.json(); var t = j && j[0] && j[0].map(function(x){ return x && x[0] ? x[0] : ""; }).join("").trim();
+    if(t) return t;
+  }catch(e){}
+  try{
+    var ctl2 = new AbortController(), to2 = setTimeout(function(){ ctl2.abort(); }, 8000);
+    var r2 = await fetch("https://api.mymemory.translated.net/get?q=" + encodeURIComponent(zh) + "&langpair=" + encodeURIComponent("zh-TW|" + code), { signal: ctl2.signal }); clearTimeout(to2);
+    var j2 = await r2.json(); var t2 = j2 && j2.responseData && j2.responseData.translatedText, mt = j2 && j2.responseData && Number(j2.responseData.match);
+    if(t2 && !/MYMEMORY WARNING|INVALID/i.test(t2) && (isNaN(mt) || mt >= 0.8)) return t2.replace(/&#39;/g, "'").replace(/&quot;/g, '"').replace(/&amp;/g, "&");
   }catch(e){}
   return null;
 }
 function trPath(id){ return "teacherPlatform/" + S.teacher.id + "/transList" + (id ? "/" + id : ""); }
 function trSortedIds(){ return Object.keys(TR.list).sort(function(a, b){ return (TR.list[b].at || 0) - (TR.list[a].at || 0); }); }
+// 把這筆缺的語言補翻出來（失敗會再試一次；還是不行就留空，旁邊有 ↻ 可以再按）
+async function trFill(id, codes){
+  var ent = TR.list[id]; if(!ent) return 0; ent.tr = ent.tr || {}; var miss = 0;
+  await Promise.all(codes.map(async function(code){
+    if(ent.tr[code]) return;
+    var t = null; for(var k = 0; k < 2 && !t; k++){ try{ t = await trTranslate(ent.zh, code); }catch(e){ console.warn("trTranslate", e); } if(!t && k === 0) await new Promise(function(r){ setTimeout(r, 900); }); }
+    if(t) ent.tr[code] = t; else miss++;
+  }));
+  return miss;
+}
 async function trAdd(zh){
   zh = zh.trim(); if(!zh) return;
   var id = uid("tr_"), ent = { zh: zh, tr: {}, at: Date.now() };
   TR.list[id] = ent; trDrawList(); trSetStatus("busy");
   try{ var rd = await trReading(zh); ent.py = rd.py; ent.zy = rd.zy; ent.pya = rd.pya; ent.zya = rd.zya; }catch(e){ console.warn("trReading", e); }
-  await Promise.all(TR.langs.map(async function(code){ try{ var t = await trTranslate(zh, code); if(t) ent.tr[code] = t; }catch(e){ console.warn("trTranslate", e); } }));
+  var miss = await trFill(id, TR.langs);
   TR.list[id] = ent; trDrawList(); trPersist(id);
-  var miss = TR.langs.filter(function(c){ return !ent.tr[c]; });
-  if(miss.length) toast("有 " + miss.length + " 種語言沒翻出來，可以直接在清單裡手動輸入");
+  if(miss) toast("有 " + miss + " 種語言沒翻出來，按該筆的 ↻ 可以再試一次，或直接手動輸入");
+}
+async function trRetry(id){
+  var ent = TR.list[id]; if(!ent) return; trSetStatus("busy");
+  TR.langs.forEach(function(c){ if(ent.tr) delete ent.tr[c]; });
+  var miss = await trFill(id, TR.langs); trDrawList(); trPersist(id);
+  toast(miss ? "還有 " + miss + " 種語言沒翻出來，可能是網路或翻譯服務忙碌，稍後再按 ↻" : "已重新翻譯");
 }
 function trPersist(id){
   var v = TR.list[id] || null;
@@ -604,10 +627,12 @@ function trDrawList(){
   el.innerHTML = ids.length ? ids.map(function(id){
     var e = TR.list[id];
     return '<div class="tr-row" data-id="' + id + '"><div class="tr-zh">' + trWordHtml(e) + '<button class="tr-x" data-del="' + id + '" title="刪除">🗑</button></div><div class="tr-ts">' +
-      TR_LANGS.filter(function(l){ return TR.langs.indexOf(l[0]) !== -1; }).map(function(l){ return '<input type="text" class="tr-t tr-t-' + l[0] + '" data-id="' + id + '" data-lang="' + l[0] + '" value="' + esc((e.tr || {})[l[0]] || "") + '" placeholder="' + esc(l[1].split(" ")[0]) + '（可手動輸入）" size="' + Math.max(8, ((e.tr || {})[l[0]] || "").length + 2) + '">'; }).join("") +
-      '</div><div class="tr-time">' + trTime(e.at || Date.now()) + (e.imp ? '　✓ 已加入課堂記錄' : '') + '</div></div>';
+      TR_LANGS.filter(function(l){ return TR.langs.indexOf(l[0]) !== -1; }).map(function(l){ return '<textarea rows="1" class="tr-t tr-t-' + l[0] + '" data-id="' + id + '" data-lang="' + l[0] + '" placeholder="' + esc(l[1].split(" ")[0]) + '（沒翻出來，可手動輸入）">' + esc((e.tr || {})[l[0]] || "") + '</textarea>'; }).join("") +
+      '</div><div class="tr-time">' + trTime(e.at || Date.now()) + (e.imp ? '　✓ 已加入課堂記錄' : '') + '　<button class="tr-retry" data-retry="' + id + '" title="重新翻譯這個詞（會覆蓋目前的翻譯）">↻ 重新翻譯</button>' + '</div></div>';
   }).join("") : '<p class="tr-empty">還沒有記錄。輸入中文按 Enter，就會翻譯並記下來。</p>';
+  trFit();
 }
+function trFit(){ document.querySelectorAll("#tr-list textarea.tr-t").forEach(function(t){ t.style.height = "auto"; t.style.height = (t.scrollHeight + 2) + "px"; }); }
 function trCopyAll(){
   var ids = trSortedIds().reverse(), lines = ids.map(function(id){ var e = TR.list[id]; return [e.zh].concat(TR_LANGS.filter(function(l){ return TR.langs.indexOf(l[0]) !== -1; }).map(function(l){ return (e.tr || {})[l[0]] || ""; })).join("\t"); });
   var txt = lines.join("\n");
@@ -650,7 +675,7 @@ function trBuild(){
     '.tr-zt{position:absolute;right:0;top:44%;font-style:normal;font-size:17px;line-height:1}.tr-zn{position:absolute;top:-10px;left:0;font-style:normal;font-size:15px}' +
     '.tr-ch.py{flex-direction:column;align-items:center}.tr-pp{font-size:15px;color:var(--tr-grn);font-weight:600;line-height:1.1}' +
     '.tr-x{position:absolute;right:8px;top:8px;border:0;background:none;cursor:pointer;color:#aaa;font-size:15px;opacity:.7}' +
-    '.tr-ts{display:flex;flex-wrap:wrap;gap:0 12px;margin-top:2px}.tr-t{border:1px solid transparent !important;border-radius:6px !important;padding:2px 4px !important;font-size:16px !important;background:transparent !important;width:auto !important;min-width:60px;max-width:100%;color:#B5502F !important;box-shadow:none !important}.tr-t-th,.tr-t-ja{color:var(--tr-grn) !important}.tr-t:focus{border-color:var(--tr-line) !important;background:var(--tr-soft) !important;outline:0}' +
+    '.tr-ts{display:flex;flex-direction:column;gap:0;margin-top:2px}.tr-retry{border:0;background:#FFF1E6;color:#B5502F;border-radius:99px;padding:1px 9px;font-size:11px;font-weight:700;cursor:pointer}.tr-t{border:1px solid transparent !important;border-radius:6px !important;padding:2px 4px !important;font-size:16px !important;background:transparent !important;width:100% !important;resize:none;overflow:hidden;font-family:inherit;line-height:1.35;display:block;box-sizing:border-box;color:#B5502F !important;box-shadow:none !important}.tr-t-th,.tr-t-ja{color:var(--tr-grn) !important}.tr-t:focus{border-color:var(--tr-line) !important;background:var(--tr-soft) !important;outline:0}' +
     '.tr-time{font-size:10.5px;color:#a89a8d;margin-top:1px}.tr-empty{font-size:13px;color:#8a7c70;padding:6px 4px}' +
     '#tr-foot{display:flex;gap:6px;align-items:center;padding:7px 30px 7px 12px;border-top:1px solid var(--tr-line);font-size:12.5px;color:#7a6c60;font-weight:600}' +
     '#tr-foot button{background:#fff;border:1px solid var(--tr-line);border-radius:99px;padding:4px 12px;font-size:12.5px;font-weight:700;cursor:pointer;color:var(--tr-ink)}#tr-foot .danger{color:#B23B32}' +
@@ -690,14 +715,15 @@ function trBuild(){
     box.querySelectorAll(".tr-seg button").forEach(function(c){ c.classList.toggle("on", TR.show.mode === c.dataset.mode); });
   }
   syncOpts();
-  box.querySelectorAll(".tr-chip").forEach(function(c){ c.onclick = function(){ var k = c.dataset.lang, i = TR.langs.indexOf(k); if(i === -1) TR.langs.push(k); else TR.langs.splice(i, 1); trSaveCfg(); syncOpts(); trDrawList(); }; });
+  box.querySelectorAll(".tr-chip").forEach(function(c){ c.onclick = function(){ var k = c.dataset.lang, i = TR.langs.indexOf(k); if(i === -1) TR.langs.push(k); else TR.langs.splice(i, 1); trSaveCfg(); syncOpts(); trDrawList(); if(i === -1){ var need = trSortedIds().filter(function(id){ return !(TR.list[id].tr || {})[k]; }).slice(0, 30); if(need.length){ trSetStatus("busy"); (async function(){ for(var q = 0; q < need.length; q++){ await trFill(need[q], [k]); trPersist(need[q]); } trDrawList(); toast("已補上新增語言的翻譯"); })(); } } }; });
   box.querySelectorAll(".tr-seg button").forEach(function(c){ c.onclick = function(){ TR.show.mode = c.dataset.mode; trSaveCfg(); syncOpts(); trDrawList(); }; });
   box.querySelector("#tr-copy").onclick = trCopyAll;
   box.querySelector("#tr-imp").onclick = function(){ trImportToRecords(true); };
   box.querySelector("#tr-cfg").onclick = async function(){ var v = await askText("每天幾點以後，自動把翻譯機的生詞加進課堂記錄？（格式 17:00）", trTimeCfg()); if(!v) return; if(!/^\d{1,2}:\d{2}$/.test(v.trim())){ toast("請輸入像 17:00 這樣的時間"); return; } try{ localStorage.setItem("mm_tr_time", v.trim()); }catch(e){} toast("已設定：每天 " + v.trim() + " 之後自動加入"); };
   box.querySelector("#tr-clear").onclick = function(){ if(!Object.keys(TR.list).length) return; if(!confirm("清空全部記錄？（下課後整理完再清比較保險，建議先按「複製全部」）")) return; var ids = Object.keys(TR.list); TR.list = {}; trDrawList(); try{ localStorage.removeItem("mm_tr_list_" + S.teacher.id); }catch(e){} fbSet(trPath(), null).then(function(){ trSetStatus("ok"); }).catch(function(){ trSetStatus("local"); }); };
-  box.addEventListener("click", function(e){ var d = e.target.closest("[data-del]"); if(!d) return; var id = d.dataset.del; delete TR.list[id]; trDrawList(); trPersist(id); });
-  box.addEventListener("change", function(e){ var t = e.target; if(t.tagName !== "INPUT" || t.type !== "text" || !t.dataset.id) return; var ent = TR.list[t.dataset.id]; if(!ent) return; ent.tr = ent.tr || {}; ent.tr[t.dataset.lang] = t.value.trim(); trPersist(t.dataset.id); });
+  box.addEventListener("click", function(e){ var rt = e.target.closest("[data-retry]"); if(rt){ trRetry(rt.dataset.retry); return; } var d = e.target.closest("[data-del]"); if(!d) return; var id = d.dataset.del; delete TR.list[id]; trDrawList(); trPersist(id); });
+  box.addEventListener("input", function(e){ if(e.target.matches && e.target.matches("textarea.tr-t")){ e.target.style.height = "auto"; e.target.style.height = (e.target.scrollHeight + 2) + "px"; } });
+  box.addEventListener("change", function(e){ var t = e.target; if(t.tagName !== "TEXTAREA" || !t.dataset.id) return; var ent = TR.list[t.dataset.id]; if(!ent) return; ent.tr = ent.tr || {}; ent.tr[t.dataset.lang] = t.value.trim(); trPersist(t.dataset.id); });
   box.addEventListener("keydown", function(e){ e.stopPropagation(); });
   window.addEventListener("resize", function(){ if(TR.open) trApplyGeo(); });
 }
