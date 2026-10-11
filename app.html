@@ -617,7 +617,7 @@ function navSnap(){
     return { k: "t", sel: S.sel ? { s: S.sel.s, t: S.sel.t || null, c: S.sel.c || null } : null, lesson: S.lesson || null, tab: S.tab || null, sub: S.sub || null,
       hw: S.hw ? { view: S.hw.view || "list", id: S.hw.id || null, from: S.hw.from || null, to: S.hw.to || null } : null,
       rec: S.rec ? { view: S.rec.edit !== undefined ? null : (S.rec.view || null), filter: S.rec.filter || null, label: S.rec.label || null, student: S.rec.student || null } : null,
-      lib: S.lib ? { book: S.lib.book || null, lesson: S.lib.lesson || null } : null, day: S.day || null, settings: !!S.settings };
+      lib: S.lib ? { book: S.lib.book || null, lesson: S.lib.lesson || null, view: S.lib.view || null, pid: S.lib.pid || null } : null, day: S.day || null, settings: !!S.settings };
   }
   return { k: "s", lesson: S.lesson || null, tab: S.tab || null, sub: S.sub || null, hwOpen: S.hwOpen || null, leaveOpen: !!S.leaveOpen, roomJoin: S.roomJoin || null, examOpen: S.examOpen || null };
 }
@@ -786,18 +786,78 @@ async function platAct(a, s, t, c){
     S.sel = { s: s, t: t, c: cid2 }; S.lesson = null; S.tab = null; render(); return;
   }
 }
+// 哪些班把這一課的簡報／測驗開放給學生（同一份教材可以同時給好幾個班用）
+function lessonClassUsage(key){
+  var out = [], sch = S.plat.schools || {};
+  Object.keys(sch).forEach(function(sid){ var terms = sch[sid].terms || {}; Object.keys(terms).forEach(function(tid){ var cl = terms[tid].classes || {}; Object.keys(cl).forEach(function(cid){
+    var o = (cl[cid].lessonOpen || {})[key] || {}; if(o.slides || o.quiz) out.push((sch[sid].name || "") + " " + (cl[cid].name || ""));
+  }); }); });
+  return out;
+}
+function libAssignOptions(sel){
+  var o = '<option value="">還沒歸課</option>';
+  bookIds().forEach(function(b){
+    o += '<optgroup label="' + esc(bookTitle(b)) + '">' + lessonsOfBook(b).map(function(k){ return '<option value="' + esc(k) + '"' + (k === sel ? " selected" : "") + '>' + esc(lessonTitle(k)) + '</option>'; }).join("") + '<option value="__new:' + esc(b) + '">＋ 新增一課…</option></optgroup>';
+  });
+  var us = unitKeys(); if(us.length) o += '<optgroup label="複習單元">' + us.map(function(k){ return '<option value="' + esc(k) + '"' + (k === sel ? " selected" : "") + '>' + esc(lessonTitle(k)) + '</option>'; }).join("") + '</optgroup>';
+  return o;
+}
+function libProjRow(pid, p, key){
+  var use = key ? lessonClassUsage(key) : [];
+  return '<div class="slot"><div class="slot-main"><div><b>' + esc(p.title || "（未命名）") + '</b>　<span class="note">投影片 ' + (p.slides || 0) + '・測驗 ' + (p.quiz || 0) + '</span></div>' +
+    '<div class="note" style="margin-top:3px;">' + (key ? (use.length ? '正在使用：' + use.map(esc).join("、") : '還沒有班級開放這一課') : '不屬於任何一課，學生看不到') + '</div></div>' +
+    '<div class="slot-actions" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;"><select data-assign="' + esc(pid) + '" title="這份簡報屬於哪一課">' + libAssignOptions(key) + '</select><button class="btn sm primary" data-pe="' + esc(pid) + '">編輯</button></div></div>';
+}
+function libSlidesHtml(cur){
+  var L = S.plat.lessons || {}, un = S.unassigned || {}, unk = Object.keys(un);
+  var h = '<div class="panel"><p class="note" style="margin:0;">簡報與測驗跟著「課次」走：歸在哪一課，開放那一課的班級就都能用同一份。要讓別的班也用，到那個班把這一課的「投影片／測驗與練習」打開就好，不用複製。</p></div>';
+  h += '<div class="panel"><h3>' + esc(bookTitle(cur)) + '</h3>';
+  var ks = lessonsOfBook(cur), any = false;
+  ks.forEach(function(k){
+    var ps = (L[k] || {}).projects || {}, pids = Object.keys(ps);
+    h += '<div class="lesson" style="margin-bottom:10px;"><div class="lh"><div class="lt">' + esc(lessonTitle(k)) + '</div><button class="btn sm" data-pnew="' + esc(k) + '">＋ 新增簡報／測驗</button></div>' +
+      (pids.length ? pids.map(function(pid){ any = true; return libProjRow(pid, ps[pid], k); }).join("") : '<p class="note" style="margin:6px 0 0;">這一課還沒有簡報或測驗。</p>') + '</div>';
+  });
+  if(!ks.length) h += '<p class="note">這本教材還沒有課次。可以在下面「還沒歸課」建立簡報後，再用選單新增一課。</p>';
+  h += '</div>';
+  h += '<div class="panel"><div class="lh"><h3 style="margin:0;flex:1;">還沒歸課（' + unk.length + '）</h3><button class="btn sm" data-pnew="">＋ 新增簡報／測驗</button></div>' +
+    (unk.length ? unk.map(function(pid){ return libProjRow(pid, un[pid], null); }).join("") : '<p class="note" style="margin:6px 0 0;">所有簡報都已經歸到某一課了。</p>') + '</div>';
+  return h;
+}
 function renderLibrary(){
   S.focus = false;
   var bids = bookIds(), cur = S.lib.book;
   if(bids.indexOf(cur) === -1) cur = S.lib.book = bids[0] || DEFAULT_BOOK;
-  var html = '<div class="tabs"><button class="tab" data-libback="1">‹ 返回</button>' + bids.map(function(b){ return '<button class="tab' + (b === cur ? ' on' : '') + '" data-libbook="' + esc(b) + '">' + esc(bookTitle(b)) + '</button>'; }).join("") +
-    '<button class="tab" data-libadd="1" style="margin-left:auto;">新增教材</button><button class="tab" data-libren="1">改教材名</button>' + (cur === DEFAULT_BOOK ? '' : '<button class="tab" data-libdel="1" style="color:#B23B32;">刪除教材</button>') + '</div>' +
-    '<iframe class="frame" id="fr" src="' + esc("index.html?embed=1&manage=1&book=" + encodeURIComponent(cur) + (S.lib.lesson ? "&lesson=" + encodeURIComponent(S.lib.lesson) : "")) + '"></iframe>';
+  var view = S.lib.view === "slides" ? "slides" : "bank";
+  var html, editing = view === "slides" && (S.lib.pid || S.lib.creating != null);
+  if(editing){
+    var src = S.lib.pid ? "slides/practice.html?embed=1&project=" + encodeURIComponent(S.lib.pid) : "slides/practice.html?embed=1&newproject=" + encodeURIComponent(S.lib.creating ? lessonTitle(S.lib.creating) : "新的簡報");
+    html = '<div class="tabs"><button class="tab" data-pback="1">‹ 回簡報與測驗清單</button></div><iframe class="frame" id="fr" src="' + esc(src) + '" allow="microphone; camera; autoplay; clipboard-write"></iframe>';
+  } else {
+    html = '<div class="tabs"><button class="tab" data-libback="1">‹ 返回</button>' + bids.map(function(b){ return '<button class="tab' + (b === cur ? ' on' : '') + '" data-libbook="' + esc(b) + '">' + esc(bookTitle(b)) + '</button>'; }).join("") +
+      '<button class="tab" data-libadd="1" style="margin-left:auto;">新增教材</button><button class="tab" data-libren="1">改教材名</button>' + (cur === DEFAULT_BOOK ? '' : '<button class="tab" data-libdel="1" style="color:#B23B32;">刪除教材</button>') + '</div>' +
+      '<div class="subbar"><button class="tab' + (view === "bank" ? ' on' : '') + '" data-libview="bank" style="padding:5px 14px;font-size:13.5px;">生詞・語法・課文</button><button class="tab' + (view === "slides" ? ' on' : '') + '" data-libview="slides" style="padding:5px 14px;font-size:13.5px;">簡報與測驗</button></div>' +
+      (view === "slides" ? '<div class="page" style="padding:12px 16px;overflow:auto;">' + libSlidesHtml(cur) + '</div>' :
+      '<iframe class="frame" id="fr" src="' + esc("index.html?embed=1&manage=1&book=" + encodeURIComponent(cur) + (S.lib.lesson ? "&lesson=" + encodeURIComponent(S.lib.lesson) : "")) + '"></iframe>');
+  }
   shell(html, { flush: true }); setCrumb([]);
-  document.getElementById("main").onclick = async function(e){
+  var main = document.getElementById("main");
+  main.onchange = async function(e){
+    var sel = e.target.closest("select[data-assign]"); if(!sel) return;
+    var pid = sel.dataset.assign, v = sel.value;
+    if(v.indexOf("__new:") === 0){ var nk = await newLessonFlow(v.slice(6)); if(!nk){ renderLibrary(); return; } v = nk; }
+    if(!v){ delete S.plat.lessonMap[pid]; await fbSet("teacherPlatform/" + S.teacher.id + "/lessonMap/" + pid, null); }
+    else { S.plat.lessonMap[pid] = v; await fbSet("teacherPlatform/" + S.teacher.id + "/lessonMap/" + pid, v); }
+    await syncLessonIndex(); toast("已更新"); renderLibrary();
+  };
+  main.onclick = async function(e){
     var b = e.target.closest("button"); if(!b) return;
     if(b.dataset.libback){ S.lib = null; render(); return; }
-    if(b.dataset.libbook){ S.lib = { book: b.dataset.libbook }; renderLibrary(); return; }
+    if(b.dataset.libbook){ S.lib = { book: b.dataset.libbook, view: S.lib.view || null }; renderLibrary(); return; }
+    if(b.dataset.libview){ S.lib = { book: cur, view: b.dataset.libview }; renderLibrary(); return; }
+    if(b.dataset.pe){ S.lib = { book: cur, view: "slides", pid: b.dataset.pe }; renderLibrary(); return; }
+    if(b.dataset.pnew != null){ S.lib = { book: cur, view: "slides", creating: b.dataset.pnew }; renderLibrary(); return; }
+    if(b.dataset.pback){ S.lib = { book: cur, view: "slides" }; await syncLessonIndex(); renderLibrary(); return; }
     if(b.dataset.libadd){
       var n = await askText("教材名稱（例如 自編教材 A、《學華語向前走》第三冊）", ""); if(!n) return;
       var id = uid("b_"); S.plat.books = S.plat.books || {}; S.plat.books[id] = { title: n, order: Date.now() };
@@ -3426,8 +3486,16 @@ window.addEventListener("message", function(e){
 });
 // 簡報頁（iframe）為這一課建好專案：歸到這一課（不重新載入 iframe，編輯器繼續用）
 window.addEventListener("message", function(e){
-  if(!S.teacher || !e.data || e.data.mm !== "projectCreated" || !S.lesson) return;
-  var pid = e.data.pid, key = S.lesson;
+  if(!S.teacher || !e.data || e.data.mm !== "projectCreated") return;
+  var pid = e.data.pid;
+  if(S.lib && S.lib.view === "slides" && S.lib.creating != null){
+    // 在教材庫「簡報與測驗」裡新增：有指定課次就歸過去，編輯器繼續用
+    var lk = S.lib.creating;
+    if(lk){ S.plat.lessonMap[pid] = lk; fbSet("teacherPlatform/" + S.teacher.id + "/lessonMap/" + pid, lk).catch(function(){}); }
+    S.lib.pid = pid; S.lib.creating = null; return;
+  }
+  if(!S.lesson) return;
+  var key = S.lesson;
   S.plat.lessonMap[pid] = key; fbSet("teacherPlatform/" + S.teacher.id + "/lessonMap/" + pid, key).catch(function(){});
   var l = S.plat.lessons[key]; if(l){ l.projects = l.projects || {}; l.projects[pid] = { title: e.data.title, slides: 0, quiz: 0 }; }
   S.sub = pid; S.creating = null;
