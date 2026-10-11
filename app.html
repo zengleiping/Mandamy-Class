@@ -593,6 +593,25 @@ async function trAiTranslate(word, langs){
     return JSON.parse(m[0]);
   }catch(e){ clearTimeout(to); return null; }
 }
+// ----- 修正詞庫：優先順序＝你手動修正過的 > 你自己的雲端生詞庫（英文、泰文、注音、拼音）> 翻譯服務 -----
+function trGKey(w){ return encodeURIComponent(w).replace(/\./g, "%2E"); }
+var TR_GLO = {};
+function trBankLookup(w){
+  var bank = S.bank || [], hit = null;
+  for(var i = 0; i < bank.length && !hit; i++){ var vs = bank[i].vocab || []; for(var j = 0; j < vs.length; j++){ if(vs[j]["生詞"] === w){ hit = vs[j]; break; } } }
+  if(!hit) return null;
+  var o = { tr: {} }; if(hit["英文翻譯"]) o.tr.en = String(hit["英文翻譯"]).trim(); if(hit["泰文翻譯"]) o.tr.th = String(hit["泰文翻譯"]).trim();
+  if(hit["注音"]) o.zy = String(hit["注音"]).trim(); if(hit["拼音"]) o.py = String(hit["拼音"]).trim(); return o;
+}
+function trGlossary(w){
+  var g = TR_GLO[trGKey(w)], b = trBankLookup(w), out = { tr: {} };
+  [b, g && { tr: { en: g.en, th: g.th, ja: g.ja }, zy: g.zy, py: g.py }].forEach(function(src){ if(!src) return; ["en", "th", "ja"].forEach(function(k){ if(src.tr && src.tr[k]) out.tr[k] = src.tr[k]; }); if(src.zy) out.zy = src.zy; if(src.py) out.py = src.py; });
+  return (out.zy || out.py || Object.keys(out.tr).length) ? out : null;
+}
+function trLearn(w, patch){
+  var k = trGKey(w), cur = Object.assign({ zh: w }, TR_GLO[k] || {}, patch); TR_GLO[k] = cur;
+  fbSet("teacherPlatform/" + S.teacher.id + "/transGlossary/" + k, cur).catch(function(){});
+}
 function trPath(id){ return "teacherPlatform/" + S.teacher.id + "/transList" + (id ? "/" + id : ""); }
 function trSortedIds(){ return Object.keys(TR.list).sort(function(a, b){ return (TR.list[b].at || 0) - (TR.list[a].at || 0); }); }
 // 把這筆缺的語言補翻出來（失敗會再試一次；還是不行就留空，旁邊有 ↻ 可以再按）
@@ -608,13 +627,19 @@ async function trFillEnt(ent, codes){
 async function trFill(id, codes){ var ent = TR.list[id]; return ent ? trFillEnt(ent, codes) : 0; }
 // 算出一個詞的注音、拼音、各語言翻譯（優先用 Claude，缺的用一般翻譯補）
 async function trCompute(zh){
-  var ent = { zh: zh, tr: {}, at: Date.now() };
+  var ent = { zh: zh, tr: {}, at: Date.now() }, han0 = Array.from(zh).filter(function(c){ return /[\u3400-\u9fff]/.test(c); }).length;
+  var gl = trGlossary(zh); if(gl){ ent.glo = true; Object.keys(gl.tr).forEach(function(k){ ent.tr[k] = gl.tr[k]; }); }
   try{ var rd = await trReading(zh); ent.py = rd.py; ent.zy = rd.zy; ent.pya = rd.pya; ent.zya = rd.zya; }catch(e){ console.warn("trReading", e); }
-  var aiRes = await trAiTranslate(zh, TR.langs);
+  if(gl && (gl.zy || gl.py)){
+    function al(str){ var tk = String(str || "").trim().split(/\s+/).filter(Boolean); if(tk.length !== han0) return null; var ci = 0; return Array.from(zh).map(function(c){ return /[\u3400-\u9fff]/.test(c) ? tk[ci++] : c; }); }
+    var gz = al(gl.zy), gp = al(gl.py); if(gz){ ent.zya = gz; ent.zy = gz.join(" "); } if(gp){ ent.pya = gp; ent.py = gp.join(" "); }
+  }
+  var needAi = TR.langs.some(function(k){ return !ent.tr[k]; });
+  var aiRes = needAi ? await trAiTranslate(zh, TR.langs) : null;
   if(aiRes){
-    TR.langs.forEach(function(k){ if(aiRes[k]) ent.tr[k] = String(aiRes[k]).trim(); });
+    TR.langs.forEach(function(k){ if(!ent.tr[k] && aiRes[k]) ent.tr[k] = String(aiRes[k]).trim(); });
     var az = String(aiRes.zhuyin || "").trim().split(/\s+/).filter(Boolean), ap = String(aiRes.pinyin || "").trim().split(/\s+/).filter(Boolean), nz = Array.from(zh).filter(function(c){ return /[\u3400-\u9fff]/.test(c); }).length;
-    if(az.length === nz && ap.length === nz){ var ci = 0, zy2 = [], py2 = []; Array.from(zh).forEach(function(c){ if(/[\u3400-\u9fff]/.test(c)){ zy2.push(az[ci]); py2.push(ap[ci]); ci++; } else { zy2.push(c); py2.push(c); } }); ent.zya = zy2; ent.pya = py2; ent.zy = zy2.join(" "); ent.py = py2.join(" "); }
+    if(!(gl && gl.zy) && az.length === nz && ap.length === nz){ var ci = 0, zy2 = [], py2 = []; Array.from(zh).forEach(function(c){ if(/[\u3400-\u9fff]/.test(c)){ zy2.push(az[ci]); py2.push(ap[ci]); ci++; } else { zy2.push(c); py2.push(c); } }); ent.zya = zy2; ent.pya = py2; ent.zy = zy2.join(" "); ent.py = py2.join(" "); }
     ent.ai = true;
   }
   var miss = await trFillEnt(ent, TR.langs);
@@ -627,10 +652,12 @@ async function trAdd(zh){
   if(r.miss) toast("有 " + r.miss + " 種語言沒翻出來，按該筆的 ↻ 可以再試一次，或直接手動輸入");
 }
 // 先翻譯、填進上方欄位讓老師檢查修改，再按「加入清單」
+var TR_LAST = null;
 async function trFillFields(){
   var w = document.getElementById("tr-in"), word = (w.value || "").trim(); if(!word) return;
   var btn = document.getElementById("tr-go"); btn.disabled = true; btn.textContent = "翻譯中…";
   var r = await trCompute(word); var e = r.ent, set = function(id, v){ var el = document.getElementById(id); if(el) el.value = v || ""; };
+  TR_LAST = { word: word, ent: JSON.parse(JSON.stringify(e)) };
   set("tr-f-zy", e.zy); set("tr-f-py", e.py); TR_LANGS.forEach(function(l){ set("tr-f-" + l[0], (e.tr || {})[l[0]]); });
   btn.disabled = false; btn.textContent = "🔤 自動翻譯";
   if(r.miss) toast("有 " + r.miss + " 種語言沒翻出來，可以直接手動輸入");
@@ -656,7 +683,12 @@ async function trAddFromFields(){
   if(ent.zy){ var za = align(ent.zy); if(za) ent.zya = za; }
   if(ent.py){ var pa = align(ent.py); if(pa) ent.pya = pa; }
   if(!ent.zy && !ent.py){ try{ var rd = await trReading(word); ent.py = rd.py; ent.zy = rd.zy; ent.pya = rd.pya; ent.zya = rd.zya; }catch(e){} }
-  var id = uid("tr_"); TR.list[id] = ent; trDrawList(); trPersist(id);
+  var learned = 0, base = (TR_LAST && TR_LAST.word === word) ? TR_LAST.ent : { tr: {} }, patch = {};
+  TR_LANGS.forEach(function(l){ var v = ent.tr[l[0]]; if(v && v !== (base.tr || {})[l[0]]){ patch[l[0]] = v; learned++; } });
+  if(ent.zy && ent.zy !== base.zy){ patch.zy = ent.zy; learned++; } if(ent.py && ent.py !== base.py){ patch.py = ent.py; learned++; }
+  if(learned) trLearn(word, patch);
+  var id = uid("tr_"); TR.list[id] = ent; trDrawList(); trPersist(id); TR_LAST = null;
+  if(learned) setTimeout(function(){ toast("已記住你修改的 " + learned + " 項，下次同一個詞會直接用"); }, 300);
   w.value = ""; ["zy", "py", "en", "th", "ja"].forEach(function(k){ var el = document.getElementById("tr-f-" + k); if(el) el.value = ""; });
   toast("已加入清單 ✓"); w.focus();
 }
@@ -800,7 +832,7 @@ function trBuild(){
   box.querySelector("#tr-clear").onclick = function(){ if(!Object.keys(TR.list).length) return; if(!confirm("清空全部記錄？（下課後整理完再清比較保險，建議先按「複製全部」）")) return; var ids = Object.keys(TR.list); TR.list = {}; trDrawList(); try{ localStorage.removeItem("mm_tr_list_" + S.teacher.id); }catch(e){} fbSet(trPath(), null).then(function(){ trSetStatus("ok"); }).catch(function(){ trSetStatus("local"); }); };
   box.addEventListener("click", function(e){ var rt = e.target.closest("[data-retry]"); if(rt){ trRetry(rt.dataset.retry); return; } var d = e.target.closest("[data-del]"); if(!d) return; var id = d.dataset.del; delete TR.list[id]; trDrawList(); trPersist(id); });
   box.addEventListener("input", function(e){ if(e.target.matches && e.target.matches("textarea.tr-t")){ e.target.style.height = "auto"; e.target.style.height = (e.target.scrollHeight + 2) + "px"; } });
-  box.addEventListener("change", function(e){ var ck = e.target.closest && e.target.closest("[data-ck]"); if(ck){ var en = TR.list[ck.dataset.ck]; if(en){ en.done = ck.checked; ck.closest(".tr-row").classList.toggle("done", ck.checked); trPersist(ck.dataset.ck); } return; } var t = e.target; if(t.tagName !== "TEXTAREA" || !t.dataset.id) return; var ent = TR.list[t.dataset.id]; if(!ent) return; ent.tr = ent.tr || {}; ent.tr[t.dataset.lang] = t.value.trim(); trPersist(t.dataset.id); });
+  box.addEventListener("change", function(e){ var ck = e.target.closest && e.target.closest("[data-ck]"); if(ck){ var en = TR.list[ck.dataset.ck]; if(en){ en.done = ck.checked; ck.closest(".tr-row").classList.toggle("done", ck.checked); trPersist(ck.dataset.ck); } return; } var t = e.target; if(t.tagName !== "TEXTAREA" || !t.dataset.id) return; var ent = TR.list[t.dataset.id]; if(!ent) return; ent.tr = ent.tr || {}; ent.tr[t.dataset.lang] = t.value.trim(); trPersist(t.dataset.id); if(t.value.trim()){ var pp = {}; pp[t.dataset.lang] = t.value.trim(); trLearn(ent.zh, pp); toast("已記住這個修正，下次同一個詞會直接用"); } });
   box.addEventListener("keydown", function(e){ e.stopPropagation(); });
   window.addEventListener("resize", function(){ if(TR.open) trApplyGeo(); });
 }
@@ -865,11 +897,13 @@ function trStart(){
     }, function(){ trSetStatus("local"); });
   }catch(e){ trSetStatus("local"); }
   TR.btn.style.display = TR.open ? "none" : "flex";
+  try{ TR.unG = window.onValue(window.ref(window.db, "teacherPlatform/" + S.teacher.id + "/transGlossary"), function(snap){ TR_GLO = snap.val() || {}; }); }catch(e){}
   trTickStart();
 }
 function trStop(){
   if(TR_TICK){ clearInterval(TR_TICK); TR_TICK = null; }
   if(TR.un){ try{ TR.un(); }catch(e){} TR.un = null; }
+  if(TR.unG){ try{ TR.unG(); }catch(e){} TR.unG = null; }
   if(TR.box){ TR.box.remove(); TR.box = null; } if(TR.btn){ TR.btn.remove(); TR.btn = null; }
   var st = document.getElementById("tr-style"); if(st) st.remove(); TR.open = false; TR.list = {};
 }
