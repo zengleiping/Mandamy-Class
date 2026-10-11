@@ -505,8 +505,8 @@ function viewLogin(msg){
 var TR = { open: false, list: {}, un: null, langs: null, show: null, opacity: 1, box: null, btn: null, sync: "local", tCache: {}, pyLoaded: null };
 var TR_LANGS = [["en", "English", "en"], ["th", "ภาษาไทย 泰文", "th"], ["ja", "日本語 日文", "ja"]];
 function trLoad(){
-  try{ var v = JSON.parse(localStorage.getItem("mm_tr_cfg") || "null") || {}; TR.langs = v.langs || ["en", "th", "ja"]; TR.show = v.show || { zy: false, py: false }; TR.opacity = v.opacity || 1; TR.geo = v.geo || null; }
-  catch(e){ TR.langs = ["en", "th", "ja"]; TR.show = { zy: false, py: false }; TR.opacity = 1; TR.geo = null; }
+  try{ var v = JSON.parse(localStorage.getItem("mm_tr_cfg") || "null") || {}; TR.langs = v.langs || ["en", "th", "ja"]; TR.show = { mode: (v.show && v.show.mode) || "zy" }; TR.opacity = v.opacity || 1; TR.geo = v.geo || null; }
+  catch(e){ TR.langs = ["en", "th", "ja"]; TR.show = { mode: "zy" }; TR.opacity = 1; TR.geo = null; }
 }
 function trSaveCfg(){ try{ localStorage.setItem("mm_tr_cfg", JSON.stringify({ langs: TR.langs, show: TR.show, opacity: TR.opacity, geo: TR.geo })); }catch(e){} }
 function trLoadPinyin(){
@@ -542,7 +542,7 @@ async function trReading(zh){
   try{
     var py = pinyinPro.pinyin(zh, { type: "array" }), nm = pinyinPro.pinyin(zh, { toneType: "num", type: "array" }), chars = Array.from(zh), pp = [], zz = [];
     chars.forEach(function(ch, i){ if(/[㐀-鿿]/.test(ch)){ pp.push(py[i]); zz.push(trZhuyinSyl(nm[i])); } else { pp.push(ch); zz.push(ch); } });
-    return { py: pp.join(" "), zy: zz.join(" ") };
+    return { py: pp.join(" "), zy: zz.join(" "), pya: pp, zya: zz };
   }catch(e){ return { py: "", zy: "" }; }
 }
 // 翻譯：先用瀏覽器內建翻譯（Chrome，離線也行、免費），沒有就用網路翻譯服務；都失敗就回 null，讓老師手動輸入
@@ -571,7 +571,7 @@ async function trAdd(zh){
   zh = zh.trim(); if(!zh) return;
   var id = uid("tr_"), ent = { zh: zh, tr: {}, at: Date.now() };
   TR.list[id] = ent; trDrawList(); trSetStatus("busy");
-  try{ var rd = await trReading(zh); ent.py = rd.py; ent.zy = rd.zy; }catch(e){ console.warn("trReading", e); }
+  try{ var rd = await trReading(zh); ent.py = rd.py; ent.zy = rd.zy; ent.pya = rd.pya; ent.zya = rd.zya; }catch(e){ console.warn("trReading", e); }
   await Promise.all(TR.langs.map(async function(code){ try{ var t = await trTranslate(zh, code); if(t) ent.tr[code] = t; }catch(e){ console.warn("trTranslate", e); } }));
   TR.list[id] = ent; trDrawList(); trPersist(id);
   var miss = TR.langs.filter(function(c){ return !ent.tr[c]; });
@@ -583,14 +583,30 @@ function trPersist(id){
   fbSet(trPath(id), v).then(function(){ trSetStatus("ok"); }).catch(function(){ trSetStatus("local"); });
 }
 function trSetStatus(s){ TR.sync = s; var el = document.getElementById("tr-sync"); if(el) el.textContent = s === "ok" ? "☁️ 已同步" : s === "busy" ? "⏳ 處理中…" : "⚠️ 只存在這台裝置"; }
+function trZyHtml(sym){
+  var tone = "", neutral = false, main = String(sym).replace(/[ˊˇˋ˙]/g, function(m){ if(m === "˙") neutral = true; else tone = m; return ""; });
+  return '<span class="tr-zs">' + (neutral ? '<i class="tr-zn">˙</i>' : '') + '<span class="tr-zm">' + Array.from(main).map(function(c){ return '<i>' + esc(c) + '</i>'; }).join("") + '</span>' + (tone ? '<i class="tr-zt">' + tone + '</i>' : '') + '</span>';
+}
+function trWordHtml(e){
+  var chars = Array.from(e.zh), mode = TR.show.mode;
+  var zya = e.zya || (e.zy ? e.zy.split(" ") : []), pya = e.pya || (e.py ? e.py.split(" ") : []);
+  return chars.map(function(ch, i){
+    var han = /[\u3400-\u9fff]/.test(ch);
+    if(mode === "zy" && han && zya[i]) return '<span class="tr-ch"><span class="tr-c">' + esc(ch) + '</span>' + trZyHtml(zya[i]) + '</span>';
+    if(mode === "py" && han && pya[i]) return '<span class="tr-ch py"><span class="tr-pp">' + esc(pya[i]) + '</span><span class="tr-c">' + esc(ch) + '</span></span>';
+    return '<span class="tr-ch"><span class="tr-c">' + esc(ch) + '</span></span>';
+  }).join("");
+}
+function trTime(at){ var d = new Date(at); return (d.getMonth() + 1) + "/" + d.getDate() + " " + (d.getHours() < 12 ? "上午" : "下午") + pad2(d.getHours() % 12 || 12) + ":" + pad2(d.getMinutes()); }
 function trDrawList(){
   var el = document.getElementById("tr-list"); if(!el) return;
   var ids = trSortedIds(), cnt = document.getElementById("tr-count"); if(cnt) cnt.textContent = "共 " + ids.length + " 筆";
   el.innerHTML = ids.length ? ids.map(function(id){
     var e = TR.list[id];
-    return '<div class="tr-row" data-id="' + id + '"><div class="tr-zh"><b>' + esc(e.zh) + '</b>' + (TR.show.zy && e.zy ? '<span class="tr-r">' + esc(e.zy) + '</span>' : '') + (TR.show.py && e.py ? '<span class="tr-r">' + esc(e.py) + '</span>' : '') + '<button class="tr-x" data-del="' + id + '" title="刪除">✕</button></div>' +
-      TR_LANGS.filter(function(l){ return TR.langs.indexOf(l[0]) !== -1; }).map(function(l){ return '<div class="tr-t"><span class="tr-l">' + l[0].toUpperCase() + '</span><input type="text" data-id="' + id + '" data-lang="' + l[0] + '" value="' + esc((e.tr || {})[l[0]] || "") + '" placeholder="手動輸入翻譯"></div>'; }).join("") + '</div>';
-  }).join("") : '<p class="note" style="padding:8px 4px;">還沒有記錄。輸入中文按 Enter，就會翻譯並記下來。</p>';
+    return '<div class="tr-row" data-id="' + id + '"><div class="tr-zh">' + trWordHtml(e) + '<button class="tr-x" data-del="' + id + '" title="刪除">🗑</button></div><div class="tr-ts">' +
+      TR_LANGS.filter(function(l){ return TR.langs.indexOf(l[0]) !== -1; }).map(function(l){ return '<input type="text" class="tr-t tr-t-' + l[0] + '" data-id="' + id + '" data-lang="' + l[0] + '" value="' + esc((e.tr || {})[l[0]] || "") + '" placeholder="' + esc(l[1].split(" ")[0]) + '（可手動輸入）" size="' + Math.max(8, ((e.tr || {})[l[0]] || "").length + 2) + '">'; }).join("") +
+      '</div><div class="tr-time">' + trTime(e.at || Date.now()) + '</div></div>';
+  }).join("") : '<p class="tr-empty">還沒有記錄。輸入中文按 Enter，就會翻譯並記下來。</p>';
 }
 function trCopyAll(){
   var ids = trSortedIds().reverse(), lines = ids.map(function(id){ var e = TR.list[id]; return [e.zh].concat(TR_LANGS.filter(function(l){ return TR.langs.indexOf(l[0]) !== -1; }).map(function(l){ return (e.tr || {})[l[0]] || ""; })).join("\t"); });
@@ -599,7 +615,7 @@ function trCopyAll(){
 }
 function trApplyGeo(){
   var b = TR.box; if(!b) return; var g = TR.geo || {}, W = window.innerWidth, H = window.innerHeight;
-  var w = Math.min(Math.max(g.w || 380, 280), W - 8), h = Math.min(Math.max(g.h || 520, 260), H - 8);
+  var w = Math.min(Math.max(g.w || 430, 300), W - 8), h = Math.min(Math.max(g.h || 520, 260), H - 8);
   var x = g.x != null ? g.x : W - w - 16, y = g.y != null ? g.y : 64;
   x = Math.min(Math.max(x, 0), W - 80); y = Math.min(Math.max(y, 0), H - 40);
   b.style.width = w + "px"; b.style.height = h + "px"; b.style.left = x + "px"; b.style.top = y + "px"; b.style.opacity = TR.opacity;
@@ -613,30 +629,42 @@ function trToggle(on){
 function trBuild(){
   if(document.getElementById("tr-style")) return;
   var st = document.createElement("style"); st.id = "tr-style";
-  st.textContent = '#tr-btn{position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:9980;display:flex;align-items:center;gap:4px;padding:10px 10px 10px 12px;border-radius:14px 0 0 14px;background:var(--ink,#2b2b2b);color:#fff;font-size:13px;font-weight:700;cursor:pointer;border:0;box-shadow:0 2px 10px rgba(0,0,0,.25);opacity:.85;writing-mode:vertical-rl;letter-spacing:2px}' +
-    '#tr-btn:hover{opacity:1}' +
-    '#tr-box{position:fixed;z-index:9981;display:none;flex-direction:column;background:var(--surface,#fff);border:1.5px solid var(--line,#ddd);border-radius:14px;box-shadow:0 8px 30px rgba(0,0,0,.28);overflow:hidden;touch-action:none}' +
-    '#tr-head{display:flex;align-items:center;gap:6px;padding:8px 10px;background:var(--ink,#2b2b2b);color:#fff;cursor:move;user-select:none;touch-action:none}' +
-    '#tr-head b{flex:1;font-size:14px}#tr-head button{background:rgba(255,255,255,.18);color:#fff;border:0;border-radius:8px;padding:4px 10px;font-size:13px;cursor:pointer}' +
-    '#tr-body{flex:1;overflow:auto;padding:10px;display:flex;flex-direction:column;gap:8px;touch-action:pan-y}' +
-    '#tr-body .tr-in{display:flex;gap:6px}#tr-in{flex:1;padding:8px 10px;border:1.5px solid var(--line,#ddd);border-radius:10px;font-size:16px;min-width:0}' +
-    '.tr-opts{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:13px;align-items:center}.tr-opts label{display:inline-flex;gap:4px;align-items:center;cursor:pointer;margin:0;font-weight:500}' +
-    '.tr-row{border:1px solid var(--line,#ddd);border-radius:10px;padding:6px 8px;margin-bottom:6px;background:var(--surface-2,#faf7f2)}' +
-    '.tr-zh{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;font-size:17px}.tr-r{font-size:12.5px;color:#666}.tr-x{margin-left:auto;border:0;background:none;cursor:pointer;color:#999;font-size:14px}' +
-    '.tr-t{display:flex;gap:6px;align-items:center;margin-top:3px}.tr-l{font-size:10.5px;font-weight:700;color:#fff;background:#8a8a8a;border-radius:5px;padding:1px 5px;min-width:22px;text-align:center}' +
-    '.tr-t input{flex:1;min-width:0;padding:4px 6px;border:1px solid transparent;border-radius:6px;font-size:15px;background:transparent}.tr-t input:focus{border-color:var(--line,#ccc);background:#fff}' +
-    '#tr-foot{display:flex;gap:6px;align-items:center;padding:6px 30px 6px 10px;border-top:1px solid var(--line,#ddd);font-size:12.5px;background:var(--surface-2,#faf7f2)}' +
-    '#tr-rs{position:absolute;right:0;bottom:0;width:26px;height:26px;cursor:nwse-resize;touch-action:none;display:flex;align-items:flex-end;justify-content:flex-end;font-size:16px;color:#888;padding:0 4px 2px 0;user-select:none}';
+  st.textContent = '#tr-box{--tr-bg:#FBF1E8;--tr-card:#fff;--tr-ink:#3a312b;--tr-org:#E8805A;--tr-grn:#4E7F6E;--tr-line:#EBDDD0;--tr-soft:#FFF8F1}' +
+    '#tr-btn{position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:9980;display:flex;align-items:center;gap:4px;padding:12px 9px;border-radius:14px 0 0 14px;background:#E8805A;color:#fff;font-size:13px;font-weight:700;cursor:pointer;border:0;box-shadow:0 2px 10px rgba(0,0,0,.25);opacity:.9;writing-mode:vertical-rl;letter-spacing:2px}#tr-btn:hover{opacity:1}' +
+    '#tr-box{position:fixed;z-index:9981;display:none;flex-direction:column;background:linear-gradient(160deg,#FCEFE4,#EBF1EA);border:1.5px solid var(--tr-line);border-radius:16px;box-shadow:0 10px 34px rgba(0,0,0,.28);overflow:hidden;touch-action:none;color:var(--tr-ink)}' +
+    '#tr-head{display:flex;align-items:center;gap:6px;padding:9px 12px;cursor:move;user-select:none;touch-action:none;border-bottom:1px solid var(--tr-line)}' +
+    '#tr-head b{flex:1;font-size:15px}#tr-head button{background:#fff;color:var(--tr-ink);border:1px solid var(--tr-line);border-radius:99px;padding:4px 12px;font-size:12.5px;cursor:pointer;font-weight:600}' +
+    '#tr-body{flex:1;overflow:auto;padding:10px 12px;display:flex;flex-direction:column;gap:10px;touch-action:pan-y}' +
+    '.tr-card{background:var(--tr-card);border-radius:14px;padding:10px;box-shadow:0 1px 4px rgba(0,0,0,.06)}' +
+    '#tr-body .tr-in{display:flex;gap:6px}#tr-in{flex:1;padding:9px 12px;border:1.5px solid var(--tr-line);border-radius:12px;font-size:16px;min-width:0;background:var(--tr-soft);color:var(--tr-ink)}' +
+    '#tr-go{background:var(--tr-org);color:#fff;border:0;border-radius:12px;padding:0 14px;font-weight:700;font-size:14px;cursor:pointer;white-space:nowrap}' +
+    '.tr-opts{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px;font-size:12.5px;color:#7a6c60;font-weight:600}' +
+    '.tr-seg{display:inline-flex;background:var(--tr-soft);border:1px solid var(--tr-line);border-radius:99px;padding:2px}' +
+    '.tr-seg button,.tr-chip{border:0;background:transparent;border-radius:99px;padding:4px 12px;font-size:13px;font-weight:700;color:#7a6c60;cursor:pointer}' +
+    '.tr-seg button.on{background:var(--tr-org);color:#fff}.tr-chip{background:var(--tr-soft);border:1px solid var(--tr-line)}.tr-chip.on{background:var(--tr-grn);border-color:var(--tr-grn);color:#fff}' +
+    '.tr-row{background:var(--tr-card);border-radius:14px;padding:9px 12px 7px;margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,.06);position:relative}' +
+    '.tr-zh{display:flex;align-items:flex-start;gap:2px;flex-wrap:wrap;padding-right:26px}' +
+    '.tr-ch{display:inline-flex;align-items:flex-start;margin-right:8px}.tr-c{font-size:34px;line-height:1.15;font-weight:700;font-family:"Noto Serif TC","Songti TC",serif}' +
+    '.tr-zs{display:inline-flex;align-items:center;margin-left:3px;margin-top:2px;padding-right:11px;position:relative;color:var(--tr-grn);font-weight:600}' +
+    '.tr-zm{display:flex;flex-direction:column;font-size:17px;line-height:1.08;font-style:normal}.tr-zm i{font-style:normal}' +
+    '.tr-zt{position:absolute;right:0;top:44%;font-style:normal;font-size:17px;line-height:1}.tr-zn{position:absolute;top:-10px;left:0;font-style:normal;font-size:15px}' +
+    '.tr-ch.py{flex-direction:column;align-items:center}.tr-pp{font-size:15px;color:var(--tr-grn);font-weight:600;line-height:1.1}' +
+    '.tr-x{position:absolute;right:8px;top:8px;border:0;background:none;cursor:pointer;color:#aaa;font-size:15px;opacity:.7}' +
+    '.tr-ts{display:flex;flex-wrap:wrap;gap:0 12px;margin-top:2px}.tr-t{border:1px solid transparent !important;border-radius:6px !important;padding:2px 4px !important;font-size:16px !important;background:transparent !important;width:auto !important;min-width:60px;max-width:100%;color:#B5502F !important;box-shadow:none !important}.tr-t-th,.tr-t-ja{color:var(--tr-grn) !important}.tr-t:focus{border-color:var(--tr-line) !important;background:var(--tr-soft) !important;outline:0}' +
+    '.tr-time{font-size:10.5px;color:#a89a8d;margin-top:1px}.tr-empty{font-size:13px;color:#8a7c70;padding:6px 4px}' +
+    '#tr-foot{display:flex;gap:6px;align-items:center;padding:7px 30px 7px 12px;border-top:1px solid var(--tr-line);font-size:12.5px;color:#7a6c60;font-weight:600}' +
+    '#tr-foot button{background:#fff;border:1px solid var(--tr-line);border-radius:99px;padding:4px 12px;font-size:12.5px;font-weight:700;cursor:pointer;color:var(--tr-ink)}#tr-foot .danger{color:#B23B32}' +
+    '#tr-rs{position:absolute;right:0;bottom:0;width:26px;height:26px;cursor:nwse-resize;touch-action:none;display:flex;align-items:flex-end;justify-content:flex-end;font-size:16px;color:#999;padding:0 4px 2px 0;user-select:none}';
   document.head.appendChild(st);
   var btn = document.createElement("button"); btn.id = "tr-btn"; btn.type = "button"; btn.textContent = "📝 翻譯機"; btn.title = "中文翻譯機（隨時打開，看完可收起）";
   btn.onclick = function(){ trToggle(true); };
   var box = document.createElement("div"); box.id = "tr-box";
   box.innerHTML = '<div id="tr-head"><b>📝 中文翻譯機</b><button type="button" id="tr-op" title="透明度">◐</button><button type="button" id="tr-min">收起 ▾</button></div>' +
-    '<div id="tr-body"><div class="tr-in"><input type="text" id="tr-in" placeholder="輸入中文詞語，按 Enter 翻譯並記錄" autocomplete="off"><button class="btn primary sm" id="tr-go" type="button">翻譯</button></div>' +
-    '<div class="tr-opts"><span class="note">翻成：</span>' + TR_LANGS.map(function(l){ return '<label><input type="checkbox" data-lang="' + l[0] + '"> ' + l[1] + '</label>'; }).join("") + '</div>' +
-    '<div class="tr-opts"><span class="note">顯示：</span><label><input type="checkbox" data-show="zy"> 注音</label><label><input type="checkbox" data-show="py"> 拼音</label></div>' +
+    '<div id="tr-body"><div class="tr-card"><div class="tr-in"><input type="text" id="tr-in" placeholder="學生剛剛提到的中文詞語…" autocomplete="off"><button id="tr-go" type="button">🔤 自動翻譯</button></div>' +
+    '<div class="tr-opts"><span>顯示：</span><span class="tr-seg"><button type="button" data-mode="zy">注音</button><button type="button" data-mode="py">拼音</button></span></div>' +
+    '<div class="tr-opts"><span>翻譯成：</span>' + TR_LANGS.map(function(l){ return '<button type="button" class="tr-chip" data-lang="' + l[0] + '">' + l[1] + '</button>'; }).join("") + '</div></div>' +
     '<div id="tr-list"></div></div>' +
-    '<div id="tr-foot"><span id="tr-count"></span><span id="tr-sync" style="flex:1;"></span><button class="btn sm" id="tr-copy" type="button">複製全部</button><button class="btn sm danger" id="tr-clear" type="button">清空</button></div><div id="tr-rs" title="拖曳調整大小">⤡</div>';
+    '<div id="tr-foot"><span id="tr-count"></span><span id="tr-sync" style="flex:1;"></span><button id="tr-copy" type="button">複製全部</button><button class="danger" id="tr-clear" type="button">清空</button></div><div id="tr-rs" title="拖曳調整大小">⤡</div>';
   document.body.appendChild(btn); document.body.appendChild(box); TR.btn = btn; TR.box = box;
   // 拖曳移動（標題列）與調整大小（右下角）：用 pointer capture，滑到簡報 iframe 上也不會斷
   function drag(handle, onMove){
@@ -657,8 +685,13 @@ function trBuild(){
   function go(){ var v = inp.value.trim(); if(!v) return; inp.value = ""; trAdd(v); }
   inp.addEventListener("keydown", function(e){ if(e.key === "Enter" && !e.isComposing){ e.preventDefault(); go(); } e.stopPropagation(); });
   box.querySelector("#tr-go").onclick = go;
-  box.querySelectorAll("[data-lang]").forEach(function(c){ if(c.type !== "checkbox") return; c.checked = TR.langs.indexOf(c.dataset.lang) !== -1; c.onchange = function(){ TR.langs = TR_LANGS.map(function(l){ return l[0]; }).filter(function(k){ var x = box.querySelector('input[type=checkbox][data-lang="' + k + '"]'); return x && x.checked; }); trSaveCfg(); trDrawList(); }; });
-  box.querySelectorAll("[data-show]").forEach(function(c){ c.checked = !!TR.show[c.dataset.show]; c.onchange = function(){ TR.show[c.dataset.show] = c.checked; trSaveCfg(); trDrawList(); }; });
+  function syncOpts(){
+    box.querySelectorAll(".tr-chip").forEach(function(c){ c.classList.toggle("on", TR.langs.indexOf(c.dataset.lang) !== -1); });
+    box.querySelectorAll(".tr-seg button").forEach(function(c){ c.classList.toggle("on", TR.show.mode === c.dataset.mode); });
+  }
+  syncOpts();
+  box.querySelectorAll(".tr-chip").forEach(function(c){ c.onclick = function(){ var k = c.dataset.lang, i = TR.langs.indexOf(k); if(i === -1) TR.langs.push(k); else TR.langs.splice(i, 1); trSaveCfg(); syncOpts(); trDrawList(); }; });
+  box.querySelectorAll(".tr-seg button").forEach(function(c){ c.onclick = function(){ TR.show.mode = c.dataset.mode; trSaveCfg(); syncOpts(); trDrawList(); }; });
   box.querySelector("#tr-copy").onclick = trCopyAll;
   box.querySelector("#tr-clear").onclick = function(){ if(!Object.keys(TR.list).length) return; if(!confirm("清空全部記錄？（下課後整理完再清比較保險，建議先按「複製全部」）")) return; var ids = Object.keys(TR.list); TR.list = {}; trDrawList(); try{ localStorage.removeItem("mm_tr_list_" + S.teacher.id); }catch(e){} fbSet(trPath(), null).then(function(){ trSetStatus("ok"); }).catch(function(){ trSetStatus("local"); }); };
   box.addEventListener("click", function(e){ var d = e.target.closest("[data-del]"); if(!d) return; var id = d.dataset.del; delete TR.list[id]; trDrawList(); trPersist(id); });
