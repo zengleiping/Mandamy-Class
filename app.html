@@ -573,6 +573,26 @@ async function trTranslate(zh, code){
   }catch(e){}
   return null;
 }
+// 用 Claude 一次翻好注音、拼音、各語言（跟你原本的翻譯機同一套提示詞，品質最好）。需要你自己的 API Key，只存在這台裝置的瀏覽器裡。
+var TR_AI_LANG = { en: "簡短、適合國中生詞卡的英文翻譯（不要加解釋、例句）", th: "簡短、適合國中生詞卡的泰文翻譯（不要加解釋、例句）", ja: "簡短、適合國中生詞卡的日文翻譯（漢字詞請用日文慣用的寫法，必要時可在後面用括號加平假名讀音；不要加解釋、例句）" };
+var TR_AI_NAME = { en: "英文", th: "泰文", ja: "日文" };
+function trAiKey(){ try{ return localStorage.getItem("mm_tr_aikey") || ""; }catch(e){ return ""; } }
+async function trAiTranslate(word, langs){
+  var key = trAiKey(); if(!key) return null;
+  var lines = langs.map(function(k, i){ return (i + 3) + ". " + TR_AI_LANG[k]; }).join("\n");
+  var shape = '{"zhuyin":"...","pinyin":"...",' + langs.map(function(k){ return '"' + k + '":"..."'; }).join(",") + "}";
+  var prompt = "你是台灣華語課的教學助教，學生來自不同母語背景（例如泰國、日本），學習注音符號。老師在課堂上臨時聽到一個中文詞語，需要立刻知道注音、拼音和" + langs.map(function(k){ return TR_AI_NAME[k]; }).join("、") + "翻譯，準備之後補充成生詞卡。\n\n詞語：「" + word + "」\n\n請給出：\n1. 這個詞語的注音符號，每一個字之間用一個空格分隔，例如「對我」請回答「ㄉㄨㄟˋ ㄨㄛˇ」；若某個字是輕聲，請在該字注音「前面」加上「˙」，例如「謝謝」若第二字為輕聲可回答「ㄒㄧㄝˋ ˙ㄒㄧㄝ」\n2. 這個詞語的漢語拼音（標準聲調符號，如 ā á ǎ à），每個字之間用空格分隔\n" + lines + "\n\n只回傳一個 JSON 物件，不要加其他文字，格式如下：\n" + shape;
+  var ctl = new AbortController(), to = setTimeout(function(){ ctl.abort(); }, 20000);
+  try{
+    var r = await fetch("https://api.anthropic.com/v1/messages", { method: "POST", signal: ctl.signal, headers: { "content-type": "application/json", "x-api-key": key, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" }, body: JSON.stringify({ model: "claude-haiku-5-5", max_tokens: 600, messages: [{ role: "user", content: prompt }] }) });
+    clearTimeout(to);
+    if(r.status === 401 || r.status === 403){ toast("AI 翻譯的 API Key 不正確或沒有權限，已改用一般翻譯"); return null; }
+    if(!r.ok) return null;
+    var j = await r.json(), txt = ((j.content || []).filter(function(c){ return c.type === "text"; })[0] || {}).text || "";
+    var m = /\{[\s\S]*\}/.exec(txt); if(!m) return null;
+    return JSON.parse(m[0]);
+  }catch(e){ clearTimeout(to); return null; }
+}
 function trPath(id){ return "teacherPlatform/" + S.teacher.id + "/transList" + (id ? "/" + id : ""); }
 function trSortedIds(){ return Object.keys(TR.list).sort(function(a, b){ return (TR.list[b].at || 0) - (TR.list[a].at || 0); }); }
 // 把這筆缺的語言補翻出來（失敗會再試一次；還是不行就留空，旁邊有 ↻ 可以再按）
@@ -590,6 +610,13 @@ async function trAdd(zh){
   var id = uid("tr_"), ent = { zh: zh, tr: {}, at: Date.now() };
   TR.list[id] = ent; trDrawList(); trSetStatus("busy");
   try{ var rd = await trReading(zh); ent.py = rd.py; ent.zy = rd.zy; ent.pya = rd.pya; ent.zya = rd.zya; }catch(e){ console.warn("trReading", e); }
+  var aiRes = await trAiTranslate(zh, TR.langs);
+  if(aiRes){
+    TR.langs.forEach(function(k){ if(aiRes[k]) ent.tr[k] = String(aiRes[k]).trim(); });
+    var az = String(aiRes.zhuyin || "").trim().split(/\s+/).filter(Boolean), ap = String(aiRes.pinyin || "").trim().split(/\s+/).filter(Boolean), nz = Array.from(zh).filter(function(c){ return /[\u3400-\u9fff]/.test(c); }).length;
+    if(az.length === nz && ap.length === nz){ var ci = 0, zy2 = [], py2 = []; Array.from(zh).forEach(function(c){ if(/[\u3400-\u9fff]/.test(c)){ zy2.push(az[ci]); py2.push(ap[ci]); ci++; } else { zy2.push(c); py2.push(c); } }); ent.zya = zy2; ent.pya = py2; ent.zy = zy2.join(" "); ent.py = py2.join(" "); }
+    ent.ai = true;
+  }
   var miss = await trFill(id, TR.langs);
   TR.list[id] = ent; trDrawList(); trPersist(id);
   if(miss) toast("有 " + miss + " 種語言沒翻出來，按該筆的 ↻ 可以再試一次，或直接手動輸入");
@@ -597,6 +624,7 @@ async function trAdd(zh){
 async function trRetry(id){
   var ent = TR.list[id]; if(!ent) return; trSetStatus("busy");
   TR.langs.forEach(function(c){ if(ent.tr) delete ent.tr[c]; });
+  var aiR = await trAiTranslate(ent.zh, TR.langs); if(aiR){ ent.tr = ent.tr || {}; TR.langs.forEach(function(k){ if(aiR[k]) ent.tr[k] = String(aiR[k]).trim(); }); }
   var miss = await trFill(id, TR.langs); trDrawList(); trPersist(id);
   toast(miss ? "還有 " + miss + " 種語言沒翻出來，可能是網路或翻譯服務忙碌，稍後再按 ↻" : "已重新翻譯");
 }
@@ -689,7 +717,7 @@ function trBuild(){
     '<div class="tr-opts"><span>顯示：</span><span class="tr-seg"><button type="button" data-mode="zy">注音</button><button type="button" data-mode="py">拼音</button></span></div>' +
     '<div class="tr-opts"><span>翻譯成：</span>' + TR_LANGS.map(function(l){ return '<button type="button" class="tr-chip" data-lang="' + l[0] + '">' + l[1] + '</button>'; }).join("") + '</div></div>' +
     '<div id="tr-list"></div></div>' +
-    '<div id="tr-foot"><span id="tr-count"></span><span id="tr-sync" style="flex:1;"></span><button id="tr-imp" type="button" title="把今天課堂上記的詞放進對應的課堂記錄（每天 17:00 後也會自動做）">加入課堂記錄</button><button id="tr-cfg" type="button" title="自動加入的時間">⏰</button><button id="tr-copy" type="button">複製全部</button><button class="danger" id="tr-clear" type="button">清空</button></div><div id="tr-rs" title="拖曳調整大小">⤡</div>';
+    '<div id="tr-foot"><span id="tr-count"></span><span id="tr-sync" style="flex:1;"></span><button id="tr-imp" type="button" title="把今天課堂上記的詞放進對應的課堂記錄（每天 17:00 後也會自動做）">加入課堂記錄</button><button id="tr-ai" type="button" title="AI 翻譯設定（品質最好）">🔑</button><button id="tr-cfg" type="button" title="自動加入的時間">⏰</button><button id="tr-copy" type="button">複製全部</button><button class="danger" id="tr-clear" type="button">清空</button></div><div id="tr-rs" title="拖曳調整大小">⤡</div>';
   document.body.appendChild(btn); document.body.appendChild(box); TR.btn = btn; TR.box = box;
   // 拖曳移動（標題列）與調整大小（右下角）：用 pointer capture，滑到簡報 iframe 上也不會斷
   function drag(handle, onMove){
@@ -718,6 +746,7 @@ function trBuild(){
   box.querySelectorAll(".tr-chip").forEach(function(c){ c.onclick = function(){ var k = c.dataset.lang, i = TR.langs.indexOf(k); if(i === -1) TR.langs.push(k); else TR.langs.splice(i, 1); trSaveCfg(); syncOpts(); trDrawList(); if(i === -1){ var need = trSortedIds().filter(function(id){ return !(TR.list[id].tr || {})[k]; }).slice(0, 30); if(need.length){ trSetStatus("busy"); (async function(){ for(var q = 0; q < need.length; q++){ await trFill(need[q], [k]); trPersist(need[q]); } trDrawList(); toast("已補上新增語言的翻譯"); })(); } } }; });
   box.querySelectorAll(".tr-seg button").forEach(function(c){ c.onclick = function(){ TR.show.mode = c.dataset.mode; trSaveCfg(); syncOpts(); trDrawList(); }; });
   box.querySelector("#tr-copy").onclick = trCopyAll;
+  box.querySelector("#tr-ai").onclick = async function(){ var cur = trAiKey(); var v = await askText("AI 翻譯（Claude）：貼上你的 Anthropic API Key，翻譯品質最好，會用跟原本翻譯機一樣的提示詞。只存在這台裝置，不會上傳到平台。留空＝停用。" + (cur ? "（目前已設定）" : ""), "", "確定", "password"); if(v == null) return; v = v.trim(); try{ if(v) localStorage.setItem("mm_tr_aikey", v); else localStorage.removeItem("mm_tr_aikey"); }catch(e){} toast(v ? "已啟用 AI 翻譯" : "已停用 AI 翻譯"); };
   box.querySelector("#tr-imp").onclick = function(){ trImportToRecords(true); };
   box.querySelector("#tr-cfg").onclick = async function(){ var v = await askText("每天幾點以後，自動把翻譯機的生詞加進課堂記錄？（格式 17:00）", trTimeCfg()); if(!v) return; if(!/^\d{1,2}:\d{2}$/.test(v.trim())){ toast("請輸入像 17:00 這樣的時間"); return; } try{ localStorage.setItem("mm_tr_time", v.trim()); }catch(e){} toast("已設定：每天 " + v.trim() + " 之後自動加入"); };
   box.querySelector("#tr-clear").onclick = function(){ if(!Object.keys(TR.list).length) return; if(!confirm("清空全部記錄？（下課後整理完再清比較保險，建議先按「複製全部」）")) return; var ids = Object.keys(TR.list); TR.list = {}; trDrawList(); try{ localStorage.removeItem("mm_tr_list_" + S.teacher.id); }catch(e){} fbSet(trPath(), null).then(function(){ trSetStatus("ok"); }).catch(function(){ trSetStatus("local"); }); };
