@@ -1425,6 +1425,10 @@
   .draw-toolbar-top.rb-collapsed .rb-panels{ display:none; }
   .draw-toolbar-top.rb-collapsed.rb-peek{ position:relative; }
   .draw-toolbar-top.rb-collapsed.rb-peek .rb-panels{ display:block; position:absolute; left:0; right:0; top:100%; z-index:9004; background:var(--surface,#fff); border:1.5px solid rgba(28,33,30,.15); border-radius:0 0 12px 12px; box-shadow:0 10px 24px rgba(0,0,0,.22); }
+  /* 學生在投影片上自己打的字：存在各自的 stexts/{學生} 底下，不動老師的投影片文字；全班都看得到，只有自己能改 */
+  .stext-layer{ position:absolute; inset:0; pointer-events:none; z-index:6; overflow:hidden; }
+  .stext{ position:absolute; white-space:pre-wrap; font-weight:700; line-height:1.25; max-width:80%; text-shadow:0 0 3px rgba(255,255,255,.9); }
+  .stext.mine{ outline:1.5px dashed rgba(224,112,77,.55); outline-offset:2px; border-radius:3px; }
   .rb-collapse-btn{ border:0; background:rgba(28,33,30,.07); border-radius:8px; padding:4px 9px; font-size:12px; font-weight:700; color:var(--ink-soft); cursor:pointer; white-space:nowrap; }
   .rb-collapse-btn:hover{ background:rgba(28,33,30,.14); color:var(--ink); }
   .rb-panel{ display:none; padding:6px 8px 4px; align-items:stretch; flex-wrap:wrap; row-gap:6px; overflow:visible; }
@@ -10407,6 +10411,49 @@ window.mmTA = (function(){
     // 讓範本墊在底下、大家真正寫的墨跡疊在範本上面，才是「描紅」該有的視覺順序（不是範本蓋住墨跡）。
     var traceCanvas = document.createElement("canvas"); traceCanvas.className = "trace-overlay-canvas";
     var canvas = document.createElement("canvas"); canvas.id = "paint-canvas";
+    // ----- 學生打字（只有投影片、在老師開的房間裡）-----
+    var stLayer = document.createElement("div"); stLayer.className = "stext-layer";
+    function stItemsOf(rec){ if(!rec || !rec.items) return []; return Array.isArray(rec.items) ? rec.items.filter(Boolean) : Object.keys(rec.items).map(function(k){ return rec.items[k]; }); }
+    function renderStudentTexts(){
+      if(!stLayer.parentNode){ if(!cWrap) return; cWrap.appendChild(stLayer); }
+      stLayer.innerHTML = ""; var all = (getProgress(q.id).stexts) || {}, sc = getScaleRatio();
+      Object.keys(all).forEach(function(sid){ stItemsOf(all[sid]).forEach(function(it){
+        var d = document.createElement("div"); d.className = "stext" + (sid === myId ? " mine" : ""); d.dataset.id = it.id; d.dataset.sid = sid;
+        d.style.left = it.x + "%"; d.style.top = it.y + "%"; d.style.fontSize = Math.round((it.fontSize || 30) * sc) + "px"; d.style.color = it.color || "#1c211e"; stFill(d, it.text); stLayer.appendChild(d);
+      }); });
+    }
+    // 老師在房間裡開了注音／拼音，學生打的字也跟著在上方加註音（用跟投影片文字同一套轉換）
+    function stFill(d, text){
+      var mode = currentPhoneticMode;
+      if((mode === "pinyin" || mode === "zhuyin") && typeof pinyinPro !== "undefined" && typeof pinyinPro.pinyin === "function"){
+        try{
+          var chars = Array.from(text), sy = pinyinPro.pinyin(text, { type: "array" }), nm = pinyinPro.pinyin(text, { toneType: "num", type: "array" });
+          if(sy.length === chars.length){
+            var html = ""; chars.forEach(function(ch, i){
+              if(/[\u3400-\u9fff]/.test(ch)) html += "<ruby>" + escapeHtml(ch) + "<rt>" + escapeHtml(mode === "zhuyin" ? pinyinSyllableToZhuyin(nm[i]) : sy[i]) + "</rt></ruby>";
+              else html += escapeHtml(ch);
+            });
+            d.innerHTML = html; d.style.lineHeight = "2"; return;
+          }
+        }catch(e){}
+      }
+      d.textContent = text;
+    }
+    function saveMyStexts(items){ var patch = {}; patch["stexts/" + myId] = items.length ? { name: myName, items: items } : null; writeProgress(q.id, patch); }
+    function studentTextPointer(e, pIn){
+      var mine = stItemsOf((getProgress(q.id).stexts || {})[myId]), hit = null;
+      stLayer.querySelectorAll(".stext.mine").forEach(function(el){ var r = el.getBoundingClientRect(); if(e.clientX >= r.left - 4 && e.clientX <= r.right + 4 && e.clientY >= r.top - 4 && e.clientY <= r.bottom + 4) hit = el.dataset.id; });
+      var cur = hit ? mine.filter(function(x){ return x.id === hit; })[0] : null;
+      if(!cur && mine.length >= 30){ alert("你在這一頁打的字太多了，先刪掉一些再打。\nToo many text boxes on this page."); return; }
+      showInlineTextInput(cWrap, cur ? { x: cur.x, y: cur.y } : pIn, function(val){
+        val = String(val || "").trim().slice(0, 300);
+        var list = mine.slice();
+        if(cur){ var i = list.findIndex(function(x){ return x.id === cur.id; }); if(i >= 0){ if(val) list[i] = Object.assign({}, list[i], { text: val }); else list.splice(i, 1); } }
+        else if(val){ list.push({ id: uid("st"), text: val, x: pIn.x, y: pIn.y, color: boardState.color || "#1c211e", fontSize: boardState.fontSize || 30 }); }
+        else return;
+        saveMyStexts(list);
+      }, cur ? cur.text : "", "輸入文字，點一下別處就確認", true);
+    }
     var textLayer = document.createElement("div"); textLayer.className = "text-layer";
     cWrap.appendChild(traceCanvas);
     cWrap.appendChild(canvas);
@@ -10456,7 +10503,8 @@ window.mmTA = (function(){
       if(clrB){ var clrL = clrB.querySelector(".tool-btn-v-label"); if(clrL) clrL.innerHTML = "清除<br>筆跡"; clrB.title = "清除筆跡：只清掉畫筆寫的字，投影片上的文字、圖片和背景不會動"; }
     }
     if(deckStudent){ // 學生看投影片：只留筆、橡皮擦、清空（＋放映、翻頁）
-      ["select", "text", "shape"].forEach(function(tn){ var tb = tbq.one('button[data-tool="' + tn + '"]'); var w = tb && (tb.closest(".tool-btn-v-wrap") || tb); if(w) w.style.display = "none"; });
+      ["select", "shape"].forEach(function(tn){ var tb = tbq.one('button[data-tool="' + tn + '"]'); var w = tb && (tb.closest(".tool-btn-v-wrap") || tb); if(w) w.style.display = "none"; });
+      var stTb = tbq.one('button[data-tool="text"]'); if(stTb){ var stL = stTb.querySelector(".tool-btn-v-label"); if(stL) stL.innerHTML = "打字"; stTb.title = "打字：點畫面任何位置輸入文字；點自己打的字可以修改（刪光＝刪除）"; }
       ["#btn-more-tools", "#btn-undo", "#btn-redo", "#btn-arrange", "#btn-open-layers"].forEach(function(sel){ var el = tbq.one(sel); if(el) el.style.display = "none"; });
     }
     // ===== 工具列自訂：分配到左側／上方／隱藏，並支援收合 =====
@@ -11150,7 +11198,7 @@ window.mmTA = (function(){
         if(NON_TOOL_BTN_IDS.indexOf(b.id) !== -1) return;
         function activate(){
           selectFromText = false;
-          if((deckStudent && ["pen"].indexOf(b.dataset.tool) === -1) || (simpleBoard && b.dataset.tool === "select")) return;
+          if((deckStudent && ["pen", "text"].indexOf(b.dataset.tool) === -1) || (simpleBoard && b.dataset.tool === "select")) return;
           tbq.all(".tool-btn-v").forEach(function(x){
             if(NON_TOOL_BTN_IDS.indexOf(x.id) === -1) x.classList.remove("active");
           });
@@ -11163,7 +11211,7 @@ window.mmTA = (function(){
         }
         // 「文字」工具第一次被點的時候，先問一次要不要打字加拼音／注音（只問一次，見
         // maybeAskPhoneticModeThenRun），問完才真的切換成文字工具；已經問過的話就直接切換。
-        if(b.dataset.tool === "text"){ maybeAskPhoneticModeThenRun(activate); }
+        if(b.dataset.tool === "text" && !deckStudent){ maybeAskPhoneticModeThenRun(activate); }
         else { activate(); }
       };
     }
@@ -12324,6 +12372,7 @@ window.mmTA = (function(){
     function renderTexts(){
       if(inPlaceEdit){ inPlaceEdit.refreshStyle(); return; } // 正在就地編輯：不要重建文字層（會把正在打字的框搞掉）
       textLayer.innerHTML = "";
+      if(slideSecInfo && slideSecInfo.sec.type === "board") renderStudentTexts();
       var scale = getScaleRatio();
       var zrT = zRanks();
       syncRevealAnim();
@@ -13209,6 +13258,7 @@ window.mmTA = (function(){
       var pIn = { x: Math.max(1, Math.min(97, p.x)), y: Math.max(1, Math.min(95, p.y)) };
       if(boardState.tool === "shape"){ startShapeDraw(pIn); return; }
       if(boardState.tool === "text"){
+        if(deckStudent){ if(inRoom()) studentTextPointer(e, pIn); return; }
         editTextInPlace(null, pIn);
         return;
         showInlineTextInput(cWrap, p, function(txt){
@@ -15055,7 +15105,8 @@ window.mmTA = (function(){
         if(deckStudent || (slideSecInfo && slideSecInfo.sec.type === "board")){ // 投影片：只清掉筆跡，文字／圖片／圖案／表格和底圖背景都不會動
           if(confirm("確定要清除畫筆的筆跡嗎？（投影片上的文字、圖片、底圖和背景都不會被清掉）\nClear pen strokes only? (Slide content and background stay.)")){
             strokes = []; localSelfSeq++; redrawStrokes();
-            writeProgress(q.id, { strokes: strokes, strokesRevSeq: localSelfSeq, strokesRevBy: deviceInstanceId });
+            var clrPatch = { strokes: strokes, strokesRevSeq: localSelfSeq, strokesRevBy: deviceInstanceId }; if(!isStudent && inRoom()) clrPatch.stexts = null;
+            writeProgress(q.id, clrPatch);
           }
           return;
         }
