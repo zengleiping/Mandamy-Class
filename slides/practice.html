@@ -9720,6 +9720,9 @@ window.mmTA = (function(){
   // 之後就尊重他們自己的選擇（包括手動退出），不會每換一題都硬幫他們切回全螢幕。只對學生生效，
   // 老師端維持原本手動點按鈕的行為。
   var studentAutoFsTried = false;
+  // 老師在平台裡（簡報嵌在 iframe 裡）按全螢幕：請外層平台把這個 iframe 撐滿整個視窗，
+  // 這樣上方導覽列、分頁、計時列都會被蓋掉，只剩編輯區（否則「全螢幕」只是在 iframe 的小範圍裡放大）
+  function fsTellParent(on){ try{ if(!isStudent && window.parent && window.parent !== window) window.parent.postMessage({ mm: "fsFrame", on: !!on }, "*"); }catch(e){} }
   function setupCanvasFullscreen(container, toggleBtn, refit){
     if(isStudent && !studentAutoFsTried){ studentAutoFsTried = true; canvasFullscreen = true; }
     var originalParent = container.parentNode; // 一定要在搬動前先記下來，退出時才知道要塞回哪裡
@@ -9744,6 +9747,7 @@ window.mmTA = (function(){
       container.classList.toggle("fs-edit", canvasFsMode === "edit");
       container.classList.add("canvas-fs-active");
       document.body.classList.add("canvas-fs-open");
+      fsTellParent(true);
       updateBtn();
       requestAnimationFrame(refit);
     }
@@ -9751,6 +9755,7 @@ window.mmTA = (function(){
       canvasFullscreen = false; canvasFsPrevEdit = false;
       container.classList.remove("canvas-fs-active", "fs-edit");
       document.body.classList.remove("canvas-fs-open");
+      fsTellParent(false);
       if(container.parentNode === document.body) originalParent.appendChild(container);
       updateBtn();
       requestAnimationFrame(refit);
