@@ -1406,7 +1406,7 @@
   .board-area.ribbon-mode:not(.canvas-fs-active) .draw-toolbar-vertical{ display:none !important; }
   .board-area.ribbon-mode.canvas-fs-active:not(.fs-edit) .draw-toolbar-top{ display:none !important; }
   /* 全螢幕編輯：功能區留在上方、畫布撐滿剩下的空間 */
-  .board-area.ribbon-mode.canvas-fs-active.fs-edit{ flex-direction:column; padding:8px; }
+  .board-area.ribbon-mode.canvas-fs-active.fs-edit{ flex-direction:column; padding:4px 6px 4px; }
   .board-area.ribbon-mode.fs-edit .draw-toolbar-top{ position:relative !important; top:auto !important; left:auto !important; right:auto !important; width:100% !important; flex:none; margin:0 0 6px; background:var(--surface-2); }
   .board-area.ribbon-mode.fs-edit .draw-toolbar-vertical{ display:none !important; }
   .board-area.ribbon-mode.fs-edit .canvas-fs-exit-btn{ display:none; }
@@ -1421,6 +1421,12 @@
   .rb-tab{ border:none; background:none; padding:7px 13px 6px; font-size:13.5px; font-weight:700; color:var(--ink-soft); cursor:pointer; border-bottom:3px solid transparent; white-space:nowrap; }
   .rb-tab:hover{ color:var(--ink); } .rb-tab.on{ color:var(--seal); border-bottom-color:var(--seal); }
   .rb-panels{ min-height:82px; }
+  /* 收合功能區（像 PowerPoint 的「摺疊功能區」）：只留頁籤列，畫布多出約 100px 高；點頁籤會暫時浮出面板，點別處就收回 */
+  .draw-toolbar-top.rb-collapsed .rb-panels{ display:none; }
+  .draw-toolbar-top.rb-collapsed.rb-peek{ position:relative; }
+  .draw-toolbar-top.rb-collapsed.rb-peek .rb-panels{ display:block; position:absolute; left:0; right:0; top:100%; z-index:9004; background:var(--surface,#fff); border:1.5px solid rgba(28,33,30,.15); border-radius:0 0 12px 12px; box-shadow:0 10px 24px rgba(0,0,0,.22); }
+  .rb-collapse-btn{ border:0; background:rgba(28,33,30,.07); border-radius:8px; padding:4px 9px; font-size:12px; font-weight:700; color:var(--ink-soft); cursor:pointer; white-space:nowrap; }
+  .rb-collapse-btn:hover{ background:rgba(28,33,30,.14); color:var(--ink); }
   .rb-panel{ display:none; padding:6px 8px 4px; align-items:stretch; flex-wrap:wrap; row-gap:6px; overflow:visible; }
   .draw-toolbar-top.ribbon .color-popover{ position:fixed; z-index:9003; margin:0; }
   .rb-panel.on{ display:flex; }
@@ -10607,9 +10613,20 @@ window.mmTA = (function(){
         var pn = document.createElement("div"); pn.className = "rb-panel"; pn.dataset.tab = t.id; rbPanels[t.id] = pn;
       });
       var rbNavSlot = document.createElement("div"); rbNavSlot.className = "rb-nav"; rbBar.appendChild(rbNavSlot);
+      var rbColBtn = document.createElement("button"); rbColBtn.type = "button"; rbColBtn.className = "rb-collapse-btn"; rbNavSlot.appendChild(rbColBtn);
+      var rbCollapsed = false; try{ rbCollapsed = localStorage.getItem("mm-ribbon-collapsed") === "1"; }catch(e){}
       topBar.innerHTML = ""; topBar.appendChild(rbBar); var rbPanelWrap = document.createElement("div"); rbPanelWrap.className = "rb-panels"; Object.keys(rbPanels).forEach(function(k){ rbPanelWrap.appendChild(rbPanels[k]); }); topBar.appendChild(rbPanelWrap);
+      function rbApplyCollapse(){
+        topBar.classList.toggle("rb-collapsed", rbCollapsed); if(!rbCollapsed) topBar.classList.remove("rb-peek");
+        rbColBtn.textContent = rbCollapsed ? "﹀ 展開功能區" : "︿ 收合功能區"; rbColBtn.title = rbCollapsed ? "展開功能區（也可以在頁籤上連點兩下）" : "收合功能區，讓畫布變大（也可以在頁籤上連點兩下）";
+        requestAnimationFrame(fitCanvasToViewport); setTimeout(fitCanvasToViewport, 80); setTimeout(fitCanvasToViewport, 250);
+      }
+      function rbSetCollapsed(v){ rbCollapsed = v; try{ localStorage.setItem("mm-ribbon-collapsed", v ? "1" : "0"); }catch(e){} rbApplyCollapse(); }
+      rbColBtn.onclick = function(e){ e.stopPropagation(); rbSetCollapsed(!rbCollapsed); };
+      rbBar.addEventListener("dblclick", function(e){ if(e.target.closest(".rb-tab")){ e.stopPropagation(); rbSetCollapsed(!rbCollapsed); } });
+      document.addEventListener("pointerdown", function(e){ if(topBar.classList.contains("rb-peek") && !topBar.contains(e.target) && !e.target.closest(".color-popover")) topBar.classList.remove("rb-peek"); }, true);
       function rbShow(id){
-        rbCur = id; try{ sessionStorage.setItem("mm-ribbon-tab", id); }catch(e){}
+        rbCur = id; if(rbCollapsed) topBar.classList.add("rb-peek"); try{ sessionStorage.setItem("mm-ribbon-tab", id); }catch(e){}
         rbBar.querySelectorAll(".rb-tab").forEach(function(b){ b.classList.toggle("on", b.dataset.tab === id); });
         Object.keys(rbPanels).forEach(function(k){ rbPanels[k].classList.toggle("on", k === id); });
         requestAnimationFrame(fitCanvasToViewport); setTimeout(fitCanvasToViewport, 80);
@@ -10688,6 +10705,7 @@ window.mmTA = (function(){
       var navN = tbItems.nav ? tbItems.nav.nodes : []; navN.forEach(function(n){ rbNavSlot.appendChild(n); });
       ["insert", "transition", "media", "notes"].forEach(function(k){ var it = tbItems[k]; if(it) it.nodes.forEach(function(n){ n.style.display = "none"; }); }); // 已經拆成功能區的按鈕；這幾個原本的按鈕留在原處當「引擎」（不顯示）
       rbShow(rbCur);
+      rbApplyCollapse();
       // 放映（全螢幕）時：功能區收起，左邊浮出簡單的放映工具列（放映／翻頁／筆／橡皮擦／清除／放映工具）；結束放映再放回功能區
       var fsSlots = [];
       function rbFsSync(){
