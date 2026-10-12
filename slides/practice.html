@@ -4044,7 +4044,8 @@ window.mmTA = (function(){
     }
     return activeProjectId ? fsData.projects[activeProjectId] : null;
   }
-  function getSections(){ var proj = getActiveProject(); return (proj && proj.sections) || {}; }
+  // 雲端資料庫不會保存空的物件，所以「還沒有任何小題」的大題讀回來時 questions 會不見——這裡補回空物件，新增小題才不會出錯
+  function getSections(){ var proj = getActiveProject(); var secs = (proj && proj.sections) || {}; Object.keys(secs).forEach(function(k){ if(secs[k] && !secs[k].questions) secs[k].questions = {}; }); return secs; }
 
   function getSortedSectionKeys(){
     var secs = getSections();
