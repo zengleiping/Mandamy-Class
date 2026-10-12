@@ -252,6 +252,11 @@
             }
           }
         },
+        "albums": {
+          "$c": {
+            ".read": "auth != null"
+          }
+        },
         "bingo": {
           "$c": {
             ".read": "auth != null",

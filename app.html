@@ -675,6 +675,14 @@ function trToneMark(syl){
 // 欄位裡打 ji4 de 這種「數字聲調」，加入時自動轉成拼音調號／注音
 function trNormPy(v){ return String(v || "").trim().split(/\s+/).filter(Boolean).map(trToneMark).join(" "); }
 function trNormZy(v){ return String(v || "").trim().split(/\s+/).filter(Boolean).map(function(t){ return /^[a-zA-Züv:]+[0-5]$/.test(t) ? trZhuyinSyl(t.replace(/u:/g, "ü").replace(/v/g, "ü")) : t; }).join(" "); }
+// 在注音／拼音欄位打數字聲調（1～4 聲、0 或 5 輕聲）時，當場換成調號：拼音 yu2→yú、注音 ㄋㄧ3→ㄋㄧˇ（也可以打拼音字母 ji4→ㄐㄧˋ），跟簡報裡的輸入一樣
+function trLiveDigits(el, mode){
+  var v = el.value, out;
+  if(mode === "py") out = v.replace(/([a-zA-Züv:]+)([0-5])/g, function(m, a, d){ return trToneMark(a + d); });
+  else out = v.replace(/([a-zA-Züv:]+)([0-5])/g, function(m, a, d){ return trZhuyinSyl(a.replace(/u:/g, "ü").replace(/v/g, "ü") + d); })
+              .replace(/([\u3105-\u312F]+)([0-5])/g, function(m, a, d){ return d === "0" || d === "5" ? "˙" + a : a + ({ "1": "", "2": "ˊ", "3": "ˇ", "4": "ˋ" })[d]; });
+  if(out !== v){ var pos = el.selectionStart, delta = out.length - v.length; el.value = out; try{ el.setSelectionRange(pos + delta, pos + delta); }catch(e){} }
+}
 async function trAddFromFields(){
   var w = document.getElementById("tr-in"), word = (w.value || "").trim(); if(!word){ toast("先輸入中文詞語"); return; }
   var g = function(id){ var el = document.getElementById(id); return el ? el.value.trim() : ""; };
@@ -817,6 +825,9 @@ function trBuild(){
   inp.addEventListener("keydown", function(e){ if(e.key === "Enter" && !e.isComposing){ e.preventDefault(); go(); } e.stopPropagation(); });
   box.querySelector("#tr-go").onclick = go;
   box.querySelector("#tr-add").onclick = trAddFromFields;
+  box.querySelector("#tr-f-zy").addEventListener("input", function(){ if(!this.dataset.ime) trLiveDigits(this, "zy"); });
+  box.querySelector("#tr-f-py").addEventListener("input", function(){ if(!this.dataset.ime) trLiveDigits(this, "py"); });
+  ["#tr-f-zy", "#tr-f-py"].forEach(function(sel){ var f = box.querySelector(sel); f.addEventListener("compositionstart", function(){ f.dataset.ime = "1"; }); f.addEventListener("compositionend", function(){ delete f.dataset.ime; trLiveDigits(f, sel === "#tr-f-zy" ? "zy" : "py"); }); });
   var dc = box.querySelector("#tr-direct"); dc.checked = !!TR.show.direct; dc.onchange = function(){ TR.show.direct = dc.checked; trSaveCfg(); };
   function syncOpts(){
     box.querySelectorAll(".tr-chip").forEach(function(c){ c.classList.toggle("on", TR.langs.indexOf(c.dataset.lang) !== -1); });
@@ -1060,7 +1071,7 @@ window.addEventListener("popstate", function(e){
 // ---------- 「返回」：每個功能頁左上角都有，回到上一層 ----------
 function canBack(){
   if(S.teacher) return !!(S.lib || S.rec || S.day || S.sel || S.settings);
-  return !!(S.student && (S.hwOpen || S.leaveOpen || S.lesson || S.roomJoin || S.examOpen));
+  return !!(S.student && (S.hwOpen || S.albOpen || S.leaveOpen || S.lesson || S.roomJoin || S.examOpen));
 }
 function goBack(){
   if(S.teacher){
@@ -1074,6 +1085,7 @@ function goBack(){
       render(); return;
     }
     if(S.day && !S.sel){ S.day = null; render(); return; }
+    if(S.alb && S.sel && S.sel.c){ S.alb = S.alb.id ? { id: null } : null; render(); return; }
     if(S.hw && S.sel && S.sel.c){
       var v = S.hw.view; S.hw = (v === "item" || v === "settle" || v === "new" || v === "edit" || v === "manage" || v === "summary") ? { view: "list" } : null; render(); return;
     }
@@ -1091,6 +1103,7 @@ function goBack(){
     if(S.examOpen){ S.examOpen = null; renderStudentHw(); return; }
     if(S.roomJoin){ S.roomJoin = null; renderStudent(); return; }
     if(S.leaveOpen){ S.leaveOpen = false; renderStudent(); return; }
+    if(S.albOpen){ S.albOpen = (S.albOpen !== "list") ? "list" : null; if(S.albOpen) renderStudentAlbum(); else renderStudent(); return; }
     if(S.hwOpen){ S.hwOpen = (S.hwOpen !== "list") ? "list" : null; S.hwShotsFor = null; if(S.hwOpen) renderStudentHw(); else renderStudent(); return; }
     if(S.lesson){ S.lesson = null; S.tab = null; S.sub = null; renderStudent(); return; }
   }
@@ -1109,7 +1122,7 @@ function shell(inner, opts){
     e.preventDefault();
     if(S.focus) setFocus(false);
     if(S.teacher){ S.sel = null; S.lesson = null; S.tab = null; S.sub = null; S.hw = null; S.rec = null; S.lib = null; S.day = null; S.settings = false; if(S.live && S.live.on) pushLive(true); render(); }
-    else if(S.student){ S.lesson = null; S.tab = null; S.sub = null; S.hwOpen = null; S.leaveOpen = false; S.roomJoin = null; S.examOpen = null; renderStudent(); }
+    else if(S.student){ S.lesson = null; S.tab = null; S.sub = null; S.hwOpen = null; S.albOpen = null; S.leaveOpen = false; S.roomJoin = null; S.examOpen = null; renderStudent(); }
   };
   if(isT){
     document.getElementById("bell").onclick = openBell; updateBell();
@@ -2038,6 +2051,154 @@ async function renderExamReview(cls){
   shell(html); setCrumb([]);
   document.getElementById("main").onclick = function(e){ var b = e.target.closest("[data-h]"); if(b){ S.hw = { view: "list" }; render(); } };
 }
+// ---------- 班級相簿：老師上傳課堂截圖與照片，本班學生與家長看得到 ----------
+// 資料：teacherPlatform/{老師}/albums/{班級}/{相簿}，照片檔放 Storage 的 hwTeacher/{老師}/{班級}/album_{相簿}/（沿用聯絡簿的儲存規則）
+function albPath(tid, cid, id, sub){ return "teacherPlatform/" + tid + "/albums/" + cid + (id ? "/" + id : "") + (sub ? "/" + sub : ""); }
+function albPhotos(a){ var p = a.photos || {}; return Object.keys(p).map(function(k){ var o = Object.assign({}, p[k]); o.id = k; return o; }).sort(function(x, y){ return (x.at || 0) - (y.at || 0); }); }
+async function albList(tid, cid, forViewer){
+  var v = (await fbGet(albPath(tid, cid))) || {};
+  var l = Object.keys(v).map(function(k){ var a = v[k]; a.id = k; return a; });
+  if(forViewer) l = l.filter(function(a){ return !a.hidden && albPhotos(a).length; });
+  return l.sort(function(a, b){ return (b.date || "").localeCompare(a.date || "") || (b.createdAt || 0) - (a.createdAt || 0); });
+}
+function albLightbox(photos, idx){
+  var ov = document.createElement("div"); ov.id = "alb-lb"; ov.style.cssText = "position:fixed;inset:0;z-index:99998;background:rgba(0,0,0,.9);display:flex;flex-direction:column;align-items:center;justify-content:center;";
+  var i = idx, sx = null;
+  function draw(){
+    var p = photos[i];
+    ov.innerHTML = '<div style="position:absolute;top:10px;right:14px;display:flex;gap:8px;"><a href="' + esc(p.url) + '" target="_blank" rel="noopener" download style="color:#fff;font-size:13px;background:rgba(255,255,255,.18);padding:6px 12px;border-radius:99px;text-decoration:none;">⬇ 開啟原圖</a><button id="alb-x" style="color:#fff;background:rgba(255,255,255,.18);border:0;border-radius:99px;padding:6px 14px;font-size:15px;cursor:pointer;">✕</button></div>' +
+      '<img src="' + esc(p.url) + '" style="max-width:94vw;max-height:80vh;object-fit:contain;border-radius:8px;">' +
+      '<div style="color:#fff;font-size:15px;margin-top:10px;text-align:center;max-width:90vw;">' + (p.cap ? esc(p.cap) : "") + '<div style="font-size:12px;opacity:.7;margin-top:3px;">' + (i + 1) + ' / ' + photos.length + '</div></div>' +
+      (photos.length > 1 ? '<button id="alb-p" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:30px;color:#fff;background:rgba(255,255,255,.18);border:0;border-radius:99px;width:48px;height:48px;cursor:pointer;">‹</button><button id="alb-n" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:30px;color:#fff;background:rgba(255,255,255,.18);border:0;border-radius:99px;width:48px;height:48px;cursor:pointer;">›</button>' : '');
+    ov.querySelector("#alb-x").onclick = close;
+    var pb = ov.querySelector("#alb-p"), nb = ov.querySelector("#alb-n"); if(pb) pb.onclick = function(){ go(-1); }; if(nb) nb.onclick = function(){ go(1); };
+  }
+  function go(d){ i = (i + d + photos.length) % photos.length; draw(); }
+  function key(e){ if(e.key === "Escape") close(); else if(e.key === "ArrowLeft") go(-1); else if(e.key === "ArrowRight") go(1); }
+  function close(){ document.removeEventListener("keydown", key); ov.remove(); }
+  ov.addEventListener("click", function(e){ if(e.target === ov) close(); });
+  ov.addEventListener("touchstart", function(e){ sx = e.touches[0].clientX; }, { passive: true });
+  ov.addEventListener("touchend", function(e){ if(sx == null) return; var dx = e.changedTouches[0].clientX - sx; sx = null; if(Math.abs(dx) > 50 && photos.length > 1) go(dx < 0 ? 1 : -1); }, { passive: true });
+  document.addEventListener("keydown", key); document.body.appendChild(ov); draw();
+}
+function albGridHtml(photos, teacher){
+  return '<div class="alb-grid">' + photos.map(function(p, i){ return '<div class="alb-ph"><img src="' + esc(p.url) + '" loading="lazy" data-ph="' + i + '" alt="">' + (p.cap ? '<div class="alb-cap">' + esc(p.cap) + '</div>' : '') + (teacher ? '<button class="alb-del" data-delph="' + esc(p.id) + '" title="刪除這張">✕</button><button class="alb-capbtn" data-capph="' + esc(p.id) + '" title="加說明">✎</button>' : '') + '</div>'; }).join("") + '</div>';
+}
+function albCardsHtml(list, teacher){
+  return '<div class="alb-cards">' + list.map(function(a){
+    var ph = albPhotos(a), cover = ph[0];
+    return '<div class="alb-card" data-open="' + esc(a.id) + '"><div class="alb-cover">' + (cover ? '<img src="' + esc(cover.url) + '" loading="lazy" alt="">' : '<div class="alb-empty">還沒有照片</div>') + '</div><div class="alb-info"><b>' + esc(a.title || "未命名相簿") + '</b><div class="note">' + esc(a.date || "") + '　' + ph.length + ' 張' + (teacher && a.hidden ? '　🔒 隱藏中' : '') + '</div>' + (a.desc ? '<div class="note" style="margin-top:2px;">' + esc(a.desc.length > 40 ? a.desc.slice(0, 40) + "…" : a.desc) + '</div>' : '') + '</div></div>';
+  }).join("") + '</div>';
+}
+function albCss(){
+  if(document.getElementById("alb-css")) return;
+  var st = document.createElement("style"); st.id = "alb-css";
+  st.textContent = ".alb-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}.alb-card{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer}.alb-card:hover{border-color:var(--accent,#E8805A)}.alb-cover{aspect-ratio:4/3;background:var(--surface-2);display:flex;align-items:center;justify-content:center;overflow:hidden}.alb-cover img{width:100%;height:100%;object-fit:cover}.alb-empty{color:#9a8f85;font-size:13px}.alb-info{padding:8px 10px}" +
+    ".alb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}.alb-ph{position:relative;border-radius:10px;overflow:hidden;background:var(--surface-2);aspect-ratio:1/1}.alb-ph img{width:100%;height:100%;object-fit:cover;cursor:zoom-in}.alb-cap{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(transparent,rgba(0,0,0,.7));color:#fff;font-size:12px;padding:14px 8px 6px}" +
+    ".alb-del,.alb-capbtn{position:absolute;top:6px;width:26px;height:26px;border:0;border-radius:99px;background:rgba(0,0,0,.55);color:#fff;cursor:pointer;font-size:13px}.alb-del{right:6px}.alb-capbtn{right:38px}";
+  document.head.appendChild(st);
+}
+// 老師：相簿管理
+async function renderAlbumPage(cls){
+  S.focus = false; albCss();
+  var tid = S.teacher.id, cid = S.sel.c, A = S.alb, html;
+  if(!A.id){
+    var list = await albList(tid, cid, false);
+    html = '<div class="head-row"><div style="flex:1;"><h2>班級相簿</h2><div class="note">' + esc(cls.name) + '　上傳課堂截圖與照片，本班學生和家長都看得到（可以把個別相簿設成隱藏）</div></div><div><button class="btn primary" data-al="new">＋ 新增相簿</button> <button class="btn ghost" data-al="back">回班級</button></div></div>' +
+      (list.length ? albCardsHtml(list, true) : '<div class="panel"><p class="note">還沒有相簿。按「新增相簿」，取個名字（例如「10/12 第一堂課」），再上傳或貼上截圖。</p></div>');
+    shell(html); setCrumb([getSchool(S.sel.s, S.sel.t).name, cls.name, "相簿"]);
+    document.getElementById("main").onclick = async function(e){
+      var b = e.target.closest("[data-al],[data-open]"); if(!b) return;
+      if(b.dataset.open){ S.alb = { id: b.dataset.open }; render(); return; }
+      if(b.dataset.al === "back"){ S.alb = null; render(); return; }
+      if(b.dataset.al === "new"){
+        var t = await askText("相簿名稱（例如 10/12 第一堂課）", ymd(new Date()).slice(5).replace("-", "/") + " 課堂"); if(!t) return;
+        var id = uid("al_"); await fbSet(albPath(tid, cid, id), { title: t, date: ymd(new Date()), desc: "", createdAt: nowMs() }); S.alb = { id: id }; render();
+      }
+    };
+    return;
+  }
+  var a = await fbGet(albPath(tid, cid, A.id)); if(!a){ S.alb = { id: null }; return render(); }
+  a.id = A.id; var photos = albPhotos(a);
+  html = '<div class="head-row"><div style="flex:1;"><h2>' + esc(a.title || "未命名相簿") + '</h2><div class="note">' + esc(cls.name) + '　' + photos.length + ' 張</div></div><div class="tools"><button class="btn ghost" data-al="back">‹ 全部相簿</button></div></div>' +
+    '<div class="panel"><div class="tools" style="margin-bottom:8px;"><button class="btn primary" id="alb-up">＋ 選擇照片</button><input type="file" id="alb-file" accept="image/*" multiple style="display:none;"><span class="note" id="alb-prog">也可以直接拖曳照片到這裡，或按 Ctrl／⌘+V 貼上截圖</span></div>' +
+    '<div class="tools"><button class="btn sm" data-al="ren">改名稱</button><label style="display:inline-flex;gap:6px;align-items:center;margin:0 6px;">日期 <input type="date" id="alb-date" value="' + esc(a.date || "") + '"></label><button class="btn sm" data-al="vis">' + (a.hidden ? '🔒 目前隱藏（按此公開給學生與家長）' : '👁 目前公開（按此隱藏）') + '</button><button class="btn sm danger" data-al="del">刪除相簿</button></div>' +
+    '<label style="margin-top:8px;">說明（選填，學生和家長看得到）</label><textarea id="alb-desc" rows="2" placeholder="例如：今天學了第六課，同學們分組練習">' + esc(a.desc || "") + '</textarea></div>' +
+    '<div class="panel" id="alb-drop">' + (photos.length ? albGridHtml(photos, true) : '<p class="note">還沒有照片。</p>') + '</div>';
+  shell(html); setCrumb([getSchool(S.sel.s, S.sel.t).name, cls.name, "相簿", a.title || ""]);
+  var prog = document.getElementById("alb-prog");
+  async function upload(files){
+    files = Array.prototype.slice.call(files || []).filter(function(f){ return /^image\//.test(f.type); });
+    if(!files.length){ toast("沒有找到圖片檔"); return; }
+    var ok = 0;
+    for(var i = 0; i < files.length; i++){
+      try{
+        prog.textContent = "上傳中 " + (i + 1) + "/" + files.length + "…";
+        var nm = files[i].name && files[i].name !== "image.png" ? files[i].name : "shot_" + Date.now() + ".png";
+        var r = await uploadFile("hwTeacher/" + tid + "/" + cid + "/album_" + A.id + "/" + Date.now() + "_" + safeFileName(nm), files[i], function(p){ prog.textContent = "上傳中 " + (i + 1) + "/" + files.length + "　" + Math.round(p * 100) + "%"; });
+        await fbSet(albPath(tid, cid, A.id, "photos/" + uid("ph_")), { url: r.url, path: r.path, name: nm, at: nowMs() + i }); ok++;
+      }catch(er){ toast((er && er.message) || "有一張上傳失敗"); }
+    }
+    toast("已上傳 " + ok + " 張"); render();
+  }
+  document.getElementById("alb-up").onclick = function(){ document.getElementById("alb-file").click(); };
+  document.getElementById("alb-file").onchange = function(e){ var f = Array.prototype.slice.call(e.target.files); e.target.value = ""; upload(f); };
+  var drop = document.getElementById("main");
+  drop.ondragover = function(e){ e.preventDefault(); };
+  drop.ondrop = function(e){ e.preventDefault(); if(e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) upload(e.dataTransfer.files); };
+  if(window.__albPaste) document.removeEventListener("paste", window.__albPaste);
+  window.__albPaste = function(e){
+    if(!S.alb || !S.alb.id || !S.teacher) return;
+    var tg = e.target; if(tg && (tg.tagName === "INPUT" || tg.tagName === "TEXTAREA")) return;
+    var fs = []; var items = (e.clipboardData && e.clipboardData.items) || []; for(var i = 0; i < items.length; i++){ if(items[i].kind === "file" && /^image\//.test(items[i].type)){ var f = items[i].getAsFile(); if(f) fs.push(f); } }
+    if(fs.length){ e.preventDefault(); upload(fs); }
+  };
+  document.addEventListener("paste", window.__albPaste);
+  document.getElementById("alb-date").onchange = function(){ fbUpdate(albPath(tid, cid, A.id), { date: this.value }); };
+  document.getElementById("alb-desc").onchange = function(){ fbUpdate(albPath(tid, cid, A.id), { desc: this.value.trim() }); toast("已儲存說明"); };
+  document.getElementById("main").addEventListener("click", async function(e){
+    var im = e.target.closest("img[data-ph]"); if(im){ albLightbox(photos, Number(im.dataset.ph)); return; }
+    var dp = e.target.closest("[data-delph]"); if(dp){
+      var ph = photos.filter(function(x){ return x.id === dp.dataset.delph; })[0]; if(!ph || !confirm("刪除這張照片？")) return;
+      await fbSet(albPath(tid, cid, A.id, "photos/" + ph.id), null);
+      try{ if(window.storageApi && ph.path) await window.storageApi.deleteObject(window.storageApi.ref(window.storageApi.storage, ph.path)); }catch(er){}
+      render(); return;
+    }
+    var cp = e.target.closest("[data-capph]"); if(cp){
+      var ph2 = photos.filter(function(x){ return x.id === cp.dataset.capph; })[0]; if(!ph2) return;
+      var c = await askText("這張照片的說明（可留空）", ph2.cap || ""); if(c == null) return;
+      await fbSet(albPath(tid, cid, A.id, "photos/" + ph2.id + "/cap"), c.trim() || null); render(); return;
+    }
+    var al = e.target.closest("[data-al]"); if(!al) return;
+    if(al.dataset.al === "back"){ S.alb = { id: null }; render(); }
+    else if(al.dataset.al === "ren"){ var t = await askText("相簿名稱", a.title || ""); if(!t) return; await fbUpdate(albPath(tid, cid, A.id), { title: t }); render(); }
+    else if(al.dataset.al === "vis"){ await fbUpdate(albPath(tid, cid, A.id), { hidden: a.hidden ? null : true }); render(); }
+    else if(al.dataset.al === "del"){
+      if(!confirm("刪除整本相簿「" + (a.title || "") + "」和裡面的 " + photos.length + " 張照片？無法復原。")) return;
+      for(var i = 0; i < photos.length; i++){ try{ if(window.storageApi && photos[i].path) await window.storageApi.deleteObject(window.storageApi.ref(window.storageApi.storage, photos[i].path)); }catch(er){} }
+      await fbSet(albPath(tid, cid, A.id), null); S.alb = { id: null }; render();
+    }
+  });
+}
+// 學生／家長：看相簿（唯讀）
+async function renderStudentAlbum(){
+  albCss();
+  var st = S.student, tid = st.idx.t, cid = st.idx.c, list = await albList(tid, cid, true), openId = S.albOpen && S.albOpen !== "list" ? S.albOpen : null;
+  var a = openId ? list.filter(function(x){ return x.id === openId; })[0] : null, html;
+  if(a){
+    var photos = albPhotos(a);
+    html = '<div class="head-row"><div style="flex:1;"><h2>' + esc(a.title || "") + '</h2><div class="note">' + esc(a.date || "") + '　' + photos.length + ' 張</div></div><div><button class="btn ghost" data-al="list">‹ 全部相簿</button></div></div>' + (a.desc ? '<div class="panel"><div style="white-space:pre-wrap;">' + esc(a.desc) + '</div></div>' : '') + '<div class="panel">' + albGridHtml(photos, false) + '</div>';
+    shell(html); setCrumb([st.school, st.term, st.cls.name, a.title || "相簿"]);
+    document.getElementById("main").onclick = function(e){ var im = e.target.closest("img[data-ph]"); if(im){ albLightbox(photos, Number(im.dataset.ph)); return; } if(e.target.closest("[data-al]")){ S.albOpen = "list"; renderStudentAlbum(); } };
+    return;
+  }
+  html = '<div class="head-row"><div style="flex:1;"><h2>班級相簿</h2><div class="note">' + esc(st.cls.name) + '　老師放上來的課堂照片</div></div><div><button class="btn ghost" data-al="home">回班級</button></div></div>' + (list.length ? albCardsHtml(list, false) : '<div class="panel"><p class="note">老師還沒有放照片。</p></div>');
+  shell(html); setCrumb([st.school, st.term, st.cls.name, "相簿"]);
+  document.getElementById("main").onclick = function(e){
+    var b = e.target.closest("[data-open],[data-al]"); if(!b) return;
+    if(b.dataset.open){ S.albOpen = b.dataset.open; renderStudentAlbum(); } else { S.albOpen = null; renderStudent(); }
+  };
+}
 async function renderHomework(cls){
   S.focus = false;
   syncTime();
@@ -2915,8 +3076,11 @@ async function viewParent(tok){
       var notes = allItems.filter(function(x){ return x.kind === "notice" || x.kind === "plan"; }).sort(function(a, b){ return itemDay(b).localeCompare(itemDay(a)); }).slice(0, 5);
       if(notes.length) extra += '<div class="panel"><h3>老師的通知</h3>' + notes.map(function(it){ return '<div style="margin:8px 0;"><span class="chip" style="background:' + KIND_COLOR[it.kind] + ';color:#fff;">' + KIND_LABEL[it.kind] + '</span> <b>' + esc(it.title) + '</b> <span class="note">' + esc(itemDay(it)) + '</span>' + (it.body ? '<div class="bd-body">' + richText(it.body) + '</div>' : '') + (it.progress ? '<div class="bd-plan"><b>教學進度／今日任務</b><div>' + richText(it.progress) + '</div></div>' : '') + '</div>'; }).join("") + '</div>';
     }catch(ex){ console.warn(ex); }
+    var parentAlbums = []; try{ parentAlbums = await albList(tid, link.c, true); }catch(exa){}
+    if(parentAlbums.length){ albCss(); html += '<div class="panel"><h3>📷 班級相簿</h3>' + albCardsHtml(parentAlbums, false) + '</div>'; }
     html += extra + leaveFormHtml() + '<div class="panel"><h3>請假紀錄</h3>' + leaveListHtml(myLv) + '</div></div></div>';
     root.innerHTML = html;
+    root.querySelectorAll(".alb-card[data-open]").forEach(function(c){ c.onclick = function(){ var a = parentAlbums.filter(function(x){ return x.id === c.dataset.open; })[0]; if(a) albLightbox(albPhotos(a), 0); }; });
     document.getElementById("lv-go").onclick = async function(){
       var d = document.getElementById("lv-d").value; if(!d){ alert("請選請假日期。"); return; }
       this.disabled = true;
@@ -3581,6 +3745,8 @@ function render(){
   if(!S.sel.c){ if(!getSchool(S.sel.s, S.sel.t)){ S.sel = null; render(); return; } return renderSchoolHome(); }
   var cls = getCls(S.sel);
   if(!cls){ S.sel = null; render(); return; }
+  if(S.alb && S.albCid !== S.sel.c) S.alb = null;
+  if(S.alb) return renderAlbumPage(cls);
   if(S.hw) return renderHomework(cls);
   if(S.lesson) return renderLesson(cls);
   renderClassHome(cls);
@@ -3599,7 +3765,7 @@ function renderClassHome(cls){
   var sc = schoolsOf()[S.sel.s], tm = sc.terms[S.sel.t];
   var html = '<div class="head-row"><div style="flex:1;min-width:200px;"><h2>' + esc(cls.name) + '</h2></div>' +
     '<div><div class="note">班級代碼</div><span class="code">' + esc(cls.code) + '</span> <button class="btn sm" id="cpy">複製學生連結</button> <button class="btn sm owner-only" id="ren">改班名</button> <button class="btn sm danger" id="del">刪除班級</button></div></div>';
-  html += '<div class="panel"><h3>班級功能</h3><div class="tools"><button class="btn" id="hwbtn">聯絡簿</button><button class="btn" id="wheelbtn">🎡 點名輪盤</button><button class="btn" id="capbtn">⏳ 時空膠囊</button><button class="btn" id="leavebtn">請假申請</button></div>' +
+  html += '<div class="panel"><h3>班級功能</h3><div class="tools"><button class="btn" id="hwbtn">聯絡簿</button><button class="btn" id="albbtn">📷 班級相簿</button><button class="btn" id="wheelbtn">🎡 點名輪盤</button><button class="btn" id="capbtn">⏳ 時空膠囊</button><button class="btn" id="leavebtn">請假申請</button></div>' +
     '<div class="note" style="font-weight:700;margin-bottom:6px;">🔗 這個班的常用連結（Padlet、Google Meet 等）</div><div class="tools" id="linkbox">' +
     (cls.links ? Object.keys(cls.links).map(function(k){ var L = cls.links[k]; return '<span style="display:inline-flex;gap:4px;align-items:center;"><a class="btn" href="' + esc(L.url) + '" target="_blank" rel="noopener">' + esc(L.name) + '</a>' + (S.linkEdit ? '<button class="btn sm" data-ren-link="' + k + '">修改</button><button class="btn sm danger" data-del-link="' + k + '">刪除</button>' : '') + '</span>'; }).join("") : '') +
     (S.linkEdit ? '<button class="btn sm" id="addlink">新增</button>' : '') + '<button class="btn sm ghost" id="editlinks">' + (S.linkEdit ? '完成' : '編輯') + '</button></div></div>';
@@ -3658,6 +3824,7 @@ function renderClassHome(cls){
   document.querySelectorAll("[data-del-link]").forEach(function(b){ b.onclick = async function(){ var k = b.dataset.delLink; if(!confirm("刪除這個連結？")) return; delete cls.links[k]; await fbSet(clsPath(S.sel) + "/links/" + k, null); renderClassHome(cls); }; });
   document.querySelectorAll("[data-ren-link]").forEach(function(b){ b.onclick = async function(){ var k = b.dataset.renLink, L = cls.links[k]; var nm = await askText("連結名稱", L.name); if(!nm) return; var url = await askText("網址", L.url); if(!url) return; if(!/^https?:\/\//i.test(url)) url = "https://" + url; L.name = nm; L.url = url; await fbSet(clsPath(S.sel) + "/links/" + k, L); renderClassHome(cls); }; });
   document.getElementById("hwbtn").onclick = function(){ S.hw = { view: "list" }; render(); };
+  document.getElementById("albbtn").onclick = function(){ S.alb = { id: null }; S.albCid = S.sel.c; render(); };
   document.getElementById("wheelbtn").onclick = function(){ S.hw = { view: "wheel" }; render(); };
   document.getElementById("capbtn").onclick = function(){ S.hw = { view: "capsule" }; render(); };
   document.getElementById("leavebtn").onclick = function(){ S.hw = { view: "leave" }; render(); };
@@ -4082,6 +4249,7 @@ function renderStudent(){
   if(S.examOpen) return renderStudentExam();
   if(S.roomJoin) return renderStudentRoom();
   if(S.hwOpen) return renderStudentHw();
+  if(S.albOpen) return renderStudentAlbum();
   if(S.leaveOpen) return renderStudentLeave();
   S.focus = false; S.liveRendered = null;
   var cls = st.cls, openMap = cls.lessonOpen || {};
@@ -4095,7 +4263,7 @@ function renderStudent(){
   S.lesson = null;
   var keys = lessonKeys(cls).filter(function(no){ var o = openMap[no]; return o && OPEN_KEYS.some(function(k){ return o[k[0]]; }); });
   var html = '<div class="head-row"><div><div class="note">' + esc(st.school) + '　›　' + esc(st.term) + '</div><h2>' + esc(cls.name) + '</h2></div>' + (st.acct ? '<div><button class="btn sm ghost" id="chpw">改密碼</button></div>' : '') + '</div>';
-  html += '<div id="mine"></div>'; html += '<div class="panel"><h3>聯絡簿</h3><div id="hwhint"></div><button class="btn primary" id="hwopen">看作業／交作業</button> <button class="btn" id="lvopen">我要請假</button></div>';
+  html += '<div id="mine"></div>'; html += '<div class="panel"><h3>聯絡簿</h3><div id="hwhint"></div><button class="btn primary" id="hwopen">看作業／交作業</button> <button class="btn" id="lvopen">我要請假</button> <button class="btn" id="albopen">📷 班級相簿</button></div>';
   if(!keys.length) html += '<div class="empty"><p class="note">老師還沒有開放任何課次。<br>上課時請輸入老師給的房間號碼：</p><div class="join" style="justify-content:center;"><input type="text" id="roomno" placeholder="房間號碼" inputmode="numeric" style="width:160px;"><button class="btn primary" id="roomgo">加入</button></div></div>';
   else {
     html += '<div id="ls"></div><div class="panel"><h3>上課中？</h3><div class="join" style="margin:0;"><input type="text" id="roomno" placeholder="老師給的房間號碼" inputmode="numeric" style="width:200px;"><button class="btn primary" id="roomgo">加入房間</button></div></div>';
@@ -4103,6 +4271,7 @@ function renderStudent(){
   shell(html); setCrumb([st.school, st.term, cls.name]);
   document.getElementById("hwopen").onclick = function(){ S.hwOpen = "list"; renderStudent(); };
   document.getElementById("lvopen").onclick = function(){ S.leaveOpen = true; renderStudent(); };
+  document.getElementById("albopen").onclick = function(){ S.albOpen = "list"; renderStudent(); };
   fillStudentHint();
   var chpw = document.getElementById("chpw"); if(chpw) chpw.onclick = studentChangePassword;
   var ls = document.getElementById("ls");
