@@ -13232,6 +13232,25 @@ window.mmTA = (function(){
 
       // 已經用過觸控筆的裝置：手指在畫布上只能用來平移畫面，不能畫記／擦除／打字，
       // 避免寫字時手掌或另一手不小心碰到螢幕誤畫出線條（見上面 isPalmTouch 的說明）。
+      // 手指長按 0.2 秒＝抓起手指底下的物件（文字方塊、圖片、圖案…）來拖曳。
+      // 用過 Apple Pencil 之後，手指在畫布上預設只能平移畫面（防手掌誤觸），所以手指要搬動物件只能靠「按住不動」：
+      // 快速滑動仍然是平移，按住不到 0.2 秒就放開或移動超過約 10px 也不會抓取，避免誤動。
+      if(e.pointerType === "touch" && !presentLock() && boardState.tool !== "pan" && !(deckStudent) && (isPalmTouch(e) || autoPanEligible(p))){
+        var lpHit = null; try{ lpHit = hitTestItem(p); }catch(er0){}
+        if(lpHit){
+          var lpId = e.pointerId, lpX0 = e.clientX, lpY0 = e.clientY, lpDone = false;
+          var lpTimer = setTimeout(function(){
+            var cur = activeTouchPointers[lpId]; if(!cur || lpDone) return;
+            if(Math.hypot(cur.x - lpX0, cur.y - lpY0) > 10) return; // 已經在滑動＝是平移，不抓取
+            lpDone = true; if(isPanning){ isPanning = false; canvasPanX = panStartX; canvasPanY = panStartY; try{ applyCanvasZoomPan(); }catch(er1){} }
+            switchToSelectTool(); selSet = expandGroups([lpHit]); renderSelection();
+            try{ if(navigator.vibrate) navigator.vibrate(12); }catch(er2){}
+            beginMoveSelection(getPos({ clientX: cur.x, clientY: cur.y }));
+          }, 200);
+          var lpClear = function(ev){ if(ev.pointerId !== lpId) return; clearTimeout(lpTimer); window.removeEventListener("pointerup", lpClear, true); window.removeEventListener("pointercancel", lpClear, true); };
+          window.addEventListener("pointerup", lpClear, true); window.addEventListener("pointercancel", lpClear, true);
+        }
+      }
       if(boardState.tool === "pan" || autoPanEligible(p) || isPalmTouch(e)){
         // 移動畫面：拖曳位移直接是螢幕像素（見 applyCanvasZoomPan 的說明），跟目前縮放比例無關，
         // 拖起來的手感才會跟滑鼠移動的距離一致，不會縮放愈大拖愈遲鈍或愈敏感。
