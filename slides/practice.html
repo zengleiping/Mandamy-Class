@@ -11221,7 +11221,7 @@ window.mmTA = (function(){
     // hover 開的小面板可以切換筆畫擦／局部擦，切換的同時也順便套用，不用切完再點一次主按鈕。
     var btnEraser = tbq.one("#btn-eraser");
     function selectEraserTool(){
-      boardState.tool = boardState.eraserMode === "pixel" ? "pixel-eraser" : "stroke-eraser";
+      boardState.tool = (boardState.eraserMode === "pixel" && !deckStudent) ? "pixel-eraser" : "stroke-eraser"; // 局部橡皮擦會連老師的筆記一起擦掉，學生看投影片時只給筆畫擦（而且只擦得到自己的）
       tbq.all(".tool-btn-v").forEach(function(x){
         if(NON_TOOL_BTN_IDS.indexOf(x.id) === -1) x.classList.remove("active");
       });
@@ -13121,6 +13121,7 @@ window.mmTA = (function(){
 
     function checkStrokeHit(p){
       for(var i = strokes.length - 1; i >= 0; i--){
+        if(deckStudent && strokes[i].by !== myId) continue; // 學生看投影片時，老師（或別人）的筆跡不能擦
         var pts = strokes[i].points;
         for(var j=0; j<pts.length; j++){
           var dist = Math.hypot(pts[j].x - p.x, pts[j].y - p.y);
@@ -13232,9 +13233,9 @@ window.mmTA = (function(){
 
       // 已經用過觸控筆的裝置：手指在畫布上只能用來平移畫面，不能畫記／擦除／打字，
       // 避免寫字時手掌或另一手不小心碰到螢幕誤畫出線條（見上面 isPalmTouch 的說明）。
-      // 手指長按 0.2 秒＝抓起手指底下的物件（文字方塊、圖片、圖案…）來拖曳。
+      // 手指長按 0.12 秒＝抓起手指底下的物件（文字方塊、圖片、圖案…）來拖曳。
       // 用過 Apple Pencil 之後，手指在畫布上預設只能平移畫面（防手掌誤觸），所以手指要搬動物件只能靠「按住不動」：
-      // 快速滑動仍然是平移，按住不到 0.2 秒就放開或移動超過約 10px 也不會抓取，避免誤動。
+      // 快速滑動仍然是平移，按住不到 0.12 秒就放開或移動超過約 10px 也不會抓取，避免誤動。
       if(e.pointerType === "touch" && !presentLock() && boardState.tool !== "pan" && !(deckStudent) && (isPalmTouch(e) || autoPanEligible(p))){
         var lpHit = null; try{ lpHit = hitTestItem(p); }catch(er0){}
         if(lpHit){
@@ -13246,7 +13247,7 @@ window.mmTA = (function(){
             switchToSelectTool(); selSet = expandGroups([lpHit]); renderSelection();
             try{ if(navigator.vibrate) navigator.vibrate(12); }catch(er2){}
             beginMoveSelection(getPos({ clientX: cur.x, clientY: cur.y }));
-          }, 200);
+          }, 120);
           var lpClear = function(ev){ if(ev.pointerId !== lpId) return; clearTimeout(lpTimer); window.removeEventListener("pointerup", lpClear, true); window.removeEventListener("pointercancel", lpClear, true); };
           window.addEventListener("pointerup", lpClear, true); window.addEventListener("pointercancel", lpClear, true);
         }
@@ -13410,6 +13411,7 @@ window.mmTA = (function(){
           opacity: boardState.opacity,
           isEraser: boardState.tool === "pixel-eraser"
         };
+        if(isStudent) newStroke.by = myId; // 記下是誰寫的：學生只能擦／清自己的筆跡，老師的筆記不會被學生動到
         strokes.push(newStroke);
         localSelfSeq++;
         writeProgress(q.id, { strokes: strokes, strokesRevSeq: localSelfSeq, strokesRevBy: deviceInstanceId });
@@ -15122,8 +15124,10 @@ window.mmTA = (function(){
     if(clearBtn){
       clearBtn.onclick = function(){
         if(deckStudent || (slideSecInfo && slideSecInfo.sec.type === "board")){ // 投影片：只清掉筆跡，文字／圖片／圖案／表格和底圖背景都不會動
-          if(confirm("確定要清除畫筆的筆跡嗎？（投影片上的文字、圖片、底圖和背景都不會被清掉）\nClear pen strokes only? (Slide content and background stay.)")){
-            strokes = []; localSelfSeq++; redrawStrokes();
+          var clearMsg = deckStudent ? "確定要清除你自己寫的筆跡嗎？（老師的筆記不會被清掉）\nClear your own pen strokes? (The teacher's notes stay.)" : "確定要清除畫筆的筆跡嗎？（投影片上的文字、圖片、底圖和背景都不會被清掉；學生在這頁打的字也會一併清掉）\nClear pen strokes? (Slide content and background stay; students' typed text on this page is cleared too.)";
+          if(confirm(clearMsg)){
+            if(deckStudent) strokes = strokes.filter(function(s0){ return s0.by !== myId; }); else strokes = [];
+            localSelfSeq++; redrawStrokes();
             var clrPatch = { strokes: strokes, strokesRevSeq: localSelfSeq, strokesRevBy: deviceInstanceId }; if(!isStudent && inRoom()) clrPatch.stexts = null;
             writeProgress(q.id, clrPatch);
           }
