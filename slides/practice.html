@@ -454,7 +454,7 @@
   .stage-wrap{
     overflow-y:auto; overflow-x:hidden; min-height:0; min-width:0;
     padding:18px clamp(12px, 2.5vw, 28px);
-    display:flex; justify-content:center;
+    display:flex; justify-content:center; align-items:flex-start; /* 不要把白色卡片硬拉成跟視窗一樣高：內容比視窗長時卡片要跟著撐高，不然內容會溢出卡片外（像背景破掉） */
     position:relative;
   }
 
@@ -464,7 +464,7 @@
     border:1px solid var(--grid-line);
     border-radius:20px;
     padding:clamp(16px, 2.5vw, 28px);
-    box-shadow:var(--shadow); min-height:560px; position:relative;
+    box-shadow:var(--shadow); min-height:max(560px, 100%); position:relative;
     transition:transform .15s ease-out, max-width .2s ease;
   }
   /* 側欄收合後舞台區有更多可用寬度，讓題目（尤其是寫字板）可以放大使用，而不是維持原本固定寬度 */
