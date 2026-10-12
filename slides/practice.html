@@ -1996,6 +1996,7 @@
     <div style="display:flex; gap:8px; margin-top:6px;">
       <button type="button" class="btn btn-sm btn-mode-toggle" data-mode="practice" style="flex:1; justify-content:center;">🟢 練習模式 Practice</button>
       <button type="button" class="btn btn-sm btn-mode-toggle" data-mode="test" style="flex:1; justify-content:center;">🔴 測驗模式 Test</button>
+      <button type="button" class="btn btn-sm btn-mode-toggle" data-mode="exam" style="flex:1; justify-content:center;" title="正式考試：不即時顯示答案、無音效，交卷後才公布">📝 正式考試 Exam</button>
     </div>
 
     <label style="margin-top:18px;">🎨 網站主視覺模式</label>
@@ -3533,6 +3534,8 @@ window.mmTA = (function(){
   var currentBgMode = localStorage.getItem("hanyu_theme_bg") || "light";
   var currentAccentColor = localStorage.getItem("hanyu_theme_accent") || "seal";
   var currentClassMode = localStorage.getItem("hanyu_class_mode") || "practice";
+  // 測驗模式與正式考試模式：都不即時顯示對錯，交卷／結算後才公布
+  function isTestMode(){ return currentClassMode === 'test' || currentClassMode === 'exam'; }
   // 小白板「文字」工具打字加註音：null 表示這台裝置從沒選過（要先跳出一次選擇視窗），
   // 實際的轉換函式（setPhoneticMode／buildPhoneticHtml…）在下面「打字加註音」那段一起定義。
   var currentPhoneticMode = localStorage.getItem("hanyu_phonetic_mode");
@@ -3746,8 +3749,8 @@ window.mmTA = (function(){
     }catch(e){}
   }
 
-  function playCorrectSound(){ if(currentClassMode !== 'test') playTone(currentSoundStyle, true); }
-  function playWrongSound(){ if(currentClassMode !== 'test') playTone(currentSoundStyle, false); }
+  function playCorrectSound(){ if(!isTestMode()) playTone(currentSoundStyle, true); }
+  function playWrongSound(){ if(!isTestMode()) playTone(currentSoundStyle, false); }
   function playVictorySound(){ playTone(currentSoundStyle, true); }
 
   /* ================== 資料庫載入與自動遷移 (載入第一冊 L1~L4 複習卷範本) ================== */
@@ -4573,7 +4576,7 @@ window.mmTA = (function(){
         if(sec.type === "match"){
           totalScoreable += weight;
           var pairs = q.pairs || {}; var pKeys = Object.keys(pairs); var totalPairs = pKeys.length;
-          if(currentClassMode === 'test'){
+          if(isTestMode()){
             var userPairs = progress.userPairs || {};
             var correctCount = 0;
             pKeys.forEach(function(pid){ if(userPairs[pid] === pid) correctCount++; });
@@ -9137,7 +9140,7 @@ window.mmTA = (function(){
     navBar.innerHTML = `
       <div style="font-size:13.5px; font-weight:700; color:var(--seal); display:flex; align-items:center; gap:6px;">
         <span>📝 ${sec.title}</span><span style="opacity:0.4;">/</span><span style="color:var(--ink);">${q.title}</span>
-        ${currentClassMode === 'test' ? '<span style="font-size:11px; background:var(--seal-soft); color:var(--seal); padding:2px 6px; border-radius:4px; margin-left:6px;">🔴 測驗模式中</span>' : ''}
+        ${isTestMode() ? '<span style="font-size:11px; background:var(--seal-soft); color:var(--seal); padding:2px 6px; border-radius:4px; margin-left:6px;">'+(currentClassMode==='exam'?'📝 正式考試中':'🔴 測驗模式中')+'</span>' : ''}
       </div>
       <div class="nav-page-group">
         <button type="button" class="btn btn-sm btn-ghost btn-prev-q" ${currentIndex <= 0 ? 'disabled style="opacity:0.4;"' : ''}>◀ 上一題 Prev</button>
@@ -9211,7 +9214,7 @@ window.mmTA = (function(){
     var interactive = canInteract();
     var pairs = q.pairs || {};
     var pairKeys = Object.keys(pairs);
-    var isTest = currentClassMode === 'test';
+    var isTest = isTestMode();
 
     // 用題目ID做固定種子洗牌：不管誰渲染、渲染幾次，右欄順序都完全一樣（老師／學生、每次重繪都一致）
     var rightOrder = seededShuffle(pairKeys, q.id + "|match-right");
@@ -9355,7 +9358,7 @@ window.mmTA = (function(){
     var progress = getProgress(q.id);
     var interactive = canInteract();
     var multiPicks = progress.multiPicks || {};
-    var isTest = currentClassMode === 'test';
+    var isTest = isTestMode();
     var correctIds = q.answerIds || (q.answerId ? [q.answerId] : []);
     playFeedbackOnce("choice:" + q.id, progress.lastEvent); // 勾選對／錯的音效同步：雙方都在同一個事件觸發時各自播放一次
 
@@ -9405,7 +9408,7 @@ window.mmTA = (function(){
 
   /* 填空題 */
   function renderFillBoard(q, container){
-    var progress = getProgress(q.id), interactive = canInteract() && !(progress.grade), isTest = currentClassMode === 'test';
+    var progress = getProgress(q.id), interactive = canInteract() && !(progress.grade), isTest = isTestMode();
     var fills = Object.assign({}, progress.fills || {}), fp = parseFillTemplate(q.template);
     var wrap = document.createElement("div");
     wrap.innerHTML = (q.prompt ? '<p class="circle-prompt zh">' + escapeHtml(q.prompt).replace(/\n/g, "<br>") + '</p>' : '');
@@ -9503,7 +9506,7 @@ window.mmTA = (function(){
     var interactive = canInteract();
     // 練習模式：只有在使用者實際排對之後才會標記 revealed（見 evaluateReorderState）
     // 測驗模式：全程不公布答案，要交卷結算才知道對錯
-    var isRevealed = currentClassMode !== 'test' && !!progress.revealed;
+    var isRevealed = !isTestMode() && !!progress.revealed;
     var correctWords = q.words || [];
 
     // 用題目ID做固定種子洗牌：不管誰渲染、渲染幾次，題目池的初始順序都完全一樣（老師／學生、每次重繪都一致）
@@ -9686,7 +9689,7 @@ window.mmTA = (function(){
 
       reorderTimer = setTimeout(function(){
         var isMatch = userWords.every(function(val, i){ return val === correctWords[i]; });
-        if(currentClassMode === 'test'){
+        if(isTestMode()){
           writeProgress(q.id, { userWords: userWords, poolWords: poolWords });
         } else {
           // 答對／答錯都寫進 lastEvent 讓兩端同步觸發音效與動畫（搖晃提示），不是只有動手排列的那一端自己看得到。
