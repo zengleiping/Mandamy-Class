@@ -4445,7 +4445,7 @@ window.mmTA = (function(){
   }
 
   function isOpenForStudent(){ return inRoom() ? (roomData && roomData.isOpen !== undefined ? !!roomData.isOpen : true) : true; }
-  function canInteract(){ if(window.__grade){ var gi = getCurrentQInfo(); return !!(gi && (gi.section.type === "board" || gi.section.type === "whiteboard")); } if(!inRoom() || roomRole === "teacher") return true; return isOpenForStudent(); }
+  function canInteract(){ if(window.__grade){ var gi = getCurrentQInfo(); return !!(gi && (gi.section.type === "board" || gi.section.type === "whiteboard")); } if(!inRoom() || roomRole === "teacher") return true; if(isStudent && timerLockedForStudent()) return false; return isOpenForStudent(); }
 
   function getProgress(qId){
     if(inRoom()) return (roomData && roomData.sharedProgress && roomData.sharedProgress[qId]) || {};
@@ -4949,6 +4949,71 @@ window.mmTA = (function(){
       if(timerSettingsOpen) openTimerSettingsPopover(widget, t);
     }
   }
+  /* ---- 時間到：鬧鈴 + 全螢幕提示 + 鎖住學生作答 ---- */
+  var alarmCtx = null, alarmTimer = null, alarmStopAt = 0, alarmFiredFor = null, timerWasLocked = false;
+  function timerLockedForStudent(){
+    if(!inRoom()) return false;
+    var t = getTimerState(); if(!t.totalSeconds) return false;
+    return isTimerEnded(t, getTimerRemainingSeconds(t));
+  }
+  function stopAlarm(){
+    if(alarmTimer){ clearInterval(alarmTimer); alarmTimer = null; }
+    var b = document.getElementById("alarm-stop-btn"); if(b) b.style.display = "none";
+  }
+  function playAlarm(){
+    try{
+      var ctx = getAudioContext(); if(ctx.state === "suspended") ctx.resume();
+      var beepSet = function(){
+        var now = ctx.currentTime;
+        for(var i = 0; i < 4; i++){
+          var osc = ctx.createOscillator(), g = ctx.createGain();
+          osc.type = "square"; osc.frequency.setValueAtTime(i % 2 ? 1175 : 1568, now + i * 0.16);
+          g.gain.setValueAtTime(0.0001, now + i * 0.16);
+          g.gain.exponentialRampToValueAtTime(0.28, now + i * 0.16 + 0.01);
+          g.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.16 + 0.14);
+          osc.connect(g); g.connect(ctx.destination); osc.start(now + i * 0.16); osc.stop(now + i * 0.16 + 0.15);
+        }
+      };
+      stopAlarm(); beepSet(); alarmStopAt = Date.now() + 20000;
+      alarmTimer = setInterval(function(){ if(Date.now() > alarmStopAt){ stopAlarm(); return; } beepSet(); }, 1000);
+    }catch(e){}
+  }
+  function showTimeUpOverlay(){
+    if(document.getElementById("timeup-overlay")) return;
+    var ov = document.createElement("div"); ov.id = "timeup-overlay";
+    ov.style.cssText = "position:fixed;inset:0;z-index:2147483000;background:rgba(20,20,18,.82);display:flex;align-items:center;justify-content:center;padding:20px;";
+    ov.innerHTML = '<div style="background:#fff;color:#2b2622;border-radius:24px;padding:36px 44px;max-width:520px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.4);">' +
+      '<div style="font-size:64px;line-height:1;">⏰</div>' +
+      '<div style="font-size:30px;font-weight:800;margin:14px 0 6px;color:#B23B32;">時間到！Time\'s up!</div>' +
+      '<div style="font-size:18px;margin-bottom:6px;">請停止作答，等待老師指示。</div>' +
+      '<div style="font-size:14px;color:#7a6f66;">Please stop answering and wait for your teacher.</div>' +
+      '<button type="button" id="alarm-stop-btn" style="margin-top:18px;padding:8px 18px;border-radius:12px;border:1px solid #c9b8a5;background:#faf3ea;cursor:pointer;font-size:14px;">🔕 關閉鈴聲 Silence</button></div>';
+    // 其餘畫面一律 inert：滑鼠、觸控、鍵盤（Tab／Enter）都無法再操作題目
+    Array.prototype.forEach.call(document.body.children, function(el){ if(el.tagName !== "SCRIPT" && !el.hasAttribute("inert")){ el.setAttribute("inert", ""); el.setAttribute("data-timeup-inert", "1"); } });
+    document.body.appendChild(ov);
+    document.getElementById("alarm-stop-btn").onclick = stopAlarm;
+  }
+  function hideTimeUpOverlay(){ var ov = document.getElementById("timeup-overlay"); if(ov) ov.remove(); document.querySelectorAll("[data-timeup-inert]").forEach(function(el){ el.removeAttribute("inert"); el.removeAttribute("data-timeup-inert"); }); stopAlarm(); }
+  function timerAlarmCheck(){
+    var t = getTimerState();
+    var ended = !!t.totalSeconds && isTimerEnded(t, getTimerRemainingSeconds(t));
+    if(ended){
+      // 只有「剛剛才到」才響鈴；中途進房或重新整理時，已經結束就只顯示提示、不響
+      var fresh = t.endAt && (Date.now() - t.endAt) < 8000;
+      if(alarmFiredFor !== t.endAt){ alarmFiredFor = t.endAt; if(fresh) playAlarm(); }
+      if(isStudent && inRoom()) showTimeUpOverlay();
+      else if(!document.getElementById("timeup-teacher")){
+        var tb = document.createElement("div"); tb.id = "timeup-teacher";
+        tb.style.cssText = "position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:2147483000;background:#B23B32;color:#fff;padding:10px 20px;border-radius:14px;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,.3);cursor:pointer;";
+        tb.textContent = "⏰ 時間到！學生已被鎖住不能作答（點一下關閉提示）"; tb.onclick = function(){ tb.remove(); stopAlarm(); };
+        if(inRoom()) document.body.appendChild(tb);
+      }
+    } else {
+      var ov = document.getElementById("timeup-overlay"); if(ov) hideTimeUpOverlay();
+      var tt = document.getElementById("timeup-teacher"); if(tt) tt.remove();
+    }
+    if(isStudent && timerWasLocked !== ended){ timerWasLocked = ended; if(!ended && (activeProjectId || inRoom())) { try{ renderStage(); }catch(e){} } }
+  }
   // 輕量刷新：每秒觸發，只更新數字與警示樣式，絕對不重建 DOM，避免老師設定彈窗打字打到一半被重置
   function tickTimerDisplay(){
     var widget = document.getElementById("timer-widget");
@@ -4968,7 +5033,7 @@ window.mmTA = (function(){
   document.addEventListener("click", function(e){
     if(timerSettingsOpen && !e.target.closest("#timer-widget")) closeTimerSettings();
   });
-  setInterval(tickTimerDisplay, 1000);
+  setInterval(function(){ tickTimerDisplay(); timerAlarmCheck(); }, 500);
 
   /* ================== 左側題目欄位收合／展開 ================== */
   // 進入題目區（教學主舞台）時，左側大題／題目清單佔用空間較大，
@@ -6409,7 +6474,7 @@ window.mmTA = (function(){
       var el = document.getElementById("attempt-timer"); if(roomData && roomData.submitted){ clearInterval(attemptTimerId); attemptTimerId = null; return; }
       var left = Math.max(0, endAt - Date.now()), m = Math.floor(left / 60000), sec = Math.floor(left % 60000 / 1000);
       if(el){ el.textContent = "⏱ 剩 " + m + ":" + (sec < 10 ? "0" : "") + sec; el.style.color = left < 60000 ? "#B23B32" : ""; }
-      if(left <= 0){ clearInterval(attemptTimerId); attemptTimerId = null; alert("時間到！系統會自動幫你交卷。\nTime is up — your exam will be submitted automatically."); attemptSubmit("time"); }
+      if(left <= 0){ clearInterval(attemptTimerId); attemptTimerId = null; playAlarm(); alert("時間到！系統會自動幫你交卷。\nTime is up — your exam will be submitted automatically."); attemptSubmit("time"); }
     }
     attemptTimerId = setInterval(tick, 1000); tick();
   }
