@@ -1770,6 +1770,33 @@ function recWeekNo(date, label){
   return Math.max(1, Math.floor((new Date(date + "T00:00:00") - st) / 86400000 / 7) + 1);
 }
 function recSlotDone(slotId){ var m = recMap(); return Object.keys(m).some(function(k){ return m[k].slotId === slotId; }); }
+// 課堂記錄的新生詞：把「拼音 · 注音 · 英文 · 泰文 · 日文」這串文字拆開，分欄排整齊
+function recVocabParts(sub){
+  var o = { py: "", zy: "", tr: [] };
+  String(sub || "").split(/\s*·\s*/).filter(Boolean).forEach(function(t){
+    if(!o.zy && /[\u3105-\u312F]/.test(t)) o.zy = t;
+    else if(!o.py && /[āáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]/.test(t) && !/[\u3400-\u9fff\u3040-\u30ff]/.test(t)) o.py = t;
+    else o.tr.push({ k: /[\u0E00-\u0E7F]/.test(t) ? "TH" : /[\u3040-\u30FF\u3400-\u9FFF]/.test(t) ? "JA" : "EN", t: t });
+  });
+  return o;
+}
+function recVocabListHtml(vocab){
+  if(!document.getElementById("rv-css")){
+    var st = document.createElement("style"); st.id = "rv-css";
+    st.textContent = ".rv-list{display:flex;flex-direction:column;gap:6px;margin-bottom:8px}.rv-row{display:grid;grid-template-columns:minmax(150px,230px) 1fr auto;gap:6px 14px;align-items:center;padding:8px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}" +
+      ".rv-main{display:flex;flex-direction:column;gap:1px}.rv-w{font-size:22px;font-weight:700;line-height:1.25}.rv-zy{font-size:15px;color:#3f7a66;font-weight:600}.rv-py{font-size:13px;color:#8a7c70}" +
+      ".rv-tr{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:14px;color:var(--ink)}.rv-t i{font-style:normal;font-size:10px;font-weight:700;color:#fff;background:#9a8f85;border-radius:5px;padding:1px 5px;margin-right:5px}.rv-t.EN i{background:#C0502F}.rv-t.TH i,.rv-t.JA i{background:#4E7F6E}" +
+      ".rv-add{display:grid;grid-template-columns:minmax(120px,1fr) 2fr auto;gap:6px;margin-bottom:6px}@media(max-width:700px){.rv-row{grid-template-columns:1fr auto}.rv-tr{grid-column:1/-1;order:3}.rv-add{grid-template-columns:1fr}}";
+    document.head.appendChild(st);
+  }
+  if(!vocab.length) return '<p class="note" style="margin:0 0 8px;">還沒有生詞。可以從翻譯機加入，或在下面手動輸入。</p>';
+  return '<div class="rv-list">' + vocab.map(function(v, i){
+    var o = recVocabParts(v.sub);
+    return '<div class="rv-row"><div class="rv-main"><span class="rv-w">' + esc(v.word) + '</span>' + (o.zy ? '<span class="rv-zy">' + esc(o.zy) + '</span>' : '') + (o.py ? '<span class="rv-py">' + esc(o.py) + '</span>' : '') + '</div>' +
+      '<div class="rv-tr">' + o.tr.map(function(x){ return '<span class="rv-t ' + x.k + '"><i>' + x.k + '</i>' + esc(x.t) + '</span>'; }).join("") + '</div>' +
+      '<button class="btn sm ghost" data-r="rmvoc" data-i="' + i + '" title="移除這個生詞">移除</button></div>';
+  }).join("") + '</div>';
+}
 function newRecordDraft(slot){
   var label = "", classKey = "", date = ymd(new Date()), material = "", slotId = null;
   if(slot){
@@ -1892,8 +1919,8 @@ function renderRecEditor(){
         RUBRIC.map(function(r){ return '<div><div class="note" style="font-size:11px;">' + r.label + ' /' + r.max + '</div><input type="number" class="rsc" data-k="' + r.key + '" min="0" max="' + r.max + '" value="' + (st[r.key] == null ? "" : st[r.key]) + '"></div>'; }).join("") +
         '</div><div class="note" style="text-align:right;">總分 <b class="rtot">' + stTotal(st) + '</b> / 100</div></div>';
     }).join("") + (d.mode === "group" ? '<button class="btn sm" data-r="addstu">新增學生</button>' : '') + '</div>' +
-    '<label>新生詞</label><div class="tools" style="margin-bottom:6px;">' + (d.vocab.length ? d.vocab.map(function(v, i){ return '<span class="chip" style="padding:3px 4px 3px 10px;">' + esc(v.word) + (v.sub ? ' <span class="note">' + esc(v.sub) + '</span>' : '') + ' <button class="btn sm ghost" data-r="rmvoc" data-i="' + i + '">移除</button></span>'; }).join("") : '<span class="note">還沒有生詞</span>') + '</div>' +
-    '<div style="display:flex;gap:6px;"><input type="text" id="rf-vw" placeholder="生詞"><input type="text" id="rf-vs" placeholder="拼音／注音／翻譯（選填）"><button class="btn sm" data-r="addvoc">加入</button></div>' +
+    '<label>新生詞　<span class="note" style="font-weight:400;">' + d.vocab.length + ' 個</span></label>' + recVocabListHtml(d.vocab) +
+    '<div class="rv-add"><input type="text" id="rf-vw" placeholder="生詞"><input type="text" id="rf-vs" placeholder="拼音／注音／翻譯（選填，用 · 分開）"><button class="btn sm" data-r="addvoc">加入</button></div>' +
     '<label>課程截圖</label><div class="tools" style="margin-bottom:6px;">' + shots.map(function(u, i){ return '<span style="position:relative;"><img src="' + u + '" data-r="showshot" data-i="' + i + '" style="width:84px;height:84px;object-fit:cover;border-radius:8px;cursor:zoom-in;border:1px solid var(--line);"><button class="btn sm" data-r="rmshot" data-i="' + i + '" style="position:absolute;top:2px;right:2px;padding:1px 6px;">✕</button></span>'; }).join("") + '<button class="btn sm" data-r="addshot">加入截圖</button><input type="file" id="rf-shot" accept="image/*" multiple style="display:none;"></div>' +
     '<label>備註（今天有什麼特殊的事？）</label><textarea id="rf-notes" rows="3" placeholder="例如：學生今天生日、發音特別容易搞混的字…">' + esc(d.notes) + '</textarea></div>';
   shell(html); setCrumb([]);
