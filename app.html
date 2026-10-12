@@ -739,7 +739,7 @@ function trDrawList(){
     var e = TR.list[id];
     return '<div class="tr-row' + (e.done ? ' done' : '') + '" data-id="' + id + '"><input type="checkbox" class="tr-ck" data-ck="' + id + '"' + (e.done ? ' checked' : '') + ' title="勾選（整理完的詞可以一次清除）"><div class="tr-zh">' + trWordHtml(e) + '<button class="tr-x" data-del="' + id + '" title="刪除">🗑</button></div><div class="tr-ts">' +
       TR_LANGS.filter(function(l){ return TR.langs.indexOf(l[0]) !== -1; }).map(function(l){ return '<textarea rows="1" class="tr-t tr-t-' + l[0] + '" data-id="' + id + '" data-lang="' + l[0] + '" placeholder="' + esc(l[1].split(" ")[0]) + '（沒翻出來，可手動輸入）">' + esc((e.tr || {})[l[0]] || "") + '</textarea>'; }).join("") +
-      '</div><div class="tr-time">' + trTime(e.at || Date.now()) + (e.imp ? '　✓ 已加入課堂記錄' : '') + '　<button class="tr-retry" data-retry="' + id + '" title="重新翻譯這個詞（會覆蓋目前的翻譯）">↻ 重新翻譯</button>' + (e.imp ? '' : '<div class="tr-destrow">📌 加進：<select class="tr-dest' + ((!e.dest && !trFindSlot(e.at || 0)) ? ' warn' : '') + '" data-dest="' + id + '">' + trDestOptions(e.dest || "", trFindSlot(e.at || 0)) + '</select></div>') + '</div></div>';
+      '</div><div class="tr-time">' + trTime(e.at || Date.now()) + (e.imp ? '　✓ 已加入課堂記錄' : '') + '　<button class="tr-retry" data-retry="' + id + '" title="重新翻譯這個詞（會覆蓋目前的翻譯）">↻ 重新翻譯</button>' + (e.imp ? '<div class="tr-destrow">✓ 已加進：<select class="tr-dest" data-movedone="' + id + '">' + trMovedOptions(e) + '</select></div>' : '<div class="tr-destrow">📌 加進：<select class="tr-dest' + ((!e.dest && !trFindSlot(e.at || 0)) ? ' warn' : '') + '" data-dest="' + id + '">' + trDestOptions(e.dest || "", trFindSlot(e.at || 0)) + '</select></div>') + '</div></div>';
   }).join("") : '<p class="tr-empty">還沒有記錄。輸入中文按 Enter，就會翻譯並記下來。</p>';
   trFit();
 }
@@ -845,7 +845,7 @@ function trBuild(){
   box.querySelector("#tr-clear").onclick = function(){ if(!Object.keys(TR.list).length) return; if(!confirm("清空全部記錄？（下課後整理完再清比較保險，建議先按「複製全部」）")) return; var ids = Object.keys(TR.list); TR.list = {}; trDrawList(); try{ localStorage.removeItem("mm_tr_list_" + S.teacher.id); }catch(e){} fbSet(trPath(), null).then(function(){ trSetStatus("ok"); }).catch(function(){ trSetStatus("local"); }); };
   box.addEventListener("click", function(e){ var rt = e.target.closest("[data-retry]"); if(rt){ trRetry(rt.dataset.retry); return; } var d = e.target.closest("[data-del]"); if(!d) return; var id = d.dataset.del; delete TR.list[id]; trDrawList(); trPersist(id); });
   box.addEventListener("input", function(e){ if(e.target.matches && e.target.matches("textarea.tr-t")){ e.target.style.height = "auto"; e.target.style.height = (e.target.scrollHeight + 2) + "px"; } });
-  box.addEventListener("change", function(e){ var ds = e.target.closest && e.target.closest("[data-dest]"); if(ds){ var de = TR.list[ds.dataset.dest]; if(de){ if(ds.value) de.dest = ds.value; else delete de.dest; trPersist(ds.dataset.dest); trDrawList(); } return; } var ck = e.target.closest && e.target.closest("[data-ck]"); if(ck){ var en = TR.list[ck.dataset.ck]; if(en){ en.done = ck.checked; ck.closest(".tr-row").classList.toggle("done", ck.checked); trPersist(ck.dataset.ck); } return; } var t = e.target; if(t.tagName !== "TEXTAREA" || !t.dataset.id) return; var ent = TR.list[t.dataset.id]; if(!ent) return; ent.tr = ent.tr || {}; ent.tr[t.dataset.lang] = t.value.trim(); trPersist(t.dataset.id); if(t.value.trim()){ var pp = {}; pp[t.dataset.lang] = t.value.trim(); trLearn(ent.zh, pp); toast("已記住這個修正，下次同一個詞會直接用"); } });
+  box.addEventListener("change", async function(e){ var mv = e.target.closest && e.target.closest("[data-movedone]"); if(mv){ if(!mv.value) return; var me = TR.list[mv.dataset.movedone]; if(me && me.imp){ var ok = await recMoveVocab(me.zh, me.imp.rec, mv.value); toast(ok ? "已改放到新的課堂記錄" : "沒有移動"); } trDrawList(); return; } var ds = e.target.closest && e.target.closest("[data-dest]"); if(ds){ var de = TR.list[ds.dataset.dest]; if(de){ if(ds.value) de.dest = ds.value; else delete de.dest; trPersist(ds.dataset.dest); trDrawList(); } return; } var ck = e.target.closest && e.target.closest("[data-ck]"); if(ck){ var en = TR.list[ck.dataset.ck]; if(en){ en.done = ck.checked; ck.closest(".tr-row").classList.toggle("done", ck.checked); trPersist(ck.dataset.ck); } return; } var t = e.target; if(t.tagName !== "TEXTAREA" || !t.dataset.id) return; var ent = TR.list[t.dataset.id]; if(!ent) return; ent.tr = ent.tr || {}; ent.tr[t.dataset.lang] = t.value.trim(); trPersist(t.dataset.id); if(t.value.trim()){ var pp = {}; pp[t.dataset.lang] = t.value.trim(); trLearn(ent.zh, pp); toast("已記住這個修正，下次同一個詞會直接用"); } });
   box.addEventListener("keydown", function(e){ e.stopPropagation(); });
   window.addEventListener("resize", function(){ if(TR.open) trApplyGeo(); });
 }
@@ -876,7 +876,47 @@ function trDestOptions(sel, autoSlot){
   if(recs.length) o += '<optgroup label="已有的課堂記錄">' + recs.map(function(k){ return '<option value="rec:' + esc(k) + '"' + (sel === "rec:" + k ? " selected" : "") + '>' + esc((m[k].date || "").slice(5).replace("-", "/") + " " + (m[k].classLabel || "") + "（記錄）") + '</option>'; }).join("") + '</optgroup>';
   return o;
 }
+function trMovedOptions(e){
+  var m = recMap(), cur = e.imp && e.imp.rec, c = m[cur], o = '<option value="">' + esc(c ? (c.date || "").slice(5).replace("-", "/") + " " + (c.classLabel || "") + "（目前）" : "（原記錄已不存在）") + ' — 要改放到別堂？</option>';
+  recMoveGroups(cur).forEach(function(g){ o += '<optgroup label="' + esc(g.label) + '">' + g.items.map(function(it){ return '<option value="' + esc(it.v) + '">' + esc(it.t) + '</option>'; }).join("") + '</optgroup>'; });
+  return o;
+}
 function slotClassLabel(sl){ var ci = classInfo(sl); return ci ? (ci.cls ? ci.school + " " + ci.cls : ci.school) : ""; }
+// ----- 事後改歸屬：把已經加進課堂記錄的生詞，移到另一堂（課表上的課或已有的記錄）-----
+async function recEnsureTarget(dest){
+  var m = recMap(), base = "teacherPlatform/" + S.teacher.id;
+  if(dest.indexOf("rec:") === 0){ var rid = dest.slice(4); return m[rid] ? { recId: rid, rec: m[rid] } : null; }
+  var sid = dest.slice(5), sl = (S.plat.schedule || {})[sid]; if(!sl) return null;
+  var ex = Object.keys(m).filter(function(k){ return m[k].slotId === sid; })[0];
+  if(ex) return { recId: ex, rec: m[ex] };
+  var rec = JSON.parse(JSON.stringify(newRecordDraft(Object.assign({ id: sid }, sl)))), recId = uid("rec_"), mx = 0;
+  Object.keys(m).forEach(function(k){ if(m[k].classLabel === rec.classLabel && (m[k].seq || 0) > mx) mx = m[k].seq; });
+  rec.seq = mx + 1; rec.weekNo = recWeekNo(rec.date, rec.classLabel); rec.createdAt = Date.now(); rec.students = rec.students && rec.students.length ? rec.students : [];
+  return { recId: recId, rec: rec, isNew: true };
+}
+async function recMoveVocab(word, fromId, dest){
+  var m = recMap(), base = "teacherPlatform/" + S.teacher.id, src = m[fromId]; if(!src) return false;
+  var tg = await recEnsureTarget(dest); if(!tg){ toast("找不到要移過去的課堂"); return false; }
+  if(tg.recId === fromId){ return false; }
+  var item = (src.vocab || []).filter(function(v){ return v.word === word; })[0]; if(!item){ toast("這個生詞已經不在原本的記錄裡了"); return false; }
+  var tv = (tg.rec.vocab || []).slice(); if(!tv.some(function(v){ return v.word === word; })) tv.push({ word: item.word, sub: item.sub || "" });
+  tg.rec.vocab = tv; tg.rec.updatedAt = Date.now();
+  await fbSet(base + "/classRecords/" + tg.recId, tg.rec); m[tg.recId] = tg.rec;
+  src.vocab = (src.vocab || []).filter(function(v){ return v.word !== word; }); src.updatedAt = Date.now();
+  await fbSet(base + "/classRecords/" + fromId + "/vocab", src.vocab.length ? src.vocab : null); await fbUpdate(base + "/classRecords/" + fromId, { updatedAt: src.updatedAt });
+  Object.keys(TR.list || {}).forEach(function(k){ var e = TR.list[k]; if(e.zh === word && e.imp && e.imp.rec === fromId){ e.imp = { rec: tg.recId, at: Date.now() }; trPersist(k); } });
+  return tg;
+}
+function recMoveGroups(excludeRecId){
+  var today = ymd(new Date()), from = ymd(new Date(Date.now() - 45 * 86400000)), to = ymd(new Date(Date.now() + 7 * 86400000)), sched = S.plat.schedule || {}, m = recMap(), g = [];
+  var slots = Object.keys(sched).map(function(id){ return Object.assign({ id: id }, sched[id]); }).filter(function(sl){ return sl.s && sl.date >= from && sl.date <= to && classInfo(sl); }).sort(function(a, b){ return (b.date + (b.start || "")).localeCompare(a.date + (a.start || "")); });
+  var slotHasRec = {}; Object.keys(m).forEach(function(k){ if(m[k].slotId) slotHasRec[m[k].slotId] = k; });
+  var recs = Object.keys(m).filter(function(k){ return k !== excludeRecId && (m[k].date || "") >= from; }).sort(function(a, b){ return (m[b].date || "").localeCompare(m[a].date || ""); }).slice(0, 30);
+  if(recs.length) g.push({ label: "已有的課堂記錄", items: recs.map(function(k){ return { v: "rec:" + k, t: (m[k].date || "").slice(5).replace("-", "/") + " " + (m[k].classLabel || "") }; }) });
+  var sl2 = slots.filter(function(sl){ return !slotHasRec[sl.id]; });
+  if(sl2.length) g.push({ label: "課表上的課（還沒有記錄，會自動建立）", items: sl2.map(function(sl){ return { v: "slot:" + sl.id, t: sl.date.slice(5).replace("-", "/") + " " + (sl.start || "") + " " + slotClassLabel(sl) }; }) });
+  return g;
+}
 async function trImportToRecords(manual){
   if(!S.teacher || !S.plat) return 0;
   var ids = trSortedIds().filter(function(id){ return !TR.list[id].imp; }).reverse(), by = {}, none = 0;
@@ -1780,13 +1820,13 @@ function recVocabParts(sub){
   });
   return o;
 }
-function recVocabListHtml(vocab){
+function recVocabListHtml(vocab, canMove){
   if(!document.getElementById("rv-css")){
     var st = document.createElement("style"); st.id = "rv-css";
     st.textContent = ".rv-list{display:flex;flex-direction:column;gap:6px;margin-bottom:8px}.rv-row{display:grid;grid-template-columns:minmax(150px,230px) 1fr auto;gap:6px 14px;align-items:center;padding:8px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}" +
       ".rv-main{display:flex;flex-direction:column;gap:1px}.rv-w{font-size:22px;font-weight:700;line-height:1.25}.rv-zy{font-size:15px;color:#3f7a66;font-weight:600}.rv-py{font-size:13px;color:#8a7c70}" +
       ".rv-tr{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:14px;color:var(--ink)}.rv-t i{font-style:normal;font-size:10px;font-weight:700;color:#fff;background:#9a8f85;border-radius:5px;padding:1px 5px;margin-right:5px}.rv-t.EN i{background:#C0502F}.rv-t.TH i,.rv-t.JA i{background:#4E7F6E}" +
-      ".rv-add{display:grid;grid-template-columns:minmax(120px,1fr) 2fr auto;gap:6px;margin-bottom:6px}@media(max-width:700px){.rv-row{grid-template-columns:1fr auto}.rv-tr{grid-column:1/-1;order:3}.rv-add{grid-template-columns:1fr}}";
+      ".rv-btns{display:flex;gap:4px}.rv-add{display:grid;grid-template-columns:minmax(120px,1fr) 2fr auto;gap:6px;margin-bottom:6px}@media(max-width:700px){.rv-row{grid-template-columns:1fr auto}.rv-tr{grid-column:1/-1;order:3}.rv-add{grid-template-columns:1fr}}";
     document.head.appendChild(st);
   }
   if(!vocab.length) return '<p class="note" style="margin:0 0 8px;">還沒有生詞。可以從翻譯機加入，或在下面手動輸入。</p>';
@@ -1794,7 +1834,7 @@ function recVocabListHtml(vocab){
     var o = recVocabParts(v.sub);
     return '<div class="rv-row"><div class="rv-main"><span class="rv-w">' + esc(v.word) + '</span>' + (o.zy ? '<span class="rv-zy">' + esc(o.zy) + '</span>' : '') + (o.py ? '<span class="rv-py">' + esc(o.py) + '</span>' : '') + '</div>' +
       '<div class="rv-tr">' + o.tr.map(function(x){ return '<span class="rv-t ' + x.k + '"><i>' + x.k + '</i>' + esc(x.t) + '</span>'; }).join("") + '</div>' +
-      '<button class="btn sm ghost" data-r="rmvoc" data-i="' + i + '" title="移除這個生詞">移除</button></div>';
+      '<div class="rv-btns">' + (canMove ? '<button class="btn sm ghost" data-r="mvvoc" data-i="' + i + '" title="把這個生詞移到另一堂的課堂記錄">移到…</button>' : '') + '<button class="btn sm ghost" data-r="rmvoc" data-i="' + i + '" title="移除這個生詞">移除</button></div></div>';
   }).join("") + '</div>';
 }
 function newRecordDraft(slot){
@@ -1919,7 +1959,7 @@ function renderRecEditor(){
         RUBRIC.map(function(r){ return '<div><div class="note" style="font-size:11px;">' + r.label + ' /' + r.max + '</div><input type="number" class="rsc" data-k="' + r.key + '" min="0" max="' + r.max + '" value="' + (st[r.key] == null ? "" : st[r.key]) + '"></div>'; }).join("") +
         '</div><div class="note" style="text-align:right;">總分 <b class="rtot">' + stTotal(st) + '</b> / 100</div></div>';
     }).join("") + (d.mode === "group" ? '<button class="btn sm" data-r="addstu">新增學生</button>' : '') + '</div>' +
-    '<label>新生詞　<span class="note" style="font-weight:400;">' + d.vocab.length + ' 個</span></label>' + recVocabListHtml(d.vocab) +
+    '<label>新生詞　<span class="note" style="font-weight:400;">' + d.vocab.length + ' 個</span></label>' + recVocabListHtml(d.vocab, !!S.rec.edit) +
     '<div class="rv-add"><input type="text" id="rf-vw" placeholder="生詞"><input type="text" id="rf-vs" placeholder="拼音／注音／翻譯（選填，用 · 分開）"><button class="btn sm" data-r="addvoc">加入</button></div>' +
     '<label>課程截圖</label><div class="tools" style="margin-bottom:6px;">' + shots.map(function(u, i){ return '<span style="position:relative;"><img src="' + u + '" data-r="showshot" data-i="' + i + '" style="width:84px;height:84px;object-fit:cover;border-radius:8px;cursor:zoom-in;border:1px solid var(--line);"><button class="btn sm" data-r="rmshot" data-i="' + i + '" style="position:absolute;top:2px;right:2px;padding:1px 6px;">✕</button></span>'; }).join("") + '<button class="btn sm" data-r="addshot">加入截圖</button><input type="file" id="rf-shot" accept="image/*" multiple style="display:none;"></div>' +
     '<label>備註（今天有什麼特殊的事？）</label><textarea id="rf-notes" rows="3" placeholder="例如：學生今天生日、發音特別容易搞混的字…">' + esc(d.notes) + '</textarea></div>';
@@ -1946,6 +1986,15 @@ function renderRecEditor(){
     else if(a === "rmstu"){ d.students.splice(i, 1); renderRecEditor(); }
     else if(a === "addvoc"){ var w = document.getElementById("rf-vw").value.trim(); if(!w) return; d.vocab.push({ word: w, sub: document.getElementById("rf-vs").value.trim() }); recAutosave(); renderRecEditor(); }
     else if(a === "rmvoc"){ d.vocab.splice(i, 1); renderRecEditor(); }
+    else if(a === "mvvoc"){
+      var mvWord = d.vocab[i] && d.vocab[i].word; if(!mvWord) return;
+      var groups = recMoveGroups(S.rec.edit); if(!groups.length){ toast("沒有其他可以移過去的課堂"); return; }
+      var dest = await askChoice("把「" + mvWord + "」移到哪一堂？", groups, "移過去"); if(!dest) return;
+      // 先把目前編輯中的內容存起來，再移（避免移完又被舊畫面蓋回去）
+      var recNow = recMap()[S.rec.edit]; if(recNow) recNow.vocab = d.vocab.map(function(v){ return { word: v.word, sub: v.sub || "" }; });
+      var okm = await recMoveVocab(mvWord, S.rec.edit, dest);
+      if(okm){ d.vocab = (recMap()[S.rec.edit].vocab || []).slice(); toast("已移到新的課堂記錄"); renderRecEditor(); }
+    }
     else if(a === "addshot"){ document.getElementById("rf-shot").click(); }
     else if(a === "rmshot"){ S.rec.shots.splice(i, 1); renderRecEditor(); }
     else if(a === "showshot"){ var w2 = window.open(); if(w2){ w2.document.write('<img src="' + S.rec.shots[i] + '" style="max-width:100%;">'); } }
