@@ -1676,6 +1676,15 @@
   .dialog-head{padding:24px 28px 6px;}
   .dialog-head h2{margin:0 0 4px;font-size:20px;color:var(--ink);}
   .dialog-body{padding:16px 28px;overflow-y:auto;max-height:58vh;}
+  /* 電腦版：出題視窗放大，盡量不用捲動 */
+  @media (min-width: 900px){
+    #editor-dialog{width:min(1040px,94vw);max-height:95vh;}
+    #editor-dialog .dialog-body{max-height:calc(95vh - 150px);}
+    #editor-dialog textarea{min-height:90px;}
+  }
+  .choice-img-btn{flex:none;width:56px;height:44px;border:1.5px dashed var(--line,#c9b8a5);border-radius:10px;background:var(--surface);cursor:pointer;font-size:12px;padding:0;overflow:hidden;color:var(--ink);}
+  .choice-img-btn img{width:100%;height:100%;object-fit:cover;display:block;}
+  .mc-opt-img{display:block;max-width:100%;max-height:220px;border-radius:10px;margin-top:6px;object-fit:contain;}
   .dialog-foot{padding:16px 28px 24px;display:flex;justify-content:flex-end;gap:10px;border-top:1px solid var(--grid-line);margin-top:8px;}
 
   /* 表格編輯題庫 */
@@ -4603,7 +4612,7 @@ window.mmTA = (function(){
             qRes.score = 1; qRes.status = "correct"; qRes.detail = "答案正確 Correct"; totalEarned += weight;
           } else {
             qRes.score = 0; qRes.status = "wrong";
-            var correctLabels = ansIds.map(id => (q.choices && q.choices[id]) ? q.choices[id].text : id).join(", ");
+            var correctLabels = ansIds.map(id => (q.choices && q.choices[id]) ? (q.choices[id].text || "（圖片）") : id).join(", ");
             qRes.detail = `未答對 Incorrect (正解 Answer: ${correctLabels || "無 None"})`;
           }
         } else if(sec.type === "reorder"){
@@ -8389,11 +8398,33 @@ window.mmTA = (function(){
     return row;
   }
 
-  function makeChoiceRow(text, checked){
+  function makeChoiceRow(text, checked, img){
     var row = document.createElement("div"); row.className = "choice-row";
     row.innerHTML = '<input type="checkbox" class="f-choice-correct" ' + (checked ? "checked" : "") + '>' +
-      '<input type="text" class="f-choice-text" placeholder="選項內容" value="' + escapeHtml(text) + '">' +
+      '<input type="text" class="f-choice-text" placeholder="選項內容（可只放圖片）" value="' + escapeHtml(text) + '">' +
+      '<button type="button" class="choice-img-btn" title="加入圖片選項">🖼 圖片</button>' +
+      '<input type="file" accept="image/*" class="f-choice-file" style="display:none">' +
       '<button type="button" class="row-del">✕</button>';
+    row.dataset.img = img || "";
+    var ib = row.querySelector(".choice-img-btn"), fi = row.querySelector(".f-choice-file");
+    function showImg(){ ib.innerHTML = row.dataset.img ? '<img src="' + row.dataset.img + '" alt="">' : "🖼 圖片"; ib.title = row.dataset.img ? "點一下更換，按住 Shift 點一下移除" : "加入圖片選項"; }
+    showImg();
+    ib.onclick = function(ev){ if(ev.shiftKey && row.dataset.img){ row.dataset.img = ""; showImg(); } else fi.click(); };
+    fi.onchange = function(e){
+      var file = e.target.files && e.target.files[0]; if(!file) return;
+      var reader = new FileReader();
+      reader.onload = function(evt){
+        var im = new Image();
+        im.onload = function(){
+          var c = document.createElement("canvas"), sc = Math.min(1, 520 / Math.max(im.width, im.height));
+          c.width = Math.round(im.width * sc); c.height = Math.round(im.height * sc);
+          var cx = c.getContext("2d"); cx.fillStyle = "#fff"; cx.fillRect(0, 0, c.width, c.height); cx.drawImage(im, 0, 0, c.width, c.height);
+          row.dataset.img = c.toDataURL("image/jpeg", 0.82); showImg();
+        };
+        im.src = evt.target.result;
+      };
+      reader.readAsDataURL(file); fi.value = "";
+    };
     row.querySelector(".row-del").onclick = function(){ row.remove(); };
     return row;
   }
@@ -8432,9 +8463,9 @@ window.mmTA = (function(){
       choiceOptRowsEl.innerHTML = "";
       var answerIds = (q && q.answerIds) || [];
       var choices = (q && q.choices)
-        ? Object.keys(q.choices).map(function(k){ return { text: q.choices[k].text, correct: answerIds.indexOf(k) !== -1 }; })
+        ? Object.keys(q.choices).map(function(k){ return { text: q.choices[k].text || "", img: q.choices[k].img || "", correct: answerIds.indexOf(k) !== -1 }; })
         : [{text:"",correct:false},{text:"",correct:false}];
-      choices.forEach(function(c){ choiceOptRowsEl.appendChild(makeChoiceRow(c.text, c.correct)); });
+      choices.forEach(function(c){ choiceOptRowsEl.appendChild(makeChoiceRow(c.text, c.correct, c.img)); });
     } else if(type === "fill"){
       document.getElementById("f-fill-text").value = q ? (q.template || "") : "";
       document.getElementById("f-fill-hint").value = q ? (q.prompt || "") : "";
@@ -8516,7 +8547,8 @@ window.mmTA = (function(){
       choiceOptRowsEl.querySelectorAll(".choice-row").forEach(function(row){
         var txt = row.querySelector(".f-choice-text").value.trim();
         var correct = row.querySelector(".f-choice-correct").checked;
-        if(txt){ cCount++; var cid = "c" + cCount; choices[cid] = { id: cid, text: txt }; if(correct) answerIds.push(cid); }
+        var cimg = row.dataset.img || "";
+        if(txt || cimg){ cCount++; var cid = "c" + cCount; choices[cid] = { id: cid, text: txt }; if(cimg) choices[cid].img = cimg; if(correct) answerIds.push(cid); }
       });
       if(cCount < 2){ alert("請至少輸入兩個選項！Please enter at least two options."); return; }
       if(answerIds.length === 0){ alert("請至少勾選一個正確答案！Please select at least one correct answer."); return; }
@@ -8624,7 +8656,7 @@ window.mmTA = (function(){
         } else if(sec.type === "choice"){
           var choices = q.choices || {}; var answerIds = q.answerIds || []; var cKeys = Object.keys(choices);
           if(!cKeys.length){ rows.push([sec.title, TYPE_LABEL_MAP.choice, q.title, q.prompt || "", "", ""]); }
-          cKeys.forEach(function(cid){ rows.push([sec.title, TYPE_LABEL_MAP.choice, q.title, q.prompt || "", choices[cid].text, answerIds.indexOf(cid) !== -1 ? "是" : "否"]); });
+          cKeys.forEach(function(cid){ rows.push([sec.title, TYPE_LABEL_MAP.choice, q.title, q.prompt || "", choices[cid].text || "（圖片）", answerIds.indexOf(cid) !== -1 ? "是" : "否"]); });
         } else if(sec.type === "reorder"){
           var words = q.words || [];
           if(!words.length){ rows.push([sec.title, TYPE_LABEL_MAP.reorder, q.title, q.prompt || "", "", ""]); }
@@ -9387,7 +9419,7 @@ window.mmTA = (function(){
 
       btn.innerHTML = `
         <span class="mc-opt-prefix">${letters[idx] || (idx+1)}</span>
-        <span>${c.text}</span>
+        <span>${c.text || ""}${c.img ? '<img class="mc-opt-img" src="' + c.img + '" alt="">' : ""}</span>
       `;
 
       btn.onclick = function(){
