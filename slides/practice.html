@@ -9088,7 +9088,7 @@ window.mmTA = (function(){
   function renderMediaItem(m){
     var wrap = document.createElement("div"); wrap.className = "media-item media-item-" + m.type;
     if(m.type === "image"){
-      var img = document.createElement("img"); img.className = "media-image"; img.src = m.src; img.alt = m.name || "圖片"; wrap.appendChild(img);
+      var img = document.createElement("img"); img.className = "media-image"; img.src = m.src; img.alt = isStudent ? "圖片" : (m.name || "圖片"); wrap.appendChild(img);
     } else if(m.type === "youtube"){
       var fr = document.createElement("iframe"); fr.className = "media-youtube"; fr.src = "https://www.youtube.com/embed/" + encodeURIComponent(m.ytId) + "?rel=0"; fr.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; picture-in-picture"; fr.allowFullscreen = true; fr.style.cssText = "width:min(560px,100%);aspect-ratio:16/9;border:0;border-radius:10px;background:#000;"; wrap.appendChild(fr);
     } else if(m.type === "audio"){
@@ -9098,7 +9098,8 @@ window.mmTA = (function(){
     } else if(m.type === "video"){
       var video = document.createElement("video"); video.className = "media-video"; video.controls = true; video.src = m.src; wrap.appendChild(video);
     }
-    if(m.name){
+    // 學生端不顯示檔名：檔名可能直接洩漏答案（例如「春天.mp3」）
+    if(m.name && !isStudent){
       var cap = document.createElement("div"); cap.className = "media-item-name"; cap.textContent = m.name; wrap.appendChild(cap);
     }
     return wrap;
