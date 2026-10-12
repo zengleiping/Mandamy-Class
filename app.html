@@ -1137,6 +1137,7 @@ function goBack(){
     if(S.lib){ S.lib = null; render(); return; }
     if(S.settings && !S.sel && !S.rec && !S.day){ S.settings = false; render(); return; }
     if(S.rec){
+      if(S.rec.preview){ S.rec = { filter: S.rec.filter }; render(); return; }
       if(S.rec.edit !== undefined){ if(!confirm("不儲存就離開？目前填的內容會留在這台裝置，下次新增時可以救回來。")) return; S.rec = { filter: S.rec.filter }; }
       else if(S.rec.view) S.rec = { filter: S.rec.filter };
       else S.rec = null;
@@ -1820,21 +1821,21 @@ function recVocabParts(sub){
   });
   return o;
 }
-function recVocabListHtml(vocab, canMove){
+function recVocabListHtml(vocab, canMove, ro){
   if(!document.getElementById("rv-css")){
     var st = document.createElement("style"); st.id = "rv-css";
     st.textContent = ".rv-list{display:flex;flex-direction:column;gap:6px;margin-bottom:8px}.rv-row{display:grid;grid-template-columns:minmax(150px,230px) 1fr auto;gap:6px 14px;align-items:center;padding:8px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}" +
       ".rv-main{display:flex;flex-direction:column;gap:1px}.rv-w{font-size:22px;font-weight:700;line-height:1.25}.rv-zy{font-size:15px;color:#3f7a66;font-weight:600}.rv-py{font-size:13px;color:#8a7c70}" +
       ".rv-tr{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:14px;color:var(--ink)}.rv-t i{font-style:normal;font-size:10px;font-weight:700;color:#fff;background:#9a8f85;border-radius:5px;padding:1px 5px;margin-right:5px}.rv-t.EN i{background:#C0502F}.rv-t.TH i,.rv-t.JA i{background:#4E7F6E}" +
-      ".rv-btns{display:flex;gap:4px}.rv-add{display:grid;grid-template-columns:minmax(120px,1fr) 2fr auto;gap:6px;margin-bottom:6px}@media(max-width:700px){.rv-row{grid-template-columns:1fr auto}.rv-tr{grid-column:1/-1;order:3}.rv-add{grid-template-columns:1fr}}";
+      ".rv-cm{margin-top:10px;padding:10px 12px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line)}.rv-cmh{font-weight:700;margin-bottom:4px}.rv-dt{margin-top:6px;font-size:13.5px;color:var(--ink-soft,#6b6158);display:flex;flex-direction:column;gap:2px}.rdrow{display:flex;gap:8px;align-items:center;margin-bottom:4px}.rdl{min-width:64px;font-size:12px;font-weight:700;color:#7a6c60}.rdt{flex:1}.rv-btns{display:flex;gap:4px}.rv-row.ro{grid-template-columns:minmax(150px,230px) 1fr}.rv-add{display:grid;grid-template-columns:minmax(120px,1fr) 2fr auto;gap:6px;margin-bottom:6px}@media(max-width:700px){.rv-row{grid-template-columns:1fr auto}.rv-tr{grid-column:1/-1;order:3}.rv-add{grid-template-columns:1fr}}";
     document.head.appendChild(st);
   }
   if(!vocab.length) return '<p class="note" style="margin:0 0 8px;">還沒有生詞。可以從翻譯機加入，或在下面手動輸入。</p>';
   return '<div class="rv-list">' + vocab.map(function(v, i){
     var o = recVocabParts(v.sub);
-    return '<div class="rv-row"><div class="rv-main"><span class="rv-w">' + esc(v.word) + '</span>' + (o.zy ? '<span class="rv-zy">' + esc(o.zy) + '</span>' : '') + (o.py ? '<span class="rv-py">' + esc(o.py) + '</span>' : '') + '</div>' +
+    return '<div class="rv-row' + (ro ? ' ro' : '') + '"><div class="rv-main"><span class="rv-w">' + esc(v.word) + '</span>' + (o.zy ? '<span class="rv-zy">' + esc(o.zy) + '</span>' : '') + (o.py ? '<span class="rv-py">' + esc(o.py) + '</span>' : '') + '</div>' +
       '<div class="rv-tr">' + o.tr.map(function(x){ return '<span class="rv-t ' + x.k + '"><i>' + x.k + '</i>' + esc(x.t) + '</span>'; }).join("") + '</div>' +
-      '<div class="rv-btns">' + (canMove ? '<button class="btn sm ghost" data-r="mvvoc" data-i="' + i + '" title="把這個生詞移到另一堂的課堂記錄">移到…</button>' : '') + '<button class="btn sm ghost" data-r="rmvoc" data-i="' + i + '" title="移除這個生詞">移除</button></div></div>';
+      (ro ? '</div>' : '<div class="rv-btns">' + (canMove ? '<button class="btn sm ghost" data-r="mvvoc" data-i="' + i + '" title="把這個生詞移到另一堂的課堂記錄">移到…</button>' : '') + '<button class="btn sm ghost" data-r="rmvoc" data-i="' + i + '" title="移除這個生詞">移除</button></div></div>');
   }).join("") + '</div>';
 }
 function newRecordDraft(slot){
@@ -1859,6 +1860,7 @@ function recBadge(r){
   return r.madeUp ? '<span style="' + st("#DCE8F6", "#2E75B6") + '">' + esc(t) + '・已補課</span>' : '<span style="' + st("#F7D9D5", "#B23B32") + '">' + esc(t) + '・待補課</span>';
 }
 function renderRecords(){
+  if(S.rec && S.rec.preview) return renderRecPreview();
   if(S.rec && S.rec.edit !== undefined) return renderRecEditor();
   if(S.rec && S.rec.view === "trend") return renderTrend();
   if(S.rec && S.rec.view === "review") return renderReview();
@@ -1885,7 +1887,7 @@ function renderRecords(){
   main.onclick = function(e){
     var b = e.target.closest("[data-r]"); if(!b) return; var a = b.dataset.r;
     if(a === "new"){ S.rec = { edit: null, draft: newRecordDraft(null), shots: [] }; render(); }
-    else if(a === "open"){ if(S.recSel){ S.recSel.ids[b.dataset.id] = !S.recSel.ids[b.dataset.id]; render(); } else openRecordEdit(b.dataset.id); }
+    else if(a === "open"){ if(S.recSel){ S.recSel.ids[b.dataset.id] = !S.recSel.ids[b.dataset.id]; render(); } else openRecordView(b.dataset.id); }
     else if(a === "selmode"){ S.recSel = S.recSel ? null : { ids: {} }; render(); }
     else if(a === "selall"){ ids.forEach(function(k){ S.recSel.ids[k] = true; }); render(); }
     else if(a === "selnone"){ S.recSel.ids = {}; render(); }
@@ -1920,6 +1922,40 @@ async function recDeleteSelected(){
   }
   S.recSel = null; toast("已刪除 " + ids.length + " 筆"); render();
 }
+// 課堂記錄「預覽」：點記錄先看到唯讀的頁面，要改再按「編輯」，閱讀時不會不小心動到內容
+async function openRecordView(id){
+  if(!recMap()[id]) return;
+  var shots = []; try{ shots = (await fbGet("teacherPlatform/" + S.teacher.id + "/recordShots/" + id)) || []; }catch(e){}
+  if(!Array.isArray(shots)) shots = Object.keys(shots).map(function(k){ return shots[k]; });
+  S.rec = { preview: id, shots: shots, filter: S.rec && S.rec.filter }; render();
+}
+function renderRecPreview(){
+  S.focus = false;
+  recVocabListHtml([]);
+  var id = S.rec.preview, r = recMap()[id]; if(!r){ S.rec = { filter: S.rec.filter }; return render(); }
+  var vocab = Array.isArray(r.vocab) ? r.vocab : (r.vocab ? Object.keys(r.vocab).map(function(k){ return r.vocab[k]; }) : []);
+  var stus = Array.isArray(r.students) ? r.students : (r.students ? Object.keys(r.students).map(function(k){ return r.students[k]; }) : []);
+  var shots = S.rec.shots || [];
+  var badges = (r.seq != null ? '<span class="chip">第 ' + esc(r.seq) + ' 次</span>' : '') + (r.weekNo != null ? '<span class="chip">第 ' + esc(r.weekNo) + ' 週</span>' : '') + (r.isAbsence ? '<span class="chip" style="background:#FDECEA;">' + esc(r.absType || "請假") + (r.madeUp ? '（已補課）' : '') + '</span>' : '');
+  var html = '<div class="head-row"><div style="flex:1;"><h2>' + esc(r.classLabel || "") + '</h2><div class="note">' + esc(r.date || "") + '　唯讀預覽</div></div><div><button class="btn primary" data-r="edit">✏️ 編輯</button> <button class="btn sm ghost" data-r="back">返回列表</button></div></div>' +
+    '<div class="panel">' + (badges ? '<div class="tools" style="margin-bottom:10px;">' + badges + '</div>' : '') +
+    '<h3 style="margin-top:0;">本次教材進度</h3><div style="white-space:pre-wrap;">' + (r.material ? esc(r.material) : '<span class="note">（沒有填）</span>') + '</div></div>';
+  if(!r.isAbsence){
+    html += '<div class="panel"><h3 style="margin-top:0;">學生表現</h3>' + (stus.filter(function(st){ return st && (st.name || stTotal(st)); }).length ?
+      '<div style="overflow-x:auto;"><table class="hw-table"><thead><tr><th>學生</th>' + RUBRIC.map(function(x){ return '<th>' + esc(x.label) + '<div class="note" style="font-weight:400;">/' + x.max + '</div></th>'; }).join("") + '<th>總分</th></tr></thead><tbody>' +
+      stus.filter(function(st){ return st && (st.name || stTotal(st)); }).map(function(st){ return '<tr><td><b>' + esc(st.name || "") + '</b>' + (st.absent ? ' <span class="note">缺席</span>' : '') + '</td>' + RUBRIC.map(function(x){ return '<td>' + (st[x.key] == null ? '<span class="note">—</span>' : esc(st[x.key])) + '</td>'; }).join("") + '<td><b>' + (st.absent ? "—" : stTotal(st)) + '</b></td></tr>'; }).join("") + '</tbody></table></div>' + stus.filter(function(st){ return st && (st.comment || (st.detail && Object.keys(st.detail).length)); }).map(function(st){ return '<div class="rv-cm"><div class="rv-cmh">' + esc(st.name || "（未填姓名）") + ' 的評語</div>' + (st.comment ? '<div style="white-space:pre-wrap;">' + esc(st.comment) + '</div>' : '') + (st.detail ? '<div class="rv-dt">' + RUBRIC.filter(function(r){ return st.detail[r.key]; }).map(function(r){ return '<div><b>' + r.label + '</b>　' + esc(st.detail[r.key]) + '</div>'; }).join("") + '</div>' : '') + '</div>'; }).join("") : '<p class="note">沒有填學生表現。</p>') + '</div>';
+  }
+  html += '<div class="panel"><h3 style="margin-top:0;">新生詞　<span class="note" style="font-weight:400;">' + vocab.length + ' 個</span></h3>' + (vocab.length ? recVocabListHtml(vocab, false, true) : '<p class="note">沒有新生詞。</p>') + '</div>';
+  if(shots.length) html += '<div class="panel"><h3 style="margin-top:0;">課程截圖</h3><div class="tools">' + shots.map(function(u, i){ return '<img src="' + u + '" data-r="pshot" data-i="' + i + '" style="width:120px;height:120px;object-fit:cover;border-radius:10px;cursor:zoom-in;border:1px solid var(--line);">'; }).join("") + '</div></div>';
+  html += '<div class="panel"><h3 style="margin-top:0;">備註</h3><div style="white-space:pre-wrap;">' + (r.notes ? esc(r.notes) : '<span class="note">（沒有備註）</span>') + '</div></div>';
+  shell(html); setCrumb([]);
+  document.getElementById("main").onclick = function(e){
+    var b = e.target.closest("[data-r]"); if(!b) return; var a = b.dataset.r;
+    if(a === "edit"){ openRecordEdit(id); }
+    else if(a === "back"){ S.rec = { filter: S.rec.filter }; render(); }
+    else if(a === "pshot"){ albLightbox(shots.map(function(u){ return { url: u }; }), Number(b.dataset.i)); }
+  };
+}
 async function openRecordEdit(id){
   var r = JSON.parse(JSON.stringify(recMap()[id])); if(!r.students || !r.students.length) r.students = [blankStudent("")]; r.vocab = Array.isArray(r.vocab) ? r.vocab : (r.vocab ? Object.keys(r.vocab).map(function(k){ return r.vocab[k]; }) : []); if(!Array.isArray(r.students)) r.students = Object.keys(r.students).map(function(k){ return r.students[k]; });
   var shots = []; try{ shots = (await fbGet("teacherPlatform/" + S.teacher.id + "/recordShots/" + id)) || []; }catch(e){}
@@ -1937,6 +1973,8 @@ function recSync(){
     var st = d.students[Number(box.dataset.i)]; if(!st) return;
     st.name = box.querySelector(".rname").value; var ab = box.querySelector(".rabs"); if(ab){ if(ab.checked) st.absent = true; else delete st.absent; }
     box.querySelectorAll(".rsc").forEach(function(inp){ st[inp.dataset.k] = inp.value === "" ? null : Math.max(0, Math.min(Number(inp.max), Number(inp.value))); });
+    var cm = box.querySelector(".rcm"); if(cm){ if(cm.value.trim()) st.comment = cm.value; else delete st.comment; }
+    var dtl = {}; box.querySelectorAll(".rdt").forEach(function(inp){ if(inp.value.trim()) dtl[inp.dataset.k] = inp.value; }); if(Object.keys(dtl).length) st.detail = dtl; else delete st.detail;
   });
 }
 function recBackupKey(){ return "mm_recdraft_" + (S.rec.edit || "new"); }
@@ -1957,7 +1995,10 @@ function renderRecEditor(){
     d.students.map(function(st, i){
       return '<div class="rstu" data-i="' + i + '"><div style="display:flex;gap:8px;align-items:center;"><input type="text" class="rname" placeholder="學生姓名" value="' + esc(st.name) + '"><label style="display:flex;align-items:center;gap:4px;white-space:nowrap;font-size:12.5px;margin:0;"><input type="checkbox" class="rabs"' + (st.absent ? ' checked' : '') + '> 缺席</label>' + (d.students.length > 1 ? '<button class="btn sm ghost" data-r="rmstu" data-i="' + i + '">移除</button>' : '') + '</div><div class="rgrid">' +
         RUBRIC.map(function(r){ return '<div><div class="note" style="font-size:11px;">' + r.label + ' /' + r.max + '</div><input type="number" class="rsc" data-k="' + r.key + '" min="0" max="' + r.max + '" value="' + (st[r.key] == null ? "" : st[r.key]) + '"></div>'; }).join("") +
-        '</div><div class="note" style="text-align:right;">總分 <b class="rtot">' + stTotal(st) + '</b> / 100</div></div>';
+        '</div><div class="note" style="text-align:right;">總分 <b class="rtot">' + stTotal(st) + '</b> / 100</div>' +
+        '<label style="margin-top:6px;">評語（選填）</label><textarea class="rcm" rows="2" placeholder="例如：這堂課很專心，口說比上週流利，下次多練習聲調">' + esc(st.comment || "") + '</textarea>' +
+        (function(){ var has = st.detail && RUBRIC.some(function(r){ return st.detail[r.key]; }); return '<button type="button" class="btn sm ghost" data-r="tgdt" data-i="' + i + '" style="margin-top:4px;">' + (has ? '︿ 收起細節描述' : '＋ 細節描述（聽／說／讀／寫／參與，選填）') + '</button><div class="rdetail" style="' + (has ? '' : 'display:none;') + 'margin-top:6px;">' + RUBRIC.map(function(r){ return '<div class="rdrow"><span class="rdl">' + r.label + '</span><input type="text" class="rdt" data-k="' + r.key + '" placeholder="這一項的細節（選填）" value="' + esc((st.detail || {})[r.key] || "") + '"></div>'; }).join("") + '</div>'; })() +
+        '</div>';
     }).join("") + (d.mode === "group" ? '<button class="btn sm" data-r="addstu">新增學生</button>' : '') + '</div>' +
     '<label>新生詞　<span class="note" style="font-weight:400;">' + d.vocab.length + ' 個</span></label>' + recVocabListHtml(d.vocab, !!S.rec.edit) +
     '<div class="rv-add"><input type="text" id="rf-vw" placeholder="生詞"><input type="text" id="rf-vs" placeholder="拼音／注音／翻譯（選填，用 · 分開）"><button class="btn sm" data-r="addvoc">加入</button></div>' +
@@ -1984,6 +2025,7 @@ function renderRecEditor(){
     if(a === "mode"){ d.mode = b.dataset.m; if(d.mode === "single" && d.students.length > 1) d.students = [d.students[0]]; renderRecEditor(); }
     else if(a === "addstu"){ d.students.push(blankStudent("")); renderRecEditor(); }
     else if(a === "rmstu"){ d.students.splice(i, 1); renderRecEditor(); }
+    else if(a === "tgdt"){ var box0 = b.closest(".rstu"), det = box0 && box0.querySelector(".rdetail"); if(det){ var open = det.style.display === "none"; det.style.display = open ? "" : "none"; b.textContent = open ? "︿ 收起細節描述" : "＋ 細節描述（聽／說／讀／寫／參與，選填）"; if(open){ var f0 = det.querySelector(".rdt"); if(f0) f0.focus(); } } }
     else if(a === "addvoc"){ var w = document.getElementById("rf-vw").value.trim(); if(!w) return; d.vocab.push({ word: w, sub: document.getElementById("rf-vs").value.trim() }); recAutosave(); renderRecEditor(); }
     else if(a === "rmvoc"){ d.vocab.splice(i, 1); renderRecEditor(); }
     else if(a === "mvvoc"){
