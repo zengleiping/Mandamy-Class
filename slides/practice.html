@@ -1429,6 +1429,9 @@
   .stext-layer{ position:absolute; inset:0; pointer-events:none; z-index:6; overflow:hidden; }
   .stext{ position:absolute; white-space:pre-wrap; font-weight:700; line-height:1.25; max-width:80%; text-shadow:0 0 3px rgba(255,255,255,.9); }
   .stext.mine{ outline:1.5px dashed rgba(224,112,77,.55); outline-offset:2px; border-radius:3px; }
+.passage-card{ max-width:980px; margin:4px auto 14px; padding:14px 22px 16px; background:#FFFCF5; border:1.5px solid rgba(28,33,30,.14); border-left:6px solid var(--seal); border-radius:14px; box-shadow:0 1px 6px rgba(0,0,0,.05); }
+  .passage-label{ font-size:12.5px; font-weight:800; color:var(--seal); letter-spacing:.04em; margin-bottom:8px; }
+  .passage-text{ font-size:20px; line-height:2; color:var(--ink); max-height:42vh; overflow-y:auto; padding-right:6px; }
   .rb-collapse-btn{ border:0; background:rgba(28,33,30,.07); border-radius:8px; padding:4px 9px; font-size:12px; font-weight:700; color:var(--ink-soft); cursor:pointer; white-space:nowrap; }
   .rb-collapse-btn:hover{ background:rgba(28,33,30,.14); color:var(--ink); }
   .rb-panel{ display:none; padding:6px 8px 4px; align-items:stretch; flex-wrap:wrap; row-gap:6px; overflow:visible; }
@@ -2204,6 +2207,11 @@
     <div class="dialog-body">
       <label for="f-title">小題名稱／標題（留空將自動編號）Question Title</label>
       <input type="text" id="f-title" placeholder="例如：第 1 題">
+
+      <div id="passage-wrap">
+        <label for="f-passage">閱讀文本（選填）Reading Passage</label>
+        <textarea id="f-passage" rows="4" placeholder="要讓學生先讀一段文章再回答時，貼在這裡。會顯示在題目上方的獨立區塊，和題幹分開，不會擠在一起。"></textarea>
+      </div>
 
       <label>本題媒體（選填，圖片／音檔／影片）Question Media</label>
       <div id="q-media-list" class="media-edit-list"></div>
@@ -8395,6 +8403,7 @@ window.mmTA = (function(){
 
     document.getElementById("editor-dialog-title").textContent = qId ? "編輯題目" : "新增題目";
     document.getElementById("f-title").value = q ? (q.title || "") : "";
+    document.getElementById("f-passage").value = q ? (q.passage || "") : "";
     document.getElementById("f-teacher-note").value = q ? (q.teacherNote || "") : "";
     qMediaManager.setItems(q ? q.media : []);
 
@@ -8406,6 +8415,7 @@ window.mmTA = (function(){
     document.getElementById("record-fields").style.display = type === "record" ? "block" : "none";
     document.getElementById("board-fields").style.display = (type === "board" || type === "whiteboard") ? "block" : "none";
     document.getElementById("hanzi-fields").style.display = type === "hanzi" ? "block" : "none";
+    document.getElementById("passage-wrap").style.display = (type === "choice" || type === "fill" || type === "open" || type === "record" || type === "reorder") ? "block" : "none";
 
     if(type === "match"){
       document.getElementById("f-left-label").value = (q && q.leftLabel) || "生詞";
@@ -8542,6 +8552,7 @@ window.mmTA = (function(){
     }
 
     qObj.media = qMediaManager.getItems();
+    var passageVal = document.getElementById("f-passage").value.trim(); if(passageVal && sec.type !== "board" && sec.type !== "whiteboard" && sec.type !== "hanzi" && sec.type !== "match") qObj.passage = passageVal;
     qObj.teacherNote = document.getElementById("f-teacher-note").value.trim();
     // 配分比重改到左側欄最下方的「配分總覽」大表統一編輯，這裡維持原本存的比重（新題目預設 1）。
     qObj.weight = (existing && existing.weight && existing.weight > 0) ? existing.weight : 1;
@@ -9165,6 +9176,12 @@ window.mmTA = (function(){
       stageEl.appendChild(noteBlock);
     }
 
+    // 閱讀文本：獨立的一塊，放在題幹（題目文字與選項）上方，長文章可以在區塊內捲動
+    if(q.passage && !isCanvasSec(sec) && sec.type !== "hanzi" && sec.type !== "match"){
+      var psg = document.createElement("div"); psg.className = "passage-card";
+      psg.innerHTML = '<div class="passage-label">📖 閱讀文本 Reading</div><div class="passage-text zh">' + escapeHtml(q.passage).replace(/\n/g, "<br>") + '</div>';
+      stageEl.appendChild(psg);
+    }
     var mediaBlock = renderMediaBlock(sec, q);
     if(mediaBlock) stageEl.appendChild(mediaBlock);
 
