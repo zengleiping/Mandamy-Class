@@ -2253,7 +2253,7 @@
         <label>題目（用 { } 框起來的地方，就是學生要填的答案；同一格有好幾個可接受的答案，用 | 隔開）</label>
         <textarea id="f-fill-text" rows="3" placeholder="例如：我{喜歡|愛}喝{咖啡}。"></textarea>
         <label>提示／說明（選填）</label>
-        <input type="text" id="f-fill-hint" placeholder="例如：請填入適當的詞語">
+        <textarea id="f-fill-hint" rows="2" placeholder="例如：請填入適當的詞語（可以按 Enter 換行、分段）"></textarea>
       </div>
 
       <div id="open-fields" style="display:none;">
@@ -8481,6 +8481,10 @@ window.mmTA = (function(){
   document.getElementById("btn-cancel").onclick = function(){ closeModalDialog(editorDialog); };
 
   document.getElementById("editor-form").onsubmit = function(e){
+    try{ return editorFormSubmit(e); }
+    catch(err){ console.error("儲存題目失敗", err); alert("儲存題目時發生錯誤，沒有存進去：\n" + (err && err.message ? err.message : err) + "\n\n請把這段訊息（或截圖）告訴開發者。\nSave error — please report this message."); return false; }
+  };
+  function editorFormSubmit(e){
     e.preventDefault();
     var secs = getSections(); var sec = secs[activeSectionForAdd];
     if(!sec) return;
@@ -8569,7 +8573,7 @@ window.mmTA = (function(){
       console.error("儲存題目失敗", err);
       alert("儲存失敗，請稍後再試一次。如果剛剛上傳的底圖檔案很大（例如手機直接拍的照片），建議先用較小的圖片再試一次。\nSave failed — please try again. If the background image you just uploaded is very large (e.g. a full-size phone photo), try a smaller image.\n(" + (err && err.message ? err.message : err) + ")");
     }
-  };
+  }
 
   /* ================== Excel 題庫匯入匯出 ================== */
   var TYPE_LABEL_MAP = { match: "連連看", choice: "選擇題", reorder: "句子重組", board: "投影片", whiteboard: "小白板", hanzi: "生字練習" };
@@ -9355,7 +9359,7 @@ window.mmTA = (function(){
     playFeedbackOnce("choice:" + q.id, progress.lastEvent); // 勾選對／錯的音效同步：雙方都在同一個事件觸發時各自播放一次
 
     var wrap = document.createElement("div");
-    wrap.innerHTML = `<p class="circle-prompt zh">${q.prompt || q.title}</p>`;
+    wrap.innerHTML = `<p class="circle-prompt zh">${String(q.prompt || q.title).replace(/\n/g, "<br>")}</p>`;
     var cBox = document.createElement("div"); cBox.className = "mc-choices-container";
 
     var keys = Object.keys(q.choices || {}).sort();
@@ -9403,8 +9407,8 @@ window.mmTA = (function(){
     var progress = getProgress(q.id), interactive = canInteract() && !(progress.grade), isTest = currentClassMode === 'test';
     var fills = Object.assign({}, progress.fills || {}), fp = parseFillTemplate(q.template);
     var wrap = document.createElement("div");
-    wrap.innerHTML = (q.prompt ? '<p class="circle-prompt zh">' + escapeHtml(q.prompt) + '</p>' : '');
-    var line = document.createElement("div"); line.className = "fill-line zh";
+    wrap.innerHTML = (q.prompt ? '<p class="circle-prompt zh">' + escapeHtml(q.prompt).replace(/\n/g, "<br>") + '</p>' : '');
+    var line = document.createElement("div"); line.className = "fill-line zh"; line.style.whiteSpace = "pre-wrap";
     fp.parts.forEach(function(pt){
       if(pt.b === undefined){ var sp = document.createElement("span"); sp.textContent = pt.t; line.appendChild(sp); return; }
       var inp = document.createElement("input"); inp.type = "text"; inp.className = "fill-input"; inp.autocomplete = "off"; inp.setAttribute("autocapitalize", "off");
@@ -9515,7 +9519,7 @@ window.mmTA = (function(){
 
     var wrap = document.createElement("div");
     wrap.className = "reorder-container";
-    wrap.innerHTML = `<p class="circle-prompt zh">${q.prompt || "請將下列詞語拖曳重組為正確句子："}</p>`;
+    wrap.innerHTML = `<p class="circle-prompt zh">${String(q.prompt || "請將下列詞語拖曳重組為正確句子：").replace(/\n/g, "<br>")}</p>`;
 
     var slotZone = document.createElement("div");
     slotZone.className = "reorder-slot-zone";
