@@ -10046,7 +10046,7 @@ window.mmTA = (function(){
     if(toggleBtn) toggleBtn.onclick = function(e){
       e.preventDefault(); e.stopPropagation();
       if(canvasFullscreen && canvasFsMode === "present") endPresent();
-      else { canvasFsPrevEdit = canvasFullscreen && canvasFsMode === "edit"; enter("present"); }
+      else { canvasFsPrevEdit = canvasFullscreen && canvasFsMode === "edit"; container.dispatchEvent(new CustomEvent("mm-before-present")); enter("present"); }
     };
     container.addEventListener("mm-fs-edit", function(){ if(canvasFullscreen && canvasFsMode === "edit") exit(); else enter("edit"); });
     var exitBtn = container.querySelector(".canvas-fs-exit-btn");
@@ -10096,7 +10096,34 @@ window.mmTA = (function(){
     // 學生在看「投影片」時只能用畫筆、橡皮擦、清空畫布（只清筆跡）；不能動老師放的文字／圖片／圖案／表格，也不能改底圖或背景
     var deckStudent = !!(isStudent && slideSecInfo && slideSecInfo.sec.type === "board");
     // 老師按「放映」＝正式上課：放映前已經做好的文字／圖片／圖案／表格不能被選取、搬動、改字；只能用筆寫字、打字補充筆記、橡皮擦擦筆跡
-    function isLiveItem(it){ if(!it || it.k !== "text") return false; var tt = texts.find(function(x){ return x.id === it.id; }); return !!(tt && tt.live); }
+    // 「儲存定稿」：把這份簡報每一頁目前所有物件的 id 記成 finalIds。放映時，id 在 finalIds 裡的都是定稿內容，
+    // 不能選取、搬動、改字、擦除；不在裡面的（上課中新寫的字、新打的文字方塊）才可以動。
+    function curIds(){ var o = {}; [strokes, texts, images, shapes, tables, groups, medias].forEach(function(a){ (a || []).forEach(function(x){ if(x && x.id) o[x.id] = 1; }); }); return o; }
+    function progIds(pr){ var o = {}; ["strokes", "texts", "images", "shapes", "tables", "groups", "medias"].forEach(function(k){ (pr[k] || []).forEach(function(x){ if(x && x.id) o[x.id] = 1; }); }); return o; }
+    function setProgDirect(qid, patch){ if(inRoom()) writeProgress(qid, patch); else Object.assign(getProgress(qid), patch); }
+    function finalizeSection(){
+      if(!slideSecInfo) return 0; var qs = slideSecInfo.sec.questions || {}, n = 0, now = Date.now();
+      Object.keys(qs).forEach(function(qid){ var ids = qid === q.id ? curIds() : progIds(getProgress(qid)); n += Object.keys(ids).length; setProgDirect(qid, { finalIds: ids, finalAt: now }); });
+      if(!inRoom()) saveFS();
+      return n;
+    }
+    function finalDirty(){ var pr = getProgress(q.id), fs = pr.finalIds || {}, cur = curIds(), k; for(k in cur) if(!fs[k]) return true; for(k in fs) if(!cur[k]) return true; return false; }
+    function finalSetNow(){
+      var pr = getProgress(q.id), fs = pr.finalIds;
+      if(!fs && !isStudent && !window.__solo && slideSecInfo && slideSecInfo.sec.type === "board" && container.classList.contains("canvas-fs-active") && !container.classList.contains("fs-edit")){
+        fs = curIds(); setProgDirect(q.id, { finalIds: fs, finalAt: Date.now() }); if(!inRoom()) saveFS();   // 這頁沒存過定稿就開始放映：以目前內容當定稿
+      }
+      return fs || null;
+    }
+    function isLiveItem(it){ if(!it) return false; var fs = finalSetNow(); if(fs) return !fs[it.id]; if(it.k !== "text") return false; var tt = texts.find(function(x){ return x.id === it.id; }); return !!(tt && tt.live); }
+    function isFinalStroke(st){ var fs = finalSetNow(); return !!(fs && st && fs[st.id]); }
+    container.addEventListener("mm-before-present", function(){
+      if(isStudent || !(slideSecInfo && slideSecInfo.sec.type === "board") || window.__solo) return;
+      var pr0 = getProgress(q.id);
+      if(!pr0.finalAt) finalizeSection();
+      else if(finalDirty() && confirm("這份簡報在上次「儲存定稿」之後又有修改。\n\n按「確定」＝先儲存最新版，再開始放映\n按「取消」＝直接放映（鎖定的是上次儲存的版本）")) finalizeSection();
+      undoStack.length = 0; redoStack.length = 0; updateUndoRedoBtns();   // 復原只能復原放映中的新內容，不會退回到定稿之前
+    });
     function presentLock(){ if(window.__solo) return true; return !isStudent && !!(slideSecInfo && slideSecInfo.sec.type === "board") && container.classList.contains("canvas-fs-active") && !container.classList.contains("fs-edit"); }
     // 小白板：只留筆、文字、橡皮擦、清空、圖案（多媒體放在題目上方，由題目設定，不是浮在畫布上）
     var simpleBoard = !!(slideSecInfo && slideSecInfo.sec.type === "whiteboard");
@@ -11021,6 +11048,22 @@ window.mmTA = (function(){
       ["pen", "eraser", "clear"].forEach(function(k){ var n = itemNode(k); if(n){ n.classList.add("rb-qat-btn"); rbQat.appendChild(n); } });
       var rbFsEdit = rbBtn("⛶", "全螢幕<br>編輯", function(){ container.dispatchEvent(new CustomEvent("mm-fs-edit")); }, "全螢幕編輯：畫布放到最大，功能區留在上方（Esc 退出）");
       rbFsEdit.id = "btn-fs-edit"; rbFsEdit.onclick = null; rbFsEdit.addEventListener("click", function(e){ e.stopPropagation(); container.dispatchEvent(new CustomEvent("mm-fs-edit")); }); rbNavSlot.appendChild(rbFsEdit);
+      if(!isStudent && slideSecInfo && slideSecInfo.sec.type === "board" && !window.__solo){
+        var rbFinal = rbBtn("💾", "儲存<br>定稿", function(){
+          var n = finalizeSection(); refreshFinalBtn();
+          rbFinal.title = "已儲存定稿（共 " + n + " 個內容）：放映時這些內容不能更動，上課中仍可新增文字方塊與寫字";
+        }, "儲存定稿：做好最終版本時按。放映後這些內容就不能更動，上課中仍可新增文字方塊與寫字");
+        rbFinal.id = "btn-save-final"; rbNavSlot.appendChild(rbFinal);
+        function refreshFinalBtn(){
+          if(!document.body.contains(container) && !rbFinal.isConnected) return;
+          var pr1 = getProgress(q.id), lab = rbFinal.querySelector(".tool-btn-v-label");
+          var st = !pr1.finalAt ? "new" : (finalDirty() ? "dirty" : "ok");
+          var txt = st === "ok" ? "✔ 已定稿" : (st === "dirty" ? "儲存定稿<br>（有更動）" : "儲存<br>定稿");
+          if(rbFinal.dataset.st !== st){ rbFinal.dataset.st = st; lab.innerHTML = txt; rbFinal.classList.toggle("active", st === "ok"); rbFinal.style.color = st === "dirty" ? "#C4602A" : ""; }
+        }
+        var finalTimer = setInterval(function(){ if(!rbFinal.isConnected){ clearInterval(finalTimer); return; } refreshFinalBtn(); }, 1200);
+        refreshFinalBtn();
+      }
       new MutationObserver(function(){ var on = container.classList.contains("fs-edit"); rbFsEdit.querySelector(".tool-btn-v-label").innerHTML = on ? "結束<br>全螢幕" : "全螢幕<br>編輯"; rbFsEdit.classList.toggle("active", on); }).observe(container, { attributes: true, attributeFilter: ["class"] });
       var navN = tbItems.nav ? tbItems.nav.nodes : []; navN.forEach(function(n){ rbNavSlot.appendChild(n); });
       ["insert", "transition", "media", "notes"].forEach(function(k){ var it = tbItems[k]; if(it) it.nodes.forEach(function(n){ n.style.display = "none"; }); }); // 已經拆成功能區的按鈕；這幾個原本的按鈕留在原處當「引擎」（不顯示）
@@ -11031,7 +11074,7 @@ window.mmTA = (function(){
       function rbFsSync(){
         var inFs = container.classList.contains("canvas-fs-active") && !container.classList.contains("fs-edit");
         if(inFs && !fsSlots.length){
-          ["fs", "nav", "pen", "eraser", "clear", "present", "select", "text"].forEach(function(k){
+          ["fs", "nav", "undo", "redo", "pen", "eraser", "clear", "present", "select", "text"].forEach(function(k){
             var it = tbItems[k]; if(!it) return;
             if(k === "select" && slideSecInfo && slideSecInfo.sec.type === "board") return; // 放映時不給「選取」：不能動放映前的內容
             it.nodes.forEach(function(n){ var ph = document.createElement("span"); ph.className = "rb-slot"; n.parentNode.insertBefore(ph, n); fsSlots.push({ ph: ph, n: n }); vToolbar.appendChild(n); });
@@ -11485,7 +11528,7 @@ window.mmTA = (function(){
     // hover 開的小面板可以切換筆畫擦／局部擦，切換的同時也順便套用，不用切完再點一次主按鈕。
     var btnEraser = tbq.one("#btn-eraser");
     function selectEraserTool(){
-      boardState.tool = (boardState.eraserMode === "pixel" && !isStudent) ? "pixel-eraser" : "stroke-eraser"; // 局部橡皮擦會連老師的筆記一起擦掉，學生看投影片時只給筆畫擦（而且只擦得到自己的）
+      boardState.tool = (boardState.eraserMode === "pixel" && !isStudent && !presentLock()) ? "pixel-eraser" : "stroke-eraser"; // 局部橡皮擦會連老師的筆記一起擦掉，學生看投影片時只給筆畫擦（而且只擦得到自己的）
       tbq.all(".tool-btn-v").forEach(function(x){
         if(NON_TOOL_BTN_IDS.indexOf(x.id) === -1) x.classList.remove("active");
       });
@@ -13386,6 +13429,7 @@ window.mmTA = (function(){
     function checkStrokeHit(p){
       for(var i = strokes.length - 1; i >= 0; i--){
         if(isStudent && strokes[i].by !== myId) continue; // 學生只能擦自己的筆跡，老師（或別人）的筆跡不能擦
+        if(!isStudent && presentLock() && isFinalStroke(strokes[i])) continue; // 放映中：定稿的筆跡不能擦，只能擦上課中新寫的
         var pts = strokes[i].points;
         for(var j=0; j<pts.length; j++){
           var dist = Math.hypot(pts[j].x - p.x, pts[j].y - p.y);
@@ -15397,7 +15441,9 @@ window.mmTA = (function(){
         if(deckStudent || (slideSecInfo && slideSecInfo.sec.type === "board")){ // 投影片：只清掉筆跡，文字／圖片／圖案／表格和底圖背景都不會動
           var clearMsg = deckStudent ? "確定要清除你自己寫的筆跡嗎？（老師的筆記不會被清掉）\nClear your own pen strokes? (The teacher's notes stay.)" : "確定要清除畫筆的筆跡嗎？（投影片上的文字、圖片、底圖和背景都不會被清掉；學生在這頁打的字也會一併清掉）\nClear pen strokes? (Slide content and background stay; students' typed text on this page is cleared too.)";
           if(confirm(clearMsg)){
-            if(deckStudent) strokes = strokes.filter(function(s0){ return s0.by !== myId; }); else strokes = [];
+            if(deckStudent) strokes = strokes.filter(function(s0){ return s0.by !== myId; });
+            else if(presentLock()){ var fsK = finalSetNow() || {}; strokes = strokes.filter(function(s0){ return fsK[s0.id]; }); }   // 放映中只清掉上課中新寫的
+            else strokes = [];
             localSelfSeq++; redrawStrokes();
             var clrPatch = { strokes: strokes, strokesRevSeq: localSelfSeq, strokesRevBy: deviceInstanceId }; if(!isStudent && inRoom()) clrPatch.stexts = null;
             writeProgress(q.id, clrPatch);
