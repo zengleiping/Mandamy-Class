@@ -93,6 +93,20 @@
   .cal-n{ font-weight:700; font-size:13px; margin-bottom:2px; }
   .bingo-root{ flex:1; min-height:0; overflow:auto; background:var(--paper); }
   .bg-wrap{ padding:16px; max-width:900px; margin:0 auto; }
+  /* 電腦版：賓果盤整個塞進一個螢幕，不用捲動（格子隨可用高度伸縮，不再強制正方形） */
+  @media (min-width:900px) and (min-height:560px){
+    .bingo-root{ overflow:hidden; display:flex; flex-direction:column; }
+    .bg-wrap.play{ flex:1; min-height:0; width:100%; max-width:1200px; padding:8px 20px 10px; display:flex; flex-direction:column; }
+    .bg-wrap.play .head-row{ margin-bottom:4px; flex-wrap:nowrap; align-items:center; } .bg-wrap.play .head-row h2{ font-size:20px; margin:0; }
+    .bg-wrap.play .bg-call{ margin:4px 0; padding:6px 10px; flex:none; } .bg-wrap.play .bg-callw{ font-size:clamp(28px,6vh,52px); line-height:1.1; }
+    .bg-wrap.play .bg-turn,.bg-wrap.play .bg-me,.bg-wrap.play .bg-pend,.bg-wrap.play .bg-count{ margin:3px 0; font-size:15px; padding:4px; flex:none; }
+    .bg-wrap.play .tools{ margin-bottom:4px !important; flex:none; }
+    .bg-wrap.play .bg-grid{ flex:1; min-height:0; max-width:none; width:100%; margin:4px 0; grid-auto-rows:1fr; gap:8px; }
+    .bg-wrap.play .bg-cell{ aspect-ratio:auto; min-height:0; }
+    .bg-wrap.play .bg-w{ font-size:clamp(16px,3.4vh,34px); } .bg-wrap.play .bg-p{ font-size:clamp(11px,2vh,18px); }
+    .bg-wrap.play .panel{ flex:none; margin:2px 0; padding:6px 12px; } .bg-wrap.play .panel h3{ display:none; }
+    .bg-wrap.play .bg-order{ flex:none; }
+  }
   .bg-grid{ display:grid; grid-template-columns:repeat(5,1fr); gap:8px; max-width:680px; margin:10px auto; }
   .bg-grid.small{ max-width:520px; gap:5px; }
   .bg-cell{ aspect-ratio:1/1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; background:var(--surface); border:2px solid var(--line); border-radius:12px; padding:4px; overflow:hidden; word-break:break-all; transition:transform .1s; }
@@ -4740,7 +4754,7 @@ function bingoDrawFill(d){
 // --- 遊戲中／結束 ---
 function bgOwnerCount(d){ var o = d.owner || {}; return Object.keys(o).length; }
 function bingoDrawPlay(d){
-  var cfg = d.cfg, done = d.phase === "done", html = '<div class="bg-wrap"><div class="head-row"><div style="flex:1;"><h2>🎯 賓果' + (done ? '　結束！' : '') + '</h2></div>' +
+  var cfg = d.cfg, done = d.phase === "done", html = '<div class="bg-wrap play"><div class="head-row"><div style="flex:1;"><h2>🎯 賓果' + (done ? '　結束！' : '') + '</h2></div>' +
     (B.teacher ? '<div class="tools"><button class="btn sm" data-b="end">' + (done ? '再來一局' : '結束這局') + '</button>' + (done ? '<button class="btn sm ghost" data-b="close">關閉賓果</button>' : '') + '</div>' : '') + '</div>' + bgMyBar(d);
   if(done){
     var win = bA(d.winners);
