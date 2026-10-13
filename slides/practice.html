@@ -572,7 +572,7 @@
   .timer-floating-widget.timer-ended{border-color:var(--seal); background:var(--seal-soft);}
   .timer-floating-widget.timer-ended .timer-display{color:var(--seal);}
   .timer-settings-pop{
-    position:absolute; top:calc(100% + 8px); right:0; z-index:9999;
+    position:absolute; top:calc(100% + 8px); left:0; z-index:9999; max-width:calc(100vw - 24px);
     background:var(--surface); border:1.5px solid var(--grid-line); border-radius:14px;
     box-shadow:0 10px 26px rgba(0,0,0,0.15); padding:12px 14px; width:220px;
   }
@@ -9218,7 +9218,7 @@ window.mmTA = (function(){
   function renderMediaItem(m){
     var wrap = document.createElement("div"); wrap.className = "media-item media-item-" + m.type;
     if(m.type === "image"){
-      var img = document.createElement("img"); img.className = "media-image"; img.src = m.src; img.alt = isStudent ? "圖片" : (m.name || "圖片"); wrap.appendChild(img);
+      var img = document.createElement("img"); img.className = "media-image"; img.src = m.src; img.alt = "圖片"; wrap.appendChild(img);
     } else if(m.type === "youtube"){
       var fr = document.createElement("iframe"); fr.className = "media-youtube"; fr.src = "https://www.youtube.com/embed/" + encodeURIComponent(m.ytId) + "?rel=0"; fr.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; picture-in-picture"; fr.allowFullscreen = true; fr.style.cssText = "width:min(560px,100%);aspect-ratio:16/9;border:0;border-radius:10px;background:#000;"; wrap.appendChild(fr);
     } else if(m.type === "audio"){
@@ -9228,8 +9228,8 @@ window.mmTA = (function(){
     } else if(m.type === "video"){
       var video = document.createElement("video"); video.className = "media-video"; video.controls = true; video.src = m.src; wrap.appendChild(video);
     }
-    // 學生端不顯示檔名：檔名可能直接洩漏答案（例如「春天.mp3」）
-    if(m.name && !isStudent){
+    // 檔名可能直接洩漏答案（例如「春天.mp3」），老師分享螢幕時學生也看得到，所以師生端都不顯示
+    if(false){
       var cap = document.createElement("div"); cap.className = "media-item-name"; cap.textContent = m.name; wrap.appendChild(cap);
     }
     return wrap;
@@ -9274,7 +9274,13 @@ window.mmTA = (function(){
         ts.onclick = function(){ if(window.speechSynthesis) speechSynthesis.cancel(); };
         tBlock.appendChild(tb); tBlock.appendChild(tb2); tBlock.appendChild(ts);
       }
-      if(!isStudent){ var tt = document.createElement("div"); tt.className = "media-item-name"; tt.style.maxWidth = "none"; tt.textContent = "（老師可見）" + q.tts.text; tBlock.appendChild(tt); }
+      if(!isStudent){
+        // 聽力腳本就是答案：預設藏起來，老師要看再按（分享螢幕時不會被學生看到）
+        var tt = document.createElement("div"); tt.className = "media-item-name"; tt.style.cssText = "max-width:none;white-space:normal;display:none;margin-top:6px;"; tt.textContent = q.tts.text;
+        var tg = document.createElement("button"); tg.type = "button"; tg.className = "btn btn-sm"; tg.style.marginTop = "6px"; tg.textContent = "👁 顯示腳本（老師用）";
+        tg.onclick = function(){ var on = tt.style.display === "none"; tt.style.display = on ? "block" : "none"; tg.textContent = on ? "🙈 隱藏腳本" : "👁 顯示腳本（老師用）"; };
+        tBlock.appendChild(document.createElement("br")); tBlock.appendChild(tg); tBlock.appendChild(tt);
+      }
       wrap.appendChild(tBlock);
     }
     return wrap;
@@ -12812,7 +12818,7 @@ window.mmTA = (function(){
       var barHtml = isStudent ? "" : '<div class="media-bar" title="拖曳移動位置"><span class="media-title"></span><button type="button" class="media-del" title="移除">✕</button></div>';
       root.innerHTML = barHtml + '<div class="media-body"></div>' + ((!isStudent && m.kind === "youtube") ? '<div class="media-resize" title="拖曳縮放"></div>' : '');
       var body = root.querySelector(".media-body");
-      var titleEl = root.querySelector(".media-title"); if(titleEl) titleEl.textContent = (m.kind === "youtube" ? "▶ YouTube" : "🎵 " + (m.name || "音檔"));
+      var titleEl = root.querySelector(".media-title"); if(titleEl) titleEl.textContent = (m.kind === "youtube" ? "▶ YouTube" : "🎵 音檔");
       if(!isStudent){
         var bar = root.querySelector(".media-bar");
         root.querySelector(".media-del").onclick = function(e){ e.stopPropagation(); if(confirm("移除這個媒體？\nRemove this media?")) removeMedia(m.id); };
