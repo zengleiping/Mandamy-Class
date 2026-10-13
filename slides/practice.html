@@ -2221,6 +2221,19 @@
       <label for="f-title">小題名稱／標題（留空將自動編號）Question Title</label>
       <input type="text" id="f-title" placeholder="例如：第 1 題">
 
+      <details id="q-tts" class="q-more">
+      <summary>🔊 聽力語音：輸入文字，自動變成給學生聽的語音</summary>
+      <label for="f-tts-text" style="margin-top:6px;">要念出來的內容（學生只會聽到，看不到文字）</label>
+      <textarea id="f-tts-text" rows="3" placeholder="例如：A：你今天想喝什麼？　B：我想喝一杯熱奶茶。"></textarea>
+      <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:8px;">
+        <label style="margin:0;flex:1;min-width:200px;">語速 <b id="f-tts-rate-val">1.0x</b>
+          <input type="range" id="f-tts-rate" min="0.7" max="1.2" step="0.05" value="1" style="width:100%;"></label>
+        <button type="button" class="btn btn-sm" id="btn-tts-preview">▶ 試聽</button>
+        <button type="button" class="btn btn-sm" id="btn-tts-gen">🎵 產生音檔</button>
+      </div>
+      <p class="teacher-note-hint" id="tts-status" style="margin:8px 0 0;">有設定語音伺服器時，會產生固定音質的台灣華語 MP3；沒有的話，學生用自己裝置的中文語音播放。<a href="../tts.html" target="_blank">設定語音伺服器</a></p>
+      </details>
+
       <details id="q-more" class="q-more">
       <summary>⚙️ 更多選項：閱讀文本、媒體、老師備注（點開才顯示）</summary>
       <div id="passage-wrap">
@@ -8500,6 +8513,48 @@ window.mmTA = (function(){
     return row;
   }
 
+  /* ---- 聽力語音（文字轉語音）---- */
+  var editorTtsSrc = "", editorTtsKey = "";
+  function ttsServerUrl(){ try{ return (localStorage.getItem("mm_tts_server") || "").replace(/\/+$/, ""); }catch(e){ return ""; } }
+  function ttsPickVoice(){
+    var vs = (window.speechSynthesis && speechSynthesis.getVoices()) || [];
+    function sc(v){ var n = 0; if(/^zh[-_]TW$/i.test(v.lang)) n += 100; else if(/^zh|cmn/i.test(v.lang)) n += 10;
+      if(/Taiwan|臺灣|台灣|HsiaoChen|曉臻|Mei-?Jia|美佳/i.test(v.name)) n += 30; if(/China|大陸|Xiaoxiao|Yunxi|Huihui|Tingting/i.test(v.name) || /^zh[-_]CN/i.test(v.lang)) n -= 50; return n; }
+    return vs.filter(function(v){ return /^zh|cmn/i.test(v.lang); }).sort(function(a, b){ return sc(b) - sc(a); })[0] || null;
+  }
+  function ttsSpeak(text, rate){
+    if(!window.speechSynthesis){ alert("這個瀏覽器不支援語音播放"); return; }
+    speechSynthesis.cancel();
+    var parts = String(text).match(/[^。！？!?；;\n]+[。！？!?；;]*/g) || [text];
+    var v = ttsPickVoice();
+    parts.forEach(function(t){ if(!t.trim()) return; var u = new SpeechSynthesisUtterance(t); if(v){ u.voice = v; u.lang = v.lang; } else u.lang = "zh-TW"; u.rate = rate || 1; speechSynthesis.speak(u); });
+  }
+  function ttsRateNow(){ return parseFloat(document.getElementById("f-tts-rate").value) || 1; }
+  function ttsKeyNow(){ return document.getElementById("f-tts-text").value.trim() + "|" + ttsRateNow(); }
+  function ttsSetStatus(msg){ var e = document.getElementById("tts-status"); if(e) e.textContent = msg; }
+  async function ttsGenerate(silent){
+    var text = document.getElementById("f-tts-text").value.trim(), srv = ttsServerUrl();
+    if(!text){ if(!silent) ttsSetStatus("請先輸入要念的內容。"); return; }
+    if(!srv){ ttsSetStatus("尚未設定語音伺服器：學生會用自己裝置的中文語音播放（音質依裝置而異）。要產生固定音質的 MP3，請先到「語音伺服器」設定。"); editorTtsSrc = ""; return; }
+    var key = ttsKeyNow(); ttsSetStatus("正在產生音檔…");
+    try{
+      var ctl = new AbortController(), tm = setTimeout(function(){ ctl.abort(); }, 60000);
+      var r = await fetch(srv + "/api/tts", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text: text, rate: ttsRateNow() }), signal: ctl.signal });
+      clearTimeout(tm); if(!r.ok) throw new Error("HTTP " + r.status);
+      var blob = await r.blob(); if(blob.size > 900000) throw new Error("音檔太大，請縮短內容");
+      editorTtsSrc = await blobToDataUrl(blob); editorTtsKey = key;
+      ttsSetStatus("✅ 已產生音檔（" + Math.round(blob.size / 1024) + " KB），儲存題目後學生就能聽到。");
+    }catch(e){ editorTtsSrc = ""; ttsSetStatus("產生音檔失敗（" + (e.message || e) + "），儲存後學生會改用自己裝置的語音播放。"); }
+  }
+  document.getElementById("f-tts-rate").oninput = function(){ document.getElementById("f-tts-rate-val").textContent = ttsRateNow().toFixed(2).replace(/0$/, "") + "x"; };
+  document.getElementById("f-tts-text").onchange = function(){ if(ttsServerUrl()) ttsGenerate(true); };
+  document.getElementById("f-tts-rate").onchange = function(){ if(ttsServerUrl() && document.getElementById("f-tts-text").value.trim()) ttsGenerate(true); };
+  document.getElementById("btn-tts-gen").onclick = function(){ ttsGenerate(false); };
+  document.getElementById("btn-tts-preview").onclick = function(){
+    var text = document.getElementById("f-tts-text").value.trim(); if(!text){ ttsSetStatus("請先輸入要念的內容。"); return; }
+    if(editorTtsSrc && editorTtsKey === ttsKeyNow()){ new Audio(editorTtsSrc).play(); } else ttsSpeak(text, ttsRateNow());
+  };
+
   function openQuestionDialog(secId, qId){
     var secs = getSections(); var sec = secs[secId];
     if(!sec) return;
@@ -8512,6 +8567,11 @@ window.mmTA = (function(){
     document.getElementById("f-passage").value = q ? (q.passage || "") : "";
     document.getElementById("f-teacher-note").value = q ? (q.teacherNote || "") : "";
     qMediaManager.setItems(q ? q.media : []);
+    var tq = (q && q.tts) || null;
+    document.getElementById("f-tts-text").value = tq ? (tq.text || "") : "";
+    document.getElementById("f-tts-rate").value = tq && tq.rate ? tq.rate : 1; document.getElementById("f-tts-rate").oninput();
+    editorTtsSrc = tq && tq.src ? tq.src : ""; editorTtsKey = tq ? ((tq.text || "") + "|" + (tq.rate || 1)) : "";
+    document.getElementById("q-tts").open = !!(tq && tq.text);
 
     document.getElementById("match-fields").style.display = type === "match" ? "block" : "none";
     document.getElementById("choice-fields").style.display = type === "choice" ? "block" : "none";
@@ -8667,6 +8727,11 @@ window.mmTA = (function(){
     qObj.media = qMediaManager.getItems();
     var passageVal = document.getElementById("f-passage").value.trim(); if(passageVal && sec.type !== "board" && sec.type !== "whiteboard" && sec.type !== "hanzi" && sec.type !== "match") qObj.passage = passageVal;
     qObj.teacherNote = document.getElementById("f-teacher-note").value.trim();
+    var ttsText = document.getElementById("f-tts-text").value.trim();
+    if(ttsText){
+      qObj.tts = { text: ttsText, rate: ttsRateNow() };
+      if(editorTtsSrc && editorTtsKey === ttsKeyNow()) qObj.tts.src = editorTtsSrc;   // 文字或語速改過就丟掉舊音檔
+    }
     // 配分比重改到左側欄最下方的「配分總覽」大表統一編輯，這裡維持原本存的比重（新題目預設 1）。
     qObj.weight = (existing && existing.weight && existing.weight > 0) ? existing.weight : 1;
     sec.questions[qId] = qObj;
@@ -9173,7 +9238,8 @@ window.mmTA = (function(){
   function renderMediaBlock(sec, q){
     var secMedia = (sec.media || []).filter(Boolean);
     var qMedia = (q.media || []).filter(Boolean);
-    if(!secMedia.length && !qMedia.length) return null;
+    var hasTts = !!(q.tts && q.tts.text);
+    if(!secMedia.length && !qMedia.length && !hasTts) return null;
     var wrap = document.createElement("div"); wrap.className = "stage-media-wrap";
     if(secMedia.length){
       var secBlock = document.createElement("div"); secBlock.className = "media-block";
@@ -9193,6 +9259,24 @@ window.mmTA = (function(){
       qBlock.appendChild(qItems);
       wrap.appendChild(qBlock);
     }
+    if(hasTts){
+      var tBlock = document.createElement("div"); tBlock.className = "media-block";
+      var tLabel = document.createElement("div"); tLabel.className = "media-block-label"; tLabel.textContent = "🔊 聽力 Listening";
+      tBlock.appendChild(tLabel);
+      if(q.tts.src){
+        var ta = document.createElement("audio"); ta.className = "media-audio"; ta.controls = true; ta.src = q.tts.src; ta.preload = "auto"; tBlock.appendChild(ta);
+      } else {
+        var tb = document.createElement("button"); tb.type = "button"; tb.className = "btn"; tb.textContent = "▶ 播放聽力 Play";
+        tb.onclick = function(){ ttsSpeak(q.tts.text, q.tts.rate || 1); };
+        var tb2 = document.createElement("button"); tb2.type = "button"; tb2.className = "btn"; tb2.style.marginLeft = "8px"; tb2.textContent = "↺ 重播 Replay";
+        tb2.onclick = tb.onclick;
+        var ts = document.createElement("button"); ts.type = "button"; ts.className = "btn"; ts.style.marginLeft = "8px"; ts.textContent = "⏹ 停止";
+        ts.onclick = function(){ if(window.speechSynthesis) speechSynthesis.cancel(); };
+        tBlock.appendChild(tb); tBlock.appendChild(tb2); tBlock.appendChild(ts);
+      }
+      if(!isStudent){ var tt = document.createElement("div"); tt.className = "media-item-name"; tt.style.maxWidth = "none"; tt.textContent = "（老師可見）" + q.tts.text; tBlock.appendChild(tt); }
+      wrap.appendChild(tBlock);
+    }
     return wrap;
   }
 
@@ -9206,7 +9290,7 @@ window.mmTA = (function(){
 
     var sec = currentInfo.section; var q = currentInfo.question;
     var allList = getAllQuestionsList(); var currentIndex = allList.findIndex(function(it){ return it.question.id === q.id; });
-    var mediaFingerprint = (sec.media || []).map(function(m){ return m.id; }).join(",") + "|" + (q.media || []).map(function(m){ return m.id; }).join(",");
+    var mediaFingerprint = (sec.media || []).map(function(m){ return m.id; }).join(",") + "|" + (q.media || []).map(function(m){ return m.id; }).join(",") + "|" + (q.tts ? (q.tts.text || "").length + ":" + (q.tts.rate || 1) + ":" + (q.tts.src ? q.tts.src.length : 0) : "");
     var stageSignature = JSON.stringify([q.id, sec.type, sec.title, sec.desc || "", q.title, q.desc || "", currentIndex, allList.length, currentClassMode, !!isStudent, mediaFingerprint, (isCanvasSec(sec) ? "" : (q.teacherNote || ""))]);
 
     // 填空／簡答：正在打字時，別因為雲端回傳自己剛寫的資料就整個重畫（會讓游標跑掉、輸入法中斷）

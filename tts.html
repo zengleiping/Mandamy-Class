@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>文字轉語音 TTS｜曼米中文</title>
+<style>
+  :root{--bg:#FAF3EA;--card:#fff;--ink:#2b2622;--soft:#7a6f66;--line:#e6d6c3;--seal:#E8805A;--seal-d:#C4602A;--ok:#2D5A27;--bad:#B23B32;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;}
+  .wrap{max-width:860px;margin:0 auto;padding:20px 16px 60px}
+  h1{font-size:22px;margin:6px 0 4px}
+  .sub{color:var(--soft);font-size:14px;margin-bottom:14px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:0 2px 10px rgba(0,0,0,.04)}
+  label{display:block;font-weight:700;font-size:14px;margin-bottom:6px}
+  textarea{width:100%;min-height:200px;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;font:inherit;font-size:18px;line-height:1.7;background:#fffdf9;resize:vertical}
+  textarea:focus,select:focus,input[type=text]:focus{outline:2px solid var(--seal);border-color:var(--seal)}
+  .row{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-top:12px}
+  .grow{flex:1;min-width:220px}
+  select,input[type=text]{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;font:inherit;background:#fffdf9}
+  input[type=range]{width:100%;accent-color:var(--seal)}
+  .rate-val{font-weight:800;color:var(--seal-d);min-width:46px;text-align:right}
+  .ctrl{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+  button{font:inherit;cursor:pointer;border-radius:12px;padding:10px 18px;border:1.5px solid var(--line);background:#fff;font-weight:700;color:var(--ink)}
+  button.primary{background:var(--seal);border-color:var(--seal);color:#fff}
+  button:disabled{opacity:.45;cursor:not-allowed}
+  .bar{height:12px;border-radius:99px;background:#efe3d3;position:relative;cursor:pointer;margin-top:14px;overflow:hidden}
+  .bar>i{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--seal);border-radius:99px}
+  .time{display:flex;justify-content:space-between;color:var(--soft);font-size:13px;margin-top:6px;font-variant-numeric:tabular-nums}
+  .status{font-size:13px;padding:8px 12px;border-radius:10px;background:#f4ece0;color:var(--soft);margin-top:10px;line-height:1.6}
+  .status.ok{background:#e8f3e5;color:var(--ok)} .status.warn{background:#fdecea;color:var(--bad)}
+  details summary{cursor:pointer;font-weight:700}
+  .note{font-size:13px;color:var(--soft);line-height:1.7}
+  .eng{display:inline-block;padding:2px 10px;border-radius:99px;font-size:12px;font-weight:700;background:#f4ece0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🔊 文字轉語音（聽力題）</h1>
+  <div class="sub">貼上題目或對話，選擇語速後播放；有連上語音伺服器時，可下載 MP3 當作聽力題音檔。</div>
+
+  <div class="card">
+    <label for="txt">題目／對話文字</label>
+    <textarea id="txt" placeholder="例如：A：你今天想喝什麼？&#10;B：我想喝一杯熱奶茶，謝謝。"></textarea>
+    <div class="row">
+      <div class="grow">
+        <label for="voice">語音（預設台灣華語）</label>
+        <select id="voice"></select>
+      </div>
+      <div class="grow">
+        <label for="rate">語速 <span class="rate-val" id="rateVal">1.0x</span></label>
+        <input type="range" id="rate" min="0.7" max="1.2" step="0.05" value="1">
+        <div class="note" style="display:flex;justify-content:space-between"><span>0.7x 慢</span><span>1.2x 快</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ctrl">
+      <button class="primary" id="bPlay">▶ 播放</button>
+      <button id="bPause" disabled>⏸ 暫停</button>
+      <button id="bReplay">↺ 重播</button>
+      <button id="bDl" title="">⬇ 下載 MP3</button>
+      <span style="flex:1"></span>
+      <span class="eng" id="engTag">引擎：偵測中…</span>
+    </div>
+    <div class="bar" id="bar"><i id="barFill"></i></div>
+    <div class="time"><span id="tCur">0:00</span><span id="tTot">--:--</span></div>
+    <div class="status" id="status"></div>
+  </div>
+
+  <div class="card">
+    <details id="cfg">
+      <summary>⚙ 語音伺服器（要下載 MP3 或要統一音質時設定）</summary>
+      <div class="row">
+        <div class="grow">
+          <label for="srv">伺服器網址</label>
+          <input type="text" id="srv" placeholder="例如 https://mandamy-tts.onrender.com 或 http://127.0.0.1:8000">
+        </div>
+        <button id="srvSave">儲存並測試</button>
+        <button id="srvClear">清除（只用瀏覽器語音）</button>
+      </div>
+      <p class="note">伺服器使用 edge-tts 的台灣華語語音（預設「曉臻」），音質固定、可下載 MP3。架設方式見專案內 <code>tts-server/README.md</code>。<br>
+      沒有設定伺服器時，會改用這台裝置內建的語音（Web Speech API）：可以播放，但<b>音質依裝置而異</b>，也<b>無法直接下載音檔</b>。<br>
+      正式的聽力測驗請：先用伺服器產生 MP3 → 下載 → 在出題畫面用「新增媒體」放進題目，不要考試當下才即時合成。</p>
+    </details>
+  </div>
+</div>
+
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var LS_KEY = "mm_tts_server";
+  var srvUrl = "";
+  var srvOk = false, srvVoices = [];
+  var mode = "browser";            // "server" | "browser"
+  var audio = new Audio();
+  var audioUrl = null, audioKey = "";
+  var bVoices = [];
+  var bState = { chunks: [], idx: 0, doneChars: 0, total: 0, speaking: false, paused: false, startTs: 0, estDur: 0, timer: null };
+
+  function fmt(s){ if(!isFinite(s)) return "--:--"; s = Math.max(0, Math.round(s)); return Math.floor(s/60) + ":" + (s%60 < 10 ? "0" : "") + (s%60); }
+  function setStatus(msg, cls){ var e = $("status"); e.textContent = msg || ""; e.className = "status" + (cls ? " " + cls : ""); e.style.display = msg ? "" : "none"; }
+  function rate(){ return parseFloat($("rate").value) || 1; }
+  function normUrl(u){ u = (u || "").trim().replace(/\/+$/, ""); return u; }
+
+  /* ---------- 伺服器偵測 ---------- */
+  try{
+    var qs = new URLSearchParams(location.search).get("server");
+    if(qs){ localStorage.setItem(LS_KEY, normUrl(qs)); }
+    srvUrl = normUrl(localStorage.getItem(LS_KEY) || "");
+  }catch(e){ srvUrl = ""; }
+  $("srv").value = srvUrl;
+
+  function fetchT(url, opt, ms){
+    var ctl = new AbortController(); var t = setTimeout(function(){ ctl.abort(); }, ms || 8000);
+    opt = opt || {}; opt.signal = ctl.signal;
+    return fetch(url, opt).finally(function(){ clearTimeout(t); });
+  }
+  async function probe(){
+    srvOk = false; srvVoices = [];
+    if(srvUrl){
+      try{
+        var r = await fetchT(srvUrl + "/health", {}, 20000);   // 免費主機休眠時喚醒較久
+        if(r.ok){
+          srvOk = true;
+          try{ var v = await fetchT(srvUrl + "/api/voices", {}, 8000); srvVoices = await v.json(); }catch(e){ srvVoices = [{id:"zh-TW-HsiaoChenNeural", name:"曉臻（女）"}]; }
+        }
+      }catch(e){}
+    }
+    mode = srvOk ? "server" : "browser";
+    fillVoices(); updateEngine();
+  }
+
+  /* ---------- 瀏覽器語音 ---------- */
+  function loadBVoices(){
+    var all = (window.speechSynthesis && speechSynthesis.getVoices()) || [];
+    function isTW(v){ return /^zh[-_]TW$/i.test(v.lang) || /zh[-_]Hant[-_]TW/i.test(v.lang); }
+    function isZh(v){ return /^zh/i.test(v.lang) || /cmn/i.test(v.lang); }
+    function score(v){ var s = 0; if(isTW(v)) s += 100; else if(isZh(v)) s += 10;
+      if(/Taiwan|臺灣|台灣|HsiaoChen|Hsiao|曉臻|Mei-?Jia|美佳|Meijia/i.test(v.name)) s += 30;
+      if(/Natural|Online|Neural/i.test(v.name)) s += 5;
+      if(/China|大陸|Mainland|Xiaoxiao|Yunxi|Huihui|Tingting|Ting-Ting/i.test(v.name) || /^zh[-_]CN/i.test(v.lang)) s -= 50;
+      return s; }
+    bVoices = all.filter(isZh).sort(function(a,b){ return score(b) - score(a); });
+    bVoices.forEach(function(v){ v._tw = isTW(v); });
+  }
+  if(window.speechSynthesis){ loadBVoices(); speechSynthesis.onvoiceschanged = function(){ loadBVoices(); if(mode === "browser") fillVoices(); updateEngine(); }; }
+
+  function fillVoices(){
+    var sel = $("voice"), keep = sel.value; sel.innerHTML = "";
+    if(mode === "server"){
+      srvVoices.forEach(function(v){ var o = document.createElement("option"); o.value = v.id; o.textContent = v.name + (v.id === "zh-TW-HsiaoChenNeural" ? "（推薦）" : ""); sel.appendChild(o); });
+    } else {
+      if(!bVoices.length){ var o0 = document.createElement("option"); o0.value = ""; o0.textContent = "（此裝置沒有中文語音）"; sel.appendChild(o0); }
+      bVoices.forEach(function(v, i){ var o = document.createElement("option"); o.value = String(i); o.textContent = v.name + "（" + v.lang + (v._tw ? "，台灣" : "") + "）"; sel.appendChild(o); });
+    }
+    if(keep) { for(var i = 0; i < sel.options.length; i++) if(sel.options[i].value === keep){ sel.value = keep; break; } }
+  }
+  function updateEngine(){
+    var tag = $("engTag");
+    if(mode === "server"){
+      tag.textContent = "引擎：伺服器（edge-tts 台灣華語）"; tag.style.background = "#e8f3e5"; tag.style.color = "#2D5A27";
+      $("bDl").disabled = false; $("bDl").title = "";
+      setStatus("已連上語音伺服器，可播放與下載 MP3。", "ok");
+    } else {
+      tag.textContent = "引擎：瀏覽器內建語音"; tag.style.background = "#f4ece0"; tag.style.color = "";
+      $("bDl").disabled = true; $("bDl").title = "瀏覽器內建語音無法產生音檔，請設定語音伺服器";
+      var tw = bVoices.some(function(v){ return v._tw; });
+      var msg = !window.speechSynthesis ? "這個瀏覽器不支援語音播放，請改用 Chrome／Edge／Safari，或設定語音伺服器。" :
+        !bVoices.length ? "這台裝置沒有中文語音，請安裝中文語音，或設定語音伺服器。" :
+        !tw ? "這台裝置沒有「台灣華語（zh-TW）」語音，目前用其他中文語音代替，口音可能偏中國腔。建議設定語音伺服器。" :
+        "使用瀏覽器內建台灣華語語音。音質依裝置而異；要下載 MP3 請先設定語音伺服器。";
+      setStatus(msg + (srvUrl ? "（目前連不上你設定的伺服器，已改用瀏覽器語音）" : ""), tw && !srvUrl ? "" : "warn");
+    }
+  }
+
+  /* ---------- 共同控制 ---------- */
+  function getText(){ return $("txt").value.replace(/\r/g, "").trim(); }
+  function setPlayingUI(playing, paused){
+    $("bPlay").textContent = paused ? "▶ 繼續" : "▶ 播放";
+    $("bPlay").disabled = playing && !paused;
+    $("bPause").disabled = !(playing && !paused);
+  }
+  function setProgress(cur, tot){
+    $("barFill").style.width = (tot > 0 ? Math.min(100, cur / tot * 100) : 0) + "%";
+    $("tCur").textContent = fmt(cur); $("tTot").textContent = tot > 0 ? fmt(tot) : "--:--";
+  }
+
+  /* ---------- 伺服器模式 ---------- */
+  async function serverPrepare(){
+    var text = getText(), r = rate(), v = $("voice").value || "zh-TW-HsiaoChenNeural";
+    var key = v + "|" + r + "|" + text;
+    if(audioUrl && key === audioKey) return true;
+    setStatus("正在產生語音…（第一次可能要幾秒）");
+    try{
+      var res = await fetchT(srvUrl + "/api/tts", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text: text, rate: r, voice: v }) }, 60000);
+      if(!res.ok){ var msg = ""; try{ msg = (await res.json()).detail; }catch(e){} throw new Error(msg || ("HTTP " + res.status)); }
+      var blob = await res.blob();
+      if(audioUrl) URL.revokeObjectURL(audioUrl);
+      audioUrl = URL.createObjectURL(blob); audioKey = key; audio.src = audioUrl;
+      setStatus("已連上語音伺服器，可播放與下載 MP3。", "ok");
+      return true;
+    }catch(e){
+      setStatus("伺服器產生語音失敗（" + (e.message || e) + "），已改用瀏覽器語音播放。", "warn");
+      return false;
+    }
+  }
+  audio.ontimeupdate = function(){ setProgress(audio.currentTime, audio.duration); };
+  audio.onloadedmetadata = function(){ setProgress(0, audio.duration); };
+  audio.onended = function(){ setPlayingUI(false, false); setProgress(audio.duration, audio.duration); };
+  audio.onpause = function(){ if(!audio.ended && mode === "server" && audio.currentTime > 0) setPlayingUI(true, true); };
+  audio.onplay = function(){ setPlayingUI(true, false); };
+
+  /* ---------- 瀏覽器模式 ---------- */
+  function splitChunks(t){
+    var out = [], re = /[^。！？!?；;\n]+[。！？!?；;]*\n*/g, m;
+    while((m = re.exec(t))){ if(m[0].trim()) out.push(m[0]); }
+    return out.length ? out : [t];
+  }
+  function bStop(){ bState.speaking = false; bState.paused = false; clearInterval(bState.timer); if(window.speechSynthesis) speechSynthesis.cancel(); }
+  function bSpeakFrom(i){
+    var chunk = bState.chunks[i];
+    if(chunk === undefined){ bState.speaking = false; clearInterval(bState.timer); setPlayingUI(false, false); setProgress(bState.total, bState.total); return; }
+    var u = new SpeechSynthesisUtterance(chunk);
+    var v = bVoices[parseInt($("voice").value, 10)];
+    if(v){ u.voice = v; u.lang = v.lang; } else u.lang = "zh-TW";
+    u.rate = rate();
+    u.onboundary = function(e){ bState.cur = bState.doneChars + (e.charIndex || 0); };
+    u.onend = function(){ if(!bState.speaking) return; bState.doneChars += chunk.length; bState.cur = bState.doneChars; bState.idx = i + 1; bSpeakFrom(i + 1); };
+    u.onerror = function(e){ if(e.error === "canceled" || e.error === "interrupted") return; setStatus("播放失敗：" + e.error, "warn"); bState.speaking = false; setPlayingUI(false, false); };
+    speechSynthesis.speak(u);
+  }
+  function bStart(){
+    if(!window.speechSynthesis){ setStatus("這個瀏覽器不支援語音播放。", "warn"); return; }
+    bStop();
+    var text = getText();
+    bState.chunks = splitChunks(text); bState.idx = 0; bState.doneChars = 0; bState.cur = 0; bState.total = text.length;
+    // 粗估總長度（約每秒 4 字，隨語速調整），僅用來畫進度條；實際以朗讀事件為準
+    bState.estDur = Math.max(1, text.replace(/\s/g, "").length / (4 * rate()));
+    bState.speaking = true; bState.paused = false; bState.startTs = Date.now();
+    setPlayingUI(true, false);
+    bState.timer = setInterval(function(){
+      if(!bState.speaking){ return; }
+      var frac = bState.total ? Math.min(1, (bState.cur || 0) / bState.total) : 0;
+      setProgress(frac * bState.estDur, bState.estDur);
+    }, 200);
+    bSpeakFrom(0);
+  }
+
+  /* ---------- 按鈕 ---------- */
+  async function play(restart){
+    if(!getText()){ setStatus("請先輸入文字。", "warn"); return; }
+    if(mode === "server"){
+      if(restart || !audio.src || !audioUrl) { audio.pause(); }
+      var ok = await serverPrepare();
+      if(ok){ if(restart) audio.currentTime = 0; try{ await audio.play(); }catch(e){ setStatus("無法播放：" + e.message, "warn"); } return; }
+      // 伺服器失敗 → 本次改用瀏覽器語音
+      bStart(); return;
+    }
+    if(bState.paused && !restart){ speechSynthesis.resume(); bState.paused = false; setPlayingUI(true, false); return; }
+    bStart();
+  }
+  $("bPlay").onclick = function(){ if(mode === "server" && audio.src && audio.paused && audio.currentTime > 0 && !audio.ended && audioUrl){ audio.play(); } else play(false); };
+  $("bPause").onclick = function(){
+    if(mode === "server" && !audio.paused){ audio.pause(); }
+    else if(bState.speaking){ speechSynthesis.pause(); bState.paused = true; setPlayingUI(true, true); }
+  };
+  $("bReplay").onclick = function(){ if(audio && !audio.paused) audio.pause(); bStop(); play(true); };
+  $("bar").onclick = function(e){
+    if(mode === "server" && audio.duration){ var r = this.getBoundingClientRect(); audio.currentTime = (e.clientX - r.left) / r.width * audio.duration; }
+  };
+  $("bDl").onclick = async function(){
+    if(mode !== "server"){ setStatus("瀏覽器內建語音無法產生音檔，請先到「語音伺服器」設定。", "warn"); $("cfg").open = true; return; }
+    if(!getText()){ setStatus("請先輸入文字。", "warn"); return; }
+    if(!(await serverPrepare())) return;
+    var a = document.createElement("a"); a.href = audioUrl;
+    var name = getText().replace(/[\\/:*?"<>|\s]+/g, "").slice(0, 12) || "聽力";
+    a.download = name + "_" + rate().toFixed(2).replace(/0$/, "") + "x.mp3";
+    document.body.appendChild(a); a.click(); a.remove();
+  };
+  $("rate").oninput = function(){ $("rateVal").textContent = rate().toFixed(2).replace(/0$/, "") + "x"; };
+  $("rate").onchange = function(){ if(mode === "browser" && bState.speaking){ play(true); } };
+  $("txt").addEventListener("input", function(){ /* 文字改了就要重新產生音檔 */ });
+  $("srvSave").onclick = async function(){
+    srvUrl = normUrl($("srv").value);
+    try{ localStorage.setItem(LS_KEY, srvUrl); }catch(e){}
+    setStatus("正在連線…（免費主機休眠時可能要等 30 秒以上）"); await probe();
+    if(!srvOk) setStatus("連不上伺服器，請檢查網址（要 https，或本機的 http://127.0.0.1:8000）。目前使用瀏覽器語音。", "warn");
+  };
+  $("srvClear").onclick = async function(){ srvUrl = ""; $("srv").value = ""; try{ localStorage.removeItem(LS_KEY); }catch(e){} await probe(); };
+
+  $("rate").oninput();
+  setPlayingUI(false, false);
+  probe();
+  window.__tts = { probe: probe, get mode(){ return mode; } };
+})();
+</script>
+</body>
+</html>

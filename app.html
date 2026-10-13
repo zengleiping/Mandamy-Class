@@ -805,6 +805,11 @@ function trBuild(){
     '<div id="tr-list"></div></div>' +
     '<div id="tr-foot"><span id="tr-count"></span><span id="tr-sync" style="flex:1;min-width:60px;"></span><button id="tr-imp" type="button" title="把今天課堂上記的詞放進對應的課堂記錄（每天 17:00 後也會自動做）">加入課堂記錄</button><button id="tr-ai" type="button" title="AI 翻譯設定（品質最好）">🔑</button><button id="tr-cfg" type="button" title="自動加入的時間">⏰</button><button id="tr-cleardone" type="button">清除已勾選</button><button id="tr-copy" type="button">複製全部</button><button class="danger" id="tr-clear" type="button">清空</button></div><div id="tr-rs" title="拖曳調整大小">⤡</div>';
   document.body.appendChild(btn); document.body.appendChild(box); TR.btn = btn; TR.box = box;
+  // 文字轉語音（聽力題）工具：另開分頁，不影響目前的課堂畫面
+  var tbtn = document.createElement("button"); tbtn.id = "tts-btn"; tbtn.type = "button"; tbtn.textContent = "🔊 語音"; tbtn.title = "文字轉語音（做聽力題音檔）";
+  tbtn.style.cssText = "position:fixed;right:0;top:calc(50% + 92px);z-index:9980;padding:12px 9px;border-radius:14px 0 0 14px;background:#C4602A;color:#fff;font-size:13px;font-weight:700;cursor:pointer;border:0;box-shadow:0 2px 10px rgba(0,0,0,.25);opacity:.9;writing-mode:vertical-rl;letter-spacing:2px";
+  tbtn.onclick = function(){ window.open("tts.html", "_blank"); };
+  document.body.appendChild(tbtn); TR.tbtn = tbtn;
   // 拖曳移動（標題列）與調整大小（右下角）：用 pointer capture，滑到簡報 iframe 上也不會斷
   function drag(handle, onMove){
     handle.addEventListener("pointerdown", function(e){
