@@ -4460,8 +4460,37 @@ window.mmTA = (function(){
   function isOpenForStudent(){ return inRoom() ? (roomData && roomData.isOpen !== undefined ? !!roomData.isOpen : true) : true; }
   function canInteract(){ if(window.__grade){ var gi = getCurrentQInfo(); return !!(gi && (gi.section.type === "board" || gi.section.type === "whiteboard")); } if(!inRoom() || roomRole === "teacher") return true; if(isStudent && timerLockedForStudent()) return false; return isOpenForStudent(); }
 
+  /* ---- 正式考試：每位學生的作答各自獨立（互相看不到），老師用下拉選單挑一位來看／結算 ---- */
+  var examViewId = null;
+  function isAnswerSec(sec){ return !!sec && ["choice", "match", "fill", "reorder", "open", "record"].indexOf(sec.type) !== -1; }
+  function examPrivateFor(qId){
+    if(!(inRoom() && currentClassMode === "exam") || window.__attempt || window.__grade) return null;
+    var info = findSectionForQuestion(qId); if(!info || !isAnswerSec(info.sec)) return null;
+    if(isStudent) return myId;
+    return examViewId || "__none__";   // 老師沒選學生＝空白，不會看到任何人的答案
+  }
+  function examStudentList(){
+    var out = {}, rd = roomData || {};
+    Object.keys(rd.examProg || {}).forEach(function(k){ out[k] = true; });
+    Object.keys(rd.presence || {}).forEach(function(k){ if(k !== "teacher" && k !== myId) out[k] = true; });
+    return Object.keys(out).map(function(k){ var pr = (rd.presence || {})[k]; return { id: k, name: (pr && pr.name) || "學生", online: !!(pr && pr.online) }; })
+      .sort(function(a, b){ return a.name < b.name ? -1 : a.name > b.name ? 1 : 0; });
+  }
+  function examPickerHtml(){
+    if(isStudent || !inRoom() || currentClassMode !== "exam") return "";
+    var list = examStudentList();
+    return '<select id="exam-view-sel" title="正式考試：每位學生的作答互相看不到，請選一位來查看" style="margin-left:8px;font-size:12px;padding:2px 6px;border-radius:8px;border:1px solid var(--grid-line);">' +
+      '<option value="">👁 查看學生作答…</option>' + list.map(function(x){ return '<option value="' + escapeHtml(x.id) + '"' + (x.id === examViewId ? " selected" : "") + '>' + escapeHtml(x.name) + (x.online ? "" : "（離線）") + '</option>'; }).join("") + '</select>';
+  }
+  document.addEventListener("change", function(e){
+    if(e.target && e.target.id === "exam-view-sel"){ examViewId = e.target.value || null; renderStage(); }
+  });
   function getProgress(qId){
-    if(inRoom()) return (roomData && roomData.sharedProgress && roomData.sharedProgress[qId]) || {};
+    if(inRoom()){
+      var pk = examPrivateFor(qId);
+      if(pk) return (roomData && roomData.examProg && roomData.examProg[pk] && roomData.examProg[pk][qId]) || {};
+      return (roomData && roomData.sharedProgress && roomData.sharedProgress[qId]) || {};
+    }
     var proj = getActiveProject();
     if(proj){
       if(!proj.progress) proj.progress = {}; if(!proj.progress[qId]) proj.progress[qId] = {};
@@ -4513,8 +4542,22 @@ window.mmTA = (function(){
     else { var proj = getActiveProject(); if(proj){ proj.currentQId = qId; saveFS(); renderSidebar(); renderStage(); } }
   }
 
+  // 學生寫入筆跡時，老師的筆跡（沒有 by 標記）一律以雲端最新版為準：就算學生本機畫面是舊的、按了復原、
+  // 或兩邊同時寫入，都不會把老師的筆跡蓋掉
+  function protectTeacherInk(qId, patch){
+    if(!(isStudent && inRoom()) || !Array.isArray(patch.strokes)) return;
+    var latest = (roomData && roomData.sharedProgress && roomData.sharedProgress[qId] && roomData.sharedProgress[qId].strokes) || [];
+    var teacher = latest.filter(function(s0){ return s0 && !s0.by; });
+    var mine = patch.strokes.filter(function(s0){ return s0 && s0.by; });
+    var had = {}; patch.strokes.forEach(function(s0){ if(s0 && !s0.by) had[s0.id] = true; });
+    var lost = teacher.some(function(s0){ return !had[s0.id]; }) || Object.keys(had).length !== teacher.length;
+    patch.strokes = teacher.concat(mine);
+    if(lost) patch.strokesRevBy = "merge";   // 讓自己這台也重新套用合併後的版本
+  }
   function writeProgress(qId, patch){
-    if(inRoom()) update(ref(db, "rooms/" + activeRoomId + "/sharedProgress/" + qId), patch);
+    var pk = inRoom() ? examPrivateFor(qId) : null;
+    if(pk && pk !== "__none__"){ update(ref(db, "rooms/" + activeRoomId + "/examProg/" + pk + "/" + qId), patch); return; }
+    if(inRoom()){ protectTeacherInk(qId, patch); update(ref(db, "rooms/" + activeRoomId + "/sharedProgress/" + qId), patch); }
     else { Object.assign(getProgress(qId), patch); saveFS(); renderStage(); }
   }
 
@@ -9297,7 +9340,7 @@ window.mmTA = (function(){
     var sec = currentInfo.section; var q = currentInfo.question;
     var allList = getAllQuestionsList(); var currentIndex = allList.findIndex(function(it){ return it.question.id === q.id; });
     var mediaFingerprint = (sec.media || []).map(function(m){ return m.id; }).join(",") + "|" + (q.media || []).map(function(m){ return m.id; }).join(",") + "|" + (q.tts ? (q.tts.text || "").length + ":" + (q.tts.rate || 1) + ":" + (q.tts.src ? q.tts.src.length : 0) : "");
-    var stageSignature = JSON.stringify([q.id, sec.type, sec.title, sec.desc || "", q.title, q.desc || "", currentIndex, allList.length, currentClassMode, !!isStudent, mediaFingerprint, (isCanvasSec(sec) ? "" : (q.teacherNote || ""))]);
+    var stageSignature = JSON.stringify([q.id, sec.type, sec.title, sec.desc || "", q.title, q.desc || "", currentIndex, allList.length, currentClassMode, !!isStudent, examViewId, mediaFingerprint, (isCanvasSec(sec) ? "" : (q.teacherNote || ""))]);
 
     // 填空／簡答：正在打字時，別因為雲端回傳自己剛寫的資料就整個重畫（會讓游標跑掉、輸入法中斷）
     if((sec.type === "fill" || sec.type === "open") && stageSignature === lastStageSignature && stageEl.contains(document.activeElement) && /^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)) return;
@@ -9336,7 +9379,7 @@ window.mmTA = (function(){
     navBar.innerHTML = `
       <div style="font-size:13.5px; font-weight:700; color:var(--seal); display:flex; align-items:center; gap:6px;">
         <span>📝 ${sec.title}</span><span style="opacity:0.4;">/</span><span style="color:var(--ink);">${q.title}</span>
-        ${isTestMode() ? '<span style="font-size:11px; background:var(--seal-soft); color:var(--seal); padding:2px 6px; border-radius:4px; margin-left:6px;">'+(currentClassMode==='exam'?'📝 正式考試中':'🔴 測驗模式中')+'</span>' : ''}
+        ${isTestMode() ? '<span style="font-size:11px; background:var(--seal-soft); color:var(--seal); padding:2px 6px; border-radius:4px; margin-left:6px;">'+(currentClassMode==='exam'?'📝 正式考試中':'🔴 測驗模式中')+'</span>' : ''}${examPickerHtml()}
       </div>
       <div class="nav-page-group">
         <button type="button" class="btn btn-sm btn-ghost btn-prev-q" ${currentIndex <= 0 ? 'disabled style="opacity:0.4;"' : ''}>◀ 上一題 Prev</button>
@@ -11442,7 +11485,7 @@ window.mmTA = (function(){
     // hover 開的小面板可以切換筆畫擦／局部擦，切換的同時也順便套用，不用切完再點一次主按鈕。
     var btnEraser = tbq.one("#btn-eraser");
     function selectEraserTool(){
-      boardState.tool = (boardState.eraserMode === "pixel" && !deckStudent) ? "pixel-eraser" : "stroke-eraser"; // 局部橡皮擦會連老師的筆記一起擦掉，學生看投影片時只給筆畫擦（而且只擦得到自己的）
+      boardState.tool = (boardState.eraserMode === "pixel" && !isStudent) ? "pixel-eraser" : "stroke-eraser"; // 局部橡皮擦會連老師的筆記一起擦掉，學生看投影片時只給筆畫擦（而且只擦得到自己的）
       tbq.all(".tool-btn-v").forEach(function(x){
         if(NON_TOOL_BTN_IDS.indexOf(x.id) === -1) x.classList.remove("active");
       });
@@ -13342,7 +13385,7 @@ window.mmTA = (function(){
 
     function checkStrokeHit(p){
       for(var i = strokes.length - 1; i >= 0; i--){
-        if(deckStudent && strokes[i].by !== myId) continue; // 學生看投影片時，老師（或別人）的筆跡不能擦
+        if(isStudent && strokes[i].by !== myId) continue; // 學生只能擦自己的筆跡，老師（或別人）的筆跡不能擦
         var pts = strokes[i].points;
         for(var j=0; j<pts.length; j++){
           var dist = Math.hypot(pts[j].x - p.x, pts[j].y - p.y);
@@ -15344,6 +15387,13 @@ window.mmTA = (function(){
     var clearBtn = tbq.one("#btn-clear-draw");
     if(clearBtn){
       clearBtn.onclick = function(){
+        if(isStudent && !deckStudent){
+          if(confirm("確定要清除你自己寫的筆跡嗎？（老師的筆記不會被清掉）\nClear your own pen strokes? (The teacher's notes stay.)")){
+            strokes = strokes.filter(function(s0){ return s0.by !== myId; }); localSelfSeq++; redrawStrokes();
+            writeProgress(q.id, { strokes: strokes, strokesRevSeq: localSelfSeq, strokesRevBy: deviceInstanceId });
+          }
+          return;
+        }
         if(deckStudent || (slideSecInfo && slideSecInfo.sec.type === "board")){ // 投影片：只清掉筆跡，文字／圖片／圖案／表格和底圖背景都不會動
           var clearMsg = deckStudent ? "確定要清除你自己寫的筆跡嗎？（老師的筆記不會被清掉）\nClear your own pen strokes? (The teacher's notes stay.)" : "確定要清除畫筆的筆跡嗎？（投影片上的文字、圖片、底圖和背景都不會被清掉；學生在這頁打的字也會一併清掉）\nClear pen strokes? (Slide content and background stay; students' typed text on this page is cleared too.)";
           if(confirm(clearMsg)){
