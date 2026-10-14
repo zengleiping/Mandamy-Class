@@ -10162,8 +10162,8 @@ window.mmTA = (function(){
     // 老師按「放映」＝正式上課：放映前已經做好的文字／圖片／圖案／表格不能被選取、搬動、改字；只能用筆寫字、打字補充筆記、橡皮擦擦筆跡
     // 「儲存定稿」：把這份簡報每一頁目前所有物件的 id 記成 finalIds。放映時，id 在 finalIds 裡的都是定稿內容，
     // 不能選取、搬動、改字、擦除；不在裡面的（上課中新寫的字、新打的文字方塊）才可以動。
-    function curIds(){ var o = {}; [strokes, texts, images, shapes, tables, groups, medias].forEach(function(a){ (a || []).forEach(function(x){ if(x && x.id) o[x.id] = 1; }); }); return o; }
-    function progIds(pr){ var o = {}; ["strokes", "texts", "images", "shapes", "tables", "groups", "medias"].forEach(function(k){ (pr[k] || []).forEach(function(x){ if(x && x.id) o[x.id] = 1; }); }); return o; }
+    function curIds(){ var o = {}; [strokes, texts, images, shapes, tables, groups, medias].forEach(function(a){ (a || []).forEach(function(x){ if(x && x.id && !x.live) o[x.id] = 1; }); }); return o; }   // 上課中新寫的（live）不算定稿，永遠可以改
+    function progIds(pr){ var o = {}; ["strokes", "texts", "images", "shapes", "tables", "groups", "medias"].forEach(function(k){ (pr[k] || []).forEach(function(x){ if(x && x.id && !x.live) o[x.id] = 1; }); }); return o; }
     function setProgDirect(qid, patch){ if(inRoom()) writeProgress(qid, patch); else Object.assign(getProgress(qid), patch); }
     function finalizeSection(){
       if(!slideSecInfo) return 0; var qs = slideSecInfo.sec.questions || {}, n = 0, now = Date.now();
@@ -10179,8 +10179,8 @@ window.mmTA = (function(){
       }
       return fs || null;
     }
-    function isLiveItem(it){ if(!it) return false; var fs = finalSetNow(); if(fs) return !fs[it.id]; if(it.k !== "text") return false; var tt = texts.find(function(x){ return x.id === it.id; }); return !!(tt && tt.live); }
-    function isFinalStroke(st){ var fs = finalSetNow(); return !!(fs && st && fs[st.id]); }
+    function isLiveItem(it){ if(!it) return false; var fs = finalSetNow(); if(fs){ if(!fs[it.id]) return true; var t0 = texts.find(function(x){ return x.id === it.id; }); return !!(t0 && t0.live); } if(it.k !== "text") return false; var tt = texts.find(function(x){ return x.id === it.id; }); return !!(tt && tt.live); }
+    function isFinalStroke(st){ var fs = finalSetNow(); return !!(fs && st && fs[st.id] && !st.live); }
     container.addEventListener("mm-before-present", function(){
       if(isStudent || !(slideSecInfo && slideSecInfo.sec.type === "board") || window.__solo) return;
       var pr0 = getProgress(q.id);
@@ -13608,8 +13608,9 @@ window.mmTA = (function(){
       // 手指長按 0.12 秒＝抓起手指底下的物件（文字方塊、圖片、圖案…）來拖曳。
       // 用過 Apple Pencil 之後，手指在畫布上預設只能平移畫面（防手掌誤觸），所以手指要搬動物件只能靠「按住不動」：
       // 快速滑動仍然是平移，按住不到 0.12 秒就放開或移動超過約 10px 也不會抓取，避免誤動。
-      if(e.pointerType === "touch" && !presentLock() && boardState.tool !== "pan" && !(deckStudent) && (isPalmTouch(e) || autoPanEligible(p))){
+      if(e.pointerType === "touch" && boardState.tool !== "pan" && !(deckStudent) && (isPalmTouch(e) || autoPanEligible(p))){
         var lpHit = null; try{ lpHit = hitTestItem(p); }catch(er0){}
+        if(lpHit && presentLock() && !isLiveItem(lpHit)) lpHit = null; // 放映中：只有上課中新增的筆記可以長按抓起，定稿內容不行
         if(lpHit){
           var lpId = e.pointerId, lpX0 = e.clientX, lpY0 = e.clientY, lpDone = false;
           var lpTimer = setTimeout(function(){
@@ -13784,6 +13785,7 @@ window.mmTA = (function(){
           isEraser: boardState.tool === "pixel-eraser"
         };
         if(isStudent) newStroke.by = myId; // 記下是誰寫的：學生只能擦／清自己的筆跡，老師的筆記不會被學生動到
+        if(!isStudent && presentLock()) newStroke.live = true; // 上課中新寫的：不算定稿
         strokes.push(newStroke);
         localSelfSeq++;
         writeProgress(q.id, { strokes: strokes, strokesRevSeq: localSelfSeq, strokesRevBy: deviceInstanceId });
