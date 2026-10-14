@@ -4617,6 +4617,45 @@ window.mmTA = (function(){
   function fillBlankOk(part, val){ var v = normFillAns(val); return !!v && part.answers.some(function(a){ return normFillAns(a) === v; }); }
 
   /* ================== 成績與錯題結算引擎 ================== */
+  /* ---- 成績分析：分項表現、強弱項、自動評語（規則產生，免費、不需要 API；老師可以在視窗裡直接修改） ---- */
+  var ANA_TYPE = { choice: ["選擇題", "Multiple choice", "回頭複習課文與生詞，作答時留意題幹的關鍵字。"], match: ["連連看", "Matching", "複習生詞與注音／拼音、意思的對應。"],
+    reorder: ["句子重組", "Sentence order", "多練習句型與詞序，可以把句子拆成「誰＋什麼時候＋做什麼」再排列。"], fill: ["填空題", "Fill in the blank", "複習語法點與常用的搭配詞。"],
+    record: ["錄音題", "Recording", ""], open: ["簡答題", "Short answer", ""], board: ["投影片書寫", "Slide writing", ""], whiteboard: ["小白板", "Whiteboard", ""], hanzi: ["生字書寫", "Character writing", ""] };
+  function analyzeReport(rep){
+    var by = {}, written = { done: 0, total: 0 }, pending = 0, wrong = [], partial = [], order = [];
+    rep.results.forEach(function(sec){
+      sec.questions.forEach(function(q){
+        var t = sec.type;
+        if(q.isScoreable){
+          if(!by[t]){ by[t] = { type: t, n: 0, earned: 0 }; order.push(t); }
+          by[t].n++; by[t].earned += q.score;
+          var label = q.title + "（" + ((ANA_TYPE[t] || [t])[0]) + "）";
+          if(q.score <= 0) wrong.push(label); else if(q.score < 1) partial.push(label);
+        } else if(q.pending){ pending++; }
+        else if(t === "board" || t === "whiteboard" || t === "hanzi"){ written.total++; if(q.status === "completed") written.done++; }
+      });
+    });
+    var rows = order.map(function(t){ var b = by[t]; return { type: t, name: (ANA_TYPE[t] || [t])[0], en: (ANA_TYPE[t] || [t, t])[1], n: b.n, earned: Math.round(b.earned * 10) / 10, pct: b.n ? Math.round(b.earned / b.n * 100) : 0 }; });
+    var strong = rows.filter(function(r){ return r.pct >= 90; }), weak = rows.filter(function(r){ return r.pct < 80; });
+    var sc = rep.finalScore, nm = rep.studentName || "同學";
+    var head = sc >= 100 ? "全部答對，表現非常完美！" : sc >= 90 ? "整體表現優秀，基礎很扎實。" : sc >= 80 ? "整體表現良好，大部分內容都掌握了。" : sc >= 60 ? "已經達到及格，仍有進步空間。" : "這次的內容還需要多花一些時間複習。";
+    var zh = nm + " 本次得分 " + sc + " 分。" + head;
+    if(strong.length) zh += "「" + strong.map(function(r){ return r.name; }).join("、") + "」掌握得很好（" + strong.map(function(r){ return r.pct + "%"; }).join("、") + "）。";
+    if(weak.length){
+      zh += "需要加強的是「" + weak.map(function(r){ return r.name + " " + r.pct + "%"; }).join("、") + "」。";
+      var tips = weak.map(function(r){ return (ANA_TYPE[r.type] || [])[2]; }).filter(Boolean);
+      if(tips.length) zh += "建議：" + tips.join("") ;
+    }
+    if(wrong.length) zh += "答錯的題目有：" + wrong.join("、") + "。";
+    if(partial.length) zh += "部分答對的有：" + partial.join("、") + "。";
+    if(written.total) zh += "書寫練習完成 " + written.done + "／" + written.total + " 頁" + (written.done < written.total ? "，還有 " + (written.total - written.done) + " 頁尚未書寫，建議補寫。" : "，很認真！");
+    if(pending) zh += "另有 " + pending + " 題（簡答或錄音）等老師批改，成績之後可能再調整。";
+    zh += sc >= 90 ? "請繼續保持！" : sc >= 60 ? "只要把錯題再複習一次，下次一定會更好。" : "別灰心，先從錯題開始，一步一步複習就會進步。";
+    var en = nm + " scored " + sc + ". " + (strong.length ? "Strong: " + strong.map(function(r){ return r.en + " " + r.pct + "%"; }).join(", ") + ". " : "") +
+      (weak.length ? "To review: " + weak.map(function(r){ return r.en + " " + r.pct + "%"; }).join(", ") + ". " : "") + (pending ? pending + " item(s) await teacher grading. " : "") + (sc >= 90 ? "Keep it up!" : "Review the missed items and try again.");
+    return { rows: rows, written: written, pending: pending, wrong: wrong, partial: partial, comment: zh + "\n\n" + en };
+  }
+
   function calculateScoreReport(){
     var secs = getSections();
     var secKeys = getSortedSectionKeys();
@@ -4730,7 +4769,7 @@ window.mmTA = (function(){
     });
 
     var finalScore = totalScoreable > 0 ? Math.round((totalEarned / totalScoreable) * 100) : 100;
-    return {
+    var repOut = {
       studentName: myName || "學生 Student",
       projectName: (getActiveProject() && getActiveProject().title) || "華語課堂測驗 Chinese Class Quiz",
       timeString: new Date().toLocaleString(),
@@ -4739,6 +4778,8 @@ window.mmTA = (function(){
       totalEarned: Math.round(totalEarned * 10) / 10,
       results: results
     };
+    try{ repOut.analysis = analyzeReport(repOut); }catch(e){ console.warn("analyzeReport", e); }
+    return repOut;
   }
 
   function showScoreModal(report){
@@ -4780,6 +4821,22 @@ window.mmTA = (function(){
         </div>
       </div>
     `;
+
+    if(report.analysis){
+      var an = report.analysis;
+      html += '<div style="background:var(--surface); border:1.5px solid var(--grid-line); border-radius:12px; padding:14px; margin-bottom:16px;">' +
+        '<div style="font-size:14px; font-weight:700; margin-bottom:8px;">📊 分項表現 Breakdown</div>' +
+        '<table style="width:100%; border-collapse:collapse; font-size:13.5px;">' + an.rows.map(function(r){
+          var col = r.pct >= 90 ? "var(--bamboo)" : (r.pct >= 80 ? "#B8763D" : "#E63946");
+          return '<tr><td style="padding:4px 6px;">' + r.name + ' <span style="color:var(--ink-soft);font-size:11.5px;">' + r.en + '</span></td><td style="padding:4px 6px;white-space:nowrap;">' + r.earned + ' / ' + r.n + ' 題</td>' +
+            '<td style="padding:4px 6px;width:38%;"><div style="height:9px;background:var(--surface-2);border-radius:99px;overflow:hidden;"><div style="height:100%;width:' + r.pct + '%;background:' + col + ';"></div></div></td><td style="padding:4px 6px;font-weight:700;color:' + col + ';text-align:right;">' + r.pct + '%</td></tr>';
+        }).join("") + '</table>' +
+        (an.written.total ? '<div style="font-size:12.5px;color:var(--ink-soft);margin-top:6px;">✍️ 書寫練習：完成 ' + an.written.done + ' / ' + an.written.total + ' 頁（不計分）</div>' : '') +
+        (an.pending ? '<div style="font-size:12.5px;color:var(--ink-soft);margin-top:2px;">⏳ 等老師批改：' + an.pending + ' 題</div>' : '') + '</div>' +
+        '<div style="background:var(--surface); border:1.5px solid var(--grid-line); border-radius:12px; padding:14px; margin-bottom:16px;">' +
+        '<div style="font-size:14px; font-weight:700; margin-bottom:6px;">📝 評語 Comment' + (isStudent ? '' : '<span style="font-weight:400;font-size:12px;color:var(--ink-soft);">（自動產生，老師可直接修改）</span>') + '</div>' +
+        '<textarea id="score-comment" rows="8" ' + (isStudent ? 'readonly' : '') + ' style="width:100%;border:1px solid var(--grid-line);border-radius:10px;padding:10px;font:inherit;font-size:14px;line-height:1.7;background:var(--surface-2);color:var(--ink);resize:vertical;">' + escapeHtml(an.comment) + '</textarea></div>';
+    }
 
     if(wrongItems.length > 0){
       html += `
@@ -4831,9 +4888,15 @@ window.mmTA = (function(){
     var btnCopy = document.getElementById("btn-copy-score-report");
     if(btnCopy){
       btnCopy.onclick = function(){
-        var txt = `【曼米中文 Mandamy 成績報告 Score Report】\n學員 Student：${report.studentName}\n得分 Score：${report.finalScore} 分 pts\n錯題數 Wrong：${wrongItems.length} 題 Qs\n--------------------\n`;
+        var txt = `【曼米中文 Mandamy 成績報告 Score Report】\n學員 Student：${report.studentName}\n課次 Class：${report.projectName}\n得分 Score：${report.finalScore} 分 pts\n錯題數 Wrong：${wrongItems.length} 題 Qs\n--------------------\n`;
+        if(report.analysis){
+          txt += "【分項表現】\n" + report.analysis.rows.map(function(r){ return `${r.name}：${r.earned}/${r.n} 題（${r.pct}%）`; }).join("\n") + "\n";
+          if(report.analysis.written.total) txt += `書寫練習：完成 ${report.analysis.written.done}/${report.analysis.written.total} 頁（不計分）\n`;
+          var cEl = document.getElementById("score-comment");
+          txt += "--------------------\n【評語】\n" + (cEl ? cEl.value : report.analysis.comment) + "\n--------------------\n【作答明細】\n";
+        }
         report.results.forEach(sec => {
-          sec.questions.forEach(q => { txt += `${q.score === 1 ? '✅' : '❌'} ${q.title}：${q.detail}\n`; });
+          sec.questions.forEach(q => { txt += `${q.pending ? '⏳' : (!q.isScoreable ? '✍️' : (q.score === 1 ? '✅' : (q.score > 0 ? '△' : '❌')))} ${q.title}：${q.detail}\n`; });
         });
         navigator.clipboard.writeText(txt).then(function(){ alert("✅ 成績報告已複製！Score report copied!"); });
       };
@@ -4843,6 +4906,7 @@ window.mmTA = (function(){
       if(inRoom() && roomRole === "teacher"){
         btnBroadcast.style.display = "inline-flex";
         btnBroadcast.onclick = function(){
+          var cEl2 = document.getElementById("score-comment"); if(cEl2 && report.analysis) report.analysis.comment = cEl2.value;
           update(ref(db, "rooms/" + activeRoomId), { broadcastScore: report, broadcastTime: Date.now() });
           alert("📢 成績已廣播給學生！Score broadcast to students!");
         };
