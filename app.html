@@ -740,9 +740,11 @@ function trPublish(){
     var e = TR.list[id], tr = {}; langs.forEach(function(l){ if((e.tr || {})[l]) tr[l] = e.tr[l]; });
     var o = { zh: e.zh, at: e.at || 0, tr: tr }; if(e.zya) o.zya = e.zya; if(e.pya) o.pya = e.pya; if(e.zy) o.zy = e.zy; if(e.py) o.py = e.py; items[id] = o;
   });
-  var payload = { mode: (TR.show && TR.show.mode) || "zy", langs: langs, open: !!TR.open, items: items }, js = JSON.stringify(payload);
-  if(js === TR_PUB.last) return; TR_PUB.last = js;
-  fbSet(trLiveTransPath(), Object.keys(items).length ? payload : null).catch(function(){});
+  var payload = { mode: (TR.show && TR.show.mode) || "zy", langs: langs, open: !!TR.open, items: items }, js = JSON.stringify(payload), has = Object.keys(items).length;
+  if(js !== TR_PUB.last){ TR_PUB.last = js; fbSet(trLiveTransPath(), has ? payload : null).catch(function(){}); }
+  // 學生直接用房間連結進簡報頁（不經過平台）時，面板由房間資料提供
+  var rk = (S.live.room || "") + "|" + js;
+  if(S.live.room && rk !== TR_PUB.roomLast){ TR_PUB.roomLast = rk; fbSet("rooms/" + S.live.room + "/trans", has ? payload : null).catch(function(){}); }
 }
 // 學生端：上課中浮出「今天的生詞」面板（唯讀）
 var SL = { box: null, btn: null, data: null, un: null, known: {}, open: false, teacherOpen: null };
@@ -4220,7 +4222,7 @@ async function toggleLive(){
   var cls = getCls(S.sel); if(!cls) return;
   if(S.live && S.live.on){
     if(!confirm("結束上課？學生會回到自己的班級頁。")) return;
-    S.live = null; cls.live = null; try{ await fbSet(liveRef(), null); await fbSet(clsPath(S.sel) + "/liveTrans", null); TR_PUB.last = ""; }catch(e){}
+    var endRoom = S.live.room; S.live = null; cls.live = null; try{ if(endRoom) fbSet("rooms/" + endRoom + "/trans", null).catch(function(){}); await fbSet(liveRef(), null); await fbSet(clsPath(S.sel) + "/liveTrans", null); TR_PUB.last = ""; TR_PUB.roomLast = ""; }catch(e){}
     setFocus(false); try{ if(document.fullscreenElement) document.exitFullscreen().catch(function(){}); }catch(e){} renderLesson(cls); return;
   }
   S.live = { on: true, lesson: S.lesson, tab: S.tab, sub: S.sub || null, room: null, startedAt: Date.now() };
@@ -4310,7 +4312,7 @@ window.addEventListener("message", function(e){
 // 簡報頁（iframe）裡老師開了房間：通知學生跟著進房
 window.addEventListener("message", function(e){
   if(!S.teacher || !e.data || e.data.mm !== "room" || !S.live || !S.live.on) return;
-  S.live.room = e.data.id || null; S.live.roomProject = S.live.room ? S.sub : null; fbUpdate(liveRef(), { room: S.live.room }).catch(function(){});
+  S.live.room = e.data.id || null; S.live.roomProject = S.live.room ? S.sub : null; fbUpdate(liveRef(), { room: S.live.room }).catch(function(){}); try{ trPublishSoon(); }catch(er){}
 });
 function setFocus(on){
   S.focus = !!on;

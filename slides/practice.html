@@ -6471,6 +6471,59 @@ window.mmTA = (function(){
     set(pRef, { online: true, name: name }); onDisconnect(pRef).set({ online: false, name: name });
   }
 
+  /* ---- 學生端：老師上課時記下的翻譯（翻譯機同步到 rooms/{房間}/trans），浮出唯讀面板，跟著老師打開／收起 ---- */
+  var SLT = { box: null, btn: null, open: false, teacherOpen: null, known: {} };
+  function slEsc(x){ return String(x == null ? "" : x).replace(/[&<>"]/g, function(c){ return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function slZyHtml(sym){
+    var tone = "", neutral = false, main = String(sym).replace(/[ˊˇˋ˙]/g, function(m){ if(m === "˙") neutral = true; else tone = m; return ""; });
+    return '<span class="slt-zs">' + (neutral ? '<i class="slt-zn">˙</i>' : '') + '<span class="slt-zm">' + Array.from(main).map(function(c){ return '<i>' + slEsc(c) + '</i>'; }).join("") + '</span>' + (tone ? '<i class="slt-zt">' + tone + '</i>' : '') + '</span>';
+  }
+  function slWordHtml(e, mode){
+    var zya = e.zya || (e.zy ? e.zy.split(" ") : []), pya = e.pya || (e.py ? e.py.split(" ") : []);
+    return Array.from(e.zh).map(function(ch, i){
+      var han = /[\u3400-\u9fff]/.test(ch);
+      if(mode === "zy" && han && zya[i]) return '<span class="slt-ch"><span class="slt-c">' + slEsc(ch) + '</span>' + slZyHtml(zya[i]) + '</span>';
+      if(mode === "py" && han && pya[i]) return '<span class="slt-ch py"><span class="slt-pp">' + slEsc(pya[i]) + '</span><span class="slt-c">' + slEsc(ch) + '</span></span>';
+      return '<span class="slt-ch"><span class="slt-c">' + slEsc(ch) + '</span></span>';
+    }).join("");
+  }
+  var SLT_LANG = { en: "English", th: "ภาษาไทย", ja: "日本語" };
+  function slTransDraw(){
+    if(!isStudent || window.__attempt || window.__solo || window.parent !== window) return;   // 嵌在平台裡時，由平台自己的面板負責，避免重複
+    var d = roomData && roomData.trans, items = (d && d.items) || {}, ids = Object.keys(items);
+    if(!ids.length){ if(SLT.box){ SLT.box.style.display = "none"; SLT.btn.style.display = "none"; } SLT.known = {}; SLT.teacherOpen = null; return; }
+    if(!document.getElementById("slt-style")){
+      var st = document.createElement("style"); st.id = "slt-style";
+      st.textContent = '#slt-btn{position:fixed;right:0;top:46%;z-index:99990;padding:12px 9px;border-radius:14px 0 0 14px;background:#E8805A;color:#fff;font-size:13px;font-weight:700;cursor:pointer;border:0;box-shadow:0 2px 10px rgba(0,0,0,.25);writing-mode:vertical-rl;letter-spacing:2px;font-family:inherit}' +
+        '#slt-btn b{background:#fff;color:#E8805A;border-radius:99px;padding:0 6px;margin-top:4px;writing-mode:horizontal-tb;letter-spacing:0}' +
+        '#slt-box{position:fixed;right:12px;bottom:12px;width:min(380px,calc(100vw - 24px));height:min(62vh,640px);z-index:99991;display:none;flex-direction:column;background:linear-gradient(160deg,#FCEFE4,#EBF1EA);border:1.5px solid #EBDDD0;border-radius:16px;box-shadow:0 10px 34px rgba(0,0,0,.28);color:#3a312b;--g:#4E7F6E}' +
+        '#slt-head{display:flex;align-items:center;gap:6px;padding:9px 12px;border-bottom:1px solid #EBDDD0}#slt-head b{flex:1;font-size:15px}#slt-head button{background:#fff;border:1px solid #EBDDD0;border-radius:99px;padding:4px 12px;font-size:12.5px;cursor:pointer;font-weight:700;font-family:inherit}' +
+        '#slt-list{flex:1;overflow:auto;padding:10px 12px}.slt-row{background:#fff;border-radius:14px;padding:9px 12px;margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,.06)}.slt-t{font-size:15px;line-height:1.5;margin-top:2px}.slt-t i{font-style:normal;font-size:11px;font-weight:700;color:#7a6c60;margin-right:6px}' +
+        '.slt-ch{display:inline-flex;align-items:flex-start;margin-right:8px}.slt-c{font-size:34px;line-height:1.15;font-weight:700;font-family:"Noto Serif TC","Songti TC",serif}' +
+        '.slt-zs{display:inline-flex;align-items:center;margin-left:3px;margin-top:2px;padding-right:11px;position:relative;color:var(--g);font-weight:600}.slt-zm{display:flex;flex-direction:column;font-size:17px;line-height:1.08;font-style:normal}.slt-zm i{font-style:normal}' +
+        '.slt-zt{position:absolute;right:0;top:44%;font-style:normal;font-size:17px;line-height:1}.slt-zn{position:absolute;top:-10px;left:0;font-style:normal;font-size:15px}.slt-ch.py{flex-direction:column;align-items:center}.slt-pp{font-size:15px;color:var(--g);font-weight:600;line-height:1.1}';
+      document.head.appendChild(st);
+    }
+    if(!SLT.box){
+      SLT.btn = document.createElement("button"); SLT.btn.id = "slt-btn"; SLT.btn.type = "button"; SLT.btn.onclick = function(){ SLT.open = true; slTransDraw(); };
+      SLT.box = document.createElement("div"); SLT.box.id = "slt-box";
+      SLT.box.innerHTML = '<div id="slt-head"><b>📝 中文翻譯 Translation</b><button type="button" id="slt-close">收起 ▾</button></div><div id="slt-list"></div>';
+      document.body.appendChild(SLT.btn); document.body.appendChild(SLT.box);
+      SLT.box.querySelector("#slt-close").onclick = function(){ SLT.open = false; slTransDraw(); };
+    }
+    var fresh = ids.filter(function(id){ return !SLT.known[id]; }); ids.forEach(function(id){ SLT.known[id] = 1; });
+    if(SLT.teacherOpen !== !!d.open){ SLT.teacherOpen = !!d.open; SLT.open = !!d.open; }   // 老師打開／收起，學生跟著
+    if(fresh.length && d.open) SLT.open = true;
+    ids.sort(function(a, b){ return (items[b].at || 0) - (items[a].at || 0); });
+    var langs = d.langs || [], mode = d.mode || "zy";
+    SLT.box.querySelector("#slt-list").innerHTML = ids.map(function(id){
+      var e = items[id];
+      return '<div class="slt-row"><div>' + slWordHtml(e, mode) + '</div>' + Object.keys(SLT_LANG).filter(function(l){ return langs.indexOf(l) !== -1 && (e.tr || {})[l]; }).map(function(l){ return '<div class="slt-t"><i>' + SLT_LANG[l] + '</i>' + slEsc(e.tr[l]) + '</div>'; }).join("") + '</div>';
+    }).join("");
+    SLT.box.style.display = SLT.open ? "flex" : "none"; SLT.btn.style.display = SLT.open ? "none" : "block";
+    SLT.btn.innerHTML = '📝 翻譯<br><b>' + ids.length + '</b>';
+  }
+
   function startRoom(rId, role){
     activeRoomId = rId; roomRole = role;
     if(role === "teacher" && window.parent !== window){ try{ window.parent.postMessage({ mm: "room", id: rId }, "*"); }catch(e){} } // 平台嵌入：通知外殼，學生會自動進房
@@ -6478,6 +6531,7 @@ window.mmTA = (function(){
     else if(role === "student") startStudentSnapshotLoop(); else startTeacherSnapshotListener(rId);
     onValue(ref(db, "rooms/" + rId), function(snap){
       roomData = snap.val() || {};
+      try{ slTransDraw(); }catch(erT){ console.warn("slTransDraw", erT); }
       if(roomData.theme) applyTheme(roomData.theme.bgMode || "light", roomData.theme.accent || "seal", false);
       if(roomData.classMode){ currentClassMode = roomData.classMode; }
       // 老師公布成績後，學生回頭看考卷時顯示每題對錯與正解（不再是測驗模式的「不公布答案」）
@@ -10967,6 +11021,18 @@ window.mmTA = (function(){
       topBar.style.display = "";
       syncTbCollapse();
     }
+    // 自訂視窗只列出「這個畫面真的有的」工具（學生看投影片時只有放映、筆、打字、橡皮擦、翻頁、清除；其他在這個畫面被收起來了，不該出現在清單裡）
+    function tbAvail(k){
+      var it = tbItems[k]; if(!it) return false;
+      if(!isStudent) return true;
+      function shown(x){ var e = x; if(!e || !e.isConnected) return false; while(e && e !== container){ if(e.style && e.style.display === "none") return false; e = e.parentNode; } return true; }
+      return it.nodes.some(function(n){
+        if(!shown(n)) return false;
+        var main = n.tagName === "BUTTON" ? n : (n.querySelector ? n.querySelector("button") : null);   // 看主按鈕（跳出選單裡的小按鈕不算）
+        return !main || shown(main);   // 外框還在、但裡面的按鈕已經被收起來的（例如排列），也當成沒有
+      });
+    }
+    function tbLabel(k){ return (isStudent && k === "text") ? "打字" : tbItems[k].label; }
     function openToolbarCustomizer(){
       var c = loadTbConfig();
       var back = document.createElement("div"); back.className = "tb-modal-back";
@@ -10985,12 +11051,12 @@ window.mmTA = (function(){
         modal.appendChild(barHint);
         [["left", "左側工具列 Left"], ["top", "上方工具列 Top"], ["hidden", "隱藏 Hidden"]].forEach(function(sec){
           var title = document.createElement("div"); title.className = "tb-sec-title"; title.textContent = sec[1]; modal.appendChild(title);
-          var keys = c[sec[0]].filter(function(k){ return tbItems[k]; });
+          var keys = c[sec[0]].filter(function(k){ return tbAvail(k); });
           if(!keys.length){ var em = document.createElement("div"); em.className = "tb-empty"; em.textContent = "（空的）"; modal.appendChild(em); }
           keys.forEach(function(k, i){
             var row = document.createElement("div"); row.className = "tb-row";
-            var nm = document.createElement("span"); nm.className = "tb-name"; nm.textContent = tbItems[k].label; row.appendChild(nm);
-            function mv(dir){ var arr = c[sec[0]]; var a = arr.indexOf(k); var keysVisible = arr.filter(function(x){ return tbItems[x]; }); var target = keysVisible[i + dir]; if(!target) return; var b = arr.indexOf(target); arr[a] = target; arr[b] = k; }
+            var nm = document.createElement("span"); nm.className = "tb-name"; nm.textContent = tbLabel(k); row.appendChild(nm);
+            function mv(dir){ var arr = c[sec[0]]; var a = arr.indexOf(k); var keysVisible = arr.filter(function(x){ return tbAvail(x); }); var target = keysVisible[i + dir]; if(!target) return; var b = arr.indexOf(target); arr[a] = target; arr[b] = k; }
             var up = document.createElement("button"); up.textContent = "↑"; up.disabled = i === 0; up.onclick = function(){ mv(-1); commit(); }; row.appendChild(up);
             var dn = document.createElement("button"); dn.textContent = "↓"; dn.disabled = i === keys.length - 1; dn.onclick = function(){ mv(1); commit(); }; row.appendChild(dn);
             [["left", "左"], ["top", "上"], ["hidden", "藏"]].forEach(function(sd){
