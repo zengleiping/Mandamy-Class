@@ -4128,7 +4128,7 @@ function classHeadHtml(cls, pr){
     var nx = classSlots(S.sel).filter(function(y){ return y.date > today; }).sort(function(a, b){ return (a.date + (a.start || "")).localeCompare(b.date + (b.start || "")); })[0];
     if(nx) line += '　<span class="note">下次上課 ' + md(nx.date) + (nx.start ? ' ' + esc(nx.start) : '') + '</span>';
   } else line = '<span class="note">還沒有上課記錄。進入任何一課「開始上課」或在課表排課時指定課次，進度就會自動記下來。</span>';
-  html += '<div class="panel" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 16px;"><div style="flex:1;min-width:220px;">' + line + '</div>' + (go ? '<button class="btn primary" data-ch="go" data-k="' + esc(go) + '">進入 ' + esc(lessonTitle(go).replace(/^.*?(第 \d+ 課)/, "$1")) + ' ›</button>' : '') + '</div>';
+  html += '<div class="panel" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 16px;"><div style="flex:1;min-width:220px;">' + line + '</div>' + (go ? '<button class="btn primary" data-ch="go" data-k="' + esc(go) + '">進入' + esc(lessonTitle(go).replace(/^(.*?第 \d+ 課).*$/, "$1").replace(/^.*?(第 \d+ 課)$/, "$1")) + ' ›</button>' : '') + '</div>';
   html += '<div class="ctabs">' + CTABS.map(function(t){ return '<button class="ctab' + (t[0] === (S.ctab || "progress") ? ' on' : '') + '" data-ctab="' + t[0] + '">' + t[1] + '</button>'; }).join("") + '</div>';
   return html;
 }
