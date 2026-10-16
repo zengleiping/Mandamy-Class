@@ -12,6 +12,19 @@
    "book": "b1",
    "lesson": 7,
    "file": "content/b1-lesson7-quiz.json"
+  },
+  {
+   "id": "b1-6",
+   "book": "b1",
+   "lesson": 6,
+   "file": "content/b1-lesson6.json"
+  },
+  {
+   "id": "b1-6-quiz",
+   "type": "project",
+   "book": "b1",
+   "lesson": 6,
+   "file": "content/b1-lesson6-quiz.json"
   }
  ]
 }

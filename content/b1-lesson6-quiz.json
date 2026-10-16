@@ -1,0 +1,1138 @@
+{
+ "id": "proj_l6quiz",
+ "title": "第六課 我的生日 練習題",
+ "desc": "依第六課簡報（句型、課文、習寫漢字、練習）整理",
+ "sections": {
+  "s6_1": {
+   "id": "s6_1",
+   "title": "第 1 大題：連連看（生詞與注音）",
+   "type": "match",
+   "order": 0,
+   "questions": {
+    "q6_01": {
+     "id": "q6_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "玩具",
+       "right": "ㄨㄢˊ ㄐㄩˋ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "漫畫",
+       "right": "ㄇㄢˋ ㄏㄨㄚˋ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "禮物",
+       "right": "ㄌㄧˇ ㄨˋ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "蛋糕",
+       "right": "ㄉㄢˋ ㄍㄠ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "生日",
+       "right": "ㄕㄥ ㄖˋ"
+      }
+     }
+    },
+    "q6_02": {
+     "id": "q6_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "書包",
+       "right": "ㄕㄨ ㄅㄠ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "號",
+       "right": "ㄏㄠˋ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "快",
+       "right": "ㄎㄨㄞˋ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "慢",
+       "right": "ㄇㄢˋ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "到",
+       "right": "ㄉㄠˋ"
+      }
+     }
+    },
+    "q6_03": {
+     "id": "q6_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "leftLabel": "生詞",
+     "rightLabel": "英文",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "玩具",
+       "right": "toy"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "禮物",
+       "right": "gift"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "蛋糕",
+       "right": "cake"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "書包",
+       "right": "backpack"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "生日",
+       "right": "birthday"
+      }
+     }
+    }
+   }
+  },
+  "s6_2": {
+   "id": "s6_2",
+   "title": "第 2 大題：選擇題（句型）",
+   "type": "choice",
+   "order": 1,
+   "questions": {
+    "q6_04": {
+     "id": "q6_04",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n他＿＿生日是九月三十號。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "的"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "好"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "到"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    },
+    "q6_05": {
+     "id": "q6_05",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n媽媽的生日快＿＿了！",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "到"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "好"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "的"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    },
+    "q6_06": {
+     "id": "q6_06",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n來我家吃蛋糕，＿＿？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "好不好"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "幾月幾號"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "快到了"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    },
+    "q6_07": {
+     "id": "q6_07",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n今天是＿＿？——今天是十一月二十八號。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "幾月幾號"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "好不好"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "什麼禮物"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    },
+    "q6_08": {
+     "id": "q6_08",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n我＿＿喜歡這個禮物。（very）",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "好"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "快"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "慢"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    },
+    "q6_09": {
+     "id": "q6_09",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n兔子很快，烏龜很＿＿。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "慢"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "快"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "好"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    },
+    "q6_10": {
+     "id": "q6_10",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n我＿＿圖書館了。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "到"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "的"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "慢"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    }
+   }
+  },
+  "s6_3": {
+   "id": "s6_3",
+   "title": "第 3 大題：閱讀理解（課文）",
+   "type": "choice",
+   "order": 2,
+   "questions": {
+    "q6_11": {
+     "id": "q6_11",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "讀課文，選出正確的答案。\nRead the text and choose the correct answer.\nอ่านบทเรียนแล้วเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n誰的生日快到了？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "大文"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "心美"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "老師"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：我的生日快到了，來我家吃蛋糕，好不好？\n心美：好，你的生日是幾月幾號？\n大文：我的生日是十一月二十八號，你呢？\n心美：我的生日是九月三十號。你喜歡什麼禮物？\n大文：我喜歡玩具和漫畫書。"
+    },
+    "q6_12": {
+     "id": "q6_12",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "讀課文，選出正確的答案。\nRead the text and choose the correct answer.\nอ่านบทเรียนแล้วเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n大文請心美來他家做什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "吃蛋糕"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "畫圖"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "看書"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：我的生日快到了，來我家吃蛋糕，好不好？\n心美：好，你的生日是幾月幾號？\n大文：我的生日是十一月二十八號，你呢？\n心美：我的生日是九月三十號。你喜歡什麼禮物？\n大文：我喜歡玩具和漫畫書。"
+    },
+    "q6_13": {
+     "id": "q6_13",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "讀課文，選出正確的答案。\nRead the text and choose the correct answer.\nอ่านบทเรียนแล้วเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n大文的生日是幾月幾號？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "十一月二十八號"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "九月三十號"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "九月二十八號"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：我的生日快到了，來我家吃蛋糕，好不好？\n心美：好，你的生日是幾月幾號？\n大文：我的生日是十一月二十八號，你呢？\n心美：我的生日是九月三十號。你喜歡什麼禮物？\n大文：我喜歡玩具和漫畫書。"
+    },
+    "q6_14": {
+     "id": "q6_14",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "讀課文，選出正確的答案。\nRead the text and choose the correct answer.\nอ่านบทเรียนแล้วเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n心美的生日是幾月幾號？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "九月三十號"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "十一月二十八號"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "九月十三號"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：我的生日快到了，來我家吃蛋糕，好不好？\n心美：好，你的生日是幾月幾號？\n大文：我的生日是十一月二十八號，你呢？\n心美：我的生日是九月三十號。你喜歡什麼禮物？\n大文：我喜歡玩具和漫畫書。"
+    },
+    "q6_15": {
+     "id": "q6_15",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "讀課文，選出正確的答案。\nRead the text and choose the correct answer.\nอ่านบทเรียนแล้วเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n大文喜歡什麼禮物？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "玩具和漫畫書"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "蛋糕和果汁"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "書包和書"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：我的生日快到了，來我家吃蛋糕，好不好？\n心美：好，你的生日是幾月幾號？\n大文：我的生日是十一月二十八號，你呢？\n心美：我的生日是九月三十號。你喜歡什麼禮物？\n大文：我喜歡玩具和漫畫書。"
+    }
+   }
+  },
+  "s6_4": {
+   "id": "s6_4",
+   "title": "第 4 大題：漢字（部首與筆畫）",
+   "type": "choice",
+   "order": 3,
+   "questions": {
+    "q6_16": {
+     "id": "q6_16",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n「的」的部首是什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "白"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "勺"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "日"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    },
+    "q6_17": {
+     "id": "q6_17",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n「快」的部首是什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "心"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "人"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "大"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    },
+    "q6_18": {
+     "id": "q6_18",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n「到」的部首是什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "刀"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "至"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "土"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    },
+    "q6_19": {
+     "id": "q6_19",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n「玩」的部首是什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "玉"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "元"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "王"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    },
+    "q6_20": {
+     "id": "q6_20",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n「什」的部首是什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "人"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "十"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "口"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    },
+    "q6_21": {
+     "id": "q6_21",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n「的」有幾畫？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "8"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "7"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "9"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    },
+    "q6_22": {
+     "id": "q6_22",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n「快」有幾畫？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "7"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "6"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "8"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    },
+    "q6_23": {
+     "id": "q6_23",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n「月」和「日」放在一起是哪個字？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "明"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "朋"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "晶"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    }
+   }
+  },
+  "s6_5": {
+   "id": "s6_5",
+   "title": "第 5 大題：填空",
+   "type": "fill",
+   "order": 4,
+   "questions": {
+    "q6_24": {
+     "id": "q6_24",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "template": "我的生日{快到了}，來我家吃蛋糕，好不好？",
+     "prompt": "根據課文填入適當的答案。\nFill in the blanks according to the text.\nเติมคำตอบที่เหมาะสมตามบทเรียนค่ะ/ครับ"
+    },
+    "q6_25": {
+     "id": "q6_25",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "template": "你的生日是{幾月幾號}？",
+     "prompt": "根據課文填入適當的答案。\nFill in the blanks according to the text.\nเติมคำตอบที่เหมาะสมตามบทเรียนค่ะ/ครับ"
+    },
+    "q6_26": {
+     "id": "q6_26",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "template": "我的生日是{十一}月二十八{號}。",
+     "prompt": "根據課文填入適當的答案。\nFill in the blanks according to the text.\nเติมคำตอบที่เหมาะสมตามบทเรียนค่ะ/ครับ"
+    },
+    "q6_27": {
+     "id": "q6_27",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": "",
+     "template": "你喜歡什麼{禮物}？",
+     "prompt": "根據課文填入適當的答案。\nFill in the blanks according to the text.\nเติมคำตอบที่เหมาะสมตามบทเรียนค่ะ/ครับ"
+    },
+    "q6_28": {
+     "id": "q6_28",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": "",
+     "template": "我喜歡{玩具}和漫畫書。",
+     "prompt": "根據課文填入適當的答案。\nFill in the blanks according to the text.\nเติมคำตอบที่เหมาะสมตามบทเรียนค่ะ/ครับ"
+    },
+    "q6_29": {
+     "id": "q6_29",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": "",
+     "template": "大文{的}生日禮物是玩具。",
+     "prompt": "填入適當的詞。\nFill in the blank with the correct word.\nเติมคำที่เหมาะสมค่ะ/ครับ"
+    },
+    "q6_30": {
+     "id": "q6_30",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": "",
+     "template": "夏天{快}到了！",
+     "prompt": "填入適當的詞。\nFill in the blank with the correct word.\nเติมคำที่เหมาะสมค่ะ/ครับ"
+    },
+    "q6_31": {
+     "id": "q6_31",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": "",
+     "template": "早飯喝牛奶，{好不好}？",
+     "prompt": "填入適當的詞。\nFill in the blank with the correct word.\nเติมคำที่เหมาะสมค่ะ/ครับ"
+    },
+    "q6_32": {
+     "id": "q6_32",
+     "order": 8,
+     "title": "第 9 題",
+     "weight": 1,
+     "teacherNote": "",
+     "template": "文文的生日是{九}月{十七}號。（看月曆：九月，17 號畫圈）",
+     "prompt": "填入適當的詞。\nFill in the blank with the correct word.\nเติมคำที่เหมาะสมค่ะ/ครับ"
+    }
+   }
+  },
+  "s6_6": {
+   "id": "s6_6",
+   "title": "第 6 大題：句子重組",
+   "type": "reorder",
+   "order": 5,
+   "questions": {
+    "q6_33": {
+     "id": "q6_33",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "請將下列詞語重組為正確句子 Rearrange the words into a correct sentence",
+     "words": [
+      "我",
+      "的",
+      "生日",
+      "快",
+      "到了",
+      "！"
+     ]
+    },
+    "q6_34": {
+     "id": "q6_34",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "請將下列詞語重組為正確句子 Rearrange the words into a correct sentence",
+     "words": [
+      "你",
+      "的",
+      "生日",
+      "是",
+      "幾月",
+      "幾號",
+      "？"
+     ]
+    },
+    "q6_35": {
+     "id": "q6_35",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "請將下列詞語重組為正確句子 Rearrange the words into a correct sentence",
+     "words": [
+      "來",
+      "我家",
+      "吃",
+      "蛋糕",
+      "，",
+      "好不好",
+      "？"
+     ]
+    },
+    "q6_36": {
+     "id": "q6_36",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "請將下列詞語重組為正確句子 Rearrange the words into a correct sentence",
+     "words": [
+      "我",
+      "喜歡",
+      "玩具",
+      "和",
+      "漫畫書",
+      "。"
+     ]
+    },
+    "q6_37": {
+     "id": "q6_37",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "請將下列詞語重組為正確句子 Rearrange the words into a correct sentence",
+     "words": [
+      "大文",
+      "的",
+      "生日禮物",
+      "是",
+      "玩具",
+      "。"
+     ]
+    }
+   }
+  },
+  "s6_7": {
+   "id": "s6_7",
+   "title": "第 7 大題：聽力（生詞與日期）",
+   "type": "choice",
+   "order": 6,
+   "questions": {
+    "q6_38": {
+     "id": "q6_38",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "聽一聽，選出你聽到的詞。\nListen and choose the word you hear.\nฟังแล้วเลือกคำที่ได้ยินค่ะ/ครับ",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "蛋糕"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "禮物"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "玩具"
+      }
+     },
+     "answerIds": [
+      "c2"
+     ],
+     "tts": {
+      "text": "禮物",
+      "rate": 0.9,
+      "voice": "zh-TW-HsiaoChenNeural",
+      "gap": 0.6,
+      "mode": "single",
+      "spkN": 2
+     }
+    },
+    "q6_39": {
+     "id": "q6_39",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "聽一聽，選出你聽到的詞。\nListen and choose the word you hear.\nฟังแล้วเลือกคำที่ได้ยินค่ะ/ครับ",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "漫畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "書包"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "蛋糕"
+      }
+     },
+     "answerIds": [
+      "c3"
+     ],
+     "tts": {
+      "text": "蛋糕",
+      "rate": 0.9,
+      "voice": "zh-TW-HsiaoChenNeural",
+      "gap": 0.6,
+      "mode": "single",
+      "spkN": 2
+     }
+    },
+    "q6_40": {
+     "id": "q6_40",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "聽一聽，選出你聽到的詞。\nListen and choose the word you hear.\nฟังแล้วเลือกคำที่ได้ยินค่ะ/ครับ",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "九月三十號"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "九月十三號"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "十月三十號"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "tts": {
+      "text": "九月三十號",
+      "rate": 0.9,
+      "voice": "zh-TW-HsiaoChenNeural",
+      "gap": 0.6,
+      "mode": "single",
+      "spkN": 2
+     }
+    },
+    "q6_41": {
+     "id": "q6_41",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "聽一聽，選出你聽到的詞。\nListen and choose the word you hear.\nฟังแล้วเลือกคำที่ได้ยินค่ะ/ครับ",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "十一月二十八號"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "十月二十八號"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "十一月十八號"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "tts": {
+      "text": "十一月二十八號",
+      "rate": 0.9,
+      "voice": "zh-TW-HsiaoChenNeural",
+      "gap": 0.6,
+      "mode": "single",
+      "spkN": 2
+     }
+    },
+    "q6_42": {
+     "id": "q6_42",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "聽一聽，選出正確的答案。\nListen and choose the correct answer.\nฟังแล้วเลือกคำตอบที่ถูกต้องค่ะ/ครับ",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "九月二十八號"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "九月十八號"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "十一月二十八號"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "tts": {
+      "text": "老師的生日是幾月幾號？\n老師的生日是九月二十八號。",
+      "rate": 0.9,
+      "voice": "zh-TW-HsiaoChenNeural",
+      "gap": 0.6,
+      "mode": "dialog",
+      "spkN": 2,
+      "spk": {
+       "說話者1": "zh-TW-YunJheNeural",
+       "說話者2": "zh-TW-HsiaoChenNeural"
+      }
+     }
+    }
+   }
+  },
+  "s6_8": {
+   "id": "s6_8",
+   "title": "第 8 大題：習寫漢字",
+   "type": "hanzi",
+   "order": 7,
+   "questions": {
+    "q6_43": {
+     "id": "q6_43",
+     "order": 0,
+     "title": "第 1 題：的",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "的",
+     "desc": "8畫，部首：白"
+    },
+    "q6_44": {
+     "id": "q6_44",
+     "order": 1,
+     "title": "第 2 題：日",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "日",
+     "desc": "4畫，部首：日"
+    },
+    "q6_45": {
+     "id": "q6_45",
+     "order": 2,
+     "title": "第 3 題：月",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "月",
+     "desc": "4畫，部首：月"
+    },
+    "q6_46": {
+     "id": "q6_46",
+     "order": 3,
+     "title": "第 4 題：快",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "快",
+     "desc": "7畫，部首：心"
+    },
+    "q6_47": {
+     "id": "q6_47",
+     "order": 4,
+     "title": "第 5 題：到",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "到",
+     "desc": "8畫，部首：刀"
+    },
+    "q6_48": {
+     "id": "q6_48",
+     "order": 5,
+     "title": "第 6 題：玩",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "玩",
+     "desc": "8畫，部首：玉"
+    },
+    "q6_49": {
+     "id": "q6_49",
+     "order": 6,
+     "title": "第 7 題：什",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "什",
+     "desc": "4畫，部首：人"
+    },
+    "q6_50": {
+     "id": "q6_50",
+     "order": 7,
+     "title": "第 8 題：麼",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "麼",
+     "desc": "14畫，部首：麻"
+    }
+   }
+  },
+  "s6_9": {
+   "id": "s6_9",
+   "title": "第 9 大題：口說（我會唸）",
+   "type": "record",
+   "order": 8,
+   "questions": {
+    "q6_51": {
+     "id": "q6_51",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "請唸出課文。\nRead the text aloud.\nอ่านบทเรียนออกเสียงค่ะ/ครับ",
+     "passage": "大文：我的生日快到了，來我家吃蛋糕，好不好？\n心美：好，你的生日是幾月幾號？\n大文：我的生日是十一月二十八號，你呢？\n心美：我的生日是九月三十號。你喜歡什麼禮物？\n大文：我喜歡玩具和漫畫書。",
+     "reference": "大文：我的生日快到了，來我家吃蛋糕，好不好？\n心美：好，你的生日是幾月幾號？\n大文：我的生日是十一月二十八號，你呢？\n心美：我的生日是九月三十號。你喜歡什麼禮物？\n大文：我喜歡玩具和漫畫書。",
+     "maxSec": 60
+    },
+    "q6_52": {
+     "id": "q6_52",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "請從一月念到十二月。\nSay the months from January to December.\nพูดชื่อเดือนตั้งแต่มกราคมถึงธันวาคมค่ะ/ครับ",
+     "reference": "一月、二月、三月、四月、五月、六月、七月、八月、九月、十月、十一月、十二月",
+     "maxSec": 40
+    },
+    "q6_53": {
+     "id": "q6_53",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "你的生日是幾月幾號？你喜歡什麼禮物？\nWhen is your birthday? What gift do you like?\nวันเกิดของคุณคือวันที่เท่าไร คุณชอบของขวัญอะไรคะ/ครับ",
+     "reference": "例：我的生日是九月三十號。我喜歡玩具和漫畫書。",
+     "maxSec": 30
+    },
+    "q6_54": {
+     "id": "q6_54",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "用「……，好不好？」邀請同學。\nInvite a classmate using “……，好不好？”.\nใช้ “……，好不好？” ชวนเพื่อนค่ะ/ครับ",
+     "reference": "例：來我家吃蛋糕，好不好？／我們喝果汁，好不好？",
+     "maxSec": 30
+    }
+   }
+  }
+ },
+ "currentQId": "q6_01"
+}
