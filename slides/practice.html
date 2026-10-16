@@ -2224,6 +2224,12 @@
 
       <details id="q-tts" class="q-more">
       <summary>🔊 聽力語音：輸入文字，自動變成給學生聽的語音</summary>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:6px;">
+        <b style="font-size:13px;">模式</b>
+        <button type="button" class="btn btn-sm" id="btn-tts-mode-single" data-ttsmode="single">👤 單人朗讀</button>
+        <button type="button" class="btn btn-sm" id="btn-tts-mode-dialog" data-ttsmode="dialog">👥 對話</button>
+        <span id="tts-mode-hint" style="font-size:12px;color:var(--ink-soft);"></span>
+      </div>
       <label for="f-tts-text" style="margin-top:6px;">要念出來的內容（學生只會聽到，看不到文字）</label>
       <textarea id="f-tts-text" rows="3" placeholder="例如：A：你今天想喝什麼？　B：我想喝一杯熱奶茶。"></textarea>
       <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:8px;">
@@ -2235,7 +2241,7 @@
       <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px;">
         <span id="tts-voice-wrap" style="display:inline-flex;gap:6px;align-items:center;"><b style="font-size:13px;">聲音</b>
           <select id="f-tts-voice" style="padding:4px 8px;border-radius:8px;"><option value="zh-TW-HsiaoChenNeural">曉臻（女）</option><option value="zh-TW-YunJheNeural">雲哲（男）</option><option value="zh-TW-HsiaoYuNeural">曉雨（女）</option></select></span>
-        <span style="font-size:12px;color:var(--ink-soft);">對話題：每行寫「A：…」「B：…」（或「男：」「女：」、人名），會自動分配不同的聲音</span>
+
       </div>
       <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:8px;">
         <button type="button" class="btn btn-sm" id="btn-tts-pause" title="在游標位置插入停頓，例如 [停1秒]；數字可以自己改（0.5、2…）">⏸ 插入停頓</button>
@@ -8727,9 +8733,24 @@ window.mmTA = (function(){
   function ttsRateNow(){ return parseFloat(document.getElementById("f-tts-rate").value) || 1; }
   /* ---- 聲音與對話模式：每行「A：…」「B：…」自動分配不同聲音（男聲：雲哲） ---- */
   var TTS_VOICES = [["zh-TW-HsiaoChenNeural", "曉臻（女）"], ["zh-TW-YunJheNeural", "雲哲（男）"], ["zh-TW-HsiaoYuNeural", "曉雨（女）"]];
-  var ttsSpkMap = {};
+  var ttsSpkMap = {}, ttsMode = "single", ttsSpkCount = 2;
+  function ttsSetMode(m){
+    ttsMode = m === "dialog" ? "dialog" : "single";
+    document.querySelectorAll("[data-ttsmode]").forEach(function(b){ b.classList.toggle("btn-primary", b.dataset.ttsmode === ttsMode); });
+    var ta = document.getElementById("f-tts-text");
+    ta.placeholder = ttsMode === "dialog" ? "一行一句，不用寫說話者，系統會自動輪流：\n你今天想喝什麼？\n我想喝一杯熱奶茶。\n好，我也要一杯。" : "例如：我叫王小明，我今天早上七點起床。";
+    if(ttsMode === "dialog" && (parseInt(ta.rows, 10) || 3) < 5) ta.rows = 5;
+    document.getElementById("tts-mode-hint").textContent = ttsMode === "dialog" ? "第 1 行＝說話者 1、第 2 行＝說話者 2，依序輪流" : "";
+    ttsSpkRender();
+  }
   function ttsParseDialog(text){
     var lines = String(text || "").split(/\n+/).map(function(x){ return x.trim(); }).filter(Boolean), segs = [], labeled = 0, labels = [];
+    // 對話模式、沒有寫說話者：每一行自動輪流換人
+    if(ttsMode === "dialog" && !lines.some(function(l){ return /^([^：:\s，。]{1,8})\s*[：:]\s*(.+)$/.test(l); })){
+      if(!lines.length) return null;
+      var n = ttsSpkCount, lbs = []; for(var k = 1; k <= n; k++) lbs.push("說話者" + k);
+      return { segs: lines.map(function(l, i){ return { label: lbs[i % n], text: l }; }), labels: lbs, auto: true };
+    }
     lines.forEach(function(l){
       var m = l.match(/^([^：:\s，。]{1,8})\s*[：:]\s*(.+)$/);
       if(m){ labeled++; segs.push({ label: m[1], text: m[2] }); if(labels.indexOf(m[1]) < 0) labels.push(m[1]); }
@@ -8747,11 +8768,12 @@ window.mmTA = (function(){
     var box = document.getElementById("tts-spk"), d = ttsParseDialog(document.getElementById("f-tts-text").value), vw = document.getElementById("tts-voice-wrap");
     if(!d){ box.style.display = "none"; vw.style.display = "inline-flex"; return; }
     vw.style.display = "none"; box.style.display = "block";
-    box.innerHTML = '<b>🎭 對話模式</b>（說話者名稱不會念出來）：' + d.labels.map(function(lb, i){
+    box.innerHTML = '<b>🎭 對話</b>' + (d.auto ? '　人數 <select id="tts-spk-n" style="padding:2px 6px;border-radius:8px;"><option value="2"' + (ttsSpkCount === 2 ? " selected" : "") + '>2 人</option><option value="3"' + (ttsSpkCount === 3 ? " selected" : "") + '>3 人</option></select>　' : '（說話者名稱不會念出來）：') + d.labels.map(function(lb, i){
       var v = ttsSpkVoice(lb, i);
       return '<span style="display:inline-flex;align-items:center;gap:4px;margin:4px 10px 0 0;">' + escapeHtml(lb) + ' ▸ <select data-spk="' + escapeHtml(lb) + '" style="padding:2px 6px;border-radius:8px;">' + TTS_VOICES.map(function(o){ return '<option value="' + o[0] + '"' + (o[0] === v ? " selected" : "") + '>' + o[1] + '</option>'; }).join("") + '</select></span>';
     }).join("");
     box.querySelectorAll("select[data-spk]").forEach(function(sel){ sel.onchange = function(){ ttsSpkMap[sel.dataset.spk] = sel.value; if(ttsServerUrl() && !editorTtsRec) ttsGenerate(true); }; });
+    var nSel = box.querySelector("#tts-spk-n"); if(nSel) nSel.onchange = function(){ ttsSpkCount = parseInt(nSel.value, 10) || 2; ttsSpkRender(); if(ttsServerUrl() && !editorTtsRec && document.getElementById("f-tts-text").value.trim()) ttsGenerate(true); };
   }
   function ttsVoiceNow(){ return document.getElementById("f-tts-voice").value || "zh-TW-HsiaoChenNeural"; }
   function ttsGapNow(){ var v = parseFloat(document.getElementById("f-tts-gap").value); return isFinite(v) ? v : 0.6; }
@@ -8774,7 +8796,7 @@ window.mmTA = (function(){
   function ttsKeyNow(){
     var t = document.getElementById("f-tts-text").value.trim(), d = ttsParseDialog(t);
     var vk = d ? d.labels.map(function(lb, i){ return lb + "=" + ttsSpkVoice(lb, i); }).join(",") : ttsVoiceNow();
-    return t + "|" + ttsRateNow() + "|" + vk + "|" + ttsGapNow();
+    return t + "|" + ttsRateNow() + "|" + vk + "|" + ttsGapNow() + "|" + ttsMode;
   }
   function ttsSetStatus(msg){ var e = document.getElementById("tts-status"); if(e) e.textContent = msg; }
   async function ttsGenerate(silent){
@@ -8810,6 +8832,7 @@ window.mmTA = (function(){
   document.getElementById("f-tts-rate").oninput = function(){ document.getElementById("f-tts-rate-val").textContent = ttsRateNow().toFixed(2).replace(/0$/, "") + "x"; };
   document.getElementById("f-tts-text").onchange = function(){ if(ttsServerUrl() && !editorTtsRec) ttsGenerate(true); };
   var ttsSpkT = 0; document.getElementById("f-tts-text").addEventListener("input", function(){ clearTimeout(ttsSpkT); ttsSpkT = setTimeout(ttsSpkRender, 300); });
+  document.querySelectorAll("[data-ttsmode]").forEach(function(b){ b.onclick = function(){ ttsSetMode(b.dataset.ttsmode); if(ttsServerUrl() && !editorTtsRec && document.getElementById("f-tts-text").value.trim()) ttsGenerate(true); }; });
   document.getElementById("f-tts-gap").oninput = function(){ document.getElementById("f-tts-gap-val").textContent = ttsGapNow().toFixed(1) + " 秒"; };
   document.getElementById("f-tts-gap").onchange = function(){ if(ttsServerUrl() && !editorTtsRec && ttsParseDialog(document.getElementById("f-tts-text").value)) ttsGenerate(true); };
   document.getElementById("btn-tts-pause").onclick = function(){
@@ -8890,8 +8913,9 @@ window.mmTA = (function(){
     var tq = (q && q.tts) || null;
     document.getElementById("f-tts-text").value = tq ? (tq.text || "") : "";
     document.getElementById("f-tts-rate").value = tq && tq.rate ? tq.rate : 1; document.getElementById("f-tts-rate").oninput();
-    ttsSpkMap = (tq && tq.spk) ? JSON.parse(JSON.stringify(tq.spk)) : {};
-    document.getElementById("f-tts-voice").value = (tq && tq.voice) || "zh-TW-HsiaoChenNeural"; ttsSpkRender();
+    ttsSpkMap = (tq && tq.spk) ? JSON.parse(JSON.stringify(tq.spk)) : {}; ttsSpkCount = (tq && tq.spkN) || 2;
+    document.getElementById("f-tts-voice").value = (tq && tq.voice) || "zh-TW-HsiaoChenNeural";
+    ttsSetMode(tq && tq.mode === "dialog" ? "dialog" : "single");
     document.getElementById("f-tts-gap").value = (tq && tq.gap != null) ? tq.gap : 0.6; document.getElementById("f-tts-gap").oninput();
     editorTtsSrc = tq && tq.src ? tq.src : ""; editorTtsRec = !!(tq && tq.rec && tq.src); editorTtsKey = tq ? ttsKeyNow() : "";   // 剛載入的設定就是產生這個音檔時的設定
     if(ttsRecState){ try{ ttsRecState.rec.stop(); }catch(e){} }
@@ -9056,7 +9080,7 @@ window.mmTA = (function(){
     if(editorTtsRec && editorTtsSrc){
       qObj.tts = { text: ttsText, rate: 1, src: editorTtsSrc, rec: true };   // 老師自己錄的：文字只是參考稿，改了也不影響錄音
     } else if(ttsText){
-      qObj.tts = { text: ttsText, rate: ttsRateNow(), voice: ttsVoiceNow(), gap: ttsGapNow() };
+      qObj.tts = { text: ttsText, rate: ttsRateNow(), voice: ttsVoiceNow(), gap: ttsGapNow(), mode: ttsMode, spkN: ttsSpkCount };
       var dlgS = ttsParseDialog(ttsText); if(dlgS){ var spk = {}; dlgS.labels.forEach(function(lb, i){ spk[lb] = ttsSpkVoice(lb, i); }); qObj.tts.spk = spk; }
       if(editorTtsSrc && editorTtsKey === ttsKeyNow()){ qObj.tts.src = editorTtsSrc; qObj.tts.key = editorTtsKey; }   // 文字、語速或聲音改過就丟掉舊音檔
     }
