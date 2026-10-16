@@ -12835,6 +12835,7 @@ window.mmTA = (function(){
         if(stepHidden && isStudent) return;          // 學生端完全不渲染（DOM 裡也找不到）
         var div = document.createElement("div");
         div.className = "movable-text" + (t.id === activeSelectedTextId ? " active" : "") + (stepHidden ? " step-hidden" : "");
+        if(!isStudent) div.title = "拖曳＝搬動；連點兩下或按 Enter＝修改文字";
         if(t.live) div.dataset.live = "1";
         div.style.left = t.x + "%";
         div.style.top = t.y + "%";
@@ -14366,11 +14367,9 @@ window.mmTA = (function(){
         }
         if(!inSel(hit)) selSet = hitSet;
         renderSelection();
-        // 單擊文字方塊（沒有拖動）＝直接進入編輯、游標停在點到的位置；按住拖動＝搬動方塊；Ctrl／Shift 點＝加選
-        if(hit.k === "text" && selSet.length === 1 && selSet[0].k === "text"){
-          var cx1 = e.clientX, cy1 = e.clientY;
-          beginMoveSelection(p, function(){ editTextInPlace(hit.id, null, { x: cx1, y: cy1 }); });
-        } else beginMoveSelection(p);
+        // 文字方塊跟圖片一樣：單擊＝選取（框框出現，一拉就動）；連點兩下或按 Enter＝修改文字；Ctrl／Shift 點＝加選
+        // （以前單擊就直接進入打字，之後再拖會變成選取文字、搬不動）
+        beginMoveSelection(p);
       } else {
         if(!additive) selSet = [];
         renderSelection();
@@ -14871,6 +14870,7 @@ window.mmTA = (function(){
       else if(selSet.length && /^Arrow(Left|Right|Up|Down)$/.test(e.key)){ e.preventDefault(); var st1 = e.shiftKey ? 2 : 0.3; snapshotForUndo(); commitKinds(shiftItems(expandGroups(selSet), e.key === "ArrowLeft" ? -st1 : e.key === "ArrowRight" ? st1 : 0, e.key === "ArrowUp" ? -st1 : e.key === "ArrowDown" ? st1 : 0)); }
       else if(mod && (e.key === "a" || e.key === "A")){ e.preventDefault(); selSet = expandGroups(allItems().filter(function(it){ return !!itemBox(it); })); renderSelection(); }
       else if((e.key === "Delete" || e.key === "Backspace") && selSet.length){ e.preventDefault(); deleteSelection(); }
+      else if((e.key === "Enter" || e.key === "F2") && selSet.length === 1 && selSet[0].k === "text" && !(presentLock() && !isLiveItem(selSet[0]))){ e.preventDefault(); editTextInPlace(selSet[0].id); }   // 選取的文字方塊按 Enter：修改文字
       else if(e.key === "Escape"){ if(selSet.length){ selSet = []; renderSelection(); } if(selectFromText){ selectFromText = false; switchToTextTool(); } }
     });
 
