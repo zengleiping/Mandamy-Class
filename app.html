@@ -94,6 +94,11 @@
   .lib-sep:empty{ padding-top:4px; }
   .lib-pane{ flex:1; min-width:0; overflow:auto; padding:16px 20px; }
   @media (max-width:760px){ .lib-wrap{ flex-direction:column; overflow:auto; } .lib-nav{ width:auto; border-right:none; border-bottom:1px solid var(--line); max-height:none; } .lib-pane{ overflow:visible; } }
+  .hc-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:10px; }
+  .hc{ display:flex; flex-direction:column; gap:2px; text-align:left; border:1.5px solid var(--line); background:var(--surface-2); border-radius:14px; padding:10px 12px; font:inherit; cursor:pointer; color:var(--ink); }
+  .hc b{ font-size:16px; font-family:"LXGW WenKai TC",serif; }
+  .hc:hover{ border-color:var(--seal); background:#FBE3D6; }
+  .gbar{ height:5px; background:var(--surface-2); border-radius:3px; margin-top:3px; min-width:60px; } .gbar div{ height:100%; background:var(--bamboo); border-radius:3px; }
   .tabs{ display:flex; gap:4px; padding:8px 14px 0; background:var(--surface); border-bottom:1px solid var(--line); flex-wrap:wrap; }
   .tab{ border:none; background:none; padding:9px 16px; font-size:14.5px; font-weight:700; color:var(--ink-soft); border-bottom:3px solid transparent; }
   .tab.on{ color:var(--seal); border-bottom-color:var(--seal); }
@@ -1287,7 +1292,7 @@ function navSnap(){
     return { k: "t", sel: S.sel ? { s: S.sel.s, t: S.sel.t || null, c: S.sel.c || null } : null, lesson: S.lesson || null, tab: S.tab || null, sub: S.sub || null,
       hw: S.hw ? { view: S.hw.view || "list", id: S.hw.id || null, from: S.hw.from || null, to: S.hw.to || null } : null,
       rec: S.rec ? { view: S.rec.edit !== undefined ? null : (S.rec.view || null), filter: S.rec.filter || null, label: S.rec.label || null, student: S.rec.student || null } : null,
-      lib: S.lib ? { book: S.lib.book || null, key: S.lib.key || null, bank: !!S.lib.bank, pid: S.lib.pid || null } : null, day: S.day || null, settings: !!S.settings };
+      lib: S.lib ? { book: S.lib.book || null, key: S.lib.key || null, bank: !!S.lib.bank, pid: S.lib.pid || null } : null, day: S.day || null, settings: !!S.settings, grades: !!S.grades, ctab: S.ctab || null };
   }
   return { k: "s", lesson: S.lesson || null, tab: S.tab || null, sub: S.sub || null, hwOpen: S.hwOpen || null, leaveOpen: !!S.leaveOpen, roomJoin: S.roomJoin || null, examOpen: S.examOpen || null };
 }
@@ -1307,7 +1312,7 @@ window.addEventListener("popstate", function(e){
     try{
       if(S.focus) S.focus = false;
       S.sel = st.sel; S.lesson = st.lesson; S.tab = st.tab; S.sub = st.sub;
-      S.hw = st.hw; S.rec = st.rec ? Object.assign({}, st.rec) : null; S.lib = st.lib; S.day = st.day; S.settings = !!st.settings;
+      S.hw = st.hw; S.rec = st.rec ? Object.assign({}, st.rec) : null; S.lib = st.lib; S.day = st.day; S.settings = !!st.settings; S.grades = st.grades ? {} : null; if(st.ctab) S.ctab = st.ctab;
       if(S.rec && !S.rec.view) delete S.rec.view;
       render();
     } finally { NAV.popping = false; }
@@ -1366,21 +1371,22 @@ function shell(inner, opts){
   document.body.classList.toggle("ta", isTA());
   root.innerHTML = '<div class="shell' + (S.focus ? ' focus' : '') + '"><div class="top">' +
     '<a href="#" class="brand" id="brandhome" title="回到首頁" style="text-decoration:none;color:inherit;cursor:pointer;"><img src="icons/logo.svg" alt="" style="width:30px;height:30px;vertical-align:middle;margin-right:6px;">曼米中文' + (isT ? '' : '<small>學生</small>') + '</a><div class="crumb" id="crumb"></div><div class="grow"></div>' +
-    (isT ? '<span class="crumb" style="display:inline-flex;align-items:center;gap:6px;"><img src="icons/teacher.png" alt="" style="width:28px;height:28px;border-radius:50%;">' + esc(S.teacher.name) + '</span><button class="btn sm" id="bell" title="新的繳交">🔔</button><button class="btn sm" id="recbtn">課堂記錄</button><button class="btn sm owner-only" id="libbtn">📚 教材</button><button class="btn sm owner-only" id="setbtn">設定</button><button class="btn sm" id="logout">登出</button>'
+    (isT ? '<span class="crumb" style="display:inline-flex;align-items:center;gap:6px;"><img src="icons/teacher.png" alt="" style="width:28px;height:28px;border-radius:50%;">' + esc(S.teacher.name) + '</span><button class="btn sm" id="bell" title="新的繳交">🔔</button><button class="btn sm" id="recbtn">課堂記錄</button><button class="btn sm owner-only" id="libbtn">📚 教材</button><button class="btn sm" id="grdbtn">📊 成績</button><button class="btn sm owner-only" id="setbtn">設定</button><button class="btn sm" id="logout">登出</button>'
          : '<span class="crumb">👤 ' + esc(S.student ? S.student.name : "") + '</span><button class="btn sm" id="leave">離開</button>') +
     '</div><div class="body">' + '<main class="main' + (opts.flush ? ' flush' : '') + '" id="main">' + inner + '</main></div></div>';
   var bh = document.getElementById("brandhome");
   if(bh) bh.onclick = function(e){
     e.preventDefault();
     if(S.focus) setFocus(false);
-    if(S.teacher){ S.sel = null; S.lesson = null; S.tab = null; S.sub = null; S.hw = null; S.rec = null; S.lib = null; S.day = null; S.settings = false; if(S.live && S.live.on) pushLive(true); render(); }
+    if(S.teacher){ S.sel = null; S.lesson = null; S.tab = null; S.sub = null; S.hw = null; S.rec = null; S.lib = null; S.day = null; S.grades = null; S.settings = false; if(S.live && S.live.on) pushLive(true); render(); }
     else if(S.student){ S.lesson = null; S.tab = null; S.sub = null; S.hwOpen = null; S.albOpen = null; S.leaveOpen = false; S.roomJoin = null; S.examOpen = null; renderStudent(); }
   };
   if(isT){
     document.getElementById("bell").onclick = openBell; updateBell();
-    document.getElementById("recbtn").onclick = function(){ if(S.focus) setFocus(false); S.rec = { filter: "all" }; S.settings = false; S.lib = null; S.day = null; S.sel = null; S.lesson = null; render(); };
-    document.getElementById("setbtn").onclick = function(){ if(S.focus) setFocus(false); S.settings = true; S.lib = null; S.rec = null; S.day = null; S.sel = null; S.lesson = null; S.hw = null; render(); };
-    document.getElementById("libbtn").onclick = function(){ if(S.focus) setFocus(false); S.rec = null; S.settings = false; S.lib = { book: S.lib ? S.lib.book : DEFAULT_BOOK }; render(); };
+    document.getElementById("recbtn").onclick = function(){ if(S.focus) setFocus(false); S.grades = null; S.rec = { filter: "all" }; S.settings = false; S.lib = null; S.day = null; S.sel = null; S.lesson = null; render(); };
+    document.getElementById("setbtn").onclick = function(){ if(S.focus) setFocus(false); S.grades = null; S.settings = true; S.lib = null; S.rec = null; S.day = null; S.sel = null; S.lesson = null; S.hw = null; render(); };
+    document.getElementById("libbtn").onclick = function(){ if(S.focus) setFocus(false); S.rec = null; S.settings = false; S.grades = null; S.lib = { book: S.lib ? S.lib.book : DEFAULT_BOOK }; render(); };
+    document.getElementById("grdbtn").onclick = function(){ if(S.focus) setFocus(false); S.rec = null; S.settings = false; S.lib = null; S.day = null; S.grades = {}; render(); };
     document.getElementById("logout").onclick = async function(){ try{ localStorage.removeItem(SESSION_KEY); localStorage.removeItem("mm_ta_owner"); }catch(e){} try{ await window.mmTA.logout(); }catch(e){} try{ trStop(); }catch(e){} S.teacher = null; S.sel = null; NAV.last = null; history.replaceState(null, "", location.pathname); viewLogin(); };
   } else {
     document.getElementById("leave").onclick = async function(){ S.student = null; NAV.last = null; history.replaceState(null, "", location.pathname); if(googleUser()) await googleSignOut(); viewStudentEntry(); };
@@ -1390,9 +1396,10 @@ function setCrumb(parts){
   var c = document.getElementById("crumb"); if(!c) return;
   if(!S.teacher){ c.textContent = parts.filter(Boolean).join("  ›  "); return; }
   var items = [{ t: "首頁", go: "root" }];
-  var atHome = !S.lib && !S.rec && !S.day && !S.sel && !S.settings;
+  var atHome = !S.lib && !S.rec && !S.day && !S.sel && !S.settings && !S.grades;
   if(atHome){ c.innerHTML = ""; return; }
-  if(S.lib){ items.push({ t: "教材" }); }
+  if(S.grades){ items.push({ t: "成績" }); }
+  else if(S.lib){ items.push({ t: "教材" }); }
   else if(S.settings && !S.sel && !S.rec && !S.day){ items.push({ t: "設定" }); }
   else if(S.rec){ items.push({ t: "課堂記錄" }); }
   else if(S.day && !S.sel){ items.push({ t: "課表 " + S.day }); }
@@ -1408,7 +1415,7 @@ function setCrumb(parts){
   c.innerHTML = items.map(function(it, i){ return (it.go && i < last) ? '<a href="#" class="cr" data-go="' + it.go + '">' + esc(it.t) + '</a>' : '<span>' + esc(it.t) + '</span>'; }).join('<span style="margin:0 6px;opacity:.5;">›</span>');
   c.onclick = function(e){
     var a = e.target.closest("[data-go]"); if(!a) return; e.preventDefault();
-    var g = a.dataset.go, sel = S.sel; if(S.focus) setFocus(false); S.lib = null; S.day = null; S.rec = null; S.hw = null; S.settings = false;
+    var g = a.dataset.go, sel = S.sel; if(S.focus) setFocus(false); S.grades = null; S.lib = null; S.day = null; S.rec = null; S.hw = null; S.settings = false;
     if(g === "root") S.sel = null;
     else if(g === "year") S.sel = { s: sel.s, t: null, c: null };
     else if(g === "school") S.sel = { s: sel.s, t: sel.t, c: null };
@@ -4033,8 +4040,8 @@ function renderStudentRoom(){
 function renderPlatformHome(){
   S.focus = false;
   var ys = sortedBy(schoolsOf(), true);
-  var html = '<div class="head-row"><div style="flex:1;"><h2>歡迎，' + esc(S.teacher.name) + '</h2></div><div class="tools" style="justify-content:flex-end;">' + ys.map(function(y){ return '<button class="btn primary" data-a="go" data-s="' + y + '">' + esc(schoolsOf()[y].name) + ' ›</button>'; }).join("") + '<button class="btn" data-a="slot-new" data-d="' + ymd(new Date()) + '">新增排課</button> <button class="btn owner-only" data-a="add-s">新增年度</button></div></div>' + backupBannerHtml() + todayPanelHtml() + '<div class="panel"><h3>月課表</h3>' + calendarHtml() + '</div>';
-  shell(html); setCrumb([]); bindListPage(); autoBackupArm();
+  var html = '<div class="head-row"><div style="flex:1;"><h2>歡迎，' + esc(S.teacher.name) + '</h2></div><div class="tools" style="justify-content:flex-end;">' + ys.map(function(y){ return '<button class="btn primary" data-a="go" data-s="' + y + '">' + esc(schoolsOf()[y].name) + ' ›</button>'; }).join("") + '<button class="btn" data-a="slot-new" data-d="' + ymd(new Date()) + '">新增排課</button> <button class="btn owner-only" data-a="add-s">新增年度</button></div></div>' + backupBannerHtml() + todayPanelHtml() + '<div class="panel"><h3>待辦</h3><div id="htodo"></div></div>' + homeClassesHtml() + '<div class="panel"><h3>月課表</h3>' + calendarHtml() + '</div>';
+  shell(html); setCrumb([]); bindListPage(); autoBackupArm(); bindHomeTodo(); fillHomeTodo();
 }
 async function buildBackup(full){
   var codes = {};
@@ -4118,7 +4125,8 @@ function render(){
   if(!S.teacher) return;
   if(S.hw && (!S.sel || !S.sel.c)) S.hw = null;
   saveHash();
-  if(S.settings && !S.sel && !S.lib && !S.rec && !S.day) return renderSettings();
+  if(S.settings && !S.sel && !S.lib && !S.rec && !S.day && !S.grades) return renderSettings();
+  if(S.grades) return renderGrades();
   if(S.lib) return renderLibrary();
   if(S.rec) return renderRecords();
   if(S.day && !S.sel) return renderDayPage();
@@ -4144,6 +4152,100 @@ function renderSchoolHome(){
   shell(html); setCrumb([]); bindListPage();
 }
 function studentLink(code){ return location.origin + location.pathname + "?class=" + code; }
+// ---------- 首頁：待辦＋我的班級（一鍵進班級，不用再點年度、學校）----------
+function allClassesList(){
+  var out = [], sch = schoolsOf();
+  sortedBy(sch, true).forEach(function(y, yi){ var terms = sch[y].terms || {}; sortedBy(terms, false).forEach(function(t){ var cl = terms[t].classes || {}; sortedBy(cl, false).forEach(function(c){ out.push({ sel: { s: y, t: t, c: c }, year: sch[y].name, school: terms[t].name, cls: cl[c], latest: yi === 0 }); }); }); });
+  return out;
+}
+function homeClassesHtml(){
+  var list = allClassesList(), today = ymd(new Date());
+  if(!list.length) return '';
+  var cur = list.filter(function(x){ return x.latest; }), old = list.filter(function(x){ return !x.latest; });
+  function card(x){
+    var pr = classProgress(x.cls, x.sel), nx = classSlots(x.sel).filter(function(y){ return y.date >= today; }).sort(function(a, b){ return (a.date + (a.start || "")).localeCompare(b.date + (b.start || "")); })[0];
+    return '<button class="hc" data-a="go" data-s="' + x.sel.s + '" data-t="' + x.sel.t + '" data-c="' + x.sel.c + '"><span class="note">' + esc(x.school) + '</span><b>' + esc(x.cls.name) + '</b><span class="note">' + (pr.cur ? '▶ ' + esc(lessonTitle(pr.cur)) : '還沒有進度') + '</span>' + (nx ? '<span class="note">下次 ' + (nx.date === today ? '<b style="color:var(--seal);">今天</b>' : md(nx.date)) + (nx.start ? ' ' + esc(nx.start) : '') + '</span>' : '') + '</button>';
+  }
+  return '<div class="panel"><h3>我的班級' + (cur.length && cur[0].year ? '　<span class="note">' + esc(cur[0].year) + '</span>' : '') + '</h3><div class="hc-grid">' + cur.map(card).join("") + '</div>' +
+    (old.length ? '<details style="margin-top:10px;"><summary class="note" style="cursor:pointer;">以前的年度（' + old.length + ' 班）</summary><div class="hc-grid" style="margin-top:8px;">' + old.map(card).join("") + '</div></details>' : '') + '</div>';
+}
+async function fillHomeTodo(){
+  var box = document.getElementById("htodo"); if(!box) return;
+  var tid = S.teacher.id, today = ymd(new Date()), items = [], m = schedMap(), from = ymd(new Date(Date.now() - 21 * 86400000));
+  Object.keys(m).forEach(function(id){ var sl = m[id]; if(!sl.s || !sl.c || !sl.date || sl.date < from || sl.date > today) return; if(sl.date === today && sl.end && new Date(sl.date + "T" + sl.end + ":00").getTime() > Date.now()) return; if(recSlotDone(id)) return; var ci = classInfo(sl); if(!ci || !ci.cls) return; items.push({ order: 1, html: '📝 <b>填課堂記錄</b>　' + esc(ci.school + " " + ci.cls) + '　<span class="note">' + md(sl.date) + ' ' + esc(sl.start || "") + '</span>', btn: '<button class="btn sm" data-todo="rec" data-id="' + id + '">填記錄</button>' }); });
+  var n = bellItems().length; if(n) items.push({ order: 0, html: '🔔 <b>' + n + ' 筆新通知</b>（繳交、交卷、請假）', btn: '<button class="btn sm" data-todo="bell">看通知</button>' });
+  box.innerHTML = renderTodo(items, true);
+  try{
+    var r = await Promise.all([fbGet("teacherPlatform/" + tid + "/examAttempts").catch(function(){ return null; }), fbGet("teacherPlatform/" + tid + "/leave").catch(function(){ return null; })]);
+    var ea = r[0] || {}, lv = r[1] || {};
+    allClassesList().forEach(function(x){
+      var cid = x.sel.c, pend = 0, att = ea[cid] || {}, lp = 0, L = lv[cid] || {};
+      Object.keys(att).forEach(function(it){ Object.keys(att[it] || {}).forEach(function(k){ if((att[it][k] || {}).status === "submitted") pend++; }); });
+      Object.keys(L).forEach(function(k){ if((L[k] || {}).status === "pending") lp++; });
+      var nm = esc(x.school + " " + x.cls.name), sel = x.sel.s + "|" + x.sel.t + "|" + cid;
+      if(pend) items.push({ order: 2, html: '✍️ <b>' + pend + ' 份考卷待批改</b>　' + nm, btn: '<button class="btn sm primary" data-todo="grade" data-sel="' + sel + '">去批改</button>' });
+      if(lp) items.push({ order: 3, html: '🙋 <b>' + lp + ' 筆請假待回覆</b>　' + nm, btn: '<button class="btn sm" data-todo="leave" data-sel="' + sel + '">去回覆</button>' });
+    });
+  }catch(e){}
+  if(!document.getElementById("htodo")) return;
+  box.innerHTML = renderTodo(items, false);
+}
+function renderTodo(items, loading){
+  items.sort(function(a, b){ return a.order - b.order; });
+  var recs = items.filter(function(x){ return x.order === 1; });
+  if(recs.length > 4){ var extra = recs.slice(4); items = items.filter(function(x){ return extra.indexOf(x) < 0; }); items.splice(items.indexOf(recs[3]) + 1, 0, { order: 1, html: '<span class="note">還有 ' + extra.length + ' 堂課沒填記錄</span>', btn: '<button class="btn sm ghost" data-todo="recs">到課堂記錄</button>' }); }
+  return (items.length ? items.map(function(x){ return '<div class="slot"><div class="slot-main">' + x.html + '</div><div class="slot-act">' + x.btn + '</div></div>'; }).join("") : (loading ? '<p class="note" style="margin:0;">讀取中…</p>' : '<p class="note" style="margin:0;">都處理好了，沒有待辦 🎉</p>'));
+}
+function bindHomeTodo(){
+  var box = document.getElementById("htodo"); if(!box) return;
+  box.onclick = function(e){
+    var b = e.target.closest("[data-todo]"); if(!b) return; var a = b.dataset.todo;
+    if(a === "rec"){ var m = schedMap()[b.dataset.id]; if(m) openRecordFor(Object.assign({ id: b.dataset.id }, m)); return; }
+    if(a === "bell"){ openBell(); return; }
+    if(a === "recs"){ S.rec = { filter: "all" }; S.sel = null; render(); return; }
+    var p = (b.dataset.sel || "").split("|"); S.sel = { s: p[0], t: p[1], c: p[2] }; S.lesson = null;
+    if(a === "grade"){ S.hw = null; S.ctab = "tests"; }
+    else if(a === "leave"){ S.hw = { view: "leave" }; }
+    render();
+  };
+}
+// ---------- 成績：同一份考卷，各班的表現 ----------
+async function renderGrades(){
+  S.focus = false;
+  shell('<div class="empty"><p class="note">讀取中…</p></div>'); setCrumb([]);
+  var tid = S.teacher.id, hw = {}, ea = {};
+  try{ var r = await Promise.all([fbGet("teacherPlatform/" + tid + "/homework"), fbGet("teacherPlatform/" + tid + "/examAttempts")]); hw = r[0] || {}; ea = r[1] || {}; }catch(e){ shell('<div class="empty"><p class="note">讀取失敗，請檢查網路。</p></div>'); return; }
+  if(!S.grades) return;
+  var byPid = {}, cmap = {};
+  allClassesList().forEach(function(x){ cmap[x.sel.c] = x; });
+  Object.keys(hw).forEach(function(cid){
+    var x = cmap[cid]; if(!x) return; var its = (hw[cid] || {}).items || {}, roster = (hw[cid] || {}).roster; roster = Array.isArray(roster) ? roster : (roster ? Object.keys(roster).map(function(k){ return roster[k]; }) : []);
+    Object.keys(its).forEach(function(iid){
+      var it = Object.assign({ id: iid }, its[iid]); if(it.kind !== "exam" || !it.exam || !it.exam.pid) return;
+      var att = (ea[cid] || {})[iid] || {}, names = examNames(it, att, roster), sc = [], sub = 0, wrong = {};
+      names.forEach(function(n){ var a = att[hwSkey(n)]; if(a && (a.status === "submitted" || a.status === "graded")) sub++; var v = attScore(a); if(v != null) sc.push(v); if(a && a.status === "graded") (a.wrong || []).forEach(function(w){ wrong[w.t] = (wrong[w.t] || 0) + 1; }); });
+      var g = byPid[it.exam.pid] = byPid[it.exam.pid] || { pid: it.exam.pid, title: it.exam.ptitle || ((S.allProjects || {})[it.exam.pid] || {}).title || "（考卷）", rows: [], wrong: {}, last: "" };
+      g.rows.push({ x: x, cid: cid, it: it, n: names.length, sub: sub, avg: sc.length ? Math.round(sc.reduce(function(a, b){ return a + b; }, 0) / sc.length) : null, hi: sc.length ? Math.max.apply(null, sc) : null, lo: sc.length ? Math.min.apply(null, sc) : null });
+      Object.keys(wrong).forEach(function(t){ g.wrong[t] = (g.wrong[t] || 0) + wrong[t]; });
+      if(itemDay(it) > g.last) g.last = itemDay(it);
+    });
+  });
+  var groups = Object.keys(byPid).map(function(k){ return byPid[k]; }).sort(function(a, b){ return b.last.localeCompare(a.last); });
+  var html = '<div class="head-row"><div style="flex:1;"><h2>📊 成績</h2><div class="note">同一份考卷派給不同班時，在這裡比較各班的表現。考卷會依它用的測驗自動歸在一起。</div></div></div>';
+  if(!groups.length) html += '<div class="panel"><p class="note" style="margin:0;">還沒有線上考卷。到班級頁「📝 測驗與作業」›「＋ 公布作業／考卷」，類型選「線上考卷」。</p></div>';
+  groups.forEach(function(g){
+    var lk = (S.plat.lessonMap || {})[g.pid], wl = Object.keys(g.wrong).map(function(t){ return { t: t, n: g.wrong[t] }; }).sort(function(a, b){ return b.n - a.n; }).slice(0, 5);
+    html += '<div class="panel" style="overflow-x:auto;"><h3>' + esc(g.title) + (lk && (S.plat.lessons || {})[lk] ? '　<span class="note">' + esc(lessonTitle(lk)) + '</span>' : '') + '</h3><table class="hw-table"><thead><tr><th>班級</th><th>考卷</th><th>日期</th><th>交卷</th><th>平均</th><th>最高</th><th>最低</th><th></th></tr></thead><tbody>' +
+      g.rows.sort(function(a, b){ return (b.avg == null ? -1 : b.avg) - (a.avg == null ? -1 : a.avg); }).map(function(r){ return '<tr><td><b>' + esc(r.x.school + " " + r.x.cls.name) + '</b></td><td>' + esc(r.it.title) + '</td><td>' + esc(itemDay(r.it).slice(5)) + '</td><td>' + r.sub + ' / ' + r.n + '</td><td>' + (r.avg == null ? '—' : '<b>' + r.avg + '</b><div class="gbar"><div style="width:' + Math.max(0, Math.min(100, r.avg)) + '%"></div></div>') + '</td><td>' + (r.hi == null ? '—' : r.hi) + '</td><td>' + (r.lo == null ? '—' : r.lo) + '</td><td><button class="btn sm" data-gsel="' + esc(r.x.sel.s + "|" + r.x.sel.t + "|" + r.cid) + '">看這班</button></td></tr>'; }).join("") + '</tbody></table>' +
+      (wl.length ? '<div class="note" style="margin-top:8px;"><b>各班最常錯的題目：</b>' + wl.map(function(w){ return esc(w.t) + '（' + w.n + ' 人）'; }).join("、") + '</div>' : '') + '</div>';
+  });
+  html += '<p class="note">平均含還沒批改完的自動分數；批改公布後才是正式成績。</p>';
+  shell(html); setCrumb([]);
+  document.getElementById("main").onclick = function(e){
+    var b = e.target.closest("[data-gsel]"); if(!b) return; var p = b.dataset.gsel.split("|");
+    S.grades = null; S.sel = { s: p[0], t: p[1], c: p[2] }; S.lesson = null; S.hw = null; S.ctab = "tests"; render();
+  };
+}
 // ---------- 班級總覽：進度／測驗與作業／學生／班級工具 ----------
 var CTABS = [["progress", "📈 進度"], ["tests", "📝 測驗與作業"], ["students", "👥 學生"], ["tools", "🧰 班級工具與設定"]];
 function classSlots(sel){ var m = schedMap(); return Object.keys(m).map(function(k){ return Object.assign({ id: k }, m[k]); }).filter(function(x){ return x.s === sel.s && x.t === sel.t && x.c === sel.c; }); }
