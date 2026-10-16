@@ -84,6 +84,11 @@ async def synth(text: str, rate: float, voice: str) -> Path:
     return path
 
 
+@app.get("/")
+async def root():
+    return {"ok": True, "service": "Mandamy TTS", "try": "/api/tts?text=你好"}
+
+
 @app.get("/health")
 async def health():
     return {"ok": True, "voice": DEFAULT_VOICE}

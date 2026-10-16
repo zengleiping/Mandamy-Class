@@ -87,6 +87,7 @@
   </div>
 </div>
 
+<script src="tts-config.js"></script>
 <script>
 (function(){
   var $ = function(id){ return document.getElementById(id); };
@@ -108,7 +109,7 @@
   try{
     var qs = new URLSearchParams(location.search).get("server");
     if(qs){ localStorage.setItem(LS_KEY, normUrl(qs)); }
-    srvUrl = normUrl(localStorage.getItem(LS_KEY) || "");
+    srvUrl = normUrl(localStorage.getItem(LS_KEY) || window.MM_TTS_SERVER || "");
   }catch(e){ srvUrl = ""; }
   $("srv").value = srvUrl;
 

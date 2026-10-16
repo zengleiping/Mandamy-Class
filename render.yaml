@@ -1,0 +1,9 @@
+# Render 一鍵部署（Blueprint）：語音伺服器（edge-tts，台灣華語「曉臻」）
+services:
+  - type: web
+    name: mandamy-tts
+    runtime: docker
+    rootDir: tts-server
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /health

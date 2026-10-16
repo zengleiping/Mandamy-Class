@@ -36,6 +36,7 @@
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
 <!-- SheetJS: 支援 Excel 匯入與匯出 -->
+<script src="../tts-config.js"></script>
 <script src="vendor/xlsx.full.min.js"></script>
 <!-- HanziWriter：生字練習教室用來畫筆順動畫，預設就會自己去 CDN 抓任何漢字的筆順資料，不用自己維護字庫 -->
 <script src="vendor/hanzi-writer.min.js"></script>
@@ -8690,7 +8691,11 @@ window.mmTA = (function(){
 
   /* ---- 聽力語音（文字轉語音）---- */
   var editorTtsSrc = "", editorTtsKey = "", editorTtsRec = false;   // editorTtsRec＝這個音檔是老師自己錄的（改文字也不會作廢）
-  function ttsServerUrl(){ try{ return (localStorage.getItem("mm_tts_server") || "").replace(/\/+$/, ""); }catch(e){ return ""; } }
+  function ttsServerUrl(){ var u = ""; try{ u = localStorage.getItem("mm_tts_server") || ""; }catch(e){} if(!u) u = window.MM_TTS_SERVER || ""; return String(u).replace(/\/+$/, ""); }
+  // 免費主機閒置會休眠：一打開「聽力語音」就先叫醒伺服器，等老師打完字差不多就醒了
+  var ttsWoke = 0;
+  function ttsWake(){ var srv = ttsServerUrl(); if(!srv || Date.now() - ttsWoke < 300000) return; ttsWoke = Date.now(); try{ fetch(srv + "/health", { mode: "cors" }).catch(function(){}); }catch(e){} }
+  document.getElementById("q-tts").addEventListener("toggle", function(){ if(this.open) ttsWake(); });
   function ttsPickVoice(){
     var vs = (window.speechSynthesis && speechSynthesis.getVoices()) || [];
     function sc(v){ var n = 0; if(/^zh[-_]TW$/i.test(v.lang)) n += 100; else if(/^zh|cmn/i.test(v.lang)) n += 10;
@@ -8713,9 +8718,9 @@ window.mmTA = (function(){
     var text = document.getElementById("f-tts-text").value.trim(), srv = ttsServerUrl();
     if(!text){ if(!silent) ttsSetStatus("請先輸入要念的內容。"); return; }
     if(!srv){ ttsSetStatus("尚未設定語音伺服器：學生會用自己裝置的中文語音播放（音質依裝置而異）。要產生固定音質的 MP3，請先到「語音伺服器」設定。"); editorTtsSrc = ""; return; }
-    var key = ttsKeyNow(); ttsSetStatus("正在產生音檔…");
+    var key = ttsKeyNow(); ttsSetStatus("正在產生音檔…（伺服器休眠中的話，第一次約要 30～60 秒）");
     try{
-      var ctl = new AbortController(), tm = setTimeout(function(){ ctl.abort(); }, 60000);
+      var ctl = new AbortController(), tm = setTimeout(function(){ ctl.abort(); }, 90000);   // 伺服器剛睡醒可能要等 30～60 秒
       var r = await fetch(srv + "/api/tts", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text: text, rate: ttsRateNow() }), signal: ctl.signal });
       clearTimeout(tm); if(!r.ok) throw new Error("HTTP " + r.status);
       var blob = await r.blob(); if(blob.size > 900000) throw new Error("音檔太大，請縮短內容");
