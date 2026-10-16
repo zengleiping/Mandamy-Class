@@ -740,17 +740,17 @@ function trPublish(){
     var e = TR.list[id], tr = {}; langs.forEach(function(l){ if((e.tr || {})[l]) tr[l] = e.tr[l]; });
     var o = { zh: e.zh, at: e.at || 0, tr: tr }; if(e.zya) o.zya = e.zya; if(e.pya) o.pya = e.pya; if(e.zy) o.zy = e.zy; if(e.py) o.py = e.py; items[id] = o;
   });
-  var payload = { mode: (TR.show && TR.show.mode) || "zy", langs: langs, items: items }, js = JSON.stringify(payload);
+  var payload = { mode: (TR.show && TR.show.mode) || "zy", langs: langs, open: !!TR.open, items: items }, js = JSON.stringify(payload);
   if(js === TR_PUB.last) return; TR_PUB.last = js;
   fbSet(trLiveTransPath(), Object.keys(items).length ? payload : null).catch(function(){});
 }
 // 學生端：上課中浮出「今天的生詞」面板（唯讀）
-var SL = { box: null, btn: null, data: null, un: null, known: {}, open: false };
+var SL = { box: null, btn: null, data: null, un: null, known: {}, open: false, teacherOpen: null };
 function stuTransStart(base, idx){
   if(SL.un) return;
   try{ SL.un = window.onValue(window.ref(window.db, base + "/schools/" + idx.s + "/terms/" + idx.tm + "/classes/" + idx.c + "/liveTrans"), function(snap){ SL.data = snap.val(); stuTransDraw(); }); }catch(e){}
 }
-function stuTransHide(){ if(SL.box) SL.box.style.display = "none"; if(SL.btn) SL.btn.style.display = "none"; SL.open = false; }
+function stuTransHide(){ if(SL.box) SL.box.style.display = "none"; if(SL.btn) SL.btn.style.display = "none"; SL.open = false; SL.teacherOpen = null; }
 function stuTransDraw(){
   var d = SL.data, items = (d && d.items) || {}, ids = Object.keys(items);
   if(!(S.student && S.live && S.live.on && ids.length)){ stuTransHide(); if(!ids.length) SL.known = {}; return; }
@@ -772,7 +772,8 @@ function stuTransDraw(){
     SL.box.querySelector("#sl-close").onclick = function(){ SL.open = false; stuTransDraw(); };
   }
   var fresh = ids.filter(function(id){ return !SL.known[id]; }); ids.forEach(function(id){ SL.known[id] = 1; });
-  if(fresh.length) SL.open = true;   // 老師新加了詞：自動打開，學生一眼就看到
+  if(SL.teacherOpen !== !!d.open){ SL.teacherOpen = !!d.open; SL.open = !!d.open; }   // 老師打開／收起，學生跟著打開／收起（學生自己也能手動收起或打開）
+  if(fresh.length && d.open) SL.open = true;
   var old = TR.show; TR.show = { mode: d.mode || "zy" };
   ids.sort(function(a, b){ return (items[b].at || 0) - (items[a].at || 0); });
   var langs = d.langs || [];
@@ -831,6 +832,7 @@ function trToggle(on){
   if(TR.box) TR.box.style.display = TR.open ? "flex" : "none";
   if(TR.btn) TR.btn.style.display = TR.open ? "none" : "flex";
   if(TR.open){ trApplyGeo(); setTimeout(function(){ var i = document.getElementById("tr-in"); if(i) i.focus(); }, 30); }
+  trPublishSoon();   // 上課中：學生的面板跟著老師一起打開／收起
 }
 function trInjectStyle(){
   if(document.getElementById("tr-style")) return false;
