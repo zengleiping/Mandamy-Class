@@ -518,6 +518,8 @@ function viewLogin(msg){
 
 // ---------- 老師：載入平台資料 ----------
 // ---------- 中文翻譯機（老師專用，懸浮視窗：上課中聽到的詞語，一鍵翻成英／泰／日文並記錄）----------
+// 內嵌頁面（簡報頁、教材頁）網址加上版本參數：每 10 分鐘換一次，平台更新後不會一直卡在瀏覽器快取的舊版
+var MM_V = String(Math.floor(Date.now() / 600000));
 var TR = { open: false, list: {}, un: null, langs: null, show: null, opacity: 1, box: null, btn: null, sync: "local", tCache: {}, pyLoaded: null };
 var TR_LANGS = [["en", "English", "en"], ["th", "ภาษาไทย 泰文", "th"], ["ja", "日本語 日文", "ja"]];
 function trLoad(){
@@ -1422,14 +1424,14 @@ function renderLibrary(){
   var view = S.lib.view === "slides" ? "slides" : "bank";
   var html, editing = view === "slides" && (S.lib.pid || S.lib.creating != null);
   if(editing){
-    var src = S.lib.pid ? "slides/practice.html?embed=1&project=" + encodeURIComponent(S.lib.pid) : "slides/practice.html?embed=1&newproject=" + encodeURIComponent(S.lib.creating ? lessonTitle(S.lib.creating) : "新的簡報");
+    var src = S.lib.pid ? "slides/practice.html?v=" + MM_V + "&embed=1&project=" + encodeURIComponent(S.lib.pid) : "slides/practice.html?v=" + MM_V + "&embed=1&newproject=" + encodeURIComponent(S.lib.creating ? lessonTitle(S.lib.creating) : "新的簡報");
     html = '<div class="tabs"><button class="tab" data-pback="1">‹ 回簡報與測驗清單</button></div><iframe class="frame" id="fr" src="' + esc(src) + '" allow="microphone; camera; autoplay; clipboard-write"></iframe>';
   } else {
     html = '<div class="tabs"><button class="tab" data-libback="1">‹ 返回</button>' + bids.map(function(b){ return '<button class="tab' + (b === cur ? ' on' : '') + '" data-libbook="' + esc(b) + '">' + esc(bookTitle(b)) + '</button>'; }).join("") +
       '<button class="tab" data-libadd="1" style="margin-left:auto;">新增教材</button><button class="tab" data-libren="1">改教材名</button>' + (cur === DEFAULT_BOOK ? '' : '<button class="tab" data-libdel="1" style="color:#B23B32;">刪除教材</button>') + '</div>' +
       '<div class="subbar"><button class="tab' + (view === "bank" ? ' on' : '') + '" data-libview="bank" style="padding:5px 14px;font-size:13.5px;">生詞・語法・課文</button><button class="tab' + (view === "slides" ? ' on' : '') + '" data-libview="slides" style="padding:5px 14px;font-size:13.5px;">簡報與測驗</button></div>' +
       (view === "slides" ? '<div class="page" style="padding:12px 16px;overflow:auto;">' + libSlidesHtml(cur) + '</div>' :
-      '<iframe class="frame" id="fr" src="' + esc("index.html?embed=1&manage=1&book=" + encodeURIComponent(cur) + (S.lib.lesson ? "&lesson=" + encodeURIComponent(S.lib.lesson) : "")) + '"></iframe>');
+      '<iframe class="frame" id="fr" src="' + esc("index.html?v=" + MM_V + "&embed=1&manage=1&book=" + encodeURIComponent(cur) + (S.lib.lesson ? "&lesson=" + encodeURIComponent(S.lib.lesson) : "")) + '"></iframe>');
   }
   shell(html, { flush: true }); setCrumb([]);
   var main = document.getElementById("main");
@@ -2287,14 +2289,14 @@ async function renderStudentExam(){
       await fbSet(examAttPath(tid, cid, id, st.name), Object.assign({ name: st.name, room: rid, status: "doing", startedAt: started }, keep));
     }
     var lim = (it.exam && it.exam.minutes) || 0;
-    shell('<iframe class="frame" id="fr" src="' + esc("slides/practice.html?embed=1&room=" + encodeURIComponent(rid) + "&role=student&name=" + encodeURIComponent(st.name) + "&attempt=1&tid=" + encodeURIComponent(tid) + "&cid=" + encodeURIComponent(cid) + "&item=" + encodeURIComponent(id) + (lim ? "&limit=" + lim + "&started=" + started : "")) + '" allow="microphone; camera; autoplay; clipboard-write" style="width:100%;height:calc(100vh - 56px);border:0;"></iframe>', { flush: true });
+    shell('<iframe class="frame" id="fr" src="' + esc("slides/practice.html?v=" + MM_V + "&embed=1&room=" + encodeURIComponent(rid) + "&role=student&name=" + encodeURIComponent(st.name) + "&attempt=1&tid=" + encodeURIComponent(tid) + "&cid=" + encodeURIComponent(cid) + "&item=" + encodeURIComponent(id) + (lim ? "&limit=" + lim + "&started=" + started : "")) + '" allow="microphone; camera; autoplay; clipboard-write" style="width:100%;height:calc(100vh - 56px);border:0;"></iframe>', { flush: true });
     setCrumb([st.school, st.term, st.cls.name, it.title]);
   }catch(er){ shell('<div class="empty"><p class="note">' + esc(er && er.message ? er.message : "打不開考卷，請檢查網路後再試。") + '</p></div>'); }
 }
 async function renderExamReview(cls){
   var hw = S.hw, tid = S.teacher.id, cid = S.sel.c, rid = hw.room;
   var html = '<div class="head-row"><div style="flex:1;"><h2>批改：' + esc(hw.name) + '</h2><div class="note">' + esc(hw.title || "") + '</div></div><div><button class="btn sm ghost" data-h="back">回聯絡簿</button></div></div>' +
-    '<iframe class="frame" id="fr" src="' + esc("slides/practice.html?embed=1&room=" + encodeURIComponent(rid) + "&grade=1&name=" + encodeURIComponent(hw.name)) + '" allow="microphone; camera; autoplay; clipboard-write" style="width:100%;height:calc(100vh - 150px);border:0;border-radius:12px;background:#fff;"></iframe>';
+    '<iframe class="frame" id="fr" src="' + esc("slides/practice.html?v=" + MM_V + "&embed=1&room=" + encodeURIComponent(rid) + "&grade=1&name=" + encodeURIComponent(hw.name)) + '" allow="microphone; camera; autoplay; clipboard-write" style="width:100%;height:calc(100vh - 150px);border:0;border-radius:12px;background:#fff;"></iframe>';
   shell(html); setCrumb([]);
   document.getElementById("main").onclick = function(e){ var b = e.target.closest("[data-h]"); if(b){ S.hw = { view: "list" }; render(); } };
 }
@@ -3061,7 +3063,7 @@ function renderReview(){
 }
 function createReviewQuiz(title, pairs, target){
   return new Promise(function(resolve, reject){
-    var fr = document.createElement("iframe"); fr.style.cssText = "position:fixed;left:-9999px;top:0;width:900px;height:700px;border:0;"; fr.src = "slides/practice.html?embed=1&worker=1";
+    var fr = document.createElement("iframe"); fr.style.cssText = "position:fixed;left:-9999px;top:0;width:900px;height:700px;border:0;"; fr.src = "slides/practice.html?v=" + MM_V + "&embed=1&worker=1";
     var to = setTimeout(function(){ cleanup(); reject(new Error("逾時，請稍後再試")); }, 45000);
     function cleanup(){ clearTimeout(to); window.removeEventListener("message", onMsg); setTimeout(function(){ fr.remove(); }, 500); }
     function onMsg(e){
@@ -3890,7 +3892,7 @@ function renderSettings(){
 // 學生自己輸入房間號碼加入：直接在平台裡開，不跳到舊的簡報網頁
 function renderStudentRoom(){
   var st = S.student;
-  shell('<iframe class="frame" id="fr" src="' + esc("slides/practice.html?embed=1&room=" + encodeURIComponent(S.roomJoin) + "&role=student&name=" + encodeURIComponent(st.name)) + '" allow="microphone; camera; autoplay; clipboard-write" style="width:100%;height:calc(100vh - 56px);border:0;"></iframe>', { flush: true });
+  shell('<iframe class="frame" id="fr" src="' + esc("slides/practice.html?v=" + MM_V + "&embed=1&room=" + encodeURIComponent(S.roomJoin) + "&role=student&name=" + encodeURIComponent(st.name)) + '" allow="microphone; camera; autoplay; clipboard-write" style="width:100%;height:calc(100vh - 56px);border:0;"></iframe>', { flush: true });
   setCrumb([st.school, st.term, st.cls.name, "房間 " + S.roomJoin]);
 }
 function renderPlatformHome(){
@@ -4208,36 +4210,36 @@ function renderLessonCommon(no, open, teacher, liveStudent){
     if(!S.sub || !subs.some(function(s){ return s[0] === S.sub; })) S.sub = subs[0][0];
     sub = liveStudent ? '' : '<div class="subbar">' + subs.map(function(s){ return '<button class="tab' + (s[0] === S.sub ? ' on' : '') + '" data-sub="' + s[0] + '" style="padding:5px 14px;font-size:13.5px;">' + s[1] + '</button>'; }).join("") + (teacher && parseKey(no) ? '<button class="tab" data-editlib="1" style="padding:5px 14px;font-size:13.5px;margin-left:auto;">編輯這一課教材</button>' : '') + '</div>';
     var lp = lessonParam(no); embedBankSet(lessonBookOf(no));
-    frame = lp ? lessonHtmlFrame("index.html?embed=1&" + lp + "&tab=" + S.sub + role) : '<div class="empty"><p class="note">這本教材還沒有生詞庫，所以這裡暫時沒有內容。<br>之後會開放你新增自己的教材內容。</p></div>';
+    frame = lp ? lessonHtmlFrame("index.html?v=" + MM_V + "&embed=1&" + lp + "&tab=" + S.sub + role) : '<div class="empty"><p class="note">這本教材還沒有生詞庫，所以這裡暫時沒有內容。<br>之後會開放你新增自己的教材內容。</p></div>';
   } else if(S.tab === "bingo"){
     frame = '<div class="bingo-root" id="bingo-root"></div>';
     setTimeout(function(){ bingoMount(teacher); }, 0);
   } else if(S.tab === "activities"){
     var lp2 = lessonParam(no); embedBankSet(lessonBookOf(no));
-    frame = lp2 ? lessonHtmlFrame("index.html?embed=1&" + lp2 + "&tab=activities" + role) : '<div class="empty"><p class="note">這本教材還沒有生詞庫，所以活動暫時沒有可用的生詞。</p></div>';
+    frame = lp2 ? lessonHtmlFrame("index.html?v=" + MM_V + "&embed=1&" + lp2 + "&tab=activities" + role) : '<div class="empty"><p class="note">這本教材還沒有生詞庫，所以活動暫時沒有可用的生詞。</p></div>';
   } else {
     var ps = ((S.plat.lessons || {})[no] || {}).projects || {}, pids = Object.keys(ps);
     var kind = S.tab === "slides" ? "slides" : "quiz";
     if(!teacher) pids = pids.filter(function(p){ return (ps[p][kind] || 0) > 0; });
     if(teacher){
       if(!pids.length){
-        if(S.creating === no) frame = lessonHtmlFrame("slides/practice.html?embed=1&newproject=" + encodeURIComponent(lessonTitle(no)) + "&focus=" + kind);
+        if(S.creating === no) frame = lessonHtmlFrame("slides/practice.html?v=" + MM_V + "&embed=1&newproject=" + encodeURIComponent(lessonTitle(no)) + "&focus=" + kind);
         else frame = '<div class="empty"><h3 style="margin-bottom:8px;">' + lessonTitle(no) + '</h3><p class="note" style="margin-bottom:12px;">這一課還沒有' + (kind === "slides" ? "投影片" : "測驗與練習") + '。</p><button class="btn" id="mkproj">＋ 為這一課建立' + (kind === "slides" ? "投影片" : "測驗與練習") + '</button></div>';
       } else {
         if(!S.sub || pids.indexOf(S.sub) === -1) S.sub = pids[0];
         sub = '<div class="subbar">' + (pids.length > 1 ? pids.map(function(p){ return '<button class="tab' + (p === S.sub ? ' on' : '') + '" data-sub="' + p + '" style="padding:5px 14px;font-size:13.5px;">' + esc(ps[p].title) + '</button>'; }).join("") : '') + '</div>';
         if(pids.length === 1) sub = '';
         html = html.replace('<!--copyto-->', '<button class="tab" data-copyto="' + kind + '">複製到其他課…</button>');
-        frame = lessonHtmlFrame("slides/practice.html?embed=1&project=" + encodeURIComponent(S.sub) + "&focus=" + kind + ((S.live && S.live.on && S.live.room && S.live.roomProject === S.sub) ? "&room=" + encodeURIComponent(S.live.room) : ""));
+        frame = lessonHtmlFrame("slides/practice.html?v=" + MM_V + "&embed=1&project=" + encodeURIComponent(S.sub) + "&focus=" + kind + ((S.live && S.live.on && S.live.room && S.live.roomProject === S.sub) ? "&room=" + encodeURIComponent(S.live.room) : ""));
       }
     } else if(liveStudent){
-      frame = (S.live && S.live.room) ? lessonHtmlFrame("slides/practice.html?embed=1&room=" + encodeURIComponent(S.live.room) + "&role=student&name=" + encodeURIComponent(S.student ? S.student.name : "")) : '<div class="empty"><p class="note">老師還沒開始這一段，請稍候…</p></div>';
+      frame = (S.live && S.live.room) ? lessonHtmlFrame("slides/practice.html?v=" + MM_V + "&embed=1&room=" + encodeURIComponent(S.live.room) + "&role=student&name=" + encodeURIComponent(S.student ? S.student.name : "")) : '<div class="empty"><p class="note">老師還沒開始這一段，請稍候…</p></div>';
     } else if(pids.length && S.student){
       // 學生自習：老師開放這一項後，不用房間號碼也能自己看、自己練習
       if(!S.sub || pids.indexOf(S.sub) === -1) S.sub = pids[0];
       sub = '<div class="subbar">' + (pids.length > 1 ? pids.map(function(p){ return '<button class="tab' + (p === S.sub ? ' on' : '') + '" data-sub="' + p + '" style="padding:5px 14px;font-size:13.5px;">' + esc(ps[p].title) + '</button>'; }).join("") : '') +
         '<span style="margin-left:auto;display:flex;gap:6px;align-items:center;"><span class="note">上課中？</span><input type="text" id="roomno" placeholder="房間號碼" inputmode="numeric" style="width:110px;padding:5px 8px;border-radius:8px;border:1.5px solid var(--line);"><button class="btn sm primary" id="roomgo">加入</button></span></div>';
-      frame = lessonHtmlFrame("slides/practice.html?embed=1&solo=" + encodeURIComponent(S.sub) + "&tid=" + encodeURIComponent(S.student.idx.t) + "&focus=" + kind);
+      frame = lessonHtmlFrame("slides/practice.html?v=" + MM_V + "&embed=1&solo=" + encodeURIComponent(S.sub) + "&tid=" + encodeURIComponent(S.student.idx.t) + "&focus=" + kind);
     } else {
       frame = '<div class="empty"><h3 style="margin-bottom:8px;">' + (kind === "slides" ? "投影片" : "測驗與練習") + '</h3><p class="note">上課時，老師會給你一組房間號碼。<br>輸入後就能和老師一起看投影片、作答。</p><div class="join" style="justify-content:center;"><input type="text" id="roomno" placeholder="房間號碼" inputmode="numeric" style="width:160px;"><button class="btn primary" id="roomgo">加入</button></div></div>';
     }
