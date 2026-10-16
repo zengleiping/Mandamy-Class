@@ -763,7 +763,22 @@ function trPublish(){
 window.addEventListener("message", function(e){
   if(!S.teacher || !e.data || e.data.mm !== "room" || !e.data.id) return;
   TR_PUB.rooms = TR_PUB.rooms || {}; TR_PUB.rooms[e.data.id] = 1; trPublishSoon();
+  // 記住「這個班 × 這份簡報 × 今天」用的是哪個房間：重新整理、重新進入上課都回到同一個房間，上課寫的筆記不會不見
+  if(S.sel && S.sel.c && S.sub){
+    var rec = { room: String(e.data.id), day: todayStr(), at: Date.now() };
+    S.classRooms = S.classRooms || {}; S.classRooms[S.sel.c] = S.classRooms[S.sel.c] || {}; S.classRooms[S.sel.c][S.sub] = rec;
+    fbSet("teacherPlatform/" + S.teacher.id + "/classRooms/" + S.sel.c + "/" + S.sub, rec).catch(function(){});
+  }
 });
+function todayStr(){ var d = new Date(); return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate()); }
+function todayClassRoom(pid){
+  var r = S.sel && S.sel.c && S.classRooms && S.classRooms[S.sel.c] && S.classRooms[S.sel.c][pid];
+  return (r && r.room && r.day === todayStr()) ? r.room : null;
+}
+function classRoomsStart(){
+  if(!S.teacher) return;
+  try{ window.onValue(window.ref(window.db, "teacherPlatform/" + S.teacher.id + "/classRooms"), function(snap){ S.classRooms = snap.val() || {}; }); }catch(e){}
+}
 // 學生端：上課中浮出「今天的生詞」面板（唯讀）
 var SL = { box: null, btn: null, data: null, un: null, known: {}, open: false, teacherOpen: null, scale: 1.2, teacherScale: null };
 function stuTransStart(base, idx){
@@ -1108,7 +1123,8 @@ async function startTeacher(acc, owner){
   await migrateHier();
   S.plat.schedule = S.plat.schedule || {};
   await syncLessonIndex();
-  startReminders(); startNotify(); trStart();
+  try{ S.classRooms = (await fbGet(pbase + "/classRooms")) || {}; }catch(e){ S.classRooms = {}; }   // 先讀好今天用過的房間，重新整理後才能回到同一個房間
+  startReminders(); startNotify(); trStart(); classRoomsStart();
   restoreFromHash();
   render();
 }
@@ -4230,7 +4246,8 @@ function renderLessonCommon(no, open, teacher, liveStudent){
         sub = '<div class="subbar">' + (pids.length > 1 ? pids.map(function(p){ return '<button class="tab' + (p === S.sub ? ' on' : '') + '" data-sub="' + p + '" style="padding:5px 14px;font-size:13.5px;">' + esc(ps[p].title) + '</button>'; }).join("") : '') + '</div>';
         if(pids.length === 1) sub = '';
         html = html.replace('<!--copyto-->', '<button class="tab" data-copyto="' + kind + '">複製到其他課…</button>');
-        frame = lessonHtmlFrame("slides/practice.html?v=" + MM_V + "&embed=1&project=" + encodeURIComponent(S.sub) + "&focus=" + kind + ((S.live && S.live.on && S.live.room && S.live.roomProject === S.sub) ? "&room=" + encodeURIComponent(S.live.room) : ""));
+        var rjoin = (S.live && S.live.on && S.live.room && S.live.roomProject === S.sub) ? S.live.room : todayClassRoom(S.sub);   // 今天這個班已經用這份簡報上過課：回到同一個房間，課堂筆記都還在
+        frame = lessonHtmlFrame("slides/practice.html?v=" + MM_V + "&embed=1&project=" + encodeURIComponent(S.sub) + "&focus=" + kind + (rjoin ? "&room=" + encodeURIComponent(rjoin) : ""));
       }
     } else if(liveStudent){
       frame = (S.live && S.live.room) ? lessonHtmlFrame("slides/practice.html?v=" + MM_V + "&embed=1&room=" + encodeURIComponent(S.live.room) + "&role=student&name=" + encodeURIComponent(S.student ? S.student.name : "")) : '<div class="empty"><p class="note">老師還沒開始這一段，請稍候…</p></div>';
