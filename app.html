@@ -734,19 +734,34 @@ var TR_PUB = { t: 0, last: "" };
 function trLiveTransPath(){ return clsPath(S.sel) + "/liveTrans"; }
 function trPublishSoon(){ clearTimeout(TR_PUB.t); TR_PUB.t = setTimeout(trPublish, 500); }
 function trPublish(){
-  if(!(S.teacher && S.live && S.live.on && S.sel && S.sel.c)) return;
-  var since = S.live.startedAt || 0, langs = TR.langs || [], items = {};
+  if(!S.teacher) return;
+  var liveOn = !!(S.live && S.live.on && S.sel && S.sel.c);
+  TR_PUB.rooms = TR_PUB.rooms || {}; if(liveOn && S.live.room) TR_PUB.rooms[S.live.room] = 1;
+  var roomIds = Object.keys(TR_PUB.rooms);
+  if(!liveOn && !roomIds.length) return;   // 沒在上課、也沒開房間：不用同步
+  // 同步「今天」記下的詞（最新 40 個）；老師刪掉的、改過的都跟著更新
+  var d0 = new Date(); d0.setHours(0, 0, 0, 0);
+  var since = d0.getTime(), langs = TR.langs || [], items = {};
   trSortedIds().filter(function(id){ return (TR.list[id].at || 0) >= since; }).slice(0, 40).forEach(function(id){
     var e = TR.list[id], tr = {}; langs.forEach(function(l){ if((e.tr || {})[l]) tr[l] = e.tr[l]; });
     var o = { zh: e.zh, at: e.at || 0, tr: tr }; if(e.zya) o.zya = e.zya; if(e.pya) o.pya = e.pya; if(e.zy) o.zy = e.zy; if(e.py) o.py = e.py; items[id] = o;
   });
   var tin = document.getElementById("tr-in"), typing = tin ? tin.value.trim().slice(0, 40) : "";
-  var payload = { mode: (TR.show && TR.show.mode) || "zy", langs: langs, open: !!TR.open, scale: TR.scale || 1, typing: typing, items: items }, js = JSON.stringify(payload), has = Object.keys(items).length || !!typing;
-  if(js !== TR_PUB.last){ TR_PUB.last = js; fbSet(trLiveTransPath(), has ? payload : null).catch(function(){}); }
-  // 學生直接用房間連結進簡報頁（不經過平台）時，面板由房間資料提供
-  var rk = (S.live.room || "") + "|" + js;
-  if(S.live.room && rk !== TR_PUB.roomLast){ TR_PUB.roomLast = rk; fbSet("rooms/" + S.live.room + "/trans", has ? payload : null).catch(function(){}); }
+  var payload = { mode: (TR.show && TR.show.mode) || "zy", langs: langs, open: !!TR.open, scale: TR.scale || 1, typing: typing, items: items, t: Date.now() };
+  var js = JSON.stringify(Object.assign({}, payload, { t: 0 })), has = Object.keys(items).length || !!typing;
+  if(liveOn && js !== TR_PUB.last){ TR_PUB.last = js; fbSet(trLiveTransPath(), has ? payload : null).catch(function(err){ TR_PUB.last = ""; console.warn("liveTrans", err); }); }
+  // 學生直接用房間連結進簡報頁時，面板由房間資料提供；這次開過的每個房間都同步（中途重開房間，還在舊房間的學生也會更新）
+  TR_PUB.roomLast = TR_PUB.roomLast || {};
+  roomIds.forEach(function(rid){
+    if(TR_PUB.roomLast[rid] === js) return; TR_PUB.roomLast[rid] = js;
+    try{ fbSet("rooms/" + rid + "/trans", has ? payload : null).catch(function(err){ delete TR_PUB.roomLast[rid]; console.warn("room trans", err); }); }catch(err){ delete TR_PUB.roomLast[rid]; console.warn("room trans", err); }
+  });
 }
+// 簡報頁（iframe）開了房間：不管有沒有按「開始上課」，都記下這個房間，翻譯機就會同步給房間裡的學生
+window.addEventListener("message", function(e){
+  if(!S.teacher || !e.data || e.data.mm !== "room" || !e.data.id) return;
+  TR_PUB.rooms = TR_PUB.rooms || {}; TR_PUB.rooms[e.data.id] = 1; trPublishSoon();
+});
 // 學生端：上課中浮出「今天的生詞」面板（唯讀）
 var SL = { box: null, btn: null, data: null, un: null, known: {}, open: false, teacherOpen: null, scale: 1, teacherScale: null };
 function stuTransStart(base, idx){
@@ -4235,7 +4250,7 @@ async function toggleLive(){
   var cls = getCls(S.sel); if(!cls) return;
   if(S.live && S.live.on){
     if(!confirm("結束上課？學生會回到自己的班級頁。")) return;
-    var endRoom = S.live.room; S.live = null; cls.live = null; try{ if(endRoom) fbSet("rooms/" + endRoom + "/trans", null).catch(function(){}); await fbSet(liveRef(), null); await fbSet(clsPath(S.sel) + "/liveTrans", null); TR_PUB.last = ""; TR_PUB.roomLast = ""; }catch(e){}
+    var endRooms = Object.keys(TR_PUB.rooms || {}); if(S.live.room && endRooms.indexOf(S.live.room) < 0) endRooms.push(S.live.room); S.live = null; cls.live = null; try{ endRooms.forEach(function(rid){ fbSet("rooms/" + rid + "/trans", null).catch(function(){}); }); TR_PUB.rooms = {}; await fbSet(liveRef(), null); await fbSet(clsPath(S.sel) + "/liveTrans", null); TR_PUB.last = ""; TR_PUB.roomLast = {}; }catch(e){}
     setFocus(false); try{ if(document.fullscreenElement) document.exitFullscreen().catch(function(){}); }catch(e){} renderLesson(cls); return;
   }
   S.live = { on: true, lesson: S.lesson, tab: S.tab, sub: S.sub || null, room: null, startedAt: Date.now() };
