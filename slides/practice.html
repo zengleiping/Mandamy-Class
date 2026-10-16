@@ -13572,6 +13572,21 @@ window.mmTA = (function(){
       var sb = tbq.one('button[data-tool="select"]'); if(sb) sb.classList.add("active");
       canvas.style.cursor = toolCursor(); clearObjSelection(); syncObjInteractive();
     }
+    function armPresentGrab(e, hit){
+      var id = e.pointerId, x0 = e.clientX, y0 = e.clientY, cx = x0, cy = y0, tm = 0;
+      function cleanup(){ clearTimeout(tm); window.removeEventListener("pointermove", mv, true); window.removeEventListener("pointerup", up, true); window.removeEventListener("pointercancel", up, true); }
+      function mv(ev){ if(ev.pointerId !== id) return; cx = ev.clientX; cy = ev.clientY; if(Math.hypot(cx - x0, cy - y0) > 10) cleanup(); }
+      function up(ev){ if(ev.pointerId === id) cleanup(); }
+      window.addEventListener("pointermove", mv, true); window.addEventListener("pointerup", up, true); window.addEventListener("pointercancel", up, true);
+      tm = setTimeout(function(){
+        cleanup();
+        isDrawing = false; currentPath = []; recordingCurrentStrokePoints = null; try{ redrawStrokes(); }catch(er0){}   // 放棄這一小點筆跡
+        switchToSelectTool(); selSet = expandGroups([hit]); renderSelection();
+        var back = function(){ window.removeEventListener("pointerup", back, true); setTimeout(function(){ var pb = tbq.one('button[data-tool="pen"]'); if(pb && presentLock()) pb.click(); }, 50); };   // 搬完回到筆
+        window.addEventListener("pointerup", back, true);
+        beginMoveSelection(getPos({ clientX: cx, clientY: cy }));
+      }, 120);
+    }
     canvas.onpointerdown = function(e){
       if(!canInteract()) return;
       if(e.pointerType === "mouse" && e.button === 2){
@@ -13677,6 +13692,11 @@ window.mmTA = (function(){
         return;
       }
 
+      // 放映中用滑鼠／觸控筆：在「上課筆記」上按住不動約 0.12 秒＝抓起來搬動（不用換工具）；一按下就移動＝照常寫字
+      if(presentLock() && !isStudent && e.pointerType !== "touch" && boardState.tool === "pen"){
+        var gHit = null; try{ gHit = hitTestItem(p); }catch(erG){}
+        if(gHit && gHit.k !== "stroke" && isLiveItem(gHit)) armPresentGrab(e, gHit);
+      }
       isDrawing = true;
       currentPath = [p];
       // 錄製老師示範時，畫筆筆畫額外多存一份「相對錄製起點的時間戳記」，跟正常的 strokes 分開存，
