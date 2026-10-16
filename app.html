@@ -99,6 +99,11 @@
   .hc b{ font-size:16px; font-family:"LXGW WenKai TC",serif; }
   .hc:hover{ border-color:var(--seal); background:#FBE3D6; }
   .gbar{ height:5px; background:var(--surface-2); border-radius:3px; margin-top:3px; min-width:60px; } .gbar div{ height:100%; background:var(--bamboo); border-radius:3px; }
+  .mic-on{ background:#C0392B !important; color:#fff !important; border-color:#C0392B !important; animation:micpulse 1.2s infinite; }
+  @keyframes micpulse{ 50%{ box-shadow:0 0 0 6px rgba(192,57,43,.2); } }
+  .rq-ph{ cursor:pointer; font-weight:400; } .rq-ph:hover{ border-color:var(--seal); }
+  .rq-seg{ display:flex; gap:8px; align-items:flex-start; margin-top:8px; flex-wrap:wrap; } .rq-seg select{ padding:6px 8px; border-radius:8px; border:1.5px solid var(--line); background:var(--surface-2); } .rq-seg textarea{ flex:1; min-width:200px; }
+  .rb-st{ display:flex; gap:6px; align-items:center; flex-wrap:wrap; padding:4px 0; } .rb-st b{ min-width:70px; }
   .tabs{ display:flex; gap:4px; padding:8px 14px 0; background:var(--surface); border-bottom:1px solid var(--line); flex-wrap:wrap; }
   .tab{ border:none; background:none; padding:9px 16px; font-size:14.5px; font-weight:700; color:var(--ink-soft); border-bottom:3px solid transparent; }
   .tab.on{ color:var(--seal); border-bottom-color:var(--seal); }
@@ -1755,7 +1760,7 @@ function slotRowHtml(sl, withDate){
   var sub = (ci && ci.cls) ? ((sl.title ? esc(slotLabel(sl)) + '　・　' : esc(ci.cls) + '　・　') + (les ? esc(les) : '未指定課次')) : (les ? esc(les) : '');
   var info = sub + (sl.note ? (sub ? '　・　' : '') + esc(sl.note) : '');
   return '<div class="slot"><div class="slot-time">' + esc((sl.start || "") + (sl.end ? "–" + sl.end : "")) + '</div><div class="slot-main"><div>' + chip + (withDate ? '　<span class="note">' + esc(sl.date) + '</span>' : '') + '</div>' + (info ? '<div class="note">' + info + '</div>' : '') + '</div>' +
-    '<div class="slot-act">' + (u ? '<a class="btn sm" href="' + esc(u) + '" target="_blank" rel="noopener noreferrer">🔗 開啟連結</a>' : '') + (ci ? '<button class="btn" data-a="slot-go" data-id="' + sl.id + '">' + '進入上課' + '</button>' : '') + (!sl.s ? '' : recSlotDone(sl.id) ? '<span class="note">✓已記錄</span>' : '<button class="btn sm" data-a="slot-rec" data-id="' + sl.id + '">填記錄</button>') + '<button class="btn sm" data-a="slot-edit" data-id="' + sl.id + '">修改</button><button class="btn sm danger" data-a="slot-del" data-id="' + sl.id + '">刪除</button></div></div>';
+    '<div class="slot-act">' + (u ? '<a class="btn sm" href="' + esc(u) + '" target="_blank" rel="noopener noreferrer">🔗 開啟連結</a>' : '') + (ci ? '<button class="btn" data-a="slot-go" data-id="' + sl.id + '">' + '進入上課' + '</button>' : '') + (!sl.s ? '' : !recSlotNeeds(sl.id) ? '<span class="note">✓已記錄</span>' : '<button class="btn sm" data-a="slot-rec" data-id="' + sl.id + '">填記錄</button>') + '<button class="btn sm" data-a="slot-edit" data-id="' + sl.id + '">修改</button><button class="btn sm danger" data-a="slot-del" data-id="' + sl.id + '">刪除</button></div></div>';
 }
 function todayPanelHtml(){
   var sl = slotsOn(ymd(new Date()));
@@ -2035,7 +2040,7 @@ function checkReminders(force){
     var later = 0; try{ later = Number(localStorage.getItem("mm_rec_later_" + id)) || 0; }catch(e){}
     var dueAt = Math.max(endAt + REMIND_AFTER_MIN * 60000, later);
     var done = false; try{ done = !!localStorage.getItem(notifiedKey(id)); }catch(e){}
-    if(done || recSlotDone(id) || now < dueAt || now > endAt + 6 * 3600000) continue;
+    if(done || !recSlotNeeds(id) || now < dueAt || now > endAt + 6 * 3600000) continue;
     showReminder(id, sl); return;
   }
 }
@@ -2107,7 +2112,16 @@ function newRecordDraft(slot){
   return { classLabel: label, classKey: classKey, mode: prevNames.length > 1 ? "group" : "single", date: date, seq: null, weekNo: null, material: material, isAbsence: false,
     students: (prevNames.length ? prevNames : [""]).map(blankStudent), vocab: [], shots: [], notes: "", slotId: slotId };
 }
-function openRecordFor(slot){ S.rec = { edit: null, draft: newRecordDraft(slot), shots: [] }; S.day = null; S.lib = null; S.sel = null; S.lesson = null; render(); }
+// 這堂課的記錄：翻譯機會自動建立「只有生詞」的記錄，那種還沒打分、沒寫評語的也算「還沒填完」
+function recIdForSlot(slotId){ if(!slotId) return null; var m = recMap(); return Object.keys(m).filter(function(k){ return m[k].slotId === slotId; })[0] || null; }
+function recIncomplete(r){ if(!r || r.isAbsence) return false; var sts = Array.isArray(r.students) ? r.students : Object.keys(r.students || {}).map(function(k){ return r.students[k]; }); return !sts.some(function(st){ return recHasScore(st) || (st.comment || "").trim() || st.absent; }) && !(r.notes || "").trim(); }
+function recSlotNeeds(slotId){ var id = recIdForSlot(slotId); return !id || recIncomplete(recMap()[id]); }
+async function openRecordFor(slot){
+  var exist = slot && recIdForSlot(slot.id); if(exist){ return openRecordEdit(exist, recIncomplete(recMap()[exist]) ? slot : null); }
+  var d = newRecordDraft(slot), info = [];
+  try{ info = await Promise.race([recAutoFill(d, slot), new Promise(function(res){ setTimeout(function(){ res(null); }, 4000); })]) || []; }catch(e){}
+  S.rec = { edit: null, draft: d, shots: [], autoInfo: info }; S.day = null; S.lib = null; S.grades = null; S.sel = null; S.lesson = null; S.hw = null; render();
+}
 function recBadge(r){
   var st = function(bg, fg){ return 'display:inline-block;padding:2px 10px;border-radius:99px;font-size:12px;font-weight:700;background:' + bg + ';color:' + fg + ';white-space:nowrap;'; };
   if(!r.isAbsence) return '<span style="' + st("#DCEEE6", "#3E7D68") + '">完成</span>';
@@ -2117,12 +2131,13 @@ function recBadge(r){
 function renderRecords(){
   if(S.rec && S.rec.preview) return renderRecPreview();
   if(S.rec && S.rec.edit !== undefined) return renderRecEditor();
+  if(S.rec && S.rec.view === "batch") return renderRecBatch();
   if(S.rec && S.rec.view === "trend") return renderTrend();
   if(S.rec && S.rec.view === "review") return renderReview();
   if(S.rec && S.rec.view === "comments") return renderComments();
   S.focus = false;
   var f = S.rec.filter || "all", m = recMap(), ids = Object.keys(m).filter(function(k){ return f === "all" || (f === "__makeup" ? (m[k].isAbsence && !m[k].madeUp) : m[k].classLabel === f); }).sort(function(a, b){ var d = (m[b].date || "").localeCompare(m[a].date || ""); return d || ((m[b].seq || 0) - (m[a].seq || 0)); });
-  var html = '<div class="head-row"><div style="flex:1;"><h2>課堂記錄</h2><div class="note">' + (Object.keys(m).length ? '共 ' + Object.keys(m).length + ' 筆' : '還沒有任何記錄') + '</div></div><div><button class="btn" data-r="new">新增記錄</button> <button class="btn sm" data-r="trend">學生趨勢</button> <button class="btn sm" data-r="review">生詞複習</button> <button class="btn sm" data-r="comments">學期評語</button> <button class="btn sm" data-r="import">匯入舊記錄…</button> <button class="btn sm' + (S.recSel ? ' primary' : '') + '" data-r="selmode">' + (S.recSel ? '結束選取' : '選取刪除') + '</button><input type="file" id="rec-imp" accept=".json,application/json" style="display:none;"></div></div>';
+  var html = '<div class="head-row"><div style="flex:1;"><h2>課堂記錄</h2><div class="note">' + (Object.keys(m).length ? '共 ' + Object.keys(m).length + ' 筆' : '還沒有任何記錄') + '</div></div><div><button class="btn primary" data-r="batch">⚡ 快速補填</button> <button class="btn" data-r="new">新增記錄</button> <button class="btn sm" data-r="trend">學生趨勢</button> <button class="btn sm" data-r="review">生詞複習</button> <button class="btn sm" data-r="comments">學期評語</button> <button class="btn sm" data-r="import">匯入舊記錄…</button> <button class="btn sm' + (S.recSel ? ' primary' : '') + '" data-r="selmode">' + (S.recSel ? '結束選取' : '選取刪除') + '</button><input type="file" id="rec-imp" accept=".json,application/json" style="display:none;"></div></div>';
   var labels = recLabels();
   var needMk = Object.keys(m).filter(function(k){ return m[k].isAbsence && !m[k].madeUp; }).length;
   if(labels.length) html += '<div class="tools" style="margin-bottom:12px;"><button class="btn sm' + (f === "all" ? ' primary' : '') + '" data-r="filter" data-f="all">全部 ' + Object.keys(m).length + '</button>' + (needMk ? '<button class="btn sm' + (f === "__makeup" ? ' primary' : '') + '" data-r="filter" data-f="__makeup" style="' + (f === "__makeup" ? '' : 'background:#F7D9D5;color:#B23B32;') + '">待補課 ' + needMk + '</button>' : '') + labels.map(function(l){ return '<button class="btn sm' + (f === l.label ? ' primary' : '') + '" data-r="filter" data-f="' + esc(l.label) + '">' + esc(l.label) + ' ' + l.count + '</button>'; }).join("") + '</div>';
@@ -2142,6 +2157,7 @@ function renderRecords(){
   main.onclick = function(e){
     var b = e.target.closest("[data-r]"); if(!b) return; var a = b.dataset.r;
     if(a === "new"){ S.rec = { edit: null, draft: newRecordDraft(null), shots: [] }; render(); }
+    else if(a === "batch"){ S.rec = { view: "batch" }; render(); }
     else if(a === "open"){ if(S.recSel){ S.recSel.ids[b.dataset.id] = !S.recSel.ids[b.dataset.id]; render(); } else openRecordView(b.dataset.id); }
     else if(a === "selmode"){ S.recSel = S.recSel ? null : { ids: {} }; render(); }
     else if(a === "selall"){ ids.forEach(function(k){ S.recSel.ids[k] = true; }); render(); }
@@ -2211,11 +2227,13 @@ function renderRecPreview(){
     else if(a === "pshot"){ albLightbox(shots.map(function(u){ return { url: u }; }), Number(b.dataset.i)); }
   };
 }
-async function openRecordEdit(id){
+async function openRecordEdit(id, slotForFill){
   var r = JSON.parse(JSON.stringify(recMap()[id])); if(!r.students || !r.students.length) r.students = [blankStudent("")]; r.vocab = Array.isArray(r.vocab) ? r.vocab : (r.vocab ? Object.keys(r.vocab).map(function(k){ return r.vocab[k]; }) : []); if(!Array.isArray(r.students)) r.students = Object.keys(r.students).map(function(k){ return r.students[k]; });
   var shots = []; try{ shots = (await fbGet("teacherPlatform/" + S.teacher.id + "/recordShots/" + id)) || []; }catch(e){}
   if(!Array.isArray(shots)) shots = Object.keys(shots).map(function(k){ return shots[k]; });
-  S.rec = { edit: id, draft: r, shots: shots, filter: S.rec && S.rec.filter }; render();
+  var info = null;
+  if(slotForFill){ var bare = !(r.students || []).some(function(st){ return (st.name || "").trim(); }); if(bare){ var nd = newRecordDraft(slotForFill); r.students = nd.students; r.mode = nd.mode; } try{ info = await Promise.race([recAutoFill(r, slotForFill), new Promise(function(res){ setTimeout(function(){ res(null); }, 4000); })]); }catch(e){} }
+  S.rec = { edit: id, draft: r, shots: shots, filter: S.rec && S.rec.filter, autoInfo: info }; S.day = null; S.lib = null; S.grades = null; S.sel = null; S.lesson = null; S.hw = null; render();
 }
 function recSync(){
   var d = S.rec.draft, g = function(i){ return document.getElementById(i); };
@@ -2234,7 +2252,291 @@ function recSync(){
 }
 function recBackupKey(){ return "mm_recdraft_" + (S.rec.edit || "new"); }
 function recAutosave(){ try{ localStorage.setItem(recBackupKey(), JSON.stringify({ ts: Date.now(), draft: S.rec.draft })); }catch(e){} }
-function renderRecEditor(){
+// ---------- 課堂記錄加速：自動帶入、一鍵打分、常用評語、麥克風口述→正式文字、快速補填 ----------
+var REC_LV = [["good", "👍 很好"], ["ok", "🙂 正常"], ["work", "💪 要加油"]];
+function recPresets(){
+  var p = ((S.plat.meta || {}).recPresets) || {}, out = {};
+  var pct = { good: 0.9, ok: 0.75, work: 0.6 };
+  REC_LV.forEach(function(l){ out[l[0]] = {}; RUBRIC.forEach(function(r){ var v = p[l[0]] && p[l[0]][r.key]; out[l[0]][r.key] = v != null ? Number(v) : Math.round(r.max * pct[l[0]]); }); });
+  return out;
+}
+function recApplyLevel(st, lv){ var p = recPresets()[lv]; if(!p) return; RUBRIC.forEach(function(r){ st[r.key] = p[r.key]; }); delete st.absent; }
+function recHasScore(st){ return RUBRIC.some(function(r){ return st[r.key] != null; }); }
+function recPrevOf(label, name, beforeId){
+  var m = recMap(); return Object.keys(m).filter(function(k){ return k !== beforeId && m[k].classLabel === label && !m[k].isAbsence; }).map(function(k){ return m[k]; }).sort(function(a, b){ return (b.date || "").localeCompare(a.date || ""); })
+    .map(function(r){ return (r.students || []).filter(function(s){ return (s.name || "").trim() === (name || "").trim() && !s.absent && recHasScore(s); })[0]; }).filter(Boolean)[0] || null;
+}
+// 常用評語：內建＋老師寫過的（越常用越前面）
+var REC_PHRASES = ["上課很專心", "積極參與課堂活動", "發音清楚", "聲調需要多加練習", "口語表達比上週流利", "生詞記得很熟", "語法運用正確", "閱讀速度進步", "寫字筆順需要注意", "回家請複習本課生詞", "今天表現優異", "需要更專注"];
+function recPhraseList(){
+  var cnt = {};
+  Object.keys(recMap()).forEach(function(k){ (recMap()[k].students || []).forEach(function(s){ String(s.comment || "").split(/[，。！；,.;\n]+/).forEach(function(t){ t = t.trim(); if(t.length >= 3 && t.length <= 16) cnt[t] = (cnt[t] || 0) + 1; }); }); });
+  var mine = Object.keys(cnt).filter(function(t){ return cnt[t] >= 2; }).sort(function(a, b){ return cnt[b] - cnt[a]; }).slice(0, 10);
+  return mine.concat(REC_PHRASES.filter(function(t){ return mine.indexOf(t) < 0; })).slice(0, 16);
+}
+// ----- 口語 → 正式紀錄文字（在瀏覽器裡用規則整理，免費、不用金鑰）-----
+var REC_SUBS = [
+  [/(嗯|呃|欸|唉|哦|喔)+/g, ""], [/(對對對|對啊|對呀)/g, ""],
+  [/(還|蠻|滿|挺|都)?不錯的?/g, "表現良好"], [/(超級|超)(?=[好棒認專積流清快慢穩厲可乖吵])/g, "非常"], [/(蠻|滿|挺)(?=(好|不錯|認真|專心|積極|快|流利|清楚|穩|有進步|乖))/g, "相當"],
+  [/(有一點|有點|很|好|超|一直)吵/g, "上課秩序有待加強"], [/有一點點|有一點|有點/g, "略為"], [/(不太會|不會)(語法|生詞|發音|聲調|句型|課文|寫字|筆順)/g, "$2尚不熟練"], [/(語法|生詞|發音|聲調|句型|課文)(不太熟|不熟)/g, "$1尚不熟練"], [/不太會/g, "尚不熟練"], [/不太懂|不太清楚/g, "尚未完全理解"], [/記不起來|記不住|背不起來/g, "尚未熟記"],
+  [/(很|好|超|非常)棒/g, "表現優異"], [/很厲害|好厲害/g, "表現出色"],
+  [/要再多練習|要多練習|要多練|要再練習/g, "需加強練習"], [/要加油/g, "仍需努力"], [/很認真/g, "學習態度認真"], [/很專心/g, "上課專心"],
+  [/不專心/g, "專注力不足"], [/一直分心|很分心/g, "容易分心"], [/很吵|一直講話|一直聊天/g, "上課秩序有待加強"], [/(進步很多|進步超多|有進步)/g, "進步明顯"],
+  [/都會了|都學會了/g, "已能掌握"], [/[念唸]課文/g, "朗讀課文"], [/[念唸]得/g, "朗讀得"], [/聲調不準/g, "聲調不夠準確"], [/發音不準/g, "發音不夠準確"],
+  [/沒交作業|作業沒交/g, "未繳交作業"], [/忘記帶/g, "未攜帶"], [/很乖/g, "表現良好"], [/很快/g, "速度很快"], [/表現良好的/g, "表現良好"], [/(都|很)?相當表現良好/g, "$1表現良好"]
+];
+var REC_LEAD = /^(那個|然後呢|然後|就是說|就是|對|我覺得|我是覺得|其實|基本上|反正|所以|那|還有|另外|而且)+/;
+function recFormal(t){
+  t = String(t || "").replace(/\s+/g, "，");
+  REC_SUBS.forEach(function(s){ t = t.replace(s[0], s[1]); });
+  var parts = t.split(/[，,。！!？?；;、\n]+/).map(function(c){ c = c.trim(); var o; do { o = c; c = c.replace(REC_LEAD, "").trim(); } while(c !== o); return c; }).filter(function(c){ return c.length; });
+  // 連續重複的詞（口誤）：「他他」「今天今天」
+  parts = parts.map(function(c){ return c.replace(/([一-鿿]{1,3})\1+/g, function(m, a){ return /^(謝謝|慢慢|常常|天天|多多|好好|看看|試試|想想|練練|讀讀|說說)$/.test(a + a) ? m : a; }); });
+  if(!parts.length) return "";
+  var out = ""; parts.forEach(function(c, i){ out += c + (i === parts.length - 1 ? "。" : (c.length >= 10 || /[了過完]$/.test(c) ? "。" : "，")); });
+  return out;
+}
+var REC_POS = /(優異|出色|良好|認真|專心|積極|流利|清楚|進步|很好|很棒|已能掌握)/, REC_NEG = /(仍需努力|專注力不足|分心|尚不|尚未|秩序|未繳交|未攜帶|不夠準確|需加強|落後|遲到)/;
+function recNameKeys(name){ name = (name || "").trim(); var ks = [name]; if(/^[一-鿿]{3}$/.test(name)) ks.push(name.slice(1)); return ks.filter(function(k){ return k.length >= 2; }); }
+// 把一段口述拆成句子，分到「教材進度／某位學生的評語／備註」（語音辨識沒有標點：在轉折詞、學生名字、他／她前面切開）
+var REC_MARK = /(然後|但是|可是|不過|而且|另外|還有|所以|接著|最後)/g;
+function recRoute(raw, students){
+  var t = String(raw || ""), keys = [];
+  students.forEach(function(s, i){ recNameKeys(s.name).forEach(function(k){ keys.push({ k: k, i: i }); }); });
+  keys.sort(function(a, b){ return b.k.length - a.k.length; });
+  t = t.replace(/^(嗯|呃|欸|那個|我覺得)+/, "").replace(REC_MARK, "，$1").replace(/(?<!(?:其|吉|然後|但是|可是|不過|而且|所以|還有|另外|接著|最後|，))(他|她)(?!們)/g, "，$1").replace(/(全班|大家|其他同學|別的同學|下次|下週|下禮拜)/g, "，$1").replace(/(?<=[\u4e00-\u9fff]{2})(?<!(?:的|跟|和|、))(聲調|發音|口說|口語|閱讀|寫字|寫作|筆順|態度)/g, "，$1");
+  var marks = []; keys.forEach(function(o){ var at = t.indexOf(o.k); while(at >= 0){ if(!marks.some(function(m){ return at >= m.at && at < m.at + m.len; })) marks.push({ at: at, len: o.k.length }); at = t.indexOf(o.k, at + o.k.length); } });
+  marks.sort(function(a, b){ return b.at - a.at; }).forEach(function(m){ t = t.slice(0, m.at) + "，" + t.slice(m.at); });
+  var clauses = t.split(/[，,。！!？?；;\n\s]+/).filter(function(c){ return c && c.trim(); });
+  var segs = [], last = null;
+  clauses.forEach(function(c){
+    c = c.trim(); var hit = null;
+    keys.forEach(function(o){ if(!hit && c.indexOf(o.k) >= 0) hit = o; });
+    var lead = REC_MARK.test(c) || /^(他|她)/.test(c); REC_MARK.lastIndex = 0;
+    var tgt;
+    if(hit){ tgt = "s" + hit.i; c = c.replace(hit.k, "").replace(/^(同學|的話|呢|啊)+/, ""); }
+    else if(/第\s*[0-9零一二兩三四五六七八九十]+\s*課|生詞|語法|課文|句型|進度|教到|上到|教了|複習/.test(c) && !/^(他|她)/.test(c) && !(last && last.charAt(0) === "s" && /(不太會|不熟|記不|會了)/.test(c))) tgt = "material";
+    else if(/全班|大家|同學們|其他同學|別的同學|每個人|下次|下週|下禮拜|作業/.test(c)) tgt = "notes";
+    else if(last && last.charAt(0) === "s") tgt = last;
+    else tgt = "notes";
+    if(tgt.charAt(0) === "s") c = c.replace(/^(嗯|呃|那個)*(然後|而且|還有|另外|接著|最後)?(他|她)?/, "");
+    var f = recFormal(c).replace(/。$/, "");
+    if(tgt === "material") f = f.replace(/^(今天|我們|這堂課|這節課)*(上到|教到|上了|教了|學了|上|教)?/, "").replace(/的(生詞|語法|課文|句型)/g, "$1").replace(/(跟|和)(生詞|語法|課文|句型)/g, "、$2");
+    if(!f) return;
+    var prev = segs[segs.length - 1];
+    if(prev && prev.tgt === tgt) prev.text += (tgt === "material" ? "、" : "，") + f;
+    else segs.push({ tgt: tgt, text: f });
+    last = tgt;
+  });
+  segs.forEach(function(s){
+    if(s.tgt !== "material") s.text = s.text.replace(/，(但是|可是|不過)/g, "；$1") + "。";
+    s.lv = null; if(s.tgt.charAt(0) === "s"){ if(REC_NEG.test(s.text)) s.lv = "work"; else if(REC_POS.test(s.text)) s.lv = "good"; }
+  });
+  return segs;
+}
+// ----- 麥克風（瀏覽器內建語音辨識）-----
+var REC_MIC = { r: null, target: null, base: "", btn: null };
+function recMicSupported(){ return !!(window.SpeechRecognition || window.webkitSpeechRecognition); }
+function recMicStop(){ if(REC_MIC.r){ try{ REC_MIC.r.stop(); }catch(e){} } }
+function recMicStart(el, btn, onDone){
+  if(!recMicSupported()){ alert("這個瀏覽器不支援語音輸入。請用電腦版 Chrome 或 Edge。"); return; }
+  if(REC_MIC.r){ var same = REC_MIC.target === el; recMicStop(); if(same) return; }
+  var R = new (window.SpeechRecognition || window.webkitSpeechRecognition)(); R.lang = "zh-TW"; R.continuous = true; R.interimResults = true;
+  REC_MIC.r = R; REC_MIC.target = el; REC_MIC.btn = btn; REC_MIC.base = el.value ? el.value.replace(/\s+$/, "") : ""; var finals = [];
+  btn.classList.add("mic-on"); btn.textContent = "⏹ 停止"; 
+  R.onresult = function(ev){
+    var interim = "";
+    for(var i = ev.resultIndex; i < ev.results.length; i++){ var t = ev.results[i][0].transcript; if(ev.results[i].isFinal) finals.push(t.trim()); else interim += t; }
+    el.value = REC_MIC.base + (REC_MIC.base && (finals.length || interim) ? "，" : "") + finals.join("，") + (interim ? (finals.length ? "，" : "") + interim : "");
+    el.dispatchEvent(new Event("input", { bubbles: true }));
+  };
+  R.onerror = function(ev){ if(ev.error === "not-allowed" || ev.error === "service-not-allowed") alert("麥克風被瀏覽器擋住了：請在網址列左邊的鎖頭圖示允許使用麥克風。"); };
+  R.onend = function(){
+    btn.classList.remove("mic-on"); btn.textContent = "🎙️"; var spoken = finals.join("，"); REC_MIC.r = null; REC_MIC.target = null;
+    if(onDone) onDone(spoken, REC_MIC.base);
+  };
+  try{ R.start(); }catch(e){ btn.classList.remove("mic-on"); btn.textContent = "🎙️"; REC_MIC.r = null; }
+}
+// ----- 自動帶入：今天上了哪一課、翻譯機記下的生詞、誰有進教室 -----
+async function recAutoFill(d, slot){
+  var info = [], sel = slot && slot.s && slot.c ? { s: slot.s, t: slot.t, c: slot.c } : null, cls = sel ? getCls(sel) : null, day = d.date || ymd(new Date());
+  if(cls){
+    var tg = (cls.progress || {}).taught || {}, ks = Object.keys(tg).filter(function(k){ return tg[k] && tg[k][day] && (S.plat.lessons || {})[k]; });
+    if(!d.material && ks.length){ d.material = ks.map(lessonTitle).join("、"); info.push("進度"); }
+  }
+  var d0 = new Date(day + "T00:00:00").getTime(), d1 = d0 + 86400000, have = {};
+  (d.vocab || []).forEach(function(v){ have[v.word] = 1; });
+  var tv = Object.keys(TR.list || {}).map(function(k){ return TR.list[k]; }).filter(function(e){ return e && e.zh && !e.imp && (e.at || 0) >= d0 && (e.at || 0) < d1; }).sort(function(a, b){ return (a.at || 0) - (b.at || 0); });
+  var nv = 0; tv.forEach(function(e){ if(have[e.zh]) return; have[e.zh] = 1; var tr = e.tr || {}; d.vocab.push({ word: e.zh, sub: trVocabSub(e) }); nv++; });
+  if(nv) info.push(nv + " 個生詞（翻譯機）");
+  if(cls && sel){
+    var roster = []; try{ var r = await fbGet(hwBase(S.teacher.id, sel.c) + "/roster"); roster = Array.isArray(r) ? r : (r ? Object.keys(r).map(function(k){ return r[k]; }) : []); }catch(e){}
+    var names = d.students.map(function(s){ return (s.name || "").trim(); }).filter(Boolean);
+    roster.forEach(function(n){ if(n && names.indexOf(n) < 0) names.push(n); });
+    var present = {}, rooms = [], cr = (S.classRooms || {})[sel.c] || {};
+    Object.keys(cr).forEach(function(pid){ if(cr[pid] && cr[pid].day === day && cr[pid].room) rooms.push(cr[pid].room); });
+    for(var i = 0; i < rooms.length; i++){ try{ var pr = (await fbGet("rooms/" + rooms[i] + "/presence")) || {}; Object.keys(pr).forEach(function(k){ var nm = (pr[k] && pr[k].name || "").trim(); if(nm && nm !== (S.teacher.name || "")) present[nm] = 1; }); }catch(e){} }
+    var pn = Object.keys(present);
+    if(pn.length){ pn.forEach(function(n){ if(names.indexOf(n) < 0 && (!roster.length || roster.indexOf(n) >= 0)) names.push(n); }); }
+    if(names.length){
+      var old = {}; d.students.forEach(function(s){ if(s.name) old[s.name.trim()] = s; });
+      d.students = names.map(function(n){ var s = old[n] || blankStudent(n); if(pn.length){ if(present[n]) delete s.absent; else s.absent = true; } return s; });
+      d.mode = d.students.length > 1 ? "group" : "single";
+      if(pn.length) info.push("出席 " + d.students.filter(function(s){ return !s.absent; }).length + "／" + d.students.length + " 人（依進教室的學生）");
+    }
+  }
+  return info;
+}
+// 編輯畫面加上：自動帶入提示、口述整份記錄、一鍵打分、常用評語、麥克風
+function recEnhance(){
+  var main = document.getElementById("main"), d = S.rec && S.rec.draft; if(!main || !d || !document.getElementById("rf-class")) return;
+  var firstLabel = main.querySelector("label");
+  var top = document.createElement("div");
+  top.innerHTML = (S.rec.autoInfo && S.rec.autoInfo.length ? '<div class="panel" style="background:#E7F2EC;border-color:#BFDCCB;padding:10px 14px;"><b>✨ 已自動帶入：</b>' + S.rec.autoInfo.map(esc).join("、") + '。請看一下，沒問題就按「儲存」。</div>' : '') +
+    '<div class="panel" style="padding:10px 14px;"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><b style="flex:1;min-width:200px;">🎙️ 用說的寫整份記錄</b><button class="btn sm" data-q="dictall">' + (S.rec.dict ? '收起' : '開始口述') + '</button></div>' +
+    (S.rec.dict ? '<p class="note" style="margin:6px 0;">像跟同事聊天一樣說就好，例如：「今天上到第六課的生詞和課文。小明很專心，發音進步很多。小美今天有點分心，聲調要多練習。」說完按「整理成正式記錄」，系統會分到教材進度、各學生評語和備註，你確認後再套用。</p><textarea id="rq-raw" rows="4" placeholder="按 🎙️ 開始說話，或直接貼上／打字">' + esc(S.rec.dictRaw || "") + '</textarea><div class="tools" style="margin-top:6px;"><button class="btn sm mic" data-q="micraw">🎙️</button><button class="btn sm primary" data-q="route">✨ 整理成正式記錄</button></div><div id="rq-prev"></div>' : '') + '</div>' +
+    (d.isAbsence || d.students.length < 2 ? '' : '<div class="tools" style="margin:0 0 10px;"><span class="note">全班一鍵打分（只填還沒打分的人）：</span>' + REC_LV.map(function(l){ return '<button class="btn sm" data-q="lvall" data-lv="' + l[0] + '">' + l[1] + '</button>'; }).join("") + '<button class="btn sm ghost" data-q="presets">設定各等級分數</button></div>');
+  if(firstLabel) firstLabel.parentNode.insertBefore(top, firstLabel); else main.appendChild(top);
+  if(S.rec.dict && S.rec.segs) recDrawPreview();
+  var phrases = recPhraseList();
+  main.querySelectorAll(".rstu").forEach(function(box){
+    var i = Number(box.dataset.i), st = d.students[i]; if(!st) return;
+    var row = document.createElement("div"); row.className = "tools"; row.style.cssText = "margin:6px 0 2px;";
+    var prev = recPrevOf(d.classLabel, st.name, S.rec.edit);
+    row.innerHTML = REC_LV.map(function(l){ return '<button type="button" class="btn sm" data-q="lv" data-lv="' + l[0] + '" data-i="' + i + '">' + l[1] + '</button>'; }).join("") + (prev ? '<button type="button" class="btn sm ghost" data-q="same" data-i="' + i + '">同上次（' + stTotal(prev) + ' 分）</button>' : '');
+    var grid = box.querySelector(".rsc"); var gw = grid && grid.closest("div").parentNode; if(gw && gw.parentNode === box) box.insertBefore(row, gw); else box.insertBefore(row, box.children[1] || null);
+    var cm = box.querySelector(".rcm");
+    if(cm){
+      var bar = document.createElement("div"); bar.className = "tools"; bar.style.cssText = "margin:4px 0 0;";
+      bar.innerHTML = '<button type="button" class="btn sm mic" data-q="mic" data-i="' + i + '" title="用說的輸入評語，停止後自動整理成正式文字">🎙️</button><button type="button" class="btn sm ghost" data-q="formal" data-i="' + i + '" title="把這段評語整理成正式的紀錄文字">✨ 正式化</button>' + phrases.map(function(p){ return '<button type="button" class="chip rq-ph" data-q="ph" data-i="' + i + '">' + esc(p) + '</button>'; }).join("");
+      cm.parentNode.insertBefore(bar, cm.nextSibling);
+    }
+  });
+  ["rf-material", "rf-notes"].forEach(function(id){
+    var el = document.getElementById(id); if(!el) return;
+    var bar = document.createElement("div"); bar.className = "tools"; bar.style.cssText = "margin:4px 0 0;";
+    bar.innerHTML = '<button type="button" class="btn sm mic" data-q="micf" data-f="' + id + '">🎙️</button><button type="button" class="btn sm ghost" data-q="formalf" data-f="' + id + '">✨ 正式化</button>';
+    el.parentNode.insertBefore(bar, el.nextSibling);
+  });
+  main.addEventListener("click", recEnhanceClick);
+}
+function recDrawPreview(){
+  var box = document.getElementById("rq-prev"), d = S.rec.draft, segs = S.rec.segs || []; if(!box) return;
+  if(!segs.length){ box.innerHTML = '<p class="note">沒有整理出內容，再說一次或打字看看。</p>'; return; }
+  var opts = [["material", "教材進度"], ["notes", "備註"]].concat(d.students.map(function(s, i){ return ["s" + i, (s.name || "學生 " + (i + 1)) + " 的評語"]; }));
+  box.innerHTML = '<div style="margin-top:10px;"><b>整理結果</b>　<span class="note">可以改文字或換位置，確認後按「套用」。</span>' + segs.map(function(s, j){
+    return '<div class="rq-seg"><select data-sj="' + j + '">' + opts.map(function(o){ return '<option value="' + o[0] + '"' + (o[0] === s.tgt ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join("") + '</select><textarea data-tj="' + j + '" rows="2">' + esc(s.text) + '</textarea>' +
+      (s.tgt.charAt(0) === "s" ? '<label class="note" style="display:flex;align-items:center;gap:4px;margin:0;white-space:nowrap;"><input type="checkbox" data-lj="' + j + '"' + (s.lv && !recHasScore(d.students[Number(s.tgt.slice(1))] || {}) ? ' checked' : '') + '> 也打分：' + (s.lv === "work" ? "💪 要加油" : s.lv === "good" ? "👍 很好" : "🙂 正常") + '</label>' : '') + '</div>';
+  }).join("") + '<div class="tools" style="margin-top:6px;"><button class="btn sm primary" data-q="applysegs">套用到記錄</button></div></div>';
+}
+function recEnhanceClick(e){
+  var b = e.target.closest("[data-q]"); if(!b || !S.rec || !S.rec.draft) return; e.stopPropagation();
+  var a = b.dataset.q, d = S.rec.draft, i = Number(b.dataset.i); recSync();
+  if(a === "lv"){ recApplyLevel(d.students[i], b.dataset.lv); recAutosave(); renderRecEditor(); }
+  else if(a === "lvall"){ d.students.forEach(function(st){ if(!st.absent && !recHasScore(st)) recApplyLevel(st, b.dataset.lv); }); recAutosave(); renderRecEditor(); }
+  else if(a === "same"){ var p = recPrevOf(d.classLabel, d.students[i].name, S.rec.edit); if(p){ RUBRIC.forEach(function(r){ d.students[i][r.key] = p[r.key]; }); recAutosave(); renderRecEditor(); } }
+  else if(a === "ph"){ var st = d.students[i], t = b.textContent; st.comment = (st.comment ? st.comment.replace(/[，。\s]*$/, "") + "，" : "") + t + "。"; recAutosave(); renderRecEditor(); }
+  else if(a === "formal"){ var box = document.querySelector('.rstu[data-i="' + i + '"] .rcm'); if(box){ box.value = recFormal(box.value); recSync(); recAutosave(); } }
+  else if(a === "formalf"){ var el = document.getElementById(b.dataset.f); if(el){ el.value = b.dataset.f === "rf-material" ? recFormal(el.value).replace(/。$/, "") : recFormal(el.value); recSync(); recAutosave(); } }
+  else if(a === "mic"){ var cm = document.querySelector('.rstu[data-i="' + i + '"] .rcm'); if(cm) recMicStart(cm, b, function(spoken, base){ if(!spoken) return; cm.value = (base ? base.replace(/[，。\s]*$/, "") + "，" : "") + recFormal(spoken); recSync(); recAutosave(); }); }
+  else if(a === "micf"){ var f = document.getElementById(b.dataset.f); if(f) recMicStart(f, b, function(spoken, base){ if(!spoken) return; var t = recFormal(spoken); if(b.dataset.f === "rf-material") t = t.replace(/。$/, ""); f.value = (base ? base.replace(/[，。\s]*$/, "") + "，" : "") + t; recSync(); recAutosave(); }); }
+  else if(a === "dictall"){ S.rec.dict = !S.rec.dict; if(!S.rec.dict) recMicStop(); renderRecEditor(); }
+  else if(a === "micraw"){ var raw = document.getElementById("rq-raw"); raw.oninput = function(){ S.rec.dictRaw = raw.value; }; recMicStart(raw, b, function(){ S.rec.dictRaw = raw.value; S.rec.segs = recRoute(raw.value, d.students); recDrawPreview(); }); }
+  else if(a === "route"){ var raw2 = document.getElementById("rq-raw"); S.rec.dictRaw = raw2.value; S.rec.segs = recRoute(raw2.value, d.students); recDrawPreview(); }
+  else if(a === "applysegs"){
+    var segs = S.rec.segs || [];
+    document.querySelectorAll("[data-sj]").forEach(function(s){ var j = Number(s.dataset.sj); if(segs[j]) segs[j].tgt = s.value; });
+    document.querySelectorAll("[data-tj]").forEach(function(t){ var j = Number(t.dataset.tj); if(segs[j]) segs[j].text = t.value.trim(); });
+    var lvOn = {}; document.querySelectorAll("[data-lj]").forEach(function(c){ if(c.checked) lvOn[c.dataset.lj] = 1; });
+    var add = function(cur, t, sep){ return cur && cur.trim() ? cur.replace(/[，。\s]*$/, "") + sep + t : t; };
+    segs.forEach(function(s, j){
+      if(!s.text) return;
+      if(s.tgt === "material"){
+        var mt = s.text.replace(/。$/, ""), mm = /第\s*([0-9零〇一二兩三四五六七八九十]+)\s*課/.exec(mt), cur = d.material || "";
+        if(mm && new RegExp("第\\s*" + cnNum(mm[1]) + "\\s*課").test(cur)){ mt = mt.replace(mm[0], "").replace(/^[、，：\s]+/, ""); d.material = mt ? cur.replace(/[：、，\s]*$/, "") + (/：/.test(cur) ? "、" : "：") + mt : cur; }
+        else d.material = add(cur, mt, "、");
+      }
+      else if(s.tgt === "notes") d.notes = add(d.notes, s.text, "。");
+      else { var st2 = d.students[Number(s.tgt.slice(1))]; if(!st2) return; st2.comment = add(st2.comment, s.text, "，"); if(lvOn[j]) recApplyLevel(st2, s.lv || "ok"); }
+    });
+    S.rec.dict = false; S.rec.segs = null; S.rec.dictRaw = ""; recAutosave(); toast("已套用，請看一下再儲存"); renderRecEditor();
+  }
+  else if(a === "presets") recPresetDialog();
+}
+async function recPresetDialog(){
+  var p = recPresets(), cur = REC_LV.map(function(l){ return l[1] + "：" + RUBRIC.map(function(r){ return p[l[0]][r.key]; }).join("/"); }).join("\n");
+  var v = await askText("各等級的分數（順序：" + RUBRIC.map(function(r){ return r.label + r.max; }).join("／") + "）\n一行一個等級，用 / 分開：", cur, "儲存"); if(v == null) return;
+  var lines = v.split(/\n+/), np = {};
+  REC_LV.forEach(function(l, i){ var nums = ((lines[i] || "").split(/[：:]/).pop() || "").split(/[\/,，\s]+/).filter(Boolean).map(Number); np[l[0]] = {}; RUBRIC.forEach(function(r, k){ var n = nums[k]; np[l[0]][r.key] = isNaN(n) ? p[l[0]][r.key] : Math.max(0, Math.min(r.max, n)); }); });
+  S.plat.meta = S.plat.meta || {}; S.plat.meta.recPresets = np;
+  try{ await fbSet("teacherPlatform/" + S.teacher.id + "/meta/recPresets", np); toast("已儲存"); }catch(e){ toast("儲存失敗"); }
+}
+// 下課時：直接跳出已經填好的課堂記錄
+async function recAfterClass(sel){
+  var day = ymd(new Date()), sl = slotsOn(day).filter(function(x){ return x.s === sel.s && x.t === sel.t && x.c === sel.c; })[0];
+  if(sl && !recSlotNeeds(sl.id)) return;
+  var ci = classInfo(sel), label = ci ? ci.school + " " + ci.cls : "";
+  if(!sl && Object.keys(recMap()).some(function(k){ var r = recMap()[k]; return r.date === day && (r.classKey === sel.s + "|" + sel.t + "|" + sel.c || r.classLabel === label); })) return;
+  if(!confirm("下課了！要現在填課堂記錄嗎？\n進度、今天翻譯機的生詞、出席都已經幫你先填好，看一下按儲存就好。")) return;
+  openRecordFor(sl || { s: sel.s, t: sel.t, c: sel.c, date: day, id: null });
+}
+// 快速補填：沒填的課一堂一行，勾等級就好，整批儲存
+function recPendingSlots(days){
+  var m = schedMap(), today = ymd(new Date()), from = ymd(new Date(Date.now() - (days || 30) * 86400000));
+  return Object.keys(m).map(function(id){ return Object.assign({ id: id }, m[id]); }).filter(function(sl){
+    if(!sl.s || !sl.c || !sl.date || sl.date < from || sl.date > today) return false;
+    if(sl.date === today && sl.end && new Date(sl.date + "T" + sl.end + ":00").getTime() > Date.now()) return false;
+    var ci = classInfo(sl); return ci && ci.cls && recSlotNeeds(sl.id);
+  }).sort(function(a, b){ return (a.date + (a.start || "")).localeCompare(b.date + (b.start || "")); });
+}
+async function renderRecBatch(){
+  S.focus = false;
+  if(!S.rec.batch){
+    shell('<div class="empty"><p class="note">整理中…</p></div>'); setCrumb([]);
+    var rows = [], list = recPendingSlots(30);
+    for(var i = 0; i < list.length; i++){ var exId = recIdForSlot(list[i].id), d = newRecordDraft(list[i]); if(exId){ var ex = JSON.parse(JSON.stringify(recMap()[exId])); d.vocab = Array.isArray(ex.vocab) ? ex.vocab : []; d.material = ex.material || d.material; d.seq = ex.seq == null ? null : ex.seq; d.weekNo = ex.weekNo == null ? null : ex.weekNo; d._recId = exId; } var info = await recAutoFill(d, list[i]); d.students.forEach(function(st){ if(!st.absent && !recHasScore(st)) st._lv = "ok"; }); rows.push({ slot: list[i], d: d, info: info }); }
+    S.rec.batch = rows; if(!S.rec || !S.rec.batch) return;
+  }
+  var R = S.rec.batch;
+  var html = '<div class="head-row"><div style="flex:1;"><h2>⚡ 快速補填課堂記錄</h2><div class="note">最近 30 天還沒填的課。每個學生預設「🙂 正常」，只改特別的就好；評語之後要補再打開那一筆。</div></div><div><button class="btn primary" data-b="saveall"' + (R.length ? '' : ' disabled') + '>全部儲存（' + R.filter(function(r){ return !r.skip; }).length + ' 堂）</button> <button class="btn sm ghost" data-b="back">回課堂記錄</button></div></div>';
+  if(!R.length) html += '<div class="panel"><p class="note" style="margin:0;">最近 30 天的課都填好了 🎉</p></div>';
+  R.forEach(function(r, ri){
+    var d = r.d, ci = classInfo(r.slot);
+    html += '<div class="panel" style="' + (r.skip ? 'opacity:.5;' : '') + '"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;"><b style="font-size:16px;">' + md(r.slot.date) + ' ' + esc(r.slot.start || "") + '　' + esc(ci ? ci.school + " " + ci.cls : "") + '</b>' +
+      '<label class="note" style="display:flex;gap:4px;align-items:center;margin:0;"><input type="checkbox" data-b="abs" data-r="' + ri + '"' + (d.isAbsence ? ' checked' : '') + '> 請假／調課</label><label class="note" style="display:flex;gap:4px;align-items:center;margin:0;"><input type="checkbox" data-b="skip" data-r="' + ri + '"' + (r.skip ? ' checked' : '') + '> 這堂先不填</label><span style="flex:1;"></span><button class="btn sm ghost" data-b="full" data-r="' + ri + '">打開完整表單</button></div>' +
+      '<div style="display:flex;gap:8px;align-items:center;margin-top:8px;"><span class="note" style="white-space:nowrap;">教材進度</span><input type="text" data-b="mat" data-r="' + ri + '" value="' + esc(d.material || "") + '" placeholder="例如：第六課 生詞" style="flex:1;"></div>' +
+      (d.isAbsence ? '' : '<div style="margin-top:8px;">' + d.students.filter(function(s){ return (s.name || "").trim(); }).map(function(st){ var si = d.students.indexOf(st); return '<div class="rb-st"><b>' + esc(st.name) + '</b>' + [["absent", "缺席"]].concat(REC_LV).map(function(l){ var on = l[0] === "absent" ? !!st.absent : (!st.absent && st._lv === l[0]); return '<button class="btn sm' + (on ? ' primary' : '') + '" data-b="lv" data-r="' + ri + '" data-s="' + si + '" data-lv="' + l[0] + '">' + l[1] + '</button>'; }).join("") + (recHasScore(st) && !st._lv ? '<span class="note">已有分數 ' + stTotal(st) + '</span>' : '') + '</div>'; }).join("") + (d.students.some(function(s){ return (s.name || "").trim(); }) ? '' : '<p class="note">這個班還沒有學生名單，按「打開完整表單」填。</p>') + '</div>') +
+      (d.vocab.length ? '<div class="note" style="margin-top:6px;">生詞（翻譯機）：' + d.vocab.map(function(v){ return esc(v.word); }).join("、") + '</div>' : '') + '</div>';
+  });
+  shell(html); setCrumb([]);
+  var main = document.getElementById("main");
+  main.oninput = function(e){ var t = e.target; if(t.dataset.b === "mat") R[Number(t.dataset.r)].d.material = t.value; };
+  main.onchange = function(e){ var t = e.target, r = R[Number(t.dataset.r)]; if(!r) return; if(t.dataset.b === "abs"){ r.d.isAbsence = t.checked; renderRecBatch(); } else if(t.dataset.b === "skip"){ r.skip = t.checked; renderRecBatch(); } };
+  main.onclick = async function(e){
+    var b = e.target.closest("button[data-b]"); if(!b) return; var a = b.dataset.b, r = R[Number(b.dataset.r)];
+    if(a === "back"){ S.rec = { filter: "all" }; render(); return; }
+    if(a === "lv"){ var st = r.d.students[Number(b.dataset.s)]; if(b.dataset.lv === "absent"){ st.absent = !st.absent; } else { delete st.absent; st._lv = b.dataset.lv; } renderRecBatch(); return; }
+    if(a === "full"){ var d0 = r.d, ex0 = d0._recId; delete d0._recId; d0.students.forEach(function(st){ if(st._lv){ recApplyLevel(st, st._lv); delete st._lv; } }); S.rec = { edit: ex0 || null, draft: d0, shots: [], autoInfo: r.info }; if(ex0){ try{ var sh = (await fbGet("teacherPlatform/" + S.teacher.id + "/recordShots/" + ex0)) || []; S.rec.shots = Array.isArray(sh) ? sh : Object.keys(sh).map(function(k){ return sh[k]; }); }catch(e){} } render(); return; }
+    if(a === "saveall"){
+      var todo = R.filter(function(x){ return !x.skip; }); if(!todo.length) return;
+      b.disabled = true; b.textContent = "儲存中…";
+      var m = recMap(), base = "teacherPlatform/" + S.teacher.id, n = 0;
+      for(var i = 0; i < todo.length; i++){
+        var d = todo[i].d; if(!d.classLabel) continue;
+        d.students = d.students.filter(function(s){ return (s.name || "").trim(); });
+        d.students.forEach(function(st){ if(st._lv && !st.absent) recApplyLevel(st, st._lv); delete st._lv; });
+        var id = d._recId || uid("rec_"); delete d._recId;
+        if(d.seq == null){ var mx = 0; Object.keys(m).forEach(function(k){ if(m[k].classLabel === d.classLabel && (m[k].seq || 0) > mx) mx = m[k].seq; }); d.seq = mx + 1; }
+        if(d.weekNo == null) d.weekNo = recWeekNo(d.date, d.classLabel);
+        var rec = JSON.parse(JSON.stringify(d)); rec.updatedAt = Date.now(); if(d.isAbsence) rec.students = [];
+        try{ await fbSet(base + "/classRecords/" + id, rec); m[id] = rec; n++; }catch(er){ alert("有一堂儲存失敗，請檢查網路。已存好的不會重複。"); break; }
+      }
+      toast("已儲存 " + n + " 堂"); S.rec = { filter: "all" }; render();
+    }
+  };
+}
+function renderRecEditor(){ renderRecEditorBase(); recEnhance(); }
+function renderRecEditorBase(){
   S.focus = false;
   var d = S.rec.draft, shots = S.rec.shots || [];
   var listId = "rec-labels", opts = {}; allClassOptions().forEach(function(o){ var p = o.v.split("|"), ci = classInfo({ s: p[0], t: p[1], c: p[2] }); if(ci) opts[ci.school + " " + ci.cls] = 1; }); recLabels().forEach(function(l){ opts[l.label] = 1; });
@@ -2306,8 +2608,8 @@ function renderRecEditor(){
   try{
     var bk = JSON.parse(localStorage.getItem(recBackupKey()) || "null");
     var base = S.rec.edit ? (recMap()[S.rec.edit] || {}).updatedAt || 0 : 0;
-    if(bk && bk.draft && bk.ts > base && !S.rec.restored){
-      S.rec.restored = true;
+    var first = !S.rec.restored; S.rec.restored = true;   // 只在剛打開表單時問一次（之後畫面重畫是自己剛存的草稿，不用問）
+    if(bk && bk.draft && bk.ts > base && first){
       if(confirm("找到上次沒有儲存的內容（" + new Date(bk.ts).toLocaleString("zh-TW", { hour12: false }) + "），要還原嗎？")){ S.rec.draft = bk.draft; renderRecEditor(); return; }
       else localStorage.removeItem(recBackupKey());
     }
@@ -3016,7 +3318,7 @@ async function fillClassStatus(cls){
     var top = items.slice(0, 3), subsBy = {};
     await Promise.all(top.map(function(it){ return fbGet("teacherPlatform/" + tid + "/hwSubs/" + cid + "/" + it.id).then(function(v){ subsBy[it.id] = v || {}; }); }));
     var html = '', today = ymd(new Date()), sl = slotsOn(today).filter(function(x){ return x.s === S.sel.s && x.t === S.sel.t && x.c === S.sel.c; });
-    if(sl.length) html += '<div style="margin-bottom:10px;"><b>今天這個班的課</b>' + sl.map(function(x){ return '<div class="slot"><div class="slot-time" style="min-width:110px;">' + esc((x.start || "") + (x.end ? "–" + x.end : "")) + '</div><div class="slot-main note">' + (x.lesson && (S.plat.lessons || {})[x.lesson] ? esc(lessonTitle(x.lesson)) : "未指定課次") + (x.note ? "　・　" + esc(x.note) : "") + '</div><div class="slot-act">' + (recSlotDone(x.id) ? '<span class="note">✓已記錄</span>' : '<button class="btn sm" data-x="rec" data-id="' + x.id + '">填記錄</button>') + '</div></div>'; }).join("") + '</div>';
+    if(sl.length) html += '<div style="margin-bottom:10px;"><b>今天這個班的課</b>' + sl.map(function(x){ return '<div class="slot"><div class="slot-time" style="min-width:110px;">' + esc((x.start || "") + (x.end ? "–" + x.end : "")) + '</div><div class="slot-main note">' + (x.lesson && (S.plat.lessons || {})[x.lesson] ? esc(lessonTitle(x.lesson)) : "未指定課次") + (x.note ? "　・　" + esc(x.note) : "") + '</div><div class="slot-act">' + (!recSlotNeeds(x.id) ? '<span class="note">✓已記錄</span>' : '<button class="btn sm" data-x="rec" data-id="' + x.id + '">填記錄</button>') + '</div></div>'; }).join("") + '</div>';
     var lvo = (await fbGet("teacherPlatform/" + tid + "/leave/" + cid)) || {}, lvPending = Object.keys(lvo).filter(function(k){ return lvo[k].status === "pending"; }).length;
     if(lvPending) html += '<div style="margin-bottom:10px;"><b>請假申請</b>　<span class="chip" style="background:#FBEBC8;">' + lvPending + ' 筆待回覆</span> <button class="btn sm" data-x="leave">去看看</button></div>';
     var newCount = 0;
@@ -4172,7 +4474,7 @@ function homeClassesHtml(){
 async function fillHomeTodo(){
   var box = document.getElementById("htodo"); if(!box) return;
   var tid = S.teacher.id, today = ymd(new Date()), items = [], m = schedMap(), from = ymd(new Date(Date.now() - 21 * 86400000));
-  Object.keys(m).forEach(function(id){ var sl = m[id]; if(!sl.s || !sl.c || !sl.date || sl.date < from || sl.date > today) return; if(sl.date === today && sl.end && new Date(sl.date + "T" + sl.end + ":00").getTime() > Date.now()) return; if(recSlotDone(id)) return; var ci = classInfo(sl); if(!ci || !ci.cls) return; items.push({ order: 1, html: '📝 <b>填課堂記錄</b>　' + esc(ci.school + " " + ci.cls) + '　<span class="note">' + md(sl.date) + ' ' + esc(sl.start || "") + '</span>', btn: '<button class="btn sm" data-todo="rec" data-id="' + id + '">填記錄</button>' }); });
+  Object.keys(m).forEach(function(id){ var sl = m[id]; if(!sl.s || !sl.c || !sl.date || sl.date < from || sl.date > today) return; if(sl.date === today && sl.end && new Date(sl.date + "T" + sl.end + ":00").getTime() > Date.now()) return; if(!recSlotNeeds(id)) return; var ci = classInfo(sl); if(!ci || !ci.cls) return; items.push({ order: 1, html: '📝 <b>填課堂記錄</b>　' + esc(ci.school + " " + ci.cls) + '　<span class="note">' + md(sl.date) + ' ' + esc(sl.start || "") + '</span>', btn: '<button class="btn sm" data-todo="rec" data-id="' + id + '">填記錄</button>' }); });
   var n = bellItems().length; if(n) items.push({ order: 0, html: '🔔 <b>' + n + ' 筆新通知</b>（繳交、交卷、請假）', btn: '<button class="btn sm" data-todo="bell">看通知</button>' });
   box.innerHTML = renderTodo(items, true);
   try{
@@ -4193,7 +4495,7 @@ async function fillHomeTodo(){
 function renderTodo(items, loading){
   items.sort(function(a, b){ return a.order - b.order; });
   var recs = items.filter(function(x){ return x.order === 1; });
-  if(recs.length > 4){ var extra = recs.slice(4); items = items.filter(function(x){ return extra.indexOf(x) < 0; }); items.splice(items.indexOf(recs[3]) + 1, 0, { order: 1, html: '<span class="note">還有 ' + extra.length + ' 堂課沒填記錄</span>', btn: '<button class="btn sm ghost" data-todo="recs">到課堂記錄</button>' }); }
+  if(recs.length > 4){ var extra = recs.slice(4); items = items.filter(function(x){ return extra.indexOf(x) < 0; }); items.splice(items.indexOf(recs[3]) + 1, 0, { order: 1, html: '<span class="note">還有 ' + extra.length + ' 堂課沒填記錄</span>', btn: '<button class="btn sm primary" data-todo="recs">⚡ 快速補填</button>' }); }
   return (items.length ? items.map(function(x){ return '<div class="slot"><div class="slot-main">' + x.html + '</div><div class="slot-act">' + x.btn + '</div></div>'; }).join("") : (loading ? '<p class="note" style="margin:0;">讀取中…</p>' : '<p class="note" style="margin:0;">都處理好了，沒有待辦 🎉</p>'));
 }
 function bindHomeTodo(){
@@ -4202,7 +4504,7 @@ function bindHomeTodo(){
     var b = e.target.closest("[data-todo]"); if(!b) return; var a = b.dataset.todo;
     if(a === "rec"){ var m = schedMap()[b.dataset.id]; if(m) openRecordFor(Object.assign({ id: b.dataset.id }, m)); return; }
     if(a === "bell"){ openBell(); return; }
-    if(a === "recs"){ S.rec = { filter: "all" }; S.sel = null; render(); return; }
+    if(a === "recs"){ S.rec = { view: "batch" }; S.sel = null; render(); return; }
     var p = (b.dataset.sel || "").split("|"); S.sel = { s: p[0], t: p[1], c: p[2] }; S.lesson = null;
     if(a === "grade"){ S.hw = null; S.ctab = "tests"; }
     else if(a === "leave"){ S.hw = { view: "leave" }; }
@@ -4289,7 +4591,7 @@ function classHeadHtml(cls, pr){
   var go = pr.cur, line = '';
   if(sl.length){
     var x = sl[0], lk = x.lesson && (S.plat.lessons || {})[x.lesson] ? x.lesson : null; if(lk) go = lk;
-    line = '<b>今天 ' + esc((x.start || "") + (x.end ? "–" + x.end : "")) + '</b>　' + (lk ? esc(lessonTitle(lk)) : (go ? '目前進度：' + esc(lessonTitle(go)) : '未指定課次')) + (recSlotDone(x.id) ? '　<span class="note">✓ 已填記錄</span>' : '　<button class="btn sm" data-ch="rec" data-id="' + x.id + '">填記錄</button>');
+    line = '<b>今天 ' + esc((x.start || "") + (x.end ? "–" + x.end : "")) + '</b>　' + (lk ? esc(lessonTitle(lk)) : (go ? '目前進度：' + esc(lessonTitle(go)) : '未指定課次')) + (!recSlotNeeds(x.id) ? '　<span class="note">✓ 已填記錄</span>' : '　<button class="btn sm" data-ch="rec" data-id="' + x.id + '">填記錄</button>');
   } else if(go){
     var s0 = pr.st[go] || {}; line = '<b>目前進度</b>　' + esc(lessonTitle(go)) + (s0.dates && s0.dates.length ? '　<span class="note">已上 ' + s0.dates.length + ' 次，最近 ' + md(s0.dates[s0.dates.length - 1]) + '</span>' : '');
     var nx = classSlots(S.sel).filter(function(y){ return y.date > today; }).sort(function(a, b){ return (a.date + (a.start || "")).localeCompare(b.date + (b.start || "")); })[0];
@@ -4665,7 +4967,7 @@ async function toggleLive(){
   if(S.live && S.live.on){
     if(!confirm("結束上課？學生會回到自己的班級頁。")) return;
     var endRooms = Object.keys(TR_PUB.rooms || {}); if(S.live.room && endRooms.indexOf(S.live.room) < 0) endRooms.push(S.live.room); S.live = null; cls.live = null; try{ endRooms.forEach(function(rid){ fbSet("rooms/" + rid + "/trans", null).catch(function(){}); }); TR_PUB.rooms = {}; await fbSet(liveRef(), null); await fbSet(clsPath(S.sel) + "/liveTrans", null); TR_PUB.last = ""; TR_PUB.roomLast = {}; }catch(e){}
-    setFocus(false); try{ if(document.fullscreenElement) document.exitFullscreen().catch(function(){}); }catch(e){} renderLesson(cls); return;
+    setFocus(false); try{ if(document.fullscreenElement) document.exitFullscreen().catch(function(){}); }catch(e){} renderLesson(cls); var selEnd = { s: S.sel.s, t: S.sel.t, c: S.sel.c }; setTimeout(function(){ recAfterClass(selEnd); }, 400); return;
   }
   S.live = { on: true, lesson: S.lesson, tab: S.tab, sub: S.sub || null, room: null, startedAt: Date.now() };
   try{ await fbSet(liveRef(), S.live); }catch(e){ toast("開始上課失敗，請檢查網路或 Firebase 規則"); S.live = null; return; }
