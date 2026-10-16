@@ -1158,10 +1158,49 @@ async function migrateHier(){
   await fbSet(base + "/hier", 2); S.plat.hier = 2;
 }
 
+// 新教材自動加入：content/packs.json 列出整理好的課（生詞／語法／課文），老師登入時自動補進自己的生詞庫。
+// 每一包只加一次（記在 autoAdded），老師的教材庫裡已經有同一課就不動，老師之後刪掉也不會再自動加回來。
+async function autoAddContentPacks(t, bank){
+  if(!S.teacher || S.teacher.role === "ta") return bank;
+  var list = null; try{ var r = await fetch("content/packs.json?v=" + MM_V, { cache: "no-store" }); if(r.ok) list = await r.json(); }catch(e){}
+  if(!list || !Array.isArray(list.packs) || !list.packs.length) return bank;
+  bank = bank || {}; var cd = Array.isArray(bank.courseData) ? bank.courseData.slice() : [], done = Object.assign({}, bank.autoAdded || {}), added = [], changed = false;
+  for(var i = 0; i < list.packs.length; i++){
+    var pk = list.packs[i]; if(!pk || !pk.id || done[pk.id]) continue;
+    if(pk.type === "project"){   // 整理好的測驗／練習題：放進老師的測驗庫，並歸到對應課次
+      try{
+        var rp = await fetch(pk.file + "?v=" + MM_V, { cache: "no-store" }); if(!rp.ok) continue; var proj = await rp.json();
+        var have = await fbGet("teacherLibraries/" + t + "/projects/" + proj.id);
+        if(!have){
+          var folders = (await fbGet("teacherLibraries/" + t + "/folders")) || {}, fk = Object.keys(folders);
+          var fid = fk.filter(function(k){ return /學華語向前走/.test((folders[k] || {}).title || ""); })[0] || fk[0] || null;
+          if(fid) proj.folderId = fid;
+          await fbSet("teacherLibraries/" + t + "/projects/" + proj.id, proj);
+          var lk = lkey(pk.book || DEFAULT_BOOK, pk.lesson); S.plat.lessonMap = S.plat.lessonMap || {}; S.plat.lessonMap[proj.id] = lk;
+          await fbSet("teacherPlatform/" + t + "/lessonMap/" + proj.id, lk);
+          added.push({ lesson: pk.lesson, title: proj.title, isProj: true });
+        }
+        done[pk.id] = Date.now(); changed = true;
+      }catch(e){ console.warn("pack", pk.id, e); }
+      continue;
+    }
+    var exists = cd.some(function(l){ return (l.book || DEFAULT_BOOK) === (pk.book || DEFAULT_BOOK) && Number(l.lesson) === Number(pk.lesson); });
+    if(!exists){
+      try{ var rr = await fetch(pk.file + "?v=" + MM_V, { cache: "no-store" }); if(!rr.ok) continue; var lesson = await rr.json(); if((pk.book || DEFAULT_BOOK) !== DEFAULT_BOOK) lesson.book = pk.book; cd.push(lesson); added.push(lesson); }catch(e){ continue; }
+    }
+    done[pk.id] = Date.now(); changed = true;
+  }
+  if(!changed) return bank;
+  cd.sort(function(a, b){ return (Number(a.lesson) || 0) - (Number(b.lesson) || 0); });
+  await fbUpdate("teacherVocabBanks/" + t, { courseData: cd, autoAdded: done, updatedAt: Date.now(), updatedBy: S.teacher.name || t });
+  if(added.length) setTimeout(function(){ toast("已自動加入新教材：" + added.map(function(l){ return l.isProj ? "「" + l.title + "」" : "第" + l.lesson + "課 " + (l.title || "") + "（生詞、語法、課文）"; }).join("、")); }, 1500);
+  return Object.assign({}, bank, { courseData: cd, autoAdded: done });
+}
 // 把「雲端生詞庫」跟「測驗庫」整理成一份輕量的課次索引（學生端只讀這一份，不必下載整個測驗庫）
 async function syncLessonIndex(){
   var t = S.teacher.id, bank = null, lib = null;
   try{ bank = await fbGet("teacherVocabBanks/" + t); }catch(e){}
+  try{ bank = await autoAddContentPacks(t, bank); }catch(e){ console.warn("autoAddContentPacks", e); }
   S.bank = (bank && Array.isArray(bank.courseData)) ? bank.courseData : [];
   try{ lib = await fbGet("teacherLibraries/" + t); }catch(e){}
   var lessons = {}, lm = S.plat.lessonMap || {};

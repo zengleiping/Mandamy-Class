@@ -1,0 +1,17 @@
+{
+ "packs": [
+  {
+   "id": "b1-7",
+   "book": "b1",
+   "lesson": 7,
+   "file": "content/b1-lesson7.json"
+  },
+  {
+   "id": "b1-7-quiz",
+   "type": "project",
+   "book": "b1",
+   "lesson": 7,
+   "file": "content/b1-lesson7-quiz.json"
+  }
+ ]
+}

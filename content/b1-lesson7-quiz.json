@@ -1,0 +1,1002 @@
+{
+ "id": "proj_l7quiz",
+ "title": "第七課 一起畫圖吧 練習題",
+ "desc": "依第七課簡報（句型、課文、習寫漢字、練習）整理",
+ "sections": {
+  "s7_1": {
+   "id": "s7_1",
+   "title": "第 1 大題：連連看（生詞與注音）",
+   "type": "match",
+   "order": 0,
+   "questions": {
+    "q7_01": {
+     "id": "q7_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "一起",
+       "right": "ㄧˋ ㄑㄧˇ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "身體",
+       "right": "ㄕㄣ ㄊㄧˇ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "畫圖",
+       "right": "ㄏㄨㄚˋ ㄊㄨˊ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "雪人",
+       "right": "ㄒㄩㄝˇ ㄖㄣˊ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "眼睛",
+       "right": "ㄧㄢˇ ㄐㄧㄥ"
+      }
+     }
+    },
+    "q7_02": {
+     "id": "q7_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "鼻子",
+       "right": "ㄅㄧˊ ˙ㄗ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "頭",
+       "right": "ㄊㄡˊ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "手",
+       "right": "ㄕㄡˇ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "會",
+       "right": "ㄏㄨㄟˋ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "看",
+       "right": "ㄎㄢˋ"
+      }
+     }
+    },
+    "q7_03": {
+     "id": "q7_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "leftLabel": "生詞",
+     "rightLabel": "英文",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "眼睛",
+       "right": "eyes"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "鼻子",
+       "right": "nose"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "頭",
+       "right": "head"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "手",
+       "right": "hand"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "身體",
+       "right": "body"
+      }
+     }
+    }
+   }
+  },
+  "s7_2": {
+   "id": "s7_2",
+   "title": "第 2 大題：選擇題（句型）",
+   "type": "choice",
+   "order": 1,
+   "questions": {
+    "q7_04": {
+     "id": "q7_04",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n心美，來我家畫圖＿＿！",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "吧"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "嗎"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "的"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    },
+    "q7_05": {
+     "id": "q7_05",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n她是你的老師＿＿？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "嗎"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "吧"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "了"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    },
+    "q7_06": {
+     "id": "q7_06",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n大文＿＿畫雪人，心美也會畫雪人。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "會"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "太"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "和"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    },
+    "q7_07": {
+     "id": "q7_07",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n我們＿＿吃早飯。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "一起"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "太"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "嗎"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    },
+    "q7_08": {
+     "id": "q7_08",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n雪人的身體太大＿＿。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "了"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "嗎"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "吧"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    },
+    "q7_09": {
+     "id": "q7_09",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n今天有一點冷，我們喝熱牛奶＿＿！",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "吧"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "嗎"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "會"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    }
+   }
+  },
+  "s7_3": {
+   "id": "s7_3",
+   "title": "第 3 大題：閱讀理解（課文）",
+   "type": "choice",
+   "order": 2,
+   "questions": {
+    "q7_10": {
+     "id": "q7_10",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "讀課文，選出正確的答案。\nRead the text and choose the correct answer.\nอ่านบทเรียนแล้วเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n大文和心美一起做什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "畫圖"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "吃早飯"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "看書"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：心美，我們一起畫圖吧！\n心美：好，你會畫雪人嗎？\n大文：會，我畫頭、眼睛和鼻子。\n心美：我畫身體和手。\n大文：你看！雪人的身體太大了。\n心美：可是眼睛太小了。"
+    },
+    "q7_11": {
+     "id": "q7_11",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "讀課文，選出正確的答案。\nRead the text and choose the correct answer.\nอ่านบทเรียนแล้วเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n大文畫什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "頭、眼睛和鼻子"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "身體和手"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "雪人的手"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：心美，我們一起畫圖吧！\n心美：好，你會畫雪人嗎？\n大文：會，我畫頭、眼睛和鼻子。\n心美：我畫身體和手。\n大文：你看！雪人的身體太大了。\n心美：可是眼睛太小了。"
+    },
+    "q7_12": {
+     "id": "q7_12",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "讀課文，選出正確的答案。\nRead the text and choose the correct answer.\nอ่านบทเรียนแล้วเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n心美畫什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "身體和手"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "頭和鼻子"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "眼睛"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：心美，我們一起畫圖吧！\n心美：好，你會畫雪人嗎？\n大文：會，我畫頭、眼睛和鼻子。\n心美：我畫身體和手。\n大文：你看！雪人的身體太大了。\n心美：可是眼睛太小了。"
+    },
+    "q7_13": {
+     "id": "q7_13",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "讀課文，選出正確的答案。\nRead the text and choose the correct answer.\nอ่านบทเรียนแล้วเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n雪人的身體怎麼樣？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "太大了"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "太小了"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "很好看"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：心美，我們一起畫圖吧！\n心美：好，你會畫雪人嗎？\n大文：會，我畫頭、眼睛和鼻子。\n心美：我畫身體和手。\n大文：你看！雪人的身體太大了。\n心美：可是眼睛太小了。"
+    },
+    "q7_14": {
+     "id": "q7_14",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "讀課文，選出正確的答案。\nRead the text and choose the correct answer.\nอ่านบทเรียนแล้วเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n雪人的眼睛怎麼樣？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "太小了"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "太大了"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "很大"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：心美，我們一起畫圖吧！\n心美：好，你會畫雪人嗎？\n大文：會，我畫頭、眼睛和鼻子。\n心美：我畫身體和手。\n大文：你看！雪人的身體太大了。\n心美：可是眼睛太小了。"
+    }
+   }
+  },
+  "s7_4": {
+   "id": "s7_4",
+   "title": "第 4 大題：漢字（部首與筆畫）",
+   "type": "choice",
+   "order": 3,
+   "questions": {
+    "q7_15": {
+     "id": "q7_15",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n「頭」的部首是什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "頁"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "豆"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "大"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    },
+    "q7_16": {
+     "id": "q7_16",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n「眼」的部首是什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "目"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "艮"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "日"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    },
+    "q7_17": {
+     "id": "q7_17",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n「看」的部首是什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "目"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "手"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "日"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    },
+    "q7_18": {
+     "id": "q7_18",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n「手」有幾畫？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "4"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "3"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "5"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    },
+    "q7_19": {
+     "id": "q7_19",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n「看」有幾畫？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "9"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "8"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "10"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    },
+    "q7_20": {
+     "id": "q7_20",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n「眼」有幾畫？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "11"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "10"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "12"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    },
+    "q7_21": {
+     "id": "q7_21",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n「頭」有幾畫？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "16"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "14"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "15"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    }
+   }
+  },
+  "s7_5": {
+   "id": "s7_5",
+   "title": "第 5 大題：填空",
+   "type": "fill",
+   "order": 4,
+   "questions": {
+    "q7_22": {
+     "id": "q7_22",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "template": "心美和大文{一起}畫雪人。",
+     "prompt": "根據課文填入適當的答案。\nFill in the blanks according to the text.\nเติมคำตอบที่เหมาะสมตามบทเรียนค่ะ/ครับ"
+    },
+    "q7_23": {
+     "id": "q7_23",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "template": "大文畫{頭}、{眼}睛和鼻子。",
+     "prompt": "根據課文填入適當的答案。\nFill in the blanks according to the text.\nเติมคำตอบที่เหมาะสมตามบทเรียนค่ะ/ครับ"
+    },
+    "q7_24": {
+     "id": "q7_24",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "template": "心美畫身體和{手}。",
+     "prompt": "根據課文填入適當的答案。\nFill in the blanks according to the text.\nเติมคำตอบที่เหมาะสมตามบทเรียนค่ะ/ครับ"
+    },
+    "q7_25": {
+     "id": "q7_25",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": "",
+     "template": "雪人的身體太{大}了。",
+     "prompt": "根據課文填入適當的答案。\nFill in the blanks according to the text.\nเติมคำตอบที่เหมาะสมตามบทเรียนค่ะ/ครับ"
+    },
+    "q7_26": {
+     "id": "q7_26",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": "",
+     "template": "雪人的眼睛{太小了}。",
+     "prompt": "根據課文填入適當的答案。\nFill in the blanks according to the text.\nเติมคำตอบที่เหมาะสมตามบทเรียนค่ะ/ครับ"
+    },
+    "q7_27": {
+     "id": "q7_27",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": "",
+     "template": "大文和妹妹{一起}喝果汁。",
+     "prompt": "填入適當的詞。\nFill in the blank with the correct word.\nเติมคำที่เหมาะสมค่ะ/ครับ"
+    },
+    "q7_28": {
+     "id": "q7_28",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": "",
+     "template": "你畫眼睛和鼻子{吧}！",
+     "prompt": "填入適當的詞。\nFill in the blank with the correct word.\nเติมคำที่เหมาะสมค่ะ/ครับ"
+    },
+    "q7_29": {
+     "id": "q7_29",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": "",
+     "template": "老師的生日是十一月二十號{嗎}？",
+     "prompt": "填入適當的詞。\nFill in the blank with the correct word.\nเติมคำที่เหมาะสมค่ะ/ครับ"
+    }
+   }
+  },
+  "s7_6": {
+   "id": "s7_6",
+   "title": "第 6 大題：句子重組",
+   "type": "reorder",
+   "order": 5,
+   "questions": {
+    "q7_30": {
+     "id": "q7_30",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "請將下列詞語重組為正確句子 Rearrange the words into a correct sentence",
+     "words": [
+      "我們",
+      "一起",
+      "畫圖",
+      "吧",
+      "！"
+     ]
+    },
+    "q7_31": {
+     "id": "q7_31",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "請將下列詞語重組為正確句子 Rearrange the words into a correct sentence",
+     "words": [
+      "你",
+      "會",
+      "畫",
+      "雪人",
+      "嗎",
+      "？"
+     ]
+    },
+    "q7_32": {
+     "id": "q7_32",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "請將下列詞語重組為正確句子 Rearrange the words into a correct sentence",
+     "words": [
+      "雪人",
+      "的",
+      "身體",
+      "太",
+      "大",
+      "了",
+      "。"
+     ]
+    },
+    "q7_33": {
+     "id": "q7_33",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "請將下列詞語重組為正確句子 Rearrange the words into a correct sentence",
+     "words": [
+      "我",
+      "畫",
+      "頭",
+      "、",
+      "眼睛",
+      "和",
+      "鼻子",
+      "。"
+     ]
+    }
+   }
+  },
+  "s7_7": {
+   "id": "s7_7",
+   "title": "第 7 大題：聽力（身體部位）",
+   "type": "choice",
+   "order": 6,
+   "questions": {
+    "q7_34": {
+     "id": "q7_34",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "聽一聽，選出你聽到的詞。\nListen and choose the word you hear.\nฟังแล้วเลือกคำที่ได้ยินค่ะ/ครับ",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "眼睛"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "鼻子"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "身體"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "tts": {
+      "text": "眼睛",
+      "rate": 0.9,
+      "voice": "zh-TW-HsiaoChenNeural",
+      "gap": 0.6,
+      "mode": "single",
+      "spkN": 2
+     }
+    },
+    "q7_35": {
+     "id": "q7_35",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "聽一聽，選出你聽到的詞。\nListen and choose the word you hear.\nฟังแล้วเลือกคำที่ได้ยินค่ะ/ครับ",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "手"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "頭"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "鼻子"
+      }
+     },
+     "answerIds": [
+      "c3"
+     ],
+     "tts": {
+      "text": "鼻子",
+      "rate": 0.9,
+      "voice": "zh-TW-HsiaoChenNeural",
+      "gap": 0.6,
+      "mode": "single",
+      "spkN": 2
+     }
+    },
+    "q7_36": {
+     "id": "q7_36",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "聽一聽，選出你聽到的詞。\nListen and choose the word you hear.\nฟังแล้วเลือกคำที่ได้ยินค่ะ/ครับ",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "身體"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "手"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "頭"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "tts": {
+      "text": "身體",
+      "rate": 0.9,
+      "voice": "zh-TW-HsiaoChenNeural",
+      "gap": 0.6,
+      "mode": "single",
+      "spkN": 2
+     }
+    },
+    "q7_37": {
+     "id": "q7_37",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "聽一聽，選出正確的答案。\nListen and choose the correct answer.\nฟังแล้วเลือกคำตอบที่ถูกต้องค่ะ/ครับ",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "一起畫圖"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "一起看書"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "一起吃早飯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "tts": {
+      "text": "心美，我們一起畫圖吧！\n好，你會畫雪人嗎？",
+      "rate": 0.9,
+      "voice": "zh-TW-HsiaoChenNeural",
+      "gap": 0.6,
+      "mode": "dialog",
+      "spkN": 2,
+      "spk": {
+       "說話者1": "zh-TW-YunJheNeural",
+       "說話者2": "zh-TW-HsiaoChenNeural"
+      }
+     }
+    }
+   }
+  },
+  "s7_8": {
+   "id": "s7_8",
+   "title": "第 8 大題：習寫漢字",
+   "type": "hanzi",
+   "order": 7,
+   "questions": {
+    "q7_38": {
+     "id": "q7_38",
+     "order": 0,
+     "title": "第 1 題：手",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "手",
+     "desc": "4畫，部首：手"
+    },
+    "q7_39": {
+     "id": "q7_39",
+     "order": 1,
+     "title": "第 2 題：頭",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "頭",
+     "desc": "16畫，部首：頁"
+    },
+    "q7_40": {
+     "id": "q7_40",
+     "order": 2,
+     "title": "第 3 題：眼",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "眼",
+     "desc": "11畫，部首：目"
+    },
+    "q7_41": {
+     "id": "q7_41",
+     "order": 3,
+     "title": "第 4 題：看",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "看",
+     "desc": "9畫，部首：目"
+    },
+    "q7_42": {
+     "id": "q7_42",
+     "order": 4,
+     "title": "第 5 題：大",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "大",
+     "desc": "3畫，部首：大"
+    },
+    "q7_43": {
+     "id": "q7_43",
+     "order": 5,
+     "title": "第 6 題：小",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "小",
+     "desc": "3畫，部首：小"
+    }
+   }
+  },
+  "s7_9": {
+   "id": "s7_9",
+   "title": "第 9 大題：口說（我會唸）",
+   "type": "record",
+   "order": 8,
+   "questions": {
+    "q7_44": {
+     "id": "q7_44",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "請唸出課文。\nRead the text aloud.\nอ่านบทเรียนออกเสียงค่ะ/ครับ",
+     "passage": "大文：心美，我們一起畫圖吧！\n心美：好，你會畫雪人嗎？\n大文：會，我畫頭、眼睛和鼻子。\n心美：我畫身體和手。\n大文：你看！雪人的身體太大了。\n心美：可是眼睛太小了。",
+     "reference": "大文：心美，我們一起畫圖吧！\n心美：好，你會畫雪人嗎？\n大文：會，我畫頭、眼睛和鼻子。\n心美：我畫身體和手。\n大文：你看！雪人的身體太大了。\n心美：可是眼睛太小了。",
+     "maxSec": 60
+    },
+    "q7_45": {
+     "id": "q7_45",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "用「我們一起……吧！」邀請同學做一件事。\nUse “我們一起……吧！” to invite a classmate to do something.\nใช้ “我們一起……吧！” ชวนเพื่อนทำอะไรสักอย่างค่ะ/ครับ",
+     "reference": "例：我們一起吃水果吧！／我們一起畫雪人吧！",
+     "maxSec": 30
+    },
+    "q7_46": {
+     "id": "q7_46",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "你會畫什麼？用「我會畫……」說一說。\nWhat can you draw? Use “我會畫……”.\nคุณวาดอะไรเป็นบ้าง ใช้ “我會畫……” พูดค่ะ/ครับ",
+     "reference": "例：我會畫雪人。／我會畫小狗。",
+     "maxSec": 30
+    }
+   }
+  }
+ },
+ "currentQId": "q7_01"
+}

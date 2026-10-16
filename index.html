@@ -5225,7 +5225,7 @@ render();
     var appMod = mods[0], dbMod = mods[1], authMod = mods[2];
     var fbApp = appMod.initializeApp(window.FIREBASE_CONFIG);
     window.db = dbMod.getDatabase(fbApp);
-    window.ref = dbMod.ref; window.get = dbMod.get; window.set = dbMod.set;
+    window.ref = dbMod.ref; window.get = dbMod.get; window.set = dbMod.set; window.update = dbMod.update;
     window.serverTimestamp = dbMod.serverTimestamp;
     window.auth = authMod.getAuth(fbApp);
     window.mmAuthApi = authMod;
@@ -5362,7 +5362,8 @@ window.mmTA = (function(){
     return snap.exists() ? snap.val() : null;
   }
   async function saveCloudVocabBank(teacherId, courseDataToSave, displayName){
-    await window.set(window.ref(window.db, "teacherVocabBanks/" + teacherId), {
+    // 用 update（不是 set）：保留 autoAdded 等其他欄位（平台自動加入新教材的紀錄）
+    await window.update(window.ref(window.db, "teacherVocabBanks/" + teacherId), {
       courseData: courseDataToSave,
       updatedAt: window.serverTimestamp ? window.serverTimestamp() : Date.now(),
       updatedBy: displayName || teacherId
