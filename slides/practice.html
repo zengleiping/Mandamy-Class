@@ -6472,7 +6472,7 @@ window.mmTA = (function(){
   }
 
   /* ---- 學生端：老師上課時記下的翻譯（翻譯機同步到 rooms/{房間}/trans），浮出唯讀面板，跟著老師打開／收起 ---- */
-  var SLT = { box: null, btn: null, open: false, teacherOpen: null, known: {}, scale: 1, teacherScale: null };
+  var SLT = { box: null, btn: null, open: false, teacherOpen: null, known: {}, scale: 1.2, teacherScale: null };
   function slEsc(x){ return String(x == null ? "" : x).replace(/[&<>"]/g, function(c){ return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
   function slZyHtml(sym){
     var tone = "", neutral = false, main = String(sym).replace(/[ˊˇˋ˙]/g, function(m){ if(m === "˙") neutral = true; else tone = m; return ""; });
@@ -6515,11 +6515,11 @@ window.mmTA = (function(){
       SLT.box.querySelector("#slt-close").onclick = function(){ SLT.open = false; slTransDraw(); };
     }
     var fresh = ids.filter(function(id){ return !SLT.known[id]; }); ids.forEach(function(id){ SLT.known[id] = 1; });
-    if(SLT.teacherScale !== (d.scale || 1)){ SLT.teacherScale = d.scale || 1; SLT.scale = SLT.teacherScale; }
+    if(SLT.teacherScale !== (d.scale || 1)){ SLT.teacherScale = d.scale || 1; SLT.scale = Math.min(3, Math.round(SLT.teacherScale * 1.2 * 100) / 100); }   // 學生端預設比老師大一級（1.2 倍），字比較清楚
     var tyEl = SLT.box.querySelector("#slt-typing"); tyEl.style.display = typingNow ? "block" : "none"; tyEl.textContent = typingNow ? "✏️ 老師正在輸入：" + typingNow : "";
     SLT.box.querySelector("#slt-list").style.zoom = String(SLT.scale || 1);
     if(SLT.teacherOpen !== !!d.open){ SLT.teacherOpen = !!d.open; SLT.open = !!d.open; }   // 老師打開／收起，學生跟著
-    if(fresh.length && d.open) SLT.open = true;
+    if(fresh.length) SLT.open = true;   // 老師輸入完一個新詞：學生的面板一定自動打開（不用學生自己操作）
     ids.sort(function(a, b){ return (items[b].at || 0) - (items[a].at || 0); });
     var langs = d.langs || [], mode = d.mode || "zy";
     SLT.box.querySelector("#slt-list").innerHTML = ids.map(function(id){
