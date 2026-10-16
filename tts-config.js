@@ -1,2 +1,2 @@
 // 語音伺服器網址（部署好之後填這裡，所有裝置都會用；個別裝置在 tts.html 的「⚙ 語音伺服器」另外設定的會優先）
-window.MM_TTS_SERVER = "";
+window.MM_TTS_SERVER = "https://mandamy-class.onrender.com";
