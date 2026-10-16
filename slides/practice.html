@@ -1073,7 +1073,7 @@
   .draw-toolbar-top .color-popover{ left:0; top:100%; margin:8px 0 0; transform:translateY(-6px); }
   .draw-toolbar-top .tool-btn-v-wrap:hover .color-popover, .draw-toolbar-top .tool-btn-v-wrap:focus-within .color-popover{ transform:none; }
   .board-area.canvas-fs-active .draw-toolbar-top .color-popover{ transform:none !important; }
-  .board-area.canvas-fs-active .draw-toolbar-top{ position:absolute; top:14px; left:104px; right:64px; width:auto; z-index:9001; margin:0; background:rgba(255,255,255,0.96); }
+  .board-area.canvas-fs-active .draw-toolbar-top{ position:absolute; top:14px; left:104px; right:auto; max-width:calc(100% - 170px); width:auto; z-index:9001; margin:0; background:rgba(255,255,255,0.96); }   /* 只佔工具列本身的寬度，不再整條橫跨、蓋住投影片上方 */
   .draw-toolbar-top.student-locked > *:not(.tb-head):not(#btn-canvas-fs){ opacity:.42; filter:grayscale(.3); cursor:not-allowed; }
   .draw-toolbar-vertical.student-locked > .tb-head{ opacity:1; filter:none; cursor:pointer; }
   .tb-head{ display:flex; gap:4px; align-items:center; justify-content:center; width:100%; flex-shrink:0; }
