@@ -2232,6 +2232,12 @@
         <button type="button" class="btn btn-sm" id="btn-tts-preview">▶ 試聽</button>
         <button type="button" class="btn btn-sm" id="btn-tts-gen">🎵 產生音檔</button>
       </div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px;">
+        <span id="tts-voice-wrap" style="display:inline-flex;gap:6px;align-items:center;"><b style="font-size:13px;">聲音</b>
+          <select id="f-tts-voice" style="padding:4px 8px;border-radius:8px;"><option value="zh-TW-HsiaoChenNeural">曉臻（女）</option><option value="zh-TW-YunJheNeural">雲哲（男）</option><option value="zh-TW-HsiaoYuNeural">曉雨（女）</option></select></span>
+        <span style="font-size:12px;color:var(--ink-soft);">對話題：每行寫「A：…」「B：…」（或「男：」「女：」、人名），會自動分配不同的聲音</span>
+      </div>
+      <div id="tts-spk" style="display:none;margin-top:8px;padding:8px 10px;border-radius:10px;background:var(--surface-2);font-size:13px;"></div>
       <div style="margin-top:10px;padding:10px 12px;border:1.5px solid var(--grid-line);border-radius:12px;background:var(--surface);">
         <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
           <button type="button" class="btn btn-sm btn-primary" id="btn-tts-rec">🎙 用我的聲音錄音</button>
@@ -8712,7 +8718,40 @@ window.mmTA = (function(){
     parts.forEach(function(t){ if(!t.trim()) return; var u = new SpeechSynthesisUtterance(t); if(v){ u.voice = v; u.lang = v.lang; } else u.lang = "zh-TW"; u.rate = rate || 1; speechSynthesis.speak(u); });
   }
   function ttsRateNow(){ return parseFloat(document.getElementById("f-tts-rate").value) || 1; }
-  function ttsKeyNow(){ return document.getElementById("f-tts-text").value.trim() + "|" + ttsRateNow(); }
+  /* ---- 聲音與對話模式：每行「A：…」「B：…」自動分配不同聲音（男聲：雲哲） ---- */
+  var TTS_VOICES = [["zh-TW-HsiaoChenNeural", "曉臻（女）"], ["zh-TW-YunJheNeural", "雲哲（男）"], ["zh-TW-HsiaoYuNeural", "曉雨（女）"]];
+  var ttsSpkMap = {};
+  function ttsParseDialog(text){
+    var lines = String(text || "").split(/\n+/).map(function(x){ return x.trim(); }).filter(Boolean), segs = [], labeled = 0, labels = [];
+    lines.forEach(function(l){
+      var m = l.match(/^([^：:\s，。]{1,8})\s*[：:]\s*(.+)$/);
+      if(m){ labeled++; segs.push({ label: m[1], text: m[2] }); if(labels.indexOf(m[1]) < 0) labels.push(m[1]); }
+      else segs.push({ label: segs.length ? segs[segs.length - 1].label : "", text: l });   // 沒寫說話者的行：沿用上一行的人
+    });
+    return (labeled >= 2 && labels.length >= 2) ? { segs: segs, labels: labels } : null;
+  }
+  function ttsDefaultVoice(label, idx){
+    if(/男|先生|爸|哥|弟|叔|伯|爺|舅|Mr|man|boy|he\b/i.test(label)) return "zh-TW-YunJheNeural";
+    if(/女|小姐|太太|媽|姐|妹|姨|婆|奶|Ms|Mrs|woman|girl|she\b/i.test(label)) return idx === 2 ? "zh-TW-HsiaoYuNeural" : "zh-TW-HsiaoChenNeural";
+    return ["zh-TW-HsiaoChenNeural", "zh-TW-YunJheNeural", "zh-TW-HsiaoYuNeural"][idx % 3];   // 第 1 個人女聲、第 2 個人男聲、第 3 個人另一個女聲
+  }
+  function ttsSpkVoice(label, idx){ return ttsSpkMap[label] || ttsDefaultVoice(label, idx); }
+  function ttsSpkRender(){
+    var box = document.getElementById("tts-spk"), d = ttsParseDialog(document.getElementById("f-tts-text").value), vw = document.getElementById("tts-voice-wrap");
+    if(!d){ box.style.display = "none"; vw.style.display = "inline-flex"; return; }
+    vw.style.display = "none"; box.style.display = "block";
+    box.innerHTML = '<b>🎭 對話模式</b>（說話者名稱不會念出來）：' + d.labels.map(function(lb, i){
+      var v = ttsSpkVoice(lb, i);
+      return '<span style="display:inline-flex;align-items:center;gap:4px;margin:4px 10px 0 0;">' + escapeHtml(lb) + ' ▸ <select data-spk="' + escapeHtml(lb) + '" style="padding:2px 6px;border-radius:8px;">' + TTS_VOICES.map(function(o){ return '<option value="' + o[0] + '"' + (o[0] === v ? " selected" : "") + '>' + o[1] + '</option>'; }).join("") + '</select></span>';
+    }).join("");
+    box.querySelectorAll("select[data-spk]").forEach(function(sel){ sel.onchange = function(){ ttsSpkMap[sel.dataset.spk] = sel.value; if(ttsServerUrl() && !editorTtsRec) ttsGenerate(true); }; });
+  }
+  function ttsVoiceNow(){ return document.getElementById("f-tts-voice").value || "zh-TW-HsiaoChenNeural"; }
+  function ttsKeyNow(){
+    var t = document.getElementById("f-tts-text").value.trim(), d = ttsParseDialog(t);
+    var vk = d ? d.labels.map(function(lb, i){ return lb + "=" + ttsSpkVoice(lb, i); }).join(",") : ttsVoiceNow();
+    return t + "|" + ttsRateNow() + "|" + vk;
+  }
   function ttsSetStatus(msg){ var e = document.getElementById("tts-status"); if(e) e.textContent = msg; }
   async function ttsGenerate(silent){
     var text = document.getElementById("f-tts-text").value.trim(), srv = ttsServerUrl();
@@ -8721,15 +8760,24 @@ window.mmTA = (function(){
     var key = ttsKeyNow(); ttsSetStatus("正在產生音檔…（伺服器休眠中的話，第一次約要 30～60 秒）");
     try{
       var ctl = new AbortController(), tm = setTimeout(function(){ ctl.abort(); }, 90000);   // 伺服器剛睡醒可能要等 30～60 秒
-      var r = await fetch(srv + "/api/tts", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text: text, rate: ttsRateNow() }), signal: ctl.signal });
-      clearTimeout(tm); if(!r.ok) throw new Error("HTTP " + r.status);
-      var blob = await r.blob(); if(blob.size > 900000) throw new Error("音檔太大，請縮短內容");
+      var dlg = ttsParseDialog(text), parts = dlg ? dlg.segs.map(function(sg){ return { text: sg.text, voice: ttsSpkVoice(sg.label, dlg.labels.indexOf(sg.label)) }; }) : [{ text: text, voice: ttsVoiceNow() }];
+      var bufs = [];
+      for(var pi = 0; pi < parts.length; pi++){
+        if(parts.length > 1) ttsSetStatus("正在產生對話音檔…（" + (pi + 1) + "／" + parts.length + " 句）");
+        var r = await fetch(srv + "/api/tts", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text: parts[pi].text, rate: ttsRateNow(), voice: parts[pi].voice }), signal: ctl.signal });
+        if(!r.ok) throw new Error("HTTP " + r.status);
+        bufs.push(await r.arrayBuffer());
+      }
+      clearTimeout(tm);
+      var blob = new Blob(bufs, { type: "audio/mpeg" }); if(blob.size > 900000) throw new Error("音檔太大，請縮短內容");   // 同一種格式的 MP3 直接接起來就能連續播放
       editorTtsSrc = await blobToDataUrl(blob); editorTtsKey = key;
       ttsSetStatus("✅ 已產生音檔（" + Math.round(blob.size / 1024) + " KB），儲存題目後學生就能聽到。");
     }catch(e){ editorTtsSrc = ""; ttsSetStatus("產生音檔失敗（" + (e.message || e) + "），儲存後學生會改用自己裝置的語音播放。"); }
   }
   document.getElementById("f-tts-rate").oninput = function(){ document.getElementById("f-tts-rate-val").textContent = ttsRateNow().toFixed(2).replace(/0$/, "") + "x"; };
   document.getElementById("f-tts-text").onchange = function(){ if(ttsServerUrl() && !editorTtsRec) ttsGenerate(true); };
+  var ttsSpkT = 0; document.getElementById("f-tts-text").addEventListener("input", function(){ clearTimeout(ttsSpkT); ttsSpkT = setTimeout(ttsSpkRender, 300); });
+  document.getElementById("f-tts-voice").onchange = function(){ if(ttsServerUrl() && !editorTtsRec && document.getElementById("f-tts-text").value.trim()) ttsGenerate(true); };
   document.getElementById("f-tts-rate").onchange = function(){ if(ttsServerUrl() && !editorTtsRec && document.getElementById("f-tts-text").value.trim()) ttsGenerate(true); };
   /* ---- 用老師自己的聲音錄聽力：錄音＋同時語音轉文字（瀏覽器內建辨識，免費） ---- */
   var ttsRecState = null;
@@ -8802,7 +8850,9 @@ window.mmTA = (function(){
     var tq = (q && q.tts) || null;
     document.getElementById("f-tts-text").value = tq ? (tq.text || "") : "";
     document.getElementById("f-tts-rate").value = tq && tq.rate ? tq.rate : 1; document.getElementById("f-tts-rate").oninput();
-    editorTtsSrc = tq && tq.src ? tq.src : ""; editorTtsKey = tq ? ((tq.text || "") + "|" + (tq.rate || 1)) : ""; editorTtsRec = !!(tq && tq.rec && tq.src);
+    ttsSpkMap = (tq && tq.spk) ? JSON.parse(JSON.stringify(tq.spk)) : {};
+    document.getElementById("f-tts-voice").value = (tq && tq.voice) || "zh-TW-HsiaoChenNeural"; ttsSpkRender();
+    editorTtsSrc = tq && tq.src ? tq.src : ""; editorTtsRec = !!(tq && tq.rec && tq.src); editorTtsKey = tq ? (tq.key || ttsKeyNow()) : "";
     if(ttsRecState){ try{ ttsRecState.rec.stop(); }catch(e){} }
     ttsRecUi(); ttsRecStatus(editorTtsRec ? "這題用的是你錄的聲音。" : "最自然：直接錄你自己念的。錄音時會同時把你說的話轉成文字填進上面（Chrome／Edge）。");
     document.getElementById("q-tts").open = !!(tq && (tq.text || tq.src));
@@ -8965,8 +9015,9 @@ window.mmTA = (function(){
     if(editorTtsRec && editorTtsSrc){
       qObj.tts = { text: ttsText, rate: 1, src: editorTtsSrc, rec: true };   // 老師自己錄的：文字只是參考稿，改了也不影響錄音
     } else if(ttsText){
-      qObj.tts = { text: ttsText, rate: ttsRateNow() };
-      if(editorTtsSrc && editorTtsKey === ttsKeyNow()) qObj.tts.src = editorTtsSrc;   // 文字或語速改過就丟掉舊音檔
+      qObj.tts = { text: ttsText, rate: ttsRateNow(), voice: ttsVoiceNow() };
+      var dlgS = ttsParseDialog(ttsText); if(dlgS){ var spk = {}; dlgS.labels.forEach(function(lb, i){ spk[lb] = ttsSpkVoice(lb, i); }); qObj.tts.spk = spk; }
+      if(editorTtsSrc && editorTtsKey === ttsKeyNow()){ qObj.tts.src = editorTtsSrc; qObj.tts.key = editorTtsKey; }   // 文字、語速或聲音改過就丟掉舊音檔
     }
     // 配分比重改到左側欄最下方的「配分總覽」大表統一編輯，這裡維持原本存的比重（新題目預設 1）。
     qObj.weight = (existing && existing.weight && existing.weight > 0) ? existing.weight : 1;
