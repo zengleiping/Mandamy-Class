@@ -10094,6 +10094,15 @@ window.mmTA = (function(){
       container.classList.add("canvas-fs-active");
       document.body.classList.add("canvas-fs-open");
       fsTellParent(true);
+      if(canvasFsMode === "present" && !isStudent && window.parent !== window){   // 放映時：左邊工具列多一顆「翻譯」，不用靠右緣那顆（可能被 Meet 小視窗蓋住）
+        var vt = container.querySelector(".draw-toolbar-vertical");
+        if(vt && !vt.querySelector("#btn-fs-trans")){
+          var tb = document.createElement("button"); tb.type = "button"; tb.className = "tool-btn-v"; tb.id = "btn-fs-trans"; tb.title = "翻譯機：打開／收起（Alt+T）";
+          tb.innerHTML = '<span class="tool-btn-v-icon">📝</span><span class="tool-btn-v-label">翻譯</span>';
+          tb.onclick = function(e){ e.preventDefault(); e.stopPropagation(); try{ window.parent.postMessage({ mm: "trToggle" }, "*"); }catch(er){} };
+          vt.appendChild(tb);
+        }
+      }
       updateBtn();
       requestAnimationFrame(refit);
     }
@@ -10102,6 +10111,7 @@ window.mmTA = (function(){
       container.classList.remove("canvas-fs-active", "fs-edit");
       document.body.classList.remove("canvas-fs-open");
       fsTellParent(false);
+      var ftb = container.querySelector("#btn-fs-trans"); if(ftb) ftb.remove();
       if(container.parentNode === document.body) originalParent.appendChild(container);
       updateBtn();
       requestAnimationFrame(refit);
@@ -10116,7 +10126,7 @@ window.mmTA = (function(){
     var exitBtn = container.querySelector(".canvas-fs-exit-btn");
     if(exitBtn) exitBtn.onclick = function(e){ e.preventDefault(); e.stopPropagation(); exit(); };
     if(canvasFsKeyHandler) document.removeEventListener("keydown", canvasFsKeyHandler);
-    canvasFsKeyHandler = function(e){ if(e.key === "Escape" && canvasFullscreen){ if(canvasFsMode === "present") endPresent(); else exit(); } };
+    canvasFsKeyHandler = function(e){ if(e.altKey && (e.key === "t" || e.key === "T") && !isStudent && window.parent !== window){ e.preventDefault(); try{ window.parent.postMessage({ mm: "trToggle" }, "*"); }catch(er){} return; } if(e.key === "Escape" && canvasFullscreen){ if(canvasFsMode === "present") endPresent(); else exit(); } };
     document.addEventListener("keydown", canvasFsKeyHandler);
     updateBtn();
     if(canvasFullscreen) enter(canvasFsMode); // 之前就開著全螢幕、現在是換題目後重新渲染，新題目的畫布接著維持全螢幕

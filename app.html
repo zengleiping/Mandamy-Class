@@ -4292,6 +4292,14 @@ window.addEventListener("message", function(e){
   var l = S.plat.lessons[key]; if(l){ l.projects = l.projects || {}; l.projects[pid] = { title: e.data.title, slides: 0, quiz: 0 }; }
   S.sub = pid; S.creating = null;
 });
+// 簡報頁放映時（右緣的翻譯按鈕可能被 Meet 小視窗蓋住）：由簡報頁的「翻譯」按鈕或 Alt+T 打開／收起翻譯機
+window.addEventListener("message", function(e){
+  if(!e.data || e.data.mm !== "trToggle" || !S.teacher) return;
+  var fr = document.getElementById("fr"); if(!fr || fr.contentWindow !== e.source) return;
+  if(TR.box) trToggle();
+});
+// 平台頁面本身也支援 Alt+T
+document.addEventListener("keydown", function(e){ if(e.altKey && (e.key === "t" || e.key === "T") && S.teacher && TR.box){ e.preventDefault(); trToggle(); } });
 // 簡報頁（iframe）按「全螢幕編輯／放映」：把這個 iframe 撐滿整個視窗，蓋掉平台的導覽列、分頁與計時列
 window.addEventListener("message", function(e){
   if(!e.data || e.data.mm !== "fsFrame") return;
