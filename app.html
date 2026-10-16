@@ -727,6 +727,62 @@ function trPersist(id){
   var v = TR.list[id] || null;
   try{ localStorage.setItem("mm_tr_list_" + S.teacher.id, JSON.stringify(TR.list)); }catch(e){}
   fbSet(trPath(id), v).then(function(){ trSetStatus("ok"); }).catch(function(){ trSetStatus("local"); });
+  trPublishSoon();
+}
+// 上課中：把這堂課記下的生詞同步給學生（放在班級底下的 liveTrans，和 live 分開，才不會讓學生畫面重新載入）
+var TR_PUB = { t: 0, last: "" };
+function trLiveTransPath(){ return clsPath(S.sel) + "/liveTrans"; }
+function trPublishSoon(){ clearTimeout(TR_PUB.t); TR_PUB.t = setTimeout(trPublish, 500); }
+function trPublish(){
+  if(!(S.teacher && S.live && S.live.on && S.sel && S.sel.c)) return;
+  var since = S.live.startedAt || 0, langs = TR.langs || [], items = {};
+  trSortedIds().filter(function(id){ return (TR.list[id].at || 0) >= since; }).slice(0, 40).forEach(function(id){
+    var e = TR.list[id], tr = {}; langs.forEach(function(l){ if((e.tr || {})[l]) tr[l] = e.tr[l]; });
+    var o = { zh: e.zh, at: e.at || 0, tr: tr }; if(e.zya) o.zya = e.zya; if(e.pya) o.pya = e.pya; if(e.zy) o.zy = e.zy; if(e.py) o.py = e.py; items[id] = o;
+  });
+  var payload = { mode: (TR.show && TR.show.mode) || "zy", langs: langs, items: items }, js = JSON.stringify(payload);
+  if(js === TR_PUB.last) return; TR_PUB.last = js;
+  fbSet(trLiveTransPath(), Object.keys(items).length ? payload : null).catch(function(){});
+}
+// 學生端：上課中浮出「今天的生詞」面板（唯讀）
+var SL = { box: null, btn: null, data: null, un: null, known: {}, open: false };
+function stuTransStart(base, idx){
+  if(SL.un) return;
+  try{ SL.un = window.onValue(window.ref(window.db, base + "/schools/" + idx.s + "/terms/" + idx.tm + "/classes/" + idx.c + "/liveTrans"), function(snap){ SL.data = snap.val(); stuTransDraw(); }); }catch(e){}
+}
+function stuTransHide(){ if(SL.box) SL.box.style.display = "none"; if(SL.btn) SL.btn.style.display = "none"; SL.open = false; }
+function stuTransDraw(){
+  var d = SL.data, items = (d && d.items) || {}, ids = Object.keys(items);
+  if(!(S.student && S.live && S.live.on && ids.length)){ stuTransHide(); if(!ids.length) SL.known = {}; return; }
+  trInjectStyle();
+  if(!document.getElementById("sl-style")){
+    var st = document.createElement("style"); st.id = "sl-style";
+    st.textContent = '#sl-btn{position:fixed;right:0;top:46%;z-index:9980;padding:12px 9px;border-radius:14px 0 0 14px;background:#E8805A;color:#fff;font-size:13px;font-weight:700;cursor:pointer;border:0;box-shadow:0 2px 10px rgba(0,0,0,.25);writing-mode:vertical-rl;letter-spacing:2px}' +
+      '#sl-btn b{background:#fff;color:#E8805A;border-radius:99px;padding:0 6px;margin-top:4px;writing-mode:horizontal-tb;letter-spacing:0}' +
+      '#sl-box{position:fixed;right:12px;bottom:12px;width:min(380px,calc(100vw - 24px));height:min(62vh,640px);z-index:9981;display:none;flex-direction:column;background:linear-gradient(160deg,#FCEFE4,#EBF1EA);border:1.5px solid #EBDDD0;border-radius:16px;box-shadow:0 10px 34px rgba(0,0,0,.28);color:#3a312b;--tr-grn:#4E7F6E}' +
+      '#sl-head{display:flex;align-items:center;gap:6px;padding:9px 12px;border-bottom:1px solid #EBDDD0}#sl-head b{flex:1;font-size:15px}#sl-head button{background:#fff;border:1px solid #EBDDD0;border-radius:99px;padding:4px 12px;font-size:12.5px;cursor:pointer;font-weight:700}' +
+      '#sl-list{flex:1;overflow:auto;padding:10px 12px}.sl-row{background:#fff;border-radius:14px;padding:9px 12px;margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,.06)}.sl-t{font-size:15px;line-height:1.5;margin-top:2px}.sl-t i{font-style:normal;font-size:11px;font-weight:700;color:#7a6c60;margin-right:6px}';
+    document.head.appendChild(st);
+  }
+  if(!SL.box){
+    SL.btn = document.createElement("button"); SL.btn.id = "sl-btn"; SL.btn.type = "button"; SL.btn.onclick = function(){ SL.open = true; stuTransDraw(); };
+    SL.box = document.createElement("div"); SL.box.id = "sl-box";
+    SL.box.innerHTML = '<div id="sl-head"><b>📝 今天的生詞 Words</b><button type="button" id="sl-close">收起 ▾</button></div><div id="sl-list"></div>';
+    document.body.appendChild(SL.btn); document.body.appendChild(SL.box);
+    SL.box.querySelector("#sl-close").onclick = function(){ SL.open = false; stuTransDraw(); };
+  }
+  var fresh = ids.filter(function(id){ return !SL.known[id]; }); ids.forEach(function(id){ SL.known[id] = 1; });
+  if(fresh.length) SL.open = true;   // 老師新加了詞：自動打開，學生一眼就看到
+  var old = TR.show; TR.show = { mode: d.mode || "zy" };
+  ids.sort(function(a, b){ return (items[b].at || 0) - (items[a].at || 0); });
+  var langs = d.langs || [];
+  SL.box.querySelector("#sl-list").innerHTML = ids.map(function(id){
+    var e = items[id];
+    return '<div class="sl-row"><div>' + trWordHtml(e) + '</div>' + TR_LANGS.filter(function(l){ return langs.indexOf(l[0]) !== -1 && (e.tr || {})[l[0]]; }).map(function(l){ return '<div class="sl-t"><i>' + esc(l[1].split(" ")[0]) + '</i>' + esc(e.tr[l[0]]) + '</div>'; }).join("") + '</div>';
+  }).join("");
+  TR.show = old;
+  SL.box.style.display = SL.open ? "flex" : "none"; SL.btn.style.display = SL.open ? "none" : "block";
+  SL.btn.innerHTML = '📝 生詞<br><b>' + ids.length + '</b>';
 }
 function trSetStatus(s){ TR.sync = s; var el = document.getElementById("tr-sync"); if(el) el.textContent = s === "ok" ? "☁️ 已同步" : s === "busy" ? "⏳ 處理中…" : "⚠️ 只存在這台裝置"; }
 function trZyHtml(sym){
@@ -755,7 +811,7 @@ function trDrawList(){
       TR_LANGS.filter(function(l){ return TR.langs.indexOf(l[0]) !== -1; }).map(function(l){ return '<textarea rows="1" class="tr-t tr-t-' + l[0] + '" data-id="' + id + '" data-lang="' + l[0] + '" placeholder="' + esc(l[1].split(" ")[0]) + '（沒翻出來，可手動輸入）">' + esc((e.tr || {})[l[0]] || "") + '</textarea>'; }).join("") +
       '</div><div class="tr-time">' + trTime(e.at || Date.now()) + (e.imp ? '　✓ 已加入課堂記錄' : '') + '　<button class="tr-retry" data-retry="' + id + '" title="重新翻譯這個詞（會覆蓋目前的翻譯）">↻ 重新翻譯</button>' + (e.imp ? '<div class="tr-destrow">✓ 已加進：<select class="tr-dest" data-movedone="' + id + '">' + trMovedOptions(e) + '</select></div>' : '<div class="tr-destrow">📌 加進：<select class="tr-dest' + ((!e.dest && !trFindSlot(e.at || 0)) ? ' warn' : '') + '" data-dest="' + id + '">' + trDestOptions(e.dest || "", trFindSlot(e.at || 0)) + '</select></div>') + '</div></div>';
   }).join("") : '<p class="tr-empty">還沒有記錄。輸入中文按 Enter，就會翻譯並記下來。</p>';
-  trFit();
+  trFit(); trPublishSoon();
 }
 function trFit(){ document.querySelectorAll("#tr-list textarea.tr-t").forEach(function(t){ t.style.height = "auto"; t.style.height = (t.scrollHeight + 2) + "px"; }); }
 function trCopyAll(){
@@ -776,8 +832,8 @@ function trToggle(on){
   if(TR.btn) TR.btn.style.display = TR.open ? "none" : "flex";
   if(TR.open){ trApplyGeo(); setTimeout(function(){ var i = document.getElementById("tr-in"); if(i) i.focus(); }, 30); }
 }
-function trBuild(){
-  if(document.getElementById("tr-style")) return;
+function trInjectStyle(){
+  if(document.getElementById("tr-style")) return false;
   var st = document.createElement("style"); st.id = "tr-style";
   st.textContent = '#tr-box{--tr-bg:#FBF1E8;--tr-card:#fff;--tr-ink:#3a312b;--tr-org:#E8805A;--tr-grn:#4E7F6E;--tr-line:#EBDDD0;--tr-soft:#FFF8F1}' +
     '#tr-btn{position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:9980;display:flex;align-items:center;gap:4px;padding:12px 9px;border-radius:14px 0 0 14px;background:#E8805A;color:#fff;font-size:13px;font-weight:700;cursor:pointer;border:0;box-shadow:0 2px 10px rgba(0,0,0,.25);opacity:.9;writing-mode:vertical-rl;letter-spacing:2px}#tr-btn:hover{opacity:1}' +
@@ -807,6 +863,10 @@ function trBuild(){
     '#tr-foot span{white-space:nowrap}#tr-foot button{white-space:nowrap;background:#fff;border:1px solid var(--tr-line);border-radius:99px;padding:4px 12px;font-size:12.5px;font-weight:700;cursor:pointer;color:var(--tr-ink)}#tr-foot .danger{color:#B23B32}' +
     '#tr-rs{position:absolute;right:0;bottom:0;width:26px;height:26px;cursor:nwse-resize;touch-action:none;display:flex;align-items:flex-end;justify-content:flex-end;font-size:16px;color:#999;padding:0 4px 2px 0;user-select:none}';
   document.head.appendChild(st);
+  return true;
+}
+function trBuild(){
+  if(!trInjectStyle()) return;
   var btn = document.createElement("button"); btn.id = "tr-btn"; btn.type = "button"; btn.textContent = "📝 翻譯機"; btn.title = "中文翻譯機（隨時打開，看完可收起）";
   btn.onclick = function(){ trToggle(true); };
   var box = document.createElement("div"); box.id = "tr-box";
@@ -861,7 +921,7 @@ function trBuild(){
   box.querySelector("#tr-ai").onclick = async function(){ var cur = trAiKey(); var v = await askText("AI 翻譯（Claude）：貼上你的 Anthropic API Key，翻譯品質最好，會用跟原本翻譯機一樣的提示詞。只存在這台裝置，不會上傳到平台。留空＝停用。" + (cur ? "（目前已設定）" : ""), "", "確定", "password"); if(v == null) return; v = v.trim(); try{ if(v) localStorage.setItem("mm_tr_aikey", v); else localStorage.removeItem("mm_tr_aikey"); }catch(e){} toast(v ? "已啟用 AI 翻譯" : "已停用 AI 翻譯"); };
   box.querySelector("#tr-imp").onclick = function(){ trImportToRecords(true); };
   box.querySelector("#tr-cfg").onclick = async function(){ var v = await askText("每天幾點以後，自動把翻譯機的生詞加進課堂記錄？（格式 17:00）", trTimeCfg()); if(!v) return; if(!/^\d{1,2}:\d{2}$/.test(v.trim())){ toast("請輸入像 17:00 這樣的時間"); return; } try{ localStorage.setItem("mm_tr_time", v.trim()); }catch(e){} toast("已設定：每天 " + v.trim() + " 之後自動加入"); };
-  box.querySelector("#tr-clear").onclick = function(){ if(!Object.keys(TR.list).length) return; if(!confirm("清空全部記錄？（下課後整理完再清比較保險，建議先按「複製全部」）")) return; var ids = Object.keys(TR.list); TR.list = {}; trDrawList(); try{ localStorage.removeItem("mm_tr_list_" + S.teacher.id); }catch(e){} fbSet(trPath(), null).then(function(){ trSetStatus("ok"); }).catch(function(){ trSetStatus("local"); }); };
+  box.querySelector("#tr-clear").onclick = function(){ if(!Object.keys(TR.list).length) return; if(!confirm("清空全部記錄？（下課後整理完再清比較保險，建議先按「複製全部」）")) return; var ids = Object.keys(TR.list); TR.list = {}; trDrawList(); try{ localStorage.removeItem("mm_tr_list_" + S.teacher.id); }catch(e){} fbSet(trPath(), null).then(function(){ trSetStatus("ok"); }).catch(function(){ trSetStatus("local"); }); trPublishSoon(); };
   box.addEventListener("click", function(e){ var rt = e.target.closest("[data-retry]"); if(rt){ trRetry(rt.dataset.retry); return; } var d = e.target.closest("[data-del]"); if(!d) return; var id = d.dataset.del; delete TR.list[id]; trDrawList(); trPersist(id); });
   box.addEventListener("input", function(e){ if(e.target.matches && e.target.matches("textarea.tr-t")){ e.target.style.height = "auto"; e.target.style.height = (e.target.scrollHeight + 2) + "px"; } });
   box.addEventListener("change", async function(e){ var mv = e.target.closest && e.target.closest("[data-movedone]"); if(mv){ if(!mv.value) return; var me = TR.list[mv.dataset.movedone]; if(me && me.imp){ var ok = await recMoveVocab(me.zh, me.imp.rec, mv.value); toast(ok ? "已改放到新的課堂記錄" : "沒有移動"); } trDrawList(); return; } var ds = e.target.closest && e.target.closest("[data-dest]"); if(ds){ var de = TR.list[ds.dataset.dest]; if(de){ if(ds.value) de.dest = ds.value; else delete de.dest; trPersist(ds.dataset.dest); trDrawList(); } return; } var ck = e.target.closest && e.target.closest("[data-ck]"); if(ck){ var en = TR.list[ck.dataset.ck]; if(en){ en.done = ck.checked; ck.closest(".tr-row").classList.toggle("done", ck.checked); trPersist(ck.dataset.ck); } return; } var t = e.target; if(t.tagName !== "TEXTAREA" || !t.dataset.id) return; var ent = TR.list[t.dataset.id]; if(!ent) return; ent.tr = ent.tr || {}; ent.tr[t.dataset.lang] = t.value.trim(); trPersist(t.dataset.id); if(t.value.trim()){ var pp = {}; pp[t.dataset.lang] = t.value.trim(); trLearn(ent.zh, pp); toast("已記住這個修正，下次同一個詞會直接用"); } });
@@ -4158,7 +4218,7 @@ async function toggleLive(){
   var cls = getCls(S.sel); if(!cls) return;
   if(S.live && S.live.on){
     if(!confirm("結束上課？學生會回到自己的班級頁。")) return;
-    S.live = null; cls.live = null; try{ await fbSet(liveRef(), null); }catch(e){}
+    S.live = null; cls.live = null; try{ await fbSet(liveRef(), null); await fbSet(clsPath(S.sel) + "/liveTrans", null); TR_PUB.last = ""; }catch(e){}
     setFocus(false); try{ if(document.fullscreenElement) document.exitFullscreen().catch(function(){}); }catch(e){} renderLesson(cls); return;
   }
   S.live = { on: true, lesson: S.lesson, tab: S.tab, sub: S.sub || null, room: null, startedAt: Date.now() };
@@ -4391,7 +4451,7 @@ async function startStudent(code, name, pw, opts){
     if(needAcct && !(opts && opts.google)){ var au = await studentAuth(idx, name, pw); if(au !== true){ viewStudentEntry(au, code); return; } }
     S.student = { name: name, code: code, idx: idx, school: res[0], term: res[1], cls: res[2], acct: needAcct };
     S.live = res[2].live && res[2].live.on ? res[2].live : null;
-    try{ window.onValue(window.ref(window.db, base + "/schools/" + idx.s + "/terms/" + idx.tm + "/classes/" + idx.c + "/live"), function(snap){ var v = snap.val(); var nv = v && v.on ? v : null; var key = JSON.stringify(nv); if(key === S.liveKey) return; S.liveKey = key; S.live = nv; S.liveRendered = null; if(S.student) renderStudent(); }); }catch(e){}
+    try{ window.onValue(window.ref(window.db, base + "/schools/" + idx.s + "/terms/" + idx.tm + "/classes/" + idx.c + "/live"), function(snap){ var v = snap.val(); var nv = v && v.on ? v : null; var key = JSON.stringify(nv); if(key === S.liveKey) return; S.liveKey = key; S.live = nv; S.liveRendered = null; if(S.student) renderStudent(); try{ stuTransDraw(); }catch(e2){} }); stuTransStart(base, idx); }catch(e){}
     S.plat = { lessons: res[3] || {}, books: res[4] || {} };
     S.lesson = null; S.tab = null; S.sub = null;
     var h = new URLSearchParams(location.hash.replace(/^#/, "")); if(h.get("l")) S.lesson = h.get("l"); if(h.get("tab")) S.tab = h.get("tab");
