@@ -6296,20 +6296,23 @@ window.mmTA = (function(){
           var text = String(r[idxOf["台詞內容"]] || "").trim();
           if(!title || !text) return;
           if(!byTitle[title]){ byTitle[title] = []; titleOrder.push(title); }
-          byTitle[title].push({ speaker: speaker, text: text });
+          var zyCol = idxOf["注音（逐字）"] !== undefined ? idxOf["注音（逐字）"] : idxOf["注音"];
+          byTitle[title].push({ speaker: speaker, text: text, zys: zyCol !== undefined ? String(r[zyCol] || "").trim().split(/\s+/).filter(Boolean) : [] });
         });
         var added = 0;
         titleOrder.forEach(function(title){
           var lines = byTitle[title].map(function(l){
-            var chars = Array.from(l.text);
-            return { speaker: l.speaker, text: l.text, zy: chars.map(function(ch){ return [ch, ""]; }) };
+            // 有「注音（逐字）」欄：依序對應到每個國字（標點符號跳過）
+            var chars = Array.from(l.text), zi = 0;
+            return { speaker: l.speaker, text: l.text, zy: chars.map(function(ch){ return [ch, /[\u3400-\u9fff]/.test(ch) ? (l.zys[zi++] || "") : ""]; }) };
           });
           lesson.texts.push({ title: title, lines: lines });
           added++;
         });
         cmDirty = true;
         renderCmLessonEditor();
-        alert("✅ 已匯入 " + added + " 篇課文到「第" + lesson.lesson + "課」（注音先留白，可以之後在編輯裡用「🔤 標注注音」補上）。");
+        var hadZy = titleOrder.some(function(t){ return byTitle[t].some(function(l){ return l.zys.length; }); });
+        alert("✅ 已匯入 " + added + " 篇課文到「第" + lesson.lesson + "課」" + (hadZy ? "（含注音）。" : "（注音先留白，可以之後在編輯裡用「🔤 標注注音」補上）。"));
       }catch(err){
         alert("匯入失敗，請確認檔案格式是否正確（可以先下載範本檔參考欄位）。");
       }
