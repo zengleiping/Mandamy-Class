@@ -95,7 +95,8 @@
   .bg-wrap{ padding:16px; max-width:900px; margin:0 auto; }
   /* 電腦版：賓果盤整個塞進一個螢幕，不用捲動（格子隨可用高度伸縮，不再強制正方形） */
   @media (min-width:900px) and (min-height:560px){
-    .bingo-root{ overflow:hidden; display:flex; flex-direction:column; }
+    .bingo-root{ overflow:auto; display:flex; flex-direction:column; }
+    .bg-wrap:not(.play){ flex:none; width:100%; }
     .bg-wrap.play{ flex:1; min-height:0; width:100%; max-width:1200px; padding:8px 20px 10px; display:flex; flex-direction:column; }
     .bg-wrap.play .head-row{ margin-bottom:4px; flex-wrap:nowrap; align-items:center; } .bg-wrap.play .head-row h2{ font-size:20px; margin:0; }
     .bg-wrap.play .bg-call{ margin:4px 0; padding:6px 10px; flex:none; } .bg-wrap.play .bg-callw{ font-size:clamp(28px,6vh,52px); line-height:1.1; }
