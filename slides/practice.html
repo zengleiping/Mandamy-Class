@@ -6472,7 +6472,7 @@ window.mmTA = (function(){
   }
 
   /* ---- 學生端：老師上課時記下的翻譯（翻譯機同步到 rooms/{房間}/trans），浮出唯讀面板，跟著老師打開／收起 ---- */
-  var SLT = { box: null, btn: null, open: false, teacherOpen: null, known: {} };
+  var SLT = { box: null, btn: null, open: false, teacherOpen: null, known: {}, scale: 1, teacherScale: null };
   function slEsc(x){ return String(x == null ? "" : x).replace(/[&<>"]/g, function(c){ return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
   function slZyHtml(sym){
     var tone = "", neutral = false, main = String(sym).replace(/[ˊˇˋ˙]/g, function(m){ if(m === "˙") neutral = true; else tone = m; return ""; });
@@ -6491,7 +6491,8 @@ window.mmTA = (function(){
   function slTransDraw(){
     if(!isStudent || window.__attempt || window.__solo || window.parent !== window) return;   // 嵌在平台裡時，由平台自己的面板負責，避免重複
     var d = roomData && roomData.trans, items = (d && d.items) || {}, ids = Object.keys(items);
-    if(!ids.length){ if(SLT.box){ SLT.box.style.display = "none"; SLT.btn.style.display = "none"; } SLT.known = {}; SLT.teacherOpen = null; return; }
+    var typingNow = (d && d.typing) || "";
+    if(!ids.length && !typingNow){ if(SLT.box){ SLT.box.style.display = "none"; SLT.btn.style.display = "none"; } SLT.known = {}; SLT.teacherOpen = null; return; }
     if(!document.getElementById("slt-style")){
       var st = document.createElement("style"); st.id = "slt-style";
       st.textContent = '#slt-btn{position:fixed;right:0;top:46%;z-index:99990;padding:12px 9px;border-radius:14px 0 0 14px;background:#E8805A;color:#fff;font-size:13px;font-weight:700;cursor:pointer;border:0;box-shadow:0 2px 10px rgba(0,0,0,.25);writing-mode:vertical-rl;letter-spacing:2px;font-family:inherit}' +
@@ -6507,11 +6508,16 @@ window.mmTA = (function(){
     if(!SLT.box){
       SLT.btn = document.createElement("button"); SLT.btn.id = "slt-btn"; SLT.btn.type = "button"; SLT.btn.onclick = function(){ SLT.open = true; slTransDraw(); };
       SLT.box = document.createElement("div"); SLT.box.id = "slt-box";
-      SLT.box.innerHTML = '<div id="slt-head"><b>📝 中文翻譯 Translation</b><button type="button" id="slt-close">收起 ▾</button></div><div id="slt-list"></div>';
+      SLT.box.innerHTML = '<div id="slt-head"><b>📝 中文翻譯 Translation</b><button type="button" id="slt-zo" title="縮小">A−</button><button type="button" id="slt-zi" title="放大">A＋</button><button type="button" id="slt-close">收起 ▾</button></div><div id="slt-typing" style="display:none;padding:6px 12px;font-size:14px;background:#FFF8F1;border-bottom:1px solid #EBDDD0;"></div><div id="slt-list"></div>';
+      SLT.box.querySelector("#slt-zo").onclick = function(){ SLT.scale = Math.max(0.6, (SLT.scale || 1) - 0.2); slTransDraw(); };
+      SLT.box.querySelector("#slt-zi").onclick = function(){ SLT.scale = Math.min(3, (SLT.scale || 1) + 0.2); slTransDraw(); };
       document.body.appendChild(SLT.btn); document.body.appendChild(SLT.box);
       SLT.box.querySelector("#slt-close").onclick = function(){ SLT.open = false; slTransDraw(); };
     }
     var fresh = ids.filter(function(id){ return !SLT.known[id]; }); ids.forEach(function(id){ SLT.known[id] = 1; });
+    if(SLT.teacherScale !== (d.scale || 1)){ SLT.teacherScale = d.scale || 1; SLT.scale = SLT.teacherScale; }
+    var tyEl = SLT.box.querySelector("#slt-typing"); tyEl.style.display = typingNow ? "block" : "none"; tyEl.textContent = typingNow ? "✏️ 老師正在輸入：" + typingNow : "";
+    SLT.box.querySelector("#slt-list").style.zoom = String(SLT.scale || 1);
     if(SLT.teacherOpen !== !!d.open){ SLT.teacherOpen = !!d.open; SLT.open = !!d.open; }   // 老師打開／收起，學生跟著
     if(fresh.length && d.open) SLT.open = true;
     ids.sort(function(a, b){ return (items[b].at || 0) - (items[a].at || 0); });
