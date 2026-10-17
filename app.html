@@ -124,6 +124,16 @@
   .act-fav{ position:absolute; top:6px; right:8px; border:none; background:none; font-size:18px; cursor:pointer; color:var(--ink-soft); } .act-fav.on{ color:#E8B04A; }
   .act-ctx{ display:flex; gap:8px 12px; align-items:center; flex-wrap:wrap; } .act-ctx label{ margin:0; font-weight:700; font-size:13.5px; } .act-ctx select{ padding:6px 10px; border-radius:8px; border:1.5px solid var(--line); background:var(--surface-2); max-width:100%; }
   .cl-school{ margin-top:10px; } .cl-sh{ display:flex; align-items:center; gap:8px; margin-bottom:6px; flex-wrap:wrap; }
+  .rte{ border:1.5px solid var(--line); border-radius:10px; background:var(--surface); overflow:hidden; margin-top:4px; }
+  .rte-bar{ display:flex; flex-wrap:wrap; gap:2px; padding:4px 6px; background:var(--surface-2); border-bottom:1px solid var(--line); }
+  .rte-bar button{ border:none; background:none; padding:4px 9px; border-radius:6px; font:inherit; font-size:13px; cursor:pointer; color:var(--ink); }
+  .rte-bar button:hover{ background:var(--surface); } .rte-bar .rte-exp{ margin-left:auto; font-weight:700; color:var(--seal); }
+  .rte-ed{ min-height:90px; max-height:420px; overflow:auto; padding:10px 14px; line-height:1.8; outline:none; font-size:15px; }
+  .rte-ed:empty::before{ content:attr(data-ph); color:var(--ink-soft); }
+  .rte-ed h4, .rte-view h4{ font-size:16px; margin:10px 0 4px; color:var(--seal); } .rte-ed p, .rte-view p{ margin:0 0 6px; }
+  .rte-ed ul, .rte-ed ol, .rte-view ul, .rte-view ol{ margin:4px 0 8px; padding-left:1.8em; } .rte-ed blockquote, .rte-view blockquote{ margin:0 0 0 2em; padding:0; border:none; }
+  .rte-live{ padding:4px 12px 8px; font-size:13px; color:var(--seal); }
+  .rte-dlg{ width:min(1000px,96vw); max-width:96vw; padding:16px 18px; border:none; border-radius:16px; } .rte-dlg .rte-ed{ max-height:72vh; font-size:16px; }
   .tabs{ display:flex; gap:4px; padding:8px 14px 0; background:var(--surface); border-bottom:1px solid var(--line); flex-wrap:wrap; }
   .tab{ border:none; background:none; padding:9px 16px; font-size:14.5px; font-weight:700; color:var(--ink-soft); border-bottom:3px solid transparent; }
   .tab.on{ color:var(--seal); border-bottom-color:var(--seal); }
@@ -2389,7 +2399,7 @@ function renderRecPreview(){
   if(!r.isAbsence){
     html += '<div class="panel"><h3 style="margin-top:0;">學生表現</h3>' + (stus.filter(function(st){ return st && (st.name || stTotal(st)); }).length ?
       '<div style="overflow-x:auto;"><table class="hw-table"><thead><tr><th>學生</th>' + RUBRIC.map(function(x){ return '<th>' + esc(x.label) + '<div class="note" style="font-weight:400;">/' + x.max + '</div></th>'; }).join("") + '<th>總分</th></tr></thead><tbody>' +
-      stus.filter(function(st){ return st && (st.name || stTotal(st)); }).map(function(st){ return '<tr><td><b>' + esc(st.name || "") + '</b>' + (st.absent ? ' <span class="note">缺席</span>' : '') + '</td>' + RUBRIC.map(function(x){ return '<td>' + (st[x.key] == null ? '<span class="note">—</span>' : esc(st[x.key])) + '</td>'; }).join("") + '<td><b>' + (st.absent ? "—" : stTotal(st)) + '</b></td></tr>'; }).join("") + '</tbody></table></div>' + stus.filter(function(st){ return st && (st.comment || (st.detail && Object.keys(st.detail).length)); }).map(function(st){ return '<div class="rv-cm"><div class="rv-cmh">' + esc(st.name || "（未填姓名）") + ' 的評語</div>' + (st.comment ? '<div style="white-space:pre-wrap;">' + esc(st.comment) + '</div>' : '') + (st.detail ? '<div class="rv-dt">' + RUBRIC.filter(function(r){ return st.detail[r.key]; }).map(function(r){ return '<div><b>' + r.label + '</b>　' + esc(st.detail[r.key]) + '</div>'; }).join("") + '</div>' : '') + '</div>'; }).join("") : '<p class="note">沒有填學生表現。</p>') + '</div>';
+      stus.filter(function(st){ return st && (st.name || stTotal(st)); }).map(function(st){ return '<tr><td><b>' + esc(st.name || "") + '</b>' + (st.absent ? ' <span class="note">缺席</span>' : '') + '</td>' + RUBRIC.map(function(x){ return '<td>' + (st[x.key] == null ? '<span class="note">—</span>' : esc(st[x.key])) + '</td>'; }).join("") + '<td><b>' + (st.absent ? "—" : stTotal(st)) + '</b></td></tr>'; }).join("") + '</tbody></table></div>' + stus.filter(function(st){ return st && (st.comment || (st.detail && Object.keys(st.detail).length)); }).map(function(st){ return '<div class="rv-cm"><div class="rv-cmh">' + esc(st.name || "（未填姓名）") + ' 的評語</div>' + (st.comment ? rteShow(st.commentHtml, st.comment) : '') + (st.detail ? '<div class="rv-dt">' + RUBRIC.filter(function(r){ return st.detail[r.key]; }).map(function(r){ return '<div><b>' + r.label + '</b>　' + esc(st.detail[r.key]) + '</div>'; }).join("") + '</div>' : '') + '</div>'; }).join("") : '<p class="note">沒有填學生表現。</p>') + '</div>';
   }
   html += '<div class="panel"><h3 style="margin-top:0;">新生詞　<span class="note" style="font-weight:400;">' + vocab.length + ' 個</span></h3>' + (vocab.length ? recVocabListHtml(vocab, false, true) : '<p class="note">沒有新生詞。</p>') + '</div>';
   if(shots.length) html += '<div class="panel"><h3 style="margin-top:0;">課程截圖</h3><div class="tools">' + shots.map(function(u, i){ return '<img src="' + u + '" data-r="pshot" data-i="' + i + '" style="width:120px;height:120px;object-fit:cover;border-radius:10px;cursor:zoom-in;border:1px solid var(--line);">'; }).join("") + '</div></div>';
@@ -2421,12 +2431,126 @@ function recSync(){
     var st = d.students[Number(box.dataset.i)]; if(!st) return;
     st.name = box.querySelector(".rname").value; var ab = box.querySelector(".rabs"); if(ab){ if(ab.checked) st.absent = true; else delete st.absent; }
     box.querySelectorAll(".rsc").forEach(function(inp){ st[inp.dataset.k] = inp.value === "" ? null : Math.max(0, Math.min(Number(inp.max), Number(inp.value))); });
-    var cm = box.querySelector(".rcm"); if(cm){ if(cm.value.trim()) st.comment = cm.value; else delete st.comment; }
+    var cm = box.querySelector(".rcm"); if(cm){ if(cm.value.trim()) st.comment = cm.value; else delete st.comment; if(cm._rte){ var hh = cm.dataset.html || ""; if(hh && /<(b|u|ol|ul|h4|blockquote)\b/.test(hh)) st.commentHtml = hh; else delete st.commentHtml; } }
     var dtl = {}; box.querySelectorAll(".rdt").forEach(function(inp){ if(inp.value.trim()) dtl[inp.dataset.k] = inp.value; }); if(Object.keys(dtl).length) st.detail = dtl; else delete st.detail;
   });
 }
 function recBackupKey(){ return "mm_recdraft_" + (S.rec.edit || "new"); }
 function recAutosave(){ try{ localStorage.setItem(recBackupKey(), JSON.stringify({ ts: Date.now(), draft: S.rec.draft })); }catch(e){} }
+// ---------- 長評語編輯器：標題、粗體、底線、項目符號、編號、縮排、放大編輯；貼上純文字會自動整理成標題／段落／清單 ----------
+var RTE_TAGS = { P: 1, BR: 1, B: 1, STRONG: 1, I: 1, EM: 1, U: 1, UL: 1, OL: 1, LI: 1, H4: 1, BLOCKQUOTE: 1 };
+function rteClean(html){
+  var box = document.createElement("div"); box.innerHTML = String(html || "");
+  (function walk(node){
+    Array.prototype.slice.call(node.childNodes).forEach(function(ch){
+      if(ch.nodeType === 3) return;
+      if(ch.nodeType !== 1){ ch.remove(); return; }
+      var tag = ch.tagName;
+      if(/^(SCRIPT|STYLE|META|LINK|TITLE|XML|O:P)$/.test(tag)){ ch.remove(); return; }
+      walk(ch);
+      if(tag === "DIV" || /^H[1-3,5-6]$/.test(tag) && tag !== "H4"){ var np = document.createElement(/^H/.test(tag) ? "h4" : "p"); while(ch.firstChild) np.appendChild(ch.firstChild); ch.replaceWith(np); return; }
+      if(tag === "SPAN" && /font-weight:\s*(bold|[6-9]00)/i.test(ch.getAttribute("style") || "")){ var bb = document.createElement("b"); while(ch.firstChild) bb.appendChild(ch.firstChild); ch.replaceWith(bb); return; }
+      if(!RTE_TAGS[tag]){ var frag = document.createDocumentFragment(); while(ch.firstChild) frag.appendChild(ch.firstChild); ch.replaceWith(frag); return; }
+      Array.prototype.slice.call(ch.attributes).forEach(function(a){ ch.removeAttribute(a.name); });
+    });
+  })(box);
+  return box.innerHTML.replace(/(<p>(\s|&nbsp;|<br>)*<\/p>\s*){2,}/g, "<p><br></p>").trim();
+}
+function rteEsc(t){ return String(t).replace(/[&<>]/g, function(c){ return { "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]; }); }
+// 純文字 → 有結構的內容：短短一行、沒有標點、後面接著內文的 → 標題；1. 2. 3. → 編號清單；・-• → 項目符號
+function rteFromText(text){
+  var lines = String(text || "").replace(/\r/g, "").split("\n"), out = [], i = 0;
+  var isHead = function(s, next){ s = s.trim(); return s.length >= 2 && s.length <= 14 && !/[，。、；：！？,.;:!?「」（）()]/.test(s) && !/^\d/.test(s) && next != null && next.trim().length > s.length; };
+  while(i < lines.length){
+    var L = lines[i], s = L.trim();
+    if(!s){ i++; continue; }
+    if(/^\d+\s*[\.、．)）]\s*/.test(s)){ var li = []; while(i < lines.length && (/^\d+\s*[\.、．)）]\s*/.test(lines[i].trim()) || !lines[i].trim())){ if(lines[i].trim()) li.push("<li>" + rteEsc(lines[i].trim().replace(/^\d+\s*[\.、．)）]\s*/, "")) + "</li>"); i++; } out.push("<ol>" + li.join("") + "</ol>"); continue; }
+    if(/^[・•\-\*●▪◦]\s*/.test(s)){ var ui = []; while(i < lines.length && /^[・•\-\*●▪◦]\s*/.test(lines[i].trim())){ ui.push("<li>" + rteEsc(lines[i].trim().replace(/^[・•\-\*●▪◦]\s*/, "")) + "</li>"); i++; } out.push("<ul>" + ui.join("") + "</ul>"); continue; }
+    var nx = null; for(var j = i + 1; j < lines.length; j++){ if(lines[j].trim()){ nx = lines[j]; break; } }
+    out.push(isHead(s, nx) ? "<h4>" + rteEsc(s) + "</h4>" : "<p>" + rteEsc(s) + "</p>"); i++;
+  }
+  return out.join("");
+}
+function rteHtmlOf(html, text){ return html ? rteClean(html) : (text ? rteFromText(text) : ""); }
+function rteText(el){
+  var out = []; (function walk(n, depth){
+    Array.prototype.forEach.call(n.childNodes, function(c){
+      if(c.nodeType === 3){ out.push(c.nodeValue); return; }
+      if(c.nodeType !== 1) return;
+      var t = c.tagName;
+      if(t === "BR"){ out.push("\n"); return; }
+      if(t === "LI"){ var par = c.parentNode, idx = Array.prototype.indexOf.call(par.children, c) + 1; out.push("\n" + "  ".repeat(depth) + (par.tagName === "OL" ? idx + ". " : "・")); walk(c, depth + 1); return; }
+      if(/^(P|H4|BLOCKQUOTE|UL|OL)$/.test(t)){ out.push("\n"); walk(c, t === "BLOCKQUOTE" ? depth + 1 : depth); out.push("\n"); return; }
+      walk(c, depth);
+    });
+  })(el, 0);
+  return out.join("").replace(/\n{3,}/g, "\n\n").trim();
+}
+var RTE_BTNS = [["h4", "標題", "設成小標題（再按一次變回內文）"], ["bold", "<b>B</b>", "粗體（Ctrl+B）"], ["underline", "<u>U</u>", "底線（Ctrl+U）"], ["ul", "• 項目", "項目符號清單"], ["ol", "1. 編號", "編號清單 1. 2. 3."], ["indent", "→ 縮排", "增加縮排（清單裡按 Tab 也可以）"], ["outdent", "← 凸排", "減少縮排（清單裡按 Shift+Tab）"], ["clear", "清除格式", "把選取的文字變回一般文字"]];
+// 把一個 textarea 換成編輯器；textarea 留著（隱藏）放純文字，給其他功能使用
+function rteMount(ta, opts){
+  opts = opts || {};
+  if(ta._rte) return ta._rte;
+  var wrap = document.createElement("div"); wrap.className = "rte";
+  var bar = document.createElement("div"); bar.className = "rte-bar";
+  bar.innerHTML = RTE_BTNS.map(function(b){ return '<button type="button" data-cmd="' + b[0] + '" title="' + b[2] + '">' + b[1] + '</button>'; }).join("") + (opts.noExpand ? '' : '<button type="button" data-cmd="expand" class="rte-exp" title="放大成全螢幕編輯">⤢ 放大編輯</button>');
+  var ed = document.createElement("div"); ed.className = "rte-ed"; ed.contentEditable = "true"; ed.setAttribute("data-ph", ta.getAttribute("placeholder") || "");
+  ed.innerHTML = rteHtmlOf(opts.html, ta.value);
+  if(opts.minH) ed.style.minHeight = opts.minH;
+  var live = document.createElement("div"); live.className = "rte-live"; live.style.display = "none";
+  wrap.appendChild(bar); wrap.appendChild(ed); wrap.appendChild(live);
+  ta.style.display = "none"; ta.parentNode.insertBefore(wrap, ta.nextSibling);
+  var api = {
+    el: ed, wrap: wrap,
+    html: function(){ var h = rteClean(ed.innerHTML); return rteText(ed) ? h : ""; },
+    text: function(){ return rteText(ed); },
+    set: function(html){ ed.innerHTML = html; sync(); },
+    appendPara: function(t){ if(!t) return; var last = ed.lastElementChild; if(last && last.tagName === "P" && !last.textContent.trim()) last.remove(); var p = document.createElement("p"); p.textContent = t; ed.appendChild(p); sync(); },
+    appendInline: function(t){ if(!t) return; var last = ed.lastElementChild; if(last && last.tagName === "P"){ var cur = last.textContent.replace(/[，。\s]*$/, ""); last.textContent = (cur ? cur + "，" : "") + t; sync(); } else api.appendPara(t); },
+    live: function(t){ live.style.display = t ? "" : "none"; live.textContent = t ? "🎙️ " + t : ""; }
+  };
+  function sync(){ ta.value = rteText(ed); ta.dataset.html = api.html(); ta.dispatchEvent(new Event("input", { bubbles: true })); if(opts.onChange) opts.onChange(api); }
+  ed.addEventListener("input", sync);
+  ed.addEventListener("blur", sync);
+  ed.addEventListener("paste", function(e){
+    var cd = e.clipboardData; if(!cd) return; e.preventDefault();
+    var h = cd.getData("text/html"), t = cd.getData("text/plain");
+    var ins = h && /<(p|li|h\d|b|strong|ol|ul|br)\b/i.test(h) ? rteClean(h) : rteFromText(t);
+    document.execCommand("insertHTML", false, ins || rteEsc(t)); sync();
+  });
+  ed.addEventListener("keydown", function(e){
+    if(e.key === "Tab"){ e.preventDefault(); document.execCommand(e.shiftKey ? "outdent" : "indent"); sync(); }
+  });
+  bar.addEventListener("mousedown", function(e){ if(e.target.closest("button")) e.preventDefault(); });
+  bar.addEventListener("click", function(e){
+    var b = e.target.closest("button[data-cmd]"); if(!b) return; var c = b.dataset.cmd;
+    if(c === "expand"){ rteExpand(api, opts.title || "編輯評語"); return; }
+    ed.focus();
+    if(c === "h4"){ var blk = document.queryCommandValue("formatBlock"); document.execCommand("formatBlock", false, /h4/i.test(blk) ? "p" : "h4"); }
+    else if(c === "bold" || c === "underline") document.execCommand(c);
+    else if(c === "ul") document.execCommand("insertUnorderedList");
+    else if(c === "ol") document.execCommand("insertOrderedList");
+    else if(c === "indent" || c === "outdent") document.execCommand(c);
+    else if(c === "clear"){ document.execCommand("removeFormat"); document.execCommand("formatBlock", false, "p"); }
+    sync();
+  });
+  ta._rte = api; sync0(); return api;
+  function sync0(){ ta.dataset.html = api.html(); }
+}
+// 全螢幕編輯：同一份內容放大，關掉時寫回原本的格子
+function rteExpand(api, title){
+  var d = document.createElement("dialog"); d.className = "rte-dlg";
+  d.innerHTML = '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><h3 style="flex:1;margin:0;">' + rteEsc(title) + '</h3><span class="note" id="rte-cnt"></span><button class="btn primary" data-x="1">完成</button></div><textarea style="display:none;"></textarea>';
+  document.body.appendChild(d);
+  var ta = d.querySelector("textarea"), big = rteMount(ta, { html: api.html() || "", noExpand: true, minH: "60vh", onChange: function(a){ d.querySelector("#rte-cnt").textContent = a.text().replace(/\s/g, "").length + " 字"; } });
+  d.querySelector("#rte-cnt").textContent = big.text().replace(/\s/g, "").length + " 字";
+  var done = function(){ api.set(big.html()); d.close(); d.remove(); };
+  d.querySelector("[data-x]").onclick = done;
+  d.addEventListener("cancel", function(e){ e.preventDefault(); done(); });
+  d.showModal(); setTimeout(function(){ big.el.focus(); }, 30);
+}
+// 顯示評語：有格式就用格式，沒有就把換行變成段落
+function rteShow(html, text){ var h = rteHtmlOf(html, text); return h ? '<div class="rte-view">' + h + '</div>' : ''; }
 // ---------- 課堂記錄加速：自動帶入、一鍵打分、常用評語、麥克風口述→正式文字、快速補填 ----------
 var REC_LV = [["good", "👍 很好"], ["ok", "🙂 正常"], ["work", "💪 要加油"]];
 function recPresets(){
@@ -2585,6 +2709,7 @@ function recEnhance(){
       var bar = document.createElement("div"); bar.className = "tools"; bar.style.cssText = "margin:4px 0 0;";
       bar.innerHTML = '<button type="button" class="btn sm mic" data-q="mic" data-i="' + i + '" title="用說的輸入評語，停止後自動整理成正式文字">🎙️</button><button type="button" class="btn sm ghost" data-q="formal" data-i="' + i + '" title="把這段評語整理成正式的紀錄文字">✨ 正式化</button>' + phrases.map(function(p){ return '<button type="button" class="chip rq-ph" data-q="ph" data-i="' + i + '">' + esc(p) + '</button>'; }).join("");
       cm.parentNode.insertBefore(bar, cm.nextSibling);
+      rteMount(cm, { html: st.commentHtml, title: (st.name || "學生") + " 的評語" });
     }
   });
   ["rf-material", "rf-notes"].forEach(function(id){
@@ -2610,10 +2735,10 @@ function recEnhanceClick(e){
   if(a === "lv"){ recApplyLevel(d.students[i], b.dataset.lv); recAutosave(); renderRecEditor(); }
   else if(a === "lvall"){ d.students.forEach(function(st){ if(!st.absent && !recHasScore(st)) recApplyLevel(st, b.dataset.lv); }); recAutosave(); renderRecEditor(); }
   else if(a === "same"){ var p = recPrevOf(d.classLabel, d.students[i].name, S.rec.edit); if(p){ RUBRIC.forEach(function(r){ d.students[i][r.key] = p[r.key]; }); recAutosave(); renderRecEditor(); } }
-  else if(a === "ph"){ var st = d.students[i], t = b.textContent; st.comment = (st.comment ? st.comment.replace(/[，。\s]*$/, "") + "，" : "") + t + "。"; recAutosave(); renderRecEditor(); }
-  else if(a === "formal"){ var box = document.querySelector('.rstu[data-i="' + i + '"] .rcm'); if(box){ box.value = recFormal(box.value); recSync(); recAutosave(); } }
+  else if(a === "ph"){ var cmp = document.querySelector('.rstu[data-i="' + i + '"] .rcm'); if(cmp && cmp._rte){ cmp._rte.appendInline(b.textContent + "。"); recSync(); recAutosave(); } }
+  else if(a === "formal"){ var box = document.querySelector('.rstu[data-i="' + i + '"] .rcm'); if(box && box._rte){ var edd = box._rte.el; edd.querySelectorAll("p,li,h4").forEach(function(n){ if(n.querySelector("p,li,ul,ol")) return; var tx = n.textContent.trim(); if(tx) n.textContent = n.tagName === "H4" ? tx : recFormal(tx); }); if(!edd.children.length && edd.textContent.trim()) edd.innerHTML = rteFromText(recFormal(edd.textContent)); box._rte.set(edd.innerHTML); recSync(); recAutosave(); } }
   else if(a === "formalf"){ var el = document.getElementById(b.dataset.f); if(el){ el.value = b.dataset.f === "rf-material" ? recFormal(el.value).replace(/。$/, "") : recFormal(el.value); recSync(); recAutosave(); } }
-  else if(a === "mic"){ var cm = document.querySelector('.rstu[data-i="' + i + '"] .rcm'); if(cm) recMicStart(cm, b, function(spoken, base){ if(!spoken) return; cm.value = (base ? base.replace(/[，。\s]*$/, "") + "，" : "") + recFormal(spoken); recSync(); recAutosave(); }); }
+  else if(a === "mic"){ var cm = document.querySelector('.rstu[data-i="' + i + '"] .rcm'); if(cm && cm._rte){ var tmp = document.createElement("textarea"), api = cm._rte; tmp.addEventListener("input", function(){ api.live(tmp.value); }); recMicStart(tmp, b, function(spoken){ api.live(""); if(!spoken) return; api.appendPara(recFormal(spoken)); recSync(); recAutosave(); }); } }
   else if(a === "micf"){ var f = document.getElementById(b.dataset.f); if(f) recMicStart(f, b, function(spoken, base){ if(!spoken) return; var t = recFormal(spoken); if(b.dataset.f === "rf-material") t = t.replace(/。$/, ""); f.value = (base ? base.replace(/[，。\s]*$/, "") + "，" : "") + t; recSync(); recAutosave(); }); }
   else if(a === "dictall"){ S.rec.dict = !S.rec.dict; if(!S.rec.dict) recMicStop(); renderRecEditor(); }
   else if(a === "micraw"){ var raw = document.getElementById("rq-raw"); raw.oninput = function(){ S.rec.dictRaw = raw.value; }; recMicStart(raw, b, function(){ S.rec.dictRaw = raw.value; S.rec.segs = recRoute(raw.value, d.students); recDrawPreview(); }); }
@@ -2632,7 +2757,7 @@ function recEnhanceClick(e){
         else d.material = add(cur, mt, "、");
       }
       else if(s.tgt === "notes") d.notes = add(d.notes, s.text, "。");
-      else { var st2 = d.students[Number(s.tgt.slice(1))]; if(!st2) return; st2.comment = add(st2.comment, s.text, "，"); if(lvOn[j]) recApplyLevel(st2, s.lv || "ok"); }
+      else { var st2 = d.students[Number(s.tgt.slice(1))]; if(!st2) return; st2.comment = add(st2.comment, s.text, "，"); if(st2.commentHtml) st2.commentHtml += "<p>" + rteEsc(s.text) + "</p>"; if(lvOn[j]) recApplyLevel(st2, s.lv || "ok"); }
     });
     S.rec.dict = false; S.rec.segs = null; S.rec.dictRaw = ""; recAutosave(); toast("已套用，請看一下再儲存"); renderRecEditor();
   }
@@ -3780,10 +3905,12 @@ async function renderComments(){
     '<p class="note" style="margin-top:8px;">這是依照你記錄的分數、出席、備註和作業「組合」出來的草稿，不是 AI 寫的；請你再看過、改成你自己的口吻。你改過的內容，在不按「重新產生」之前都會保留。</p></div>' + (cards || '<div class="panel"><p class="note">這個班的課堂記錄裡還沒有學生姓名。</p></div>');
   recViewShell("學期評語", "依課堂記錄產生每位學生的中文評語草稿", body);
   var main = document.getElementById("main");
-  main.oninput = function(e){ if(e.target.classList.contains("cmt")){ t.texts[t.label + "|" + e.target.dataset.n] = e.target.value; var cs = document.querySelectorAll(".cc"); cs.forEach(function(c){ if(c.dataset.n === e.target.dataset.n) c.textContent = e.target.value.length + " 字"; }); } };
+  t.html = t.html || {};
+  main.querySelectorAll("textarea.cmt").forEach(function(ta){ rteMount(ta, { html: t.html[t.label + "|" + ta.dataset.n], title: ta.dataset.n + " 的學期評語", minH: "160px" }); });
+  main.oninput = function(e){ if(e.target.classList.contains("cmt")){ t.texts[t.label + "|" + e.target.dataset.n] = e.target.value; t.html[t.label + "|" + e.target.dataset.n] = e.target.dataset.html || ""; var cs = document.querySelectorAll(".cc"); cs.forEach(function(c){ if(c.dataset.n === e.target.dataset.n) c.textContent = e.target.value.length + " 字"; }); } };
   main.onchange = function(e){
     var id = e.target.id;
-    if(id === "cm-l"){ t.label = e.target.value; t.texts = {}; renderComments(); }
+    if(id === "cm-l"){ t.label = e.target.value; t.texts = {}; t.html = {}; renderComments(); }
     else if(id === "cm-f" || id === "cm-t"){ t.from = document.getElementById("cm-f").value; t.to = document.getElementById("cm-t").value; t.texts = {}; renderComments(); }
     else if(id === "cm-tone"){ o.tone = e.target.value; t.texts = {}; renderComments(); }
     else if(id === "cm-len"){ o.length = e.target.value; t.texts = {}; renderComments(); }
@@ -3792,7 +3919,7 @@ async function renderComments(){
   recViewNav(async function(e){
     var b = e.target.closest("[data-r]"); if(!b) return; var a = b.dataset.r, n = b.dataset.n;
     if(a === "cgen"){ if(!confirm("重新產生全部？你手動修改過的內容會被覆蓋。")) return; t.texts = {}; renderComments(); }
-    else if(a === "cregen"){ delete t.texts[t.label + "|" + n]; renderComments(); }
+    else if(a === "cregen"){ delete t.texts[t.label + "|" + n]; if(t.html) delete t.html[t.label + "|" + n]; renderComments(); }
     else if(a === "ccopy"){ try{ await navigator.clipboard.writeText(t.texts[t.label + "|" + n]); toast("已複製"); }catch(er){} }
     else if(a === "cprint"){ openReportCards(t.label, names, rng, t.texts, hwBy); }
     else if(a === "cprint1"){ openReportCards(t.label, [n], rng, t.texts, hwBy); }
@@ -4054,7 +4181,7 @@ function openReportCards(label, names, rng, texts, hwBy){
     return '<section><h1>學期學習報告</h1><div class="meta">' + esc(label) + '　｜　' + esc(period) + '</div><h2>' + esc(n) + ' 同學</h2>' +
       '<table class="kv"><tr><td>上課堂數</td><td>' + st.sessions + ' 堂</td><td>出席率</td><td>' + (st.rate == null ? "—" : st.rate + "%") + '</td></tr><tr><td>缺席</td><td>' + st.absent + ' 堂</td><td>課堂平均分數</td><td>' + (st.total == null ? "—" : st.total.toFixed(0) + " / 100") + '</td></tr>' + (hw && hw.total ? '<tr><td>作業</td><td>' + hw.total + ' 份</td><td>準時 / 遲交 / 未交</td><td>' + hw.ok + ' / ' + hw.late + ' / ' + hw.missing + '</td></tr>' : '') + '</table>' +
       '<h3>各項學習表現（佔滿分的百分比）</h3><table class="dims">' + dimRows + '</table>' +
-      '<h3>老師的話</h3><p class="cmt">' + esc(txt).replace(/\n/g, "<br>") + '</p><div class="sign">老師簽名：＿＿＿＿＿＿＿＿　　日期：＿＿＿＿＿＿＿＿</div></section>';
+      '<h3>老師的話</h3><div class="cmt">' + (function(){ var hh = S.rec && S.rec.html && S.rec.html[label + "|" + n]; return hh ? rteClean(hh) : rteFromText(txt) || esc(txt).replace(/\n/g, "<br>"); })() + '</div><div class="sign">老師簽名：＿＿＿＿＿＿＿＿　　日期：＿＿＿＿＿＿＿＿</div></section>';
   }).join("");
   w.document.write('<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8"><title>學期學習報告 ' + esc(label) + '</title><style>body{font-family:"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;color:#222;margin:0}section{padding:28px 36px;page-break-after:always;max-width:720px;margin:0 auto}h1{font-size:24px;margin:0 0 4px}.meta{color:#666;margin-bottom:14px}h2{font-size:20px;border-bottom:2px solid #B23B32;padding-bottom:6px}h3{font-size:15px;margin:18px 0 6px;color:#B23B32}table{width:100%;border-collapse:collapse}.kv td{padding:6px 8px;border:1px solid #ddd}.kv td:nth-child(odd){background:#f6f1ea;width:18%;font-weight:700}.dims td{padding:5px 6px}.bar{background:#eee;border-radius:6px;height:12px;overflow:hidden}.bar div{background:#B23B32;height:100%}.cmt{line-height:1.9;white-space:normal}.sign{margin-top:36px;color:#444}@media print{section{padding:0}}</style></head><body>' + pages + '<script>setTimeout(function(){window.print();},400);<\/script></body></html>');
   w.document.close();
