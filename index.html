@@ -8217,6 +8217,9 @@ window.mmTA = (function(){
         bingoBoards = null; bingoCallerWords = null; bingoSharedCard = null; flipCards = null; usedIndices = []; currentCard = null; qaUsedIndices = []; qaCurrentWord = null;
       }catch(e2){ console.warn('embed activity filter', e2); }
     }
+    // 平台指定了要開哪一個活動：直接進去，返回選單由平台負責
+    var actP = pp.get('activity');
+    if(actP && tab === 'activities'){ activityTab = actP; var hb = document.createElement('style'); hb.textContent = '#activityBackBtn{display:none !important;}'; document.head.appendChild(hb); }
     var tabMap = { vocab:'vocab', grammar:'grammar', text:'text', activities:'activities' };
     var tb = tab && document.querySelector('nav.tabs button[data-tab="' + (tabMap[tab] || tab) + '"]');
     if(tb) tb.click(); else render();

@@ -107,6 +107,22 @@
   .lib-grp{ display:inline-flex; align-items:flex-end; gap:0; margin-right:10px; padding-left:8px; border-left:1px solid var(--line); }
   .lib-grp:first-of-type{ border-left:none; }
   .lib-grp-t{ font-size:11.5px; font-weight:700; color:var(--ink-soft); align-self:center; margin-right:2px; white-space:nowrap; }
+  .mainnav{ display:flex; gap:2px; margin-right:6px; }
+  .mn{ border:none; background:none; padding:6px 10px; border-radius:10px; font:inherit; font-size:14px; font-weight:700; color:var(--ink-soft); cursor:pointer; display:inline-flex; gap:4px; align-items:center; white-space:nowrap; }
+  .mn:hover{ background:var(--surface-2); } .mn.on{ background:#FBE3D6; color:var(--seal); }
+  .umenu{ position:relative; } .ughost{ display:inline-flex; align-items:center; }
+  .udrop{ display:none; position:absolute; right:0; top:calc(100% + 6px); background:var(--surface); border:1.5px solid var(--line); border-radius:12px; padding:6px; min-width:140px; box-shadow:0 8px 24px rgba(0,0,0,.12); z-index:50; }
+  .udrop.open{ display:block; } .udrop button{ display:block; width:100%; text-align:left; border:none; background:none; padding:8px 10px; border-radius:8px; font:inherit; cursor:pointer; color:var(--ink); } .udrop button:hover{ background:var(--surface-2); }
+  @media (max-width:1100px){ .mn-t{ display:none; } .mn{ font-size:18px; padding:6px 8px; } }
+  .act-h{ font-size:15px; margin:14px 0 8px; }
+  .act-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:10px; }
+  .act-card{ position:relative; }
+  .act-go{ display:flex; flex-direction:column; gap:3px; width:100%; height:100%; text-align:left; border:1.5px solid var(--line); background:var(--surface); border-radius:14px; padding:12px 14px; font:inherit; cursor:pointer; color:var(--ink); }
+  .act-go:hover{ border-color:var(--seal); background:#FBE3D6; }
+  .act-e{ font-size:28px; line-height:1.1; } .act-go b{ font-size:15.5px; }
+  .act-fav{ position:absolute; top:6px; right:8px; border:none; background:none; font-size:18px; cursor:pointer; color:var(--ink-soft); } .act-fav.on{ color:#E8B04A; }
+  .act-ctx{ display:flex; gap:8px 12px; align-items:center; flex-wrap:wrap; } .act-ctx label{ margin:0; font-weight:700; font-size:13.5px; } .act-ctx select{ padding:6px 10px; border-radius:8px; border:1.5px solid var(--line); background:var(--surface-2); max-width:100%; }
+  .cl-school{ margin-top:10px; } .cl-sh{ display:flex; align-items:center; gap:8px; margin-bottom:6px; flex-wrap:wrap; }
   .tabs{ display:flex; gap:4px; padding:8px 14px 0; background:var(--surface); border-bottom:1px solid var(--line); flex-wrap:wrap; }
   .tab{ border:none; background:none; padding:9px 16px; font-size:14.5px; font-weight:700; color:var(--ink-soft); border-bottom:3px solid transparent; }
   .tab.on{ color:var(--seal); border-bottom-color:var(--seal); }
@@ -1314,7 +1330,7 @@ function navSnap(){
     return { k: "t", sel: S.sel ? { s: S.sel.s, t: S.sel.t || null, c: S.sel.c || null } : null, lesson: S.lesson || null, tab: S.tab || null, sub: S.sub || null,
       hw: S.hw ? { view: S.hw.view || "list", id: S.hw.id || null, from: S.hw.from || null, to: S.hw.to || null } : null,
       rec: S.rec ? { view: S.rec.edit !== undefined ? null : (S.rec.view || null), filter: S.rec.filter || null, label: S.rec.label || null, student: S.rec.student || null } : null,
-      lib: S.lib ? { book: S.lib.book || null, key: S.lib.key || null, bank: !!S.lib.bank, pid: S.lib.pid || null, tidy: !!S.lib.tidy } : null, day: S.day || null, settings: !!S.settings, grades: !!S.grades, ctab: S.ctab || null };
+      lib: S.lib ? { book: S.lib.book || null, key: S.lib.key || null, bank: !!S.lib.bank, pid: S.lib.pid || null, tidy: !!S.lib.tidy } : null, day: S.day || null, settings: !!S.settings, grades: !!S.grades, ctab: S.ctab || null, act: S.act ? { cls: S.act.cls || null, lesson: S.act.lesson || null, run: S.act.run || null } : null, classes: !!S.classes };
   }
   return { k: "s", lesson: S.lesson || null, tab: S.tab || null, sub: S.sub || null, hwOpen: S.hwOpen || null, leaveOpen: !!S.leaveOpen, roomJoin: S.roomJoin || null, examOpen: S.examOpen || null };
 }
@@ -1334,7 +1350,7 @@ window.addEventListener("popstate", function(e){
     try{
       if(S.focus) S.focus = false;
       S.sel = st.sel; S.lesson = st.lesson; S.tab = st.tab; S.sub = st.sub;
-      S.hw = st.hw; S.rec = st.rec ? Object.assign({}, st.rec) : null; S.lib = st.lib; S.day = st.day; S.settings = !!st.settings; S.grades = st.grades ? {} : null; if(st.ctab) S.ctab = st.ctab;
+      S.hw = st.hw; S.rec = st.rec ? Object.assign({}, st.rec) : null; S.lib = st.lib; S.day = st.day; S.settings = !!st.settings; S.grades = st.grades ? {} : null; if(st.ctab) S.ctab = st.ctab; S.act = st.act || null; S.classes = st.classes ? {} : null;
       if(S.rec && !S.rec.view) delete S.rec.view;
       render();
     } finally { NAV.popping = false; }
@@ -1393,22 +1409,28 @@ function shell(inner, opts){
   document.body.classList.toggle("ta", isTA());
   root.innerHTML = '<div class="shell' + (S.focus ? ' focus' : '') + '"><div class="top">' +
     '<a href="#" class="brand" id="brandhome" title="回到首頁" style="text-decoration:none;color:inherit;cursor:pointer;"><img src="icons/logo.svg" alt="" style="width:30px;height:30px;vertical-align:middle;margin-right:6px;">曼米中文' + (isT ? '' : '<small>學生</small>') + '</a><div class="crumb" id="crumb"></div><div class="grow"></div>' +
-    (isT ? '<span class="crumb" style="display:inline-flex;align-items:center;gap:6px;"><img src="icons/teacher.png" alt="" style="width:28px;height:28px;border-radius:50%;">' + esc(S.teacher.name) + '</span><button class="btn sm" id="bell" title="新的繳交">🔔</button><button class="btn sm" id="recbtn">課堂記錄</button><button class="btn sm owner-only" id="libbtn">📚 教材</button><button class="btn sm" id="grdbtn">📊 成績</button><button class="btn sm owner-only" id="setbtn">設定</button><button class="btn sm" id="logout">登出</button>'
+    (isT ? '<nav class="mainnav">' + [["navhome", "🏠", "首頁", topArea() === "home"], ["navcls", "🏫", "班級", topArea() === "cls"], ["libbtn", "📚", "教材", topArea() === "lib", "owner-only"], ["actbtn", "🎲", "課堂活動", topArea() === "act"], ["recbtn", "📊", "記錄與成績", topArea() === "rec"]].map(function(n){ return '<button class="mn' + (n[3] ? ' on' : '') + (n[4] ? ' ' + n[4] : '') + '" id="' + n[0] + '"><span>' + n[1] + '</span><span class="mn-t">' + n[2] + '</span></button>'; }).join("") + '</nav>' +
+         '<button class="btn sm" id="bell" title="新的繳交">🔔</button><span class="umenu"><button class="btn sm ughost" id="ubtn" title="' + esc(S.teacher.name) + '"><img src="icons/teacher.png" alt="" style="width:26px;height:26px;border-radius:50%;vertical-align:middle;"><span class="mn-t"> ' + esc(S.teacher.name) + ' ▾</span></button><div class="udrop" id="udrop"><button class="owner-only" id="setbtn">⚙️ 設定</button><button id="logout">登出</button></div></span>'
          : '<span class="crumb">👤 ' + esc(S.student ? S.student.name : "") + '</span><button class="btn sm" id="leave">離開</button>') +
     '</div><div class="body">' + '<main class="main' + (opts.flush ? ' flush' : '') + '" id="main">' + inner + '</main></div></div>';
   var bh = document.getElementById("brandhome");
   if(bh) bh.onclick = function(e){
     e.preventDefault();
     if(S.focus) setFocus(false);
-    if(S.teacher){ S.sel = null; S.lesson = null; S.tab = null; S.sub = null; S.hw = null; S.rec = null; S.lib = null; S.day = null; S.grades = null; S.settings = false; if(S.live && S.live.on) pushLive(true); render(); }
+    if(S.teacher){ S.sel = null; S.lesson = null; S.tab = null; S.sub = null; S.hw = null; S.rec = null; S.lib = null; S.day = null; S.grades = null; S.act = null; S.classes = null; S.settings = false; if(S.live && S.live.on) pushLive(true); render(); }
     else if(S.student){ S.lesson = null; S.tab = null; S.sub = null; S.hwOpen = null; S.albOpen = null; S.leaveOpen = false; S.roomJoin = null; S.examOpen = null; renderStudent(); }
   };
   if(isT){
     document.getElementById("bell").onclick = openBell; updateBell();
-    document.getElementById("recbtn").onclick = function(){ if(S.focus) setFocus(false); S.grades = null; S.rec = { filter: "all" }; S.settings = false; S.lib = null; S.day = null; S.sel = null; S.lesson = null; render(); };
-    document.getElementById("setbtn").onclick = function(){ if(S.focus) setFocus(false); S.grades = null; S.settings = true; S.lib = null; S.rec = null; S.day = null; S.sel = null; S.lesson = null; S.hw = null; render(); };
-    document.getElementById("libbtn").onclick = function(){ if(S.focus) setFocus(false); S.rec = null; S.settings = false; S.grades = null; S.lib = { book: S.lib ? S.lib.book : DEFAULT_BOOK }; render(); };
-    document.getElementById("grdbtn").onclick = function(){ if(S.focus) setFocus(false); S.rec = null; S.settings = false; S.lib = null; S.day = null; S.grades = {}; render(); };
+    var goTop = function(fn){ return function(){ if(S.focus) setFocus(false); if(S.live && S.live.on) pushLive(true); S.sel = null; S.lesson = null; S.tab = null; S.sub = null; S.hw = null; S.rec = null; S.lib = null; S.day = null; S.grades = null; S.act = null; S.classes = null; S.settings = false; fn(); render(); }; };
+    document.getElementById("recbtn").onclick = goTop(function(){ S.rec = { filter: "all" }; });
+    document.getElementById("navhome").onclick = goTop(function(){});
+    document.getElementById("navcls").onclick = goTop(function(){ S.classes = {}; });
+    document.getElementById("actbtn").onclick = goTop(function(){ S.act = {}; });
+    document.getElementById("ubtn").onclick = function(e){ e.stopPropagation(); document.getElementById("udrop").classList.toggle("open"); };
+    document.addEventListener("click", function(){ var u = document.getElementById("udrop"); if(u) u.classList.remove("open"); });
+    document.getElementById("setbtn").onclick = function(){ if(S.focus) setFocus(false); S.grades = null; S.act = null; S.classes = null; S.settings = true; S.lib = null; S.rec = null; S.day = null; S.sel = null; S.lesson = null; S.hw = null; render(); };
+    document.getElementById("libbtn").onclick = (function(){ var bk = S.lib ? S.lib.book : DEFAULT_BOOK; return goTop(function(){ S.lib = { book: bk }; }); })();
     document.getElementById("logout").onclick = async function(){ try{ localStorage.removeItem(SESSION_KEY); localStorage.removeItem("mm_ta_owner"); }catch(e){} try{ await window.mmTA.logout(); }catch(e){} try{ trStop(); }catch(e){} S.teacher = null; S.sel = null; NAV.last = null; history.replaceState(null, "", location.pathname); viewLogin(); };
   } else {
     document.getElementById("leave").onclick = async function(){ S.student = null; NAV.last = null; history.replaceState(null, "", location.pathname); if(googleUser()) await googleSignOut(); viewStudentEntry(); };
@@ -1418,12 +1440,14 @@ function setCrumb(parts){
   var c = document.getElementById("crumb"); if(!c) return;
   if(!S.teacher){ c.textContent = parts.filter(Boolean).join("  ›  "); return; }
   var items = [{ t: "首頁", go: "root" }];
-  var atHome = !S.lib && !S.rec && !S.day && !S.sel && !S.settings && !S.grades;
+  var atHome = !S.lib && !S.rec && !S.day && !S.sel && !S.settings && !S.grades && !S.act && !S.classes;
   if(atHome){ c.innerHTML = ""; return; }
-  if(S.grades){ items.push({ t: "成績" }); }
+  if(S.act){ items.push({ t: "課堂活動" }); }
+  else if(S.classes && !S.sel){ items.push({ t: "班級" }); }
+  else if(S.grades){ items.push({ t: "記錄與成績" }); }
   else if(S.lib){ items.push({ t: "教材" }); }
   else if(S.settings && !S.sel && !S.rec && !S.day){ items.push({ t: "設定" }); }
-  else if(S.rec){ items.push({ t: "課堂記錄" }); }
+  else if(S.rec){ items.push({ t: "記錄與成績" }); }
   else if(S.day && !S.sel){ items.push({ t: "課表 " + S.day }); }
   else if(S.sel){
     var yr = schoolsOf()[S.sel.s], sc = S.sel.t ? getSchool(S.sel.s, S.sel.t) : null, cl = S.sel.c ? getCls(S.sel) : null;
@@ -1437,7 +1461,7 @@ function setCrumb(parts){
   c.innerHTML = items.map(function(it, i){ return (it.go && i < last) ? '<a href="#" class="cr" data-go="' + it.go + '">' + esc(it.t) + '</a>' : '<span>' + esc(it.t) + '</span>'; }).join('<span style="margin:0 6px;opacity:.5;">›</span>');
   c.onclick = function(e){
     var a = e.target.closest("[data-go]"); if(!a) return; e.preventDefault();
-    var g = a.dataset.go, sel = S.sel; if(S.focus) setFocus(false); S.grades = null; S.lib = null; S.day = null; S.rec = null; S.hw = null; S.settings = false;
+    var g = a.dataset.go, sel = S.sel; if(S.focus) setFocus(false); S.grades = null; S.act = null; S.lib = null; S.day = null; S.rec = null; S.hw = null; S.settings = false;
     if(g === "root") S.sel = null;
     else if(g === "year") S.sel = { s: sel.s, t: null, c: null };
     else if(g === "school") S.sel = { s: sel.s, t: sel.t, c: null };
@@ -2209,7 +2233,7 @@ function renderRecords(){
   if(S.rec && S.rec.view === "comments") return renderComments();
   S.focus = false;
   var f = S.rec.filter || "all", m = recMap(), ids = Object.keys(m).filter(function(k){ return f === "all" || (f === "__makeup" ? (m[k].isAbsence && !m[k].madeUp) : m[k].classLabel === f); }).sort(function(a, b){ var d = (m[b].date || "").localeCompare(m[a].date || ""); return d || ((m[b].seq || 0) - (m[a].seq || 0)); });
-  var html = '<div class="head-row"><div style="flex:1;"><h2>課堂記錄</h2><div class="note">' + (Object.keys(m).length ? '共 ' + Object.keys(m).length + ' 筆' : '還沒有任何記錄') + '</div></div><div><button class="btn primary" data-r="batch">⚡ 快速補填</button> <button class="btn" data-r="new">新增記錄</button> <button class="btn sm" data-r="trend">學生趨勢</button> <button class="btn sm" data-r="review">生詞複習</button> <button class="btn sm" data-r="comments">學期評語</button> <button class="btn sm" data-r="import">匯入舊記錄…</button> <button class="btn sm' + (S.recSel ? ' primary' : '') + '" data-r="selmode">' + (S.recSel ? '結束選取' : '選取刪除') + '</button><input type="file" id="rec-imp" accept=".json,application/json" style="display:none;"></div></div>';
+  var html = recTabsHtml("list") + '<div class="head-row"><div style="flex:1;"><h2>課堂記錄</h2><div class="note">' + (Object.keys(m).length ? '共 ' + Object.keys(m).length + ' 筆' : '還沒有任何記錄') + '</div></div><div><button class="btn primary" data-r="batch">⚡ 快速補填</button> <button class="btn" data-r="new">新增記錄</button> <button class="btn sm" data-r="trend">學生趨勢</button> <button class="btn sm" data-r="review">生詞複習</button> <button class="btn sm" data-r="comments">學期評語</button> <button class="btn sm" data-r="import">匯入舊記錄…</button> <button class="btn sm' + (S.recSel ? ' primary' : '') + '" data-r="selmode">' + (S.recSel ? '結束選取' : '選取刪除') + '</button><input type="file" id="rec-imp" accept=".json,application/json" style="display:none;"></div></div>';
   var labels = recLabels();
   var needMk = Object.keys(m).filter(function(k){ return m[k].isAbsence && !m[k].madeUp; }).length;
   if(labels.length) html += '<div class="tools" style="margin-bottom:12px;"><button class="btn sm' + (f === "all" ? ' primary' : '') + '" data-r="filter" data-f="all">全部 ' + Object.keys(m).length + '</button>' + (needMk ? '<button class="btn sm' + (f === "__makeup" ? ' primary' : '') + '" data-r="filter" data-f="__makeup" style="' + (f === "__makeup" ? '' : 'background:#F7D9D5;color:#B23B32;') + '">待補課 ' + needMk + '</button>' : '') + labels.map(function(l){ return '<button class="btn sm' + (f === l.label ? ' primary' : '') + '" data-r="filter" data-f="' + esc(l.label) + '">' + esc(l.label) + ' ' + l.count + '</button>'; }).join("") + '</div>';
@@ -2570,7 +2594,7 @@ async function renderRecBatch(){
     S.rec.batch = rows; if(!S.rec || !S.rec.batch) return;
   }
   var R = S.rec.batch;
-  var html = '<div class="head-row"><div style="flex:1;"><h2>⚡ 快速補填課堂記錄</h2><div class="note">最近 30 天還沒填的課。每個學生預設「🙂 正常」，只改特別的就好；評語之後要補再打開那一筆。</div></div><div><button class="btn primary" data-b="saveall"' + (R.length ? '' : ' disabled') + '>全部儲存（' + R.filter(function(r){ return !r.skip; }).length + ' 堂）</button> <button class="btn sm ghost" data-b="back">回課堂記錄</button></div></div>';
+  var html = recTabsHtml("batch") + '<div class="head-row"><div style="flex:1;"><h2>⚡ 快速補填課堂記錄</h2><div class="note">最近 30 天還沒填的課。每個學生預設「🙂 正常」，只改特別的就好；評語之後要補再打開那一筆。</div></div><div><button class="btn primary" data-b="saveall"' + (R.length ? '' : ' disabled') + '>全部儲存（' + R.filter(function(r){ return !r.skip; }).length + ' 堂）</button> <button class="btn sm ghost" data-b="back">回課堂記錄</button></div></div>';
   if(!R.length) html += '<div class="panel"><p class="note" style="margin:0;">最近 30 天的課都填好了 🎉</p></div>';
   R.forEach(function(r, ri){
     var d = r.d, ci = classInfo(r.slot);
@@ -4494,12 +4518,45 @@ async function newCode(){
   throw new Error("code");
 }
 
+// 上方主選單：目前在哪一區
+function topArea(){ if(S.act) return "act"; if(S.lib) return "lib"; if(S.rec || S.grades) return "rec"; if(S.classes || S.sel) return "cls"; if(S.settings) return "set"; return "home"; }
+// 🏫 班級：全部班級一頁看完（依年度、學校分組），新增年度／學校／班級也在這裡
+function renderClassList(){
+  S.focus = false;
+  var sch = schoolsOf(), ys = sortedBy(sch, true), today = ymd(new Date());
+  var html = '<div class="head-row"><div style="flex:1;"><h2>🏫 班級</h2><div class="note">全部班級都在這裡，點卡片進入班級。</div></div><div class="owner-only"><button class="btn sm" data-a="add-s">＋ 新增年度</button></div></div>';
+  if(!ys.length) html += '<div class="panel"><p class="note" style="margin:0;">還沒有年度。按右上角「＋ 新增年度」開始。</p></div>';
+  ys.forEach(function(y, yi){
+    var terms = sch[y].terms || {}, tids = sortedBy(terms, false), n = 0; tids.forEach(function(t){ n += Object.keys(terms[t].classes || {}).length; });
+    var body = tids.map(function(t){
+      var cl = terms[t].classes || {}, cids = sortedBy(cl, false);
+      return '<div class="cl-school"><div class="cl-sh"><b>' + esc(terms[t].name) + '</b><span class="note">' + cids.length + ' 班</span><span style="flex:1;"></span><button class="btn sm ghost owner-only" data-a="add-c" data-s="' + y + '" data-t="' + t + '">＋ 班級</button><button class="btn sm ghost owner-only" data-a="go" data-s="' + y + '" data-t="' + t + '">學校設定</button></div><div class="hc-grid">' +
+        (cids.length ? cids.map(function(c){ var x = { sel: { s: y, t: t, c: c }, cls: cl[c] }, pr = classProgress(x.cls, x.sel), nx = classSlots(x.sel).filter(function(z){ return z.date >= today; }).sort(function(a, b){ return (a.date + (a.start || "")).localeCompare(b.date + (b.start || "")); })[0];
+          return '<button class="hc" data-a="go" data-s="' + y + '" data-t="' + t + '" data-c="' + c + '"><b>' + esc(cl[c].name) + '</b><span class="note">' + (pr.cur ? '▶ ' + esc(lessonTitle(pr.cur)) : '還沒有進度') + '</span>' + (nx ? '<span class="note">下次 ' + (nx.date === today ? '<b style="color:var(--seal);">今天</b>' : md(nx.date)) + (nx.start ? ' ' + esc(nx.start) : '') + '</span>' : '') + '</button>'; }).join("") : '<p class="note" style="margin:0;">這間學校還沒有班級。</p>') + '</div></div>';
+    }).join("");
+    var head = '<b style="font-size:17px;">' + esc(sch[y].name) + '</b>　<span class="note">' + tids.length + ' 間學校・' + n + ' 班</span>';
+    var tools = '<span class="owner-only" style="margin-left:auto;display:inline-flex;gap:6px;"><button class="btn sm ghost" data-a="add-t" data-s="' + y + '">＋ 學校</button><button class="btn sm ghost" data-a="go" data-s="' + y + '">年度設定</button></span>';
+    html += yi === 0 ? '<div class="panel"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px;">' + head + tools + '</div>' + (body || '<p class="note">這個年度還沒有學校。</p>') + '</div>'
+      : '<details class="panel"><summary style="cursor:pointer;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">' + head + tools + '</summary><div style="margin-top:8px;">' + (body || '<p class="note">這個年度還沒有學校。</p>') + '</div></details>';
+  });
+  shell(html); setCrumb([]); bindListPage();
+}
+// 📊 記錄與成績：課堂記錄、快速補填、跨班成績放在同一區
+function recTabsHtml(cur){ return '<div class="ctabs">' + [["list", "📝 課堂記錄"], ["batch", "⚡ 快速補填"], ["grades", "📊 跨班成績"]].map(function(t){ return '<button class="ctab' + (t[0] === cur ? ' on' : '') + '" data-rtab="' + t[0] + '">' + t[1] + '</button>'; }).join("") + '</div>'; }
+document.addEventListener("click", function(e){
+  var b = e.target.closest && e.target.closest("[data-rtab]"); if(!b || !S.teacher) return;
+  var t = b.dataset.rtab; S.grades = null; S.rec = null;
+  if(t === "grades") S.grades = {}; else if(t === "batch") S.rec = { view: "batch" }; else S.rec = { filter: "all" };
+  render();
+});
 // ---------- 老師：渲染 ----------
 function render(){
   if(!S.teacher) return;
   if(S.hw && (!S.sel || !S.sel.c)) S.hw = null;
   saveHash();
-  if(S.settings && !S.sel && !S.lib && !S.rec && !S.day && !S.grades) return renderSettings();
+  if(S.settings && !S.sel && !S.lib && !S.rec && !S.day && !S.grades && !S.act && !S.classes) return renderSettings();
+  if(S.act) return renderActHub();
+  if(S.classes && !S.sel) return renderClassList();
   if(S.grades) return renderGrades();
   if(S.lib) return renderLibrary();
   if(S.rec) return renderRecords();
@@ -4605,7 +4662,7 @@ async function renderGrades(){
     });
   });
   var groups = Object.keys(byPid).map(function(k){ return byPid[k]; }).sort(function(a, b){ return b.last.localeCompare(a.last); });
-  var html = '<div class="head-row"><div style="flex:1;"><h2>📊 成績</h2><div class="note">同一份考卷派給不同班時，在這裡比較各班的表現。考卷會依它用的測驗自動歸在一起。</div></div></div>';
+  var html = recTabsHtml("grades") + '<div class="head-row"><div style="flex:1;"><h2>📊 跨班成績</h2><div class="note">同一份考卷派給不同班時，在這裡比較各班的表現。考卷會依它用的測驗自動歸在一起。</div></div></div>';
   if(!groups.length) html += '<div class="panel"><p class="note" style="margin:0;">還沒有線上考卷。到班級頁「📝 測驗與作業」›「＋ 公布作業／考卷」，類型選「線上考卷」。</p></div>';
   groups.forEach(function(g){
     var lk = (S.plat.lessonMap || {})[g.pid], wl = Object.keys(g.wrong).map(function(t){ return { t: t, n: g.wrong[t] }; }).sort(function(a, b){ return b.n - a.n; }).slice(0, 5);
@@ -4974,9 +5031,105 @@ async function deleteUnit(key){
   }catch(er){}
   await syncLessonIndex(); render();
 }
+// ---------- 🎲 課堂活動：全部活動集中一頁（常用、最近用過），選課次／班級就開始 ----------
+var ACTS = [
+  { id: "flashcard", e: "🎴", t: "字卡練習", d: "生詞字卡，翻面看注音和意思", need: "lesson" },
+  { id: "flip", e: "🃏", t: "翻卡遊戲", d: "翻牌配對，記憶生詞", need: "lesson" },
+  { id: "bingo", e: "🎉", t: "賓果卡", d: "產生賓果卡、老師念詞", need: "lesson" },
+  { id: "pbingo", e: "🎯", t: "線上賓果（全班一起）", d: "學生用自己的裝置連進來一起玩", need: "class" },
+  { id: "qa", e: "💬", t: "回答問題", d: "用生詞的延伸問題練口說", need: "lesson" },
+  { id: "kinship", e: "🗣️", t: "語法遊戲", d: "句型練習遊戲", need: "lesson" },
+  { id: "order", e: "🧾", t: "點餐練習", d: "情境對話：點餐", need: "lesson" },
+  { id: "dtq", e: "📅", t: "年月日問答", d: "日期、星期的問答練習", need: "lesson" },
+  { id: "wheel", e: "🎡", t: "點名輪盤", d: "用班級名單隨機抽人", need: "classOnly" },
+  { id: "capsule", e: "⏳", t: "時空膠囊", d: "學生寫給未來的自己", need: "classOnly" }
+];
+function actById(id){ return ACTS.filter(function(a){ return a.id === id; })[0]; }
+function actFavs(){ var f = (S.plat.meta || {}).actFav; return Array.isArray(f) ? f : []; }
+function actRecent(){ try{ var v = JSON.parse(localStorage.getItem("mm_act_recent_" + S.teacher.id) || "[]"); return Array.isArray(v) ? v : []; }catch(e){ return []; } }
+function actNoteRecent(id){ try{ var r = actRecent().filter(function(x){ return x !== id; }); r.unshift(id); localStorage.setItem("mm_act_recent_" + S.teacher.id, JSON.stringify(r.slice(0, 6))); }catch(e){} }
+function actCardHtml(a, attr){
+  var fav = actFavs().indexOf(a.id) >= 0;
+  return '<div class="act-card"><button class="act-go" ' + attr + '="' + a.id + '"><span class="act-e">' + a.e + '</span><b>' + esc(a.t) + '</b><span class="note">' + esc(a.d) + '</span></button><button class="act-fav' + (fav ? ' on' : '') + '" data-actfav="' + a.id + '" title="' + (fav ? '取消常用' : '設為常用') + '">' + (fav ? '★' : '☆') + '</button></div>';
+}
+function actGridHtml(attr, filter){
+  var list = ACTS.filter(filter || function(){ return true; }), favs = actFavs().map(actById).filter(Boolean).filter(function(a){ return list.indexOf(a) >= 0; }), rec = actRecent().map(actById).filter(Boolean).filter(function(a){ return list.indexOf(a) >= 0 && favs.indexOf(a) < 0; }).slice(0, 4);
+  return (favs.length ? '<h3 class="act-h">⭐ 常用</h3><div class="act-grid">' + favs.map(function(a){ return actCardHtml(a, attr); }).join("") + '</div>' : '') +
+    (rec.length ? '<h3 class="act-h">🕘 最近用過</h3><div class="act-grid">' + rec.map(function(a){ return actCardHtml(a, attr); }).join("") + '</div>' : '') +
+    '<h3 class="act-h">全部活動</h3><div class="act-grid">' + list.map(function(a){ return actCardHtml(a, attr); }).join("") + '</div>' +
+    '<p class="note" style="margin-top:10px;">按 ☆ 把常用的活動釘在最上面。簡報裡另外有計時器、白板等工具。</p>';
+}
+async function actToggleFav(id){
+  var f = actFavs().slice(), i = f.indexOf(id); if(i >= 0) f.splice(i, 1); else f.push(id);
+  S.plat.meta = S.plat.meta || {}; S.plat.meta.actFav = f;
+  try{ await fbSet("teacherPlatform/" + S.teacher.id + "/meta/actFav", f); }catch(e){}
+}
+function actClassDefault(){
+  if(S.act && S.act.cls) return S.act.cls;
+  var today = ymd(new Date()), sl = slotsOn(today).filter(function(x){ return x.c && getCls({ s: x.s, t: x.t, c: x.c }); })[0];
+  if(sl) return sl.s + "|" + sl.t + "|" + sl.c;
+  var all = allClassesList().filter(function(x){ return x.latest; }); return all.length === 1 ? all[0].sel.s + "|" + all[0].sel.t + "|" + all[0].sel.c : "";
+}
+function renderActHub(){
+  S.focus = false;
+  var A = S.act, cv = A.cls != null ? A.cls : actClassDefault(), sel = cv ? (function(p){ return { s: p[0], t: p[1], c: p[2] }; })(cv.split("|")) : null, cls = sel ? getCls(sel) : null;
+  if(!cls){ sel = null; cv = ""; }
+  var keys = cls ? lessonKeys(cls) : lessonKeys(null), lk = A.lesson && keys.indexOf(A.lesson) >= 0 ? A.lesson : (cls ? classProgress(cls, sel).cur : null) || keys[0] || "";
+  if(A.run){
+    var a = actById(A.run), lp = lessonParam(lk); embedBankSet(lessonBookOf(lk));
+    var html0 = '<div class="tabs"><button class="tab" data-actback="1">‹ 回課堂活動</button><span class="note" style="align-self:center;margin-left:8px;">' + esc(a ? a.e + " " + a.t : "") + '　｜　' + esc(lk ? lessonTitle(lk) : "") + '</span></div>' +
+      (lp ? '<iframe class="frame" id="fr" src="' + esc("index.html?v=" + MM_V + "&embed=1&" + lp + "&tab=activities&activity=" + encodeURIComponent(A.run)) + '" allow="microphone; autoplay; clipboard-write"></iframe>' : '<div class="empty"><p class="note">這一課還沒有生詞，活動沒有內容可以用。</p></div>');
+    shell(html0, { flush: true }); setCrumb([]);
+    document.getElementById("main").onclick = function(e){ if(e.target.closest("[data-actback]")){ S.act = { cls: A.cls, lesson: A.lesson }; render(); } };
+    return;
+  }
+  var copts = '<option value="">（不指定班級）</option>' + allClassesList().map(function(x){ var v = x.sel.s + "|" + x.sel.t + "|" + x.sel.c; return '<option value="' + esc(v) + '"' + (v === cv ? ' selected' : '') + '>' + esc((x.latest ? "" : x.year + " ") + x.school + " " + x.cls.name) + '</option>'; }).join("");
+  var lopts = keys.map(function(k){ return '<option value="' + esc(k) + '"' + (k === lk ? ' selected' : '') + '>' + esc(lessonTitle(k)) + '</option>'; }).join("");
+  var html = '<div class="head-row"><div style="flex:1;"><h2>🎲 課堂活動</h2><div class="note">先選班級和課次，再點活動就開始。上課中也可以按課次頁右上的「⚡ 活動選單」叫出這個選單。</div></div></div>' +
+    '<div class="panel act-ctx"><label>班級</label><select id="act-cls">' + copts + '</select><label>課次（用哪一課的生詞）</label><select id="act-les">' + lopts + '</select>' +
+    (cls ? '<span class="note">選了班級：活動會在這個班的課次頁開啟，「開始上課」時學生會跟著看到。</span>' : '<span class="note">沒選班級也可以直接玩（投影給學生看）；線上賓果、點名輪盤、時空膠囊需要選班級。</span>') + '</div>' +
+    actGridHtml("data-actrun");
+  shell(html); setCrumb([]);
+  var main = document.getElementById("main");
+  document.getElementById("act-cls").onchange = function(){ S.act = { cls: this.value, lesson: null }; render(); };
+  document.getElementById("act-les").onchange = function(){ S.act = { cls: cv, lesson: this.value }; };
+  main.onclick = async function(e){
+    var f = e.target.closest("[data-actfav]"); if(f){ await actToggleFav(f.dataset.actfav); render(); return; }
+    var b = e.target.closest("[data-actrun]"); if(!b) return;
+    var id = b.dataset.actrun, a = actById(id), lsel = document.getElementById("act-les").value;
+    if((a.need === "class" || a.need === "classOnly") && !sel){ toast("「" + a.t + "」需要先選班級"); document.getElementById("act-cls").focus(); return; }
+    actNoteRecent(id);
+    if(!sel){ S.act = { cls: "", lesson: lsel, run: id }; render(); return; }
+    S.act = null; S.sel = sel; S.lib = null; S.rec = null; S.grades = null; S.day = null; S.settings = false;
+    if(a.need === "classOnly"){ S.lesson = null; S.hw = { view: id }; render(); return; }
+    S.hw = null; S.lesson = lsel || null; if(!S.lesson){ toast("這個班還沒有課次"); render(); return; }
+    if(id === "pbingo"){ S.tab = "bingo"; S.sub = null; } else { S.tab = "activities"; S.sub = id; }
+    render(); pushLive();
+  };
+}
+// 課次頁「活動」分頁的老師選單（賓果合併進來）
+function lessonActPickerHtml(){ return '<div class="page" style="padding:16px 20px;overflow:auto;">' + actGridHtml("data-actgo", function(a){ return a.id !== "capsule"; }) + '</div>'; }
+// 上課中的「🎲 活動」快速選單
+function openActMenu(){
+  var d = document.getElementById("actdlg");
+  if(!d){ d = document.createElement("dialog"); d.id = "actdlg"; d.style.cssText = "max-width:760px;width:94vw;"; document.body.appendChild(d); }
+  d.innerHTML = '<div style="display:flex;align-items:center;"><h3 style="flex:1;margin:0;">🎲 選一個活動</h3><button class="btn sm ghost" data-x="1">關閉</button></div><div class="note" style="margin:4px 0 6px;">用「' + esc(lessonTitle(S.lesson)) + '」的生詞；學生會跟著你的畫面。</div>' + actGridHtml("data-actgo", function(a){ return a.id !== "capsule"; });
+  d.onclick = async function(e){
+    if(e.target.closest("[data-x]")){ d.close(); return; }
+    var f = e.target.closest("[data-actfav]"); if(f){ await actToggleFav(f.dataset.actfav); d.close(); openActMenu(); return; }
+    var b = e.target.closest("[data-actgo]"); if(!b) return; d.close(); lessonActGo(b.dataset.actgo);
+  };
+  d.showModal();
+}
+function lessonActGo(id){
+  actNoteRecent(id);
+  if(id === "wheel"){ S.hw = { view: "wheel" }; render(); return; }
+  if(id === "pbingo"){ S.tab = "bingo"; S.sub = null; } else { S.tab = "activities"; S.sub = id; }
+  renderLesson(getCls(S.sel)); pushLive();
+}
 // ---------- 課次頁（老師與學生共用）----------
 function tabsFor(open, teacher){
-  var all = [["material","教材", ["vocab","grammar","text"]], ["slides","投影片",["slides"]], ["quiz","測驗與練習",["quiz"]], ["bingo","🎯 賓果",["quiz"]], ["activities","活動",["activities"]]];
+  var all = [["material","教材", ["vocab","grammar","text"]], ["slides","投影片",["slides"]], ["quiz","測驗與練習",["quiz"]], ["bingo","🎯 賓果",["quiz"]], ["activities","🎲 活動",["activities"]]];
   return all.filter(function(t){ if(t[0] === "bingo" && !teacher && !(S.live && S.live.on)) return false; return teacher || t[2].some(function(k){ return open[k]; }); });
 }
 function lessonHtmlFrame(src){ return '<iframe class="frame" id="fr" src="' + esc(src + (S.focus ? "&nochrome=1" : "")) + '" allow="microphone; camera; autoplay; clipboard-write"></iframe>'; }
@@ -4986,8 +5139,8 @@ function renderLessonCommon(no, open, teacher, liveStudent){
   if(!S.tab || !tabs.some(function(t){ return t[0] === S.tab; })) S.tab = tabs[0][0];
   var cur = tabs.filter(function(t){ return t[0] === S.tab; })[0];
   var live = S.live && S.live.on;
-  var html = '<div class="tabs">' + (liveStudent ? '' : '<button class="tab" data-back="1">‹ 返回</button>' + tabs.map(function(t){ return '<button class="tab' + (t[0] === S.tab ? ' on' : '') + '" data-tab="' + t[0] + '">' + t[1] + '</button>'; }).join("") + (teacher ? '<!--copyto-->' : '') +
-    (teacher ? ((live ? '<button class="tab focus-btn" data-fs="1" style="margin-left:auto;" title="瀏覽器全螢幕（Esc 退出，不會結束上課）">⛶ 全螢幕</button><button class="tab focus-btn" data-focus="1" style="margin-left:6px;">' + (S.focus ? "顯示欄位" : "隱藏欄位") + '</button><button class="tab focus-btn" data-live="1" style="margin-left:6px;background:var(--seal);color:#fff;">⏹ 結束上課</button>' : '<button class="tab focus-btn" data-live="1" title="開始上課：學生會自動跟著你的畫面，並隱藏上方與左側欄位">🎬 開始上課</button>')) : '')) + '</div>';
+  var html = '<div class="tabs">' + (liveStudent ? '' : '<button class="tab" data-back="1">‹ 返回</button>' + tabs.filter(function(t){ return t[0] !== "bingo"; }).map(function(t){ var on = t[0] === S.tab || (t[0] === "activities" && S.tab === "bingo"); return '<button class="tab' + (on ? ' on' : '') + '" data-tab="' + t[0] + '">' + t[1] + '</button>'; }).join("") + (teacher ? '<!--copyto-->' : '') +
+    (teacher ? '<button class="tab focus-btn" data-actmenu="1" style="margin-left:auto;" title="叫出課堂活動選單（常用、最近用過）">⚡ 活動選單</button>' : '') + (teacher ? ((live ? '<button class="tab focus-btn" data-fs="1" style="margin-left:6px;" title="瀏覽器全螢幕（Esc 退出，不會結束上課）">⛶ 全螢幕</button><button class="tab focus-btn" data-focus="1" style="margin-left:6px;">' + (S.focus ? "顯示欄位" : "隱藏欄位") + '</button><button class="tab focus-btn" data-live="1" style="margin-left:6px;background:var(--seal);color:#fff;">⏹ 結束上課</button>' : '<button class="tab focus-btn" data-live="1" title="開始上課：學生會自動跟著你的畫面，並隱藏上方與左側欄位">🎬 開始上課</button>')) : '')) + '</div>';
   var sub = '', frame = '', role = teacher ? '' : '&role=student';
   if(S.tab === "material"){
     var subs = [["vocab","生詞"],["grammar","語法"],["text","課文"]].filter(function(s){ return teacher || open[s[0]]; });
@@ -5001,7 +5154,12 @@ function renderLessonCommon(no, open, teacher, liveStudent){
     setTimeout(function(){ bingoMount(teacher); }, 0);
   } else if(S.tab === "activities"){
     var lp2 = lessonParam(no); embedBankSet(lessonBookOf(no));
-    frame = lp2 ? lessonHtmlFrame("index.html?v=" + MM_V + "&embed=1&" + lp2 + "&tab=activities" + role) : '<div class="empty"><p class="note">這本教材還沒有生詞庫，所以活動暫時沒有可用的生詞。</p></div>';
+    var actOk = S.sub && actById(S.sub) && actById(S.sub).need === "lesson";
+    if(teacher && !actOk){ S.sub = null; frame = lessonActPickerHtml(); }
+    else {
+      if(teacher) sub = '<div class="subbar"><button class="tab" data-actback="1" style="padding:5px 14px;font-size:13.5px;">‹ 其他活動</button><span class="note">' + esc((actById(S.sub) || {}).e + " " + (actById(S.sub) || {}).t) + '</span></div>';
+      frame = lp2 ? lessonHtmlFrame("index.html?v=" + MM_V + "&embed=1&" + lp2 + "&tab=activities" + (actOk ? "&activity=" + encodeURIComponent(S.sub) : "") + role) : '<div class="empty"><p class="note">這本教材還沒有生詞庫，所以活動暫時沒有可用的生詞。</p></div>';
+    }
   } else {
     var ps = ((S.plat.lessons || {})[no] || {}).projects || {}, pids = Object.keys(ps);
     var kind = S.tab === "slides" ? "slides" : "quiz";
@@ -5156,6 +5314,10 @@ function bindLessonNav(cls, backFn, renderFn){
     if(b.dataset.copyto){ copyToLesson(b.dataset.copyto); return; }
     if(b.dataset.editlib){ var pk0 = parseKey(S.lesson); if(pk0){ S.lib = { book: pk0.book, key: S.lesson, bank: true }; render(); } return; }
     if(b.id === "mkproj"){ S.creating = S.lesson; renderFn(); return; }
+    if(b.dataset.actmenu){ openActMenu(); return; }
+    if(b.dataset.actfav){ actToggleFav(b.dataset.actfav).then(renderFn); return; }
+    if(b.dataset.actgo){ lessonActGo(b.dataset.actgo); return; }
+    if(b.dataset.actback){ S.sub = null; renderFn(); pushLive(); return; }
     if(b.dataset.tab){ S.tab = b.dataset.tab; S.sub = null; renderFn(); pushLive(); return; }
     if(b.dataset.sub){ S.sub = b.dataset.sub; renderFn(); pushLive(); return; }
     if(b.id === "roomgo"){
