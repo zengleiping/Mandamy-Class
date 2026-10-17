@@ -113,7 +113,8 @@
   .umenu{ position:relative; } .ughost{ display:inline-flex; align-items:center; }
   .udrop{ display:none; position:absolute; right:0; top:calc(100% + 6px); background:var(--surface); border:1.5px solid var(--line); border-radius:12px; padding:6px; min-width:140px; box-shadow:0 8px 24px rgba(0,0,0,.12); z-index:50; }
   .udrop.open{ display:block; } .udrop button{ display:block; width:100%; text-align:left; border:none; background:none; padding:8px 10px; border-radius:8px; font:inherit; cursor:pointer; color:var(--ink); } .udrop button:hover{ background:var(--surface-2); }
-  @media (max-width:1100px){ .mn-t{ display:none; } .mn{ font-size:18px; padding:6px 8px; } }
+  @media (max-width:1100px){ .umenu .mn-t{ display:none; } .mn{ padding:6px 7px; font-size:13.5px; } }
+  @media (max-width:640px){ .mainnav{ order:10; width:100%; overflow-x:auto; } .top{ flex-wrap:wrap; } }
   .act-h{ font-size:15px; margin:14px 0 8px; }
   .act-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:10px; }
   .act-card{ position:relative; }
@@ -1126,7 +1127,7 @@ async function trImportToRecords(manual){
   });
   var total = 0, labels = [], base = "teacherPlatform/" + S.teacher.id, m = recMap();
   for(var sid in by){
-    var g = by[sid], recId = g.recId || Object.keys(m).filter(function(k){ return m[k].slotId === sid; })[0], rec;
+    var g = by[sid], recId = g.recId || recIdForSlot(sid), rec;
     if(recId){ rec = m[recId]; }
     else {
       rec = JSON.parse(JSON.stringify(newRecordDraft(Object.assign({ id: sid }, g.slot)))); recId = uid("rec_");
@@ -1409,7 +1410,7 @@ function shell(inner, opts){
   document.body.classList.toggle("ta", isTA());
   root.innerHTML = '<div class="shell' + (S.focus ? ' focus' : '') + '"><div class="top">' +
     '<a href="#" class="brand" id="brandhome" title="回到首頁" style="text-decoration:none;color:inherit;cursor:pointer;"><img src="icons/logo.svg" alt="" style="width:30px;height:30px;vertical-align:middle;margin-right:6px;">曼米中文' + (isT ? '' : '<small>學生</small>') + '</a><div class="crumb" id="crumb"></div><div class="grow"></div>' +
-    (isT ? '<nav class="mainnav">' + [["navhome", "🏠", "首頁", topArea() === "home"], ["navcls", "🏫", "班級", topArea() === "cls"], ["libbtn", "📚", "教材", topArea() === "lib", "owner-only"], ["actbtn", "🎲", "課堂活動", topArea() === "act"], ["recbtn", "📊", "記錄與成績", topArea() === "rec"]].map(function(n){ return '<button class="mn' + (n[3] ? ' on' : '') + (n[4] ? ' ' + n[4] : '') + '" id="' + n[0] + '"><span>' + n[1] + '</span><span class="mn-t">' + n[2] + '</span></button>'; }).join("") + '</nav>' +
+    (isT ? '<nav class="mainnav">' + [["navhome", "🏠", "首頁", topArea() === "home"], ["navcls", "🏫", "班級", topArea() === "cls"], ["libbtn", "📚", "教材", topArea() === "lib", "owner-only"], ["actbtn", "🎲", "課堂活動", topArea() === "act"], ["recbtn", "📊", "記錄與成績", topArea() === "rec"]].map(function(n){ return '<button class="mn' + (n[3] ? ' on' : '') + (n[4] ? ' ' + n[4] : '') + '" id="' + n[0] + '">' + n[2] + '</button>'; }).join("") + '</nav>' +
          '<button class="btn sm" id="bell" title="新的繳交">🔔</button><span class="umenu"><button class="btn sm ughost" id="ubtn" title="' + esc(S.teacher.name) + '"><img src="icons/teacher.png" alt="" style="width:26px;height:26px;border-radius:50%;vertical-align:middle;"><span class="mn-t"> ' + esc(S.teacher.name) + ' ▾</span></button><div class="udrop" id="udrop"><button class="owner-only" id="setbtn">⚙️ 設定</button><button id="logout">登出</button></div></span>'
          : '<span class="crumb">👤 ' + esc(S.student ? S.student.name : "") + '</span><button class="btn sm" id="leave">離開</button>') +
     '</div><div class="body">' + '<main class="main' + (opts.flush ? ' flush' : '') + '" id="main">' + inner + '</main></div></div>';
@@ -1623,6 +1624,7 @@ function renderLibrary(){
     if(b.dataset.pnew != null){ S.lib = { book: cur, key: key, creating: b.dataset.pnew, tidy: tidy }; renderLibrary(); return; }
     if(b.dataset.pback){ S.lib = { book: cur, key: key, tidy: tidy }; await syncLessonIndex(); renderLibrary(); return; }
     if(b.dataset.pdel){ await libDeleteProject(b.dataset.pdel); renderLibrary(); return; }
+    if(b.dataset.lesdel){ if(await libDeleteLesson(b.dataset.lesdel)) S.lib = { book: cur }; renderLibrary(); return; }
     if(b.dataset.trestore){ await libRestoreProject(b.dataset.trestore); renderLibrary(); return; }
     if(b.dataset.tpurge){ var tp = (S.projTrash || {})[b.dataset.tpurge]; if(!tp || !confirm("永久刪除「" + ((tp.proj || {}).title || "") + "」？這個動作沒辦法復原。")) return; delete S.projTrash[b.dataset.tpurge]; await fbSet("teacherPlatform/" + S.teacher.id + "/projTrash/" + b.dataset.tpurge, null); renderLibrary(); return; }
     if(b.dataset.sugok){ await libAssign(b.dataset.sugok, b.dataset.to); toast("已歸到" + lessonTitle(b.dataset.to)); renderLibrary(); return; }
@@ -1687,9 +1689,35 @@ function libTrashHtml(){
   return '<div class="head-row" style="margin-bottom:10px;"><div style="flex:1;"><h2>🗑️ 最近刪除</h2><div class="note">刪除的簡報和測驗會在這裡保留 30 天，之後自動清掉。</div></div></div><div class="panel">' +
     (ks.length ? ks.map(function(pid){ var x = t[pid], left = Math.max(0, 30 - Math.floor((Date.now() - (x.at || 0)) / 86400000)); return '<div class="slot"><div class="slot-main"><b>' + esc((x.proj || {}).title || "（未命名）") + '</b><div class="note">' + esc(hwFmt(x.at)) + ' 刪除' + (x.lesson && (S.plat.lessons || {})[x.lesson] ? '・原本在' + esc(lessonTitle(x.lesson)) : '') + '・還剩 ' + left + ' 天</div></div><div class="slot-act"><button class="btn sm primary" data-trestore="' + esc(pid) + '">還原</button><button class="btn sm danger" data-tpurge="' + esc(pid) + '">永久刪除</button></div></div>'; }).join("") : '<p class="note" style="margin:0;">沒有刪除的項目。</p>') + '</div>';
 }
+// 刪除一課：只有沒有內容（生詞・語法・課文都是 0、也沒有簡報／測驗）時才能刪，避免誤刪教材
+async function libDeleteLesson(key){
+  var L = S.plat.lessons || {}, l = L[key]; if(!l || l.unit) return false;
+  var c = lessonCounts(key), np = Object.keys(l.projects || {}).length;
+  if(c.vocab + c.grammar + c.text > 0){ alert("「" + lessonTitle(key) + "」還有內容（生詞 " + c.vocab + "、語法 " + c.grammar + "、課文 " + c.text + "）。\n為了避免誤刪，請先按「編輯生詞・語法・課文」把內容刪掉，再回來刪這一課。"); return false; }
+  if(np){ alert("「" + lessonTitle(key) + "」裡還有 " + np + " 份簡報／測驗。\n請先把它們刪除，或用選單歸到別課，再回來刪這一課。"); return false; }
+  var use = lessonClassUsage(key);
+  if(!confirm("刪除「" + lessonTitle(key) + "」？" + (use.length ? "\n這一課在這些班有開放設定，會一起清掉：" + use.join("、") : "") + "\n（這一課沒有任何內容，刪掉不會影響其他教材）")) return false;
+  var t = S.teacher.id, base = "teacherPlatform/" + t, pk = parseKey(key);
+  try{
+    if((S.plat.customLessons || {})[key]){ delete S.plat.customLessons[key]; await fbSet(base + "/customLessons/" + key, null); }
+    var bank = await fbGet("teacherVocabBanks/" + t);
+    if(bank && Array.isArray(bank.courseData)){
+      var cd = bank.courseData.filter(function(x){ return !((x.book || DEFAULT_BOOK) === pk.book && Number(x.lesson) === pk.no && !(x.vocab || []).length && !(x.grammar || []).length && !(x.texts || []).length); });
+      if(cd.length !== bank.courseData.length) await fbUpdate("teacherVocabBanks/" + t, { courseData: cd, updatedAt: Date.now(), updatedBy: S.teacher.name || t });
+    }
+    var units = S.plat.units || {};
+    for(var uk in units){ var mem = (units[uk].lessons || []).map(String); if(mem.indexOf(key) >= 0){ units[uk].lessons = mem.filter(function(x){ return x !== key; }); await fbSet(base + "/units/" + uk + "/lessons", units[uk].lessons); } }
+    var sch = S.plat.schools || {};
+    for(var y in sch){ var terms = sch[y].terms || {}; for(var tt in terms){ var cl = terms[tt].classes || {}; for(var ci in cl){ var cp = base + "/schools/" + y + "/terms/" + tt + "/classes/" + ci, o = cl[ci];
+      if(o.lessonOpen && o.lessonOpen[key]){ delete o.lessonOpen[key]; await fbSet(cp + "/lessonOpen/" + key, null); }
+      if(o.progress){ if(o.progress.taught && o.progress.taught[key]){ delete o.progress.taught[key]; await fbSet(cp + "/progress/taught/" + key, null); } if(o.progress.cur === key){ o.progress.cur = null; await fbSet(cp + "/progress/cur", null); } }
+    } } }
+  }catch(e){ toast("刪除失敗，請檢查網路"); return false; }
+  await syncLessonIndex(); toast("已刪除" + lessonTitle(key).replace(/^.*?(第 \d+ 課).*$/, "$1")); return true;
+}
 function libLessonHtml(key){
   var L = S.plat.lessons || {}, l = L[key] || {}, c = lessonCounts(key), ps = l.projects || {}, pids = Object.keys(ps), dup = libDupSet();
-  var h = '<div class="head-row" style="margin-bottom:10px;"><div style="flex:1;"><h2>' + esc(lessonTitle(key)) + '</h2></div></div>';
+  var h = '<div class="head-row" style="margin-bottom:10px;"><div style="flex:1;"><h2>' + esc(lessonTitle(key)) + '</h2></div>' + (l.unit ? '' : '<button class="btn sm danger" data-lesdel="' + esc(key) + '" title="沒有內容的課才能刪">刪除這一課</button>') + '</div>';
   h += '<div class="panel"><div class="lh" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><h3 style="margin:0;flex:1;">📖 生詞・語法・課文</h3>' + (l.unit ? '' : '<button class="btn sm primary" data-bank="1">編輯生詞・語法・課文</button>') + '</div>' +
     '<div class="tools" style="margin-top:8px;"><span class="chip">生詞 ' + c.vocab + '</span><span class="chip">語法 ' + c.grammar + '</span><span class="chip">課文 ' + c.text + '</span></div>' + (l.unit ? '<p class="note" style="margin:6px 0 0;">複習單元的生詞・語法・課文是 ' + esc(memberRange(l.members)) + ' 的合計，請到各課編輯。</p>' : (c.vocab + c.grammar + c.text ? '' : '<p class="note" style="margin:6px 0 0;">這一課還沒有生詞・語法・課文。按右上角開始編輯，或用 Excel 匯入。</p>')) + '</div>';
   h += '<div class="panel"><div class="lh" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><h3 style="margin:0;flex:1;">🖥️ 簡報與練習（' + pids.length + '）</h3><button class="btn sm" data-pnew="' + esc(key) + '">＋ 新增簡報／測驗</button></div>' +
@@ -2198,6 +2226,9 @@ function newRecordDraft(slot){
   var label = "", classKey = "", date = ymd(new Date()), material = "", slotId = null;
   if(slot){
     var ci = classInfo(slot); label = ci ? (ci.cls ? ci.school + " " + ci.cls : ci.school) : ""; classKey = slot.s + "|" + slot.t + "|" + (slot.c || ""); date = slot.date; slotId = slot.id;
+    // 老師之前替這個班填記錄時用的名稱（例如「五結國中 林愛黛」）優先，序號才會接得上
+    if(ci && ci.obj && ci.obj.recLabel) label = ci.obj.recLabel;
+    else { var mm = recMap(), lastL = Object.keys(mm).map(function(k){ return mm[k]; }).filter(function(r){ return r.classKey === classKey && r.classLabel && !recIncomplete(r); }).sort(function(a, b){ return (b.date || "").localeCompare(a.date || ""); })[0]; if(lastL) label = lastL.classLabel; }
     material = slot.lesson && (S.plat.lessons || {})[slot.lesson] ? lessonTitle(slot.lesson) : "";
   } else {
     var last = Object.keys(recMap()).map(function(k){ return recMap()[k]; }).sort(function(a, b){ return (b.updatedAt || 0) - (a.updatedAt || 0); })[0];
@@ -2208,8 +2239,54 @@ function newRecordDraft(slot){
   return { classLabel: label, classKey: classKey, mode: prevNames.length > 1 ? "group" : "single", date: date, seq: null, weekNo: null, material: material, isAbsence: false,
     students: (prevNames.length ? prevNames : [""]).map(blankStudent), vocab: [], shots: [], notes: "", slotId: slotId };
 }
+// 從班級的課填記錄、而且名稱跟預設不同：記住這個名稱，下次同一班自動用它
+function recRememberLabel(d){
+  if(!d.classKey || !d.classLabel) return; var p = d.classKey.split("|"); if(p.length < 3 || !p[2]) return;
+  var sel = { s: p[0], t: p[1], c: p[2] }, cls = getCls(sel), ci = classInfo(sel); if(!cls || !ci) return;
+  var def = [ci.school + " " + ci.cls, ci.school]; if(cls.recLabel === d.classLabel || (!cls.recLabel && def.indexOf(d.classLabel) >= 0)) return;
+  cls.recLabel = d.classLabel; fbSet(clsPath(sel) + "/recLabel", d.classLabel).catch(function(){});
+}
+// 自動產生、只有生詞的記錄，跟同一天同一班的正式記錄重複：找出來給老師一鍵合併
+function recDupJunk(){
+  var m = recMap(), out = [];
+  Object.keys(m).forEach(function(k){
+    var r = m[k]; if(!recIncomplete(r) || !r.date) return;
+    var sids = r.slotId ? sessionSlotIds(r.slotId) : [];
+    var main = Object.keys(m).filter(function(j){ if(j === k) return false; var c = m[j]; if(c.date !== r.date || recIncomplete(c) || c.isAbsence) return false; return (c.slotId && sids.indexOf(c.slotId) >= 0) || (r.classKey && c.classKey === r.classKey); })[0];
+    if(main) out.push({ junk: k, main: main });
+  });
+  return out;
+}
+async function recMergeJunk(){
+  var list = recDupJunk(), m = recMap(), base = "teacherPlatform/" + S.teacher.id, n = 0;
+  if(!list.length) return;
+  if(!confirm("把 " + list.length + " 筆自動產生的記錄合併進同一天的課堂記錄？\n裡面的生詞會搬過去（不會重複），然後刪掉這幾筆空的記錄。")) return;
+  for(var i = 0; i < list.length; i++){
+    var j = m[list[i].junk], c = m[list[i].main]; if(!j || !c) continue;
+    var have = {}, voc = (Array.isArray(c.vocab) ? c.vocab : []).slice(); voc.forEach(function(v){ have[v.word] = 1; });
+    (Array.isArray(j.vocab) ? j.vocab : []).forEach(function(v){ if(v && v.word && !have[v.word]){ voc.push(v); have[v.word] = 1; } });
+    c.vocab = voc; c.updatedAt = Date.now();
+    try{ await fbSet(base + "/classRecords/" + list[i].main, c); await fbSet(base + "/classRecords/" + list[i].junk, null); await fbSet(base + "/recordShots/" + list[i].junk, null); delete m[list[i].junk]; n++; }catch(e){ toast("合併失敗，請檢查網路"); break; }
+  }
+  toast("已合併 " + n + " 筆"); render();
+}
 // 這堂課的記錄：翻譯機會自動建立「只有生詞」的記錄，那種還沒打分、沒寫評語的也算「還沒填完」
-function recIdForSlot(slotId){ if(!slotId) return null; var m = recMap(); return Object.keys(m).filter(function(k){ return m[k].slotId === slotId; })[0] || null; }
+// 同一天、同一班、時間連在一起（中間隔不到 60 分鐘）的幾節課＝同一堂，共用一筆課堂記錄
+function sessionSlotIds(slotId){
+  var m = schedMap(), sl = m[slotId]; if(!sl || !sl.c || !sl.date) return [slotId];
+  var same = Object.keys(m).filter(function(k){ var x = m[k]; return x.date === sl.date && x.s === sl.s && x.t === sl.t && x.c === sl.c; }).sort(function(a, b){ return (m[a].start || "").localeCompare(m[b].start || ""); });
+  var i = same.indexOf(slotId), lo = i, hi = i;
+  var gap = function(a, b){ var e = trMin(m[a].end || m[a].start), st = trMin(m[b].start); return e == null || st == null ? 999 : st - e; };
+  while(lo > 0 && gap(same[lo - 1], same[lo]) <= 60) lo--;
+  while(hi < same.length - 1 && gap(same[hi], same[hi + 1]) <= 60) hi++;
+  return same.slice(lo, hi + 1);
+}
+function recIdForSlot(slotId){
+  if(!slotId) return null; var m = recMap(), sids = sessionSlotIds(slotId);
+  var ids = Object.keys(m).filter(function(k){ return sids.indexOf(m[k].slotId) >= 0; });
+  ids.sort(function(a, b){ return (m[a].slotId === slotId ? 0 : 1) - (m[b].slotId === slotId ? 0 : 1); });
+  return ids.filter(function(k){ return !recIncomplete(m[k]); })[0] || ids[0] || null;
+}
 function recIncomplete(r){ if(!r || r.isAbsence) return false; var sts = Array.isArray(r.students) ? r.students : Object.keys(r.students || {}).map(function(k){ return r.students[k]; }); return !sts.some(function(st){ return recHasScore(st) || (st.comment || "").trim() || st.absent; }) && !(r.notes || "").trim(); }
 function recSlotNeeds(slotId){ var id = recIdForSlot(slotId); return !id || recIncomplete(recMap()[id]); }
 async function openRecordFor(slot){
@@ -2233,7 +2310,8 @@ function renderRecords(){
   if(S.rec && S.rec.view === "comments") return renderComments();
   S.focus = false;
   var f = S.rec.filter || "all", m = recMap(), ids = Object.keys(m).filter(function(k){ return f === "all" || (f === "__makeup" ? (m[k].isAbsence && !m[k].madeUp) : m[k].classLabel === f); }).sort(function(a, b){ var d = (m[b].date || "").localeCompare(m[a].date || ""); return d || ((m[b].seq || 0) - (m[a].seq || 0)); });
-  var html = recTabsHtml("list") + '<div class="head-row"><div style="flex:1;"><h2>課堂記錄</h2><div class="note">' + (Object.keys(m).length ? '共 ' + Object.keys(m).length + ' 筆' : '還沒有任何記錄') + '</div></div><div><button class="btn primary" data-r="batch">⚡ 快速補填</button> <button class="btn" data-r="new">新增記錄</button> <button class="btn sm" data-r="trend">學生趨勢</button> <button class="btn sm" data-r="review">生詞複習</button> <button class="btn sm" data-r="comments">學期評語</button> <button class="btn sm" data-r="import">匯入舊記錄…</button> <button class="btn sm' + (S.recSel ? ' primary' : '') + '" data-r="selmode">' + (S.recSel ? '結束選取' : '選取刪除') + '</button><input type="file" id="rec-imp" accept=".json,application/json" style="display:none;"></div></div>';
+  var junkN = recDupJunk().length;
+  var html = recTabsHtml("list") + (junkN ? '<div class="panel" style="background:#FBEBC8;display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><div style="flex:1;min-width:220px;"><b>🧹 有 ' + junkN + ' 筆自動產生的記錄重複了</b><div class="note">翻譯機自動存生詞時另外開的、只有生詞沒有分數，跟同一天同一班的課堂記錄重複。</div></div><button class="btn sm primary" data-r="mergejunk">合併到原本的記錄</button></div>' : '') + '<div class="head-row"><div style="flex:1;"><h2>課堂記錄</h2><div class="note">' + (Object.keys(m).length ? '共 ' + Object.keys(m).length + ' 筆' : '還沒有任何記錄') + '</div></div><div><button class="btn primary" data-r="batch">⚡ 快速補填</button> <button class="btn" data-r="new">新增記錄</button> <button class="btn sm" data-r="trend">學生趨勢</button> <button class="btn sm" data-r="review">生詞複習</button> <button class="btn sm" data-r="comments">學期評語</button> <button class="btn sm" data-r="import">匯入舊記錄…</button> <button class="btn sm' + (S.recSel ? ' primary' : '') + '" data-r="selmode">' + (S.recSel ? '結束選取' : '選取刪除') + '</button><input type="file" id="rec-imp" accept=".json,application/json" style="display:none;"></div></div>';
   var labels = recLabels();
   var needMk = Object.keys(m).filter(function(k){ return m[k].isAbsence && !m[k].madeUp; }).length;
   if(labels.length) html += '<div class="tools" style="margin-bottom:12px;"><button class="btn sm' + (f === "all" ? ' primary' : '') + '" data-r="filter" data-f="all">全部 ' + Object.keys(m).length + '</button>' + (needMk ? '<button class="btn sm' + (f === "__makeup" ? ' primary' : '') + '" data-r="filter" data-f="__makeup" style="' + (f === "__makeup" ? '' : 'background:#F7D9D5;color:#B23B32;') + '">待補課 ' + needMk + '</button>' : '') + labels.map(function(l){ return '<button class="btn sm' + (f === l.label ? ' primary' : '') + '" data-r="filter" data-f="' + esc(l.label) + '">' + esc(l.label) + ' ' + l.count + '</button>'; }).join("") + '</div>';
@@ -2253,6 +2331,7 @@ function renderRecords(){
   main.onclick = function(e){
     var b = e.target.closest("[data-r]"); if(!b) return; var a = b.dataset.r;
     if(a === "new"){ S.rec = { edit: null, draft: newRecordDraft(null), shots: [] }; render(); }
+    else if(a === "mergejunk"){ recMergeJunk(); }
     else if(a === "batch"){ S.rec = { view: "batch" }; render(); }
     else if(a === "open"){ if(S.recSel){ S.recSel.ids[b.dataset.id] = !S.recSel.ids[b.dataset.id]; render(); } else openRecordView(b.dataset.id); }
     else if(a === "selmode"){ S.recSel = S.recSel ? null : { ids: {} }; render(); }
@@ -2738,6 +2817,7 @@ async function saveRecord(){
     await fbSet(base + "/recordShots/" + id, S.rec.shots && S.rec.shots.length ? S.rec.shots : null);
   }catch(e){ alert("儲存失敗，請檢查網路或 Firebase 規則。內容還留在畫面上。"); return; }
   m[id] = rec; try{ localStorage.removeItem(recBackupKey()); }catch(e){}
+  recRememberLabel(d);
   refreshParentLinksFor(d.classLabel);
   toast("已儲存"); S.rec = { filter: d.classLabel }; render();
 }
