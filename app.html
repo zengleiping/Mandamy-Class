@@ -133,11 +133,16 @@
   .rte-ed h4, .rte-view h4{ font-size:16px; margin:10px 0 4px; color:var(--seal); } .rte-ed p, .rte-view p{ margin:0 0 6px; }
   .rte-ed ul, .rte-ed ol, .rte-view ul, .rte-view ol{ margin:4px 0 8px; padding-left:1.8em; } .rte-ed blockquote, .rte-view blockquote{ margin:0 0 0 2em; padding:0; border:none; }
   .rq-sum{ margin:12px 0 4px; padding:10px 12px; border:1.5px dashed var(--line); border-radius:12px; background:var(--surface); } .rq-sum > label{ margin-top:0; }
+  .pr-cmt{ margin-top:6px; padding:8px 10px; background:var(--surface-2); border-radius:10px; } .pr-trout{ white-space:pre-wrap; margin-top:4px; } .pr-voc{ margin-top:6px; }
   .rte-live{ padding:4px 12px 8px; font-size:13px; color:var(--seal); }
   .rte-dlg{ width:min(1000px,96vw); max-width:96vw; padding:16px 18px; border:none; border-radius:16px; } .rte-dlg .rte-ed{ max-height:72vh; font-size:16px; }
   .sroster{ display:flex; flex-wrap:wrap; gap:6px; margin:2px 0 8px; } .sroster .note{ width:100%; }
   .sr-n{ border:1.5px solid var(--line); background:var(--surface-2); border-radius:99px; padding:6px 14px; font:inherit; font-weight:700; cursor:pointer; color:var(--ink); }
   .sr-n.on{ background:var(--seal); border-color:var(--seal); color:#fff; }
+  .sv-day{ border-top:1px solid var(--line); padding:6px 0; } .sv-day summary{ cursor:pointer; }
+  .sv-dlg{ width:min(520px,94vw); border:none; border-radius:18px; padding:16px; }
+  .sv-card{ margin:12px 0; min-height:200px; border:2px solid var(--line); border-radius:16px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; cursor:pointer; background:var(--surface-2); padding:16px; text-align:center; }
+  .sv-w{ font-size:56px; font-family:"LXGW WenKai TC",serif; font-weight:700; } .sv-s{ font-size:20px; color:var(--seal); } .sv-t{ font-size:16px; }
   .tabs{ display:flex; gap:4px; padding:8px 14px 0; background:var(--surface); border-bottom:1px solid var(--line); flex-wrap:wrap; }
   .tab{ border:none; background:none; padding:9px 16px; font-size:14.5px; font-weight:700; color:var(--ink-soft); border-bottom:3px solid transparent; }
   .tab.on{ color:var(--seal); border-bottom-color:var(--seal); }
@@ -1330,6 +1335,7 @@ async function syncLessonIndex(){
   var t = S.teacher.id, bank = null, lib = null;
   try{ bank = await fbGet("teacherVocabBanks/" + t); }catch(e){}
   try{ bank = await autoAddContentPacks(t, bank); }catch(e){ console.warn("autoAddContentPacks", e); }
+  if(!S.vocabPub && S.teacher.role !== "ta"){ S.vocabPub = true; setTimeout(function(){ allClassesList().forEach(function(x){ var ls = recLabelsOfClass(x.sel); publishClassVocab(ls[0] || "", x.sel.s + "|" + x.sel.t + "|" + x.sel.c); }); }, 4000); }
   if(!S.fixesRun){ S.fixesRun = true; setTimeout(function(){ applyContentFixes().catch(function(e){ console.warn("fixes", e); }); }, 1500); }
   S.bank = (bank && Array.isArray(bank.courseData)) ? bank.courseData : [];
   try{ lib = await fbGet("teacherLibraries/" + t); }catch(e){}
@@ -1662,7 +1668,7 @@ function renderLibrary(){
     bids.forEach(function(bk){ var sr = bookSeries(bk) || "__own"; if(gi[sr] == null){ gi[sr] = grp.length; grp.push({ sr: sr, ids: [] }); } grp[gi[sr]].ids.push(bk); });
     var tabsHtml = grp.map(function(g){ return '<span class="lib-grp"><span class="lib-grp-t">' + (g.sr === "__own" ? '自編教材' : esc(g.sr)) + '</span>' + g.ids.map(function(bk){ return '<button class="tab' + (!tidy && bk === cur ? ' on' : '') + '" data-libbook="' + esc(bk) + '">' + esc(g.sr === "__own" ? bookTitle(bk) : bookShort(bk)) + '</button>'; }).join("") + '</span>'; }).join("");
     html = '<div class="tabs lib-tabs"><button class="tab" data-libback="1">‹ 返回</button>' + tabsHtml +
-      '<span style="margin-left:auto;display:flex;gap:2px;flex-wrap:wrap;"><button class="tab' + (tidy ? ' on' : '') + '" data-libtidy="1">🧹 整理' + (tidyN ? ' <span class="chip" style="background:#FBEBC8;">' + tidyN + '</span>' : '') + '</button><button class="tab" data-libadd="1">＋ 新增教材</button>' + (tidy ? '' : '<button class="tab" data-libren="1">⚙️ 教材設定</button>' + (cur === DEFAULT_BOOK ? '<button class="tab" data-libhide="1">隱藏這本</button>' : '<button class="tab" data-libdel="1" style="color:#B23B32;">刪除教材</button>')) + (hiddenN ? '<button class="tab" data-libunhide="1">已隱藏（' + hiddenN + '）</button>' : '') + '</span></div>' +
+      '<span style="margin-left:auto;display:flex;gap:2px;flex-wrap:wrap;"><button class="tab" data-libimp="1" title="匯入別的老師分享的課次檔案">⬆ 匯入課次</button><button class="tab' + (tidy ? ' on' : '') + '" data-libtidy="1">🧹 整理' + (tidyN ? ' <span class="chip" style="background:#FBEBC8;">' + tidyN + '</span>' : '') + '</button><button class="tab" data-libadd="1">＋ 新增教材</button>' + (tidy ? '' : '<button class="tab" data-libren="1">⚙️ 教材設定</button>' + (cur === DEFAULT_BOOK ? '<button class="tab" data-libhide="1">隱藏這本</button>' : '<button class="tab" data-libdel="1" style="color:#B23B32;">刪除教材</button>')) + (hiddenN ? '<button class="tab" data-libunhide="1">已隱藏（' + hiddenN + '）</button>' : '') + '</span></div>' +
       '<div class="lib-wrap">' + nav + '<div class="lib-pane">' + pane + '</div></div>';
   }
   shell(html, { flush: true }); setCrumb([]);
@@ -1685,6 +1691,8 @@ function renderLibrary(){
     if(b.dataset.pnew != null){ S.lib = { book: cur, key: key, creating: b.dataset.pnew, tidy: tidy }; renderLibrary(); return; }
     if(b.dataset.pback){ S.lib = { book: cur, key: key, tidy: tidy }; await syncLessonIndex(); renderLibrary(); return; }
     if(b.dataset.pdel){ await libDeleteProject(b.dataset.pdel); renderLibrary(); return; }
+    if(b.dataset.lesexp){ libExportLesson(b.dataset.lesexp); return; }
+    if(b.dataset.libimp){ var fi = document.createElement("input"); fi.type = "file"; fi.accept = ".json,application/json"; fi.onchange = async function(){ if(!fi.files[0]) return; var nk2 = await libImportLesson(fi.files[0], cur); if(nk2) S.lib = { book: cur, key: nk2 }; renderLibrary(); }; fi.click(); return; }
     if(b.dataset.lesdel){ if(await libDeleteLesson(b.dataset.lesdel)) S.lib = { book: cur }; renderLibrary(); return; }
     if(b.dataset.trestore){ await libRestoreProject(b.dataset.trestore); renderLibrary(); return; }
     if(b.dataset.tpurge){ var tp = (S.projTrash || {})[b.dataset.tpurge]; if(!tp || !confirm("永久刪除「" + ((tp.proj || {}).title || "") + "」？這個動作沒辦法復原。")) return; delete S.projTrash[b.dataset.tpurge]; await fbSet("teacherPlatform/" + S.teacher.id + "/projTrash/" + b.dataset.tpurge, null); renderLibrary(); return; }
@@ -1778,9 +1786,52 @@ async function libDeleteLesson(key){
   }catch(e){ toast("刪除失敗，請檢查網路"); return false; }
   await syncLessonIndex(); toast("已刪除" + lessonTitle(key).replace(/^.*?(第 \d+ 課).*$/, "$1")); return true;
 }
+// ---------- 教材分享：把一整課（生詞・語法・課文＋簡報與練習）匯出成檔案，給別的老師匯入 ----------
+async function libExportLesson(key){
+  var L = (S.plat.lessons || {})[key]; if(!L || L.unit) return;
+  var pk = parseKey(key), bankL = (S.bank || []).filter(function(l){ return (l.book || DEFAULT_BOOK) === pk.book && Number(l.lesson) === pk.no; })[0] || null;
+  var projs = [];
+  for(var pid in (L.projects || {})){ try{ var pj = await fbGet("teacherLibraries/" + S.teacher.id + "/projects/" + pid); if(pj) projs.push(pj); }catch(e){} }
+  var data = { kind: "mandamy-lesson", version: 1, exportedAt: new Date().toISOString(), from: S.teacher.name || "", bookTitle: bookTitle(pk.book), lesson: pk.no, title: L.title || "", bank: bankL, projects: projs };
+  var blob = new Blob([JSON.stringify(data)], { type: "application/json" });
+  downloadBlobFile(blob, "曼米中文_" + bookTitle(pk.book).replace(/[\\/:*?"<>|《》]/g, "") + "_第" + pk.no + "課.json");
+  toast("已匯出：生詞・語法・課文" + (bankL ? "" : "（這一課沒有）") + "、簡報／練習 " + projs.length + " 份");
+}
+async function libImportLesson(file, cur){
+  var data; try{ data = JSON.parse(await file.text()); }catch(e){ alert("這不是有效的檔案。"); return; }
+  if(!data || data.kind !== "mandamy-lesson"){ alert("這不是曼米中文匯出的課次檔案。"); return; }
+  var ns = await askText("匯入到「" + bookTitle(cur) + "」的第幾課？（檔案裡是《" + (data.bookTitle || "") + "》第 " + data.lesson + " 課 " + (data.title || "") + "）", String(data.lesson || ""), "匯入"); if(!ns) return;
+  var no = cnNum(String(ns).replace(/[第課\s]/g, "")); if(!no){ toast("請輸入課次數字"); return; }
+  var key = lkey(cur, no), t = S.teacher.id, Lx = (S.plat.lessons || {})[key];
+  if(Lx && (lessonCounts(key).vocab + lessonCounts(key).grammar + lessonCounts(key).text) > 0 && data.bank && !confirm("「" + lessonTitle(key) + "」已經有生詞・語法・課文。\n匯入的生詞・語法・課文會加在後面（同一個詞不會重複），確定嗎？")) return;
+  try{
+    if(data.bank){
+      var bank = (await fbGet("teacherVocabBanks/" + t)) || {}, cd = Array.isArray(bank.courseData) ? bank.courseData.slice() : [];
+      var ex = cd.filter(function(l){ return (l.book || DEFAULT_BOOK) === cur && Number(l.lesson) === no; })[0];
+      if(!ex){ ex = JSON.parse(JSON.stringify(data.bank)); ex.lesson = no; if(cur !== DEFAULT_BOOK) ex.book = cur; else delete ex.book; cd.push(ex); }
+      else {
+        var hv = {}; (ex.vocab || []).forEach(function(v){ hv[v["生詞"]] = 1; }); ex.vocab = (ex.vocab || []).concat((data.bank.vocab || []).filter(function(v){ return !hv[v["生詞"]]; }));
+        var hg = {}; (ex.grammar || []).forEach(function(g){ hg[g["語法點"]] = 1; }); ex.grammar = (ex.grammar || []).concat((data.bank.grammar || []).filter(function(g){ return !hg[g["語法點"]]; }));
+        ex.texts = (ex.texts || []).concat(data.bank.texts || []); if(!ex.title && data.bank.title) ex.title = data.bank.title;
+      }
+      cd.sort(function(a, b){ return (Number(a.lesson) || 0) - (Number(b.lesson) || 0); });
+      await fbUpdate("teacherVocabBanks/" + t, { courseData: cd, updatedAt: Date.now(), updatedBy: S.teacher.name || t });
+    } else if(!Lx){
+      S.plat.customLessons = S.plat.customLessons || {}; S.plat.customLessons[key] = { book: cur, no: no, title: data.title || "" };
+      await fbSet("teacherPlatform/" + t + "/customLessons/" + key, S.plat.customLessons[key]);
+    }
+    var n = 0;
+    for(var i = 0; i < (data.projects || []).length; i++){
+      var pj = JSON.parse(JSON.stringify(data.projects[i])), nid = uid("proj_"); pj.id = nid; delete pj.folderId;
+      await fbSet("teacherLibraries/" + t + "/projects/" + nid, pj); S.plat.lessonMap = S.plat.lessonMap || {}; S.plat.lessonMap[nid] = key; await fbSet("teacherPlatform/" + t + "/lessonMap/" + nid, key); n++;
+    }
+    await syncLessonIndex(); toast("已匯入到" + lessonTitle(key) + (data.bank ? "：生詞・語法・課文" : "") + (n ? "、簡報／練習 " + n + " 份" : ""));
+    return key;
+  }catch(e){ alert("匯入失敗，請檢查網路。"); return null; }
+}
 function libLessonHtml(key){
   var L = S.plat.lessons || {}, l = L[key] || {}, c = lessonCounts(key), ps = l.projects || {}, pids = Object.keys(ps), dup = libDupSet();
-  var h = '<div class="head-row" style="margin-bottom:10px;"><div style="flex:1;"><h2>' + esc(lessonTitle(key)) + '</h2></div>' + (l.unit ? '' : '<button class="btn sm danger" data-lesdel="' + esc(key) + '" title="沒有內容的課才能刪">刪除這一課</button>') + '</div>';
+  var h = '<div class="head-row" style="margin-bottom:10px;"><div style="flex:1;"><h2>' + esc(lessonTitle(key)) + '</h2></div>' + (l.unit ? '' : '<button class="btn sm" data-lesexp="' + esc(key) + '" title="把這一課的生詞・語法・課文和簡報、練習打包成一個檔案，可以傳給別的老師">⬇ 匯出這一課</button> <button class="btn sm danger" data-lesdel="' + esc(key) + '" title="沒有內容的課才能刪">刪除這一課</button>') + '</div>';
   h += '<div class="panel"><div class="lh" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><h3 style="margin:0;flex:1;">📖 生詞・語法・課文</h3>' + (l.unit ? '' : '<button class="btn sm primary" data-bank="1">編輯生詞・語法・課文</button>') + '</div>' +
     '<div class="tools" style="margin-top:8px;"><span class="chip">生詞 ' + c.vocab + '</span><span class="chip">語法 ' + c.grammar + '</span><span class="chip">課文 ' + c.text + '</span></div>' + (l.unit ? '<p class="note" style="margin:6px 0 0;">複習單元的生詞・語法・課文是 ' + esc(memberRange(l.members)) + ' 的合計，請到各課編輯。</p>' : (c.vocab + c.grammar + c.text ? '' : '<p class="note" style="margin:6px 0 0;">這一課還沒有生詞・語法・課文。按右上角開始編輯，或用 Excel 匯入。</p>')) + '</div>';
   h += '<div class="panel"><div class="lh" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><h3 style="margin:0;flex:1;">🖥️ 簡報與練習（' + pids.length + '）</h3><button class="btn sm" data-pnew="' + esc(key) + '">＋ 新增簡報／測驗</button></div>' +
@@ -4087,6 +4138,8 @@ async function parentDigest(tid, link){
     var mine = (r.students || []).filter(function(s){ return (s.name || "").trim() === link.name; })[0];
     if(!mine) return;
     var e = { date: r.date, material: r.material || "", absent: !!mine.absent };
+    if(!mine.absent && link.showComments !== false && (mine.comment || "").trim()){ e.comment = mine.comment; if(mine.commentHtml) e.commentHtml = rteClean(mine.commentHtml); }
+    var vv = (Array.isArray(r.vocab) ? r.vocab : []).filter(function(v){ return v && v.word; }).slice(0, 40); if(vv.length && !mine.absent) e.vocab = vv.map(function(v){ return { w: v.word, s: v.sub || "" }; });
     if(!mine.absent && link.showScores && hasScore(mine)){ e.total = stTotal(mine); e.scores = {}; RUBRIC.forEach(function(rb){ if(typeof mine[rb.key] === "number") e.scores[rb.label] = mine[rb.key] + "/" + rb.max; }); }
     out.push(e);
   });
@@ -4096,8 +4149,21 @@ async function refreshParentLink(tok){
   var tid = S.teacher.id, link = await fbGet("teacherPlatform/" + tid + "/parentLinks/" + tok); if(!link) return;
   await fbSet("teacherPlatform/" + tid + "/parentRecords/" + tok, await parentDigest(tid, link));
 }
+// 學生的「我的生詞本」：每堂課記錄裡的生詞，整理成一份只有生詞的清單給學生看（不含分數和評語）
+async function publishClassVocab(label, classKey){
+  try{
+    var targets = allClassesList().filter(function(x){ return recLabelsOfClass(x.sel).indexOf(label) >= 0 || (classKey && classKey === x.sel.s + "|" + x.sel.t + "|" + x.sel.c); });
+    for(var i = 0; i < targets.length; i++){
+      var sel = targets[i].sel, m = recMap();
+      var out = Object.keys(m).map(function(k){ return m[k]; }).filter(function(r){ return !r.isAbsence && recBelongsTo(r, sel) && Array.isArray(r.vocab) && r.vocab.length; }).sort(function(a, b){ return (b.date || "").localeCompare(a.date || ""); }).slice(0, 60)
+        .map(function(r){ return { d: r.date || "", m: (r.material || "").slice(0, 60), w: r.vocab.filter(function(v){ return v && v.word; }).map(function(v){ return { w: v.word, s: v.sub || "" }; }) }; });
+      await fbSet("teacherPlatform/" + S.teacher.id + "/classVocab/" + sel.c, out.length ? out : null);
+    }
+  }catch(e){}
+}
 async function refreshParentLinksFor(label, classKey){
   // 存課堂記錄後，更新這個班所有家長頁面（記錄名稱是老師自訂的也對得上：看班級連結的名稱與 classKey）
+  publishClassVocab(label, classKey);
   try{
     var links = (await fbGet("teacherPlatform/" + S.teacher.id + "/parentLinks")) || {};
     for(var tok in links){ var L = links[tok], sel = { s: L.s, t: L.tm, c: L.c }; if(!classInfo(sel)) continue;
@@ -4110,7 +4176,7 @@ function refreshParentsForRecs(recs){
 }
 function parentPanelHtml(roster, links){
   var byName = {}; Object.keys(links).forEach(function(t){ byName[links[t].name] = Object.assign({ tok: t }, links[t]); });
-  var rows = roster.map(function(n){ var L = byName[n]; return '<tr><td><b>' + esc(n) + '</b></td><td>' + (L ? '<input type="text" readonly value="' + esc(parentUrl(L.tok)) + '" style="width:260px;max-width:60vw;font-size:12px;padding:5px 8px;border-radius:6px;border:1px solid var(--line);"> <label style="white-space:nowrap;"><input type="checkbox" data-h="plink-scores" data-tok="' + L.tok + '"' + (L.showScores ? ' checked' : '') + '> 顯示分數</label>' : '<span class="note">尚未建立</span>') + '</td><td>' + (L ? '<button class="btn sm" data-h="plink-copy" data-tok="' + L.tok + '">複製</button><button class="btn sm" data-h="plink-pin" data-tok="' + L.tok + '">' + (L.pinHash ? '🔒 改密碼' : '設密碼') + '</button><button class="btn sm" data-h="plink-new" data-n="' + esc(n) + '">換新連結</button><button class="btn sm danger" data-h="plink-del" data-tok="' + L.tok + '">停用</button>' : '<button class="btn sm" data-h="plink-new" data-n="' + esc(n) + '">建立連結</button>') + '</td></tr>'; }).join("");
+  var rows = roster.map(function(n){ var L = byName[n]; return '<tr><td><b>' + esc(n) + '</b></td><td>' + (L ? '<input type="text" readonly value="' + esc(parentUrl(L.tok)) + '" style="width:260px;max-width:60vw;font-size:12px;padding:5px 8px;border-radius:6px;border:1px solid var(--line);"> <label style="white-space:nowrap;"><input type="checkbox" data-h="plink-scores" data-tok="' + L.tok + '"' + (L.showScores ? ' checked' : '') + '> 顯示分數</label> <label style="white-space:nowrap;"><input type="checkbox" data-h="plink-cmts" data-tok="' + L.tok + '"' + (L.showComments !== false ? ' checked' : '') + '> 顯示評語</label>' : '<span class="note">尚未建立</span>') + '</td><td>' + (L ? '<button class="btn sm" data-h="plink-copy" data-tok="' + L.tok + '">複製</button><button class="btn sm" data-h="plink-pin" data-tok="' + L.tok + '">' + (L.pinHash ? '🔒 改密碼' : '設密碼') + '</button><button class="btn sm" data-h="plink-new" data-n="' + esc(n) + '">換新連結</button><button class="btn sm danger" data-h="plink-del" data-tok="' + L.tok + '">停用</button>' : '<button class="btn sm" data-h="plink-new" data-n="' + esc(n) + '">建立連結</button>') + '</td></tr>'; }).join("");
   return '<h3 style="margin-top:16px;">家長查看連結</h3><p class="note" style="margin:0 0 8px;">每位學生一個專屬連結（不用登入）。家長可以看到孩子的作業繳交狀況、你的回饋，和每堂課的教材進度與出缺席；「顯示分數」打勾才會讓家長看到課堂分數。連結外洩時，按「換新連結」舊的就會失效。</p>' +
     (roster.length ? '<div style="overflow-x:auto;"><table class="hw-table"><thead><tr><th>學生</th><th>連結</th><th>操作</th></tr></thead><tbody>' + rows + '</tbody></table></div><div class="tools" style="margin-top:8px;"><button class="btn sm" data-h="plink-all">為名單全部建立連結</button><button class="btn sm" data-h="plink-refresh">更新家長頁面內容</button></div>' : '<p class="note">先貼上班級名單。</p>');
 }
@@ -4142,6 +4208,7 @@ async function parentAct(a, roster, links, b){
     render(); return;
   }
   if(a === "plink-refresh"){ for(var t2 in links) await refreshParentLink(t2); toast("已更新"); return; }
+  if(a === "plink-cmts"){ await fbUpdate(base + "/" + b.dataset.tok, { showComments: !!b.checked }); await refreshParentLink(b.dataset.tok); toast(b.checked ? "家長現在看得到你給孩子的評語" : "家長看不到評語了"); return; }
   if(a === "plink-scores"){ await fbUpdate(base + "/" + b.dataset.tok, { showScores: !!b.checked }); await refreshParentLink(b.dataset.tok); toast(b.checked ? "家長現在看得到分數" : "家長看不到分數了"); return; }
 }
 // 小折線圖：points = [{ v: 分數, t: 標籤 }]
@@ -4181,7 +4248,7 @@ async function viewParent(tok){
     var html = '<div class="center-wrap" style="align-items:flex-start;"><div style="width:100%;max-width:720px;margin:0 auto;padding:16px;"><h2>' + esc(link.name) + ' 的學習狀況</h2><div class="note" style="margin-bottom:12px;">' + esc(cname || "") + '　（家長專屬頁面）</div>';
     var cnt = { ok: 0, late: 0, missing: 0 }; items.forEach(function(it){ var s = hwStatus(it, subs[it.id]); if(cnt[s] != null) cnt[s]++; });
     html += '<div class="panel"><h3>聯絡簿</h3><div class="note" style="margin-bottom:8px;">準時 ' + cnt.ok + '　遲交 ' + cnt.late + '　未交 ' + cnt.missing + '</div>' + (items.length ? items.map(function(it){ var s = hwStatus(it, subs[it.id]), sb = subs[it.id]; return '<div class="slot"><div class="slot-time" style="min-width:100px;">' + esc(it.due ? hwFmt(hwDueTs(it)) : "") + '<div class="note">截止</div></div><div class="slot-main"><div><b>' + esc(it.title) + '</b></div><div class="note">' + HW_LABEL[s] + (sb && sb.firstAt ? '　最後送出 ' + esc(hwFmt(sb.at)) : '') + '</div>' + (sb && sb.fb ? '<div style="margin-top:4px;">老師回饋：' + esc(sb.fb) + '</div>' : '') + '</div></div>'; }).join("") : '<p class="note">還沒有作業。</p>') + '</div>';
-    html += '<div class="panel"><h3>上課記錄</h3>' + (recs.length ? recs.map(function(r){ return '<div class="slot"><div class="slot-time" style="min-width:100px;">' + esc(r.date || "") + '</div><div class="slot-main">' + (r.absent ? '<span class="note">缺席</span>' : '') + '<div>' + esc(r.material || "") + '</div>' + (r.scores ? '<div class="note">總分 ' + r.total + '　' + Object.keys(r.scores).map(function(k){ return esc(k) + " " + esc(r.scores[k]); }).join("　") + '</div>' : '') + '</div></div>'; }).join("") : '<p class="note">還沒有上課記錄。</p>') + '</div>';
+    html += '<div class="panel"><h3>上課記錄</h3>' + (recs.length ? recs.map(function(r){ return '<div class="slot"><div class="slot-time" style="min-width:100px;">' + esc(r.date || "") + '</div><div class="slot-main">' + (r.absent ? '<span class="note">缺席</span>' : '') + '<div>' + esc(r.material || "") + '</div>' + (r.scores ? '<div class="note">總分 ' + r.total + '　' + Object.keys(r.scores).map(function(k){ return esc(k) + " " + esc(r.scores[k]); }).join("　") + '</div>' : '') + (r.comment ? '<div class="pr-cmt"><div class="note" style="font-weight:700;">老師的評語</div>' + rteShow(r.commentHtml, r.comment) + '<button class="btn sm ghost pr-tr" data-tr="1">🌐 翻譯</button><div class="pr-trout note"></div></div>' : '') + (r.vocab && r.vocab.length ? '<details class="pr-voc"><summary class="note">這堂課的生詞（' + r.vocab.length + '）</summary><div class="tools" style="margin-top:6px;">' + r.vocab.map(function(v){ return '<span class="chip" title="' + esc(v.s) + '">' + esc(v.w) + (v.s ? ' <span class="note" style="font-weight:400;">' + esc(v.s.split(" · ").slice(0, 1).join("")) + '</span>' : '') + '</span>'; }).join("") + '</div></details>' : '') + '</div></div>'; }).join("") : '<p class="note">還沒有上課記錄。</p>') + '</div>';
     var lvAll = (await fbGet(base + "/leave/" + link.c)) || {}, myLv = objList(lvAll).filter(function(x){ return x.name === link.name; }).sort(function(a, b){ return (b.createdAt || 0) - (a.createdAt || 0); });
     // ---- 下次上課、考卷成績、通知、進步趨勢 ----
     var extra = '';
@@ -4204,6 +4271,15 @@ async function viewParent(tok){
     if(parentAlbums.length){ albCss(); html += '<div class="panel"><h3>📷 班級相簿</h3>' + albCardsHtml(parentAlbums, false) + '</div>'; }
     html += extra + '<details class="panel"><summary style="cursor:pointer;font-weight:700;">🙋 幫孩子請假／請假紀錄' + (myLv && Object.keys(myLv).length ? '（' + Object.keys(myLv).length + '）' : '') + '</summary><div style="margin-top:10px;">' + leaveFormHtml().replace('<div class="panel rec-form"><h3>請假申請</h3>', '<div class="rec-form">') + '<h3 style="margin-top:14px;">請假紀錄</h3>' + leaveListHtml(myLv) + '</div></details></div></div>';
     root.innerHTML = html;
+    // 評語翻譯（用免費翻譯服務；家長介面選英文／泰文就翻成那個語言，否則英文）
+    root.addEventListener("click", async function(e){
+      var tb = e.target.closest && e.target.closest(".pr-tr"); if(!tb) return;
+      var box = tb.closest(".pr-cmt"), out = box.querySelector(".pr-trout"), view = box.querySelector(".rte-view"), txt = view ? view.innerText : "";
+      if(!txt) return; var lang = I18N_LANG === "th" ? "th" : I18N_LANG === "ja" ? "ja" : "en";
+      out.textContent = "翻譯中…"; var parts = txt.split(/\n+/).filter(function(x){ return x.trim(); }), res = [];
+      for(var k = 0; k < parts.length; k++){ var t = null; try{ t = await trTranslate(parts[k], lang); }catch(er){} res.push(t || parts[k]); }
+      out.innerText = res.join("\n"); tb.style.display = "none";
+    });
     root.querySelectorAll(".alb-card[data-open]").forEach(function(c){ c.onclick = function(){ var a = parentAlbums.filter(function(x){ return x.id === c.dataset.open; })[0]; if(a) albLightbox(albPhotos(a), 0); }; });
     document.getElementById("lv-go").onclick = async function(){
       var d = document.getElementById("lv-d").value; if(!d){ alert("請選請假日期。"); return; }
@@ -5892,6 +5968,31 @@ async function startStudent(code, name, pw, opts){
     renderStudent();
   }catch(e){ console.warn("startStudent", e); viewStudentEntry("連線失敗，請檢查網路後再試。", code); }
 }
+// 學生：我的生詞本（每堂課的生詞，可以用字卡複習）
+async function fillStudentVocab(){
+  var box = document.getElementById("svocab"); if(!box || !S.student) return;
+  var st = S.student, data = null; try{ data = await fbGet("teacherPlatform/" + st.idx.t + "/classVocab/" + st.idx.c); }catch(e){}
+  data = Array.isArray(data) ? data : (data ? Object.keys(data).map(function(k){ return data[k]; }) : []);
+  if(!document.getElementById("svocab")) return;
+  if(!data.length){ box.innerHTML = ''; return; }
+  var total = 0; data.forEach(function(x){ total += (x.w || []).length; });
+  box.innerHTML = '<div class="panel"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><h3 style="margin:0;flex:1;">📒 我的生詞本</h3><span class="note">' + data.length + ' 堂課・' + total + ' 個生詞</span><button class="btn sm primary" data-sv="all">🎴 全部用字卡複習</button></div>' +
+    data.slice(0, 12).map(function(x, i){ return '<details class="sv-day"' + (i === 0 ? ' open' : '') + '><summary><b>' + esc(x.d) + '</b>　<span class="note">' + esc(x.m || "") + '（' + (x.w || []).length + '）</span></summary><div class="tools" style="margin:6px 0;">' + (x.w || []).map(function(v){ return '<span class="chip" title="' + esc(v.s) + '">' + esc(v.w) + '</span>'; }).join("") + '<button class="btn sm" data-sv="' + i + '">🎴 字卡</button></div></details>'; }).join("") + '</div>';
+  box.onclick = function(e){ var b = e.target.closest("[data-sv]"); if(!b) return; var words = b.dataset.sv === "all" ? [].concat.apply([], data.map(function(x){ return x.w || []; })) : (data[Number(b.dataset.sv)].w || []); var seen = {}; words = words.filter(function(v){ if(seen[v.w]) return false; seen[v.w] = 1; return true; }); svFlashcards(words); };
+}
+function svFlashcards(words){
+  if(!words.length) return; var order = words.slice().sort(function(){ return Math.random() - 0.5; }), i = 0, flipped = false;
+  var d = document.createElement("dialog"); d.className = "sv-dlg"; document.body.appendChild(d);
+  function draw(){ var v = order[i], parts = recVocabParts(v.s || ""); d.innerHTML = '<div style="display:flex;align-items:center;"><span class="note" style="flex:1;">' + (i + 1) + ' / ' + order.length + '</span><button class="btn sm ghost" data-c="x">關閉</button></div><div class="sv-card" data-c="flip"><div class="sv-w">' + esc(v.w) + '</div>' + (flipped ? '<div class="sv-s">' + [parts.zy, parts.py].filter(Boolean).map(esc).join("　") + '</div><div class="sv-t">' + parts.tr.map(function(x){ return esc(x.t); }).join("<br>") + '</div>' : '<div class="note">點一下看注音和意思</div>') + '</div><div class="tools" style="justify-content:center;"><button class="btn" data-c="prev">‹ 上一個</button><button class="btn" data-c="say">🔊 念</button><button class="btn primary" data-c="next">下一個 ›</button></div>'; }
+  d.onclick = function(e){ var b = e.target.closest("[data-c]"); if(!b) return; var c = b.dataset.c;
+    if(c === "x"){ d.close(); d.remove(); return; }
+    if(c === "flip"){ flipped = !flipped; }
+    else if(c === "next"){ i = (i + 1) % order.length; flipped = false; }
+    else if(c === "prev"){ i = (i - 1 + order.length) % order.length; flipped = false; }
+    else if(c === "say"){ try{ var u = new SpeechSynthesisUtterance(order[i].w); u.lang = "zh-TW"; u.rate = 0.85; speechSynthesis.cancel(); speechSynthesis.speak(u); }catch(er){} return; }
+    draw(); };
+  draw(); d.showModal();
+}
 function renderStudent(){
   var st = S.student;
   if(S.live && S.live.on) return renderStudentLive();
@@ -5912,7 +6013,7 @@ function renderStudent(){
   S.lesson = null;
   var keys = lessonKeys(cls).filter(function(no){ var o = openMap[no]; return o && OPEN_KEYS.some(function(k){ return o[k[0]]; }); });
   var html = '<div class="head-row"><div><div class="note">' + esc(st.school) + '　›　' + esc(st.term) + '</div><h2>' + esc(cls.name) + '</h2></div>' + (st.acct ? '<div><button class="btn sm ghost" id="chpw">改密碼</button></div>' : '') + '</div>';
-  html += '<div id="mine"></div>'; html += '<div class="panel"><h3>聯絡簿</h3><div id="hwhint"></div><button class="btn primary" id="hwopen">看作業／交作業</button> <button class="btn" id="lvopen">我要請假</button> <button class="btn" id="albopen">📷 班級相簿</button></div>';
+  html += '<div id="mine"></div>'; html += '<div class="panel"><h3>聯絡簿</h3><div id="hwhint"></div><button class="btn primary" id="hwopen">看作業／交作業</button> <button class="btn" id="lvopen">我要請假</button> <button class="btn" id="albopen">📷 班級相簿</button></div><div id="svocab"></div>';
   if(!keys.length) html += '<div class="empty"><p class="note">老師還沒有開放任何課次。<br>上課時請輸入老師給的房間號碼：</p><div class="join" style="justify-content:center;"><input type="text" id="roomno" placeholder="房間號碼" inputmode="numeric" style="width:160px;"><button class="btn primary" id="roomgo">加入</button></div></div>';
   else {
     html += '<div id="ls"></div><div class="panel"><h3>上課中？</h3><div class="join" style="margin:0;"><input type="text" id="roomno" placeholder="老師給的房間號碼" inputmode="numeric" style="width:200px;"><button class="btn primary" id="roomgo">加入房間</button></div></div>';
@@ -5921,7 +6022,7 @@ function renderStudent(){
   document.getElementById("hwopen").onclick = function(){ S.hwOpen = "list"; renderStudent(); };
   document.getElementById("lvopen").onclick = function(){ S.leaveOpen = true; renderStudent(); };
   document.getElementById("albopen").onclick = function(){ S.albOpen = "list"; renderStudent(); };
-  fillStudentHint();
+  fillStudentHint(); fillStudentVocab();
   var chpw = document.getElementById("chpw"); if(chpw) chpw.onclick = studentChangePassword;
   var ls = document.getElementById("ls");
   keys.forEach(function(no){
