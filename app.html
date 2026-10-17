@@ -5378,38 +5378,76 @@ function renderActHub(){
   S.focus = false;
   var A = S.act, cv = A.cls != null ? A.cls : actClassDefault(), sel = cv ? (function(p){ return { s: p[0], t: p[1], c: p[2] }; })(cv.split("|")) : null, cls = sel ? getCls(sel) : null;
   if(!cls){ sel = null; cv = ""; }
-  var keys = cls ? lessonKeys(cls) : lessonKeys(null), lk = A.lesson && keys.indexOf(A.lesson) >= 0 ? A.lesson : (cls ? classProgress(cls, sel).cur : null) || keys[0] || "";
+  var keys = cls ? lessonKeys(cls) : lessonKeys(null), lk = A.lesson && keys.indexOf(A.lesson) >= 0 ? A.lesson : actDefaultLesson(keys, cls ? classProgress(cls, sel).cur : null);
+  var ls = (A.ls || []).filter(function(k){ return keys.indexOf(k) >= 0; }); if(!ls.length && lk) ls = [lk];
   if(A.run){
-    var a = actById(A.run), lp = lessonParam(lk); embedBankSet(lessonBookOf(lk));
-    var html0 = '<div class="tabs"><button class="tab" data-actback="1">‹ 回課堂活動</button><span class="note" style="align-self:center;margin-left:8px;">' + esc(a ? a.e + " " + a.t : "") + '　｜　' + esc(lk ? lessonTitle(lk) : "") + '</span></div>' +
+    var a = actById(A.run), lp = actLessonsParam(ls);
+    var html0 = '<div class="tabs"><button class="tab" data-actback="1">‹ 回課堂活動</button><span class="note" style="align-self:center;margin-left:8px;">' + esc(a ? a.e + " " + a.t : "") + '　｜　' + esc(ls.map(lessonTitle).join("、")) + '（' + actVocabCount(ls) + ' 個生詞）</span><button class="tab" data-actmore="1" style="margin-left:auto;">📚 選課次（可多選）</button></div>' +
       (lp ? '<iframe class="frame" id="fr" src="' + esc("index.html?v=" + MM_V + "&embed=1&" + lp + "&tab=activities&activity=" + encodeURIComponent(A.run)) + '" allow="microphone; autoplay; clipboard-write"></iframe>' : '<div class="empty"><p class="note">這一課還沒有生詞，活動沒有內容可以用。</p></div>');
     shell(html0, { flush: true }); setCrumb([]);
-    document.getElementById("main").onclick = function(e){ if(e.target.closest("[data-actback]")){ S.act = { cls: A.cls, lesson: A.lesson }; render(); } };
+    document.getElementById("main").onclick = async function(e){ if(e.target.closest("[data-actback]")){ S.act = { cls: A.cls, lesson: A.lesson, ls: A.ls }; render(); } else if(e.target.closest("[data-actmore]")){ var nk = await actPickLessons(keys, ls); if(nk){ S.act = Object.assign({}, A, { ls: nk }); render(); } } };
     return;
   }
   var copts = '<option value="">（不指定班級）</option>' + allClassesList().map(function(x){ var v = x.sel.s + "|" + x.sel.t + "|" + x.sel.c; return '<option value="' + esc(v) + '"' + (v === cv ? ' selected' : '') + '>' + esc((x.latest ? "" : x.year + " ") + x.school + " " + x.cls.name) + '</option>'; }).join("");
-  var lopts = keys.map(function(k){ return '<option value="' + esc(k) + '"' + (k === lk ? ' selected' : '') + '>' + esc(lessonTitle(k)) + '</option>'; }).join("");
+  var lsHtml = '<span class="act-ls">' + esc(ls.map(function(k){ return lessonTitle(k).replace(/^.*?(第 \d+ 課)/, "$1"); }).join("、") || "（還沒選）") + '<span class="note">　共 ' + actVocabCount(ls) + ' 個生詞</span></span><button class="btn sm" id="act-les">📚 選課次（可多選）</button>';
   var html = '<div class="head-row"><div style="flex:1;"><h2>🎲 課堂活動</h2><div class="note">先選班級和課次，再點活動就開始。上課中也可以按課次頁右上的「⚡ 活動選單」叫出這個選單。</div></div></div>' +
-    '<div class="panel act-ctx"><label>班級</label><select id="act-cls">' + copts + '</select><label>課次（用哪一課的生詞）</label><select id="act-les">' + lopts + '</select>' +
+    '<div class="panel act-ctx"><label>班級</label><select id="act-cls">' + copts + '</select><label>課次（用哪幾課的生詞）</label>' + lsHtml + '' +
     (cls ? '<span class="note">選了班級：活動會在這個班的課次頁開啟，「開始上課」時學生會跟著看到。</span>' : '<span class="note">沒選班級也可以直接玩（投影給學生看）；線上賓果、點名輪盤、時空膠囊需要選班級。</span>') + '</div>' +
     actGridHtml("data-actrun");
   shell(html); setCrumb([]);
   var main = document.getElementById("main");
-  document.getElementById("act-cls").onchange = function(){ S.act = { cls: this.value, lesson: null }; render(); };
-  document.getElementById("act-les").onchange = function(){ S.act = { cls: cv, lesson: this.value }; };
+  document.getElementById("act-cls").onchange = function(){ S.act = { cls: this.value, lesson: null, ls: ls }; render(); };
+  document.getElementById("act-les").onclick = async function(){ var nk = await actPickLessons(keys, ls); if(nk){ S.act = { cls: cv, lesson: nk[0], ls: nk }; render(); } };
   main.onclick = async function(e){
     var f = e.target.closest("[data-actfav]"); if(f){ await actToggleFav(f.dataset.actfav); render(); return; }
     var b = e.target.closest("[data-actrun]"); if(!b) return;
-    var id = b.dataset.actrun, a = actById(id), lsel = document.getElementById("act-les").value;
+    var id = b.dataset.actrun, a = actById(id), lsel = ls[0] || "";
     if((a.need === "class" || a.need === "classOnly") && !sel){ toast("「" + a.t + "」需要先選班級"); document.getElementById("act-cls").focus(); return; }
     actNoteRecent(id);
-    if(!sel){ S.act = { cls: "", lesson: lsel, run: id }; render(); return; }
+    if(a.need === "lesson" && !actVocabCount(ls)){ toast("選的課次還沒有生詞，請按「選課次」多勾幾課"); return; }
+    if(!sel){ S.act = { cls: "", lesson: lsel, ls: ls, run: id }; render(); return; }
     S.act = null; S.sel = sel; S.lib = null; S.rec = null; S.grades = null; S.day = null; S.settings = false;
     if(a.need === "classOnly"){ S.lesson = null; S.hw = { view: id }; render(); return; }
     S.hw = null; S.lesson = lsel || null; if(!S.lesson){ toast("這個班還沒有課次"); render(); return; }
-    if(id === "pbingo"){ S.tab = "bingo"; S.sub = null; } else { S.tab = "activities"; S.sub = id; }
+    if(id === "pbingo"){ S.tab = "bingo"; S.sub = null; } else { S.tab = "activities"; S.sub = id + (ls.length > 1 ? "|" + ls.join(",") : ""); }
     render(); pushLive();
   };
+}
+// 活動可以同時用好幾課的生詞：把課次（含複習單元）展開成同一本教材的課號
+function actLessonsParam(keys){
+  var L = S.plat.lessons || {}, byBook = {}, order = [];
+  (keys || []).forEach(function(k){
+    var l = L[k]; if(!l) return;
+    var mem = l.unit ? (l.members || []) : [k];
+    mem.forEach(function(m){ var pk = parseKey(m); if(!pk) return; if(!byBook[pk.book]){ byBook[pk.book] = []; order.push(pk.book); } if(byBook[pk.book].indexOf(pk.no) < 0) byBook[pk.book].push(pk.no); });
+  });
+  if(!order.length) return null;
+  var bk = order[0], nums = byBook[bk].sort(function(a, b){ return a - b; });
+  embedBankSet(bk);
+  if(bk !== DEFAULT_BOOK && !bankFor(bk).length) return null;
+  return nums.length === 1 ? "lesson=" + nums[0] + "&book=" + encodeURIComponent(bk) : "lessons=" + nums.join(",") + "&book=" + encodeURIComponent(bk);
+}
+function actVocabCount(keys){ var n = 0, seen = {}; (keys || []).forEach(function(k){ var l = (S.plat.lessons || {})[k]; if(!l) return; (l.unit ? (l.members || []) : [k]).forEach(function(m){ if(seen[m]) return; seen[m] = 1; n += lessonCounts(m).vocab; }); }); return n; }
+// 預設課次：目前進度那一課；那一課還沒有生詞就往前找有生詞的課
+function actDefaultLesson(keys, cur){
+  var i = cur ? keys.indexOf(cur) : -1;
+  if(i >= 0 && lessonCounts(cur).vocab) return cur;
+  for(var j = (i >= 0 ? i : keys.length) - 1; j >= 0; j--){ if(!isUnit(keys[j]) && lessonCounts(keys[j]).vocab) return keys[j]; }
+  return keys.filter(function(k){ return lessonCounts(k).vocab; })[0] || keys[0] || "";
+}
+// 選好幾課的小視窗
+function actPickLessons(keys, cur, title){
+  return new Promise(function(res){
+    var d = document.createElement("dialog"); d.style.cssText = "max-width:640px;width:94vw;";
+    d.innerHTML = '<h3 style="margin:0 0 6px;">' + esc(title || "用哪幾課的生詞？") + '</h3><div class="note" style="margin-bottom:8px;">可以勾好幾課，生詞會合在一起。</div><div style="max-height:55vh;overflow:auto;display:flex;flex-direction:column;gap:4px;">' +
+      keys.map(function(k){ var c = actVocabCount([k]); return '<label style="display:flex;gap:8px;align-items:center;padding:6px 8px;border-radius:8px;background:var(--surface-2);cursor:pointer;"><input type="checkbox" value="' + esc(k) + '"' + (cur.indexOf(k) >= 0 ? ' checked' : '') + (c ? '' : ' disabled') + '> <span style="flex:1;">' + esc(lessonTitle(k)) + '</span><span class="note">' + (c ? c + ' 個生詞' : '沒有生詞') + '</span></label>'; }).join("") +
+      '</div><div class="row" style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:12px;"><span class="note" id="apl-n"></span><span><button class="btn sm ghost" data-x="0">取消</button> <button class="btn sm primary" data-x="1">確定</button></span></div>';
+    document.body.appendChild(d);
+    var cnt = function(){ var ks = Array.prototype.map.call(d.querySelectorAll("input:checked"), function(x){ return x.value; }); d.querySelector("#apl-n").textContent = "已選 " + ks.length + " 課・共 " + actVocabCount(ks) + " 個生詞"; return ks; };
+    d.addEventListener("change", cnt); cnt();
+    d.onclick = function(e){ var b = e.target.closest("[data-x]"); if(!b) return; var ks = cnt(); d.close(); d.remove(); res(b.dataset.x === "1" && ks.length ? ks : null); };
+    d.showModal();
+  });
 }
 // 課次頁「活動」分頁的老師選單（賓果合併進來）
 function lessonActPickerHtml(){ return '<div class="page" style="padding:16px 20px;overflow:auto;">' + actGridHtml("data-actgo", function(a){ return a.id !== "capsule"; }) + '</div>'; }
@@ -5458,11 +5496,14 @@ function renderLessonCommon(no, open, teacher, liveStudent){
     setTimeout(function(){ bingoMount(teacher); }, 0);
   } else if(S.tab === "activities"){
     var lp2 = lessonParam(no); embedBankSet(lessonBookOf(no));
-    var actOk = S.sub && actById(S.sub) && actById(S.sub).need === "lesson";
+    var subId = S.sub ? String(S.sub).split("|")[0] : null, subLs = S.sub && String(S.sub).indexOf("|") > 0 ? String(S.sub).split("|")[1].split(",") : null;
+    var actOk = subId && actById(subId) && actById(subId).need === "lesson";
+    if(actOk && subLs){ var lpM = actLessonsParam(subLs); if(lpM) lp2 = lpM; }
     if(teacher && !actOk){ S.sub = null; frame = lessonActPickerHtml(); }
     else {
-      if(teacher) sub = '<div class="subbar"><button class="tab" data-actback="1" style="padding:5px 14px;font-size:13.5px;">‹ 其他活動</button><span class="note">' + esc((actById(S.sub) || {}).e + " " + (actById(S.sub) || {}).t) + '</span></div>';
-      frame = lp2 ? lessonHtmlFrame("index.html?v=" + MM_V + "&embed=1&" + lp2 + "&tab=activities" + (actOk ? "&activity=" + encodeURIComponent(S.sub) : "") + role) : '<div class="empty"><p class="note">這本教材還沒有生詞庫，所以活動暫時沒有可用的生詞。</p></div>';
+      var curLs = subLs || [String(no)];
+      if(teacher) sub = '<div class="subbar"><button class="tab" data-actback="1" style="padding:5px 14px;font-size:13.5px;">‹ 其他活動</button><span class="note">' + esc((actById(subId) || {}).e + " " + (actById(subId) || {}).t) + '　｜　' + esc(curLs.map(function(k){ return lessonTitle(k).replace(/^.*?(第 \d+ 課)/, "$1"); }).join("、")) + '（' + actVocabCount(curLs) + ' 個生詞）</span><button class="tab" data-actmore="1" style="padding:5px 14px;font-size:13.5px;margin-left:auto;">📚 加入其他課的生詞</button></div>';
+      frame = lp2 ? lessonHtmlFrame("index.html?v=" + MM_V + "&embed=1&" + lp2 + "&tab=activities" + (actOk ? "&activity=" + encodeURIComponent(subId) : "") + role) : '<div class="empty"><p class="note">這本教材還沒有生詞庫，所以活動暫時沒有可用的生詞。</p></div>';
     }
   } else {
     var ps = ((S.plat.lessons || {})[no] || {}).projects || {}, pids = Object.keys(ps);
@@ -5622,6 +5663,7 @@ function bindLessonNav(cls, backFn, renderFn){
     if(b.dataset.actfav){ actToggleFav(b.dataset.actfav).then(renderFn); return; }
     if(b.dataset.actgo){ lessonActGo(b.dataset.actgo); return; }
     if(b.dataset.actback){ S.sub = null; renderFn(); pushLive(); return; }
+    if(b.dataset.actmore){ var sid0 = String(S.sub || "").split("|")[0], cur0 = String(S.sub || "").indexOf("|") > 0 ? String(S.sub).split("|")[1].split(",") : [String(S.lesson)]; actPickLessons(lessonKeys(getCls(S.sel)), cur0).then(function(nk){ if(!nk) return; S.sub = sid0 + (nk.length > 1 || nk[0] !== String(S.lesson) ? "|" + nk.join(",") : ""); renderFn(); pushLive(); }); return; }
     if(b.dataset.tab){ S.tab = b.dataset.tab; S.sub = null; renderFn(); pushLive(); return; }
     if(b.dataset.sub){ S.sub = b.dataset.sub; renderFn(); pushLive(); return; }
     if(b.id === "roomgo"){
