@@ -484,8 +484,8 @@ function booksObj(){ var b = S.plat.books || {}; if(!b[DEFAULT_BOOK]) b = Object
 function bookSeries(id){ var b = booksObj()[id] || {}; if(b.series != null) return String(b.series); var m = /《([^》]+)》/.exec(b.title || ""); return m ? "《" + m[1] + "》" : ""; }
 function bookVol(id){ var m = /第\s*([0-9零〇一二兩三四五六七八九十]+)\s*冊/.exec((booksObj()[id] || {}).title || ""); return m ? cnNum(m[1]) : 0; }
 function bookShort(id){ var t = bookTitle(id), sr = bookSeries(id); if(sr && t.indexOf(sr) === 0){ var r = t.slice(sr.length).trim(); if(r) return r; } return t; }
-function bookIds(){
-  var b = booksObj(), ks = Object.keys(b), so = {};
+function bookIds(all){
+  var b = booksObj(), ks = Object.keys(b).filter(function(k){ return all || !b[k].hidden; }), so = {};
   ks.forEach(function(k){ var sr = bookSeries(k); if(sr) so[sr] = Math.min(so[sr] == null ? Infinity : so[sr], b[k].order || 0); });
   return ks.sort(function(x, y){
     var sx = bookSeries(x), sy = bookSeries(y);
@@ -1288,6 +1288,11 @@ async function autoAddContentPacks(t, bank){
   if(!S.teacher || S.teacher.role === "ta") return bank;
   var list = null; try{ var r = await fetch("content/packs.json?v=" + MM_V, { cache: "no-store" }); if(r.ok) list = await r.json(); }catch(e){}
   if(!list || !Array.isArray(list.packs) || !list.packs.length) return bank;
+  // 還沒有自己教材的新老師：先問要不要加入《學華語向前走》的現成教材，不直接塞
+  var optIn = (S.plat.meta || {}).packsOptIn, hasOwn = !!(bank && Array.isArray(bank.courseData) && bank.courseData.length);
+  if(optIn === false) return bank;
+  if(optIn !== true && !hasOwn){ var ad0 = (bank && bank.autoAdded) || {}; var pend = list.packs.filter(function(x){ return x && x.id && !ad0[x.id]; }); S.packOffer = pend.length; S.packLessons = pend.map(function(x){ return x.lesson; }).filter(function(v, i, a){ return v && a.indexOf(v) === i; }).sort(function(a, b){ return a - b; }); return bank; }
+  S.packOffer = 0;
   bank = bank || {}; var cd = Array.isArray(bank.courseData) ? bank.courseData.slice() : [], done = Object.assign({}, bank.autoAdded || {}), added = [], changed = false;
   for(var i = 0; i < list.packs.length; i++){
     var pk = list.packs[i]; if(!pk || !pk.id || done[pk.id]) continue;
@@ -1623,7 +1628,7 @@ function lessonProgressLine(key){
 }
 function renderLibrary(){
   S.focus = false;
-  var bids = bookIds(), cur = S.lib.book;
+  var bids = bookIds(), cur = S.lib.book, hiddenN = bookIds(true).length - bids.length;
   if(bids.indexOf(cur) === -1) cur = S.lib.book = bids[0] || DEFAULT_BOOK;
   var L = S.plat.lessons || {}, html, editing = !!(S.lib.pid || S.lib.creating != null);
   var ks = lessonsOfBook(cur), us = unitKeys(), un = S.unassigned || {}, unk = Object.keys(un), sug = libSuggestions(), nsug = sug.assign.length + sug.dup.length;
@@ -1657,7 +1662,7 @@ function renderLibrary(){
     bids.forEach(function(bk){ var sr = bookSeries(bk) || "__own"; if(gi[sr] == null){ gi[sr] = grp.length; grp.push({ sr: sr, ids: [] }); } grp[gi[sr]].ids.push(bk); });
     var tabsHtml = grp.map(function(g){ return '<span class="lib-grp"><span class="lib-grp-t">' + (g.sr === "__own" ? '自編教材' : esc(g.sr)) + '</span>' + g.ids.map(function(bk){ return '<button class="tab' + (!tidy && bk === cur ? ' on' : '') + '" data-libbook="' + esc(bk) + '">' + esc(g.sr === "__own" ? bookTitle(bk) : bookShort(bk)) + '</button>'; }).join("") + '</span>'; }).join("");
     html = '<div class="tabs lib-tabs"><button class="tab" data-libback="1">‹ 返回</button>' + tabsHtml +
-      '<span style="margin-left:auto;display:flex;gap:2px;flex-wrap:wrap;"><button class="tab' + (tidy ? ' on' : '') + '" data-libtidy="1">🧹 整理' + (tidyN ? ' <span class="chip" style="background:#FBEBC8;">' + tidyN + '</span>' : '') + '</button><button class="tab" data-libadd="1">＋ 新增教材</button>' + (tidy ? '' : '<button class="tab" data-libren="1">⚙️ 教材設定</button>' + (cur === DEFAULT_BOOK ? '' : '<button class="tab" data-libdel="1" style="color:#B23B32;">刪除教材</button>')) + '</span></div>' +
+      '<span style="margin-left:auto;display:flex;gap:2px;flex-wrap:wrap;"><button class="tab' + (tidy ? ' on' : '') + '" data-libtidy="1">🧹 整理' + (tidyN ? ' <span class="chip" style="background:#FBEBC8;">' + tidyN + '</span>' : '') + '</button><button class="tab" data-libadd="1">＋ 新增教材</button>' + (tidy ? '' : '<button class="tab" data-libren="1">⚙️ 教材設定</button>' + (cur === DEFAULT_BOOK ? '<button class="tab" data-libhide="1">隱藏這本</button>' : '<button class="tab" data-libdel="1" style="color:#B23B32;">刪除教材</button>')) + (hiddenN ? '<button class="tab" data-libunhide="1">已隱藏（' + hiddenN + '）</button>' : '') + '</span></div>' +
       '<div class="lib-wrap">' + nav + '<div class="lib-pane">' + pane + '</div></div>';
   }
   shell(html, { flush: true }); setCrumb([]);
@@ -1701,6 +1706,8 @@ function renderLibrary(){
       await fbSet("teacherPlatform/" + S.teacher.id + "/books/" + cur, S.plat.books[cur]); await syncLessonIndex(); renderLibrary(); return;
     }
     if(b.dataset.libdel){ await deleteBook(cur); S.lib = { book: DEFAULT_BOOK }; renderLibrary(); return; }
+    if(b.dataset.libhide){ if(!confirm("隱藏「" + bookTitle(cur) + "」？\n隱藏後教材頁、班級和學生都不會再看到它（內容不會刪除），之後可以在「已隱藏」裡顯示回來。")) return; S.plat.books = S.plat.books || {}; S.plat.books[cur] = Object.assign({}, booksObj()[cur], { hidden: true }); await fbSet("teacherPlatform/" + S.teacher.id + "/books/" + cur, S.plat.books[cur]); S.lib = { book: bookIds()[0] }; await syncLessonIndex(); renderLibrary(); return; }
+    if(b.dataset.libunhide){ var hid = bookIds(true).filter(function(k){ return booksObj()[k].hidden; }); var pick = await askChoice("要顯示回來的教材：", [{ label: "已隱藏", items: hid.map(function(k){ return { v: k, t: bookTitle(k) }; }) }], "顯示"); if(!pick) return; S.plat.books = S.plat.books || {}; S.plat.books[pick] = Object.assign({}, booksObj()[pick]); delete S.plat.books[pick].hidden; await fbSet("teacherPlatform/" + S.teacher.id + "/books/" + pick, S.plat.books[pick]); S.lib = { book: pick }; await syncLessonIndex(); renderLibrary(); return; }
   };
 }
 async function libAssign(pid, v){
@@ -4766,8 +4773,9 @@ function renderStudentRoom(){
 function renderPlatformHome(){
   S.focus = false;
   var ys = sortedBy(schoolsOf(), true);
-  var html = '<div class="head-row"><div style="flex:1;"><h2>歡迎，' + esc(S.teacher.name) + '</h2></div><div class="tools" style="justify-content:flex-end;">' + ys.map(function(y){ return '<button class="btn primary" data-a="go" data-s="' + y + '">' + esc(schoolsOf()[y].name) + ' ›</button>'; }).join("") + '<button class="btn" data-a="slot-new" data-d="' + ymd(new Date()) + '">新增排課</button> <button class="btn owner-only" data-a="add-s">新增年度</button></div></div>' + backupBannerHtml() + todayPanelHtml() + '<div class="panel"><h3>待辦</h3><div id="htodo"></div></div>' + homeClassesHtml() + '<div class="panel"><h3>月課表</h3>' + calendarHtml() + '</div>';
+  var html = '<div class="head-row"><div style="flex:1;"><h2>歡迎，' + esc(S.teacher.name) + '</h2></div><div class="tools" style="justify-content:flex-end;">' + ys.map(function(y){ return '<button class="btn primary" data-a="go" data-s="' + y + '">' + esc(schoolsOf()[y].name) + ' ›</button>'; }).join("") + '<button class="btn" data-a="slot-new" data-d="' + ymd(new Date()) + '">新增排課</button> <button class="btn owner-only" data-a="add-s">新增年度</button></div></div>' + backupBannerHtml() + onboardHtml() + todayPanelHtml() + '<div class="panel"><h3>待辦</h3><div id="htodo"></div></div>' + homeClassesHtml() + '<div class="panel"><h3>月課表</h3>' + calendarHtml() + '</div>';
   shell(html); setCrumb([]); bindListPage(); autoBackupArm(); bindHomeTodo(); fillHomeTodo();
+  document.getElementById("main").addEventListener("click", function(e){ var b = e.target.closest("[data-ob]"); if(b) onboardAct(b.dataset.ob); });
 }
 async function buildBackup(full){
   var codes = {};
@@ -4852,8 +4860,8 @@ function topArea(){ if(S.act) return "act"; if(S.lib) return "lib"; if(S.rec || 
 function renderClassList(){
   S.focus = false;
   var sch = schoolsOf(), ys = sortedBy(sch, true), today = ymd(new Date());
-  var html = '<div class="head-row"><div style="flex:1;"><h2>🏫 班級</h2><div class="note">全部班級都在這裡，點卡片進入班級。</div></div><div class="owner-only"><button class="btn sm" data-a="add-s">＋ 新增年度</button></div></div>';
-  if(!ys.length) html += '<div class="panel"><p class="note" style="margin:0;">還沒有年度。按右上角「＋ 新增年度」開始。</p></div>';
+  var html = '<div class="head-row"><div style="flex:1;"><h2>🏫 班級</h2><div class="note">全部班級都在這裡，點卡片進入班級。一對一家教直接按「快速新增」就好，不用先建年度和學校。</div></div><div class="owner-only"><button class="btn sm primary" id="qnew">＋ 快速新增班級／學生</button> <button class="btn sm" data-a="add-s">＋ 新增年度</button></div></div>';
+  if(!ys.length) html += '<div class="panel"><p class="note" style="margin:0;">還沒有班級。按右上角「＋ 快速新增班級／學生」開始。</p></div>';
   ys.forEach(function(y, yi){
     var terms = sch[y].terms || {}, tids = sortedBy(terms, false), n = 0; tids.forEach(function(t){ n += Object.keys(terms[t].classes || {}).length; });
     var body = tids.map(function(t){
@@ -4868,6 +4876,7 @@ function renderClassList(){
       : '<details class="panel"><summary style="cursor:pointer;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">' + head + tools + '</summary><div style="margin-top:8px;">' + (body || '<p class="note">這個年度還沒有學校。</p>') + '</div></details>';
   });
   shell(html); setCrumb([]); bindListPage();
+  var qn = document.getElementById("qnew"); if(qn) qn.onclick = quickNewClass;
 }
 // 📊 記錄與成績：課堂記錄、快速補填、跨班成績放在同一區
 function recTabsHtml(cur){ return '<div class="ctabs">' + [["list", "📝 課堂記錄"], ["batch", "⚡ 快速補填"], ["grades", "📊 跨班成績"]].map(function(t){ return '<button class="ctab' + (t[0] === cur ? ' on' : '') + '" data-rtab="' + t[0] + '">' + t[1] + '</button>'; }).join("") + '</div>'; }
@@ -4911,6 +4920,50 @@ function renderSchoolHome(){
   shell(html); setCrumb([]); bindListPage();
 }
 function studentLink(code){ return location.origin + location.pathname + "?class=" + code; }
+// ---------- 新老師引導：開始使用的步驟、要不要加入現成教材、快速新增班級（一對一家教不用先建年度和學校）----------
+function rocYearLabel(){ var d = new Date(), y = d.getFullYear() - 1911; if(d.getMonth() < 7) y--; return y + " 學年度"; }
+async function quickNewClass(){
+  var name = await askText("班級名稱，或一對一學生的名字（例如 週三晚間班、林愛黛）", ""); if(!name) return;
+  var base = "teacherPlatform/" + S.teacher.id + "/schools", sch = schoolsOf(), ys = sortedBy(sch, true), y = ys[0];
+  if(!y){ y = uid("y_"); sch[y] = { name: rocYearLabel(), order: Date.now(), terms: {} }; await fbSet(base + "/" + y, sch[y]); }
+  var terms = sch[y].terms = sch[y].terms || {}, tids = sortedBy(terms, false), t;
+  var items = tids.map(function(k){ return { v: k, t: terms[k].name }; }).concat([{ v: "__solo", t: "個人學生（家教）" }, { v: "__new", t: "＋ 新的學校…" }]);
+  var exist = tids.filter(function(k){ return terms[k].name === "個人學生（家教）"; })[0];
+  if(exist) items = items.filter(function(x){ return x.v !== "__solo"; });
+  var pick = await askChoice("放在哪裡？（" + sch[y].name + "）", [{ label: "學校／分類", items: items }], "建立"); if(!pick) return;
+  if(pick === "__solo" || pick === "__new"){
+    var tn = pick === "__solo" ? "個人學生（家教）" : await askText("學校名稱", ""); if(!tn) return;
+    t = uid("s_"); terms[t] = { name: tn, order: Date.now(), classes: {} }; await fbSet(base + "/" + y + "/terms/" + t, terms[t]);
+  } else t = pick;
+  var code = await newCode(), cid = uid("c_"), cls = { name: name, order: Date.now(), code: code, lessonOpen: {} };
+  terms[t].classes = terms[t].classes || {}; terms[t].classes[cid] = cls;
+  await fbSet(base + "/" + y + "/terms/" + t + "/classes/" + cid, cls); await fbSet("classCodes/" + code, { t: S.teacher.id, s: y, tm: t, c: cid });
+  S.classes = null; S.sel = { s: y, t: t, c: cid }; S.lesson = null; toast("已建立「" + name + "」，班級代碼 " + code); render();
+}
+function onboardHtml(){
+  var m = S.plat.meta || {}, html = '';
+  if(S.packOffer) html += '<div class="panel" style="background:#E7F2EC;border-color:#BFDCCB;"><b>📦 要加入《學華語向前走》的現成教材嗎？</b><div class="note" style="margin:4px 0 8px;">第一冊第 ' + (S.packLessons || []).join('、') + ' 課，已經整理好生詞、語法、課文（含注音）和練習題。用別的課本的話選「不用」，之後隨時可以自己建立教材。</div><div class="tools"><button class="btn sm primary" data-ob="packyes">加入</button><button class="btn sm" data-ob="packno">不用</button></div></div>';
+  if(m.onboardDone) return html;
+  var steps = [
+    ["cls", "建立第一個班級", allClassesList().length > 0, "＋ 新增班級"],
+    ["lib", "準備教材（生詞、語法、課文、簡報）", Object.keys(S.plat.lessons || {}).length > 0, "到教材"],
+    ["sched", "把上課時間排進課表", Object.keys(schedMap()).length > 0, "新增排課"],
+    ["link", "把學生連結傳給學生", !!m.linkShared, "到班級拿連結"]
+  ];
+  var n = steps.filter(function(x){ return x[2]; }).length; if(n === steps.length) return html;
+  return html + '<div class="panel"><div style="display:flex;align-items:center;gap:8px;"><h3 style="margin:0;flex:1;">🚀 開始使用（' + n + '／' + steps.length + '）</h3><button class="btn sm ghost" data-ob="done">我會了，不用再顯示</button></div>' +
+    steps.map(function(x, i){ return '<div class="slot"><div class="slot-time" style="min-width:34px;font-size:18px;">' + (x[2] ? '✅' : (i + 1) + '.') + '</div><div class="slot-main"' + (x[2] ? ' style="opacity:.6;"' : '') + '><b>' + x[1] + '</b></div>' + (x[2] ? '' : '<div class="slot-act"><button class="btn sm primary" data-ob="' + x[0] + '">' + x[3] + '</button></div>') + '</div>'; }).join("") + '</div>';
+}
+async function onboardAct(a){
+  var base = "teacherPlatform/" + S.teacher.id + "/meta/";
+  S.plat.meta = S.plat.meta || {};
+  if(a === "packyes" || a === "packno"){ S.plat.meta.packsOptIn = a === "packyes"; await fbSet(base + "packsOptIn", a === "packyes"); S.packOffer = 0; if(a === "packyes"){ toast("正在加入教材…"); await syncLessonIndex(); } render(); return; }
+  if(a === "done"){ S.plat.meta.onboardDone = true; await fbSet(base + "onboardDone", true); render(); return; }
+  if(a === "cls"){ quickNewClass(); return; }
+  if(a === "lib"){ S.lib = { book: bookIds()[0] || DEFAULT_BOOK }; render(); return; }
+  if(a === "sched"){ schedAct("slot-new", { d: ymd(new Date()) }); return; }
+  if(a === "link"){ var c0 = allClassesList()[0]; if(!c0){ toast("請先建立班級"); return; } S.sel = c0.sel; S.ctab = "progress"; render(); return; }
+}
 // ---------- 首頁：待辦＋我的班級（一鍵進班級，不用再點年度、學校）----------
 function allClassesList(){
   var out = [], sch = schoolsOf();
@@ -5077,7 +5130,7 @@ function renderClassHome(cls){
     if(a === "go"){ S.lesson = String(b.dataset.k); S.tab = null; S.sub = null; render(); pushLive(); }
     else if(a === "rec"){ var m = schedMap()[b.dataset.id]; if(m) openRecordFor(Object.assign({ id: b.dataset.id }, m)); }
   });
-  document.getElementById("cpy").onclick = function(){ var l = studentLink(cls.code); (navigator.clipboard ? navigator.clipboard.writeText(l) : Promise.reject()).then(function(){ toast("學生連結已複製"); }, function(){ prompt("學生連結", l); }); };
+  document.getElementById("cpy").onclick = function(){ if(!(S.plat.meta || {}).linkShared){ S.plat.meta = S.plat.meta || {}; S.plat.meta.linkShared = true; fbSet("teacherPlatform/" + S.teacher.id + "/meta/linkShared", true).catch(function(){}); } var l = studentLink(cls.code); (navigator.clipboard ? navigator.clipboard.writeText(l) : Promise.reject()).then(function(){ toast("學生連結已複製"); }, function(){ prompt("學生連結", l); }); };
   if(ct === "progress") bindClassProgress(cls, pr);
   else if(ct === "tests") fillClassTests(cls);
   else if(ct === "students") fillClassStudents(cls);
