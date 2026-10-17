@@ -2297,7 +2297,12 @@ var RUBRIC = [
   { key: "listening", label: "聽力理解", max: 20 }, { key: "speaking", label: "口語表達", max: 25 }, { key: "reading", label: "閱讀", max: 15 },
   { key: "writing", label: "寫作", max: 20 }, { key: "participation", label: "課堂參與", max: 20 }
 ];
-function recMap(){ S.plat.classRecords = S.plat.classRecords || {}; return S.plat.classRecords; }
+function recMap(){
+  var m = S.plat.classRecords = S.plat.classRecords || {};
+  // Firebase 偶爾把清單回傳成 {0:…,1:…}：統一成陣列，避免畫面壞掉
+  for(var k in m){ var r = m[k]; if(!r) continue; if(r.students && !Array.isArray(r.students)) r.students = arrOf(r.students); if(r.vocab && !Array.isArray(r.vocab)) r.vocab = arrOf(r.vocab); }
+  return m;
+}
 function stTotal(st){ var n = 0; RUBRIC.forEach(function(r){ var v = st[r.key]; n += (typeof v === "number" && !isNaN(v)) ? v : 0; }); return n; }
 function blankStudent(name){ var st = { name: name || "" }; RUBRIC.forEach(function(r){ st[r.key] = null; }); return st; }
 function recLabels(){ var set = {}; Object.keys(recMap()).forEach(function(k){ var l = recMap()[k].classLabel; if(l) set[l] = (set[l] || 0) + 1; }); return Object.keys(set).map(function(k){ return { label: k, count: set[k] }; }).sort(function(a, b){ return b.count - a.count; }); }
@@ -4135,11 +4140,11 @@ async function parentDigest(tid, link){
   var label = classInfo({ s: link.s, t: link.tm, c: link.c }), recs = Object.keys(recMap()).map(function(k){ return recMap()[k]; }).filter(function(r){ return recBelongsTo(r, { s: link.s, t: link.tm, c: link.c }); }).sort(function(a, b){ return (b.date || "").localeCompare(a.date || ""); }), out = [];
   recs.forEach(function(r){
     if(r.isAbsence) return;
-    var mine = (r.students || []).filter(function(s){ return (s.name || "").trim() === link.name; })[0];
+    var mine = arrOf(r.students).filter(function(s){ return s && (s.name || "").trim() === link.name; })[0];
     if(!mine) return;
     var e = { date: r.date, material: r.material || "", absent: !!mine.absent };
     if(!mine.absent && link.showComments !== false && (mine.comment || "").trim()){ e.comment = mine.comment; if(mine.commentHtml) e.commentHtml = rteClean(mine.commentHtml); }
-    var vv = (Array.isArray(r.vocab) ? r.vocab : []).filter(function(v){ return v && v.word; }).slice(0, 40); if(vv.length && !mine.absent) e.vocab = vv.map(function(v){ return { w: v.word, s: v.sub || "" }; });
+    var vv = arrOf(r.vocab).filter(function(v){ return v && v.word; }).slice(0, 40); if(vv.length && !mine.absent) e.vocab = vv.map(function(v){ return { w: v.word, s: v.sub || "" }; });
     if(!mine.absent && link.showScores && hasScore(mine)){ e.total = stTotal(mine); e.scores = {}; RUBRIC.forEach(function(rb){ if(typeof mine[rb.key] === "number") e.scores[rb.label] = mine[rb.key] + "/" + rb.max; }); }
     out.push(e);
   });
@@ -4149,17 +4154,19 @@ async function refreshParentLink(tok){
   var tid = S.teacher.id, link = await fbGet("teacherPlatform/" + tid + "/parentLinks/" + tok); if(!link) return;
   await fbSet("teacherPlatform/" + tid + "/parentRecords/" + tok, await parentDigest(tid, link));
 }
+// Firebase 有時把清單存成 {0:…,1:…}：統一轉成陣列
+function arrOf(x){ return Array.isArray(x) ? x : (x && typeof x === "object" ? Object.keys(x).sort(function(a, b){ return Number(a) - Number(b); }).map(function(k){ return x[k]; }) : []); }
 // 學生的「我的生詞本」：每堂課記錄裡的生詞，整理成一份只有生詞的清單給學生看（不含分數和評語）
 async function publishClassVocab(label, classKey){
   try{
     var targets = allClassesList().filter(function(x){ return recLabelsOfClass(x.sel).indexOf(label) >= 0 || (classKey && classKey === x.sel.s + "|" + x.sel.t + "|" + x.sel.c); });
     for(var i = 0; i < targets.length; i++){
       var sel = targets[i].sel, m = recMap();
-      var out = Object.keys(m).map(function(k){ return m[k]; }).filter(function(r){ return !r.isAbsence && recBelongsTo(r, sel) && Array.isArray(r.vocab) && r.vocab.length; }).sort(function(a, b){ return (b.date || "").localeCompare(a.date || ""); }).slice(0, 60)
-        .map(function(r){ return { d: r.date || "", m: (r.material || "").slice(0, 60), w: r.vocab.filter(function(v){ return v && v.word; }).map(function(v){ return { w: v.word, s: v.sub || "" }; }) }; });
+      var out = Object.keys(m).map(function(k){ return m[k]; }).filter(function(r){ return !r.isAbsence && recBelongsTo(r, sel) && arrOf(r.vocab).length; }).sort(function(a, b){ return (b.date || "").localeCompare(a.date || ""); }).slice(0, 60)
+        .map(function(r){ return { d: r.date || "", m: (r.material || "").slice(0, 60), w: arrOf(r.vocab).filter(function(v){ return v && v.word; }).map(function(v){ return { w: v.word, s: v.sub || "" }; }) }; });
       await fbSet("teacherPlatform/" + S.teacher.id + "/classVocab/" + sel.c, out.length ? out : null);
     }
-  }catch(e){}
+  }catch(e){ console.warn("publishClassVocab", e); }
 }
 async function refreshParentLinksFor(label, classKey){
   // 存課堂記錄後，更新這個班所有家長頁面（記錄名稱是老師自訂的也對得上：看班級連結的名稱與 classKey）
@@ -4243,7 +4250,7 @@ async function viewParent(tok){
     var cname = await fbGet(base + "/schools/" + link.s + "/terms/" + link.tm + "/classes/" + link.c + "/name");
     var items = objList(await fbGet(hwBase(tid, link.c) + "/items")).filter(function(x){ return (x.kind || "hw") === "hw" && itemVisible(x); }).sort(function(a, b){ return (b.due || "").localeCompare(a.due || ""); });
     var subs = {}; await Promise.all(items.map(function(it){ return fbGet(base + "/hwSubs/" + link.c + "/" + it.id + "/" + me).then(function(v){ subs[it.id] = v; }); }));
-    var recs = (await fbGet(base + "/parentRecords/" + tok)) || []; if(!Array.isArray(recs)) recs = Object.keys(recs).map(function(k){ return recs[k]; });
+    var recs = (await fbGet(base + "/parentRecords/" + tok)) || []; if(!Array.isArray(recs)) recs = Object.keys(recs).map(function(k){ return recs[k]; }); recs.forEach(function(r){ if(r && r.vocab) r.vocab = arrOf(r.vocab); });
     await syncTime();
     var html = '<div class="center-wrap" style="align-items:flex-start;"><div style="width:100%;max-width:720px;margin:0 auto;padding:16px;"><h2>' + esc(link.name) + ' 的學習狀況</h2><div class="note" style="margin-bottom:12px;">' + esc(cname || "") + '　（家長專屬頁面）</div>';
     var cnt = { ok: 0, late: 0, missing: 0 }; items.forEach(function(it){ var s = hwStatus(it, subs[it.id]); if(cnt[s] != null) cnt[s]++; });
@@ -5972,7 +5979,7 @@ async function startStudent(code, name, pw, opts){
 async function fillStudentVocab(){
   var box = document.getElementById("svocab"); if(!box || !S.student) return;
   var st = S.student, data = null; try{ data = await fbGet("teacherPlatform/" + st.idx.t + "/classVocab/" + st.idx.c); }catch(e){}
-  data = Array.isArray(data) ? data : (data ? Object.keys(data).map(function(k){ return data[k]; }) : []);
+  data = arrOf(data).map(function(x){ return { d: x.d, m: x.m, w: arrOf(x.w) }; });
   if(!document.getElementById("svocab")) return;
   if(!data.length){ box.innerHTML = ''; return; }
   var total = 0; data.forEach(function(x){ total += (x.w || []).length; });
