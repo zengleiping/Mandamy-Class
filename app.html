@@ -2491,9 +2491,15 @@ function rteClean(html){
       if(/^(SCRIPT|STYLE|META|LINK|TITLE|XML|O:P)$/.test(tag)){ ch.remove(); return; }
       walk(ch);
       if(tag === "DIV" || /^H[1-3,5-6]$/.test(tag) && tag !== "H4"){ var np = document.createElement(/^H/.test(tag) ? "h4" : "p"); while(ch.firstChild) np.appendChild(ch.firstChild); ch.replaceWith(np); return; }
+      // Google 文件會用 <b style="font-weight:normal"> 把整份包起來；行內標籤裡面包著段落的也拆掉
+      if(/^(B|STRONG|I|EM|U|SPAN|A|FONT)$/.test(tag) && (/font-weight:\s*(normal|[1-4]00)/i.test(ch.getAttribute("style") || "") || ch.querySelector("p,div,h1,h2,h3,h4,h5,h6,ul,ol,li,blockquote,table"))){ var uf = document.createDocumentFragment(); while(ch.firstChild) uf.appendChild(ch.firstChild); ch.replaceWith(uf); return; }
       if(tag === "SPAN" && /font-weight:\s*(bold|[6-9]00)/i.test(ch.getAttribute("style") || "")){ var bb = document.createElement("b"); while(ch.firstChild) bb.appendChild(ch.firstChild); ch.replaceWith(bb); return; }
       if(!RTE_TAGS[tag]){ var frag = document.createDocumentFragment(); while(ch.firstChild) frag.appendChild(ch.firstChild); ch.replaceWith(frag); return; }
       Array.prototype.slice.call(ch.attributes).forEach(function(a){ ch.removeAttribute(a.name); });
+      if(tag === "H4"){
+        if(ch.querySelector("p,h4,ul,ol,li,blockquote")){ var fr = document.createDocumentFragment(); while(ch.firstChild) fr.appendChild(ch.firstChild); ch.replaceWith(fr); return; }
+        var tx = ch.textContent.trim(); if(tx.length > 20 || /[，。！？；,.!?;]/.test(tx)){ var pp = document.createElement("p"); while(ch.firstChild) pp.appendChild(ch.firstChild); ch.replaceWith(pp); }
+      }
     });
   })(box);
   return box.innerHTML.replace(/(<p>(\s|&nbsp;|<br>)*<\/p>\s*){2,}/g, "<p><br></p>").trim();
@@ -2529,6 +2535,28 @@ function rteText(el){
   return out.join("").replace(/\n{3,}/g, "\n\n").trim();
 }
 var RTE_BTNS = [["h4", "標題", "設成小標題（再按一次變回內文）"], ["bold", "<b>B</b>", "粗體（Ctrl+B）"], ["underline", "<u>U</u>", "底線（Ctrl+U）"], ["ul", "• 項目", "項目符號清單"], ["ol", "1. 編號", "編號清單 1. 2. 3."], ["indent", "→ 縮排", "增加縮排（清單裡按 Tab 也可以）"], ["outdent", "← 凸排", "減少縮排（清單裡按 Shift+Tab）"], ["clear", "清除格式", "把選取的文字變回一般文字"]];
+// 貼上：內容一段一段獨立放進去（不會被游標所在的標題染成標題色）
+function rteInsert(ed, html){
+  var tmp = document.createElement("div"); tmp.innerHTML = html;
+  var blocks = !!tmp.querySelector("p,h4,ul,ol,blockquote,li");
+  var sel = window.getSelection(), rg = sel && sel.rangeCount ? sel.getRangeAt(0) : null;
+  if(!rg || !ed.contains(rg.commonAncestorContainer)){ while(tmp.firstChild) ed.appendChild(tmp.firstChild); return; }
+  rg.deleteContents();
+  if(!blocks){ var f = document.createDocumentFragment(), last = null; while(tmp.firstChild){ last = tmp.firstChild; f.appendChild(last); } rg.insertNode(f); if(last){ rg.setStartAfter(last); rg.collapse(true); sel.removeAllRanges(); sel.addRange(rg); } return; }
+  var cur = rg.startContainer; while(cur && cur.parentNode !== ed) cur = cur.parentNode;
+  var nodes = Array.prototype.slice.call(tmp.childNodes), lastN = nodes[nodes.length - 1];
+  if(!cur){ nodes.forEach(function(n){ ed.appendChild(n); }); }
+  else {
+    // 游標在一段文字中間：把這段切成前後兩段，貼上的內容放中間
+    var after = document.createRange(); after.setStart(rg.startContainer, rg.startOffset); after.setEndAfter(cur.lastChild || cur);
+    var tail = after.extractContents(), tailBlk = document.createElement(cur.tagName === "H4" ? "h4" : "p"); tailBlk.appendChild(tail);
+    var ref = cur.nextSibling;
+    nodes.forEach(function(n){ ed.insertBefore(n, ref); });
+    if(tailBlk.textContent.trim()) ed.insertBefore(tailBlk, ref);
+    if(!cur.textContent.trim() && !cur.querySelector("img")) cur.remove();
+  }
+  if(lastN){ var r2 = document.createRange(); r2.selectNodeContents(lastN); r2.collapse(false); sel.removeAllRanges(); sel.addRange(r2); }
+}
 // 把一個 textarea 換成編輯器；textarea 留著（隱藏）放純文字，給其他功能使用
 function rteMount(ta, opts){
   opts = opts || {};
@@ -2558,7 +2586,7 @@ function rteMount(ta, opts){
     var cd = e.clipboardData; if(!cd) return; e.preventDefault();
     var h = cd.getData("text/html"), t = cd.getData("text/plain");
     var ins = h && /<(p|li|h\d|b|strong|ol|ul|br)\b/i.test(h) ? rteClean(h) : rteFromText(t);
-    document.execCommand("insertHTML", false, ins || rteEsc(t)); sync();
+    rteInsert(ed, ins || "<p>" + rteEsc(t) + "</p>"); sync();
   });
   ed.addEventListener("keydown", function(e){
     if(e.key === "Tab"){ e.preventDefault(); document.execCommand(e.shiftKey ? "outdent" : "indent"); sync(); }
@@ -2611,7 +2639,7 @@ function recPrevOf(label, name, beforeId){
 var REC_PHRASES = ["上課很專心", "積極參與課堂活動", "發音清楚", "聲調需要多加練習", "口語表達比上週流利", "生詞記得很熟", "語法運用正確", "閱讀速度進步", "寫字筆順需要注意", "回家請複習本課生詞", "今天表現優異", "需要更專注"];
 function recPhraseList(){
   var cnt = {};
-  Object.keys(recMap()).forEach(function(k){ (recMap()[k].students || []).forEach(function(s){ String(s.comment || "").split(/[，。！；,.;\n]+/).forEach(function(t){ t = t.trim(); if(t.length >= 3 && t.length <= 16) cnt[t] = (cnt[t] || 0) + 1; }); }); });
+  Object.keys(recMap()).forEach(function(k){ (recMap()[k].students || []).forEach(function(s){ String(s.comment || "").split(/\n+/).filter(function(line){ return /[，。！；,.;]/.test(line); }).join("。").split(/[，。！；,.;]+/).forEach(function(t){ t = t.trim(); if(t.length >= 3 && t.length <= 16 && !/[「」『』]/.test(t)) cnt[t] = (cnt[t] || 0) + 1; }); }); });
   var mine = Object.keys(cnt).filter(function(t){ return cnt[t] >= 2; }).sort(function(a, b){ return cnt[b] - cnt[a]; }).slice(0, 10);
   return mine.concat(REC_PHRASES.filter(function(t){ return mine.indexOf(t) < 0; })).slice(0, 16);
 }
