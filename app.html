@@ -1150,7 +1150,7 @@ async function trImportToRecords(manual){
     rec.vocab = vocab; rec.updatedAt = Date.now();
     try{ await fbSet(base + "/classRecords/" + recId, rec); m[recId] = rec; }catch(er){ g.ids.forEach(function(id){ delete TR.list[id].imp; }); continue; }
     g.ids.forEach(function(id){ trPersist(id); });
-    total += added; labels.push((rec.classLabel || "") + " " + (rec.date || "").slice(5).replace("-", "/"));
+    total += added; labels.push((rec.classLabel || "") + " " + (rec.date || "").slice(5).replace("-", "/")); refreshParentsForRecs([rec]);
   }
   trDrawList();
   if(total || manual){ toast(total ? "已把 " + total + " 個生詞加進課堂記錄：" + labels.join("、") : (none ? "有 " + none + " 個詞找不到對應的課堂（那天課表上沒有課），先留在清單裡" : "沒有需要匯入的新生詞")); }
@@ -2321,6 +2321,7 @@ async function recMergeJunk(){
     c.vocab = voc; c.updatedAt = Date.now();
     try{ await fbSet(base + "/classRecords/" + list[i].main, c); await fbSet(base + "/classRecords/" + list[i].junk, null); await fbSet(base + "/recordShots/" + list[i].junk, null); delete m[list[i].junk]; n++; }catch(e){ toast("合併失敗，請檢查網路"); break; }
   }
+  refreshParentsForRecs(list.map(function(x){ return m[x.main]; }));
   toast("已合併 " + n + " 筆"); render();
 }
 // 這堂課的記錄：翻譯機會自動建立「只有生詞」的記錄，那種還沒打分、沒寫評語的也算「還沒填完」
@@ -2921,6 +2922,7 @@ async function renderRecBatch(){
         var rec = JSON.parse(JSON.stringify(d)); rec.updatedAt = Date.now(); if(d.isAbsence) rec.students = [];
         try{ await fbSet(base + "/classRecords/" + id, rec); m[id] = rec; n++; }catch(er){ alert("有一堂儲存失敗，請檢查網路。已存好的不會重複。"); break; }
       }
+      refreshParentsForRecs(todo.map(function(x){ return x.d; }));
       toast("已儲存 " + n + " 堂"); S.rec = { filter: "all" }; render();
     }
   };
@@ -3033,7 +3035,7 @@ async function saveRecord(){
   }catch(e){ alert("儲存失敗，請檢查網路或 Firebase 規則。內容還留在畫面上。"); return; }
   m[id] = rec; try{ localStorage.removeItem(recBackupKey()); }catch(e){}
   recRememberLabel(d);
-  refreshParentLinksFor(d.classLabel);
+  refreshParentLinksFor(d.classLabel, d.classKey);
   toast("已儲存"); S.rec = { filter: d.classLabel }; render();
 }
 async function importRecords(file){
@@ -3759,7 +3761,7 @@ async function fillStudentHint(){
     var wrong = []; results.forEach(function(it){ (atts[it.id].wrong || []).forEach(function(w){ wrong.push({ exam: it.title, t: w.t, d: w.d, s: w.s }); }); });
     var h = '<div class="panel mine-panel"><h3 style="margin:0 0 8px;">我的</h3>';
     h += '<div class="mine-grid"><div><div class="note">下次上課</div><b>' + (next ? (function(){ var d = new Date(next.date + "T00:00:00"); return (d.getMonth() + 1) + "/" + d.getDate() + "（" + ["日", "一", "二", "三", "四", "五", "六"][d.getDay()] + "）" + esc(next.start + (next.end ? "–" + next.end : "")); })() : "老師還沒排") + '</b></div>' +
-      '<div><div class="note">待完成</div><b>' + todo.length + ' 項</b></div><div><div class="note">考卷成績</div><b>' + (results.length ? results.map(function(it){ return atts[it.id].final; }).join("、") : "—") + '</b></div></div>';
+      '<div><div class="note">待完成</div><b>' + todo.length + ' 項</b></div><div><div class="note">考卷平均</div><b>' + (results.length ? Math.round(results.reduce(function(a, it){ return a + Number(atts[it.id].final || 0); }, 0) / results.length) + ' 分' : "—") + '</b></div></div>';
     if(todo.length) h += '<div style="margin-top:10px;"><b>待完成</b>' + todo.slice(0, 6).map(function(x){ return '<div class="mine-row' + (x.over ? ' over' : '') + '"><span class="chip" style="background:' + (x.kind === "考卷" ? KIND_COLOR.exam : KIND_COLOR.hw) + ';color:#fff;">' + x.kind + '</span> ' + esc(x.t) + '<span class="note">　' + esc(x.doing ? "作答中・" : "") + rel(x.due) + '</span></div>'; }).join("") + '</div>';
     else h += '<div class="note" style="margin-top:8px;">🎉 目前沒有待交的作業或考卷。</div>';
     if(results.length) h += '<div style="margin-top:10px;"><b>考卷成績</b>' + results.map(function(it){ var a = atts[it.id]; return '<div class="mine-row"><b>' + a.final + ' 分</b>　' + esc(it.title) + (a.comment ? '<div class="note">老師：' + esc(a.comment) + '</div>' : '') + '</div>'; }).join("") + '</div>';
@@ -4084,12 +4086,17 @@ async function refreshParentLink(tok){
   var tid = S.teacher.id, link = await fbGet("teacherPlatform/" + tid + "/parentLinks/" + tok); if(!link) return;
   await fbSet("teacherPlatform/" + tid + "/parentRecords/" + tok, await parentDigest(tid, link));
 }
-async function refreshParentLinksFor(label){
-  // 存課堂記錄後，更新這個班所有家長頁面
+async function refreshParentLinksFor(label, classKey){
+  // 存課堂記錄後，更新這個班所有家長頁面（記錄名稱是老師自訂的也對得上：看班級連結的名稱與 classKey）
   try{
     var links = (await fbGet("teacherPlatform/" + S.teacher.id + "/parentLinks")) || {};
-    for(var tok in links){ var L = links[tok], ci = classInfo({ s: L.s, t: L.tm, c: L.c }); if(ci && (ci.school + " " + ci.cls === label || label === "")) await refreshParentLink(tok); }
+    for(var tok in links){ var L = links[tok], sel = { s: L.s, t: L.tm, c: L.c }; if(!classInfo(sel)) continue;
+      if(label === "" || recLabelsOfClass(sel).indexOf(label) >= 0 || (classKey && classKey === sel.s + "|" + sel.t + "|" + sel.c)) await refreshParentLink(tok); }
   }catch(e){}
+}
+// 一次更新好幾筆記錄後：把牽涉到的班級家長頁都更新（同一個班只更新一次）
+function refreshParentsForRecs(recs){
+  var seen = {}; (recs || []).forEach(function(r){ if(!r) return; var k = (r.classLabel || "") + "|" + (r.classKey || ""); if(seen[k]) return; seen[k] = 1; refreshParentLinksFor(r.classLabel || "", r.classKey || ""); });
 }
 function parentPanelHtml(roster, links){
   var byName = {}; Object.keys(links).forEach(function(t){ byName[links[t].name] = Object.assign({ tok: t }, links[t]); });
@@ -4140,7 +4147,7 @@ async function viewParent(tok){
     var subs = {}; await Promise.all(items.map(function(it){ return fbGet(base + "/hwSubs/" + link.c + "/" + it.id + "/" + me).then(function(v){ subs[it.id] = v; }); }));
     var recs = (await fbGet(base + "/parentRecords/" + tok)) || []; if(!Array.isArray(recs)) recs = Object.keys(recs).map(function(k){ return recs[k]; });
     await syncTime();
-    var html = '<div class="center-wrap" style="align-items:flex-start;"><div style="width:100%;max-width:720px;margin:0 auto;padding:16px;"><h2>' + esc(link.name) + ' 的學習狀況</h2><div class="note" style="margin-bottom:12px;">' + esc(cname || "") + '　（家長專屬頁面，只能查看）</div>';
+    var html = '<div class="center-wrap" style="align-items:flex-start;"><div style="width:100%;max-width:720px;margin:0 auto;padding:16px;"><h2>' + esc(link.name) + ' 的學習狀況</h2><div class="note" style="margin-bottom:12px;">' + esc(cname || "") + '　（家長專屬頁面）</div>';
     var cnt = { ok: 0, late: 0, missing: 0 }; items.forEach(function(it){ var s = hwStatus(it, subs[it.id]); if(cnt[s] != null) cnt[s]++; });
     html += '<div class="panel"><h3>聯絡簿</h3><div class="note" style="margin-bottom:8px;">準時 ' + cnt.ok + '　遲交 ' + cnt.late + '　未交 ' + cnt.missing + '</div>' + (items.length ? items.map(function(it){ var s = hwStatus(it, subs[it.id]), sb = subs[it.id]; return '<div class="slot"><div class="slot-time" style="min-width:100px;">' + esc(it.due ? hwFmt(hwDueTs(it)) : "") + '<div class="note">截止</div></div><div class="slot-main"><div><b>' + esc(it.title) + '</b></div><div class="note">' + HW_LABEL[s] + (sb && sb.firstAt ? '　最後送出 ' + esc(hwFmt(sb.at)) : '') + '</div>' + (sb && sb.fb ? '<div style="margin-top:4px;">老師回饋：' + esc(sb.fb) + '</div>' : '') + '</div></div>'; }).join("") : '<p class="note">還沒有作業。</p>') + '</div>';
     html += '<div class="panel"><h3>上課記錄</h3>' + (recs.length ? recs.map(function(r){ return '<div class="slot"><div class="slot-time" style="min-width:100px;">' + esc(r.date || "") + '</div><div class="slot-main">' + (r.absent ? '<span class="note">缺席</span>' : '') + '<div>' + esc(r.material || "") + '</div>' + (r.scores ? '<div class="note">總分 ' + r.total + '　' + Object.keys(r.scores).map(function(k){ return esc(k) + " " + esc(r.scores[k]); }).join("　") + '</div>' : '') + '</div></div>'; }).join("") : '<p class="note">還沒有上課記錄。</p>') + '</div>';
@@ -4164,7 +4171,7 @@ async function viewParent(tok){
     }catch(ex){ console.warn(ex); }
     var parentAlbums = []; try{ parentAlbums = await albList(tid, link.c, true); }catch(exa){}
     if(parentAlbums.length){ albCss(); html += '<div class="panel"><h3>📷 班級相簿</h3>' + albCardsHtml(parentAlbums, false) + '</div>'; }
-    html += extra + leaveFormHtml() + '<div class="panel"><h3>請假紀錄</h3>' + leaveListHtml(myLv) + '</div></div></div>';
+    html += extra + '<details class="panel"><summary style="cursor:pointer;font-weight:700;">🙋 幫孩子請假／請假紀錄' + (myLv && Object.keys(myLv).length ? '（' + Object.keys(myLv).length + '）' : '') + '</summary><div style="margin-top:10px;">' + leaveFormHtml().replace('<div class="panel rec-form"><h3>請假申請</h3>', '<div class="rec-form">') + '<h3 style="margin-top:14px;">請假紀錄</h3>' + leaveListHtml(myLv) + '</div></details></div></div>';
     root.innerHTML = html;
     root.querySelectorAll(".alb-card[data-open]").forEach(function(c){ c.onclick = function(){ var a = parentAlbums.filter(function(x){ return x.id === c.dataset.open; })[0]; if(a) albLightbox(albPhotos(a), 0); }; });
     document.getElementById("lv-go").onclick = async function(){
@@ -6239,7 +6246,7 @@ var I18N_DICT = {
   "✗ 老師無法核准": ["✗ Not approved", "✗ ครูไม่สามารถอนุมัติได้"], "還沒有請假紀錄。": ["No leave records yet.", "ยังไม่มีบันทึกการลา"], "請假": ["Leave", "ลา"], "回班級頁": ["Back to class page", "กลับหน้าห้องเรียน"], "我的請假紀錄": ["My leave records", "บันทึกการลาของฉัน"], "請假紀錄": ["Leave records", "บันทึกการลา"],
   "請選請假日期。": ["Please choose the leave date.", "กรุณาเลือกวันที่ลา"], "已送出，老師會盡快回覆": ["Sent. Your teacher will reply soon.", "ส่งแล้ว ครูจะตอบกลับโดยเร็ว"],
   "連結無效": ["Invalid link", "ลิงก์ไม่ถูกต้อง"], "這個連結已停用或不正確，請向老師確認。": ["This link is disabled or incorrect. Please ask the teacher.", "ลิงก์นี้ถูกปิดหรือไม่ถูกต้อง กรุณาสอบถามครู"],
-  "（家長專屬頁面，只能查看）": ["(Parent page — view only)", "(หน้าสำหรับผู้ปกครอง ดูได้อย่างเดียว)"], "還沒有作業。": ["No homework yet.", "ยังไม่มีการบ้าน"], "上課記錄": ["Class records", "บันทึกการเรียน"], "缺席": ["Absent", "ขาดเรียน"], "還沒有上課記錄。": ["No class records yet.", "ยังไม่มีบันทึกการเรียน"],
+  "（家長專屬頁面）": ["(Parent page)", "(หน้าสำหรับผู้ปกครอง)"], "還沒有作業。": ["No homework yet.", "ยังไม่มีการบ้าน"], "上課記錄": ["Class records", "บันทึกการเรียน"], "缺席": ["Absent", "ขาดเรียน"], "還沒有上課記錄。": ["No class records yet.", "ยังไม่มีบันทึกการเรียน"],
   "考卷進步趨勢": ["Exam progress", "แนวโน้มคะแนนสอบ"], "老師的通知": ["Notices from the teacher", "ประกาศจากครู"], "分數由老師決定是否公開。": ["Scores are shared at the teacher's discretion.", "คะแนนจะเปิดเผยตามดุลยพินิจของครู"], "已批改": ["Graded", "ตรวจแล้ว"], "已交卷": ["Submitted", "ส่งข้อสอบแล้ว"], "作答中": ["In progress", "กำลังทำ"],
   "讀取失敗": ["Failed to load", "โหลดไม่สำเร็จ"], "請檢查網路後重新整理。": ["Please check your connection and refresh.", "กรุณาตรวจสอบอินเทอร์เน็ตแล้วรีเฟรช"], "送出": ["Send", "ส่ง"], "請假日期": ["Leave date", "วันที่ลา"], "原因": ["Reason", "เหตุผล"],
   "⚠️ 網路中斷了：現在輸入的內容還沒有存到雲端，連回網路後會自動同步。請先不要關掉這個頁面。": ["⚠️ You're offline: what you typed isn't saved yet. It will sync when you reconnect — please keep this page open.", "⚠️ ออฟไลน์: สิ่งที่พิมพ์ยังไม่ถูกบันทึก จะซิงก์เมื่อเชื่อมต่อใหม่ โปรดอย่าปิดหน้านี้"]
@@ -6264,7 +6271,7 @@ function i18nText(raw){
   else if(t === "沒有截止日") out = L === "en" ? "No due date" : "ไม่มีกำหนดส่ง";
   else if((m = /^(.+) 的學習狀況$/.exec(t))) out = L === "en" ? m[1] + "'s learning progress" : "ความก้าวหน้าการเรียนของ " + m[1];
   else if((m = /^你的 Google 帳號（(.*)）已經申請連結到「(.*)」。$/.exec(t))) out = L === "en" ? "Your Google account (" + m[1] + ") has asked to link to “" + m[2] + "”." : "บัญชี Google ของคุณ (" + m[1] + ") ขอเชื่อมกับ “" + m[2] + "” แล้ว";
-  else if((m = /^(.*)　（家長專屬頁面，只能查看）$/.exec(t))) out = m[1] + (L === "en" ? "  (Parent page — view only)" : "  (หน้าสำหรับผู้ปกครอง ดูได้อย่างเดียว)");
+  else if((m = /^(.*)　（家長專屬頁面）$/.exec(t))) out = m[1] + (L === "en" ? "  (Parent page)" : "  (หน้าสำหรับผู้ปกครอง)");
   else if((m = /^(\d+) 月 (\d+) 日$/.exec(t))) out = I18N_MON[L][Number(m[1]) - 1] + " " + m[2];
   else { for(var k in I18N_PREFIX){ if(t.indexOf(k) === 0){ var rest = t.slice(k.length); out = I18N_PREFIX[k][ix] + (I18N_DICT[rest] ? I18N_DICT[rest][ix] : (/^\d+ 分$/.test(rest) ? i18nText(rest) : rest)); break; } } }
   return out == null ? raw : lead + out + tail;
@@ -6281,7 +6288,7 @@ function i18nStart(on){
   var box = document.getElementById("langbox");
   if(!on){ if(box) box.style.display = "none"; return; }
   if(!box){
-    box = document.createElement("div"); box.id = "langbox"; box.style.cssText = "position:fixed;right:10px;bottom:10px;z-index:9990;background:var(--surface,#fff);border:1.5px solid var(--line,#ddd);border-radius:10px;padding:4px 8px;font-size:13px;box-shadow:0 2px 8px rgba(0,0,0,.12);";
+    box = document.createElement("div"); box.id = "langbox"; box.style.cssText = "display:block;width:max-content;margin:18px auto 24px;background:var(--surface,#fff);border:1.5px solid var(--line,#ddd);border-radius:10px;padding:4px 10px;font-size:13px;";
     box.innerHTML = '🌐 <select id="langsel" style="border:0;background:transparent;font:inherit;"><option value="zh">中文</option><option value="en">English</option><option value="th">ไทย</option></select>';
     document.body.appendChild(box);
     document.getElementById("langsel").onchange = function(){ try{ localStorage.setItem("mm_lang", this.value); }catch(e){} location.reload(); };
