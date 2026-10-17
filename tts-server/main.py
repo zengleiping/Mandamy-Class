@@ -8,6 +8,7 @@
 
 同樣的 文字+語速+語音 會快取成檔案，聽力測驗反覆播放不會重複呼叫微軟。
 """
+import asyncio
 import hashlib
 import os
 import re
@@ -70,18 +71,22 @@ async def synth(text: str, rate: float, voice: str) -> Path:
     path = CACHE_DIR / f"{key}.mp3"
     if path.exists() and path.stat().st_size > 0:
         return path
-    tmp = path.with_suffix(".part")
-    try:
-        await edge_tts.Communicate(text, voice, rate=rs).save(str(tmp))
-        if not tmp.exists() or tmp.stat().st_size == 0:
-            raise RuntimeError("empty audio")
-        tmp.replace(path)
-    except HTTPException:
-        raise
-    except Exception as e:  # 微軟端暫時失敗時回 502，前端會退回瀏覽器語音
-        tmp.unlink(missing_ok=True)
-        raise HTTPException(502, f"語音產生失敗：{e}")
-    return path
+    tmp = path.with_suffix(f".{os.getpid()}.{id(text)}.part")
+    last = None
+    # 微軟端偶爾會拒絕或斷線：自動重試 3 次（間隔 1、2 秒），都失敗才回 502
+    for attempt in range(3):
+        try:
+            await edge_tts.Communicate(text, voice, rate=rs).save(str(tmp))
+            if not tmp.exists() or tmp.stat().st_size == 0:
+                raise RuntimeError("empty audio")
+            tmp.replace(path)
+            return path
+        except Exception as e:
+            last = e
+            tmp.unlink(missing_ok=True)
+            if attempt < 2:
+                await asyncio.sleep(1 + attempt)
+    raise HTTPException(502, f"語音產生失敗：{last}")
 
 
 @app.get("/")

@@ -8735,6 +8735,7 @@ window.mmTA = (function(){
   var TTS_VOICES = [["zh-TW-HsiaoChenNeural", "曉臻（女）"], ["zh-TW-YunJheNeural", "雲哲（男）"], ["zh-TW-HsiaoYuNeural", "曉雨（女）"]];
   var ttsSpkMap = {}, ttsMode = "single", ttsSpkCount = 2;
   function ttsSetMode(m){
+    ttsWarm();
     ttsMode = m === "dialog" ? "dialog" : "single";
     document.querySelectorAll("[data-ttsmode]").forEach(function(b){ b.classList.toggle("btn-primary", b.dataset.ttsmode === ttsMode); });
     var ta = document.getElementById("f-tts-text");
@@ -8799,13 +8800,32 @@ window.mmTA = (function(){
     return t + "|" + ttsRateNow() + "|" + vk + "|" + ttsGapNow() + "|" + ttsMode;
   }
   function ttsSetStatus(msg){ var e = document.getElementById("tts-status"); if(e) e.textContent = msg; }
+  // 一段一段產生：成功的段落先記起來（再按一次不用重做）；伺服器剛睡醒（502／503／504）或微軟端暫時失敗時自動重試
+  var TTS_SEG_CACHE = {};
+  async function ttsFetchSeg(srv, text, rate, voice, signal, onRetry){
+    var k = voice + "|" + rate + "|" + text; if(TTS_SEG_CACHE[k]) return TTS_SEG_CACHE[k].slice(0);
+    var waits = [3000, 6000, 10000, 15000], lastErr = null;
+    for(var a = 0; a <= waits.length; a++){
+      try{
+        var r = await fetch(srv + "/api/tts", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text: text, rate: rate, voice: voice }), signal: signal });
+        if(r.ok){ var buf = await r.arrayBuffer(); if(buf.byteLength){ TTS_SEG_CACHE[k] = buf.slice(0); return buf; } lastErr = new Error("空的音檔"); }
+        else { lastErr = new Error("HTTP " + r.status); if(r.status === 400 || r.status === 413) throw lastErr; }
+      }catch(e){ if(signal && signal.aborted) throw new Error("等太久了"); if(/HTTP 4(00|13)/.test(e.message || "")) throw e; lastErr = e; }
+      if(a < waits.length){ if(onRetry) onRetry(a + 1, /502|503|504|Failed to fetch|NetworkError/i.test(String(lastErr && lastErr.message)) ? "還在啟動或忙碌" : "暫時沒回應"); await new Promise(function(res){ setTimeout(res, waits[a]); }); }
+    }
+    throw lastErr || new Error("失敗");
+  }
+  // 打開出題畫面就先叫醒語音伺服器（免費方案閒置 15 分鐘會休眠）
+  var TTS_WARM_AT = 0;
+  function ttsWarm(){ var srv = ttsServerUrl(); if(!srv || Date.now() - TTS_WARM_AT < 600000) return; TTS_WARM_AT = Date.now(); try{ fetch(srv + "/health", { cache: "no-store" }).catch(function(){}); }catch(e){} }
+  document.addEventListener("focusin", function(e){ if(e.target && e.target.id === "f-tts-text") ttsWarm(); });
   async function ttsGenerate(silent){
     var text = document.getElementById("f-tts-text").value.trim(), srv = ttsServerUrl();
     if(!text){ if(!silent) ttsSetStatus("請先輸入要念的內容。"); return; }
     if(!srv){ ttsSetStatus("尚未設定語音伺服器：學生會用自己裝置的中文語音播放（音質依裝置而異）。要產生固定音質的 MP3，請先到「語音伺服器」設定。"); editorTtsSrc = ""; return; }
     var key = ttsKeyNow(); ttsSetStatus("正在產生音檔…（伺服器休眠中的話，第一次約要 30～60 秒）");
     try{
-      var ctl = new AbortController(), tm = setTimeout(function(){ ctl.abort(); }, 90000);   // 伺服器剛睡醒可能要等 30～60 秒
+      var ctl = new AbortController(), tm = setTimeout(function(){ ctl.abort(); }, 240000);   // 伺服器剛睡醒可能要等 30～60 秒
       var dlg = ttsParseDialog(text), lines = dlg ? dlg.segs.map(function(sg){ return { text: sg.text, voice: ttsSpkVoice(sg.label, dlg.labels.indexOf(sg.label)) }; }) : [{ text: text, voice: ttsVoiceNow() }];
       // 每句再依 [停N秒] 切開；對話的句與句之間另外加上「句間停頓」
       var parts = [];
@@ -8817,9 +8837,7 @@ window.mmTA = (function(){
       for(var pi = 0; pi < parts.length; pi++){
         if(parts[pi].text){
           done++; if(nSay > 1) ttsSetStatus("正在產生音檔…（" + done + "／" + nSay + " 段）");
-          var r = await fetch(srv + "/api/tts", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text: parts[pi].text, rate: ttsRateNow(), voice: parts[pi].voice }), signal: ctl.signal });
-          if(!r.ok) throw new Error("HTTP " + r.status);
-          bufs.push(await r.arrayBuffer());
+          bufs.push(await ttsFetchSeg(srv, parts[pi].text, ttsRateNow(), parts[pi].voice, ctl.signal, function(n, why){ ttsSetStatus("伺服器" + why + "，自動重試中（第 " + n + " 次）…" + (nSay > 1 ? "（" + done + "／" + nSay + " 段）" : "")); }));
         }
         var sil = ttsSilence(parts[pi].pause); if(sil && pi < parts.length - 1) bufs.push(sil);
       }
@@ -8827,7 +8845,7 @@ window.mmTA = (function(){
       var blob = new Blob(bufs, { type: "audio/mpeg" }); if(blob.size > 900000) throw new Error("音檔太大，請縮短內容");   // 同一種格式的 MP3 直接接起來就能連續播放
       editorTtsSrc = await blobToDataUrl(blob); editorTtsKey = key;
       ttsSetStatus("✅ 已產生音檔（" + Math.round(blob.size / 1024) + " KB），儲存題目後學生就能聽到。");
-    }catch(e){ editorTtsSrc = ""; ttsSetStatus("產生音檔失敗（" + (e.message || e) + "），儲存後學生會改用自己裝置的語音播放。"); }
+    }catch(e){ editorTtsSrc = ""; var nOk = Object.keys(TTS_SEG_CACHE).length; ttsSetStatus("產生音檔失敗（" + (e.message || e) + "）。語音伺服器可能還在啟動或暫時忙碌，請過 1 分鐘再按一次「產生音檔」" + (nOk ? "（已經做好的段落會保留，不用重做）" : "") + "。如果不重試，儲存後學生會改用自己裝置的語音播放。"); }
   }
   document.getElementById("f-tts-rate").oninput = function(){ document.getElementById("f-tts-rate-val").textContent = ttsRateNow().toFixed(2).replace(/0$/, "") + "x"; };
   document.getElementById("f-tts-text").onchange = function(){ if(ttsServerUrl() && !editorTtsRec) ttsGenerate(true); };
