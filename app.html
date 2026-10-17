@@ -800,7 +800,7 @@ async function trRetry(id){
   var ent = TR.list[id]; if(!ent) return; trSetStatus("busy");
   TR.langs.forEach(function(c){ if(ent.tr) delete ent.tr[c]; });
   var aiR = await trAiTranslate(ent.zh, TR.langs); if(aiR){ ent.tr = ent.tr || {}; TR.langs.forEach(function(k){ if(aiR[k]) ent.tr[k] = String(aiR[k]).trim(); }); }
-  var miss = await trFill(id, TR.langs); trDrawList(); trPersist(id);
+  var miss = await trFill(id, TR.langs); trDrawList(); trPersist(id); trSyncRecord(TR.list[id]);
   toast(miss ? "還有 " + miss + " 種語言沒翻出來，可能是網路或翻譯服務忙碌，稍後再按 ↻" : "已重新翻譯");
 }
 function trPersist(id){
@@ -1052,7 +1052,7 @@ function trBuild(){
   box.querySelector("#tr-clear").onclick = function(){ if(!Object.keys(TR.list).length) return; if(!confirm("清空全部記錄？（下課後整理完再清比較保險，建議先按「複製全部」）")) return; var ids = Object.keys(TR.list); TR.list = {}; trDrawList(); try{ localStorage.removeItem("mm_tr_list_" + S.teacher.id); }catch(e){} fbSet(trPath(), null).then(function(){ trSetStatus("ok"); }).catch(function(){ trSetStatus("local"); }); trPublishSoon(); };
   box.addEventListener("click", function(e){ var rt = e.target.closest("[data-retry]"); if(rt){ trRetry(rt.dataset.retry); return; } var d = e.target.closest("[data-del]"); if(!d) return; var id = d.dataset.del; delete TR.list[id]; trDrawList(); trPersist(id); });
   box.addEventListener("input", function(e){ if(e.target.matches && e.target.matches("textarea.tr-t")){ e.target.style.height = "auto"; e.target.style.height = (e.target.scrollHeight + 2) + "px"; } });
-  box.addEventListener("change", async function(e){ var mv = e.target.closest && e.target.closest("[data-movedone]"); if(mv){ if(!mv.value) return; var me = TR.list[mv.dataset.movedone]; if(me && me.imp){ var ok = await recMoveVocab(me.zh, me.imp.rec, mv.value); toast(ok ? "已改放到新的課堂記錄" : "沒有移動"); } trDrawList(); return; } var ds = e.target.closest && e.target.closest("[data-dest]"); if(ds){ var de = TR.list[ds.dataset.dest]; if(de){ if(ds.value) de.dest = ds.value; else delete de.dest; trPersist(ds.dataset.dest); trDrawList(); } return; } var ck = e.target.closest && e.target.closest("[data-ck]"); if(ck){ var en = TR.list[ck.dataset.ck]; if(en){ en.done = ck.checked; ck.closest(".tr-row").classList.toggle("done", ck.checked); trPersist(ck.dataset.ck); } return; } var t = e.target; if(t.tagName !== "TEXTAREA" || !t.dataset.id) return; var ent = TR.list[t.dataset.id]; if(!ent) return; ent.tr = ent.tr || {}; ent.tr[t.dataset.lang] = t.value.trim(); trPersist(t.dataset.id); if(t.value.trim()){ var pp = {}; pp[t.dataset.lang] = t.value.trim(); trLearn(ent.zh, pp); toast("已記住這個修正，下次同一個詞會直接用"); } });
+  box.addEventListener("change", async function(e){ var mv = e.target.closest && e.target.closest("[data-movedone]"); if(mv){ if(!mv.value) return; var me = TR.list[mv.dataset.movedone]; if(me && me.imp){ var ok = await recMoveVocab(me.zh, me.imp.rec, mv.value); toast(ok ? "已改放到新的課堂記錄" : "沒有移動"); } trDrawList(); return; } var ds = e.target.closest && e.target.closest("[data-dest]"); if(ds){ var de = TR.list[ds.dataset.dest]; if(de){ if(ds.value) de.dest = ds.value; else delete de.dest; trPersist(ds.dataset.dest); trDrawList(); } return; } var ck = e.target.closest && e.target.closest("[data-ck]"); if(ck){ var en = TR.list[ck.dataset.ck]; if(en){ en.done = ck.checked; ck.closest(".tr-row").classList.toggle("done", ck.checked); trPersist(ck.dataset.ck); } return; } var t = e.target; if(t.tagName !== "TEXTAREA" || !t.dataset.id) return; var ent = TR.list[t.dataset.id]; if(!ent) return; ent.tr = ent.tr || {}; ent.tr[t.dataset.lang] = t.value.trim(); trPersist(t.dataset.id); var synced = await trSyncRecord(ent); if(t.value.trim()){ var pp = {}; pp[t.dataset.lang] = t.value.trim(); trLearn(ent.zh, pp); toast("已記住這個修正，下次同一個詞會直接用" + (synced ? "；課堂記錄也更新了" : "")); } else if(synced) toast("課堂記錄也更新了"); });
   box.addEventListener("keydown", function(e){ e.stopPropagation(); });
   window.addEventListener("resize", function(){ if(TR.open) trApplyGeo(); });
 }
@@ -1239,6 +1239,47 @@ async function migrateHier(){
 
 // 新教材自動加入：content/packs.json 列出整理好的課（生詞／語法／課文），老師登入時自動補進自己的生詞庫。
 // 每一包只加一次（記在 autoAdded），老師的教材庫裡已經有同一課就不動，老師之後刪掉也不會再自動加回來。
+// 翻譯機的詞改過之後：已經加進課堂記錄的那一筆也跟著更新
+async function trSyncRecord(ent){
+  if(!ent || !ent.imp || !ent.imp.rec) return false; var m = recMap(), r = m[ent.imp.rec]; if(!r || !Array.isArray(r.vocab)) return false;
+  var ch = false; r.vocab.forEach(function(v){ if(v && v.word === ent.zh){ var ns = trVocabSub(ent); if(v.sub !== ns){ v.sub = ns; ch = true; } } });
+  if(!ch) return false; r.updatedAt = Date.now();
+  try{ await fbSet("teacherPlatform/" + S.teacher.id + "/classRecords/" + ent.imp.rec + "/vocab", r.vocab); return true; }catch(e){ return false; }
+}
+// 老師指出的翻譯錯誤：統一修正（翻譯機清單、記住的修正、課堂記錄），每一包只做一次
+async function applyContentFixes(){
+  if(!S.teacher || S.teacher.role === "ta") return;
+  var list = null; try{ var r = await fetch("content/fixes.json?v=" + MM_V, { cache: "no-store" }); if(r.ok) list = await r.json(); }catch(e){}
+  if(!list || !Array.isArray(list.fixes)) return;
+  var base = "teacherPlatform/" + S.teacher.id, done = ((S.plat.meta || {}).fixesApplied) || {}, nWords = 0, nRec = 0;
+  for(var f = 0; f < list.fixes.length; f++){
+    var fx = list.fixes[f]; if(!fx || !fx.id || done[fx.id]) continue;
+    var tl = {}; try{ tl = (await fbGet(base + "/transList")) || {}; }catch(e){ continue; }
+    var touched = {};
+    (fx.items || []).forEach(function(it){
+      var patch = Object.assign({}, it.tr || {}); if(it.py) patch.py = it.py; trLearn(it.zh, patch);
+      Object.keys(tl).forEach(function(id){ var e = tl[id]; if(!e || e.zh !== it.zh) return; e.tr = Object.assign({}, e.tr || {}, it.tr || {}); if(it.py){ e.py = it.py; e.pya = it.py.split(/\s+/); } touched[id] = 1; });
+    });
+    for(var id in touched){ try{ await fbSet(base + "/transList/" + id, tl[id]); if(TR.list) TR.list[id] = tl[id]; nWords++; }catch(e){} }
+    // 課堂記錄：同一個詞的生詞說明，用修正後的內容重新組好
+    var byZh = {}; Object.keys(tl).forEach(function(id){ var e = tl[id]; if(e && touched[id]) byZh[e.zh] = e; });
+    var m = recMap();
+    for(var rk in m){
+      var rec = m[rk], ch = false; if(!Array.isArray(rec.vocab)) continue;
+      rec.vocab.forEach(function(v){
+        if(!v || !v.word) return; var it = (fx.items || []).filter(function(x){ return x.zh === v.word; })[0]; if(!it) return;
+        var e = byZh[v.word], ns;
+        if(e) ns = trVocabSub(e);
+        else { var pts = recVocabParts(v.sub || ""), tr = { en: "", th: "", ja: "" }; pts.tr.forEach(function(x){ tr[x.k.toLowerCase()] = tr[x.k.toLowerCase()] || x.t; }); Object.keys(it.tr || {}).forEach(function(k){ tr[k] = it.tr[k]; }); ns = [it.py || pts.py, pts.zy, tr.en, tr.th, tr.ja].filter(Boolean).join(" · "); }
+        if(ns && ns !== v.sub){ v.sub = ns; ch = true; }
+      });
+      if(ch){ rec.updatedAt = Date.now(); try{ await fbSet(base + "/classRecords/" + rk + "/vocab", rec.vocab); nRec++; }catch(e){} }
+    }
+    done[fx.id] = Date.now(); S.plat.meta = S.plat.meta || {}; S.plat.meta.fixesApplied = done;
+    try{ await fbSet(base + "/meta/fixesApplied/" + fx.id, done[fx.id]); }catch(e){}
+    if(nWords || nRec) setTimeout(function(){ toast("已修正翻譯：" + (fx.note || "") + "（翻譯機 " + nWords + " 筆、課堂記錄 " + nRec + " 筆）"); try{ trDrawList(); }catch(e){} }, 2500);
+  }
+}
 async function autoAddContentPacks(t, bank){
   if(!S.teacher || S.teacher.role === "ta") return bank;
   var list = null; try{ var r = await fetch("content/packs.json?v=" + MM_V, { cache: "no-store" }); if(r.ok) list = await r.json(); }catch(e){}
@@ -1280,6 +1321,7 @@ async function syncLessonIndex(){
   var t = S.teacher.id, bank = null, lib = null;
   try{ bank = await fbGet("teacherVocabBanks/" + t); }catch(e){}
   try{ bank = await autoAddContentPacks(t, bank); }catch(e){ console.warn("autoAddContentPacks", e); }
+  if(!S.fixesRun){ S.fixesRun = true; setTimeout(function(){ applyContentFixes().catch(function(e){ console.warn("fixes", e); }); }, 1500); }
   S.bank = (bank && Array.isArray(bank.courseData)) ? bank.courseData : [];
   try{ lib = await fbGet("teacherLibraries/" + t); }catch(e){}
   var lessons = {}, lm = S.plat.lessonMap || {};
