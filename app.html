@@ -135,6 +135,9 @@
   .rq-sum{ margin:12px 0 4px; padding:10px 12px; border:1.5px dashed var(--line); border-radius:12px; background:var(--surface); } .rq-sum > label{ margin-top:0; }
   .rte-live{ padding:4px 12px 8px; font-size:13px; color:var(--seal); }
   .rte-dlg{ width:min(1000px,96vw); max-width:96vw; padding:16px 18px; border:none; border-radius:16px; } .rte-dlg .rte-ed{ max-height:72vh; font-size:16px; }
+  .sroster{ display:flex; flex-wrap:wrap; gap:6px; margin:2px 0 8px; } .sroster .note{ width:100%; }
+  .sr-n{ border:1.5px solid var(--line); background:var(--surface-2); border-radius:99px; padding:6px 14px; font:inherit; font-weight:700; cursor:pointer; color:var(--ink); }
+  .sr-n.on{ background:var(--seal); border-color:var(--seal); color:#fff; }
   .tabs{ display:flex; gap:4px; padding:8px 14px 0; background:var(--surface); border-bottom:1px solid var(--line); flex-wrap:wrap; }
   .tab{ border:none; background:none; padding:9px 16px; font-size:14.5px; font-weight:700; color:var(--ink-soft); border-bottom:3px solid transparent; }
   .tab.on{ color:var(--seal); border-bottom-color:var(--seal); }
@@ -4100,14 +4103,23 @@ function refreshParentsForRecs(recs){
 }
 function parentPanelHtml(roster, links){
   var byName = {}; Object.keys(links).forEach(function(t){ byName[links[t].name] = Object.assign({ tok: t }, links[t]); });
-  var rows = roster.map(function(n){ var L = byName[n]; return '<tr><td><b>' + esc(n) + '</b></td><td>' + (L ? '<input type="text" readonly value="' + esc(parentUrl(L.tok)) + '" style="width:260px;max-width:60vw;font-size:12px;padding:5px 8px;border-radius:6px;border:1px solid var(--line);"> <label style="white-space:nowrap;"><input type="checkbox" data-h="plink-scores" data-tok="' + L.tok + '"' + (L.showScores ? ' checked' : '') + '> 顯示分數</label>' : '<span class="note">尚未建立</span>') + '</td><td>' + (L ? '<button class="btn sm" data-h="plink-copy" data-tok="' + L.tok + '">複製</button><button class="btn sm" data-h="plink-new" data-n="' + esc(n) + '">換新連結</button><button class="btn sm danger" data-h="plink-del" data-tok="' + L.tok + '">停用</button>' : '<button class="btn sm" data-h="plink-new" data-n="' + esc(n) + '">建立連結</button>') + '</td></tr>'; }).join("");
+  var rows = roster.map(function(n){ var L = byName[n]; return '<tr><td><b>' + esc(n) + '</b></td><td>' + (L ? '<input type="text" readonly value="' + esc(parentUrl(L.tok)) + '" style="width:260px;max-width:60vw;font-size:12px;padding:5px 8px;border-radius:6px;border:1px solid var(--line);"> <label style="white-space:nowrap;"><input type="checkbox" data-h="plink-scores" data-tok="' + L.tok + '"' + (L.showScores ? ' checked' : '') + '> 顯示分數</label>' : '<span class="note">尚未建立</span>') + '</td><td>' + (L ? '<button class="btn sm" data-h="plink-copy" data-tok="' + L.tok + '">複製</button><button class="btn sm" data-h="plink-pin" data-tok="' + L.tok + '">' + (L.pinHash ? '🔒 改密碼' : '設密碼') + '</button><button class="btn sm" data-h="plink-new" data-n="' + esc(n) + '">換新連結</button><button class="btn sm danger" data-h="plink-del" data-tok="' + L.tok + '">停用</button>' : '<button class="btn sm" data-h="plink-new" data-n="' + esc(n) + '">建立連結</button>') + '</td></tr>'; }).join("");
   return '<h3 style="margin-top:16px;">家長查看連結</h3><p class="note" style="margin:0 0 8px;">每位學生一個專屬連結（不用登入）。家長可以看到孩子的作業繳交狀況、你的回饋，和每堂課的教材進度與出缺席；「顯示分數」打勾才會讓家長看到課堂分數。連結外洩時，按「換新連結」舊的就會失效。</p>' +
     (roster.length ? '<div style="overflow-x:auto;"><table class="hw-table"><thead><tr><th>學生</th><th>連結</th><th>操作</th></tr></thead><tbody>' + rows + '</tbody></table></div><div class="tools" style="margin-top:8px;"><button class="btn sm" data-h="plink-all">為名單全部建立連結</button><button class="btn sm" data-h="plink-refresh">更新家長頁面內容</button></div>' : '<p class="note">先貼上班級名單。</p>');
 }
+async function pinHash(tok, pin){ var buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode("mm-parent|" + tok + "|" + pin)); return Array.prototype.map.call(new Uint8Array(buf), function(x){ return ("0" + x.toString(16)).slice(-2); }).join(""); }
 async function parentAct(a, roster, links, b){
   var tid = S.teacher.id, cid = S.sel.c, base = "teacherPlatform/" + tid + "/parentLinks";
   function tok(){ var x = new Uint8Array(15); crypto.getRandomValues(x); return Array.prototype.map.call(x, function(v){ return ACC_ALPHA[v % ACC_ALPHA.length]; }).join(""); }
   async function make(n){ var t = tok(); var L = { name: n, cid: cid, c: S.sel.c, s: S.sel.s, tm: S.sel.t, tid: tid, showScores: false, createdAt: nowMs() }; await fbSet(base + "/" + t, L); await refreshParentLink(t); return t; }
+  if(a === "plink-pin"){
+    var L0 = links[b.dataset.tok]; if(!L0) return;
+    var pin = await askText("家長密碼（4～6 位數字）。設定後，家長打開連結要先輸入密碼，連結被轉傳也不怕。\n留空＝取消密碼。", "", "儲存"); if(pin == null) return; pin = pin.trim();
+    if(pin && !/^\d{4,6}$/.test(pin)){ alert("請輸入 4～6 位數字"); return; }
+    var ph = pin ? await pinHash(b.dataset.tok, pin) : null;
+    await fbSet(base + "/" + b.dataset.tok + "/pinHash", ph); L0.pinHash = ph || undefined;
+    toast(pin ? "已設定家長密碼，記得告訴家長" : "已取消家長密碼"); render(); return;
+  }
   if(a === "plink-copy"){ try{ await navigator.clipboard.writeText(parentUrl(b.dataset.tok)); toast("已複製家長連結"); }catch(e){ alert(parentUrl(b.dataset.tok)); } return; }
   if(a === "plink-new"){
     var n = b.dataset.n, old = Object.keys(links).filter(function(t){ return links[t].name === n; });
@@ -4141,6 +4153,18 @@ async function viewParent(tok){
     var link = tid && real ? await fbGet("teacherPlatform/" + tid + "/parentLinks/" + real) : null;
     if(!link){ root.innerHTML = '<div class="center-wrap"><div class="card"><h2>連結無效</h2><p class="sub">這個連結已停用或不正確，請向老師確認。</p></div></div>'; return; }
     tok = real;
+    if(link.pinHash){
+      var okKey = "mm_ppin_" + real, ok0 = ""; try{ ok0 = localStorage.getItem(okKey) || ""; }catch(e){}
+      if(ok0 !== link.pinHash){
+        var passed = await new Promise(function(res){
+          root.innerHTML = '<div class="center-wrap"><div class="card"><img src="icons/logo.svg" alt="曼米中文" style="width:72px;height:72px;display:block;margin:0 auto 8px;"><h2 style="text-align:center;">家長專屬頁面</h2><p class="sub" style="text-align:center;">請輸入老師給你的家長密碼</p><input type="password" inputmode="numeric" id="ppin" maxlength="6" style="text-align:center;letter-spacing:.3em;font-size:20px;"><div class="err" id="ppe"></div><button class="btn primary" id="ppgo" style="width:100%;margin-top:12px;padding:11px;">查看</button></div></div>';
+          var tryIt = async function(){ var v = document.getElementById("ppin").value.trim(), h = await pinHash(real, v); if(h === link.pinHash){ try{ localStorage.setItem(okKey, h); }catch(e){} res(true); } else { var pe = document.getElementById("ppe"); pe.textContent = "密碼不對，請再試一次或向老師確認。"; pe.style.display = "block"; } };
+          document.getElementById("ppgo").onclick = tryIt; document.getElementById("ppin").addEventListener("keydown", function(e){ if(e.key === "Enter") tryIt(); }); setTimeout(function(){ document.getElementById("ppin").focus(); }, 50);
+        });
+        if(!passed) return;
+        root.innerHTML = '<div class="center-wrap"><div class="note">載入中…</div></div>';
+      }
+    }
     var base = "teacherPlatform/" + tid, me = hwSkey(link.name);
     var cname = await fbGet(base + "/schools/" + link.s + "/terms/" + link.tm + "/classes/" + link.c + "/name");
     var items = objList(await fbGet(hwBase(tid, link.c) + "/items")).filter(function(x){ return (x.kind || "hw") === "hw" && itemVisible(x); }).sort(function(a, b){ return (b.due || "").localeCompare(a.due || ""); });
@@ -5750,17 +5774,37 @@ function viewStudentEntry(msg, codeIn){
   var saved = ""; try{ saved = localStorage.getItem("mm_student_name") || ""; }catch(e){}
   root.innerHTML = '<div class="center-wrap"><div class="card"><img src="icons/logo.svg" alt="曼米中文" style="width:84px;height:84px;display:block;margin:0 auto 8px;"><h2 style="text-align:center;">曼米中文</h2><p class="sub" style="text-align:center;">學生入口</p>' +
     '<label>班級代碼</label><input type="text" id="sc" value="' + esc(codeIn || "") + '" style="text-transform:uppercase;letter-spacing:.15em;" autocomplete="off">' +
-    '<label>你的名字</label><input type="text" id="sn" value="' + esc(saved) + '" autocomplete="off">' +
+    '<label>你的名字</label><div id="sroster" class="sroster" style="display:none;"></div><input type="text" id="sn" value="' + esc(saved) + '" autocomplete="off">' +
     '<label>密碼 <span class="note" style="font-weight:400;">（老師有設定才需要）</span></label><input type="password" id="spw" autocomplete="current-password">' +
     '<div class="err" id="se"></div><button class="btn primary" id="sgo" style="width:100%;margin-top:14px;padding:11px;">進入班級</button>' +
     '<div style="text-align:center;margin:10px 0 2px;color:var(--ink-soft);font-size:13px;">或</div><button class="btn" id="sgg" style="width:100%;padding:11px;">🔑 用 Google 帳號登入</button>' +
     '<p class="sub" style="margin-top:16px;"><a href="#" id="tot">老師登入</a></p></div></div>';
   var se = document.getElementById("se"); if(msg){ se.textContent = msg; se.style.display = "block"; }
   document.getElementById("tot").onclick = function(e){ e.preventDefault(); history.replaceState(null, "", location.pathname); viewLogin(); };
+  // 老師有貼班級名單：直接點自己的名字（不會打錯字，作業和成績才對得上）
+  var rosterNow = null, rosterCode = "";
+  async function loadRoster(){
+    var code = document.getElementById("sc").value.trim().toUpperCase().replace(/[^A-Z0-9]/g, ""), box = document.getElementById("sroster");
+    if(code.length < 6 || code === rosterCode) return; rosterCode = code;
+    try{
+      var ix = await fbGet("classCodes/" + code); if(!ix){ rosterNow = null; box.style.display = "none"; return; }
+      var r = await fbGet("teacherPlatform/" + ix.t + "/homework/" + ix.c + "/roster"); var list = Array.isArray(r) ? r : (r ? Object.keys(r).map(function(k){ return r[k]; }) : []);
+      list = list.map(function(x){ return String(x || "").trim(); }).filter(Boolean);
+      rosterNow = list.length ? list : null;
+      if(!rosterNow){ box.style.display = "none"; return; }
+      var cur = document.getElementById("sn").value.trim();
+      box.innerHTML = '<div class="note" style="margin-bottom:6px;">點你的名字：</div>' + rosterNow.map(function(n){ return '<button type="button" class="sr-n' + (n === cur ? ' on' : '') + '" data-n="' + esc(n) + '">' + esc(n) + '</button>'; }).join("") + '<div class="note" style="margin-top:6px;">名單上沒有你？在下面輸入名字，並告訴老師。</div>';
+      box.style.display = "";
+      box.onclick = function(e){ var b = e.target.closest("[data-n]"); if(!b) return; document.getElementById("sn").value = b.dataset.n; box.querySelectorAll(".sr-n").forEach(function(x){ x.classList.toggle("on", x === b); }); var pw = document.getElementById("spw"); if(pw) pw.focus(); };
+    }catch(e){}
+  }
+  document.getElementById("sc").addEventListener("input", function(){ loadRoster(); });
+  loadRoster();
   async function go(){
     se.style.display = "none";
     var code = document.getElementById("sc").value.trim().toUpperCase().replace(/[^A-Z0-9]/g, ""), name = document.getElementById("sn").value.trim();
     if(!code || !name){ se.textContent = "請輸入班級代碼和名字"; se.style.display = "block"; return; }
+    if(rosterNow && rosterCode === code && rosterNow.indexOf(name) < 0 && !confirm("班級名單上沒有「" + name + "」。\n名字跟名單不一樣，老師那邊的作業和成績會對不上。\n確定用這個名字進入嗎？（建議直接點上面的名字）")) return;
     try{ localStorage.setItem("mm_student_name", name); }catch(e){}
     await startStudent(code, name, document.getElementById("spw").value);
   }
