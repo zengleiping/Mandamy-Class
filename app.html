@@ -104,6 +104,9 @@
   .rq-ph{ cursor:pointer; font-weight:400; } .rq-ph:hover{ border-color:var(--seal); }
   .rq-seg{ display:flex; gap:8px; align-items:flex-start; margin-top:8px; flex-wrap:wrap; } .rq-seg select{ padding:6px 8px; border-radius:8px; border:1.5px solid var(--line); background:var(--surface-2); } .rq-seg textarea{ flex:1; min-width:200px; }
   .rb-st{ display:flex; gap:6px; align-items:center; flex-wrap:wrap; padding:4px 0; } .rb-st b{ min-width:70px; }
+  .lib-grp{ display:inline-flex; align-items:flex-end; gap:0; margin-right:10px; padding-left:8px; border-left:1px solid var(--line); }
+  .lib-grp:first-of-type{ border-left:none; }
+  .lib-grp-t{ font-size:11.5px; font-weight:700; color:var(--ink-soft); align-self:center; margin-right:2px; white-space:nowrap; }
   .tabs{ display:flex; gap:4px; padding:8px 14px 0; background:var(--surface); border-bottom:1px solid var(--line); flex-wrap:wrap; }
   .tab{ border:none; background:none; padding:9px 16px; font-size:14.5px; font-weight:700; color:var(--ink-soft); border-bottom:3px solid transparent; }
   .tab.on{ color:var(--seal); border-bottom-color:var(--seal); }
@@ -446,7 +449,21 @@ var DEFAULT_BOOK_TITLE = "《學華語向前走》第一冊";
 function lkey(book, no){ return book === DEFAULT_BOOK ? String(no) : book + "~" + no; }
 function parseKey(k){ k = String(k); if(k.indexOf("u_") === 0) return null; var i = k.indexOf("~"); return i < 0 ? { book: DEFAULT_BOOK, no: Number(k) } : { book: k.slice(0, i), no: Number(k.slice(i + 1)) }; }
 function booksObj(){ var b = S.plat.books || {}; if(!b[DEFAULT_BOOK]) b = Object.assign({ b1: { title: DEFAULT_BOOK_TITLE, order: 0 } }, b); return b; }
-function bookIds(){ var b = booksObj(); return Object.keys(b).sort(function(x, y){ return (b[x].order || 0) - (b[y].order || 0); }); }
+// 教材依「系列」排：同一套（書名《》相同，或老師指定）放在一起、按冊別排；自編教材排在後面
+function bookSeries(id){ var b = booksObj()[id] || {}; if(b.series != null) return String(b.series); var m = /《([^》]+)》/.exec(b.title || ""); return m ? "《" + m[1] + "》" : ""; }
+function bookVol(id){ var m = /第\s*([0-9零〇一二兩三四五六七八九十]+)\s*冊/.exec((booksObj()[id] || {}).title || ""); return m ? cnNum(m[1]) : 0; }
+function bookShort(id){ var t = bookTitle(id), sr = bookSeries(id); if(sr && t.indexOf(sr) === 0){ var r = t.slice(sr.length).trim(); if(r) return r; } return t; }
+function bookIds(){
+  var b = booksObj(), ks = Object.keys(b), so = {};
+  ks.forEach(function(k){ var sr = bookSeries(k); if(sr) so[sr] = Math.min(so[sr] == null ? Infinity : so[sr], b[k].order || 0); });
+  return ks.sort(function(x, y){
+    var sx = bookSeries(x), sy = bookSeries(y);
+    if(!!sx !== !!sy) return sx ? -1 : 1;
+    if(sx !== sy) return (so[sx] - so[sy]) || sx.localeCompare(sy);
+    if(sx){ var d = bookVol(x) - bookVol(y); if(d) return d; }
+    return (b[x].order || 0) - (b[y].order || 0);
+  });
+}
 function bookTitle(id){ var b = booksObj()[id]; return b ? b.title : "（已刪除的教材）"; }
 function classBookIds(cls){ var all = bookIds(); if(!cls || !cls.books) return all; var sel = all.filter(function(b){ return cls.books[b]; }); return sel; }
 function multiBooks(){ return bookIds().length > 1; }
@@ -1297,7 +1314,7 @@ function navSnap(){
     return { k: "t", sel: S.sel ? { s: S.sel.s, t: S.sel.t || null, c: S.sel.c || null } : null, lesson: S.lesson || null, tab: S.tab || null, sub: S.sub || null,
       hw: S.hw ? { view: S.hw.view || "list", id: S.hw.id || null, from: S.hw.from || null, to: S.hw.to || null } : null,
       rec: S.rec ? { view: S.rec.edit !== undefined ? null : (S.rec.view || null), filter: S.rec.filter || null, label: S.rec.label || null, student: S.rec.student || null } : null,
-      lib: S.lib ? { book: S.lib.book || null, key: S.lib.key || null, bank: !!S.lib.bank, pid: S.lib.pid || null } : null, day: S.day || null, settings: !!S.settings, grades: !!S.grades, ctab: S.ctab || null };
+      lib: S.lib ? { book: S.lib.book || null, key: S.lib.key || null, bank: !!S.lib.bank, pid: S.lib.pid || null, tidy: !!S.lib.tidy } : null, day: S.day || null, settings: !!S.settings, grades: !!S.grades, ctab: S.ctab || null };
   }
   return { k: "s", lesson: S.lesson || null, tab: S.tab || null, sub: S.sub || null, hwOpen: S.hwOpen || null, leaveOpen: !!S.leaveOpen, roomJoin: S.roomJoin || null, examOpen: S.examOpen || null };
 }
@@ -1531,10 +1548,10 @@ function renderLibrary(){
   var ks = lessonsOfBook(cur), us = unitKeys(), un = S.unassigned || {}, unk = Object.keys(un), sug = libSuggestions(), nsug = sug.assign.length + sug.dup.length;
   if(S.projTrash === undefined){ S.projTrash = null; libLoadTrash().then(function(){ if(S.lib && !S.lib.pid && S.lib.creating == null && !S.lib.bank) renderLibrary(); }); }
   var trashN = Object.keys(S.projTrash || {}).length;
-  var key = S.lib.key;
-  if(key === "_trash" && !trashN) key = S.lib.key = null;
+  var key = S.lib.key, tidy = !!S.lib.tidy, tidyN = unk.length + nsug + trashN;
   if(key == null && S.lib.lesson != null){ key = S.lib.key = lkey(cur, S.lib.lesson); }
-  if(!key || (key.charAt(0) !== "_" && !L[key])) key = S.lib.key = nsug ? "_sug" : (ks[0] || (unk.length ? "_un" : "_none"));
+  if(tidy){ if(["_un", "_sug", "_trash"].indexOf(key) < 0 || (key === "_trash" && !trashN)) key = S.lib.key = nsug ? "_sug" : unk.length ? "_un" : trashN ? "_trash" : "_sug"; }
+  else if(!key || key.charAt(0) === "_" || !L[key] || (!L[key].unit && (L[key].book || DEFAULT_BOOK) !== cur)) key = S.lib.key = ks[0] || "_none";
   if(editing){
     var src = S.lib.pid ? "slides/practice.html?v=" + MM_V + "&embed=1&project=" + encodeURIComponent(S.lib.pid) : "slides/practice.html?v=" + MM_V + "&embed=1&newproject=" + encodeURIComponent(S.lib.creating ? lessonTitle(S.lib.creating) : "新的簡報");
     html = '<div class="tabs"><button class="tab" data-pback="1">‹ 回' + esc(key.charAt(0) === "_" ? "教材" : lessonTitle(key)) + '</button></div><iframe class="frame" id="fr" src="' + esc(src) + '" allow="microphone; camera; autoplay; clipboard-write"></iframe>';
@@ -1543,15 +1560,23 @@ function renderLibrary(){
     html = '<div class="tabs"><button class="tab" data-bankback="1">‹ 回' + esc(key.charAt(0) === "_" ? "教材" : lessonTitle(key)) + '</button><span class="note" style="align-self:center;margin-left:8px;">編輯生詞・語法・課文（改完會自動存到雲端）</span></div>' +
       '<iframe class="frame" id="fr" src="' + esc("index.html?v=" + MM_V + "&embed=1&manage=1&book=" + encodeURIComponent(cur) + (lno ? "&lesson=" + encodeURIComponent(lno) : "")) + '"></iframe>';
   } else {
-    var nav = '<div class="lib-nav">' + ks.map(function(k){ var c = lessonCounts(k); return '<button class="lib-it' + (k === key ? ' on' : '') + '" data-lk="' + esc(k) + '"><b>第 ' + L[k].no + ' 課</b> ' + esc(L[k].title || "") + '<span class="note">生詞 ' + c.vocab + '・簡報／練習 ' + Object.keys(L[k].projects || {}).length + '</span></button>'; }).join("") +
-      (us.length ? '<div class="lib-sep">複習單元</div>' + us.map(function(k){ return '<button class="lib-it' + (k === key ? ' on' : '') + '" data-lk="' + esc(k) + '"><b>📚 ' + esc(L[k].title || "") + '</b><span class="note">' + esc(memberRange(L[k].members)) + '</span></button>'; }).join("") : '') +
-      '<div class="lib-sep"></div><button class="lib-it' + (key === "_un" ? ' on' : '') + '" data-lk="_un"><b>📂 未分類</b>' + (unk.length ? ' <span class="chip" style="background:#FBEBC8;">' + unk.length + '</span>' : '') + '<span class="note">還沒歸到任何一課的簡報／測驗</span></button>' +
-      '<button class="lib-it' + (key === "_sug" ? ' on' : '') + '" data-lk="_sug"><b>💡 整理建議</b>' + (nsug ? ' <span class="chip" style="background:#FBEBC8;">' + nsug + '</span>' : '') + '<span class="note">可能要歸課、可能重複的</span></button>' +
-      (trashN ? '<button class="lib-it' + (key === "_trash" ? ' on' : '') + '" data-lk="_trash"><b>🗑️ 最近刪除</b> <span class="chip">' + trashN + '</span><span class="note">30 天內可以還原</span></button>' : '') +
-      '<button class="btn sm" data-newlesson="' + esc(cur) + '" style="margin-top:8px;width:100%;">＋ 新增課次</button></div>';
+    var nav;
+    if(tidy){
+      nav = '<div class="lib-nav"><div class="lib-sep" style="margin-top:0;border-top:none;padding-top:0;">🧹 整理（全部教材）</div>' +
+        '<button class="lib-it' + (key === "_sug" ? ' on' : '') + '" data-lk="_sug"><b>💡 整理建議</b>' + (nsug ? ' <span class="chip" style="background:#FBEBC8;">' + nsug + '</span>' : '') + '<span class="note">可能要歸課、可能重複的</span></button>' +
+        '<button class="lib-it' + (key === "_un" ? ' on' : '') + '" data-lk="_un"><b>📂 未分類</b>' + (unk.length ? ' <span class="chip" style="background:#FBEBC8;">' + unk.length + '</span>' : '') + '<span class="note">還沒歸到任何一課的簡報／測驗</span></button>' +
+        '<button class="lib-it' + (key === "_trash" ? ' on' : '') + '" data-lk="_trash"><b>🗑️ 最近刪除</b>' + (trashN ? ' <span class="chip">' + trashN + '</span>' : '') + '<span class="note">30 天內可以還原</span></button></div>';
+    } else {
+      nav = '<div class="lib-nav">' + ks.map(function(k){ var c = lessonCounts(k); return '<button class="lib-it' + (k === key ? ' on' : '') + '" data-lk="' + esc(k) + '"><b>第 ' + L[k].no + ' 課</b> ' + esc(L[k].title || "") + '<span class="note">生詞 ' + c.vocab + '・簡報／練習 ' + Object.keys(L[k].projects || {}).length + '</span></button>'; }).join("") +
+        (us.length ? '<div class="lib-sep">複習單元</div>' + us.map(function(k){ return '<button class="lib-it' + (k === key ? ' on' : '') + '" data-lk="' + esc(k) + '"><b>📚 ' + esc(L[k].title || "") + '</b><span class="note">' + esc(memberRange(L[k].members)) + '</span></button>'; }).join("") : '') +
+        '<button class="btn sm" data-newlesson="' + esc(cur) + '" style="margin-top:8px;width:100%;">＋ 新增課次</button></div>';
+    }
     var pane = key === "_trash" ? libTrashHtml() : key === "_un" ? libUnassignedHtml() : key === "_sug" ? libSugHtml(sug) : key === "_none" ? '<div class="panel"><p class="note">這本教材還沒有課次。按左邊「＋ 新增課次」開始。</p></div>' : libLessonHtml(key);
-    html = '<div class="tabs"><button class="tab" data-libback="1">‹ 返回</button>' + bids.map(function(b){ return '<button class="tab' + (b === cur ? ' on' : '') + '" data-libbook="' + esc(b) + '">' + esc(bookTitle(b)) + '</button>'; }).join("") +
-      '<button class="tab" data-libadd="1" style="margin-left:auto;">新增教材</button><button class="tab" data-libren="1">改教材名</button>' + (cur === DEFAULT_BOOK ? '' : '<button class="tab" data-libdel="1" style="color:#B23B32;">刪除教材</button>') + '</div>' +
+    var grp = [], gi = {};
+    bids.forEach(function(bk){ var sr = bookSeries(bk) || "__own"; if(gi[sr] == null){ gi[sr] = grp.length; grp.push({ sr: sr, ids: [] }); } grp[gi[sr]].ids.push(bk); });
+    var tabsHtml = grp.map(function(g){ return '<span class="lib-grp"><span class="lib-grp-t">' + (g.sr === "__own" ? '自編教材' : esc(g.sr)) + '</span>' + g.ids.map(function(bk){ return '<button class="tab' + (!tidy && bk === cur ? ' on' : '') + '" data-libbook="' + esc(bk) + '">' + esc(g.sr === "__own" ? bookTitle(bk) : bookShort(bk)) + '</button>'; }).join("") + '</span>'; }).join("");
+    html = '<div class="tabs lib-tabs"><button class="tab" data-libback="1">‹ 返回</button>' + tabsHtml +
+      '<span style="margin-left:auto;display:flex;gap:2px;flex-wrap:wrap;"><button class="tab' + (tidy ? ' on' : '') + '" data-libtidy="1">🧹 整理' + (tidyN ? ' <span class="chip" style="background:#FBEBC8;">' + tidyN + '</span>' : '') + '</button><button class="tab" data-libadd="1">＋ 新增教材</button>' + (tidy ? '' : '<button class="tab" data-libren="1">⚙️ 教材設定</button>' + (cur === DEFAULT_BOOK ? '' : '<button class="tab" data-libdel="1" style="color:#B23B32;">刪除教材</button>')) + '</span></div>' +
       '<div class="lib-wrap">' + nav + '<div class="lib-pane">' + pane + '</div></div>';
   }
   shell(html, { flush: true }); setCrumb([]);
@@ -1565,13 +1590,14 @@ function renderLibrary(){
   main.onclick = async function(e){
     var b = e.target.closest("button"); if(!b) return;
     if(b.dataset.libback){ S.lib = null; render(); return; }
-    if(b.dataset.lk){ S.lib = { book: cur, key: b.dataset.lk }; renderLibrary(); return; }
+    if(b.dataset.lk){ S.lib = { book: cur, key: b.dataset.lk, tidy: S.lib.tidy }; renderLibrary(); return; }
     if(b.dataset.libbook){ S.lib = { book: b.dataset.libbook }; renderLibrary(); return; }
+    if(b.dataset.libtidy){ S.lib = S.lib.tidy ? { book: cur } : { book: cur, tidy: true }; renderLibrary(); return; }
     if(b.dataset.bank){ S.lib = { book: cur, key: key, bank: true }; renderLibrary(); return; }
     if(b.dataset.bankback){ S.lib = { book: cur, key: key }; await syncLessonIndex(); renderLibrary(); return; }
-    if(b.dataset.pe){ S.lib = { book: cur, key: key, pid: b.dataset.pe }; renderLibrary(); return; }
-    if(b.dataset.pnew != null){ S.lib = { book: cur, key: key, creating: b.dataset.pnew }; renderLibrary(); return; }
-    if(b.dataset.pback){ S.lib = { book: cur, key: key }; await syncLessonIndex(); renderLibrary(); return; }
+    if(b.dataset.pe){ S.lib = { book: cur, key: key, pid: b.dataset.pe, tidy: tidy }; renderLibrary(); return; }
+    if(b.dataset.pnew != null){ S.lib = { book: cur, key: key, creating: b.dataset.pnew, tidy: tidy }; renderLibrary(); return; }
+    if(b.dataset.pback){ S.lib = { book: cur, key: key, tidy: tidy }; await syncLessonIndex(); renderLibrary(); return; }
     if(b.dataset.pdel){ await libDeleteProject(b.dataset.pdel); renderLibrary(); return; }
     if(b.dataset.trestore){ await libRestoreProject(b.dataset.trestore); renderLibrary(); return; }
     if(b.dataset.tpurge){ var tp = (S.projTrash || {})[b.dataset.tpurge]; if(!tp || !confirm("永久刪除「" + ((tp.proj || {}).title || "") + "」？這個動作沒辦法復原。")) return; delete S.projTrash[b.dataset.tpurge]; await fbSet("teacherPlatform/" + S.teacher.id + "/projTrash/" + b.dataset.tpurge, null); renderLibrary(); return; }
@@ -1587,7 +1613,9 @@ function renderLibrary(){
     }
     if(b.dataset.libren){
       var nn = await askText("教材名稱", bookTitle(cur)); if(!nn) return;
-      S.plat.books = S.plat.books || {}; S.plat.books[cur] = Object.assign({}, booksObj()[cur], { title: nn });
+      var autoS = (/《([^》]+)》/.exec(nn) || [])[1], curS = booksObj()[cur].series != null ? booksObj()[cur].series : (autoS ? "《" + autoS + "》" : "");
+      var sr = await askText("這本屬於哪一套教材？同一套的各冊會排在一起（例如《學華語向前走》）。\n留空＝放在「自編教材」。", curS, "儲存"); if(sr == null) return;
+      S.plat.books = S.plat.books || {}; S.plat.books[cur] = Object.assign({}, booksObj()[cur], { title: nn, series: sr.trim() });
       await fbSet("teacherPlatform/" + S.teacher.id + "/books/" + cur, S.plat.books[cur]); await syncLessonIndex(); renderLibrary(); return;
     }
     if(b.dataset.libdel){ await deleteBook(cur); S.lib = { book: DEFAULT_BOOK }; renderLibrary(); return; }
