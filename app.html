@@ -1491,7 +1491,7 @@ function libProjRow(pid, p, key, isDup){
   var use = key ? lessonClassUsage(key) : [];
   return '<div class="slot"><div class="slot-main"><div><b>' + esc(p.title || "（未命名）") + '</b>' + (isDup ? ' <span class="chip" style="background:#FBEBC8;" title="同一課有標題很像的另一份，到「整理建議」比對">⚠ 可能重複</span>' : '') + '　<span class="note">投影片 ' + (p.slides || 0) + '・測驗 ' + (p.quiz || 0) + '</span></div>' +
     '<div class="note" style="margin-top:3px;">' + (key ? (use.length ? '正在使用：' + use.map(esc).join("、") : '還沒有班級開放這一課') : '不屬於任何一課，學生看不到') + '</div></div>' +
-    '<div class="slot-actions" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;"><select data-assign="' + esc(pid) + '" title="這份簡報屬於哪一課">' + libAssignOptions(key) + '</select><button class="btn sm primary" data-pe="' + esc(pid) + '">編輯</button></div></div>';
+    '<div class="slot-actions" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;"><select data-assign="' + esc(pid) + '" title="這份簡報屬於哪一課">' + libAssignOptions(key) + '</select><button class="btn sm primary" data-pe="' + esc(pid) + '">編輯</button><button class="btn sm danger" data-pdel="' + esc(pid) + '">刪除</button></div></div>';
 }
 // ---------- 教材：一課一頁（左邊課次清單，右邊這一課的生詞・語法・課文、簡報與練習、哪些班在用）----------
 function normTitle(t){ return String(t || "").replace(/[\s（）()【】\[\]「」、，。：:・·\-—_~～]/g, "").replace(/(的)?(副本|複製|copy)\d*$/i, "").toLowerCase(); }
@@ -1529,7 +1529,10 @@ function renderLibrary(){
   if(bids.indexOf(cur) === -1) cur = S.lib.book = bids[0] || DEFAULT_BOOK;
   var L = S.plat.lessons || {}, html, editing = !!(S.lib.pid || S.lib.creating != null);
   var ks = lessonsOfBook(cur), us = unitKeys(), un = S.unassigned || {}, unk = Object.keys(un), sug = libSuggestions(), nsug = sug.assign.length + sug.dup.length;
+  if(S.projTrash === undefined){ S.projTrash = null; libLoadTrash().then(function(){ if(S.lib && !S.lib.pid && S.lib.creating == null && !S.lib.bank) renderLibrary(); }); }
+  var trashN = Object.keys(S.projTrash || {}).length;
   var key = S.lib.key;
+  if(key === "_trash" && !trashN) key = S.lib.key = null;
   if(key == null && S.lib.lesson != null){ key = S.lib.key = lkey(cur, S.lib.lesson); }
   if(!key || (key.charAt(0) !== "_" && !L[key])) key = S.lib.key = nsug ? "_sug" : (ks[0] || (unk.length ? "_un" : "_none"));
   if(editing){
@@ -1544,8 +1547,9 @@ function renderLibrary(){
       (us.length ? '<div class="lib-sep">複習單元</div>' + us.map(function(k){ return '<button class="lib-it' + (k === key ? ' on' : '') + '" data-lk="' + esc(k) + '"><b>📚 ' + esc(L[k].title || "") + '</b><span class="note">' + esc(memberRange(L[k].members)) + '</span></button>'; }).join("") : '') +
       '<div class="lib-sep"></div><button class="lib-it' + (key === "_un" ? ' on' : '') + '" data-lk="_un"><b>📂 未分類</b>' + (unk.length ? ' <span class="chip" style="background:#FBEBC8;">' + unk.length + '</span>' : '') + '<span class="note">還沒歸到任何一課的簡報／測驗</span></button>' +
       '<button class="lib-it' + (key === "_sug" ? ' on' : '') + '" data-lk="_sug"><b>💡 整理建議</b>' + (nsug ? ' <span class="chip" style="background:#FBEBC8;">' + nsug + '</span>' : '') + '<span class="note">可能要歸課、可能重複的</span></button>' +
+      (trashN ? '<button class="lib-it' + (key === "_trash" ? ' on' : '') + '" data-lk="_trash"><b>🗑️ 最近刪除</b> <span class="chip">' + trashN + '</span><span class="note">30 天內可以還原</span></button>' : '') +
       '<button class="btn sm" data-newlesson="' + esc(cur) + '" style="margin-top:8px;width:100%;">＋ 新增課次</button></div>';
-    var pane = key === "_un" ? libUnassignedHtml() : key === "_sug" ? libSugHtml(sug) : key === "_none" ? '<div class="panel"><p class="note">這本教材還沒有課次。按左邊「＋ 新增課次」開始。</p></div>' : libLessonHtml(key);
+    var pane = key === "_trash" ? libTrashHtml() : key === "_un" ? libUnassignedHtml() : key === "_sug" ? libSugHtml(sug) : key === "_none" ? '<div class="panel"><p class="note">這本教材還沒有課次。按左邊「＋ 新增課次」開始。</p></div>' : libLessonHtml(key);
     html = '<div class="tabs"><button class="tab" data-libback="1">‹ 返回</button>' + bids.map(function(b){ return '<button class="tab' + (b === cur ? ' on' : '') + '" data-libbook="' + esc(b) + '">' + esc(bookTitle(b)) + '</button>'; }).join("") +
       '<button class="tab" data-libadd="1" style="margin-left:auto;">新增教材</button><button class="tab" data-libren="1">改教材名</button>' + (cur === DEFAULT_BOOK ? '' : '<button class="tab" data-libdel="1" style="color:#B23B32;">刪除教材</button>') + '</div>' +
       '<div class="lib-wrap">' + nav + '<div class="lib-pane">' + pane + '</div></div>';
@@ -1568,6 +1572,9 @@ function renderLibrary(){
     if(b.dataset.pe){ S.lib = { book: cur, key: key, pid: b.dataset.pe }; renderLibrary(); return; }
     if(b.dataset.pnew != null){ S.lib = { book: cur, key: key, creating: b.dataset.pnew }; renderLibrary(); return; }
     if(b.dataset.pback){ S.lib = { book: cur, key: key }; await syncLessonIndex(); renderLibrary(); return; }
+    if(b.dataset.pdel){ await libDeleteProject(b.dataset.pdel); renderLibrary(); return; }
+    if(b.dataset.trestore){ await libRestoreProject(b.dataset.trestore); renderLibrary(); return; }
+    if(b.dataset.tpurge){ var tp = (S.projTrash || {})[b.dataset.tpurge]; if(!tp || !confirm("永久刪除「" + ((tp.proj || {}).title || "") + "」？這個動作沒辦法復原。")) return; delete S.projTrash[b.dataset.tpurge]; await fbSet("teacherPlatform/" + S.teacher.id + "/projTrash/" + b.dataset.tpurge, null); renderLibrary(); return; }
     if(b.dataset.sugok){ await libAssign(b.dataset.sugok, b.dataset.to); toast("已歸到" + lessonTitle(b.dataset.to)); renderLibrary(); return; }
     if(b.dataset.goclass){ var p = b.dataset.goclass.split("|"); S.lib = null; S.sel = { s: p[0], t: p[1], c: p[2] }; S.ctab = "progress"; S.progExp = key; render(); return; }
     if(b.dataset.newlesson){ var k2 = await newLessonFlow(b.dataset.newlesson); if(k2){ S.lib = { book: cur, key: k2 }; } renderLibrary(); return; }
@@ -1591,6 +1598,43 @@ async function libAssign(pid, v){
   else { S.plat.lessonMap[pid] = v; await fbSet("teacherPlatform/" + S.teacher.id + "/lessonMap/" + pid, v); }
   await syncLessonIndex();
 }
+// ----- 刪除簡報／測驗：先放進「最近刪除」（30 天內可以還原）-----
+async function libLoadTrash(){
+  var t = {}; try{ t = (await fbGet("teacherPlatform/" + S.teacher.id + "/projTrash")) || {}; }catch(e){}
+  var lim = Date.now() - 30 * 86400000;
+  for(var k in t){ if(!t[k] || (t[k].at || 0) < lim){ delete t[k]; try{ await fbSet("teacherPlatform/" + S.teacher.id + "/projTrash/" + k, null); }catch(e){} } }
+  S.projTrash = t;
+}
+async function libDeleteProject(pid){
+  var base = "teacherPlatform/" + S.teacher.id, ap = (S.allProjects || {})[pid] || {}, lk = (S.plat.lessonMap || {})[pid], warn = [];
+  if(lk && (S.plat.lessons || {})[lk]){ var use = lessonClassUsage(lk); if(use.length) warn.push("「" + lessonTitle(lk) + "」目前開放給：" + use.join("、") + "，刪除後學生就看不到這份。"); }
+  try{ var hw = (await fbGet(base + "/homework")) || {}, ex = []; Object.keys(hw).forEach(function(cid){ var its = (hw[cid] || {}).items || {}; Object.keys(its).forEach(function(i){ var it = its[i]; if(it && it.kind === "exam" && it.exam && it.exam.pid === pid) ex.push(it.title); }); }); if(ex.length) warn.push("有線上考卷用到這份：" + ex.join("、") + "，刪除後學生就打不開這些考卷。"); }catch(e){}
+  if(!confirm("刪除「" + (ap.title || "（未命名）") + "」（投影片 " + (ap.slides || 0) + "・測驗 " + (ap.quiz || 0) + "）？\n" + (warn.length ? "\n⚠️ " + warn.join("\n⚠️ ") + "\n" : "") + "\n刪除後會先放在「🗑️ 最近刪除」，30 天內可以還原。")) return false;
+  var proj = null; try{ proj = await fbGet("teacherLibraries/" + S.teacher.id + "/projects/" + pid); }catch(e){}
+  if(!proj){ toast("找不到這份資料，可能已經被刪除了"); await syncLessonIndex(); return false; }
+  var rec = { proj: proj, at: Date.now(), lesson: lk || null };
+  try{ await fbSet(base + "/projTrash/" + pid, rec); await fbSet("teacherLibraries/" + S.teacher.id + "/projects/" + pid, null); if(lk) await fbSet(base + "/lessonMap/" + pid, null); }
+  catch(e){ toast("刪除失敗，請檢查網路"); return false; }
+  if(S.plat.lessonMap) delete S.plat.lessonMap[pid];
+  S.projTrash = S.projTrash || {}; S.projTrash[pid] = rec;
+  await syncLessonIndex(); toast("已刪除。30 天內可以在「🗑️ 最近刪除」還原"); return true;
+}
+async function libRestoreProject(pid){
+  var t = (S.projTrash || {})[pid]; if(!t || !t.proj) return;
+  var base = "teacherPlatform/" + S.teacher.id;
+  try{
+    if(await fbGet("teacherLibraries/" + S.teacher.id + "/projects/" + pid)) toast("測驗庫裡已經有同一份了");
+    else await fbSet("teacherLibraries/" + S.teacher.id + "/projects/" + pid, t.proj);
+    if(t.lesson && (S.plat.lessons || {})[t.lesson]){ S.plat.lessonMap = S.plat.lessonMap || {}; S.plat.lessonMap[pid] = t.lesson; await fbSet(base + "/lessonMap/" + pid, t.lesson); }
+    await fbSet(base + "/projTrash/" + pid, null);
+  }catch(e){ toast("還原失敗，請檢查網路"); return; }
+  delete S.projTrash[pid]; await syncLessonIndex(); toast("已還原「" + (t.proj.title || "") + "」");
+}
+function libTrashHtml(){
+  var t = S.projTrash || {}, ks = Object.keys(t).sort(function(a, b){ return (t[b].at || 0) - (t[a].at || 0); });
+  return '<div class="head-row" style="margin-bottom:10px;"><div style="flex:1;"><h2>🗑️ 最近刪除</h2><div class="note">刪除的簡報和測驗會在這裡保留 30 天，之後自動清掉。</div></div></div><div class="panel">' +
+    (ks.length ? ks.map(function(pid){ var x = t[pid], left = Math.max(0, 30 - Math.floor((Date.now() - (x.at || 0)) / 86400000)); return '<div class="slot"><div class="slot-main"><b>' + esc((x.proj || {}).title || "（未命名）") + '</b><div class="note">' + esc(hwFmt(x.at)) + ' 刪除' + (x.lesson && (S.plat.lessons || {})[x.lesson] ? '・原本在' + esc(lessonTitle(x.lesson)) : '') + '・還剩 ' + left + ' 天</div></div><div class="slot-act"><button class="btn sm primary" data-trestore="' + esc(pid) + '">還原</button><button class="btn sm danger" data-tpurge="' + esc(pid) + '">永久刪除</button></div></div>'; }).join("") : '<p class="note" style="margin:0;">沒有刪除的項目。</p>') + '</div>';
+}
 function libLessonHtml(key){
   var L = S.plat.lessons || {}, l = L[key] || {}, c = lessonCounts(key), ps = l.projects || {}, pids = Object.keys(ps), dup = libDupSet();
   var h = '<div class="head-row" style="margin-bottom:10px;"><div style="flex:1;"><h2>' + esc(lessonTitle(key)) + '</h2></div></div>';
@@ -1608,9 +1652,9 @@ function libUnassignedHtml(){
     '<div class="panel">' + (unk.length ? unk.map(function(pid){ return libProjRow(pid, un[pid], null); }).join("") : '<p class="note" style="margin:0;">所有簡報與測驗都已經歸到某一課了 👍</p>') + '</div>';
 }
 function libSugHtml(sug){
-  var ap = S.allProjects || {}, h = '<div class="head-row" style="margin-bottom:10px;"><div style="flex:1;"><h2>💡 整理建議</h2><div class="note">只是建議，按了「歸課」才會移動；重複的請自己打開比對，決定要不要刪。</div></div></div>';
+  var ap = S.allProjects || {}, h = '<div class="head-row" style="margin-bottom:10px;"><div style="flex:1;"><h2>💡 整理建議</h2><div class="note">只是建議，按了「歸課」才會移動；重複的請先「打開比對」，確定不要再按「刪除」（30 天內可以在「🗑️ 最近刪除」還原）。</div></div></div>';
   h += '<div class="panel"><h3>建議歸課（' + sug.assign.length + '）</h3>' + (sug.assign.length ? sug.assign.map(function(x){ return '<div class="slot"><div class="slot-main"><b>' + esc(x.title || "（未命名）") + '</b><div class="note">標題跟「' + esc(lessonTitle(x.key)) + '」很像</div></div><div class="slot-act"><button class="btn sm primary" data-sugok="' + esc(x.pid) + '" data-to="' + esc(x.key) + '">歸到' + esc(lessonTitle(x.key).replace(/^(.*?第 \d+ 課).*$/, "$1")) + '</button><button class="btn sm" data-pe="' + esc(x.pid) + '">打開看看</button></div></div>'; }).join("") : '<p class="note" style="margin:0;">沒有需要歸課的。</p>') + '</div>';
-  h += '<div class="panel"><h3>可能重複（' + sug.dup.length + '）</h3>' + (sug.dup.length ? sug.dup.map(function(d){ return '<div class="lesson" style="margin-bottom:8px;"><div class="note" style="font-weight:700;">' + esc(lessonTitle(d.key)) + '</div>' + d.pids.map(function(pid){ var p = ap[pid] || {}; return '<div class="slot"><div class="slot-main"><b>' + esc(p.title || "（未命名）") + '</b>　<span class="note">投影片 ' + (p.slides || 0) + '・測驗 ' + (p.quiz || 0) + '</span></div><div class="slot-act"><button class="btn sm" data-pe="' + esc(pid) + '">打開比對</button></div></div>'; }).join("") + '</div>'; }).join("") : '<p class="note" style="margin:0;">沒有發現重複的簡報或測驗。</p>') + '</div>';
+  h += '<div class="panel"><h3>可能重複（' + sug.dup.length + '）</h3>' + (sug.dup.length ? sug.dup.map(function(d){ return '<div class="lesson" style="margin-bottom:8px;"><div class="note" style="font-weight:700;">' + esc(lessonTitle(d.key)) + '</div>' + d.pids.map(function(pid){ var p = ap[pid] || {}; return '<div class="slot"><div class="slot-main"><b>' + esc(p.title || "（未命名）") + '</b>　<span class="note">投影片 ' + (p.slides || 0) + '・測驗 ' + (p.quiz || 0) + '</span></div><div class="slot-act"><button class="btn sm" data-pe="' + esc(pid) + '">打開比對</button><button class="btn sm danger" data-pdel="' + esc(pid) + '">刪除</button></div></div>'; }).join("") + '</div>'; }).join("") : '<p class="note" style="margin:0;">沒有發現重複的簡報或測驗。</p>') + '</div>';
   return h;
 }
 function sortedBy(obj, desc){ return Object.keys(obj || {}).sort(function(a, b){ var d = (obj[a].order || 0) - (obj[b].order || 0); return desc ? -d : d; }); }
