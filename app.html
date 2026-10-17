@@ -132,6 +132,7 @@
   .rte-ed:empty::before{ content:attr(data-ph); color:var(--ink-soft); }
   .rte-ed h4, .rte-view h4{ font-size:16px; margin:10px 0 4px; color:var(--seal); } .rte-ed p, .rte-view p{ margin:0 0 6px; }
   .rte-ed ul, .rte-ed ol, .rte-view ul, .rte-view ol{ margin:4px 0 8px; padding-left:1.8em; } .rte-ed blockquote, .rte-view blockquote{ margin:0 0 0 2em; padding:0; border:none; }
+  .rq-sum{ margin:12px 0 4px; padding:10px 12px; border:1.5px dashed var(--line); border-radius:12px; background:var(--surface); } .rq-sum > label{ margin-top:0; }
   .rte-live{ padding:4px 12px 8px; font-size:13px; color:var(--seal); }
   .rte-dlg{ width:min(1000px,96vw); max-width:96vw; padding:16px 18px; border:none; border-radius:16px; } .rte-dlg .rte-ed{ max-height:72vh; font-size:16px; }
   .tabs{ display:flex; gap:4px; padding:8px 14px 0; background:var(--surface); border-bottom:1px solid var(--line); flex-wrap:wrap; }
@@ -2339,7 +2340,7 @@ function recIdForSlot(slotId){
   ids.sort(function(a, b){ return (m[a].slotId === slotId ? 0 : 1) - (m[b].slotId === slotId ? 0 : 1); });
   return ids.filter(function(k){ return !recIncomplete(m[k]); })[0] || ids[0] || null;
 }
-function recIncomplete(r){ if(!r || r.isAbsence) return false; var sts = Array.isArray(r.students) ? r.students : Object.keys(r.students || {}).map(function(k){ return r.students[k]; }); return !sts.some(function(st){ return recHasScore(st) || (st.comment || "").trim() || st.absent; }) && !(r.notes || "").trim(); }
+function recIncomplete(r){ if(!r || r.isAbsence) return false; var sts = Array.isArray(r.students) ? r.students : Object.keys(r.students || {}).map(function(k){ return r.students[k]; }); return !sts.some(function(st){ return recHasScore(st) || (st.comment || "").trim() || st.absent; }) && !(r.notes || "").trim() && !(r.summary || "").trim(); }
 function recSlotNeeds(slotId){ var id = recIdForSlot(slotId); return !id || recIncomplete(recMap()[id]); }
 async function openRecordFor(slot){
   var exist = slot && recIdForSlot(slot.id); if(exist){ return openRecordEdit(exist, recIncomplete(recMap()[exist]) ? slot : null); }
@@ -2438,6 +2439,7 @@ function renderRecPreview(){
   var html = '<div class="head-row"><div style="flex:1;"><h2>' + esc(r.classLabel || "") + '</h2><div class="note">' + esc(r.date || "") + '　唯讀預覽</div></div><div><button class="btn primary" data-r="edit">✏️ 編輯</button> <button class="btn sm ghost" data-r="back">返回列表</button></div></div>' +
     '<div class="panel">' + (badges ? '<div class="tools" style="margin-bottom:10px;">' + badges + '</div>' : '') +
     '<h3 style="margin-top:0;">本次教材進度</h3><div style="white-space:pre-wrap;">' + (r.material ? esc(r.material) : '<span class="note">（沒有填）</span>') + '</div></div>';
+  if(!r.isAbsence && (r.summary || "").trim()) html += '<div class="panel"><h3 style="margin-top:0;">本週課堂紀錄（全班共同）</h3>' + rteShow(r.summaryHtml, r.summary) + '</div>';
   if(!r.isAbsence){
     html += '<div class="panel"><h3 style="margin-top:0;">學生表現</h3>' + (stus.filter(function(st){ return st && (st.name || stTotal(st)); }).length ?
       '<div style="overflow-x:auto;"><table class="hw-table"><thead><tr><th>學生</th>' + RUBRIC.map(function(x){ return '<th>' + esc(x.label) + '<div class="note" style="font-weight:400;">/' + x.max + '</div></th>'; }).join("") + '<th>總分</th></tr></thead><tbody>' +
@@ -2468,6 +2470,7 @@ function recSync(){
   d.classLabel = g("rf-class").value.trim(); d.date = g("rf-date").value || d.date;
   d.seq = g("rf-seq").value === "" ? null : Number(g("rf-seq").value); d.weekNo = g("rf-week").value === "" ? null : Number(g("rf-week").value);
   d.material = g("rf-material").value; d.notes = g("rf-notes").value; d.isAbsence = g("rf-abs").checked;
+  var smy = g("rf-summary"); if(smy){ if(smy.value.trim()){ d.summary = smy.value; d.summaryHtml = smy.dataset.html || ""; } else { delete d.summary; delete d.summaryHtml; } }
   if(d.isAbsence){ if(g("rf-abst")) d.absType = g("rf-abst").value; if(g("rf-madeup")) d.madeUp = g("rf-madeup").checked; } else { delete d.absType; delete d.madeUp; }
   document.querySelectorAll(".rstu").forEach(function(box){
     var st = d.students[Number(box.dataset.i)]; if(!st) return;
@@ -2673,7 +2676,7 @@ function recRoute(raw, students){
   var t = String(raw || ""), keys = [];
   students.forEach(function(s, i){ recNameKeys(s.name).forEach(function(k){ keys.push({ k: k, i: i }); }); });
   keys.sort(function(a, b){ return b.k.length - a.k.length; });
-  t = t.replace(/^(嗯|呃|欸|那個|我覺得)+/, "").replace(REC_MARK, "，$1").replace(/(?<!(?:其|吉|然後|但是|可是|不過|而且|所以|還有|另外|接著|最後|，))(他|她)(?!們)/g, "，$1").replace(/(全班|大家|其他同學|別的同學|下次|下週|下禮拜)/g, "，$1").replace(/(?<=[\u4e00-\u9fff]{2})(?<!(?:的|跟|和|、))(聲調|發音|口說|口語|閱讀|寫字|寫作|筆順|態度)/g, "，$1");
+  t = t.replace(/^(嗯|呃|欸|那個|我覺得)+/, "").replace(REC_MARK, "，$1").replace(/(?<!(?:其|吉|然後|但是|可是|不過|而且|所以|還有|另外|接著|最後|，))(他|她)(?!們)/g, "，$1").replace(/(全班|大家|兩人|兩個人|他們|她們|其他同學|別的同學|下次|下週|下禮拜)/g, "，$1").replace(/(?<=[\u4e00-\u9fff]{2})(?<!(?:的|跟|和|、))(聲調|發音|口說|口語|閱讀|寫字|寫作|筆順|態度)/g, "，$1");
   var marks = []; keys.forEach(function(o){ var at = t.indexOf(o.k); while(at >= 0){ if(!marks.some(function(m){ return at >= m.at && at < m.at + m.len; })) marks.push({ at: at, len: o.k.length }); at = t.indexOf(o.k, at + o.k.length); } });
   marks.sort(function(a, b){ return b.at - a.at; }).forEach(function(m){ t = t.slice(0, m.at) + "，" + t.slice(m.at); });
   var clauses = t.split(/[，,。！!？?；;\n\s]+/).filter(function(c){ return c && c.trim(); });
@@ -2685,7 +2688,7 @@ function recRoute(raw, students){
     var tgt;
     if(hit){ tgt = "s" + hit.i; c = c.replace(hit.k, "").replace(/^(同學|的話|呢|啊)+/, ""); }
     else if(/第\s*[0-9零一二兩三四五六七八九十]+\s*課|生詞|語法|課文|句型|進度|教到|上到|教了|複習/.test(c) && !/^(他|她)/.test(c) && !(last && last.charAt(0) === "s" && /(不太會|不熟|記不|會了)/.test(c))) tgt = "material";
-    else if(/全班|大家|同學們|其他同學|別的同學|每個人|下次|下週|下禮拜|作業/.test(c)) tgt = "notes";
+    else if(/全班|大家|兩人|兩個人|他們|她們|同學們|其他同學|別的同學|每個人|下次|下週|下禮拜|作業/.test(c)) tgt = "notes";
     else if(last && last.charAt(0) === "s") tgt = last;
     else tgt = "notes";
     if(tgt.charAt(0) === "s") c = c.replace(/^(嗯|呃|那個)*(然後|而且|還有|另外|接著|最後)?(他|她)?/, "");
@@ -2701,6 +2704,12 @@ function recRoute(raw, students){
     if(s.tgt !== "material") s.text = s.text.replace(/，(但是|可是|不過)/g, "；$1") + "。";
     s.lv = null; if(s.tgt.charAt(0) === "s"){ if(REC_NEG.test(s.text)) s.lv = "work"; else if(REC_POS.test(s.text)) s.lv = "good"; }
   });
+  return segs;
+}
+// 兩人以上一起上課：不是講某位學生、也不是特殊事件的句子，放進「本週課堂紀錄（共同）」
+function recRouteSum(segs, d){
+  if(!(d.mode === "group" || d.students.length > 1)) return segs;
+  segs.forEach(function(sg){ if(sg.tgt === "notes" && !/(生日|請假|遲到|早退|特別|提醒|下次|下週|作業|考試)/.test(sg.text)) sg.tgt = "summary"; });
   return segs;
 }
 // ----- 麥克風（瀏覽器內建語音辨識）-----
@@ -2782,6 +2791,13 @@ function recEnhance(){
       rteMount(cm, { html: st.commentHtml, title: (st.name || "學生") + " 的評語" });
     }
   });
+  var stuBox = document.getElementById("rf-stu");
+  if(stuBox && !d.isAbsence && (d.mode === "group" || d.students.length > 1)){
+    var sb = document.createElement("div"); sb.className = "rq-sum";
+    sb.innerHTML = '<label style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">本週課堂紀錄（全班共同）<span class="note" style="font-weight:400;">上課內容、教學策略、大家共同的學習狀況與後續建議；每位學生的個別表現寫在下面</span><span style="flex:1;"></span><button type="button" class="btn sm ghost" data-q="sumtpl">📋 套用段落範本</button><button type="button" class="btn sm mic" data-q="micsum" title="用說的，停止後自動整理成正式文字">🎙️</button></label><textarea id="rf-summary" placeholder="例如：本週從現代學生的角度切入〈師說〉……">' + esc(d.summary || "") + '</textarea>';
+    stuBox.parentNode.insertBefore(sb, stuBox);
+    rteMount(document.getElementById("rf-summary"), { html: d.summaryHtml, title: "本週課堂紀錄（全班共同）", minH: "160px" });
+  }
   ["rf-material", "rf-notes"].forEach(function(id){
     var el = document.getElementById(id); if(!el) return;
     var bar = document.createElement("div"); bar.className = "tools"; bar.style.cssText = "margin:4px 0 0;";
@@ -2793,7 +2809,8 @@ function recEnhance(){
 function recDrawPreview(){
   var box = document.getElementById("rq-prev"), d = S.rec.draft, segs = S.rec.segs || []; if(!box) return;
   if(!segs.length){ box.innerHTML = '<p class="note">沒有整理出內容，再說一次或打字看看。</p>'; return; }
-  var opts = [["material", "教材進度"], ["notes", "備註"]].concat(d.students.map(function(s, i){ return ["s" + i, (s.name || "學生 " + (i + 1)) + " 的評語"]; }));
+  var grp = d.mode === "group" || d.students.length > 1;
+  var opts = [["material", "教材進度"]].concat(grp ? [["summary", "本週課堂紀錄（共同）"]] : []).concat([["notes", "備註"]]).concat(d.students.map(function(s, i){ return ["s" + i, (s.name || "學生 " + (i + 1)) + " 的評語"]; }));
   box.innerHTML = '<div style="margin-top:10px;"><b>整理結果</b>　<span class="note">可以改文字或換位置，確認後按「套用」。</span>' + segs.map(function(s, j){
     return '<div class="rq-seg"><select data-sj="' + j + '">' + opts.map(function(o){ return '<option value="' + o[0] + '"' + (o[0] === s.tgt ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join("") + '</select><textarea data-tj="' + j + '" rows="2">' + esc(s.text) + '</textarea>' +
       (s.tgt.charAt(0) === "s" ? '<label class="note" style="display:flex;align-items:center;gap:4px;margin:0;white-space:nowrap;"><input type="checkbox" data-lj="' + j + '"' + (s.lv && !recHasScore(d.students[Number(s.tgt.slice(1))] || {}) ? ' checked' : '') + '> 也打分：' + (s.lv === "work" ? "💪 要加油" : s.lv === "good" ? "👍 很好" : "🙂 正常") + '</label>' : '') + '</div>';
@@ -2811,8 +2828,8 @@ function recEnhanceClick(e){
   else if(a === "mic"){ var cm = document.querySelector('.rstu[data-i="' + i + '"] .rcm'); if(cm && cm._rte){ var tmp = document.createElement("textarea"), api = cm._rte; tmp.addEventListener("input", function(){ api.live(tmp.value); }); recMicStart(tmp, b, function(spoken){ api.live(""); if(!spoken) return; api.appendPara(recFormal(spoken)); recSync(); recAutosave(); }); } }
   else if(a === "micf"){ var f = document.getElementById(b.dataset.f); if(f) recMicStart(f, b, function(spoken, base){ if(!spoken) return; var t = recFormal(spoken); if(b.dataset.f === "rf-material") t = t.replace(/。$/, ""); f.value = (base ? base.replace(/[，。\s]*$/, "") + "，" : "") + t; recSync(); recAutosave(); }); }
   else if(a === "dictall"){ S.rec.dict = !S.rec.dict; if(!S.rec.dict) recMicStop(); renderRecEditor(); }
-  else if(a === "micraw"){ var raw = document.getElementById("rq-raw"); raw.oninput = function(){ S.rec.dictRaw = raw.value; }; recMicStart(raw, b, function(){ S.rec.dictRaw = raw.value; S.rec.segs = recRoute(raw.value, d.students); recDrawPreview(); }); }
-  else if(a === "route"){ var raw2 = document.getElementById("rq-raw"); S.rec.dictRaw = raw2.value; S.rec.segs = recRoute(raw2.value, d.students); recDrawPreview(); }
+  else if(a === "micraw"){ var raw = document.getElementById("rq-raw"); raw.oninput = function(){ S.rec.dictRaw = raw.value; }; recMicStart(raw, b, function(){ S.rec.dictRaw = raw.value; S.rec.segs = recRouteSum(recRoute(raw.value, d.students), d); recDrawPreview(); }); }
+  else if(a === "route"){ var raw2 = document.getElementById("rq-raw"); S.rec.dictRaw = raw2.value; S.rec.segs = recRouteSum(recRoute(raw2.value, d.students), d); recDrawPreview(); }
   else if(a === "applysegs"){
     var segs = S.rec.segs || [];
     document.querySelectorAll("[data-sj]").forEach(function(s){ var j = Number(s.dataset.sj); if(segs[j]) segs[j].tgt = s.value; });
@@ -2827,11 +2844,14 @@ function recEnhanceClick(e){
         else d.material = add(cur, mt, "、");
       }
       else if(s.tgt === "notes") d.notes = add(d.notes, s.text, "。");
+      else if(s.tgt === "summary"){ d.summary = add(d.summary, s.text, "\n"); if(d.summaryHtml) d.summaryHtml += "<p>" + rteEsc(s.text) + "</p>"; }
       else { var st2 = d.students[Number(s.tgt.slice(1))]; if(!st2) return; st2.comment = add(st2.comment, s.text, "，"); if(st2.commentHtml) st2.commentHtml += "<p>" + rteEsc(s.text) + "</p>"; if(lvOn[j]) recApplyLevel(st2, s.lv || "ok"); }
     });
     S.rec.dict = false; S.rec.segs = null; S.rec.dictRaw = ""; recAutosave(); toast("已套用，請看一下再儲存"); renderRecEditor();
   }
   else if(a === "presets") recPresetDialog();
+  else if(a === "sumtpl"){ var sm = document.getElementById("rf-summary"); if(!sm || !sm._rte) return; var tpl = "<h4>本週課程內容</h4><p><br></p><h4>學生共同的學習狀況</h4><ul><li><br></li></ul><h4>後續建議</h4><ol><li><br></li></ol>"; if(sm._rte.text() && !confirm("在目前內容的後面加上段落範本？")) return; sm._rte.set((sm._rte.text() ? sm._rte.html() : "") + tpl); recSync(); recAutosave(); }
+  else if(a === "micsum"){ var sm2 = document.getElementById("rf-summary"); if(sm2 && sm2._rte){ var tmp2 = document.createElement("textarea"), api2 = sm2._rte; tmp2.addEventListener("input", function(){ api2.live(tmp2.value); }); recMicStart(tmp2, b, function(spoken){ api2.live(""); if(!spoken) return; api2.appendPara(recFormal(spoken)); recSync(); recAutosave(); }); } }
 }
 async function recPresetDialog(){
   var p = recPresets(), cur = REC_LV.map(function(l){ return l[1] + "：" + RUBRIC.map(function(r){ return p[l[0]][r.key]; }).join("/"); }).join("\n");
