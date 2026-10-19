@@ -683,6 +683,33 @@
 
   /* 選擇題與多選題 */
   .circle-prompt{font-family:"MM Kai","LXGW WenKai TC",serif;font-size:21px;margin:0 0 20px;line-height:1.6;color:var(--ink);}
+  .mc-ink-host{position:relative;max-width:860px;margin:0 auto;}
+  .mc-ink-host .mc-choices-container{max-width:none;}
+  .mc-ink-canvas{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:3;touch-action:none;}
+  .mc-ink-texts{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:4;}
+  .mc-ink-note{position:absolute;font-weight:700;white-space:pre;line-height:1.2;transform:translateY(-50%);text-shadow:0 0 3px #fff,0 0 3px #fff;}
+  .mc-ink-texts.editable .mc-ink-note{pointer-events:auto;cursor:pointer;outline:1px dashed rgba(0,0,0,.25);}
+  .mc-ink-input{position:absolute;pointer-events:auto;font-weight:700;transform:translateY(-50%);min-width:8em;border:2px dashed currentColor;border-radius:6px;background:rgba(255,255,255,.92);padding:2px 6px;}
+  .mc-ink-bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;margin:0 auto 8px;max-width:860px;}
+  .mc-ink-col{width:24px;height:24px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--grid-line);cursor:pointer;padding:0;}
+  .mc-ink-col.on{box-shadow:0 0 0 3px var(--ink);}
+  .mc-vote-panel{max-width:860px;margin:0 auto 10px;padding:8px 12px;border-radius:12px;background:var(--surface-2);border:1px solid var(--grid-line);font-size:14px;}
+  .mc-vote-panel.student{text-align:center;color:var(--ink-soft);}
+  .mc-vote-panel.done{background:rgba(45,90,39,.12);border-color:#2D5A27;}
+  .mc-vp-line{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+  .mc-vp-msg{color:#2D5A27;font-weight:700;} .mc-vp-wait{color:var(--ink-soft);}
+  .mc-pulse{animation:mcPulse 1.2s ease-in-out infinite;}
+  @keyframes mcPulse{0%,100%{box-shadow:0 0 0 0 rgba(232,130,90,.6);}50%{box-shadow:0 0 0 8px rgba(232,130,90,0);}}
+  .mc-opt-tally{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-soft);white-space:nowrap;}
+  .mc-opt-tally b{font-size:17px;color:var(--ink);}
+  .mc-tbar{display:inline-block;width:70px;height:8px;border-radius:4px;background:var(--grid-line);overflow:hidden;} .mc-tbar i{display:block;height:100%;background:var(--seal);}
+  .mc-option-btn.mc-ans{border-color:#2D5A27;border-style:dashed;}
+  .mc-vote-names{max-width:860px;margin:10px auto 0;display:flex;flex-direction:column;gap:6px;font-size:14px;}
+  .mc-vn-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;} .mc-vn-row.ok .mc-vn-l{background:#2D5A27;color:#fff;}
+  .mc-vn-l{width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700;background:var(--surface-2);border:1px solid var(--grid-line);}
+  .mc-vn-n{padding:2px 10px;border-radius:999px;background:var(--surface-2);border:1px solid var(--grid-line);}
+  .mc-toast{position:fixed;left:50%;top:76px;transform:translateX(-50%);background:#2D5A27;color:#fff;padding:12px 20px;border-radius:12px;font-size:16px;font-weight:700;z-index:99999;box-shadow:0 6px 20px rgba(0,0,0,.2);transition:opacity .5s;}
+  .mc-toast.out{opacity:0;}
   .mc-choices-container{display:flex;flex-direction:column;gap:14px;margin-top:12px;max-width:860px;margin-left:auto;margin-right:auto;}
   .mc-option-btn{
     padding:16px 22px;border-radius:14px;border:2px solid var(--grid-line);
@@ -4518,7 +4545,10 @@ window.mmTA = (function(){
     if(inRoom()){
       var pk = examPrivateFor(qId);
       if(pk) return (roomData && roomData.examProg && roomData.examProg[pk] && roomData.examProg[pk][qId]) || {};
-      return (roomData && roomData.sharedProgress && roomData.sharedProgress[qId]) || {};
+      var shp = (roomData && roomData.sharedProgress && roomData.sharedProgress[qId]) || {};
+      // 測驗模式的選擇題：每位學生各自作答（記在 votes），自己畫面只看到自己的選擇
+      if(isStudent && choiceVoteOn() && isChoiceQ(qId)){ var mv = choiceVotes(qId)[myId]; return Object.assign({}, shp, { multiPicks: Object.assign({}, (mv && mv.picks) || {}) }); }
+      return shp;
     }
     var proj = getActiveProject();
     if(proj){
@@ -4586,6 +4616,7 @@ window.mmTA = (function(){
   function writeProgress(qId, patch){
     var pk = inRoom() ? examPrivateFor(qId) : null;
     if(pk && pk !== "__none__"){ update(ref(db, "rooms/" + activeRoomId + "/examProg/" + pk + "/" + qId), patch); return; }
+    if(isStudent && choiceVoteOn() && patch.multiPicks && isChoiceQ(qId)){ set(ref(db, "rooms/" + activeRoomId + "/votes/" + qId + "/" + myId), { name: myName || "學生", picks: patch.multiPicks, at: Date.now() }); return; }
     if(inRoom()){ protectTeacherInk(qId, patch); update(ref(db, "rooms/" + activeRoomId + "/sharedProgress/" + qId), patch); }
     else { Object.assign(getProgress(qId), patch); saveFS(); renderStage(); }
   }
@@ -6972,6 +7003,8 @@ window.mmTA = (function(){
       if(pid === myId) return;
       var c = cursorsData[pid];
       if(!c || c.qId !== curQId) return;
+      // 測驗／考試中：學生看不到其他同學的游標（不然看得出別人選哪個）
+      if(isStudent && isTestMode() && c.role !== "teacher") return;
       activePeerIds[pid] = true;
       var color = getColorForStudent(pid, c.role);
 
@@ -9673,7 +9706,7 @@ window.mmTA = (function(){
 
     // 填空／簡答：正在打字時，別因為雲端回傳自己剛寫的資料就整個重畫（會讓游標跑掉、輸入法中斷）
     if((sec.type === "fill" || sec.type === "open") && stageSignature === lastStageSignature && stageEl.contains(document.activeElement) && /^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)) return;
-    if((isCanvasSec(sec) || sec.type === "hanzi") && liveBoardQId === q.id && stageSignature === lastStageSignature && liveBoardRefresh && liveBoardRefresh()){
+    if((isCanvasSec(sec) || sec.type === "hanzi" || sec.type === "choice") && liveBoardQId === q.id && stageSignature === lastStageSignature && liveBoardRefresh && liveBoardRefresh()){
       return; // 局部刷新成功：只更新畫布內容（筆畫／文字／格線／底圖），不重建整個舞台
     }
 
@@ -9733,6 +9766,7 @@ window.mmTA = (function(){
       var resetBtn = document.createElement("button"); resetBtn.className = "btn btn-sm"; resetBtn.textContent = "🔄 重新開始 Restart";
       resetBtn.onclick = function(){
         var resetPatch = { fills:{}, text:"", audio:null, audioSec:null, grade:null, matched:{}, selected:{}, choicePick:null, choiceStatus:null, multiPicks:{}, userPairs:{}, userWords:[], revealed:false, strokes:[], texts:[], selection:null, wrongFlash:null, lastEvent:null };
+        if(sec.type === "choice"){ resetPatch.ink = null; if(inRoom()){ remove(ref(db, "rooms/" + activeRoomId + "/votes/" + q.id)); remove(ref(db, "rooms/" + activeRoomId + "/voteReveal/" + q.id)); } }
         resetPatch.poolWords = (sec.type === "reorder") ? seededShuffle(q.words || [], q.id + "|reorder-pool") : [];
         writeProgress(q.id, resetPatch);
       };
@@ -9922,56 +9956,227 @@ window.mmTA = (function(){
   }
 
   /* 選擇題（支援複選） */
+  /* 選擇題：測驗模式（全班在房間裡）每位學生各自作答，記在 rooms/{房間}/votes/{題目}/{學生}；
+     老師畫面看到每個選項幾個人選、誰選了、誰還沒作答，全部作答完會提醒公布答案。
+     老師檢討時可以在題目上手寫、打字（存在共用進度的 ink，學生畫面同步看到）。 */
+  function choiceVoteOn(){ return inRoom() && currentClassMode === "test" && !window.__attempt && !window.__grade; }
+  function isChoiceQ(qId){ var inf = findSectionForQuestion(qId); return !!(inf && inf.sec.type === "choice"); }
+  function choiceVotes(qId){ return (roomData && roomData.votes && roomData.votes[qId]) || {}; }
+  function choiceRevealed(qId){ return !!(roomData && roomData.voteReveal && roomData.voteReveal[qId]); }
+  function choiceAnswered(v){ var p = v && v.picks; return !!(p && Object.keys(p).some(function(k){ return p[k]; })); }
+  function choiceStatus(qId){
+    var votes = choiceVotes(qId), pres = (roomData && roomData.presence) || {}, online = [], answered = [], pending = [];
+    Object.keys(pres).forEach(function(k){ if(k !== "teacher" && pres[k] && pres[k].online) online.push(k); });
+    Object.keys(votes).forEach(function(k){ if(choiceAnswered(votes[k])) answered.push(k); });
+    online.forEach(function(k){ if(answered.indexOf(k) < 0) pending.push(k); });
+    function nm(k){ return (votes[k] && votes[k].name) || (pres[k] && pres[k].name) || "學生"; }
+    return { votes: votes, answered: answered, pending: pending, online: online, nm: nm, allDone: online.length > 0 && pending.length === 0 };
+  }
+  var choiceDoneSeen = {};
+  function choiceNamesOn(){ try{ return localStorage.getItem("mm_choice_names") !== "0"; }catch(e){ return true; } }
+  function mcToast(msg){
+    var t = document.createElement("div"); t.className = "mc-toast"; t.textContent = msg; document.body.appendChild(t);
+    setTimeout(function(){ t.classList.add("out"); }, 3800); setTimeout(function(){ if(t.parentNode) t.parentNode.removeChild(t); }, 4400);
+  }
+
+  // 老師手寫／打字：座標用題目區的比例（0～1）存，不同螢幕大小都對得上
+  var mcInkTool = null, mcInkColor = "#E63946";
+  function mcInkGet(qId){
+    var ink = inRoom() ? (roomData && roomData.sharedProgress && roomData.sharedProgress[qId] && roomData.sharedProgress[qId].ink) : getProgress(qId).ink;
+    function arr(x){ return Array.isArray(x) ? x.filter(Boolean) : (x && typeof x === "object" ? Object.keys(x).map(function(k){ return x[k]; }).filter(Boolean) : []); }
+    return { s: arr(ink && ink.s), t: arr(ink && ink.t) };
+  }
+  function mcInkSave(qId, ink){
+    var val = (ink.s.length || ink.t.length) ? ink : null;
+    if(inRoom()) update(ref(db, "rooms/" + activeRoomId + "/sharedProgress/" + qId), { ink: val });
+    else { var p = getProgress(qId); p.ink = val; saveFS(); renderStage(); }
+  }
+  function mcInkSetup(q, host){
+    var cv = document.createElement("canvas"); cv.className = "mc-ink-canvas";
+    var layer = document.createElement("div"); layer.className = "mc-ink-texts";
+    host.appendChild(cv); host.appendChild(layer);
+    var cur = null;   // 正在畫的這一筆
+    function sizeOf(){ var r = host.getBoundingClientRect(); return { w: Math.max(1, host.offsetWidth), h: Math.max(1, host.offsetHeight), r: r }; }
+    function drawStroke(ctx, s, W, H){
+      var pts = String(s.p || "").split(" ").map(function(x){ var a = x.split(","); return [Number(a[0]) * W, Number(a[1]) * H]; }).filter(function(a){ return !isNaN(a[0]) && !isNaN(a[1]); });
+      if(!pts.length) return;
+      ctx.strokeStyle = s.c || "#E63946"; ctx.lineWidth = (s.w || 3) * W / 860; ctx.lineCap = "round"; ctx.lineJoin = "round";
+      ctx.beginPath(); ctx.moveTo(pts[0][0], pts[0][1]);
+      if(pts.length === 1) ctx.lineTo(pts[0][0] + 0.1, pts[0][1]); else pts.slice(1).forEach(function(a){ ctx.lineTo(a[0], a[1]); });
+      ctx.stroke();
+    }
+    function redraw(){
+      var z = sizeOf(), dpr = window.devicePixelRatio || 1, ink = mcInkGet(q.id);
+      if(cv.width !== Math.round(z.w * dpr) || cv.height !== Math.round(z.h * dpr)){ cv.width = Math.round(z.w * dpr); cv.height = Math.round(z.h * dpr); }
+      var ctx = cv.getContext("2d"); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, z.w, z.h);
+      ink.s.forEach(function(s){ drawStroke(ctx, s, z.w, z.h); });
+      if(cur) drawStroke(ctx, { c: cur.c, w: cur.w, p: cur.pts.join(" ") }, z.w, z.h);
+      var editing = layer.querySelector("input.mc-ink-input");
+      Array.prototype.slice.call(layer.querySelectorAll(".mc-ink-note")).forEach(function(n){ n.parentNode.removeChild(n); });
+      ink.t.forEach(function(t){
+        var d = document.createElement("div"); d.className = "mc-ink-note zh"; d.textContent = t.v || ""; d.dataset.id = t.id;
+        d.style.left = (t.x * 100) + "%"; d.style.top = (t.y * 100) + "%"; d.style.color = t.c || "#E63946"; d.style.fontSize = Math.max(12, z.w * 0.028) + "px";
+        if(editing && editing.dataset.id === t.id) d.style.visibility = "hidden";
+        layer.appendChild(d);
+      });
+      var on = !isStudent && !!mcInkTool;
+      cv.style.pointerEvents = on ? "auto" : "none"; cv.style.cursor = mcInkTool === "text" ? "text" : (mcInkTool === "pen" ? "crosshair" : "");
+      layer.classList.toggle("editable", !isStudent && mcInkTool === "text");
+    }
+    function rel(e){ var r = cv.getBoundingClientRect(); return [Math.min(1, Math.max(0, (e.clientX - r.left) / Math.max(1, r.width))), Math.min(1, Math.max(0, (e.clientY - r.top) / Math.max(1, r.height)))]; }
+    function editText(x, y, t){
+      var old = layer.querySelector("input.mc-ink-input"); if(old) old.blur();
+      var z = sizeOf(), inp = document.createElement("input"); inp.type = "text"; inp.className = "mc-ink-input zh"; inp.value = t ? t.v : ""; inp.placeholder = "打字…";
+      if(t) inp.dataset.id = t.id;
+      inp.style.left = (x * 100) + "%"; inp.style.top = (y * 100) + "%"; inp.style.color = t ? t.c : mcInkColor; inp.style.fontSize = Math.max(12, z.w * 0.028) + "px";
+      layer.appendChild(inp); redraw(); setTimeout(function(){ inp.focus(); }, 0);
+      var done = false;
+      function commit(){
+        if(done) return; done = true; var v = inp.value.trim(), ink = mcInkGet(q.id);
+        if(inp.parentNode) inp.parentNode.removeChild(inp);
+        if(t){ ink.t = ink.t.filter(function(x0){ return x0.id !== t.id; }); if(v) ink.t.push(Object.assign({}, t, { v: v })); }
+        else if(v) ink.t.push({ id: uid("tx"), x: x, y: y, c: mcInkColor, v: v, at: Date.now() });
+        if(t || v) mcInkSave(q.id, ink); else redraw();
+      }
+      inp.onkeydown = function(e){ e.stopPropagation(); if(e.key === "Enter"){ e.preventDefault(); commit(); } if(e.key === "Escape"){ done = true; if(inp.parentNode) inp.parentNode.removeChild(inp); redraw(); } };
+      inp.onblur = commit;
+    }
+    cv.addEventListener("pointerdown", function(e){
+      if(isStudent || !mcInkTool) return; e.preventDefault();
+      var p = rel(e);
+      if(mcInkTool === "text"){ editText(p[0], p[1], null); return; }
+      cur = { c: mcInkColor, w: mcInkColor === "rgba(255,214,0,0.45)" ? 18 : 3.5, pts: [p[0].toFixed(4) + "," + p[1].toFixed(4)] };
+      try{ cv.setPointerCapture(e.pointerId); }catch(er){}
+      redraw();
+    });
+    cv.addEventListener("pointermove", function(e){ if(!cur) return; var p = rel(e); cur.pts.push(p[0].toFixed(4) + "," + p[1].toFixed(4)); redraw(); });
+    function end(){ if(!cur) return; var s = { c: cur.c, w: cur.w, p: cur.pts.join(" "), at: Date.now() }; cur = null; var ink = mcInkGet(q.id); ink.s.push(s); mcInkSave(q.id, ink); redraw(); }
+    cv.addEventListener("pointerup", end); cv.addEventListener("pointercancel", end);
+    layer.addEventListener("click", function(e){
+      var n = e.target.closest(".mc-ink-note"); if(!n || isStudent || mcInkTool !== "text") return;
+      var t = mcInkGet(q.id).t.filter(function(x){ return x.id === n.dataset.id; })[0]; if(t) editText(t.x, t.y, t);
+    });
+    if(window.ResizeObserver){ var ro = new ResizeObserver(function(){ if(!host.isConnected){ ro.disconnect(); return; } redraw(); }); ro.observe(host); }
+    redraw();
+    return { redraw: redraw };
+  }
+  function mcInkToolbarHtml(){
+    var cols = [["#E63946", "紅"], ["#1E66D0", "藍"], ["#2D7A36", "綠"], ["#222222", "黑"], ["rgba(255,214,0,0.45)", "螢光"]];
+    return '<div class="mc-ink-bar">' +
+      '<button type="button" class="btn btn-sm' + (mcInkTool === "pen" ? ' btn-primary' : '') + '" data-ink="pen" title="在題目上手寫、畫重點">✏️ 手寫</button>' +
+      '<button type="button" class="btn btn-sm' + (mcInkTool === "text" ? ' btn-primary' : '') + '" data-ink="text" title="點題目上任何位置打字；點已經打的字可以修改（清空就刪掉）">🔤 打字</button>' +
+      (mcInkTool ? cols.map(function(c){ return '<button type="button" class="mc-ink-col' + (mcInkColor === c[0] ? ' on' : '') + '" data-col="' + c[0] + '" title="' + c[1] + '" style="background:' + c[0] + ';"></button>'; }).join("") : '') +
+      '<button type="button" class="btn btn-sm btn-ghost" data-ink="undo" title="復原上一筆">↶ 復原</button>' +
+      '<button type="button" class="btn btn-sm btn-ghost" data-ink="clear" title="清掉這一題所有手寫和打字">🧹 清除</button>' +
+      (mcInkTool ? '<button type="button" class="btn btn-sm btn-ghost" data-ink="off" title="收起筆，回到點選選項">✋ 收起筆</button>' : '') +
+      '</div>';
+  }
+
   function renderChoiceBoard(q, container){
-    var progress = getProgress(q.id);
-    var interactive = canInteract();
-    var multiPicks = progress.multiPicks || {};
-    var isTest = isTestMode();
     var correctIds = q.answerIds || (q.answerId ? [q.answerId] : []);
-    playFeedbackOnce("choice:" + q.id, progress.lastEvent); // 勾選對／錯的音效同步：雙方都在同一個事件觸發時各自播放一次
-
-    var wrap = document.createElement("div");
-    wrap.innerHTML = `<p class="circle-prompt zh">${String(q.prompt || q.title).replace(/\n/g, "<br>")}</p>`;
-    var cBox = document.createElement("div"); cBox.className = "mc-choices-container";
-
     var keys = Object.keys(q.choices || {}).sort();
     var letters = ["A", "B", "C", "D", "E", "F"];
 
+    var wrap = document.createElement("div");
+    var bar = null, panel = null, names = null;
+    if(!isStudent){ bar = document.createElement("div"); wrap.appendChild(bar); }
+    panel = document.createElement("div"); panel.className = "mc-vote-panel"; wrap.appendChild(panel);
+    var host = document.createElement("div"); host.className = "mc-ink-host";
+    host.innerHTML = `<p class="circle-prompt zh">${String(q.prompt || q.title).replace(/\n/g, "<br>")}</p>`;
+    var cBox = document.createElement("div"); cBox.className = "mc-choices-container";
+    var btns = {};
     keys.forEach(function(cid, idx){
       var c = q.choices[cid];
       var btn = document.createElement("button"); btn.type = "button"; btn.className = "mc-option-btn"; btn.dataset.cid = cid;
-
-      var isPicked = !!multiPicks[cid];
-      var isCorrect = correctIds.indexOf(cid) !== -1;
-
-      // 練習模式：勾選當下立刻顯示對／錯（即時回饋，不需要交卷）
-      // 測驗模式：全程只顯示「已勾選」中性樣式，正確與否要等交卷結算才公布
-      if(!isTest && isPicked){
-        btn.classList.add(isCorrect ? "correct" : "wrong");
-      } else if(isPicked){
-        btn.classList.add("selected");
-      }
-      if(!interactive) btn.disabled = true;
-
       btn.innerHTML = `
         <span class="mc-opt-prefix">${letters[idx] || (idx+1)}</span>
-        <span>${c.text || ""}${c.img ? '<img class="mc-opt-img" src="' + c.img + '" alt="">' : ""}</span>
+        <span style="flex:1;">${c.text || ""}${c.img ? '<img class="mc-opt-img" src="' + c.img + '" alt="">' : ""}</span>
+        <span class="mc-opt-tally" style="display:none;"></span>
       `;
-
       btn.onclick = function(){
-        if(!interactive) return;
-        multiPicks[cid] = !multiPicks[cid];
-        var patch = { multiPicks: multiPicks };
-        if(multiPicks[cid] && !isTest){
-          patch.lastEvent = { type: isCorrect ? "correct" : "wrong", token: makeEventToken() };
-        }
+        if(btn.disabled) return;
+        var pr = getProgress(q.id), mp = Object.assign({}, pr.multiPicks || {}), isTest = isTestMode();
+        mp[cid] = !mp[cid];
+        var patch = { multiPicks: mp };
+        if(mp[cid] && !isTest) patch.lastEvent = { type: correctIds.indexOf(cid) !== -1 ? "correct" : "wrong", token: makeEventToken() };
         writeProgress(q.id, patch);
       };
-      cBox.appendChild(btn);
+      btns[cid] = btn; cBox.appendChild(btn);
     });
-
-    wrap.appendChild(cBox);
+    host.appendChild(cBox);
+    wrap.appendChild(host);
+    names = document.createElement("div"); names.className = "mc-vote-names"; wrap.appendChild(names);
     container.appendChild(wrap);
+    var ink = mcInkSetup(q, host);
+
+    function paint(){
+      var progress = getProgress(q.id), multiPicks = progress.multiPicks || {};
+      var voteOn = choiceVoteOn(), revealed = voteOn && choiceRevealed(q.id), isTest = isTestMode() && !revealed;
+      var st = voteOn ? choiceStatus(q.id) : null;
+      var interactive = canInteract() && !(voteOn && revealed && isStudent) && !(voteOn && !isStudent);
+      playFeedbackOnce("choice:" + q.id, progress.lastEvent); // 勾選對／錯的音效同步：雙方都在同一個事件觸發時各自播放一次
+      var counts = {}, who = {};
+      if(st) st.answered.forEach(function(k){ var p = st.votes[k].picks || {}; Object.keys(p).forEach(function(cid){ if(!p[cid]) return; counts[cid] = (counts[cid] || 0) + 1; (who[cid] = who[cid] || []).push(st.nm(k)); }); });
+      keys.forEach(function(cid){
+        var btn = btns[cid], isPicked = !!multiPicks[cid], isCorrect = correctIds.indexOf(cid) !== -1;
+        // 練習模式：勾選當下立刻顯示對／錯；測驗模式：只顯示「已勾選」，老師公布答案後才顯示對錯
+        var cls = "";
+        if(voteOn && revealed && !isStudent) cls = isCorrect ? "correct" : "";
+        else if(!isTest && isPicked) cls = isCorrect ? "correct" : "wrong";
+        else if(isPicked) cls = "selected";
+        ["correct", "wrong", "selected"].forEach(function(k){ btn.classList.toggle(k, cls === k); });
+        btn.classList.toggle("mc-ans", !!(revealed && isStudent && isCorrect && !isPicked));
+        btn.disabled = !interactive;
+        var tl = btn.querySelector(".mc-opt-tally");
+        if(st && !isStudent){
+          var n = counts[cid] || 0, pct = st.answered.length ? Math.round(n * 100 / st.answered.length) : 0;
+          tl.style.display = ""; tl.innerHTML = '<b>' + n + '</b> 人<span class="mc-tbar"><i style="width:' + pct + '%;"></i></span>';
+        } else tl.style.display = "none";
+      });
+      // 老師的作答狀況面板
+      if(st && !isStudent){
+        var showN = choiceNamesOn();
+        var allDone = st.allDone && !revealed;
+        panel.style.display = "";
+        panel.className = "mc-vote-panel" + (allDone ? " done" : "");
+        panel.innerHTML = '<div class="mc-vp-line"><b>📊 ' + st.answered.length + ' / ' + Math.max(st.online.length, st.answered.length) + ' 人已作答</b>' +
+          (allDone ? '<span class="mc-vp-msg">✅ 全部同學都作答了，可以公布答案！</span>' : (st.pending.length ? '<span class="mc-vp-wait">還沒作答：' + st.pending.map(function(k){ return escapeHtml(st.nm(k)); }).join("、") + '</span>' : (st.online.length ? '' : '<span class="mc-vp-wait">還沒有學生進教室</span>'))) +
+          '<span style="flex:1;"></span>' +
+          '<button type="button" class="btn btn-sm btn-ghost" data-vp="names">' + (showN ? "🙈 隱藏名字" : "👀 顯示名字") + '</button>' +
+          (revealed ? '<button type="button" class="btn btn-sm" data-vp="hide">↩ 收回答案</button>' : '<button type="button" class="btn btn-sm btn-primary' + (allDone ? ' mc-pulse' : '') + '" data-vp="reveal">📢 公布答案</button>') +
+          '</div>';
+        panel.onclick = function(e){
+          var b = e.target.closest("[data-vp]"); if(!b) return;
+          if(b.dataset.vp === "names"){ try{ localStorage.setItem("mm_choice_names", choiceNamesOn() ? "0" : "1"); }catch(er){} paint(); return; }
+          var o = {}; o[q.id] = b.dataset.vp === "reveal" ? true : null;
+          update(ref(db, "rooms/" + activeRoomId + "/voteReveal"), o);
+        };
+        names.style.display = showN && st.answered.length ? "" : "none";
+        names.innerHTML = keys.map(function(cid, idx){ var w = who[cid] || []; if(!w.length) return ""; var ok = revealed && correctIds.indexOf(cid) !== -1; return '<div class="mc-vn-row' + (ok ? ' ok' : '') + '"><span class="mc-vn-l">' + (letters[idx] || idx + 1) + '</span>' + w.map(function(x){ return '<span class="mc-vn-n">' + escapeHtml(x) + '</span>'; }).join("") + '</div>'; }).join("");
+        var key = q.id + "|" + st.answered.length + "|" + st.online.length;
+        if(allDone && choiceDoneSeen[q.id] !== key){ choiceDoneSeen[q.id] = key; mcToast("✅ 全部同學都作答了（" + st.answered.length + " 人），可以公布答案！"); try{ playVictorySound(); }catch(er){} }
+      } else if(voteOn && isStudent){
+        var mine = Object.keys(multiPicks).some(function(k){ return multiPicks[k]; });
+        panel.style.display = ""; panel.className = "mc-vote-panel student";
+        panel.innerHTML = revealed ? (keys.some(function(cid){ return !!multiPicks[cid] !== (correctIds.indexOf(cid) !== -1); }) ? '老師公布答案了：綠色是正確答案。' : '🎉 答對了！') : (mine ? '已作答，等老師公布答案（可以再改）。' : '請選出你的答案。');
+        names.style.display = "none";
+      } else { panel.style.display = "none"; names.style.display = "none"; }
+      if(bar){
+        bar.innerHTML = mcInkToolbarHtml();
+        bar.onclick = function(e){
+          var b = e.target.closest("[data-ink],[data-col]"); if(!b) return;
+          if(b.dataset.col){ mcInkColor = b.dataset.col; if(mcInkTool === "text" && /rgba/.test(mcInkColor)) mcInkColor = "#E63946"; }
+          else if(b.dataset.ink === "pen" || b.dataset.ink === "text"){ mcInkTool = mcInkTool === b.dataset.ink ? null : b.dataset.ink; if(mcInkTool === "text" && /rgba/.test(mcInkColor)) mcInkColor = "#E63946"; }
+          else if(b.dataset.ink === "off") mcInkTool = null;
+          else if(b.dataset.ink === "undo"){ var k = mcInkGet(q.id), ls = k.s[k.s.length - 1], lt = k.t.slice().sort(function(a, b2){ return (a.at || 0) - (b2.at || 0); }).pop(); if(lt && (!ls || (lt.at || 0) > (ls.at || 0))) k.t = k.t.filter(function(x){ return x !== lt; }); else k.s.pop(); mcInkSave(q.id, k); }
+          else if(b.dataset.ink === "clear"){ var k2 = mcInkGet(q.id); if((k2.s.length || k2.t.length) && confirm("清掉這一題所有手寫和打字？")) mcInkSave(q.id, { s: [], t: [] }); }
+          paint(); ink.redraw();
+        };
+      }
+    }
+    paint();
+    liveBoardQId = q.id;
+    liveBoardRefresh = function(){ if(!wrap.isConnected) return false; paint(); ink.redraw(); return true; };
   }
 
   /* 填空題 */
