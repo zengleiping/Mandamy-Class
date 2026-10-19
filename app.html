@@ -12,6 +12,8 @@
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap">
 <style>
+  @font-face{ font-family:"MM Kai"; src: local("DFKai-SB"), local("DFKaiShu-SB-Estd-BF"), local("標楷體"), local("BiauKai"), local("BiauKaiTC"), local("BiauKaiTC-Regular"); unicode-range: U+2E80-2FFF, U+3001-303F, U+3100-312F, U+31A0-31BF, U+3400-4DBF, U+4E00-9FFF, U+F900-FAFF, U+FE30-FE4F, U+FF01-FF5E, U+20000-2FFFF; }
+
   :root{ --paper:#FAF7F2; --surface:#fff; --surface-2:#F2EAE0; --ink:#2B2320; --ink-soft:#6B5F55; --line:rgba(43,35,32,.12); --seal:#E8825A; --seal-soft:#FBE8DE; --bamboo:#4C8577; --bamboo-soft:#E3F0EC; --shadow:0 8px 24px -10px rgba(28,33,30,.18); }
   *{ box-sizing:border-box; }
   html,body{ margin:0; height:100%; }
@@ -142,7 +144,7 @@
   .sv-day{ border-top:1px solid var(--line); padding:6px 0; } .sv-day summary{ cursor:pointer; }
   .sv-dlg{ width:min(520px,94vw); border:none; border-radius:18px; padding:16px; }
   .sv-card{ margin:12px 0; min-height:200px; border:2px solid var(--line); border-radius:16px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; cursor:pointer; background:var(--surface-2); padding:16px; text-align:center; }
-  .sv-w{ font-size:56px; font-family:"LXGW WenKai TC",serif; font-weight:700; } .sv-s{ font-size:20px; color:var(--seal); } .sv-t{ font-size:16px; }
+  .sv-w{ font-size:56px; font-family:"MM Kai","LXGW WenKai TC",serif; font-weight:700; } .sv-s{ font-size:20px; color:var(--seal); } .sv-t{ font-size:16px; }
   .tabs{ display:flex; gap:4px; padding:8px 14px 0; background:var(--surface); border-bottom:1px solid var(--line); flex-wrap:wrap; }
   .tab{ border:none; background:none; padding:9px 16px; font-size:14.5px; font-weight:700; color:var(--ink-soft); border-bottom:3px solid transparent; }
   .tab.on{ color:var(--seal); border-bottom-color:var(--seal); }
@@ -1301,6 +1303,13 @@ async function autoAddContentPacks(t, bank){
   bank = bank || {}; var cd = Array.isArray(bank.courseData) ? bank.courseData.slice() : [], done = Object.assign({}, bank.autoAdded || {}), added = [], changed = false;
   for(var i = 0; i < list.packs.length; i++){
     var pk = list.packs[i]; if(!pk || !pk.id || done[pk.id]) continue;
+    // 指定「教材名稱」的包（例如第三冊）：找老師同一本教材（同系列同冊別），沒有就幫忙建一本
+    if(pk.bookTitle && !pk.book){
+      var want = String(pk.bookTitle).replace(/\s+/g, ""), wSer = (/《([^》]+)》/.exec(want) || [])[1], wVol = (/第\s*([0-9零〇一二兩三四五六七八九十]+)\s*冊/.exec(want) || [])[1];
+      var hit = bookIds(true).filter(function(b){ var tt = bookTitle(b).replace(/\s+/g, ""); if(tt === want) return true; var s2 = (/《([^》]+)》/.exec(tt) || [])[1], v2 = (/第\s*([0-9零〇一二兩三四五六七八九十]+)\s*冊/.exec(tt) || [])[1]; return wSer && wVol && s2 === wSer && v2 && cnNum(v2) === cnNum(wVol); })[0];
+      if(!hit){ hit = uid("b_"); S.plat.books = S.plat.books || {}; S.plat.books[hit] = { title: pk.bookTitle, order: Date.now() }; var ob = {}; ob[hit] = S.plat.books[hit]; if(!S.plat.books.b1) ob.b1 = booksObj().b1; try{ await fbUpdate("teacherPlatform/" + t + "/books", ob); }catch(e){ continue; } }
+      pk = Object.assign({}, pk, { book: hit });
+    }
     if(pk.type === "project"){   // 整理好的測驗／練習題：放進老師的測驗庫，並歸到對應課次
       try{
         var rp = await fetch(pk.file + "?v=" + MM_V, { cache: "no-store" }); if(!rp.ok) continue; var proj = await rp.json();
@@ -1327,7 +1336,7 @@ async function autoAddContentPacks(t, bank){
   if(!changed) return bank;
   cd.sort(function(a, b){ return (Number(a.lesson) || 0) - (Number(b.lesson) || 0); });
   await fbUpdate("teacherVocabBanks/" + t, { courseData: cd, autoAdded: done, updatedAt: Date.now(), updatedBy: S.teacher.name || t });
-  if(added.length) setTimeout(function(){ toast("已自動加入新教材：" + added.map(function(l){ return l.isProj ? "「" + l.title + "」" : "第" + l.lesson + "課 " + (l.title || "") + "（生詞、語法、課文）"; }).join("、")); }, 1500);
+  if(added.length) setTimeout(function(){ toast("已自動加入新教材：" + added.map(function(l){ return l.isProj ? "「" + l.title + "」" : (l.book ? bookTitle(l.book) + " " : "") + "第" + l.lesson + "課 " + (l.title || "") + "（生詞、語法、課文）"; }).join("、")); }, 1500);
   return Object.assign({}, bank, { courseData: cd, autoAdded: done });
 }
 // 把「雲端生詞庫」跟「測驗庫」整理成一份輕量的課次索引（學生端只讀這一份，不必下載整個測驗庫）
@@ -5911,19 +5920,22 @@ function viewStudentEntry(msg, codeIn){
   root.innerHTML = '<div class="center-wrap"><div class="card"><img src="icons/logo.svg" alt="曼米中文" style="width:84px;height:84px;display:block;margin:0 auto 8px;"><h2 style="text-align:center;">曼米中文</h2><p class="sub" style="text-align:center;">學生入口</p>' +
     '<label>班級代碼</label><input type="text" id="sc" value="' + esc(codeIn || "") + '" style="text-transform:uppercase;letter-spacing:.15em;" autocomplete="off">' +
     '<label>你的名字</label><div id="sroster" class="sroster" style="display:none;"></div><input type="text" id="sn" value="' + esc(saved) + '" autocomplete="off">' +
-    '<label>密碼 <span class="note" style="font-weight:400;">（老師有設定才需要）</span></label><input type="password" id="spw" autocomplete="current-password">' +
+    '<div id="spwbox" style="display:none;"><label>密碼</label><input type="password" id="spw" autocomplete="current-password"></div>' +
     '<div class="err" id="se"></div><button class="btn primary" id="sgo" style="width:100%;margin-top:14px;padding:11px;">進入班級</button>' +
-    '<div style="text-align:center;margin:10px 0 2px;color:var(--ink-soft);font-size:13px;">或</div><button class="btn" id="sgg" style="width:100%;padding:11px;">🔑 用 Google 帳號登入</button>' +
+    '<div id="sggbox" style="display:none;"><div style="text-align:center;margin:10px 0 2px;color:var(--ink-soft);font-size:13px;">或</div><button class="btn" id="sgg" style="width:100%;padding:11px;">🔑 用 Google 帳號登入</button></div>' +
     '<p class="sub" style="margin-top:16px;"><a href="#" id="tot">老師登入</a></p></div></div>';
   var se = document.getElementById("se"); if(msg){ se.textContent = msg; se.style.display = "block"; }
   document.getElementById("tot").onclick = function(e){ e.preventDefault(); history.replaceState(null, "", location.pathname); viewLogin(); };
   // 老師有貼班級名單：直接點自己的名字（不會打錯字，作業和成績才對得上）
   var rosterNow = null, rosterCode = "";
+  function showAcct(on){ document.getElementById("spwbox").style.display = on ? "" : "none"; document.getElementById("sggbox").style.display = on ? "" : "none"; if(!on) document.getElementById("spw").value = ""; }
   async function loadRoster(){
     var code = document.getElementById("sc").value.trim().toUpperCase().replace(/[^A-Z0-9]/g, ""), box = document.getElementById("sroster");
     if(code.length < 6 || code === rosterCode) return; rosterCode = code;
     try{
-      var ix = await fbGet("classCodes/" + code); if(!ix){ rosterNow = null; box.style.display = "none"; return; }
+      var ix = await fbGet("classCodes/" + code); if(!ix){ rosterNow = null; box.style.display = "none"; showAcct(false); return; }
+      // 密碼和 Google 登入只在老師開啟「學生帳號」時才出現，平常上課不用
+      fbGet("teacherPlatform/" + ix.t + "/accountsOn/" + ix.c).then(function(v){ if(rosterCode === code) showAcct(!!v); }).catch(function(){});
       var r = await fbGet("teacherPlatform/" + ix.t + "/homework/" + ix.c + "/roster"); var list = Array.isArray(r) ? r : (r ? Object.keys(r).map(function(k){ return r[k]; }) : []);
       list = list.map(function(x){ return String(x || "").trim(); }).filter(Boolean);
       rosterNow = list.length ? list : null;
@@ -5931,7 +5943,7 @@ function viewStudentEntry(msg, codeIn){
       var cur = document.getElementById("sn").value.trim();
       box.innerHTML = '<div class="note" style="margin-bottom:6px;">點你的名字：</div>' + rosterNow.map(function(n){ return '<button type="button" class="sr-n' + (n === cur ? ' on' : '') + '" data-n="' + esc(n) + '">' + esc(n) + '</button>'; }).join("") + '<div class="note" style="margin-top:6px;">名單上沒有你？在下面輸入名字，並告訴老師。</div>';
       box.style.display = "";
-      box.onclick = function(e){ var b = e.target.closest("[data-n]"); if(!b) return; document.getElementById("sn").value = b.dataset.n; box.querySelectorAll(".sr-n").forEach(function(x){ x.classList.toggle("on", x === b); }); var pw = document.getElementById("spw"); if(pw) pw.focus(); };
+      box.onclick = function(e){ var b = e.target.closest("[data-n]"); if(!b) return; document.getElementById("sn").value = b.dataset.n; box.querySelectorAll(".sr-n").forEach(function(x){ x.classList.toggle("on", x === b); }); var pw = document.getElementById("spw"); if(pw && pw.offsetParent) pw.focus(); };
     }catch(e){}
   }
   document.getElementById("sc").addEventListener("input", function(){ loadRoster(); });
