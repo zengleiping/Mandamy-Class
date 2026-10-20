@@ -29,6 +29,18 @@
   .btn.sm{ padding:5px 10px; font-size:12.5px; border-radius:8px; }
   .btn.danger{ color:#C0392B; }
   .btn.ghost{ background:transparent; border-color:transparent; color:var(--ink-soft); }
+  #brk{ position:fixed; inset:0; z-index:99990; display:flex; align-items:center; justify-content:center; background:rgba(250,247,242,.8); backdrop-filter:blur(1.5px); -webkit-backdrop-filter:blur(1.5px); }
+  #brk.brk-done{ background:rgba(255,236,230,.84); }
+  .brk-box{ text-align:center; padding:24px; }
+  .brk-glass{ width:min(220px,40vw); height:auto; animation:brkFlip 3s ease-in-out infinite; }
+  .brk-clock{ width:min(300px,52vw); height:auto; animation:brkJump .7s cubic-bezier(.3,1.6,.5,1) infinite alternate; transform-origin:50% 90%; }
+  .brk-title{ font-family:"LXGW WenKai TC","Noto Serif TC",serif; font-size:clamp(28px,5vw,52px); font-weight:700; color:var(--ink); margin-top:14px; }
+  .brk-time{ font-size:clamp(56px,12vw,128px); font-weight:800; letter-spacing:.04em; color:var(--seal); font-variant-numeric:tabular-nums; line-height:1.1; }
+  .brk-sub{ font-size:clamp(16px,2.4vw,22px); color:var(--ink-soft); margin-top:6px; }
+  .brk-act{ display:flex; gap:10px; justify-content:center; margin-top:22px; flex-wrap:wrap; }
+  .brk-act .btn{ font-size:16px; padding:10px 20px; }
+  @keyframes brkJump{ 0%{ transform:translateY(0) rotate(-6deg); } 100%{ transform:translateY(-34px) rotate(6deg); } }
+  @keyframes brkFlip{ 0%,40%{ transform:rotate(0); } 50%,90%{ transform:rotate(180deg); } 100%{ transform:rotate(360deg); } }
   input[type=text], input[type=password]{ width:100%; padding:10px 12px; border:1.5px solid var(--line); border-radius:10px; font-size:15px; background:var(--surface-2); color:var(--ink); }
   .center-wrap{ min-height:100%; display:flex; align-items:center; justify-content:center; padding:24px; }
   .card{ background:var(--surface); border:1.5px solid var(--line); border-radius:18px; box-shadow:var(--shadow); padding:26px; width:min(420px,100%); }
@@ -5776,7 +5788,7 @@ function renderLessonCommon(no, open, teacher, liveStudent){
   var cur = tabs.filter(function(t){ return t[0] === S.tab; })[0];
   var live = S.live && S.live.on;
   var html = '<div class="tabs">' + (liveStudent ? '' : '<button class="tab" data-back="1">‹ 返回</button>' + tabs.filter(function(t){ return t[0] !== "bingo"; }).map(function(t){ var on = t[0] === S.tab || (t[0] === "activities" && S.tab === "bingo"); return '<button class="tab' + (on ? ' on' : '') + '" data-tab="' + t[0] + '">' + t[1] + '</button>'; }).join("") + (teacher ? '<!--copyto-->' : '') +
-    (teacher ? '<button class="tab focus-btn" data-actmenu="1" style="margin-left:auto;" title="叫出課堂活動選單（常用、最近用過）">⚡ 活動選單</button>' : '') + (teacher ? ((live ? '<button class="tab focus-btn" data-fs="1" style="margin-left:6px;" title="瀏覽器全螢幕（Esc 退出，不會結束上課）">⛶ 全螢幕</button><button class="tab focus-btn" data-focus="1" style="margin-left:6px;">' + (S.focus ? "顯示欄位" : "隱藏欄位") + '</button><button class="tab focus-btn" data-live="1" style="margin-left:6px;background:var(--seal);color:#fff;">⏹ 結束上課</button>' : '<button class="tab focus-btn" data-live="1" title="開始上課：學生會自動跟著你的畫面，並隱藏上方與左側欄位">🎬 開始上課</button>')) : '')) + '</div>';
+    (teacher ? '<button class="tab focus-btn" data-actmenu="1" style="margin-left:auto;" title="叫出課堂活動選單（常用、最近用過）">⚡ 活動選單</button><button class="tab focus-btn" data-brk="1" style="margin-left:6px;" title="下課休息倒數：時間到會響鈴提醒回來上課（上課中，學生畫面也會一起倒數）">下課鬧鐘</button>' : '') + (teacher ? ((live ? '<button class="tab focus-btn" data-fs="1" style="margin-left:6px;" title="瀏覽器全螢幕（Esc 退出，不會結束上課）">⛶ 全螢幕</button><button class="tab focus-btn" data-focus="1" style="margin-left:6px;">' + (S.focus ? "顯示欄位" : "隱藏欄位") + '</button><button class="tab focus-btn" data-live="1" style="margin-left:6px;background:var(--seal);color:#fff;">⏹ 結束上課</button>' : '<button class="tab focus-btn" data-live="1" title="開始上課：學生會自動跟著你的畫面，並隱藏上方與左側欄位">🎬 開始上課</button>')) : '')) + '</div>';
   var sub = '', frame = '', role = teacher ? '' : '&role=student';
   if(S.tab === "material"){
     var subs = [["vocab","生詞"],["grammar","語法"],["text","課文"]].filter(function(s){ return teacher || open[s[0]]; });
@@ -5829,12 +5841,105 @@ function renderLessonCommon(no, open, teacher, liveStudent){
   }
   return { html: html + sub + frame, tabs: tabs };
 }
+// ---------- 下課鬧鐘：老師設定休息幾分鐘，畫面倒數；時間到響鈴、時鐘跳動，提醒回來上課 ----------
+// 上課中（S.live）會寫進 live.brk，學生畫面一起倒數；沒有開始上課時只在老師這台倒數（記在這台裝置，重新整理也還在）
+var BRK = { el: null, timer: null, ring: null, data: null, teacher: false, closedAt: null };
+function brkSoundOn(){ try{ return localStorage.getItem("mm_brk_sound") !== "0"; }catch(e){ return true; } }
+function brkSetSound(on){ try{ localStorage.setItem("mm_brk_sound", on ? "1" : "0"); }catch(e){} }
+function brkOpenDialog(){
+  var d = document.getElementById("brkdlg");
+  if(!d){
+    d = document.createElement("dialog"); d.id = "brkdlg"; d.style.width = "min(420px,94vw)";
+    d.innerHTML = '<form method="dialog"><h3 style="margin-bottom:6px;">下課鬧鐘</h3><p class="note" style="margin:0 0 12px;">休息幾分鐘？時間到會提醒大家回來上課。上課中，學生的畫面也會一起倒數。</p>' +
+      '<div class="tools" id="brk-pre"><button type="button" class="btn" data-m="5">5 分鐘</button><button type="button" class="btn" data-m="10">10 分鐘</button><button type="button" class="btn" data-m="15">15 分鐘</button></div>' +
+      '<label style="display:block;margin-top:12px;font-weight:700;font-size:13px;">自訂（分鐘）</label><input type="number" id="brk-min" min="1" max="120" step="1" value="10" style="width:100%;padding:8px 10px;border:1.5px solid var(--line);border-radius:10px;font-size:15px;">' +
+      '<label style="display:flex;align-items:center;gap:8px;margin-top:12px;font-size:14px;"><input type="checkbox" id="brk-snd"> 時間到響鈴</label>' +
+      '<div class="row"><button type="button" class="btn" id="brk-no">取消</button><button type="submit" class="btn primary">開始倒數</button></div></form>';
+    document.body.appendChild(d);
+    d.querySelector("#brk-pre").onclick = function(e){ var b = e.target.closest("[data-m]"); if(!b) return; d.querySelector("#brk-min").value = b.dataset.m; d.querySelectorAll("#brk-pre .btn").forEach(function(x){ x.classList.toggle("primary", x === b); }); };
+    d.querySelector("#brk-no").onclick = function(){ d.close(); };
+    d.querySelector("form").onsubmit = function(e){
+      e.preventDefault(); var m = Math.max(1, Math.min(120, Number(d.querySelector("#brk-min").value) || 0)); if(!m) return;
+      var snd = d.querySelector("#brk-snd").checked; brkSetSound(snd); d.close(); brkStart(m, snd);
+    };
+  }
+  d.querySelector("#brk-snd").checked = brkSoundOn();
+  d.querySelectorAll("#brk-pre .btn").forEach(function(x){ x.classList.toggle("primary", x.dataset.m === d.querySelector("#brk-min").value); });
+  d.showModal();
+}
+function brkStart(min, sound){
+  var data = { until: Date.now() + min * 60000, min: min, sound: !!sound, at: Date.now() };
+  brkSave(data); brkSync(data, true);
+}
+function brkSave(data){
+  try{ if(data) localStorage.setItem("mm_brk", JSON.stringify(data)); else localStorage.removeItem("mm_brk"); }catch(e){}
+  if(S.live && S.live.on && S.sel){ S.live.brk = data || null; fbUpdate(liveRef(), { brk: data || null }).catch(function(){}); }
+}
+function brkRestore(){
+  if(!S.teacher || BRK.data) return; var data = null;
+  if(S.live && S.live.on && S.live.brk) data = S.live.brk;
+  else { try{ data = JSON.parse(localStorage.getItem("mm_brk") || "null"); }catch(e){} }
+  if(data && data.until && Date.now() - data.until < 30 * 60000) brkSync(data, true);
+}
+function brkChime(){
+  try{
+    var AC = window.AudioContext || window.webkitAudioContext; if(!AC) return;
+    var ctx = BRK.ctx || (BRK.ctx = new AC()); if(ctx.state === "suspended") ctx.resume();
+    [[880, 0], [659.25, 0.45], [880, 0.9], [659.25, 1.35]].forEach(function(n){   // 叮咚、叮咚
+      var o = ctx.createOscillator(), g = ctx.createGain(), t0 = ctx.currentTime + n[1];
+      o.type = "sine"; o.frequency.value = n[0]; o.connect(g); g.connect(ctx.destination);
+      g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(0.35, t0 + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t0 + 1.1);
+      o.start(t0); o.stop(t0 + 1.15);
+    });
+  }catch(e){}
+}
+function brkFmt(ms){ var t = Math.max(0, Math.ceil(ms / 1000)), m = Math.floor(t / 60), s2 = t % 60; return (m < 10 ? "0" : "") + m + ":" + (s2 < 10 ? "0" : "") + s2; }
+function brkClose(byUser){
+  if(BRK.timer){ clearInterval(BRK.timer); BRK.timer = null; } if(BRK.ring){ clearInterval(BRK.ring); BRK.ring = null; }
+  if(BRK.el){ BRK.el.remove(); BRK.el = null; }
+  if(byUser && !BRK.teacher && BRK.data) BRK.closedAt = BRK.data.at;   // 學生自己關掉：同一次鬧鐘不再跳出來
+  if(byUser && BRK.teacher) brkSave(null);
+  BRK.data = null;
+}
+// 依目前的鬧鐘資料顯示（或關掉）蓋住整個畫面的倒數／鬧鐘
+function brkSync(data, teacher){
+  if(!data || !data.until){ if(BRK.data) brkClose(false); return; }
+  if(!teacher && BRK.closedAt === data.at) return;
+  if(BRK.data && BRK.data.at === data.at && BRK.el){ BRK.data = data; return; }
+  brkClose(false); BRK.data = data; BRK.teacher = !!teacher;
+  var el = document.createElement("div"); el.id = "brk"; BRK.el = el; document.body.appendChild(el);
+  var phase = "";
+  function draw(){
+    var left = BRK.data.until - Date.now(), done = left <= 0, snd = BRK.teacher ? brkSoundOn() : !!BRK.data.sound;
+    var ph = done ? "done" : "count";
+    if(ph !== phase){
+      phase = ph;
+      var back = new Date(BRK.data.until), hh = back.getHours(), mi = back.getMinutes();
+      el.className = "brk-" + ph;
+      el.innerHTML = '<div class="brk-box">' +
+        (done ? '<img class="brk-clock" src="icons/break-clock.png" alt="時間到"><div class="brk-title">上課時間到！</div><div class="brk-sub">請回到座位，準備上課</div>'
+              : '<img class="brk-glass" src="icons/break-hourglass.png" alt="休息中"><div class="brk-title">下課休息中</div><div class="brk-time" id="brk-time"></div><div class="brk-sub">' + (hh < 10 ? "0" : "") + hh + ':' + (mi < 10 ? "0" : "") + mi + ' 回來上課</div>') +
+        '<div class="brk-act">' + (BRK.teacher ? '<button type="button" class="btn" data-bk="snd">' + (snd ? "鈴聲：開" : "鈴聲：關") + '</button>' : '') +
+        '<button type="button" class="btn primary" data-bk="close">' + (done ? "關閉鬧鐘" : (BRK.teacher ? "提早結束休息" : "關閉")) + '</button></div></div>';
+      el.onclick = function(e){
+        var b = e.target.closest("[data-bk]"); if(!b) return;
+        if(b.dataset.bk === "close"){ brkClose(true); return; }
+        if(b.dataset.bk === "snd"){ var on = !brkSoundOn(); brkSetSound(on); BRK.data.sound = on; if(BRK.teacher) brkSave(BRK.data); b.textContent = on ? "鈴聲：開" : "鈴聲：關"; if(!on && BRK.ring){ clearInterval(BRK.ring); BRK.ring = null; } else if(on && phase === "done" && !BRK.ring){ brkChime(); BRK.ring = setInterval(brkChime, 4000); } }
+      };
+      if(done && snd){ brkChime(); BRK.ring = setInterval(brkChime, 4000); setTimeout(function(){ if(BRK.ring && BRK.el === el){ clearInterval(BRK.ring); BRK.ring = null; } }, 60000); }   // 響一分鐘就停，畫面上的時鐘繼續跳
+    }
+    var t = el.querySelector("#brk-time"); if(t) t.textContent = brkFmt(left);
+  }
+  draw(); BRK.timer = setInterval(draw, 250);
+}
 // ---------- 上課（老師開始上課，學生跟著老師的畫面）----------
 function liveRef(){ return clsPath(S.sel) + "/live"; }
+setInterval(function(){ try{ brkRestore(); }catch(e){} }, 2000);
 async function toggleLive(){
   var cls = getCls(S.sel); if(!cls) return;
   if(S.live && S.live.on){
     if(!confirm("結束上課？學生會回到自己的班級頁。")) return;
+    try{ if(S.live.brk){ fbUpdate(liveRef(), { brk: null }).catch(function(){}); } brkClose(false); localStorage.removeItem("mm_brk"); }catch(e){}
     var endRooms = Object.keys(TR_PUB.rooms || {}); if(S.live.room && endRooms.indexOf(S.live.room) < 0) endRooms.push(S.live.room); S.live = null; cls.live = null; try{ endRooms.forEach(function(rid){ fbSet("rooms/" + rid + "/trans", null).catch(function(){}); }); TR_PUB.rooms = {}; await fbSet(liveRef(), null); await fbSet(clsPath(S.sel) + "/liveTrans", null); TR_PUB.last = ""; TR_PUB.roomLast = {}; }catch(e){}
     setFocus(false); try{ if(document.fullscreenElement) document.exitFullscreen().catch(function(){}); }catch(e){} renderLesson(cls); var selEnd = { s: S.sel.s, t: S.sel.t, c: S.sel.c }; setTimeout(function(){ recAfterClass(selEnd); }, 400); return;
   }
@@ -5954,6 +6059,7 @@ function bindLessonNav(cls, backFn, renderFn){
     if(b.dataset.editlib){ var pk0 = parseKey(S.lesson); if(pk0){ S.lib = { book: pk0.book, key: S.lesson, bank: true }; render(); } return; }
     if(b.id === "mkproj"){ S.creating = S.lesson; renderFn(); return; }
     if(b.dataset.actmenu){ openActMenu(); return; }
+    if(b.dataset.brk){ brkOpenDialog(); return; }
     if(b.dataset.actfav){ actToggleFav(b.dataset.actfav).then(renderFn); return; }
     if(b.dataset.actgo){ lessonActGo(b.dataset.actgo); return; }
     if(b.dataset.actback){ S.sub = null; renderFn(); pushLive(); return; }
@@ -6105,7 +6211,7 @@ async function startStudent(code, name, pw, opts){
     if(needAcct && !(opts && opts.google)){ var au = await studentAuth(idx, name, pw); if(au !== true){ viewStudentEntry(au, code); return; } }
     S.student = { name: name, code: code, idx: idx, school: res[0], term: res[1], cls: res[2], acct: needAcct };
     S.live = res[2].live && res[2].live.on ? res[2].live : null;
-    try{ window.onValue(window.ref(window.db, base + "/schools/" + idx.s + "/terms/" + idx.tm + "/classes/" + idx.c + "/live"), function(snap){ var v = snap.val(); var nv = v && v.on ? v : null; var key = JSON.stringify(nv); if(key === S.liveKey) return; S.liveKey = key; S.live = nv; S.liveRendered = null; if(S.student) renderStudent(); try{ stuTransDraw(); }catch(e2){} }); stuTransStart(base, idx); }catch(e){}
+    try{ window.onValue(window.ref(window.db, base + "/schools/" + idx.s + "/terms/" + idx.tm + "/classes/" + idx.c + "/live"), function(snap){ var v = snap.val(); var nv = v && v.on ? v : null; var key = JSON.stringify(nv); if(key === S.liveKey) return; S.liveKey = key; S.live = nv; S.liveRendered = null; if(S.student) renderStudent(); try{ brkSync(nv && nv.brk, false); }catch(e3){} try{ stuTransDraw(); }catch(e2){} }); stuTransStart(base, idx); }catch(e){}
     S.plat = { lessons: res[3] || {}, books: res[4] || {} };
     S.lesson = null; S.tab = null; S.sub = null;
     var h = new URLSearchParams(location.hash.replace(/^#/, "")); if(h.get("l")) S.lesson = h.get("l"); if(h.get("tab")) S.tab = h.get("tab");
