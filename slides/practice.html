@@ -861,6 +861,20 @@
   .pop-more > summary::before{ content:"▸ "; } .pop-more[open] > summary::before{ content:"▾ "; }
   .color-popover-title{ font-size:11px; font-weight:700; color:var(--ink-soft); text-align:center; margin-bottom:7px; white-space:nowrap; }
   .color-dot-grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:9px; padding:2px; }
+  .my-colors{ display:flex; align-items:center; flex-wrap:wrap; gap:6px; margin:8px 0 2px; padding-top:8px; border-top:1px dashed var(--grid-line); position:relative; }
+  .my-colors-label{ font-size:11.5px; font-weight:700; color:var(--ink-soft); flex-basis:100%; }
+  .my-color{ width:24px; height:24px; border-radius:50%; border:2px solid #fff; box-shadow:0 0 0 1px var(--grid-line); cursor:pointer; padding:0; background:transparent; }
+  .my-color.empty{ border:1.5px dashed var(--ink-soft); box-shadow:none; background:transparent; }
+  .my-color.active{ box-shadow:0 0 0 2px var(--ink); }
+  .my-color.picked{ box-shadow:0 0 0 3px var(--seal); }
+  .my-colors-edit, .my-colors-clear{ border:0; background:none; color:var(--seal); font-size:12px; font-weight:700; cursor:pointer; padding:2px 4px; }
+  .my-colors-clear{ color:var(--ink-soft); }
+  .my-colors.editing .my-color{ cursor:crosshair; }
+  .my-color-input{ position:absolute; width:1px; height:1px; opacity:0; pointer-events:none; right:0; bottom:0; border:0; padding:0; }
+  .rb-colors .my-colors{ margin:0 0 0 6px; padding:0 0 0 8px; border-top:0; border-left:1px dashed var(--grid-line); flex-wrap:nowrap; }
+  .rb-colors .my-colors-label{ flex-basis:auto; }
+  .my-colors-label, .my-colors-edit, .my-colors-clear{ white-space:nowrap; flex-shrink:0; }
+  .rb-colors .my-color{ width:20px; height:20px; }
   .color-dot{
     width:26px; height:26px; border-radius:50%; cursor:pointer; border:2px solid var(--surface);
     box-shadow:0 0 0 1.5px rgba(28,33,30,0.25); transition:all .12s ease;
@@ -4051,6 +4065,17 @@ window.mmTA = (function(){
     if(now - lastSaveFsAlertAt < 15000) return;
     lastSaveFsAlertAt = now;
     alert("儲存到雲端失敗，剛剛的變更可能沒有真的存起來，請檢查網路連線。如果剛剛上傳了很大的圖片或匯入很多投影片，也可能是檔案太大，建議用較小的圖片再試一次。\nFailed to save to the cloud — your latest change may not be saved. Please check your connection. If you just uploaded a large image or imported many slides, try a smaller file.\n(" + (err && err.message ? err.message : err) + ")");
+  }
+  // 我的顏色：老師固定愛用的 5 個顏色，存在自己的資料庫（每一份簡報都看得到），可以隨時改
+  function myColorsGet(){
+    var a = (fsData && Array.isArray(fsData.myColors)) ? fsData.myColors : (fsData && fsData.myColors && typeof fsData.myColors === "object" ? Object.keys(fsData.myColors).sort().map(function(k){ return fsData.myColors[k]; }) : null);
+    if(!a){ try{ a = JSON.parse(localStorage.getItem("mm_my_colors") || "null"); }catch(e){} }
+    a = Array.isArray(a) ? a.slice(0, 5) : []; while(a.length < 5) a.push("");
+    return a.map(function(c){ return /^#[0-9A-Fa-f]{6}$/.test(c || "") ? String(c).toUpperCase() : ""; });
+  }
+  function myColorsSet(a){
+    try{ localStorage.setItem("mm_my_colors", JSON.stringify(a)); }catch(e){}
+    if(!isStudent && fsData){ fsData.myColors = a.slice(); saveFS(); }
   }
   function saveFS(){
     if(window.__solo) return; // 學生自習模式：只看、不存回老師的資料庫
@@ -10761,6 +10786,9 @@ window.mmTA = (function(){
         <div class="color-dot ${boardState.color==='#1E88E5'?'active':''}" data-color="#1E88E5" style="background:#1E88E5;" title="藍色 Blue"></div>
         <div class="color-dot ${boardState.color==='#4C7A5E'?'active':''}" data-color="#4C7A5E" style="background:#4C7A5E;" title="綠色 Green"></div>
         <div class="color-dot ${boardState.color==='#FB8C00'?'active':''}" data-color="#FB8C00" style="background:#FB8C00;" title="橘色 Orange"></div>`;
+    var myColorsHtml = isStudent ? "" : '<div class="my-colors"><span class="my-colors-label">我的顏色</span>' +
+      myColorsGet().map(function(c, i){ return '<button type="button" class="my-color' + (c ? '' : ' empty') + (c && boardState.color === c ? ' active' : '') + '" data-slot="' + i + '"' + (c ? ' style="background:' + c + ';"' : '') + ' title="' + (c ? '按一下套用這個顏色' : '空格：按一下把目前的顏色存進來') + '"></button>'; }).join("") +
+      '<button type="button" class="my-colors-edit" title="改顏色：先按「編輯」，再點要改的那一格">編輯</button><button type="button" class="my-colors-clear" hidden title="清掉選到的那一格">清除</button><input type="color" class="my-color-input" tabindex="-1"></div>';
     // 色點是快選常用色，原生色盤讓老師挑任意顏色，滴管則是「從螢幕上任何地方（包括其他視窗/
     // 圖片）吸取顏色」——用瀏覽器原生 EyeDropper API，不支援的瀏覽器（例如 iPad Safari）點下去
     // 會友善提示，不會整個功能爆掉。畫筆／文字兩個面板共用同一份 HTML，選色的同步邏輯見下面
@@ -10845,7 +10873,7 @@ window.mmTA = (function(){
         <button type="button" class="tool-btn-v ${boardState.tool==='pen'?'active':''}" data-tool="pen" title="筆 Pen（滑鼠移入可選顏色／粗細／濃淡 hover for color, size &amp; opacity）"><img class="tool-btn-v-icon tool-btn-v-icon-img" src="${TOOL_ICON_PENCIL}" alt=""><span class="tool-btn-v-label">筆</span></button>
         <div class="color-popover pen-popover">
           <div class="color-popover-title">筆刷顏色 Brush Color</div>
-          <div class="color-dot-grid">${colorDotsHtml}</div>
+          <div class="color-dot-grid">${colorDotsHtml}</div>${myColorsHtml}
           ${colorPickerRowHtml}
           <div class="popover-field-row">
             <div class="popover-field-row-label"><span>粗細 Size</span></div>
@@ -10864,7 +10892,7 @@ window.mmTA = (function(){
         <button type="button" class="tool-btn-v ${boardState.tool==='text'?'active':''}" data-tool="text" title="文字 Text（滑鼠移入可選顏色／字級 hover for color &amp; size）"><img class="tool-btn-v-icon tool-btn-v-icon-img" src="${TOOL_ICON_TEXT}" alt=""><span class="tool-btn-v-label">文字<br>方塊</span></button>
         <div class="color-popover text-popover">
           <div class="color-popover-title">字型色彩 Font color</div>
-          <div class="color-dot-grid">${colorDotsHtml}</div>
+          <div class="color-dot-grid">${colorDotsHtml}</div>${myColorsHtml}
           ${colorPickerRowHtml}
           <div class="popover-field-row">
             <div class="popover-field-row-label"><span>字型大小 Font size</span></div>
@@ -10941,7 +10969,7 @@ window.mmTA = (function(){
             <button type="button" class="shape-type-btn ${boardState.shapeType==='arrow'?'active':''}" data-shape="arrow" title="箭頭 Arrow">➜</button>
           </div>
           <div class="color-popover-title" style="margin-top:8px;">顏色 Color</div>
-          <div class="color-dot-grid">${colorDotsHtml}</div>
+          <div class="color-dot-grid">${colorDotsHtml}</div>${myColorsHtml}
           ${colorPickerRowHtml}
           <div class="popover-field-row">
             <div class="popover-field-row-label"><span>線條粗細 Line width</span></div>
@@ -11610,7 +11638,7 @@ window.mmTA = (function(){
       rbGroup("home", "投影片", [rbBtn("➕", "新增<br>投影片", function(){ if(secId()) addBlankSlideToSection(secId()); }, "在這份簡報最後新增一張空白投影片"), [rbBtn("🗂", "版面<br>配置", function(){ openSlideSetupDialog(); }, "投影片設定：大小、背景、範本"), rbBtn("📑", "章節<br>整理", function(){ openSlideSorter(); }, "整理檢視：大縮圖、拖曳重排、章節")]]);
       var fsel = qsx(".text-font-select"), szc = qsx(".board-font-select"), szWrap = szc && szc.closest(".size-combo"), boldB = qsx(".text-bold-btn");
       var colGrid = qsx(".text-popover .color-dot-grid"), colPick = qsx(".text-popover .color-picker-row");
-      var colBox = document.createElement("div"); colBox.className = "rb-colors"; if(colGrid) colBox.appendChild(colGrid); if(colPick) colBox.appendChild(colPick);
+      var colBox = document.createElement("div"); colBox.className = "rb-colors"; if(colGrid) colBox.appendChild(colGrid); if(colPick) colBox.appendChild(colPick); var colMine = qsx(".text-popover .my-colors"); if(colMine) colBox.appendChild(colMine);
       var rbTxt = document.createElement("div"); rbTxt.className = "rb-stack"; var r1 = document.createElement("div"); r1.className = "rb-row"; if(fsel) r1.appendChild(inl("字型", fsel)); if(szWrap) r1.appendChild(szWrap); if(boldB) r1.appendChild(boldB);
       var r2 = document.createElement("div"); r2.className = "rb-row"; r2.appendChild(colBox); var rst = qsx(".text-span-reset"); if(rst){ r2.appendChild(rst); }
       rbTxt.appendChild(r1); rbTxt.appendChild(r2);
@@ -15989,6 +16017,43 @@ window.mmTA = (function(){
     tbq.all(".color-dot").forEach(function(d){
       d.addEventListener("mousedown", function(e){ if(inPlaceEdit) e.preventDefault(); });
       d.onclick = function(){ applyBrushColor(d.dataset.color); };
+    });
+    // 我的顏色：按有顏色的格子＝套用；按空格＝把目前的顏色存進來；按「編輯」後點格子＝用色盤改顏色或清除
+    var myEdit = false, mySlot = -1;
+    function myColorsPaint(){
+      var a = myColorsGet();
+      tbq.all(".my-colors").forEach(function(row){
+        row.classList.toggle("editing", myEdit);
+        row.querySelectorAll(".my-color").forEach(function(b){
+          var c = a[+b.dataset.slot]; b.classList.toggle("empty", !c); b.style.background = c || "";
+          b.classList.toggle("active", !myEdit && !!c && boardState.color === c); b.classList.toggle("picked", myEdit && +b.dataset.slot === mySlot);
+          b.title = myEdit ? "點這一格，用色盤改顏色" : (c ? "按一下套用這個顏色" : "空格：按一下把目前的顏色存進來");
+        });
+        row.querySelector(".my-colors-edit").textContent = myEdit ? "完成" : "編輯";
+        row.querySelector(".my-colors-clear").hidden = !(myEdit && mySlot >= 0 && a[mySlot]);
+      });
+    }
+    tbq.all(".my-colors").forEach(function(row){
+      var inp = row.querySelector(".my-color-input");
+      row.addEventListener("mousedown", function(e){ if(inPlaceEdit && e.target !== inp) e.preventDefault(); });
+      row.addEventListener("click", function(e){
+        var b = e.target.closest(".my-color");
+        if(e.target.closest(".my-colors-edit")){ myEdit = !myEdit; mySlot = -1; myColorsPaint(); return; }
+        if(e.target.closest(".my-colors-clear")){ var a0 = myColorsGet(); if(mySlot >= 0){ a0[mySlot] = ""; myColorsSet(a0); } myColorsPaint(); return; }
+        if(!b) return;
+        var a = myColorsGet(), i = +b.dataset.slot;
+        if(myEdit){
+          mySlot = i; myColorsPaint();
+          inp.value = a[i] || (/^#[0-9A-Fa-f]{6}$/.test(boardState.color) ? boardState.color : "#E8825A");
+          try{ if(inp.showPicker) inp.showPicker(); else inp.click(); }catch(er){ inp.click(); }
+          return;
+        }
+        if(a[i]){ applyBrushColor(a[i]); myColorsPaint(); return; }
+        if(/^#[0-9A-Fa-f]{6}$/.test(boardState.color)){ a[i] = boardState.color.toUpperCase(); myColorsSet(a); myColorsPaint(); }
+      });
+      inp.addEventListener("input", function(){
+        if(mySlot < 0) return; var a = myColorsGet(); a[mySlot] = inp.value.toUpperCase(); myColorsSet(a); myColorsPaint();
+      });
     });
 
     // 原生色盤：瀏覽器自己的顏色選擇器（圓盤/滑塊都有），可以選色點之外的任何顏色。
