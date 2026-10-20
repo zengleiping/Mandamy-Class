@@ -1,0 +1,7834 @@
+我		wǒ	0	N
+你		nǐ	0	N
+妳	你	nǐ	0	N
+他		tā	0	N
+她		tā	0	N
+我們	我们	wǒmen	0	N
+你們	你们	nǐmen	0	N
+妳們	你们	nǐmen	0	N
+他們	他们	tāmen	0	N
+她們	她们	tāmen	0	N
+您		nín	0	N
+誰	谁	shéi	0	N
+姓名		xìngmíng	0	N
+人		rén	0	N
+國	国	guó	0	N
+中國	中国	Zhōngguó	0	N
+美國	美国	Měiguó	0	N
+日本		Rìběn	0	N
+台灣	台湾	Táiwān	0	N
+臺灣	台湾	Táiwān	0	N
+名字		míngzi	0	N
+家		jiā	0	N
+電話	电话	diànhuà	0	N
+時間	时间	shíjiān	0	N
+小時	小时	xiǎoshí	0	N
+現在	现在	xiànzài	0	N
+今年		jīnnián	0	N
+今天		jīntiān	0	N
+明天		míngtiān	0	N
+昨天		zuótiān	0	N
+早上		zǎoshàng	0	N
+上午		shàngwǔ	0	N
+中午		zhōngwǔ	0	N
+下午		xiàwǔ	0	N
+晚上		wǎnshàng	0	N
+一		yī	0	N
+二		èr	0	N
+三		sān	0	N
+四		sì	0	N
+五		wǔ	0	N
+六		liù	0	N
+七		qī	0	N
+八		bā	0	N
+九		jiǔ	0	N
+十		shí	0	N
+兩	两	liǎng	0	N
+時候	时候	shíhòu	0	N
+百		bǎi	0	N
+半		bàn	0	N
+千		qiān	0	N
+爸爸		bàba	0	N
+爸		bà	0	N
+媽媽	妈妈	māma	0	N
+媽	妈	mā	0	N
+哥哥		gēge	0	N
+哥		gē	0	N
+弟弟		dìdi	0	N
+弟		dì	0	N
+姊姊		jiějie	0	N
+姐姐		jiějie	0	N
+姊		jiě	0	N
+姐		jiě	0	N
+妹妹		mèimei	0	N
+妹		mèi	0	N
+小孩		xiǎohái	0	N
+小孩子		xiǎoháizi	0	N
+的		de	0	Ptc
+第		dì	0	Det
+分		fēn	0	M
+點	点	diǎn	0	M
+個	个	ge	0	M
+歲	岁	suì	0	M
+年		nián	0	M
+住		zhù	0	V
+來	来	lái	0	V
+是		shì	0	Vst
+姓		xìng	0	Vst
+覺得	觉得	juéde	0	Vst
+喜歡	喜欢	xǐhuān	0	Vst
+打電話	打电话	dǎ diànhuà	0	Vi
+漂亮		piàoliàng	0	Vs
+高		gāo	0	Vs
+老		lǎo	0	Vs
+好		hǎo	0	Adv
+很		hěn	0	Adv
+真		zhēn	0	Adv
+電腦	电脑	diànnǎo	0	N
+老師	老师	lǎoshī	0	N
+買	买	mǎi	0	V
+忙		máng	0	Vs
+學生	学生	xuéshēng	0	N
+大學	大学	dàxué	0	N
+學校	学校	xuéxiào	0	N
+中文		Zhōngwén	0	N
+同學	同学	tóngxué	0	N
+字		zì	0	N
+筆	笔	bǐ	0	N
+學	学	xué	0	V
+問	问	wèn	0	V
+說	说	shuō	0	V
+寫	写	xiě	0	V
+聽	听	tīng	0	V
+對	对	duì	0	Vs
+能		néng	0	Vaux
+可以		kěyǐ	0	Vaux
+上課	上课	shàngkè	0	V-sep
+知道		zhīdào	0	Vst
+電視	电视	diànshì	0	N
+電視機	电视机	diànshìjī	0	N
+水		shuǐ	0	N
+久		jiǔ	0	Vs-pred
+早		zǎo	0	Vs
+再		zài	0	Adv
+書	书	shū	0	N
+電影	电影	diànyǐng	0	N
+以前		yǐqián	0	N
+以後	以后	yǐhòu	0	N
+走		zǒu	0	V
+等		děng	0	V
+看		kàn	0	V
+就		jiù	0	Adv
+什麼	什么	shénme	0	N
+甚麼	什么	shénme	0	N
+朋友		péngyǒu	0	N
+東西	东西	dōngxi	0	N
+吧		ba	0	Ptc
+呢		ne	0	Ptc
+嗎	吗	ma	0	Ptc
+找		zhǎo	0	V
+做		zuò	0	V
+再見	再见	zàijiàn	0	Vi
+怎麼樣	怎么样	zěnmeyàng	0	Vs
+叫		jiào	0	Vst/V
+謝謝	谢谢	xièxie	0	Vst
+對不起	对不起	duìbùqǐ	0	
+請問	请问	qǐngwèn	0	
+這	这	zhè	0	Det
+那		nà	0	Det
+公共汽車	公共汽车	gōnggòngqìchē	0	N
+公車	公车	gōngchē	0	N
+車	车	chē	0	N
+車子	车子	chēzi	0	N
+到		dào	0	V
+去		qù	0	V
+回		huí	0	V
+坐		zuò	0	Vi
+這裡	这里	zhèlǐ	0	N
+這裏	这里	zhèlǐ	0	N
+這兒	这儿	zhèr	0	N
+那裡	那里	nàlǐ	0	N
+那裏	那里	nàlǐ	0	N
+那兒	那儿	nàr	0	N
+哪裡	哪里	nǎlǐ	0	N
+哪裏	哪里	nǎlǐ	0	N
+哪兒	哪儿	nǎr	0	N
+開車	开车	kāichē	0	V-sep
+錢	钱	qián	0	N
+多少		duōshǎo	0	N
+給	给	gěi	0	V
+貴	贵	guì	0	Vs
+便宜		piányí	0	Vs
+大		dà	0	Vs
+小		xiǎo	0	Vs
+難	难	nán	0	Vs
+容易		róngyì	0	Vs
+有		yǒu	0	Vst
+想		xiǎng	0	Vst
+幾	几	jǐ	0	Det
+塊	块	kuài	0	M
+位		wèi	0	M
+飯	饭	fàn	0	N
+吃		chī	0	V
+請	请	qǐng	0	V
+也		yě	0	Adv
+不		bù	0	Adv
+沒	没	méi	0	Adv
+都		dōu	0	Adv
+只		zhǐ	0	Adv
+可是		kěshì	0	Conj
+還是	还是	háishì	0	Conj
+了		le	0	Ptc
+得		de	0	Ptc
+過	过	guò	0	Ptc
+沒有	没有	méiyǒu	0	Ptc
+男		nán	1	N
+女		nǚ	1	N
+孩子		háizi	1	N
+小姐		xiǎojiě	1	N
+先生		xiānshēng	1	N
+太太		tàitai	1	N
+女兒	女儿	nǚ'ér	1	N
+兒子	儿子	érzi	1	N
+大家		dàjiā	1	N
+路		lù	1	N
+手機	手机	shǒujī	1	N
+明年		míngnián	1	N
+去年		qùnián	1	N
+生日		shēngrì	1	N
+月		yuè	1	N
+日		rì	1	N
+星期		xīngqí	1	N
+星期天		Xīngqítiān	1	N
+星期日		Xīngqírì	1	N
+禮拜天	礼拜天	Lǐbàitiān	1	N
+週末	周末	zhōumò	1	N
+周末		zhōumò	1	N
+號	号	hào	1	M
+天		tiān	1	N/M
+從	从	cóng	1	Prep
+在		zài	1	Prep/Vst
+愛	爱	ài	1	Vst
+快樂	快乐	kuàilè	1	Vs
+太		tài	1	Adv
+公園	公园	gōngyuán	1	N
+國家	国家	guójiā	1	N
+分鐘	分钟	fēnzhōng	1	M
+家人		jiārén	1	N
+胖		pàng	1	Vs
+矮		ǎi	1	Vs
+瘦		shòu	1	Vs
+萬	万	wàn	1	N
+鐘頭	钟头	zhōngtóu	1	N
+晚		wǎn	1	N
+前天		qiántiān	1	N
+後天	后天	hòutiān	1	N
+前年		qiánnián	1	N
+後年	后年	hòunián	1	N
+自己		zìjǐ	1	N
+它		tā	1	N
+它們	它们	tāmen	1	N
+最		zuì	1	Adv
+怕		pà	1	Vst
+美		měi	1	Vs
+應該	应该	yīnggāi	1	Vaux
+應	应	yīng	1	Vaux
+真的		zhēnde	1	Adv
+非常		fēicháng	1	Adv
+工作		gōngzuò	1	N
+醫生	医生	yīshēng	1	N
+醫師	医师	yīshī	1	N
+一點	一点	yīdiǎn	1	Det
+一點兒	一点儿	yīdiǎnr	1	Det
+一點點	一点点	yīdiǎndiǎn	1	Det
+一些		yīxiē	1	Det
+本		běn	1	M
+張	张	zhāng	1	M
+英文		Yīngwén	1	N
+紙	纸	zhǐ	1	N
+問題	问题	wèntí	1	N
+意思		yìsi	1	N
+餐廳	餐厅	cāntīng	1	N
+飯館	饭馆	fànguǎn	1	N
+畫	画	huà	1	V/N
+畫兒	画儿	huàr	1	V/N
+讀	读	dú	1	V
+會	会	huì	1	Vaux
+為什麼	为什么	wèishénme	1	Vs
+下課	下课	xiàkè	1	V-sep
+說話	说话	shuōhuà	1	V-sep
+考試	考试	kǎoshì	1	V-sep/N
+懂		dǒng	1	Vst
+念		niàn	1	V
+唸	念	niàn	1	V
+課	课	kè	1	N
+教		jiāo	1	V
+告訴	告诉	gàosù	1	V
+錯	错	cuò	1	Vp
+功課	功课	gōngkè	1	N
+教室		jiàoshì	1	N
+句子		jùzi	1	N
+休息		xiūxí	1	Vi
+房		fáng	1	N
+房子		fángzi	1	N
+房間	房间	fángjiān	1	N
+樓	楼	lóu	1	M
+門	门	mén	1	N
+門口	门口	ménkǒu	1	N
+桌		zhuō	1	N
+桌子		zhuōzi	1	N
+椅		yǐ	1	N
+椅子		yǐzi	1	N
+床		chuáng	1	N
+開	开	kāi	1	V
+低		dī	1	Vs
+不錯	不错	bùcuò	1	Vs
+天氣	天气	tiānqì	1	N
+空氣	空气	kōngqì	1	N
+冷		lěng	1	Vs
+熱	热	rè	1	Vs
+雨		yǔ	1	N
+下雨		xiàyǔ	1	V-sep
+風	风	fēng	1	N
+山		shān	1	N
+花		huā	1	N
+花兒	花儿	huār	1	N
+枝		zhī	1	M
+魚	鱼	yú	1	N
+雞	鸡	jī	1	N
+牛		niú	1	N
+豬	猪	zhū	1	N
+咖啡		kāfēi	1	N
+茶		chá	1	N
+用		yòng	1	V
+穿		chuān	1	V
+起床		qǐchuáng	1	Vp
+方便		fāngbiàn	1	Vs
+睡覺	睡觉	shuìjiào	1	V-sep
+起來	起来	qǐlái	1	Vp
+先		xiān	1	Adv
+常常		chángcháng	1	Adv
+常		cháng	1	Adv
+每		měi	1	Det
+打		dǎ	1	V
+玩		wán	1	V
+運動	运动	yùndòng	1	Vi/N
+走路		zǒulù	1	V-sep
+唱歌		chànggē	1	V-sep
+跳		tiào	1	Vi
+還	还	hái	1	Adv
+唱		chàng	1	V
+歌		gē	1	N
+跳舞		tiàowǔ	1	V-sep
+又		yòu	1	Adv
+球		qiú	1	N
+介紹	介绍	jièshào	1	V
+沒關係	没关系	méiguānxi	1	Vs
+事		shì	1	N
+事兒	事儿	shìr	1	N
+怎麼	怎么	zěnme	1	Adv
+哪		nǎ	1	Det
+裡面	里面	lǐmiàn	1	N
+裏面	里面	lǐmiàn	1	N
+上		shàng	1	N
+上面		shàngmiàn	1	N
+下		xià	1	N
+下面		xiàmiàn	1	N
+外		wài	1	N
+外面		wàimiàn	1	N
+外頭	外头	wàitou	1	N
+前		qián	1	N
+前面		qiánmiàn	1	N
+後	后	hòu	1	N
+後面	后面	hòumiàn	1	N
+左		zuǒ	1	N
+左邊	左边	zuǒbiān	1	N
+右		yòu	1	N
+右邊	右边	yòubiān	1	N
+旁		páng	1	N
+旁邊	旁边	pángbiān	1	N
+裡	里	lǐ	1	N
+裏	里	lǐ	1	N
+中		zhōng	1	N
+地方		dìfāng	1	N
+附近		fùjìn	1	N
+帶	带	dài	1	V
+拿		ná	1	V
+站		zhàn	1	Vi
+快		kuài	1	Vs
+慢		màn	1	Vs
+計程車	计程车	jìchéngchē	1	N
+火車	火车	huǒchē	1	N
+飛機	飞机	fēijī	1	N
+輛	辆	liàng	1	M
+出		chū	1	V
+進	进	jìn	1	V
+外國	外国	wàiguó	1	N
+手		shǒu	1	N
+腳	脚	jiǎo	1	N
+身體	身体	shēntǐ	1	N
+眼睛		yǎnjīng	1	N
+鼻		bí	1	N
+鼻子		bízi	1	N
+藥	药	yào	1	N
+累		lèi	1	Vs
+頭	头	tóu	1	N
+耳朵		ěrduo	1	N
+感冒		gǎnmào	1	Vp
+生病		shēngbìng	1	Vp-sep
+餓	饿	è	1	Vs
+痛		tòng	1	Vs
+嘴巴		zuǐba	1	N
+嘴		zuǐ	1	N
+病		bìng	1	N
+看病		kànbìng	1	V-sep
+元		yuán	1	M
+鞋		xié	1	N
+鞋子		xiézi	1	N
+衣服		yīfú	1	N
+衣		yī	1	N
+比		bǐ	1	Prep
+要		yào	1	V/Vaux
+長	长	cháng	1	Vs
+新		xīn	1	Vs
+一樣	一样	yīyàng	1	Vs
+見	见	jiàn	1	Vpt
+看見	看见	kànjian	1	V
+聽見	听见	tīngjiàn	1	Vpt
+店		diàn	1	N
+短		duǎn	1	Vs
+飽	饱	bǎo	1	Vs
+舊	旧	jiù	1	Vs
+像		xiàng	1	Vst
+一共		yīgòng	1	Adv
+共		gòng	1	Adv
+夠	够	gòu	1	Vs-pred
+筷		kuài	1	N
+筷子		kuàizi	1	N
+件		jiàn	1	M
+杯		bēi	1	M
+杯子		bēizi	1	N
+菜		cài	1	N
+肉		ròu	1	N
+酒		jiǔ	1	N
+喝		hē	1	V
+少		shǎo	1	Vs-pred
+多		duō	1	Vs-pred/Adv
+小吃		xiǎochī	1	N
+牛奶		niúnǎi	1	N
+蛋		dàn	1	N
+餃	饺	jiǎo	1	N
+餃子	饺子	jiǎozi	1	N
+麵	面	miàn	1	N
+湯	汤	tāng	1	N
+包子		bāozi	1	N
+蛋糕		dàngāo	1	N
+麵包	面包	miànbāo	1	N
+水果		shuǐguǒ	1	N
+香蕉		xiāngjiāo	1	N
+食物		shíwù	1	N
+飲料	饮料	yǐnliào	1	N
+果汁		guǒzhī	1	N
+甜		tián	1	Vs
+菜單	菜单	càidān	1	N
+巧克力		qiǎokèlì	1	N
+碗		wǎn	1	N/M
+冰		bīng	1	N
+一起		yīqǐ	1	Adv
+因為	因为	yīnwèi	1	Conj
+和		hé	1	Conj
+所以		suǒyǐ	1	Conj
+跟		gēn	1	Conj
+一定		yīdìng	1	Adv
+可能		kěnéng	1	Vaux
+邊	边	biān	1	N
+邊兒	边儿	biānr	1	N
+別	别	bié	1	Adv
+馬上	马上	mǎshàng	1	Adv
+然後	然后	ránhòu	1	Adv
+得		děi	1	Vpt
+著	着	zhe	1	Ptc
+有點	有点	yǒudiǎn	1	Adv
+有一點	有一点	yǒuyīdiǎn	1	Adv
+有一點兒	有一点儿	yǒuyīdiǎnr	1	Adv
+零		líng	2	N
+爺爺	爷爷	yéye	2	N
+奶奶		nǎinai	2	N
+家庭		jiātíng	2	N
+別人	别人	biérén	2	N
+大人		dàrén	2	N
+老人		lǎorén	2	N
+年輕	年轻	niánqīng	2	Vs
+男生		nánshēng	2	N
+女生		nǚshēng	2	N
+號碼	号码	hàomǎ	2	N
+在		zài	2	Adv
+哪		na	2	Ptc
+地址		dìzhǐ	2	N
+市		shì	2	N
+名		míng	2	M
+城市		chéngshì	2	N
+城		chéng	2	N
+街		jiē	2	N
+電子郵件	电子邮件	diànzǐyóujiàn	2	N
+禮拜	礼拜	lǐbài	2	N
+從前	从前	cóngqián	2	N
+剛剛	刚刚	gānggāng	2	Adv
+剛	刚	gāng	2	Adv
+一會兒	一会儿	yīhuǐr	2	N
+一會	一会	yīhuǐ	2	N
+結婚	结婚	jiéhūn	2	Vp-sep
+春天		chūntiān	2	N
+春		chūn	2	N
+夏天		xiàtiān	2	N
+夏		xià	2	N
+秋天		qiūtiān	2	N
+秋		qiū	2	N
+冬天		dōngtiān	2	N
+冬		dōng	2	N
+笑		xiào	2	Vi
+哭		kū	2	Vi
+高興	高兴	gāoxìng	2	Vs
+緊張	紧张	jǐnzhāng	2	Vs
+可愛	可爱	kě'ài	2	Vs
+生氣	生气	shēngqì	2	Vs-sep
+難過	难过	nánguò	2	Vs
+聰明	聪明	cōngmíng	2	Vs
+相信		xiāngxìn	2	Vst
+經驗	经验	jīngyàn	2	N
+辛苦		xīnkǔ	2	Vs
+願意	愿意	yuànyì	2	Vaux
+習慣	习惯	xíguàn	2	N/Vs
+當然	当然	dāngrán	2	Adv
+更		gèng	2	Adv
+醫院	医院	yīyuàn	2	N
+公司		gōngsī	2	N
+辦公室	办公室	bàngōngshì	2	N
+工人		gōngrén	2	N
+護士	护士	hùshì	2	N
+司機	司机	sījī	2	N
+老闆	老板	lǎobǎn	2	N
+老板		lǎobǎn	2	N
+上班		shàngbān	2	V-sep
+下班		xiàbān	2	V-sep
+能力		nénglì	2	N
+努力		nǔlì	2	Vs
+準備	准备	zhǔnbèi	2	V
+打算		dǎsuàn	2	Vaux
+計畫	计划	jìhuà	2	V/N
+計劃	计划	jìhuà	2	V/N
+機會	机会	jīhuì	2	N
+如果		rúguǒ	2	Conj
+小學	小学	xiǎoxué	2	N
+高中		gāozhōng	2	N
+上學	上学	shàngxué	2	V-sep
+開學	开学	kāixué	2	Vp
+班		bān	2	M/N
+年級	年级	niánjí	2	N
+作業	作业	zuòyè	2	N
+成績	成绩	chéngjī	2	N
+語言	语言	yǔyán	2	N
+華語	华语	Huáyǔ	2	N
+華文	华文	Huáwén	2	N
+黑板		hēibǎn	2	N
+課本	课本	kèběn	2	N
+字典		zìdiǎn	2	N
+注意		zhùyì	2	Vst
+讀書	读书	dúshū	2	V-sep
+回答		huídá	2	V/N
+答		dá	2	V
+句		jù	2	M
+圖	图	tú	2	N
+部分		bùfen	2	Det/N
+部份		bùfen	2	Det/N
+想法		xiǎngfǎ	2	N
+學習	学习	xuéxí	2	V
+練習	练习	liànxí	2	V/N
+參加	参加	cānjiā	2	V
+文化		wénhuà	2	N
+認為	认为	rènwéi	2	V
+清楚		qīngchǔ	2	Vs
+決定	决定	juédìng	2	N/Vp
+記得	记得	jìde	2	Vst
+忘		wàng	2	Vp
+棒		bàng	2	Vs
+行		xíng	2	Vs
+行		háng	2	M
+講	讲	jiǎng	2	V
+加		jiā	2	V
+算		suàn	2	V
+交		jiāo	2	V
+借		jiè	2	V
+還	还	huán	2	V
+辦法	办法	bànfǎ	2	N
+方法		fāngfǎ	2	N
+有用		yǒuyòng	2	Vs
+進步	进步	jìnbù	2	Vp
+圖書館	图书馆	túshūguǎn	2	N
+洗手間	洗手间	xǐshǒujiān	2	N
+廁所	厕所	cèsuǒ	2	N
+宿舍		sùshè	2	N
+屋		wū	2	N
+屋子		wūzi	2	N
+間	间	jiān	2	M
+大樓	大楼	dàlóu	2	N
+樓上	楼上	lóushàng	2	N
+樓下	楼下	lóuxià	2	N
+樓梯	楼梯	lóutī	2	N
+電梯	电梯	diàntī	2	N
+廚房	厨房	chúfáng	2	N
+客廳	客厅	kètīng	2	N
+窗		chuāng	2	N
+窗子		chuāngzi	2	N
+窗戶	窗户	chuānghu	2	N
+家具		jiājù	2	N
+沙發	沙发	shāfā	2	N
+盒		hé	2	M/N
+盒子		hézi	2	M/N
+關	关	guān	2	V
+燈	灯	dēng	2	N
+冷氣	冷气	lěngqì	2	N
+冷氣機	冷气机	lěngqìjī	2	N
+冰箱		bīngxiāng	2	N
+台		tái	2	M
+電	电	diàn	2	N
+乾淨	干净	gānjìng	2	Vs
+房租		fángzū	2	N
+租		zū	2	V
+世界		shìjiè	2	N
+火		huǒ	2	N
+雪		xuě	2	N
+下雪		xiàxuě	2	V-sep
+地		dì	2	N
+河		hé	2	N
+湖		hú	2	N
+馬	马	mǎ	2	N
+鳥	鸟	niǎo	2	N
+貓	猫	māo	2	N
+狗		gǒu	2	N
+海		hǎi	2	N
+草		cǎo	2	N
+樹	树	shù	2	N
+隻	只	zhī	2	M
+長	长	zhǎng	2	Vs
+太陽	太阳	tàiyáng	2	N
+洗		xǐ	2	V
+洗澡		xǐzǎo	2	V-sep
+有空		yǒukòng	2	Vs
+有空兒	有空儿	yǒukòngr	2	Vs
+發現	发现	fāxiàn	2	Vp/N
+餐		cān	2	N
+搬		bān	2	V
+掛	挂	guà	2	V
+脫	脱	tuō	2	V
+過年	过年	guònián	2	Vi
+新年		xīnnián	2	N
+游泳		yóuyǒng	2	V-sep
+跑		pǎo	2	Vi
+跑步		pǎobù	2	Vi
+踢		tī	2	V
+足球		zúqiú	2	N
+籃球	篮球	lánqiú	2	N
+網球	网球	wǎngqiú	2	N
+棒球		bàngqiú	2	N
+比賽	比赛	bǐsài	2	Vi/N
+開始	开始	kāishǐ	2	Vp
+騎	骑	qí	2	V
+腳踏車	脚踏车	jiǎotàchē	2	N
+自行車	自行车	zìxíngchē	2	N
+上網	上网	shàngwǎng	2	V-sep
+網路	网路	wǎnglù	2	N
+網站	网站	wǎngzhàn	2	N
+報紙	报纸	bàozhǐ	2	N
+次		cì	2	M
+電影院	电影院	diànyǐngyuàn	2	N
+部		bù	2	M
+場	场	chǎng	2	M
+音樂	音乐	yīnyuè	2	N
+票		piào	2	N
+活動	活动	huódòng	2	N
+故事		gùshi	2	N
+聊天		liáotiān	2	V-sep
+聊天兒	聊天儿	liáotiānr	2	V-sep
+有時候	有时候	yǒushíhou	2	Adv
+有時	有时	yǒushí	2	Adv
+平常		píngcháng	2	N
+總是	总是	zǒngshì	2	Adv
+已經	已经	yǐjīng	2	Adv
+後來	后来	hòulái	2	N
+各		gè	2	Det
+變	变	biàn	2	V
+才		cái	2	Adv
+客人		kèrén	2	N
+客氣	客气	kèqi	2	Vs
+不客氣	不客气	bùkèqì	2	
+不好意思		bùhǎoyìsi	2	
+喂		wéi	2	Ptc
+麻煩	麻烦	máfan	2	N
+禮物	礼物	lǐwù	2	N
+歡迎	欢迎	huānyíng	2	Vst
+寄		jì	2	V
+接		jiē	2	V
+郵局	邮局	yóujú	2	N
+銀行	银行	yínháng	2	N
+壞	坏	huài	2	Vp
+幫忙	帮忙	bāngmáng	2	V-sep
+幫助	帮助	bāngzhù	2	V
+小朋友		xiǎopéngyǒu	2	N
+信		xìn	2	N
+信封		xìnfēng	2	N
+認識	认识	rènshì	2	Vpt
+最近		zuìjìn	2	Adv
+聽說	听说	tīngshuō	2	V
+見面	见面	jiànmiàn	2	V-sep
+事情		shìqíng	2	N
+幫	帮	bāng	2	V
+錢包	钱包	qiánbāo	2	N
+拉		lā	2	V
+啊		ā	2	Ptc
+怎麼辦	怎么办	zěnmebàn	2	
+車站	车站	chēzhàn	2	N
+汽車	汽车	qìchē	2	N
+飛機場	飞机场	fēijīchǎng	2	N
+機場	机场	jīchǎng	2	N
+馬路	马路	mǎlù	2	N
+路口		lùkǒu	2	N
+十字路口		shízìlùkǒu	2	N
+對面	对面	duìmiàn	2	N
+旅行		lǚxíng	2	Vi/N
+飯店	饭店	fàndiàn	2	N
+旅館	旅馆	lǚguǎn	2	N
+袋子		dàizi	2	N
+參觀	参观	cānguān	2	V
+地圖	地图	dìtú	2	N
+照相機	照相机	zhàoxiàngjī	2	N
+相機	相机	xiàngjī	2	N
+照相		zhàoxiàng	2	V-sep
+照片		zhàopiàn	2	N
+相片		xiàngpiàn	2	N
+相片兒	相片儿	xiàngpiànr	2	N
+風景	风景	fēngjǐng	2	N
+南		nán	2	N
+南部		nánbù	2	N
+西		xī	2	N
+西部		xībù	2	N
+北		běi	2	N
+北部		běibù	2	N
+東	东	dōng	2	N
+東部	东部	dōngbù	2	N
+中間	中间	zhōngjiān	2	N
+離	离	lí	2	Prep
+離開	离开	líkāi	2	Vp
+經過	经过	jīngguò	2	V
+往		wǎng	2	Prep
+送		sòng	2	V
+放		fàng	2	V
+近		jìn	2	Vs
+遠	远	yuǎn	2	Vs
+向		xiàng	2	Prep
+轉	转	zhuǎn	2	V
+掉		diào	2	Vpt
+一直		yīzhí	2	Adv
+最後	最后	zuìhòu	2	N
+病人		bìngrén	2	N
+頭髮	头发	tóufǎ	2	N
+髮	发	fǎ	2	N
+手指		shǒuzhǐ	2	N
+手指頭	手指头	shǒuzhǐtou	2	N
+指頭	指头	zhǐtou	2	N
+肚		dù	2	N
+肚子		dùzi	2	N
+臉	脸	liǎn	2	N
+心		xīn	2	N
+健康		jiànkāng	2	Vs/N
+渴		kě	2	Vs
+舒服		shūfu	2	Vs
+眼鏡	眼镜	yǎnjìng	2	N
+賣	卖	mài	2	V
+付		fù	2	V
+希望		xīwàng	2	Vst
+書店	书店	shūdiàn	2	N
+商店		shāngdiàn	2	N
+市場	市场	shìchǎng	2	N
+超級市場	超级市场	chāojíshìchǎng	2	N
+超市		chāoshì	2	N
+信用卡		xìnyòngkǎ	2	N
+重要		zhòngyào	2	Vs
+顏色	颜色	yánsè	2	N
+黃色	黄色	huángsè	2	N
+白色		báisè	2	N
+手錶	手表	shǒubiǎo	2	N
+手表		shǒubiǎo	2	N
+錶	表	biǎo	2	N
+表		biǎo	2	N
+襪	袜	wà	2	N
+襪子	袜子	wàzi	2	N
+雙	双	shuāng	2	M
+裙		qún	2	N
+裙子		qúnzi	2	N
+褲	裤	kù	2	N
+褲子	裤子	kùzi	2	N
+大衣		dàyī	2	N
+帽		mào	2	N
+帽子		màozi	2	N
+皮包		píbāo	2	N
+外套		wàitào	2	N
+小心		xiǎoxīn	2	Vs
+比較	比较	bǐjiào	2	Adv
+較	较	jiào	2	Adv
+差不多		chābùduō	2	Vs/Adv
+戴		dài	2	V
+試	试	shì	2	V
+輕	轻	qīng	2	Vs
+重		zhòng	2	Vs
+樣子	样子	yàngzi	2	N
+特別	特别	tèbié	2	Vs
+簡單	简单	jiǎndān	2	Vs
+其他		qítā	2	Det
+其它		qítā	2	Det
+聲音	声音	shēngyīn	2	N
+聲	声	shēng	2	N
+好像		hǎoxiàng	2	Adv
+奇怪		qíguài	2	Vs
+三明治		sānmíngzhì	2	N
+漢堡	汉堡	hànbǎo	2	N
+蘋果	苹果	píngguǒ	2	N
+西瓜		xīguā	2	N
+啤酒		píjiǔ	2	N
+紅茶	红茶	hóngchá	2	N
+點心	点心	diǎnxīn	2	N
+冰淇淋		bīngqílín	2	N
+青菜		qīngcài	2	N
+糖		táng	2	N
+叉		chā	2	N
+叉子		chāzi	2	N
+刀		dāo	2	N
+刀子		dāozi	2	N
+湯匙	汤匙	tāngchí	2	N
+盤	盘	pán	2	M/N
+盤子	盘子	pánzi	2	M/N
+片		piàn	2	M
+瓶		píng	2	M/N
+瓶子		píngzi	2	M/N
+支		zhī	2	M
+份		fèn	2	M
+道		dào	2	M
+一半		yībàn	2	Det
+一半兒	一半儿	yībànr	2	Det
+味道		wèidào	2	N
+酸		suān	2	Vs
+苦		kǔ	2	Vs
+鹹	咸	xián	2	Vs
+辣		là	2	Vs
+香		xiāng	2	Vs
+條	条	tiáo	2	M
+種	种	zhǒng	2	M
+包		bāo	2	M
+全部		quánbù	2	Det
+所有		suǒyǒu	2	Det
+需要		xūyào	2	Vst
+烤		kǎo	2	V
+過	过	guò	2	V
+但是		dànshì	2	Conj
+但		dàn	2	Conj
+或是		huòshì	2	Conj
+要是		yàoshì	2	Conj
+把		bǎ	2	Ptc
+被		bèi	2	Ptc
+讓	让	ràng	2	Ptc
+雖然	虽然	suīrán	2	Conj
+那麼	那么	nàme	2	Adv
+這麼	这么	zhème	2	Adv
+本來	本来	běnlái	2	Adv
+啦		la	2	Ptc
+呀		yā	2	Ptc
+以為	以为	yǐwéi	2	V
+有的		yǒude	2	Det
+替		tì	2	Prep
+一下		yīxià	2	N
+一下子		yīxiàzi	2	N
+一下子兒	一下子儿	yīxiàzir	2	N
+不過	不过	bùguò	2	Adv/Conj
+地		de	2	Ptc
+出生		chūshēng	3	Vp
+不同		bùtóng	3	Vs
+住址		zhùzhǐ	3	N
+母語	母语	mǔyǔ	3	N
+表		biǎo	3	N
+鐘	钟	zhōng	3	M
+時鐘	时钟	shízhōng	3	N
+傳真	传真	chuánzhēn	3	N
+白天		báitian	3	N
+半夜		bànyè	3	N
+夜晚		yèwǎn	3	N
+日子		rìzi	3	N
+夜		yè	3	N
+春季		chūnjì	3	N
+時	时	shí	3	N
+不久		bùjiǔ	3	N
+剛才	刚才	gāngcái	3	Adv
+早點	早点	zǎodiǎn	3	Adv
+正好		zhènghǎo	3	Adv/Vs
+年紀	年纪	niánjì	3	N
+男人		nánrén	3	N
+女人		nǚrén	3	N
+父親	父亲	fùqīn	3	N
+母親	母亲	mǔqīn	3	N
+父母		fùmǔ	3	N
+外公		wàigōng	3	N
+外婆		wàipó	3	N
+伯伯		bóbo	3	N
+伯		bó	3	N
+伯父		bófù	3	N
+伯母		bómǔ	3	N
+叔叔		shúshu	3	N
+叔		shú	3	N
+姑姑		gūgu	3	N
+孫女	孙女	sūnnǚ	3	N
+孫子	孙子	sūnzi	3	N
+關係	关系	guānxì	3	N
+害怕		hàipà	3	Vs
+開心	开心	kāixīn	3	Vs
+擔心	担心	dānxīn	3	Vst
+傷心	伤心	shāngxīn	3	Vs-sep
+美麗	美丽	měilì	3	Vs
+帥	帅	shuài	3	Vs
+笨		bèn	3	Vs
+認真	认真	rènzhēn	3	Vs
+敢		gǎn	3	Vaux
+急		jí	3	Vs
+禮貌	礼貌	lǐmào	3	N
+害羞		hàixiū	3	Vs
+關心	关心	guānxīn	3	Vst
+心情		xīnqíng	3	N
+幸福		xìngfú	3	Vs
+差		chà	3	Vs-pred
+兄弟		xiōngdì	3	N
+阿姨		āyí	3	N
+身邊	身边	shēnbiān	3	N
+身高		shēngāo	3	N
+長大	长大	zhǎngdà	3	Vp
+經理	经理	jīnglǐ	3	N
+教書	教书	jiāoshū	3	V-sep
+開會	开会	kāihuì	3	V-sep
+加班		jiābān	3	V-sep
+危險	危险	wéixiǎn	3	Vs
+安全		ānquán	3	Vs/N
+成功		chénggōng	3	Vs
+報告	报告	bàogào	3	V/N
+資料	资料	zīliào	3	N
+管理		guǎnlǐ	3	V
+做法		zuòfǎ	3	N
+作法		zuòfǎ	3	N
+看法		kànfǎ	3	N
+辦	办	bàn	3	V
+打工		dǎgōng	3	V-sep
+選	选	xuǎn	3	V
+嚴重	严重	yánzhòng	3	Vs
+正式		zhèngshì	3	Vs
+查		chá	3	V
+考		kǎo	3	V
+例如		lìrú	3	Prep
+例		lì	3	N
+例子		lìzi	3	N
+題目	题目	tímù	3	N
+題	题	tí	3	M
+答案		dá'àn	3	N
+念書	念书	niànshū	3	V-sep
+唸書	念书	niànshū	3	V-sep
+歷史	历史	lìshǐ	3	N
+數學	数学	shùxué	3	N
+書法	书法	shūfǎ	3	N
+英語	英语	Yīngyǔ	3	N
+作文		zuòwén	3	N/Vi
+漢字	汉字	hànzì	3	N
+詞	词	cí	3	N
+文法		wénfǎ	3	N
+加上		jiāshàng	3	V
+減	减	jiǎn	3	Vst
+乘		chéng	3	V
+除		chú	3	Prep/Vst/V
+國小	国小	guóxiǎo	3	N
+中學	中学	zhōngxué	3	N
+學院	学院	xuéyuàn	3	N
+大學生	大学生	dàxuéshēng	3	N
+教授		jiàoshòu	3	N
+放假		fàngjià	3	V-sep
+春假		chūnjià	3	N
+暑假		shǔjià	3	N
+寒假		hánjià	3	N
+假		jià	3	N
+畢業	毕业	bìyè	3	Vp-sep
+學期	学期	xuéqí	3	N
+服務	服务	fúwù	3	V
+室友		shìyǒu	3	N
+操場	操场	cāochǎng	3	N
+校園	校园	xiàoyuán	3	N
+位子		wèizi	3	N
+書桌	书桌	shūzhuō	3	N
+書包	书包	shūbāo	3	N
+書架	书架	shūjià	3	N
+本子		běnzi	3	N
+尺		chǐ	3	N
+討論	讨论	tǎolùn	3	V
+同意		tóngyì	3	Vst
+了解		liǎojiě	3	Vst
+瞭解	了解	liǎojiě	3	Vst
+無聊	无聊	wúliáo	3	Vs
+有趣		yǒuqù	3	Vs
+有意思		yǒuyìsi	3	Vs
+原因		yuányīn	3	N
+遍		biàn	3	M
+改		gǎi	3	V
+忘記	忘记	wàngjì	3	Vpt
+程度		chéngdù	3	N
+趕快	赶快	gǎnkuài	3	Adv
+以上		yǐshàng	3	N
+以下		yǐxià	3	N
+意見	意见	yìjiàn	3	N
+用功		yònggōng	3	Vs
+研究		yánjiù	3	N/V
+教育		jiàoyù	3	N/V
+選擇	选择	xuǎnzé	3	N/V
+建議	建议	jiànyì	3	N/V
+知識	知识	zhīshì	3	N
+座		zuò	3	M
+臥室	卧室	wòshì	3	N
+臥房	卧房	wòfáng	3	N
+浴室		yùshì	3	N
+院		yuàn	3	N
+院子		yuànzi	3	N
+書房	书房	shūfáng	3	N
+洗衣機	洗衣机	xǐyījī	3	N
+餐桌		cānzhuō	3	N
+打開	打开	dǎkāi	3	Vp
+箱		xiāng	3	M/N
+箱子		xiāngzi	3	M/N
+層	层	céng	3	M
+櫃	柜	guì	3	N
+櫃子	柜子	guìzi	3	N
+大門	大门	dàmén	3	N
+鄰居	邻居	línjū	3	N
+熱鬧	热闹	rènao	3	Vs
+吵		chǎo	3	Vs
+亂	乱	luàn	3	Vs
+房東	房东	fángdōng	3	N
+房屋		fángwū	3	N
+搬家		bānjiā	3	V-sep
+開水	开水	kāishuǐ	3	N
+鄉下	乡下	xiāngxià	3	N
+傘	伞	sǎn	3	N
+朵		duǒ	3	M
+蚊		wén	3	N
+蚊子		wénzi	3	N
+自然		zìrán	3	Vs
+月亮		yuèliàng	3	N
+星星		xīngxing	3	N
+環境	环境	huánjìng	3	N
+晴天		qíngtiān	3	N
+暖和		nuǎnhuo	3	Vs
+涼快	凉快	liángkuài	3	Vs
+涼	凉	liáng	3	Vs
+乾	干	gān	3	Vp
+濕	湿	shī	3	Vs
+溼	湿	shī	3	Vs
+度		dù	3	M
+颱風	台风	táifēng	3	N
+季節	季节	jìjié	3	N
+環保	环保	huánbǎo	3	N
+垃圾		lèsè	3	N
+汙染	污染	wūrǎn	3	V
+底		dǐ	3	N
+底下		dǐxia	3	N
+內	内	nèi	3	N
+深		shēn	3	Vs
+淺	浅	qiǎn	3	Vs
+發生	发生	fāshēng	3	Vpt
+照顧	照顾	zhàogù	3	V
+生活		shēnghuó	3	N
+日記	日记	rìjì	3	N
+流		liú	3	V
+流汗		liúhàn	3	V-sep
+夢	梦	mèng	3	N
+枕頭	枕头	zhěntou	3	N
+鬧鐘	闹钟	nàozhōng	3	N
+拖鞋		tuōxié	3	N
+毛巾		máojīn	3	N
+刷		shuā	3	N/V
+刷子		shuāzi	3	N/V
+肥皂		féizào	3	N
+牙膏		yágāo	3	N
+衛生紙	卫生纸	wèishēngzhǐ	3	N
+籃	篮	lán	3	N
+籃子	篮子	lánzi	3	N
+假日		jiàrì	3	N
+結束	结束	jiéshù	3	Vp
+完		wán	3	Vp
+散步		sànbù	3	V-sep
+慢跑		mànpǎo	3	Vi
+野餐		yěcān	3	Vi
+爬		pá	3	Vi
+拍		pāi	3	V
+抓		zhuā	3	V
+座位		zuòwèi	3	N
+新聞	新闻	xīnwén	3	N
+體育	体育	tǐyù	3	N
+經常	经常	jīngcháng	3	Adv
+雜誌	杂志	zázhì	3	N
+美術	美术	měishù	3	N
+畫家	画家	huàjiā	3	N
+興趣	兴趣	xìngqù	3	N
+收		shōu	3	V
+談	谈	tán	3	V
+聊		liáo	3	V
+遲到	迟到	chídào	3	Vp
+樂器	乐器	yuèqì	3	N
+吉他		jítā	3	N
+可怕		kěpà	3	Vs
+輕鬆	轻松	qīngsōng	3	Vs
+情形		qíngxíng	3	N
+消息		xiāoxí	3	N
+看起來	看起来	kànqǐlái	3	Adv
+舞		wǔ	3	N
+游		yóu	3	Vi
+游泳池		yóuyǒngchí	3	N
+遊戲	游戏	yóuxì	3	N/Vi
+茶館	茶馆	cháguǎn	3	N
+茶館兒	茶馆儿	cháguǎnr	3	N
+門票	门票	ménpiào	3	N
+陪		péi	3	V
+利用		lìyòng	3	V
+好處	好处	hǎochù	3	N
+壞處	坏处	huàichù	3	N
+目的		mùdì	3	N
+要求		yāoqiú	3	N/V
+合作		hézuò	3	Vs
+主人		zhǔrén	3	N
+請客	请客	qǐngkè	3	V-sep
+約	约	yuē	3	V
+約會	约会	yuēhuì	3	N/Vi
+派對	派对	pàiduì	3	N
+祝		zhù	3	V
+留		liú	3	V
+封		fēng	3	M
+信箱		xìnxiāng	3	N
+郵票	邮票	yóupiào	3	N
+回信		huíxìn	3	V-sep
+郵件	邮件	yóujiàn	3	N
+弄		nòng	3	V
+放心		fàngxīn	3	Vs-sep
+偷		tōu	3	V
+滿	满	mǎn	3	Vp
+丟	丢	diū	3	V
+換	换	huàn	3	V
+一塊	一块	yīkuài	3	Adv
+一塊兒	一块儿	yīkuàir	3	Adv
+同時	同时	tóngshí	3	N
+保護	保护	bǎohù	3	V
+出門	出门	chūmén	3	V-sep
+現代	现代	xiàndài	3	N/Vs
+傳統	传统	chuántǒng	3	Vs
+除夕		Chúxì	3	N
+春節	春节	Chūnjié	3	N
+節日	节日	jiérì	3	N
+帶來	带来	dàilái	3	V
+當中	当中	dāngzhōng	3	N
+法律		fǎlǜ	3	N
+方面		fāngmiàn	3	N
+開玩笑	开玩笑	kāi wánxiào	3	V-sep
+可惜		kěxí	3	Vs
+老太太		lǎotàitai	3	N
+有名		yǒumíng	3	Vs
+自由		zìyóu	3	N/Vs
+社會	社会	shèhuì	3	N
+時差	时差	shíchā	3	N
+市區	市区	shìqū	3	N
+溫泉	温泉	wēnquán	3	N
+公路		gōnglù	3	N
+速度		sùdù	3	N
+到處	到处	dàochù	3	Adv
+地點	地点	dìdiǎn	3	N
+巴士		bāshì	3	N
+加油		jiāyóu	3	Vi
+摩托車	摩托车	mótuōchē	3	N
+機車	机车	jīchē	3	N
+船		chuán	3	N
+船兒	船儿	chuánr	3	N
+地鐵	地铁	dìtiě	3	N
+捷運	捷运	jiéyùn	3	N
+停車場	停车场	tíngchēchǎng	3	N
+月台		yuètái	3	N
+搭		dā	3	V
+飛	飞	fēi	3	Vi
+下		xià	3	V
+上		shàng	3	V
+這些	这些	zhèxiē	3	Det
+那些		nàxiē	3	Det
+東方	东方	dōngfāng	3	N
+非洲		Fēizhōu	3	N
+美洲		Měizhōu	3	N
+歐洲	欧洲	Ōuzhōu	3	N
+亞洲	亚洲	Yàzhōu	3	N
+大陸	大陆	dàlù	3	N
+動	动	dòng	3	Vp
+起		qǐ	3	Ptc
+停		tíng	3	Vp
+中心		zhōngxīn	3	N
+簽證	签证	qiānzhèng	3	N
+行李		xínglǐ	3	N
+背包		bēibāo	3	N
+鎖	锁	suǒ	3	N/V
+入口		rùkǒu	3	N
+出口		chūkǒu	3	N
+油		yóu	3	N
+鑰匙	钥匙	yàoshi	3	N
+方向		fāngxiàng	3	N
+交通		jiāotōng	3	N
+標準	标准	biāozhǔn	3	N/Vs
+拍照		pāizhào	3	V-sep
+腿		tuǐ	3	N
+背		bèi	3	N
+脖		bó	3	N
+脖子		bózi	3	N
+汗		hàn	3	N
+臉色	脸色	liǎnsè	3	N
+救護車	救护车	jiùhùchē	3	N
+咳嗽		késòu	3	Vi
+發燒	发烧	fāshāo	3	Vp-sep
+頭痛	头痛	tóutòng	3	Vs
+疼		téng	3	Vs
+保險	保险	bǎoxiǎn	3	N
+掛號	挂号	guàhào	3	V-sep
+牙刷		yáshuā	3	N
+藥房	药房	yàofáng	3	N
+救命		jiùmìng	3	V-sep
+影響	影响	yǐngxiǎng	3	N/V
+感覺	感觉	gǎnjué	3	N/Vst
+精神		jīngshén	3	N
+正常		zhèngcháng	3	Vs
+花		huā	3	V
+有錢	有钱	yǒuqián	3	Vs
+生意		shēngyì	3	N
+商人		shāngrén	3	N
+老闆娘	老板娘	lǎobǎnniáng	3	N
+老板娘		lǎobǎnniáng	3	N
+店員	店员	diànyuán	3	N
+訂	订	dìng	3	V
+訂位	订位	dìngwèi	3	V-sep
+得到		dédào	3	Vpt
+困難	困难	kùnnán	3	N/Vs
+百貨公司	百货公司	bǎihuògōngsī	3	N
+夜市		yèshì	3	N
+逛		guàng	3	V
+逛街		guàngjiē	3	V-sep
+排隊	排队	páiduì	3	V-sep
+客滿	客满	kèmǎn	3	Vp
+刷卡		shuākǎ	3	V-sep
+提		tí	3	V
+流行		liúxíng	3	Vs
+藍色	蓝色	lánsè	3	N
+綠色	绿色	lǜsè	3	N
+紅色	红色	hóngsè	3	N
+黑色		hēisè	3	N
+毛衣		máoyī	3	N
+雨衣		yǔyī	3	N
+內衣	内衣	nèiyī	3	N
+上衣		shàngyī	3	N
+皮鞋		píxié	3	N
+手套		shǒutào	3	N
+口袋		kǒudài	3	N
+小費	小费	xiǎofèi	3	N
+打折		dǎzhé	3	V-sep
+零錢	零钱	língqián	3	N
+零用錢	零用钱	língyòngqián	3	N
+存		cún	3	V
+毛		máo	3	M
+高級	高级	gāojí	3	Vs
+一般		yībān	3	Vs
+合適	合适	héshì	3	Vs
+適合	适合	shìhé	3	Vst
+圓	圆	yuán	3	Vs
+光		guāng	3	Vp
+死		sǐ	3	Vp
+髒	脏	zāng	3	Vs
+破		pò	3	Vp
+袋		dài	3	M
+套		tào	3	M
+沙拉		shālā	3	N
+牛排		niúpái	3	N
+海鮮	海鲜	hǎixiān	3	N
+火腿		huǒtuǐ	3	N
+熱狗	热狗	règǒu	3	N
+饅頭	馒头	mántou	3	N
+米		mǐ	3	N
+豆腐		dòufu	3	N
+橘		jú	3	N
+橘子		júzi	3	N
+葡萄		pútao	3	N
+芒果		mángguǒ	3	N
+烏龍茶	乌龙茶	wūlóngchá	3	N
+豆漿	豆浆	dòujiāng	3	N
+可樂	可乐	kělè	3	N
+奶茶		nǎichá	3	N
+汽水		qìshuǐ	3	N
+冰塊	冰块	bīngkuài	3	N
+冰塊兒	冰块儿	bīngkuàir	3	N
+甜點	甜点	tiándiǎn	3	N
+餅乾	饼干	bǐnggān	3	N
+鹽	盐	yán	3	N
+味		wèi	3	N
+味兒	味儿	wèir	3	N
+聞	闻	wén	3	V
+臭		chòu	3	Vs
+口		kǒu	3	M
+罐		guàn	3	M
+顆	颗	kē	3	M
+任何		rènhé	3	Det
+許多	许多	xǔduō	3	Det
+新鮮	新鲜	xīnxian	3	Vs
+熟		shóu	3	Vs
+炒		chǎo	3	V
+炸		zhá	3	V
+嚐	尝	cháng	3	V
+嘗	尝	cháng	3	V
+裝	装	zhuāng	3	V
+不用		bùyòng	3	Adv
+不但		bùdàn	3	Conj
+不必		bùbì	3	Vaux
+不得了		bùdéliǎo	3	Vs
+不管		bùguǎn	3	Conj
+只好		zhǐhǎo	3	Adv
+或		huò	3	Conj
+可能		kěnéng	3	N
+而且		érqiě	3	Conj
+原來	原来	yuánlái	3	Adv
+也許	也许	yěxǔ	3	Adv
+必須	必须	bìxū	3	Adv
+多麼	多么	duōme	3	Adv
+這樣	这样	zhèyàng	3	Vs
+那樣	那样	nàyàng	3	Adv/Vs
+等		děng	3	Ptc
+等等		děngděng	3	Ptc
+別的	别的	biéde	3	Det
+除了		chúle	3	Prep
+從來	从来	cónglái	3	Adv
+大概		dàgài	3	Adv
+還好	还好	háihǎo	3	Adv
+極	极	jí	3	Adv
+接著	接着	jiēzhe	3	Adv
+結果	结果	jiéguǒ	3	Conj
+立刻		lìkè	3	Adv
+沒想到	没想到	méi xiǎngdào	3	
+其實	其实	qíshí	3	Adv
+其中		qízhōng	3	Det
+完全		wánquán	3	Adv
+相當	相当	xiāngdāng	3	Adv
+一切		yīqiè	3	Det
+已		yǐ	3	Adv
+尤其		yóuqí	3	Adv
+越		yuè	3	Adv
+整		zhěng	3	Det
+正		zhèng	3	Adv
+只要		zhǐyào	3	Conj
+最好		zuìhǎo	3	Adv
+同樣	同样	tóngyàng	3	Adv/Vs-attr
+空		kōng	3	Vs
+連	连	lián	3	Conj/Vst
+倍		bèi	3	N
+包括		bāokuò	3	Vst
+步		bù	3	M
+當時	当时	dāngshí	3	N
+等到		děngdào	3	Prep
+煩	烦	fán	3	Vs
+剛好	刚好	gānghǎo	3	Vs
+或者		huòzhě	3	Conj
+哇		wā	3	Ptc
+需		xū	3	Vst
+須	须	xū	3	Adv
+直接		zhíjiē	3	Vs
+總	总	zǒng	3	Adv
+泡		pào	3	V
+且		qiě	3	Conj
+比方		bǐfāng	3	N
+比方說	比方说	bǐfāngshuō	3	Vst
+傳	传	chuán	3	V
+另		lìng	3	Det
+另外		lìngwài	3	Conj/Det
+左右		zuǒyòu	3	N/V
+當	当	dāng	3	Prep
+類	类	lèi	3	M
+樣	样	yàng	3	M
+哎		āi	4	Ptc
+唉		āi	4	Ptc
+愛	爱	ài	4	N
+愛情	爱情	àiqíng	4	N
+愛惜	爱惜	àixí	4	Vst
+愛心	爱心	àixīn	4	N
+按		àn	4	Prep
+安定		āndìng	4	Vs
+安靜	安静	ānjìng	4	Vs
+安排		ānpái	4	N/V
+安心		ānxīn	4	Vs
+按照		ànzhào	4	Prep
+把		bǎ	4	M
+白		bái	4	Vs
+白白		báibái	4	Adv
+白菜		báicài	4	N
+擺	摆	bǎi	4	V
+榜樣	榜样	bǎngyàng	4	N
+班機	班机	bānjī	4	N
+辦理	办理	bànlǐ	4	V
+半天		bàntiān	4	N
+包		bāo	4	V
+包含		bāohán	4	Vst
+寶貝	宝贝	bǎobèi	4	N
+寶貴	宝贵	bǎoguì	4	Vs
+保守		bǎoshǒu	4	Vs
+保養	保养	bǎoyǎng	4	V
+保證	保证	bǎozhèng	4	N/V
+保証	保证	bǎozhèng	4	N/V
+抱		bào	4	V
+抱怨		bàoyuàn	4	V
+報名	报名	bàomíng	4	V-sep
+把握		bǎwò	4	V
+北方		běifāng	4	N
+被動	被动	bèidòng	4	Vs
+背後	背后	bèihòu	4	N
+背景		bèijǐng	4	N
+輩子	辈子	bèizi	4	N
+本		běn	4	Det
+本人		běnrén	4	N
+逼		bī	4	V
+筆	笔	bǐ	4	M
+比		bǐ	4	V
+鞭炮		biānpào	4	N
+變	变	biàn	4	Vp
+變成	变成	biànchéng	4	Vpt
+變更	变更	biàngēng	4	V
+變化	变化	biànhuà	4	N/Vs
+便條	便条	biàntiáo	4	N
+表達	表达	biǎodá	4	V
+表面		biǎomiàn	4	N
+表示		biǎoshì	4	V
+表現	表现	biǎoxiàn	4	N/V
+表演		biǎoyǎn	4	V/N
+畢竟	毕竟	bìjìng	4	Adv
+避免		bìmiǎn	4	V
+餅	饼	bǐng	4	N
+病		bìng	4	Vp
+比如		bǐrú	4	Prep
+比如說	比如说	bǐrúshuō	4	Prep
+必要		bìyào	4	Vs
+播		bò	4	V
+博士		bóshì	4	N
+博物館	博物馆	bówùguǎn	4	N
+布		bù	4	N
+不見	不见	bùjiàn	4	Vp
+不見了	不见了	bùjiànle	4	Vp
+不得不		bùdébù	4	Adv
+不斷	不断	bùduàn	4	Adv/Vs
+不論	不论	bùlùn	4	Conj
+不滿	不满	bùmǎn	4	Vs
+部門	部门	bùmén	4	N
+不如		bùrú	4	conj
+不少		bùshǎo	4	Det/Vs
+不幸		bùxìng	4	Vs
+不用說	不用说	bùyòngshuō	4	Conj
+布置		bùzhì	4	V
+佈置	布置	bùzhì	4	V
+不足		bùzú	4	Vs
+擦		cā	4	V
+猜		cāi	4	V
+材料		cáiliào	4	N
+採用	采用	cǎiyòng	4	V
+餐		cān	4	M
+參考	参考	cānkǎo	4	V
+草地		cǎodì	4	N
+草原		cǎoyuán	4	N
+曾		céng	4	Adv
+曾經	曾经	céngjīng	4	Adv
+差點	差点	chādiǎn	4	Adv
+差點兒	差点儿	chādiǎnr	4	Adv
+差一點兒	差一点儿	chāyīdiǎnr	4	Adv
+差別	差别	chābié	4	N
+嘗試	尝试	chángshì	4	V
+嚐試	尝试	chángshì	4	V
+產品	产品	chǎnpǐn	4	N
+產生	产生	chǎnshēng	4	Vpt
+超過	超过	chāoguò	4	Vpt
+超級	超级	chāojí	4	Vs-attr
+吵架		chǎojià	4	V-sep
+差異	差异	chāyì	4	N
+車禍	车祸	chēhuò	4	N
+趁		chèn	4	Prep
+襯衫	衬衫	chènshān	4	N
+成		chéng	4	Vpt
+成果		chéngguǒ	4	N
+成就		chéngjiù	4	N
+承認	承认	chéngrèn	4	V
+誠實	诚实	chéngshí	4	Vs
+成熟		chéngshóu	4	Vs
+成長	成长	chéngzhǎng	4	Vs
+尺		chǐ	4	M
+吃喝玩樂	吃喝玩乐	chīhēwánlè	4	Vi
+蟲	虫	chóng	4	N
+蟲子	虫子	chóngzi	4	N
+充實	充实	chōngshí	4	Vs
+重新		chóngxīn	4	Adv
+醜	丑	chǒu	4	Vs
+抽		chōu	4	V
+初		chū	4	N
+串		chuàn	4	M
+創造	创造	chuàngzào	4	V
+出版		chūbǎn	4	V
+出差		chūchāi	4	V-sep
+出發	出发	chūfā	4	Vp
+出現	出现	chūxiàn	4	Vp
+出租		chūzū	4	V
+處理	处理	chǔlǐ	4	V
+廚師	厨师	chúshī	4	N
+吹		chuī	4	V
+此		cǐ	4	Det
+刺激		cìjī	4	N/Vs
+從不	从不	cóngbù	4	Adv
+從小	从小	cóngxiǎo	4	Adv
+醋		cù	4	N
+寸		cùn	4	M
+存在		cúnzài	4	Vi
+錯	错	cuò	4	N
+錯誤	错误	cuòwù	4	N
+挫折		cuòzhé	4	N
+達成	达成	dáchéng	4	Vpt
+打架		dǎjià	4	V-sep
+大多數	大多数	dàduōshù	4	Det
+大方		dàfāng	4	Vs
+大會	大会	dàhuì	4	N
+代表		dàibiǎo	4	N/V
+代替		dàitì	4	V
+帶領	带领	dàilǐng	4	V
+單純	单纯	dānchún	4	Vs
+淡		dàn	4	Vs
+當場	当场	dāngchǎng	4	Adv
+當地	当地	dāngdì	4	N
+當面	当面	dāngmiàn	4	Adv
+當年	当年	dāngnián	4	N
+當天	当天	dàngtiān	4	N
+當作	当作	dàngzuò	4	Vst
+當做	当做	dàngzuò	4	Vst
+擔任	担任	dānrèn	4	V
+單身	单身	dānshēn	4	Vs
+島	岛	dǎo	4	N
+倒		dǎo	4	V
+導演	导演	dǎoyǎn	4	N
+到		dào	4	Conj/Prep
+到底		dàodǐ	4	Adv/Vs-pred
+倒是		dàoshì	4	Adv
+道德		dàodé	4	N
+道教		Dàojiào	4	N
+道理		dàolǐ	4	N
+道歉		dàoqiàn	4	V-sep
+答應	答应	dāyìng	4	V
+打掃	打扫	dǎsǎo	4	V
+打聽	打听	dǎtīng	4	V
+大小		dàxiǎo	4	N
+大約	大约	dàyuē	4	Adv
+打仗		dǎzhàng	4	V-sep
+得		dé	4	Vaux
+得意		déyì	4	Vs
+等待		děngdài	4	V
+燈光	灯光	dēngguāng	4	N
+敵人	敌人	dírén	4	N
+抵達	抵达	dǐdá	4	V
+地板		dìbǎn	4	N
+地帶	地带	dìdài	4	N
+地理		dìlǐ	4	N
+地球		dìqiú	4	N
+地區	地区	dìqū	4	N
+地攤	地摊	dìtān	4	N
+地位		dìwèi	4	N
+地下		dìxià	4	N
+地形		dìxíng	4	N
+點	点	diǎn	4	M/N/V
+電車	电车	diànchē	4	N
+電池	电池	diànchí	4	N
+電燈	电灯	diàndēng	4	N
+調查	调查	diàochá	4	V
+東北	东北	dōngběi	4	N
+東南	东南	dōngnán	4	N
+懂事		dǒngshì	4	Vs
+動物園	动物园	dòngwùyuán	4	N
+逗		dòu	4	V
+都市		dūshì	4	N
+毒品		dúpǐn	4	N
+獨特	独特	dútè	4	Vs
+讀者	读者	dúzhě	4	N
+段		duàn	4	M
+堆		duī	4	M
+對	对	duì	4	M/Prep/V
+對方	对方	duìfāng	4	N
+對話	对话	duìhuà	4	N
+對了	对了	duìle	4	
+對象	对象	duìxiàng	4	N
+頓	顿	dùn	4	M
+多多少少		duōduoshǎoshǎo	4	Adv
+嗯		en	4	Ptc
+而		ér	4	Conj
+兒童	儿童	értóng	4	N
+發	发	fā	4	V
+發表	发表	fābiǎo	4	V
+發財	发财	fācái	4	Vp-sep
+發出	发出	fāchū	4	Vpt
+發達	发达	fādá	4	Vs
+發揮	发挥	fāhuī	4	V
+發覺	发觉	fājué	4	Vpt
+發明	发明	fāmíng	4	N/Vpt
+犯		fàn	4	Vst
+反而		fǎn'ér	4	Conj
+方式		fāngshì	4	N
+房客		fángkè	4	N
+訪問	访问	fǎngwèn	4	V
+訪	访	fǎng	4	V
+煩惱	烦恼	fánnǎo	4	Vs
+範圍	范围	fànwéi	4	N
+翻譯	翻译	fānyì	4	V
+翻		fān	4	V
+譯	译	yì	4	V
+反應	反应	fǎnyìng	4	N
+發票	发票	fāpiào	4	N
+發脾氣	发脾气	fāpíqì	4	Vi
+非		fēi	4	Adv/Vst
+費用	费用	fèiyòng	4	N
+豐富	丰富	fēngfù	4	Vs
+風格	风格	fēnggé	4	N
+風俗	风俗	fēngsú	4	N
+分開	分开	fēnkāi	4	Vp
+佛教		Fójiào	4	N
+否則	否则	fǒuzé	4	Conj
+夫婦	夫妇	fūfù	4	N
+符合		fúhé	4	Vst
+福利		fúlì	4	N
+服裝	服装	fúzhuāng	4	N
+腐敗	腐败	fǔbài	4	Vs
+付出		fùchū	4	Vpt
+負擔	负担	fùdān	4	N/V
+複習	复习	fùxí	4	V
+負責	负责	fùzé	4	Vs
+該	该	gāi	4	Vaux
+改變	改变	gǎibiàn	4	N/V
+改進	改进	gǎijìn	4	V
+改善		gǎishàn	4	V
+改天		gǎitiān	4	Adv
+蓋	盖	gài	4	V
+概念		gàiniàn	4	N
+趕	赶	gǎn	4	V
+趕上	赶上	gǎnshàng	4	Vpt
+感動	感动	gǎndòng	4	Vs
+感想		gǎnxiǎng	4	N
+感謝	感谢	gǎnxiè	4	Vst
+感興趣	感兴趣	gǎnxìngqù	4	Vs
+鋼琴	钢琴	gāngqín	4	N
+高速		gāosù	4	Vs-attr
+搞		gǎo	4	V
+個	个	ge	4	Ptc
+歌曲		gēqǔ	4	N
+歌星		gēxīng	4	N
+隔壁		gébì	4	N
+個人	个人	gèrén	4	N
+個子	个子	gèzi	4	N
+個兒	个儿	gèr	4	N
+給	给	gěi	4	Prep
+革命		gémìng	4	Vi
+跟		gēn	4	Prep/V
+根		gēn	4	M/V
+根據	根据	gēnjù	4	Prep
+據	据	jù	4	Prep
+更加		gèngjiā	4	Adv
+各式各樣	各式各样	gèshìgèyàng	4	Vs-attr
+各位		gèwèi	4	N
+工廠	工厂	gōngchǎng	4	N
+公尺		gōngchǐ	4	M
+公分		gōngfēn	4	M
+功夫		gōngfu	4	N
+公共		gōnggòng	4	Vs-attr
+公斤		gōngjīn	4	M
+工具		gōngjù	4	N
+公克		gōngkè	4	M
+公里		gōnglǐ	4	M
+功能		gōngnéng	4	N
+恭喜		gōngxǐ	4	V
+工業	工业	gōngyè	4	N
+公寓		gōngyù	4	N
+工作		gōngzuò	4	Vi
+共同		gòngtóng	4	Vs-attr
+貢獻	贡献	gòngxiàn	4	N/V
+溝通	沟通	gōutōng	4	V
+夠	够	gòu	4	Adv
+購買	购买	gòumǎi	4	V
+姑娘		gūniang	4	N
+古		gǔ	4	Vs-attr
+古代		gǔdài	4	N
+古蹟	古迹	gǔjī	4	N
+古跡	古迹	gǔjī	4	N
+古老		gǔlǎo	4	Vs
+顧	顾	gù	4	V
+顧客	顾客	gùkè	4	N
+故意		gùyì	4	Vs
+刮		guā	4	V
+乖		guāi	4	Vs
+怪		guài	4	V/Vs
+關	关	guān	4	Vp
+觀察	观察	guānchá	4	V
+觀點	观点	guāndiǎn	4	N
+管		guǎn	4	V
+廣播	广播	guǎngbò	4	N/Vi
+廣場	广场	guǎngchǎng	4	N
+廣告	广告	guǎnggào	4	N
+觀念	观念	guānniàn	4	N
+觀眾	观众	guānzhòng	4	N
+規矩	规矩	guījǔ	4	N
+規模	规模	guīmó	4	N
+鬼		guǐ	4	N
+貴姓	贵姓	guìxìng	4	
+國內	国内	guónèi	4	N
+國外	国外	guówài	4	N
+國王	国王	guówáng	4	N
+國語	国语	Guóyǔ	4	N
+過去	过去	guòqù	4	N/Vi
+過日子	过日子	guòrìzi	4	Vi
+嗨		hāi	4	Ptc
+還是	还是	háishì	4	Adv
+還要	还要	háiyào	4	Adv
+海報	海报	hǎibào	4	N
+海灘	海滩	hǎitān	4	N
+海洋		hǎiyáng	4	N
+害		hài	4	V
+航空		hángkōng	4	N
+漢語	汉语	Hànyǔ	4	N
+好		hào	4	Vs
+好好		hǎohǎo	4	Adv
+好好兒	好好儿	hǎohǎor	4	Adv
+好了		hǎole	4	Ptc
+和		hé	4	Prep
+合		hé	4	Adv
+合唱		héchàng	4	V
+黑		hēi	4	Vs
+恨		hèn	4	Vst
+恨不得		hènbùde	4	Vst
+紅	红	hóng	4	Vs
+紅包	红包	hóngbāo	4	N
+紅豆	红豆	hóngdòu	4	N
+紅綠燈	红绿灯	hónglǜdēng	4	N
+厚		hòu	4	Vs
+後	后	hòu	4	Det/N
+忽然		hūrán	4	Adv
+忽		hū	4	Adv
+糊塗	糊涂	hútú	4	Vs
+互相		hùxiāng	4	Adv
+護照	护照	hùzhào	4	N
+黃	黄	huáng	4	Vs
+花心		huāxīn	4	Vs
+花園	花园	huāyuán	4	N
+滑雪		huáxuě	4	V-sep
+話題	话题	huàtí	4	N
+化妝品	化妆品	huàzhuāngpǐn	4	N
+恢復	恢复	huīfù	4	Vpt
+回		huí	4	M
+回想		huíxiǎng	4	V
+會	会	huì	4	N
+會場	会场	huìchǎng	4	N
+會話	会话	huìhuà	4	N
+會議	会议	huìyì	4	N
+婚禮	婚礼	hūnlǐ	4	N
+婚姻		hūnyīn	4	N
+混亂	混乱	hùnluàn	4	Vs
+活		huó	4	Vs-attr
+活動	活动	huódòng	4	Vi
+或許	或许	huòxǔ	4	Adv
+基本		jīběn	4	N/Vs
+基礎	基础	jīchǔ	4	N
+激動	激动	jīdòng	4	Vs
+基督教		Jīdūjiào	4	N
+積極	积极	jījí	4	Vs
+激烈		jīliè	4	Vs
+機器	机器	jīqì	4	N
+及		jí	4	Conj
+及時	及时	jíshí	4	Adv
+擠	挤	jǐ	4	V/Vs
+記	记	jì	4	Vst/V
+記錄	记录	jìlù	4	N/V
+紀念	纪念	jìniàn	4	N/Vst
+技巧		jìqiǎo	4	N
+繼續	继续	jìxù	4	V
+記憶	记忆	jìyì	4	N
+記者	记者	jìzhě	4	N
+家		jiā	4	M
+假		jiǎ	4	Vs
+架		jià	4	M
+價格	价格	jiàgé	4	N
+肩		jiān	4	N
+肩膀		jiānbǎng	4	N
+堅持	坚持	jiānchí	4	Vs
+剪		jiǎn	4	V
+檢查	检查	jiǎnchá	4	V
+將來	将来	jiānglái	4	N
+獎學金	奖学金	jiǎngxuéjīn	4	N
+降低		jiàngdī	4	Vpt
+講話	讲话	jiǎnghuà	4	V-sep
+講價	讲价	jiǎngjià	4	Vi
+講究	讲究	jiǎngjiù	4	Vs
+醬油	酱油	jiàngyóu	4	N
+堅強	坚强	jiānqiáng	4	Vs
+減輕	减轻	jiǎnqīng	4	Vpt
+減少	减少	jiǎnshǎo	4	Vpt
+簡直	简直	jiǎnzhí	4	Adv
+建立		jiànlì	4	V
+建設	建设	jiànshè	4	N/V
+驕傲	骄傲	jiāo'ào	4	Vs
+交流		jiāoliú	4	Vi
+郊區	郊区	jiāoqū	4	N
+交友		jiāoyǒu	4	Vi
+角度		jiǎodù	4	N
+教		jiào	4	Vst
+教材		jiàocái	4	N
+教導	教导	jiàodǎo	4	V
+教法		jiàofǎ	4	N
+教練	教练	jiàoliàn	4	N
+教師	教师	jiàoshī	4	N
+教堂		jiàotáng	4	N
+教訓	教训	jiàoxùn	4	N
+加強	加强	jiāqiáng	4	V
+加入		jiārù	4	Vpt
+家鄉	家乡	jiāxiāng	4	N
+家長	家长	jiāzhǎng	4	N
+假如		jiǎrú	4	Conj
+假裝	假装	jiǎzhuāng	4	V
+價錢	价钱	jiàqián	4	N
+價值	价值	jiàzhí	4	N
+接觸	接触	jiēchù	4	V
+接受		jiēshòu	4	V
+結	结	jié	4	V
+節	节	jié	4	M
+節目	节目	jiémù	4	N
+結局	结局	jiéjú	4	N
+解決	解决	jiějué	4	V
+姊妹		jiěmèi	4	N
+解釋	解释	jiěshì	4	V/N
+斤		jīn	4	M
+金		jīn	4	N
+金子		jīnzi	4	N
+緊	紧	jǐn	4	Vs
+僅	仅	jǐn	4	Adv
+僅僅	仅仅	jǐnjǐn	4	Adv
+盡	尽	jìn	4	V
+進	进	jìn	4	V
+經	经	jīng	4	V
+經費	经费	jīngfèi	4	N
+經過	经过	jīngguò	4	N/Prep
+驚訝	惊讶	jīngyà	4	Vs
+經驗	经验	jīngyàn	4	Vpt
+警察		jǐngchá	4	N
+儘管	尽管	jǐnguǎn	4	Conj
+進行	进行	jìnxíng	4	V
+進一步	进一步	jìnyībù	4	Adv
+酒吧		jiǔbā	4	N
+救		jiù	4	V
+就		jiù	4	Prep
+就是		jiùshì	4	Conj
+就算		jiùsuàn	4	Conj
+舅舅		jiùjiu	4	N
+舅		jiù	4	N
+舅媽	舅妈	jiùmā	4	N
+居住		jūzhù	4	Vi
+舉	举	jǔ	4	V
+舉辦	举办	jǔbàn	4	V
+舉手	举手	jǔshǒu	4	V-sep
+舉行	举行	jǔxíng	4	V
+聚		jù	4	Vi
+距		jù	4	Prep
+拒絕	拒绝	jùjué	4	V
+距離	距离	jùlí	4	N
+劇本	剧本	jùběn	4	N
+劇情	剧情	jùqíng	4	N
+具有		jùyǒu	4	Vst
+絕對	绝对	juéduì	4	Adv
+角色		juésè	4	N
+軍隊	军队	jūnduì	4	N
+軍人	军人	jūnrén	4	N
+卡車	卡车	kǎchē	4	N
+開放	开放	kāifàng	4	V
+開花	开花	kāihuā	4	Vp-sep
+開朗	开朗	kāilǎng	4	Vs
+開始	开始	kāishǐ	4	N
+看不起		kànbùqǐ	4	Vst
+棵		kē	4	M
+科		kē	4	M
+科技		kējì	4	N
+科學	科学	kēxué	4	Vs/N
+可		kě	4	Adv/Vaux
+可靠		kěkào	4	Vs
+可憐	可怜	kělián	4	Vs
+渴望		kěwàng	4	Vst
+可惡	可恶	kěwù	4	Vs
+可以		kěyǐ	4	Vaux
+刻		kè	4	M/V
+克		kè	4	M
+課程	课程	kèchéng	4	N
+課堂	课堂	kètáng	4	N
+課文	课文	kèwén	4	N
+克服		kèfú	4	Vpt
+肯		kěn	4	Vaux
+肯定		kěndìng	4	Vs
+空間	空间	kōngjiān	4	N
+空軍	空军	kōngjūn	4	N
+恐怕		kǒngpà	4	Adv
+口		kǒu	4	N
+口味		kǒuwèi	4	N
+快		kuài	4	Adv
+寬	宽	kuān	4	Vs
+況且	况且	kuàngqiě	4	Conj
+誇張	夸张	kuāzhāng	4	Vs
+擴大	扩大	kuòdà	4	V
+拉肚子		lā dùzi	4	V-sep
+來	来	lái	4	Adv/Ptc
+來不及	来不及	láibùjí	4	Vs
+來得及	来得及	láidejí	4	Vs
+藍	蓝	lán	4	Vs
+浪漫		làngmàn	4	Vs
+老公		lǎogōng	4	N
+老虎		lǎohǔ	4	N
+虎		hǔ	4	N
+老婆		lǎopó	4	N
+老實	老实	lǎoshí	4	Vs
+老是		lǎoshì	4	Adv
+樂	乐	lè	4	Vs
+樂觀	乐观	lèguān	4	Vs
+樂趣	乐趣	lèqù	4	N
+淚	泪	lèi	4	N
+冷淡		lěngdàn	4	Vs
+力		lì	4	N
+里		lǐ	4	M
+練	练	liàn	4	V
+戀愛	恋爱	liàn'ài	4	Vp
+亮		liàng	4	Vs
+良好		liánghǎo	4	Vs
+連絡	连络	liánluò	4	V
+聯絡	联络	liánluò	4	V
+連續劇	连续剧	liánxùjù	4	N
+了不起		liǎobùqǐ	4	Vs
+離婚	离婚	líhūn	4	Vp-sep
+裡邊	里边	lǐbiān	4	N
+厲害	厉害	lìhài	4	Vs
+理解		lǐjiě	4	Vst
+理論	理论	lǐlùn	4	N
+禮堂	礼堂	lǐtáng	4	N
+力量		lìliàng	4	N
+領	领	lǐng	4	V
+領導	领导	lǐngdǎo	4	V
+靈魂	灵魂	línghún	4	N
+領域	领域	lǐngyù	4	N
+令		lìng	4	Vst
+留言		liúyán	4	Vi
+流血		liúxiě	4	V-sep
+留學	留学	liúxué	4	Vi
+留學生	留学生	liúxuéshēng	4	N
+理想		lǐxiǎng	4	N/Vs
+利益		lìyì	4	N
+旅客		lǚkè	4	N
+旅遊	旅游	lǚyóu	4	Vi/N
+綠	绿	lǜ	4	Vs
+律師	律师	lǜshī	4	N
+錄	录	lù	4	V
+錄取	录取	lùqǔ	4	V
+錄音	录音	lùyīn	4	V-sep
+露營	露营	lùyíng	4	V-sep
+龍	龙	lóng	4	N
+輪胎	轮胎	lúntāi	4	N
+嘛		ma	4	Ptc
+麻煩	麻烦	máfán	4	Vs
+罵	骂	mà	4	V
+滿	满	mǎn	4	Det/Vs
+滿意	满意	mǎnyì	4	Vst
+滿足	满足	mǎnzú	4	Vs
+慢慢		mànmàn	4	
+慢用		mànyòng	4	Vi
+毛		máo	4	N
+毛筆	毛笔	máobǐ	4	N
+毛病		máobìng	4	N
+貿易	贸易	màoyì	4	N
+馬桶	马桶	mǎtǒng	4	N
+碼頭	码头	mǎtou	4	N
+螞蟻	蚂蚁	mǎyǐ	4	N
+沒	没	méi	4	Ptc/Vp
+每		měi	4	Adv
+玫瑰		méiguī	4	N
+美好		měihǎo	4	Vs
+沒什麼	没什么	méishénme	4	Vs
+門	门	mén	4	M
+迷人		mírén	4	Vs
+密切		mìqiè	4	Vs
+面		miàn	4	M/N
+免費	免费	miǎnfèi	4	Vs
+面積	面积	miànjī	4	N
+面前		miànqián	4	N
+麵條	面条	miàntiáo	4	N
+秒		miǎo	4	M
+描寫	描写	miáoxiě	4	V
+廟	庙	miào	4	N
+米飯	米饭	mǐfàn	4	N
+米粉		mǐfěn	4	N
+迷路		mílù	4	Vp-sep
+秘密		mìmì	4	N
+祕密	秘密	mìmì	4	N
+明白		míngbái	4	Vpt
+名詞	名词	míngcí	4	N
+民國	民国	Mínguó	4	N
+明顯	明显	míngxiǎn	4	Vs
+明星		míngxīng	4	N
+命		mìng	4	N
+民族		mínzú	4	N
+陌生		mòshēng	4	Vs
+摸		mō	4	V
+某		mǒu	4	Det
+木		mù	4	N
+目前		mùqián	4	N
+木頭	木头	mùtou	4	N
+那		nà	4	Conj
+那麼	那么	nàme	4	Conj
+奶		nǎi	4	N
+耐心		nàixīn	4	N
+南方		nánfāng	4	N
+難怪	难怪	nánguài	4	Adv
+難看	难看	nánkàn	4	Vs
+腦	脑	nǎo	4	N
+腦子	脑子	nǎozi	4	N
+拿手		náshǒu	4	Vs
+哪些		nǎxiē	4	Det
+內容	内容	nèiróng	4	N
+能夠	能够	nénggòu	4	Vaux
+年		nián	4	N
+年代		niándài	4	N
+年齡	年龄	niánlíng	4	N
+年年		niánnián	4	Adv
+牛仔褲	牛仔裤	niúzǎikù	4	N
+農業	农业	nóngyè	4	N
+女士		nǚshì	4	N
+喔		ō	4	Ptc
+哦		ó	4	Ptc
+排		pái	4	V
+牌		pái	4	N
+牌子		páizi	4	N
+盼望		pànwàng	4	Vst
+培養	培养	péiyǎng	4	V
+配		pèi	4	V
+配合		pèihé	4	V
+碰		pèng	4	V
+碰到		pèngdào	4	Vpt
+碰上		pèngshàng	4	Vpt
+批評	批评	pīpíng	4	V
+皮		pí	4	N
+皮帶	皮带	pídài	4	N
+皮膚	皮肤	pífū	4	N
+篇		piān	4	M
+騙子	骗子	piànzi	4	N
+坪		píng	4	M
+平		píng	4	Vs
+平安		píng'ān	4	Vs
+平等		píngděng	4	Vs
+平時	平时	píngshí	4	N
+平原		píngyuán	4	N
+品質	品质	pǐnzhí	4	N
+破壞	破坏	pòhuài	4	V
+普遍		pǔbiàn	4	Vs
+期		qí	4	M
+起		qǐ	4	N/V
+氣	气	qì	4	N/Det
+鉛筆	铅笔	qiānbǐ	4	N
+簽名	签名	qiānmíng	4	V-sep
+謙虛	谦虚	qiānxū	4	Vs
+前		qián	4	N/Det
+強盜	强盗	qiángdào	4	N
+強調	强调	qiángdiào	4	V
+搶	抢	qiǎng	4	V
+橋	桥	qiáo	4	N
+欺負	欺负	qīfù	4	V
+其次		qícì	4	Conj
+期間	期间	qíjiān	4	N
+起飛	起飞	qǐfēi	4	Vp
+起來	起来	qǐlái	4	Ptc
+親	亲	qīn	4	V
+親切	亲切	qīnqiè	4	Vs
+親手	亲手	qīnshǒu	4	Adv
+親眼	亲眼	qīnyǎn	4	Adv
+親自	亲自	qīnzì	4	Adv
+清		qīng	4	Vs-pred
+青年		qīngnián	4	N
+青少年		qīngshàonián	4	N
+晴		qíng	4	Vs-pred
+情		qíng	4	N
+情況	情况	qíngkuàng	4	N
+情人		qíngrén	4	N
+請假	请假	qǐngjià	4	V
+請教	请教	qǐngjiào	4	V
+請求	请求	qǐngqiú	4	V
+慶祝	庆祝	qìngzhù	4	V
+窮	穷	qióng	4	Vs
+求		qiú	4	V
+球場	球场	qiúchǎng	4	N
+球賽	球赛	qiúsài	4	N
+球員	球员	qiúyuán	4	N
+氣溫	气温	qìwēn	4	N
+企業	企业	qìyè	4	N
+去		qù	4	Adv/Ptc
+去世		qùshì	4	Vp
+全		quán	4	Det
+全球		quánqiú	4	N
+全身		quánshēn	4	N
+取代		qǔdài	4	V
+缺點	缺点	quēdiǎn	4	N
+卻	却	què	4	Adv
+確定	确定	quèdìng	4	Vs
+確認	确认	quèrèn	4	V
+讓	让	ràng	4	V
+忍		rěn	4	Vs
+認	认	rèn	4	V
+認得	认得	rènde	4	Vst
+扔		rēng	4	Vpt
+仍		réng	4	Adv
+仍然		réngrán	4	Adv
+人家		rénjiā	4	N
+人間	人间	rénjiān	4	N
+人口		rénkǒu	4	N
+人類	人类	rénlèi	4	N
+人們	人们	rénmen	4	N
+人民		rénmín	4	N
+人人		rénrén	4	N
+人數	人数	rénshù	4	N
+人物		rénwù	4	N
+忍耐		rěnnài	4	Vst
+任務	任务	rènwù	4	N
+熱水	热水	rèshuǐ	4	N
+日出		rìchū	4	Vi
+日期		rìqí	4	N
+如		rú	4	Conj/Prep
+如此		rúcǐ	4	Vs
+如下		rúxià	4	Vs
+如意		rúyì	4	Vs
+弱		ruò	4	Vs
+森林		sēnlín	4	N
+失戀	失恋	shīliàn	4	Vp
+失去		shīqù	4	Vpt
+獅	狮	shī	4	N
+獅子	狮子	shīzi	4	N
+時代	时代	shídài	4	N
+十分		shífēn	4	Adv
+實話	实话	shíhuà	4	N
+實際	实际	shíjì	4	Vs
+時刻	时刻	shíkè	4	N
+實力	实力	shílì	4	N
+石頭	石头	shítou	4	N
+石		shí	4	N
+實行	实行	shíxíng	4	V
+石油		shíyóu	4	N
+實在	实在	shízài	4	Vs
+使得		shǐde	4	Vst
+使用		shǐyòng	4	V
+事業	事业	shìyè	4	N
+事實	事实	shìshí	4	N
+適應	适应	shìyìng	4	Vst
+市長	市长	shìzhǎng	4	N
+殺	杀	shā	4	V
+晒		shài	4	V
+傷害	伤害	shānghài	4	V
+商品		shāngpǐn	4	N
+商業	商业	shāngyè	4	N
+上		shàng	4	Det
+上當	上当	shàngdàng	4	Vp
+上帝		Shàngdì	4	N
+上街		shàngjiē	4	Vi
+山區	山区	shānqū	4	N
+燒	烧	shāo	4	V
+少		shǎo	4	Adv
+蛇		shé	4	N
+設備	设备	shèbèi	4	N
+設計	设计	shèjì	4	N/V
+升		shēng	4	V
+聲	声	shēng	4	M
+生		shēng	4	V
+生產	生产	shēngchǎn	4	V
+聲調	声调	shēngdiào	4	N
+生動	生动	shēngdòng	4	Vs
+生活		shēnghuó	4	Vi
+生命		shēngmìng	4	N
+生字		shēngzì	4	N
+深入		shēnrù	4	Vs
+身上		shēnshàng	4	N
+省		shěng	4	Vst
+省錢	省钱	shěngqián	4	Vs-sep
+剩		shèng	4	Vst
+剩下		shèngxià	4	Vpt
+甚至		shènzhì	4	Adv
+收穫	收获	shōuhuò	4	N
+收音機	收音机	shōuyīnjī	4	N
+熟悉		shóuxī	4	Vst
+手續	手续	shǒuxù	4	N
+首		shǒu	4	M
+受得了		shòudeliao	4	Vst
+受傷	受伤	shòushāng	4	Vp-sep
+輸	输	shū	4	Vp
+蔬菜		shūcài	4	N
+舒適	舒适	shūshì	4	Vs
+數	数	shǔ	4	V
+數字	数字	shùzì	4	N
+雙	双	shuāng	4	Vs-attr
+刷牙		shuāyá	4	V-sep
+水餃	水饺	shuǐjiǎo	4	N
+水平		shuǐpíng	4	N
+睡著	睡着	shuìzháo	4	Vp
+水準	水准	shuǐzhǔn	4	N
+樹木	树木	shùmù	4	N
+順便	顺便	shùnbiàn	4	Adv
+順利	顺利	shùnlì	4	Vs
+說法	说法	shuōfǎ	4	N
+說明	说明	shuōmíng	4	N/V
+說起來	说起来	shuōqǐlái	4	Adv
+思考		sīkǎo	4	V
+思想		sīxiǎng	4	N
+似乎		sìhū	4	Adv
+似		sì	4	Adv
+寺廟	寺庙	sìmiào	4	N
+算了		suànle	4	Vs
+隨便	随便	suíbiàn	4	Vs
+隨時	随时	suíshí	4	Adv
+所		suǒ	4	M/Ptc
+所謂	所谓	suǒwèi	4	Vs-attr
+抬		tái	4	V
+態度	态度	tàidù	4	N
+堂		táng	4	N/M
+躺		tǎng	4	V
+談話	谈话	tánhuà	4	V-sep
+討厭	讨厌	tǎoyàn	4	Vst
+特地		tèdì	4	Adv
+特色		tèsè	4	N
+特殊		tèshū	4	Vs
+田		tián	4	N
+填		tián	4	V
+天堂		tiāntáng	4	N
+天天		tiāntiān	4	Adv
+天下		tiānxià	4	N
+條件	条件	tiáojiàn	4	N
+挑戰	挑战	tiǎozhàn	4	V
+題材	题材	tícái	4	N
+提到		tídào	4	Vpt
+提高		tígāo	4	V
+提供		tígōng	4	V
+體會	体会	tǐhuì	4	Vst
+體力	体力	tǐlì	4	N
+體貼	体贴	tǐtiē	4	Vst
+體重	体重	tǐzhòng	4	N
+貼	贴	tiē	4	V
+鐵	铁	tiě	4	N
+鐵路	铁路	tiělù	4	N
+聽力	听力	tīnglì	4	N
+聽起來	听起来	tīngqǐlái	4	Adv
+聽眾	听众	tīngzhòng	4	N
+挺		tǐng	4	Adv
+通		tōng	4	Vs-pred
+通過	通过	tōngguò	4	Vpt
+通知		tōngzhī	4	V/N
+同		tóng	4	Det/Prep
+同情		tóngqíng	4	Vst
+同事		tóngshì	4	N
+痛苦		tòngkǔ	4	Vs
+頭	头	tóu	4	Det
+投		tóu	4	V
+投資	投资	tóuzī	4	V
+土		tǔ	4	N
+團體	团体	tuántǐ	4	N
+團圓	团圆	tuányuán	4	Vs
+土地		tǔdì	4	N
+推		tuī	4	V
+推薦	推荐	tuījiàn	4	V
+推銷	推销	tuīxiāo	4	V
+退步		tuìbù	4	Vp
+退休		tuìxiū	4	Vp
+突然		túrán	4	Adv
+兔		tù	4	N
+兔子		tùzi	4	N
+外邊	外边	wàibiān	4	N
+外文		wàiwén	4	N
+外語	外语	wàiyǔ	4	N
+外祖父		wàizǔfù	4	N
+外祖母		wàizǔmǔ	4	N
+完成		wánchéng	4	Vpt
+玩具		wánjù	4	N
+晚		wǎn	4	Vs
+萬一	万一	wànyī	4	Adv
+網	网	wǎng	4	N
+往往		wǎngwǎng	4	Adv
+娃娃		wáwa	4	N
+維持	维持	wéichí	4	V
+微笑		wéixiào	4	Vi
+偉大	伟大	wěidà	4	Vs
+為	为	wèi	4	Prep
+未來	未来	wèilái	4	N
+位置		wèizhì	4	N
+溫度	温度	wēndù	4	N
+溫暖	温暖	wēnnuǎn	4	Vs
+溫柔	温柔	wēnróu	4	Vs
+文件		wénjiàn	4	N
+文學	文学	wénxué	4	N
+文章		wénzhāng	4	N
+文		wén	4	N
+文字		wénzì	4	N
+穩定	稳定	wěndìng	4	Vs
+問好	问好	wènhǎo	4	Vi
+問候	问候	wènhòu	4	V
+握手		wòshǒu	4	V-sep
+無	无	wú	4	Vs-attr
+無法	无法	wúfǎ	4	Adv
+無論如何	无论如何	wúlùnrúhé	4	Conj
+無窮	无穷	wúqióng	4	Vs
+無所謂	无所谓	wúsuǒwèi	4	Vs
+誤會	误会	wùhuì	4	N
+物價	物价	wùjià	4	N
+西北		xīběi	4	N
+西餐		xīcān	4	N
+西方		Xīfāng	4	N
+西南		xīnán	4	N
+吸毒		xīdú	4	V-sep
+犧牲	牺牲	xīshēng	4	Vpt
+吸收		xīshōu	4	V
+希望		xīwàng	4	N
+吸引		xīyǐn	4	Vst
+喜愛	喜爱	xǐ'ài	4	Vst
+細	细	xì	4	Vs
+細心	细心	xìxīn	4	Vs
+戲	戏	xì	4	N
+戲劇	戏剧	xìjù	4	N
+系統	系统	xìtǒng	4	N
+下		xià	4	Det/M
+嚇	吓	xià	4	Vs-pred
+下來	下来	xiàlái	4	Ptc
+線	线	xiàn	4	N
+相對	相对	xiāngduì	4	Vs-attr
+相反		xiāngfǎn	4	Vs
+相關	相关	xiāngguān	4	Vs
+香水		xiāngshuǐ	4	N
+相同		xiāngtóng	4	Vs
+詳細	详细	xiángxì	4	Vs
+響	响	xiǎng	4	Vp
+想到		xiǎngdào	4	Vpt
+想像		xiǎngxiàng	4	N/Vst
+項	项	xiàng	4	M
+相聲	相声	xiàngshēng	4	N
+限		xiàn	4	Vst
+現實	现实	xiànshí	4	N/Vs
+現象	现象	xiànxiàng	4	N
+限制		xiànzhì	4	N
+小說	小说	xiǎoshuō	4	N
+小偷		xiǎotōu	4	N
+小組	小组	xiǎozǔ	4	N
+效果		xiàoguǒ	4	N
+笑話	笑话	xiàohuà	4	N
+孝順	孝顺	xiàoshùn	4	Vs/Vst
+校長	校长	xiàozhǎng	4	N
+嚇一跳	吓一跳	xiàyītiào	4	Vp
+協助	协助	xiézhù	4	V
+血		xiě	4	N
+謝	谢	xiè	4	V
+心得		xīndé	4	N
+心理		xīnlǐ	4	N
+心意		xīnyì	4	N
+欣賞	欣赏	xīnshǎng	4	Vst
+新生		xīnshēng	4	N
+信		xìn	4	Vst
+信心		xìnxīn	4	N
+興奮	兴奋	xīngfèn	4	Vs
+行動	行动	xíngdòng	4	N
+形容		xíngróng	4	V
+行為	行为	xíngwéi	4	N
+醒		xǐng	4	Vp
+醒來	醒来	xǐnglái	4	Vp
+姓		xìng	4	N
+性別	性别	xìngbié	4	N
+性格		xìnggé	4	N
+幸好		xìnghǎo	4	Adv
+幸虧	幸亏	xìngkuī	4	Adv
+幸運	幸运	xìngyùn	4	Vs
+兇	凶	xiōng	4	Vs
+凶		xiōng	4	Vs
+熊貓	熊猫	xióngmāo	4	N
+修		xiū	4	V
+修改		xiūgǎi	4	V
+修理		xiūlǐ	4	V
+需求		xūqiú	4	N
+需要		xūyào	4	N
+選舉	选举	xuǎnjǔ	4	N
+學費	学费	xuéfèi	4	N
+學會	学会	xuéhuì	4	Vpt
+學問	学问	xuéwèn	4	N
+尋找	寻找	xúnzhǎo	4	V
+訓練	训练	xùnliàn	4	V
+押金		yājīn	4	N
+鴨	鸭	yā	4	N
+鴨子	鸭子	yāzi	4	N
+牙		yá	4	N
+牙齒	牙齿	yáchǐ	4	N
+演		yǎn	4	V
+演出		yǎnchū	4	V
+羊		yáng	4	N
+陽光	阳光	yángguāng	4	N
+養	养	yǎng	4	V
+樣樣	样样	yàngyàng	4	Det
+煙火	烟火	yānhuǒ	4	N
+眼光		yǎnguāng	4	N
+演講	演讲	yǎnjiǎng	4	Vi
+眼淚	眼泪	yǎnlèi	4	N
+演員	演员	yǎnyuán	4	N
+邀請	邀请	yāoqǐng	4	V
+咬		yǎo	4	V
+要		yào	4	Vst
+要不然		yàobùrán	4	Conj
+要不是		yàobùshì	4	Conj
+要緊	要紧	yàojǐn	4	Vs
+也好		yěhǎo	4	
+頁	页	yè	4	M
+夜裡	夜里	yèlǐ	4	N
+夜裏	夜里	yèlǐ	4	N
+一般來說	一般来说	yībānláishuō	4	
+一點	一点	yīdiǎn	4	Adv
+一點兒	一点儿	yīdiǎnr	4	Adv
+一方面		yīfāngmiàn	4	Conj
+衣櫃	衣柜	yīguì	4	N
+依靠		yīkào	4	V
+一連	一连	yīlián	4	Adv
+一生		yīshēng	4	N
+一時	一时	yīshí	4	N
+一同		yītóng	4	Adv
+一向		yīxiàng	4	Adv
+一樣	一样	yīyàng	4	N
+以		yǐ	4	Prep
+以及		yǐjí	4	Conj
+以來	以来	yǐlái	4	N
+以免		yǐmiǎn	4	Conj
+藝術	艺术	yìshù	4	N
+意外		yìwài	4	N
+意義	意义	yìyì	4	N
+陰	阴	yīn	4	Vs
+因此		yīncǐ	4	Conj
+音響	音响	yīnxiǎng	4	N
+引起		yǐnqǐ	4	V
+英俊		yīngjùn	4	Vs
+贏	赢	yíng	4	Vp
+營養	营养	yíngyǎng	4	N
+影片		yǐngpiàn	4	N
+勇敢		yǒnggǎn	4	Vs
+擁有	拥有	yǒngyǒu	4	Vst
+永遠	永远	yǒngyuǎn	4	Adv
+用		yòng	4	Prep
+用法		yòngfǎ	4	N
+用品		yòngpǐn	4	N
+優點	优点	yōudiǎn	4	N
+幽默		yōumò	4	Vs
+優秀	优秀	yōuxiù	4	Vs
+遊客	游客	yóukè	4	N
+由於	由于	yóuyú	4	Conj
+有效		yǒuxiào	4	Vs
+友誼	友谊	yǒuyì	4	N
+愉快		yúkuài	4	Vs
+於是	于是	yúshì	4	Conj
+噢		yǔ	4	Ptc
+與	与	yǔ	4	Conj/Prep
+玉		yù	4	N
+玉米		yùmǐ	4	N
+預備	预备	yùbèi	4	V
+遇到		yùdào	4	Vpt
+預習	预习	yùxí	4	V
+圓	圆	yuán	4	N
+員工	员工	yuángōng	4	N
+原諒	原谅	yuánliàng	4	Vst
+願望	愿望	yuànwàng	4	N
+約	约	yuē	4	Adv
+月餅	月饼	yuèbǐng	4	N
+閱讀	阅读	yuèdú	4	V
+樂團	乐团	yuètuán	4	N
+雲	云	yún	4	N
+運氣	运气	yùnqì	4	N
+在		zài	4	Vst
+在意		zàiyì	4	Vst
+在於	在于	zàiyú	4	Vst
+早		zǎo	4	Adv
+早日		zǎorì	4	Adv
+早晚		zǎowǎn	4	N
+造成		zàochéng	4	Vpt
+噪音		zàoyīn	4	N
+增加		zēngjiā	4	Vpt
+增		zēng	4	Vpt
+責任	责任	zérèn	4	N
+知		zhī	4	Vst
+之後	之后	zhīhòu	4	N
+之間	之间	zhījiān	4	N
+之前		zhīqián	4	N
+直		zhí	4	Vs
+直到		zhídào	4	Prep
+值得		zhíde	4	Vst
+殖民地		zhímíndì	4	N
+植物		zhíwù	4	N
+職業	职业	zhíyè	4	N
+職員	职员	zhíyuán	4	N
+指		zhǐ	4	V
+只是		zhǐshì	4	Conj
+只有		zhǐyǒu	4	Adv/Conj
+制度		zhìdù	4	N
+智慧		zhìhuì	4	N
+至少		zhìshǎo	4	Adv
+至於	至于	zhìyú	4	Prep
+摘		zhāi	4	V
+站		zhàn	4	N
+暫時	暂时	zhànshí	4	Adv
+戰爭	战争	zhànzhēng	4	N
+掌握		zhǎngwò	4	V
+障礙	障碍	zhàng'ài	4	N
+著急	着急	zhāojí	4	Vs
+招待		zhāodài	4	V
+招牌		zhāopái	4	N
+找錢	找钱	zhǎoqián	4	V-sep
+照		zhào	4	V/Prep
+炸		zhà	4	V
+珍貴	珍贵	zhēnguì	4	Vs
+真理		zhēnlǐ	4	N
+真實	真实	zhēnshí	4	Vs
+真是		zhēnshì	4	Adv
+真心		zhēnxīn	4	Vs
+真正		zhēnzhèng	4	Adv/Vs-attr
+整理		zhěnglǐ	4	V
+整齊	整齐	zhěngqí	4	Vs
+證明	证明	zhèngmíng	4	V
+正確	正确	zhèngquè	4	Vs
+證書	证书	zhèngshū	4	N
+政治		zhèngzhì	4	N
+哲學	哲学	zhéxué	4	N
+這樣子	这样子	zhèyàngzi	4	Vs/Adv
+中部		zhōngbù	4	N
+中餐		zhōngcān	4	N
+終於	终于	zhōngyú	4	Adv
+種	种	zhòng	4	V
+重點	重点	zhòngdiǎn	4	N
+重視	重视	zhòngshì	4	Vst
+周圍	周围	zhōuwéi	4	N
+煮		zhǔ	4	V
+主動	主动	zhǔdòng	4	Vs
+主婦	主妇	zhǔfù	4	N
+主管		zhǔguǎn	4	N
+主任		zhǔrèn	4	N
+主題	主题	zhǔtí	4	N
+主要		zhǔyào	4	Adv/Vs-attr
+主意		zhǔyì	4	N
+助		zhù	4	V
+祝福		zhùfú	4	N/V
+助理		zhùlǐ	4	N
+著名		zhùmíng	4	Vs
+狀態	状态	zhuàngtài	4	N
+專心	专心	zhuānxīn	4	Vs
+專業	专业	zhuānyè	4	Vs-attr
+追求		zhuīqiú	4	V
+準時	准时	zhǔnshí	4	Vs
+著	着	zhuó	4	V
+資源	资源	zīyuán	4	N
+仔細	仔细	zǐxì	4	Vs
+自從	自从	zìcóng	4	Prep
+自動	自动	zìdòng	4	Vs
+自殺	自杀	zìshā	4	Vi
+自信		zìxìn	4	N
+自在		zìzài	4	Vs
+宗教		zōngjiào	4	N
+總而言之	总而言之	zǒng'éryánzhī	4	Conj
+總算	总算	zǒngsuàn	4	Adv
+總統	总统	zǒngtǒng	4	N
+總之	总之	zǒngzhī	4	Conj
+走走		zǒuzǒu	4	Vi
+組	组	zǔ	4	M
+祖父		zǔfù	4	N
+祖母		zǔmǔ	4	N
+祖先		zǔxiān	4	N
+醉		zuì	4	Vp
+最初		zuìchū	4	N
+最多		zuìduō	4	Adv
+最後	最后	zuìhòu	4	N
+最佳		zuìjiā	4	Vs-attr
+尊敬		zūnjìng	4	Vst
+作		zuò	4	V
+做夢	做梦	zuòmèng	4	V-sep
+作夢	作梦	zuòmèng	4	V-sep
+作品		zuòpǐn	4	N
+做人		zuòrén	4	Vi
+做事		zuòshì	4	Vi
+作者		zuòzhě	4	N
+愛好	爱好	àihào	5	N/Vst
+愛護	爱护	àihù	5	Vst
+愛人	爱人	àirén	5	N
+哎呀		āiyā	5	Ptc
+哎喲	哎哟	āiyāo	5	Ptc
+癌症		áizhèng	5	N
+癌		ái	5	N
+按		àn	5	V
+暗		àn	5	Vs
+案		àn	5	N
+案子		ànzi	5	N
+骯髒	肮脏	āngzāng	5	Vs
+按時	按时	ànshí	5	Adv
+安慰		ānwèi	5	V
+暗中		ànzhōng	5	Adv
+安裝	安装	ānzhuāng	5	V
+熬		áo	5	V
+拔		bá	5	V
+罷工	罢工	bàgōng	5	Vi
+敗	败	bài	5	Vp
+拜		bài	5	V
+拜拜		bàibài	5	Vi
+拜訪	拜访	bàifǎng	5	V
+拜年		bàinián	5	V-sep
+拜託	拜托	bàituō	5	V
+擺脫	摆脱	bǎituō	5	V
+罷了	罢了	bàle	5	Ptc
+拌		bàn	5	V
+般		bān	5	
+磅		bàng	5	M
+棒		bàng	5	M
+棒子		bàngzi	5	N
+辦公	办公	bàngōng	5	Vi
+傍晚		bāngwǎn	5	N
+半路		bànlù	5	N
+辦事	办事	bànshì	5	Vi
+半數	半数	bànshù	5	Det
+扮演		bànyǎn	5	V
+搬運	搬运	bānyùn	5	V
+班長	班长	bānzhǎng	5	N
+抱		bào	5	Vst
+報	报	bào	5	V
+保		bǎo	5	V
+寶	宝	bǎo	5	N
+寶寶	宝宝	bǎobao	5	N
+保持		bǎochí	5	V
+報仇	报仇	bàochóu	5	V-sep
+保存		bǎocún	5	V
+報答	报答	bàodá	5	Vpt
+報到	报到	bàodào	5	Vi
+報導	报导	bàodǎo	5	V/N
+包裹		bāoguǒ	5	N
+報警	报警	bàojǐng	5	V-sep
+暴力		bàolì	5	N/Vs
+保留		bǎoliú	5	V
+抱歉		bàoqiàn	5	Vs
+報社	报社	bàoshè	5	N
+保衛	保卫	bǎowèi	5	V
+暴躁		bàozào	5	Vs
+爆炸		bàozhà	5	Vp
+保障		bǎozhàng	5	N/V
+包裝	包装	bāozhuāng	5	N/V
+把握		bǎwò	5	N
+備	备	bèi	5	V
+被		bèi	5	N
+被子		bèizi	5	N
+悲劇	悲剧	bēijù	5	N
+背面		bèimiàn	5	N
+悲痛		bēitòng	5	Vs
+背心		bèixīn	5	N
+奔		bēn	5	Vi
+本來	本来	běnlái	5	Vs-attr
+本領	本领	běnlǐng	5	N
+奔跑		bēnpǎo	5	Vi
+本身		běnshēn	5	N
+本土		běntǔ	5	N
+笨重		bènzhòng	5	Vs
+閉	闭	bì	5	Vi
+便		biàn	5	Adv/N
+扁		biǎn	5	Vs
+編	编	biān	5	V
+變動	变动	biàndòng	5	N/Vp
+便利		biànlì	5	Vs
+表格		biǎogé	5	N
+表情		biǎoqíng	5	N
+標題	标题	biāotí	5	N
+表揚	表扬	biǎoyáng	5	V
+標誌	标志	biāozhì	5	N
+彼此		bǐcǐ	5	N
+筆記	笔记	bǐjì	5	N
+比較	比较	bǐjiào	5	N/V
+比例		bǐlì	5	N
+並	并	bìng	5	Adv/Conj
+丙		bǐng	5	N
+冰		bīng	5	Vs
+病毒		bìngdú	5	N
+病房		bìngfáng	5	N
+並且	并且	bìngqiě	5	Conj
+病情		bìngqíng	5	N
+筆試	笔试	bǐshì	5	N/Vi
+鼻涕		bítì	5	N
+必須	必须	bìxū	5	Vs-attr
+必要		bìyào	5	N
+薄		bó	5	Vs
+撥	拨	bō	5	V
+菠菜		bōcài	5	N
+波動	波动	bōdòng	5	Vi
+玻璃		bōlí	5	N
+薄弱		bóruò	5	Vs
+捕		bǔ	5	V
+補	补	bǔ	5	V
+不安		bù'ān	5	Vs
+補償	补偿	bǔcháng	5	V
+不成		bùchéng	5	Vs-pred
+補充	补充	bǔchōng	5	V
+不大		bùdà	5	Adv
+不當	不当	bùdàng	5	Vs
+不到		bùdào	5	Vst
+不得已		bùdéyǐ	5	Vs
+部隊	部队	bùduì	5	N
+不敢當	不敢当	bùgǎndāng	5	Vs
+布告		bùgào	5	N
+佈告	布告	bùgào	5	N
+布告欄	布告栏	bùgàolán	5	N
+佈告欄	布告栏	bùgàolán	5	N
+不顧	不顾	bùgù	5	Vst
+不見得	不见得	bùjiànde	5	Adv
+不僅	不仅	bùjǐn	5	Conj
+補課	补课	bǔkè	5	V-sep
+不良		bùliáng	5	Vs
+不平		bùpíng	5	Vs
+不然		bùrán	5	Conj
+不如		bùrú	5	Vst
+補習	补习	bǔxí	5	V-sep
+補習班	补习班	bǔxíbān	5	N
+不許	不许	bùxǔ	5	Adv
+不宜		bùyí	5	Vs
+不由得		bùyóude	5	Adv
+部長	部长	bùzhǎng	5	N
+不止		bùzhǐ	5	Vs-pred
+補助	补助	bǔzhù	5	N/V
+踩		cǎi	5	V
+採	采	cǎi	5	V
+財產	财产	cáichǎn	5	N
+財富	财富	cáifù	5	N
+採購	采购	cǎigòu	5	V
+才能		cáinéng	5	N
+裁判		cáipàn	5	N
+彩色		cǎisè	5	Vs-attr
+裁員	裁员	cáiyuán	5	Vpt
+蠶	蚕	cán	5	N
+慘	惨	cǎn	5	Vs
+藏		cáng	5	V
+倉庫	仓库	cāngkù	5	N
+慚愧	惭愧	cánkuì	5	Vs
+參與	参与	cānyù	5	V
+操心		cāoxīn	5	Vs
+操作		cāozuò	5	V
+冊	册	cè	5	M
+測量	测量	cèliáng	5	V
+策略		cèlüè	5	N
+測試	测试	cèshì	5	V
+測驗	测验	cèyàn	5	N/V
+差		chā	5	N
+插		chā	5	V
+差錯	差错	chācuò	5	N
+插花		chāhuā	5	Vi
+茶會	茶会	cháhuì	5	N
+拆		chāi	5	V
+差距		chājù	5	N
+產	产	chǎn	5	V
+長處	长处	chángchù	5	N
+場地	场地	chǎngdì	5	N
+長度	长度	chángdù	5	N
+長方形	长方形	chángfāngxíng	5	N
+場合	场合	chǎnghé	5	N
+長久	长久	chángjiǔ	5	Vs
+廠商	厂商	chǎngshāng	5	N
+嘗試	尝试	chángshì	5	N
+嚐試	尝试	chángshì	5	N
+常識	常识	chángshì	5	N
+場所	场所	chǎngsuǒ	5	N
+長途	长途	chángtú	5	Vs-attr
+產量	产量	chǎnliàng	5	N
+產業	产业	chǎnyè	5	N
+朝		cháo	5	Prep
+抄		chāo	5	V
+超出		chāochū	5	Vpt
+潮流		cháoliú	5	N
+吵鬧	吵闹	chǎonào	5	Vi
+鈔票	钞票	chāopiào	5	N
+超人		chāorén	5	N
+潮溼	潮湿	cháoshī	5	Vs
+潮濕	潮湿	cháoshī	5	Vs
+超越		chāoyuè	5	V
+超重		chāozhòng	5	Vp
+插圖	插图	chātú	5	N
+茶葉	茶叶	cháyè	5	N
+扯		chě	5	V
+澈底		chèdǐ	5	Vs
+徹底	彻底	chèdǐ	5	Vs
+沉		chén	5	Vp
+沈		chén	5	Vp
+成		chéng	5	M/Vpt
+稱	称	chēng	5	V
+撐	撑	chēng	5	V
+成本		chéngběn	5	N
+成分		chéngfèn	5	N
+成份		chéngfèn	5	N
+成交		chéngjiāo	5	Vp
+乘客		chéngkè	5	N
+誠懇	诚恳	chéngkěn	5	Vs
+成立		chénglì	5	Vpt
+成人		chéngrén	5	N
+成天		chéngtiān	5	Adv
+成為	成为	chéngwéi	5	Vpt
+呈現	呈现	chéngxiàn	5	Vpt
+程序		chéngxù	5	N
+誠意	诚意	chéngyì	5	N
+成語	成语	chéngyǔ	5	N
+陳列	陈列	chénliè	5	V
+車票	车票	chēpiào	5	N
+遲	迟	chí	5	Vp
+翅膀		chìbǎng	5	N
+翅		chì	5	N
+尺寸		chǐcùn	5	N
+吃虧	吃亏	chīkuī	5	Vs
+持續	持续	chíxù	5	Vaux
+遲早	迟早	chízǎo	5	Adv
+重		chóng	5	Adv
+沖	冲	chōng	5	V
+衝	冲	chōng	5	Vi
+崇拜		chóngbài	5	Vst
+充分		chōngfèn	5	Vs
+充份		chōngfèn	5	Vs
+崇高		chónggāo	5	Vs
+充滿	充满	chōngmǎn	5	Vpt
+衝突	冲突	chōngtú	5	N
+充足		chōngzú	5	Vs
+愁		chóu	5	Vs/N
+抽屜	抽屉	chōutì	5	N
+處	处	chù	5	M
+出		chū	5	Vst
+初		chū	5	Adv
+傳播	传播	chuánbò	5	V
+傳達	传达	chuándá	5	V
+傳單	传单	chuándān	5	N
+床		chuáng	5	M
+幢		chuáng	5	M
+闖	闯	chuǎng	5	V
+床單	床单	chuángdān	5	N
+窗口		chuāngkǒu	5	N
+創新	创新	chuàngxīn	5	V
+創作	创作	chuàngzuò	5	N/V
+傳染	传染	chuánrǎn	5	V
+傳說	传说	chuánshuō	5	N/V
+傳送	传送	chuánsòng	5	V
+傳統	传统	chuántǒng	5	N
+傳真	传真	chuánzhēn	5	V
+初步		chūbù	5	Adv/Vs-attr
+出產	出产	chūchǎn	5	Vst
+處處	处处	chùchù	5	Adv
+儲存	储存	chúcún	5	V
+處罰	处罚	chǔfá	5	V
+除非		chúfēi	5	Conj
+初級	初级	chūjí	5	Vs
+出境		chūjìng	5	Vp
+出口		chūkǒu	5	V/N
+純	纯	chún	5	Vs
+出色		chūsè	5	Vs
+出身		chūshēn	5	Vpt
+出事		chūshì	5	Vp-sep
+出售		chūshòu	5	V
+出席		chūxí	5	V
+儲蓄	储蓄	chúxù	5	Vi
+出院		chūyuàn	5	Vi
+刺		cì	5	V
+詞典	词典	cídiǎn	5	N
+辭典	辞典	cídiǎn	5	N
+詞彙	词汇	cíhuì	5	N
+刺激		cìjī	5	V
+次數	次数	cìshù	5	N
+此外		cǐwài	5	Conj
+辭職	辞职	cízhí	5	Vi
+從	从	cóng	5	Adv
+從此	从此	cóngcǐ	5	Adv
+從沒	从没	cóngméi	5	Adv
+從事	从事	cóngshì	5	Vst
+湊	凑	còu	5	V
+粗		cū	5	Vs
+催		cuī	5	V
+促進	促进	cùjìn	5	V
+存款		cúnkuǎn	5	N
+搓		cuō	5	V
+錯過	错过	cuòguò	5	Vpt
+措施		cuòshī	5	N
+錯字	错字	cuòzì	5	N
+粗心		cūxīn	5	Vs
+打		dǎ	5	M
+大半		dàbàn	5	Det
+打扮		dǎbàn	5	Vi
+打包		dǎbāo	5	V
+大便		dàbiàn	5	N
+大膽	大胆	dàdǎn	5	Vs
+達到	达到	dádào	5	Vpt
+大地		dàdì	5	N
+大都		dàdōu	5	Adv
+打斷	打断	dǎduàn	5	Vpt
+大哥		dàgē	5	N
+待		dài	5	V/Vi
+代		dài	5	N/V
+帶	带	dài	5	N
+帶子	带子	dàizi	5	N
+代表		dàibiǎo	5	Vs
+帶動	带动	dàidòng	5	V
+大夫		dàifū	5	N
+代溝	代沟	dàigōu	5	N
+待會	待会	dāihuì	5	Adv
+待會兒	待会儿	dāihuìr	5	Adv
+代價	代价	dàijià	5	N
+貸款	贷款	dàikuǎn	5	N/V-sep
+代理		dàilǐ	5	V
+帶路	带路	dàilù	5	Vi
+待遇		dàiyù	5	N
+大街		dàjiē	5	N
+大力		dàlì	5	Adv
+大量		dàliàng	5	Det
+單	单	dān	5	Adv
+單子	单子	dānzi	5	N
+大腦	大脑	dànǎo	5	N
+蛋白質	蛋白质	dànbáizhí	5	N
+擔保	担保	dānbǎo	5	V
+單調	单调	dāndiào	5	Vs
+當	当	dàng	5	Vst
+擋	挡	dǎng	5	V
+檔案	档案	dǎng'àn	5	N
+當初	当初	dāngchū	5	N
+當選	当选	dāngxuǎn	5	Vpt
+當中	当中	dāngzhōng	5	N
+膽量	胆量	dǎnliàng	5	N
+誕生	诞生	dànshēng	5	Vp
+單位	单位	dānwèi	5	N
+耽誤	耽误	dānwù	5	V
+膽小	胆小	dǎnxiǎo	5	Vs
+到達	到达	dàodá	5	Vpt
+道路		dàolù	5	N
+倒楣		dǎoméi	5	Vs
+到期		dàoqí	5	Vp
+導演	导演	dǎoyǎn	5	V
+導遊	导游	dǎoyóu	5	N
+大清早		dàqīngzǎo	5	N
+打擾	打扰	dǎrǎo	5	V
+大嫂		dàsǎo	5	N
+打算		dǎsuàn	5	N
+大腿		dàtuǐ	5	N
+大型		dàxíng	5	Vs-attr
+大意		dàyì	5	Vs/N
+大有		dàyǒu	5	Vst
+打招呼		dǎ zhāohū	5	V-sep
+打針	打针	dǎzhēn	5	V-sep
+大致		dàzhì	5	Adv/Vs-attr
+大眾	大众	dàzhòng	5	N
+打字		dǎzì	5	V-sep
+大自然		dàzìrán	5	N
+得分		défēn	5	Vs-sep
+得獎	得奖	déjiǎng	5	V-sep
+得了		déle	5	
+登		dēng	5	V
+凳		dèng	5	N
+凳子		dèngzi	5	N
+等不及		děngbùjí	5	Vi
+等級	等级	děngjí	5	N
+登記	登记	dēngjì	5	Vp
+登山		dēngshān	5	V-sep
+等於	等于	děngyú	5	Vst
+得罪		dézuì	5	Vpt
+抵		dǐ	5	V
+遞	递	dì	5	V
+滴		dī	5	M/V
+墊	垫	diàn	5	V
+電報	电报	diànbào	5	N
+電動	电动	diàndòng	5	Vs-attr
+典禮	典礼	diǎnlǐ	5	N
+電器	电器	diànqì	5	N
+點燃	点燃	diǎnrán	5	V
+電扇	电扇	diànshàn	5	N
+電風扇	电风扇	diànfēngshàn	5	N
+電視劇	电视剧	diànshìjù	5	N
+電視台	电视台	diànshìtái	5	N
+電視臺	电视台	diànshìtái	5	N
+電台	电台	diàntái	5	N
+電臺	电台	diàntái	5	N
+點頭	点头	diǎntóu	5	V-sep
+電線	电线	diànxiàn	5	N
+典型		diǎnxíng	5	Vs/N
+電子	电子	diànzǐ	5	N
+吊		diào	5	V
+釣	钓	diào	5	V
+雕刻		diāokè	5	N/V
+釣魚	钓鱼	diàoyú	5	V-sep
+低潮		dīcháo	5	N
+跌		dié	5	Vp
+跌倒		diédǎo	5	Vp
+抵抗		dǐkàng	5	V
+地面		dìmiàn	5	N
+頂	顶	dǐng	5	M
+丁		dīng	5	N
+盯		dīng	5	V
+訂購	订购	dìnggòu	5	V
+訂婚	订婚	dìnghūn	5	V-sep
+定期		dìngqí	5	Adv/Vs-attr
+的確	的确	díquè	5	Adv
+地毯		dìtǎn	5	N
+丟臉	丢脸	diūliǎn	5	Vs-sep
+丟人	丢人	diūrén	5	Vs
+地下		dìxià	5	Vs-attr
+地震		dìzhèn	5	Vp
+洞		dòng	5	N
+凍	冻	dòng	5	Vs
+棟	栋	dòng	5	M
+動不動	动不动	dòngbùdòng	5	Adv
+動詞	动词	dòngcí	5	N
+懂得		dǒngde	5	Vst
+冬季		dōngjì	5	N
+動人	动人	dòngrén	5	Vs
+動身	动身	dòngshēn	5	Vi
+動手	动手	dòngshǒu	5	Vi
+動作	动作	dòngzuò	5	N
+鬥爭	斗争	dòuzhēng	5	Vi
+毒		dú	5	N/Vs
+度		dù	5	V
+賭	赌	dǔ	5	V
+斷	断	duàn	5	Vp
+端		duān	5	V
+鍛鍊	锻炼	duànliàn	5	V
+度過	度过	dùguò	5	V
+渡過	渡过	dùguò	5	V
+隊	队	duì	5	M
+堆		duī	5	V
+對岸	对岸	duì'àn	5	N
+對策	对策	duìcè	5	N
+對待	对待	duìdài	5	V
+對付	对付	duìfù	5	V
+對抗	对抗	duìkàng	5	V
+對立	对立	duìlì	5	Vs
+對於	对于	duìyú	5	Prep
+隊員	队员	duìyuán	5	N
+獨立	独立	dúlì	5	Vs
+頓	顿	dùn	5	M
+噸	吨	dùn	5	M
+蹲		dūn	5	Vi
+躲		duǒ	5	Vi
+奪	夺	duó	5	V
+多半		duōbàn	5	Det
+多半兒	多半儿	duōbànr	5	Det
+多多		duōduō	5	Adv
+多少		duōshǎo	5	Adv
+多數	多数	duōshù	5	Det
+多謝	多谢	duōxiè	5	Vst
+獨自	独自	dúzì	5	Adv
+鵝	鹅	é	5	N
+惡劣	恶劣	èliè	5	Vs
+而已		éryǐ	5	Ptc
+罰	罚	fá	5	V
+發	发	fā	5	Vp
+發動	发动	fādòng	5	V
+發抖	发抖	fādǒu	5	Vi
+反		fǎn	5	V/Vst
+番		fān	5	M
+翻		fān	5	V
+犯錯	犯错	fàncuò	5	V-sep
+反對	反对	fǎnduì	5	Vst
+犯法		fànfǎ	5	V-sep
+反覆	反复	fǎnfù	5	Adv
+防		fáng	5	V
+方		fāng	5	Vs-attr
+方案		fāng'àn	5	N
+放大		fàngdà	5	V
+放棄	放弃	fàngqì	5	V
+防守		fángshǒu	5	V
+放手		fàngshǒu	5	Vi
+放鬆	放松	fàngsōng	5	Vs
+放學	放学	fàngxué	5	Vp-sep
+防止		fángzhǐ	5	V
+返回		fǎnhuí	5	V
+反抗		fǎnkàng	5	V
+繁忙		fánmáng	5	Vs
+反面		fǎnmiàn	5	N
+煩惱	烦恼	fánnǎo	5	N
+犯人		fànrén	5	N
+繁榮	繁荣	fánróng	5	Vs
+反問	反问	fǎnwèn	5	V
+反映		fǎnyìng	5	V
+反應	反应	fǎnyìng	5	Vi
+反正		fǎnzhèng	5	Adv
+繁殖		fánzhí	5	V
+犯罪		fànzuì	5	V-sep
+發起	发起	fāqǐ	5	Vp
+發射	发射	fāshè	5	V
+髮型	发型	fǎxíng	5	N
+發行	发行	fāxíng	5	V
+發言	发言	fāyán	5	V-sep
+發炎	发炎	fāyán	5	Vp
+發揚	发扬	fāyáng	5	V
+發音	发音	fāyīn	5	Vi/N
+法院		fǎyuàn	5	N
+發展	发展	fāzhǎn	5	V/N
+法子		fázi	5	N
+肥		féi	5	Vs
+肺		fèi	5	N
+費	费	fèi	5	Vst
+非法		fēifǎ	5	Vs-attr
+廢話	废话	fèihuà	5	N
+肥胖		féipàng	5	Vs
+廢氣	废气	fèiqì	5	N
+廢水	废水	fèishuǐ	5	N
+廢物	废物	fèiwù	5	N
+份		fèn	5	N
+份兒	份儿	fènr	5	N
+粉筆	粉笔	fěnbǐ	5	N
+分別	分别	fēnbié	5	Adv/N/V
+分布		fēnbù	5	Vs
+分佈	分布	fēnbù	5	Vs
+奮鬥	奋斗	fèndòu	5	Vi
+紛紛	纷纷	fēnfēn	5	Adv
+吩咐		fēnfù	5	V
+逢		féng	5	Vst
+縫	缝	féng	5	V
+封		fēng	5	V
+瘋	疯	fēng	5	Vp
+諷刺	讽刺	fèngcì	5	V
+封建		fēngjiàn	5	Vs-attr
+瘋狂	疯狂	fēngkuáng	5	Vs
+蜂蜜		fēngmì	5	N
+分工		fēngōng	5	Vi
+風氣	风气	fēngqì	5	N
+風趣	风趣	fēngqù	5	Vs
+風險	风险	fēngxiǎn	5	N
+瘋子	疯子	fēngzi	5	N
+粉紅	粉红	fěnhóng	5	Vs-attr
+分明		fēnmíng	5	Vs-pred/Adv
+憤怒	愤怒	fènnù	5	Vs
+分配		fēnpèi	5	V
+分散		fēnsàn	5	Vs
+分手		fēnshǒu	5	Vp
+分數	分数	fēnshù	5	N
+分析		fēnxī	5	N/V
+分享		fēnxiǎng	5	V
+否定		fǒudìng	5	V
+否認	否认	fǒurèn	5	V
+幅		fú	5	M
+扶		fú	5	V
+服		fú	5	V/Vst
+浮		fú	5	Vi
+付		fù	5	M
+赴		fù	5	V
+副		fù	5	M
+富		fù	5	Vs-attr
+輔導	辅导	fǔdǎo	5	V
+符號	符号	fúhào	5	N
+附加		fùjiā	5	Vpt
+婦女	妇女	fùnǚ	5	N
+夫妻		fūqī	5	N
+夫人		fūrén	5	N
+富裕		fùyù	5	Vs
+複雜	复杂	fùzá	5	Vs
+複製	复制	fùzhì	5	V
+該	该	gāi	5	Det
+蓋	盖	gài	5	N
+蓋子	盖子	gàizi	5	N
+改革		gǎigé	5	V
+改造		gǎizào	5	V
+改正		gǎizhèng	5	V
+幹	干	gàn	5	V
+趕	赶	gǎn	5	Vs
+肝		gān	5	N
+乾杯	干杯	gānbēi	5	Vi
+幹部	干部	gànbù	5	N
+乾脆	干脆	gāncuì	5	Vs
+感到		gǎndào	5	Vpt
+感恩		gǎn'ēn	5	Vs
+鋼	钢	gāng	5	N
+鋼筆	钢笔	gāngbǐ	5	N
+港幣	港币	Gǎngbì	5	N
+港口		gǎngkǒu	5	N
+港		gǎng	5	N
+感激		gǎnjī	5	Vst
+趕緊	赶紧	gǎnjǐn	5	Adv
+幹嘛	干嘛	gànma	5	Adv/Vi
+感情		gǎnqíng	5	N
+感染		gǎnrǎn	5	Vpt
+幹什麼	干什么	gànshénme	5	
+感受		gǎnshòu	5	N/Vst
+告		gào	5	V
+高潮		gāocháo	5	N
+告辭	告辞	gàocí	5	Vi
+高大		gāodà	5	Vs
+高度		gāodù	5	N/Vs-attr
+高峰		gāofēng	5	N
+高貴	高贵	gāoguì	5	Vs
+高明		gāomíng	5	Vs
+高手		gāoshǒu	5	N
+高原		gāoyuán	5	N
+隔		gé	5	Vst/Prep
+各		gè	5	Adv
+割		gē	5	V
+擱	搁	gē	5	V
+個別	个别	gèbié	5	Vs-attr
+歌唱		gēchàng	5	Vi
+各行各業	各行各业	gèhánggèyè	5	N
+歌劇	歌剧	gējù	5	N
+革命		gémìng	5	N
+根本		gēnběn	5	Adv/N
+根據	根据	gēnjù	5	N
+歌手		gēshǒu	5	N
+個性	个性	gèxìng	5	N
+各自		gèzì	5	N
+供		gōng	5	V
+公布		gōngbù	5	V
+公佈	公布	gōngbù	5	V
+工程		gōngchéng	5	N
+工夫		gōngfu	5	N
+公公		gōnggōng	5	N
+工會	工会	gōnghuì	5	N
+公開	公开	gōngkāi	5	Vs
+公立		gōnglì	5	Vs-attr
+公平		gōngpíng	5	Vs
+工錢	工钱	gōngqián	5	N
+公式		gōngshì	5	N
+共同		gòngtóng	5	Adv
+供應	供应	gōngyìng	5	V
+公用		gōngyòng	5	Vs-attr
+公元		gōngyuán	5	N
+工資	工资	gōngzī	5	N
+構成	构成	gòuchéng	5	V
+構造	构造	gòuzào	5	N
+鼓		gǔ	5	N
+掛號信	挂号信	guàhàoxìn	5	N
+怪		guài	5	Adv
+怪不得		guàibùde	5	Adv
+慣	惯	guàn	5	Vp/V
+關	关	guān	5	M
+罐		guàn	5	N
+罐子		guànzi	5	N
+管道		guǎndào	5	N
+官方		guānfāng	5	N
+廣	广	guǎng	5	Vs
+光		guāng	5	Adv/Vp
+廣大	广大	guǎngdà	5	Vs
+廣泛	广泛	guǎngfàn	5	Vs
+廣告	广告	guǎnggào	5	Vi
+廣闊	广阔	guǎngkuò	5	Vs
+光亮		guāngliàng	5	Vs
+光臨	光临	guānglín	5	V
+光明		guāngmíng	5	Vs
+光榮	光荣	guāngróng	5	Vs
+光是		guāngshì	5	Adv
+觀光	观光	guānguāng	5	Vi/N
+光線	光线	guāngxiàn	5	N
+關鍵	关键	guānjiàn	5	N
+冠軍	冠军	guànjūn	5	N
+慣例	惯例	guànlì	5	N
+關上	关上	guānshàng	5	V
+罐頭	罐头	guàntou	5	N
+關於	关于	guānyú	5	Prep
+官員	官员	guānyuán	5	N
+管制		guǎnzhì	5	V
+瓜子		guāzǐ	5	N
+孤單	孤单	gūdān	5	Vs
+古典		gǔdiǎn	5	Vs
+固定		gùdìng	5	Vs
+跪		guì	5	Vi
+規定	规定	guīdìng	5	N/V
+規畫	规画	guīhuà	5	N/V
+規劃	规划	guīhuà	5	N/V
+規律	规律	guīlǜ	5	N
+櫃臺	柜台	guìtái	5	N
+櫃台	柜台	guìtái	5	N
+櫃檯	柜台	guìtái	5	N
+規則	规则	guīzé	5	N/Vs
+貴族	贵族	guìzú	5	N
+估計	估计	gūjì	5	V
+鼓勵	鼓励	gǔlì	5	N/V
+滾	滚	gǔn	5	Vi
+裹		guǒ	5	V
+過	过	guò	5	Adv
+鍋	锅	guō	5	N
+鍋子	锅子	guōzi	5	N
+過程	过程	guòchéng	5	N
+過度	过度	guòdù	5	Vs
+過渡	过渡	guòdù	5	Vi
+國會	国会	Guóhuì	5	N
+國籍	国籍	guójí	5	N
+國際	国际	guójì	5	N
+國立	国立	guólì	5	Vs-attr
+過節	过节	guòjié	5	V-sep
+過濾	过滤	guòlǜ	5	V
+過敏	过敏	guòmǐn	5	Vs
+國旗	国旗	guóqí	5	N
+過期	过期	guòqí	5	Vp
+果然		guǒrán	5	Adv
+過世	过世	guòshì	5	Vp
+國中	国中	guózhōng	5	N
+骨頭	骨头	gútou	5	N
+骨		gǔ	5	N
+顧問	顾问	gùwèn	5	N
+鼓舞		gǔwǔ	5	V
+故鄉	故乡	gùxiāng	5	N
+姑丈		gūzhàng	5	N
+鼓掌		gǔzhǎng	5	Vi
+還不如	还不如	háibùrú	5	Conj
+害處	害处	hàichù	5	N
+海關	海关	hǎiguān	5	N
+海軍	海军	hǎijūn	5	N
+海外		hǎiwài	5	N
+海峽	海峡	hǎixiá	5	N
+還有	还有	háiyǒu	5	Conj
+含		hán	5	V/Vst
+喊		hǎn	5	V
+行業	行业	hángyè	5	N
+寒冷		hánlěng	5	Vs
+含量		hánliàng	5	N
+耗		hào	5	Vst
+好		hǎo	5	Conj
+好客		hàokè	5	Vs
+好奇		hàoqí	5	Vs
+毫無	毫无	háowú	5	Vst
+好在		hǎozài	5	Adv
+號召	号召	hàozhào	5	V
+合		hé	5	Vi/Vs
+何必		hébì	5	Adv
+合不來	合不来	hébùlái	5	Vs
+合成		héchéng	5	Vst
+合得來	合得来	hédelái	5	Vs
+合法		héfǎ	5	Vs
+合格		hégé	5	Vp
+和好		héhǎo	5	Vp
+合乎		héhū	5	Vst
+嘿		hēi	5	Ptc
+黑暗		hēi'àn	5	Vs
+黑夜		hēiyè	5	N
+何況	何况	hékuàng	5	Conj
+合理		hélǐ	5	Vs
+河流		héliú	5	N
+恨		hèn	5	N
+橫	横	héng	5	Vs-attr
+痕跡	痕迹	hénjī	5	N
+和平		hépíng	5	Vs
+和氣	和气	héqì	5	Vs
+合算		hésuàn	5	Vs
+合約	合约	héyuē	5	N
+猴		hóu	5	N
+猴子		hóuzi	5	N
+後代	后代	hòudài	5	N
+後方	后方	hòufāng	5	N
+後果	后果	hòuguǒ	5	N
+後悔	后悔	hòuhuǐ	5	Vs
+喉嚨	喉咙	hóulóng	5	N
+喉		hóu	5	N
+後頭	后头	hòutou	5	N
+後退	后退	hòutuì	5	Vi
+後院	后院	hòuyuàn	5	N
+戶	户	hù	5	M
+呼		hū	5	V
+鬍	胡	hú	5	N
+鬍子	胡子	húzi	5	N
+划		huá	5	V
+滑		huá	5	Vp/Vs
+化		huà	5	Vst/Vp
+花草		huācǎo	5	N
+花費	花费	huāfèi	5	N/V
+壞蛋	坏蛋	huàidàn	5	N
+懷念	怀念	huáiniàn	5	Vst
+懷疑	怀疑	huáiyí	5	Vst
+懷孕	怀孕	huáiyùn	5	Vi
+畫面	画面	huàmiàn	5	N
+慌		huāng	5	Vs
+皇帝		huángdì	5	N
+黃豆	黄豆	huángdòu	5	N
+黃昏	黄昏	huánghūn	5	N
+緩和	缓和	huǎnhé	5	V
+歡呼	欢呼	huānhū	5	Vi
+歡樂	欢乐	huānlè	5	Vs
+緩慢	缓慢	huǎnmàn	5	Vs
+歡喜	欢喜	huānxǐ	5	Vs
+幻想		huànxiǎng	5	N/Vi
+花盆		huāpén	5	N
+花瓶		huāpíng	5	N
+華僑	华侨	Huáqiáo	5	N
+華人	华人	Huárén	5	N
+花色		huāsè	5	N
+花生		huāshēng	5	N
+化學	化学	huàxué	5	N
+化妝	化妆	huàzhuāng	5	Vi
+化裝	化装	huàzhuāng	5	Vi
+蝴蝶		húdié	5	N
+互動	互动	hùdòng	5	N
+灰		huī	5	Vs-attr/N
+揮	挥	huī	5	V
+回電	回电	huídiàn	5	V-sep
+回教		Huíjiào	5	N
+伊斯蘭教	伊斯兰教	Yīsīlánjiào	5	N
+匯款	汇款	huìkuǎn	5	V-sep
+灰色		huīsè	5	N
+回收		huíshōu	5	V
+回頭	回头	huítóu	5	V-sep
+灰心		huīxīn	5	Vs
+回憶	回忆	huíyì	5	Vst/N
+會員	会员	huìyuán	5	N
+忽略		hūlüè	5	Vst
+混		hùn	5	V
+昏倒		hūndǎo	5	Vp
+混合		hùnhé	5	V
+昏迷		hūnmí	5	Vp
+獲	获	huò	5	Vst
+禍	祸	huò	5	N
+火柴		huǒchái	5	N
+獲得	获得	huòdé	5	Vpt
+或多或少		huòduōhuòshǎo	5	Adv
+活該	活该	huógāi	5	Vs
+活力		huólì	5	N
+活潑	活泼	huópō	5	Vs
+貨物	货物	huòwù	5	N
+活躍	活跃	huóyuè	5	Vs
+火災	火灾	huǒzāi	5	N
+忽視	忽视	hūshì	5	Vst
+戶外	户外	hùwài	5	N
+呼吸		hūxī	5	Vi
+互助		hùzhù	5	Vi
+級	级	jí	5	M
+集		jí	5	M/V
+夾	夹	jiá	5	V
+嫁		jià	5	V
+甲		jiǎ	5	N/M
+家電	家电	jiādiàn	5	N
+加工		jiāgōng	5	V-sep
+建		jiàn	5	V
+箭		jiàn	5	N
+揀	拣	jiǎn	5	V
+撿	捡	jiǎn	5	V
+尖		jiān	5	Vs
+兼		jiān	5	V
+煎		jiān	5	V
+剪刀		jiǎndāo	5	N
+堅定	坚定	jiāndìng	5	Vs
+降		jiàng	5	Vp
+江		jiāng	5	N
+將	将	jiāng	5	Adv
+降價	降价	jiàngjià	5	Vp-sep
+獎金	奖金	jiǎngjīn	5	N
+獎品	奖品	jiǎngpǐn	5	N
+建國	建国	jiànguó	5	Vi
+將要	将要	jiāngyào	5	Adv
+漸漸	渐渐	jiànjiàn	5	Adv
+漸	渐	jiàn	5	Adv
+間接	间接	jiànjiē	5	Vs-attr
+堅決	坚决	jiānjué	5	Vs
+鍵盤	键盘	jiànpán	5	N
+健全		jiànquán	5	Vs
+尖銳	尖锐	jiānruì	5	Vs
+監視	监视	jiānshì	5	V
+檢驗	检验	jiǎnyàn	5	V
+監獄	监狱	jiānyù	5	N
+建築	建筑	jiànzhú	5	N/V
+較	较	jiào	5	Prep
+角		jiǎo	5	N
+繳	缴	jiǎo	5	V
+澆	浇	jiāo	5	V
+腳步	脚步	jiǎobù	5	N
+交代		jiāodài	5	V
+叫喊		jiàohǎn	5	V
+交換	交换	jiāohuàn	5	V
+教會	教会	jiàohuì	5	N
+交際	交际	jiāojì	5	Vi
+角落		jiǎoluò	5	N
+教授		jiàoshòu	5	V
+郊外		jiāowài	5	N
+交往		jiāowǎng	5	Vi
+教學	教学	jiàoxué	5	Vi
+教訓	教训	jiàoxùn	5	V
+交易		jiāoyì	5	N/Vi
+假期		jiàqí	5	N
+加上		jiāshàng	5	Conj
+家事		jiāshì	5	N
+駕駛	驾驶	jiàshǐ	5	N/V
+駕	驾	jià	5	N/V
+加速		jiāsù	5	V
+加以		jiāyǐ	5	Adv
+價值	价值	jiàzhí	5	Vst
+基本上		jīběnshàng	5	Adv
+疾病		jíbìng	5	N
+嫉妒		jídù	5	Vst
+忌妒		jìdù	5	Vst
+結	结	jié	5	N
+屆	届	jiè	5	M
+解		jiě	5	V
+接		jiē	5	V
+解除		jiěchú	5	V
+解答		jiědá	5	V
+接待		jiēdài	5	V
+接到		jiēdào	5	Vpt
+街道		jiēdào	5	N
+階段	阶段	jiēduàn	5	N
+結構	结构	jiégòu	5	N
+結果	结果	jiéguǒ	5	N/Vp-sep
+結合	结合	jiéhé	5	Vpt
+接見	接见	jiējiàn	5	V
+接近		jiējìn	5	V/Vs
+結論	结论	jiélùn	5	N
+節慶	节庆	jiéqìng	5	N
+節省	节省	jiéshěng	5	Vst
+結算	结算	jiésuàn	5	Vi
+街頭	街头	jiētóu	5	N
+接下來	接下来	jiēxiàlái	5	Adv
+界線	界线	jièxiàn	5	N
+節約	节约	jiéyuē	5	Vst
+結帳	结帐	jiézhàng	5	Vi
+截止		jiézhǐ	5	Vp
+戒指		jièzhǐ	5	N
+及格		jígé	5	Vp
+機構	机构	jīgòu	5	N
+機關	机关	jīguān	5	N
+集合		jíhé	5	Vi
+幾乎	几乎	jīhū	5	Adv
+即將	即将	jíjiāng	5	Adv
+計較	计较	jìjiào	5	Vs
+基金		jījīn	5	N
+急忙		jímáng	5	Adv
+寂寞		jímò	5	Vs
+近		jìn	5	Vst
+浸		jìn	5	V
+金額	金额	jīn'é	5	N
+靜	静	jìng	5	Vs
+竟		jìng	5	Adv
+鏡	镜	jìng	5	N
+鏡子	镜子	jìngzi	5	N
+敬愛	敬爱	jìng'ài	5	Vst
+精彩		jīngcǎi	5	Vs
+精采		jīngcǎi	5	Vs
+警告		jǐnggào	5	N/V
+淨化	净化	jìnghuà	5	Vpt
+經濟	经济	jīngjì	5	N
+敬酒		jìngjiǔ	5	V-sep
+京劇	京剧	Jīngjù	5	N
+敬禮	敬礼	jìnglǐ	5	V-sep
+精力		jīnglì	5	N
+經歷	经历	jīnglì	5	N/Vst
+竟然		jìngrán	5	Adv
+驚人	惊人	jīngrén	5	Vs
+景色		jǐngsè	5	N
+儘管	尽管	jǐnguǎn	5	Adv
+精細	精细	jīngxì	5	Vs
+經營	经营	jīngyíng	5	V
+競爭	竞争	jìngzhēng	5	Vi
+今後	今后	jīnhòu	5	N
+緊急	紧急	jǐnjí	5	Vs
+進口	进口	jìnkǒu	5	V
+近來	近来	jìnlái	5	Adv
+盡力	尽力	jìnlì	5	Vs
+盡量	尽量	jìnliàng	5	Adv
+儘量	尽量	jǐnliàng	5	Adv
+金錢	金钱	jīnqián	5	N
+金融		jīnróng	5	N
+進入	进入	jìnrù	5	V
+近視	近视	jìnshì	5	Vs
+金屬	金属	jīnshǔ	5	N
+禁止		jìnzhǐ	5	V
+機票	机票	jīpiào	5	N
+極其	极其	jíqí	5	Adv
+既然		jìrán	5	Conj
+肌肉		jīròu	5	N
+即使		jíshǐ	5	Conj
+技術	技术	jìshù	5	N
+計算	计算	jìsuàn	5	V
+酒會	酒会	jiǔhuì	5	N
+救火		jiùhuǒ	5	Vi
+究竟		jiùjìng	5	Adv
+就是		jiùshì	5	Adv
+就是說	就是说	jiùshìshuō	5	Conj
+就業	就业	jiùyè	5	Vi
+糾正	纠正	jiūzhèng	5	V
+機械	机械	jīxiè	5	N
+記性	记性	jìxìng	5	N
+記憶	记忆	jìyì	5	Vi
+集郵	集邮	jíyóu	5	Vi
+記載	记载	jìzài	5	V
+急診	急诊	jízhěn	5	Vi
+集中		jízhōng	5	V/Vs
+記住	记住	jìzhù	5	Vpt
+局		jú	5	M
+具		jù	5	M/Vst
+卷		juǎn	5	M
+捲	卷	juǎn	5	V
+捐		juān	5	V
+捐款		juānkuǎn	5	N/V-sep
+具備	具备	jùbèi	5	Vst
+聚餐		jùcān	5	V-sep
+劇場	剧场	jùchǎng	5	N
+巨大		jùdà	5	Vs
+巨		jù	5	Vs
+決	决	jué	5	Adv
+絕	绝	jué	5	Adv
+絕不	绝不	juébù	5	Adv
+絕大部分	绝大部分	juédàbùfèn	5	Det
+絕對	绝对	juéduì	5	Vs-attr
+覺悟	觉悟	juéwù	5	Vp
+決心	决心	juéxīn	5	N/Vp
+鞠躬		júgōng	5	Vi
+聚集		jùjí	5	Vi
+俱樂部	俱乐部	jùlèbù	5	N
+距離	距离	jùlí	5	Prep
+舉例	举例	jǔlì	5	V-sep
+劇烈	剧烈	jùliè	5	Vs
+居民		jūmín	5	N
+軍	军	jūn	5	N
+軍事	军事	jūnshì	5	N
+居然		jūrán	5	Adv
+據說	据说	jùshuō	5	Conj
+具體	具体	jùtǐ	5	Vs
+劇院	剧院	jùyuàn	5	N
+卡		kǎ	5	M/Vi
+開	开	kāi	5	Vp
+開除	开除	kāichú	5	V
+開刀	开刀	kāidāo	5	V-sep
+開動	开动	kāidòng	5	Vi
+開發	开发	kāifā	5	V
+開戶	开户	kāihù	5	V-sep
+開課	开课	kāikè	5	V-sep
+開明	开明	kāimíng	5	Vs
+開設	开设	kāishè	5	V
+開拓	开拓	kāituò	5	V
+開演	开演	kāiyǎn	5	Vp
+看		kàn	5	Vst
+砍		kǎn	5	V
+看得起		kàndeqǐ	5	Vst
+抗議	抗议	kàngyì	5	V
+看家		kānjiā	5	Vi
+看看		kànkan	5	
+看來	看来	kànlái	5	Adv
+看樣子	看样子	kànyàngzi	5	Adv
+靠		kào	5	Prep
+考察		kǎochá	5	V
+靠近		kàojìn	5	V
+考卷		kǎojuàn	5	N
+考慮	考虑	kǎolǜ	5	V
+考取		kǎoqǔ	5	Vpt
+卡通		kǎtōng	5	N
+客房		kèfáng	5	N
+客觀	客观	kèguān	5	Vs
+客戶	客户	kèhù	5	N
+科目		kēmù	5	N
+可是		kěshì	5	Adv
+課外	课外	kèwài	5	Vs-attr
+可喜		kěxǐ	5	Vs
+可笑		kěxiào	5	Vs
+空		kōng	5	Adv/N
+空兒	空儿	kòngr	5	N
+恐怖		kǒngbù	5	Vs
+空前		kōngqián	5	Vs-attr
+控制		kòngzhì	5	V
+空中		kōngzhōng	5	N
+扣		kòu	5	V
+口才		kǒucái	5	N
+口號	口号	kǒuhào	5	N
+口紅	口红	kǒuhóng	5	N
+口氣	口气	kǒuqì	5	N
+口試	口试	kǒushì	5	N/Vi
+口水		kǒushuǐ	5	N
+口音		kǒuyīn	5	N
+口語	口语	kǒuyǔ	5	N
+跨		kuà	5	V
+誇	夸	kuā	5	V
+會計	会计	kuàijì	5	N
+快速		kuàisù	5	Vs
+誇獎	夸奖	kuājiǎng	5	V
+寬度	宽度	kuāndù	5	N
+款式		kuǎnshì	5	N
+喇叭		lǎbā	5	N
+來	来	lái	5	N
+來回	来回	láihuí	5	V
+來臨	来临	láilín	5	Vp
+來往	来往	láiwǎng	5	Vi
+來信	来信	láixìn	5	N
+來源	来源	láiyuán	5	N
+來自	来自	láizì	5	Vpt
+辣椒		làjiāo	5	N
+爛	烂	làn	5	Vs
+懶	懒	lǎn	5	Vs
+懶得	懒得	lǎnde	5	Vaux
+狼		láng	5	N
+浪		làng	5	N
+浪費	浪费	làngfèi	5	Vst
+濫用	滥用	lànyòng	5	V
+牢		láo	5	Vs
+老		lǎo	5	Adv
+撈	捞	lāo	5	V
+老百姓		lǎobǎixìng	5	N
+老大		lǎodà	5	N
+嘮叨	唠叨	láodāo	5	Vi
+勞動	劳动	láodòng	5	V
+勞工	劳工	láogōng	5	N
+老家		lǎojiā	5	N
+勞力	劳力	láolì	5	N
+老年		lǎonián	5	N
+牢騷	牢骚	láosāo	5	N
+老實說	老实说	lǎoshíshuō	5	
+蠟燭	蜡烛	làzhú	5	N
+類似	类似	lèisì	5	Vs
+類型	类型	lèixíng	5	N
+冷靜	冷静	lěngjìng	5	Vs
+冷門	冷门	lěngmén	5	Vs
+冷飲	冷饮	lěngyǐn	5	N
+樂意	乐意	lèyì	5	Vs
+理		lǐ	5	V/Vst
+禮	礼	lǐ	5	N
+立		lì	5	V
+利		lì	5	Vs
+粒		lì	5	M
+梨		lí	5	N
+梨子		lízi	5	N
+連	连	lián	5	Adv
+量		liáng	5	V
+亮		liàng	5	V
+倆	俩	liǎng	5	N
+諒解	谅解	liàngjiě	5	Vst
+糧食	粮食	liángshí	5	N
+聯合	联合	liánhé	5	V
+聯合國	联合国	Liánhéguó	5	N
+連接	连接	liánjiē	5	Vst
+連忙	连忙	liánmáng	5	Adv
+連續	连续	liánxù	5	Vs-attr
+了		liǎo	5	Vst
+立場	立场	lìchǎng	5	N
+列		liè	5	M
+裂		liè	5	Vp
+立即		lìjí	5	Adv
+淋		lín	5	V
+臨	临	lín	5	Vst
+凌晨		língchén	5	N
+領帶	领带	lǐngdài	5	N
+領導	领导	lǐngdǎo	5	N
+靈活	灵活	línghuó	5	Vs
+零件		língjiàn	5	N
+零售		língshòu	5	V
+領土	领土	lǐngtǔ	5	N
+零下		língxià	5	Vs-attr
+領先	领先	lǐngxiān	5	Vpt
+領袖	领袖	lǐngxiù	5	N
+臨時	临时	línshí	5	N
+禮品	礼品	lǐpǐn	5	N
+力氣	力气	lìqì	5	N
+利潤	利润	lìrùn	5	N
+裡頭	里头	lǐtou	5	N
+裏頭	里头	lǐtou	5	N
+溜		liū	5	Vi
+溜冰		liūbīng	5	V-sep
+流動	流动	liúdòng	5	Vi
+流利		liúlì	5	Vs
+留念		liúniàn	5	Vs
+例外		lìwài	5	Vs
+利息		lìxí	5	N
+理由		lǐyóu	5	N
+嘍	喽	lóu	5	Ptc
+摟	搂	lǒu	5	V
+露		lù	5	V
+路燈	路灯	lùdēng	5	N
+綠豆	绿豆	lǜdòu	5	N
+略		lüè	5	Vs
+陸軍	陆军	lùjūn	5	N
+論	论	lùn	5	V/Prep
+輪	轮	lún	5	N
+輪子	轮子	lúnzi	5	N
+輪船	轮船	lúnchuán	5	N
+輪流	轮流	lúnliú	5	Adv
+論文	论文	lùnwén	5	N
+落		luò	5	Vi
+落後	落后	luòhòu	5	Vpt
+落實	落实	luòshí	5	V
+落伍		luòwǔ	5	Vs
+路線	路线	lùxiàn	5	N
+旅行社		lǚxíngshè	5	N
+陸續	陆续	lùxù	5	Adv
+錄用	录用	lùyòng	5	V
+麻		má	5	Vs
+馬虎	马虎	mǎhū	5	Vs
+埋		mái	5	V
+買單	买单	mǎidān	5	V-sep
+買賣	买卖	mǎimài	5	V
+賣座	卖座	màizuò	5	Vs
+滿	满	mǎn	5	Adv
+忙碌		mánglù	5	Vs
+盲目		mángmù	5	Vs
+漫畫	漫画	mànhuà	5	N
+冒		mào	5	V
+矛盾		máodùn	5	Vs
+麻雀		máquè	5	N
+煤		méi	5	N
+美觀	美观	měiguān	5	Vs
+梅花		méihuā	5	N
+魅力		mèilì	5	N
+美妙		měimiào	5	Vs
+美容院		měiróngyuàn	5	N
+美食		měishí	5	N
+媒體	媒体	méitǐ	5	N
+猛		měng	5	Vs
+夢到	梦到	mèngdào	5	Vpt
+夢想	梦想	mèngxiǎng	5	N/V
+悶熱	闷热	mēnrè	5	Vs
+門診	门诊	ménzhěn	5	Vi
+迷		mí	5	Vst
+密		mì	5	Vs
+棉		mián	5	N
+棉被		miánbèi	5	N
+免得		miǎnde	5	Vaux
+面對	面对	miànduì	5	V
+麵粉	面粉	miànfěn	5	N
+棉花		miánhuā	5	N
+面臨	面临	miànlín	5	Vst
+面貌		miànmào	5	N
+勉強	勉强	miǎnqiǎng	5	Vs
+面談	面谈	miàntán	5	Vi
+面子		miànzi	5	N
+妙		miào	5	Vs
+滅亡	灭亡	mièwáng	5	Vp
+蜜蜂		mìfēng	5	N
+蜂		fēng	5	N
+迷糊		míhú	5	Vs
+名		míng	5	Vst
+命		mìng	5	V
+明白		míngbái	5	Vs
+名稱	名称	míngchēng	5	N
+名單	名单	míngdān	5	N
+明亮		míngliàng	5	Vs
+命令		mìnglìng	5	N/V
+明明		míngmíng	5	Adv
+名牌		míngpái	5	N
+名片		míngpiàn	5	N
+明確	明确	míngquè	5	Vs
+命運	命运	mìngyùn	5	N
+民間	民间	mínjiān	5	N
+民謠	民谣	mínyáo	5	N
+民眾	民众	mínzhòng	5	N
+民主		mínzhǔ	5	N/Vs
+迷失		míshī	5	Vp
+秘書	秘书	mìshū	5	N
+祕書	秘书	mìshū	5	N
+迷信		míxìn	5	N/Vs
+抹		mǒ	5	V
+磨		mó	5	V
+末		mò	5	N
+模仿		mófǎng	5	V
+模糊		móhú	5	Vs
+模型		móxíng	5	N
+模樣	模样	móyàng	5	N
+目標	目标	mùbiāo	5	N
+目的地		mùdìdì	5	N
+目錄	目录	mùlù	5	N
+奶粉		nǎifěn	5	N
+耐心		nàixīn	5	Adv
+耐用		nàiyòng	5	Vs
+難道	难道	nándào	5	Adv
+難得	难得	nándé	5	Vs
+難受	难受	nánshòu	5	Vs
+男性		nánxìng	5	N
+難以	难以	nányǐ	5	Adv
+鬧	闹	nào	5	V
+腦袋	脑袋	nǎodài	5	N
+腦筋	脑筋	nǎojīn	5	N
+鬧區	闹区	nàoqū	5	N
+哪怕		nǎpà	5	Conj
+內部	内部	nèibù	5	N
+內地	内地	nèidì	5	N
+內行	内行	nèiháng	5	Vs
+內科	内科	nèikē	5	N
+能幹	能干	nénggàn	5	Vs
+能源		néngyuán	5	N
+泥		ní	5	N
+膩	腻	nì	5	Vs
+黏		nián	5	V/Vs
+粘		nián	5	V/Vs
+尿		niào	5	N/Vi
+捏		niē	5	V
+寧可	宁可	níngkě	5	Vaux
+寧願	宁愿	níngyuàn	5	Vaux
+泥土		nítǔ	5	N
+鈕扣	钮扣	niǔkòu	5	N
+濃	浓	nóng	5	Vs
+農場	农场	nóngchǎng	5	N
+農產品	农产品	nóngchǎnpǐn	5	N
+農村	农村	nóngcūn	5	N
+弄錯	弄错	nòngcuò	5	Vp
+濃厚	浓厚	nónghòu	5	Vs
+農民	农民	nóngmín	5	N
+農夫	农夫	nóngfū	5	N
+農藥	农药	nóngyào	5	N
+暖		nuǎn	5	Vs/V
+暖氣	暖气	nuǎnqì	5	N
+女性		nǚxìng	5	N
+偶而		ǒu'ér	5	Adv
+偶爾	偶尔	ǒu'ěr	5	Adv
+偶然		ǒurán	5	Vs
+排		pái	5	M/V
+派		pài	5	V
+排斥		páichì	5	V
+排列		páiliè	5	V
+排球		páiqiú	5	N
+攀		pān	5	V
+判斷	判断	pànduàn	5	V
+炮		pào	5	N
+砲	炮	pào	5	N
+賠	赔	péi	5	V
+賠償	赔偿	péicháng	5	V
+佩服		pèifú	5	Vst
+陪同		péitóng	5	V
+盆		pén	5	M
+噴	喷	pēn	5	V
+捧		pěng	5	V
+碰見	碰见	pèngjiàn	5	Vpt
+膨脹	膨胀	péngzhàng	5	Vp
+皮		pí	5	Vs
+匹		pī	5	M
+批		pī	5	M/V
+披		pī	5	V
+騙	骗	piàn	5	V
+偏		piān	5	Adv
+偏偏		piānpiān	5	Adv
+片面		piànmiàn	5	Vs-attr
+偏食		piānshí	5	Vs
+偏向		piānxiàng	5	Vst
+片子		piànzi	5	N
+飄	飘	piāo	5	Vi
+屁股		pìgǔ	5	N
+疲倦		píjuàn	5	Vs
+疲勞	疲劳	píláo	5	Vs
+品德		pǐndé	5	N
+憑	凭	píng	5	Prep
+平常		píngcháng	5	Vs
+平衡		pínghéng	5	Vst
+平靜	平静	píngjìng	5	Vs
+平均		píngjūn	5	Vs
+乒乓球		pīngpāngqiú	5	N
+桌球		zhuōqiú	5	N
+拼命		pīnmìng	5	Vs
+聘請	聘请	pìnqǐng	5	V
+貧窮	贫穷	pínqióng	5	Vs
+貧	贫	pín	5	Vs
+批判		pīpàn	5	V
+脾氣	脾气	píqì	5	N
+頗	颇	pǒ	5	Adv
+破爛	破烂	pòlàn	5	Vs
+破裂		pòliè	5	Vp
+婆婆		pópo	5	N
+迫切		pòqiè	5	Vs
+撲	扑	pū	5	V
+鋪	铺	pū	5	V
+瀑布		pùbù	5	N
+普及		pǔjí	5	Vs
+撲滅	扑灭	pūmiè	5	V
+普通		pǔtōng	5	Vs
+普通話	普通话	pǔtōnghuà	5	N
+期		qí	5	N
+起		qǐ	5	M/V
+其		qí	5	N
+棋		qí	5	N
+齊	齐	qí	5	Vs
+旗		qí	5	N
+旗子		qízi	5	N
+妻		qī	5	N
+妻子		qīzǐ	5	N
+欠		qiàn	5	V
+牽	牵	qiān	5	V
+遷	迁	qiān	5	V
+簽	签	qiān	5	V
+簽訂	签订	qiāndìng	5	V
+前方		qiánfāng	5	N
+強	强	qiáng	5	Vs
+槍	枪	qiāng	5	N
+牆	墙	qiáng	5	N
+牆壁	墙壁	qiángbì	5	N
+強大	强大	qiángdà	5	Vs
+強度	强度	qiángdù	5	N
+搶救	抢救	qiǎngjiù	5	V
+強烈	强烈	qiángliè	5	Vs
+強迫	强迫	qiǎngpò	5	V
+強人	强人	qiángrén	5	N
+前進	前进	qiánjìn	5	V
+前頭	前头	qiántou	5	N
+前途		qiántú	5	N
+千萬	千万	qiānwàn	5	Adv
+前往		qiánwǎng	5	V
+歉意		qiànyì	5	N
+前院		qiányuàn	5	N
+簽約	签约	qiānyuē	5	V-sep
+簽字	签字	qiānzì	5	V-sep
+巧		qiǎo	5	Vs
+瞧		qiáo	5	V
+敲		qiāo	5	V
+巧妙		qiǎomiào	5	Vs
+悄悄		qiǎoqiǎo	5	Adv
+悄		qiǎo	5	Adv
+器材		qìcái	5	N
+起初		qǐchū	5	Adv
+期待		qídài	5	Vst
+切		qiē	5	V
+氣憤	气愤	qìfèn	5	Vs
+氣氛	气氛	qìfēn	5	N
+器官		qìguān	5	N
+氣候	气候	qìhòu	5	N
+起火		qǐhuǒ	5	Vp
+親愛	亲爱	qīn'ài	5	Vs-attr
+青		qīng	5	Vs
+清		qīng	5	V
+清晨		qīngchén	5	N
+清除		qīngchú	5	V
+清淡		qīngdàn	5	Vs
+輕傷	轻伤	qīngshāng	5	N
+輕視	轻视	qīngshì	5	Vst
+情書	情书	qíngshū	5	N
+清晰		qīngxī	5	Vs
+傾向	倾向	qīngxiàng	5	Vst
+清醒		qīngxǐng	5	Vs
+情緒	情绪	qíngxù	5	N
+侵害		qīnhài	5	V
+親口	亲口	qīnkǒu	5	Adv
+勤勞	勤劳	qínláo	5	Vs
+親戚	亲戚	qīnqī	5	N
+親人	亲人	qīnrén	5	N
+侵入		qīnrù	5	V
+寢室	寝室	qǐnshì	5	N
+旗袍		qípáo	5	N
+欺騙	欺骗	qīpiàn	5	V
+齊全	齐全	qíquán	5	Vs
+歧視	歧视	qíshì	5	Vst
+企圖	企图	qìtú	5	N/Vaux
+球隊	球队	qiúduì	5	N
+求婚		qiúhūn	5	V-sep
+秋季		qiūjì	5	N
+球鞋		qiúxié	5	N
+期望		qíwàng	5	Vst
+氣味	气味	qìwèi	5	N
+氣息	气息	qìxí	5	N
+期限		qíxiàn	5	N
+氣象	气象	qìxiàng	5	N
+汽油		qìyóu	5	N
+其餘	其余	qíyú	5	Det
+取		qǔ	5	V
+娶		qǔ	5	V
+勸	劝	quàn	5	V
+圈		quān	5	M
+全家		quánjiā	5	N
+權利	权利	quánlì	5	N
+全面		quánmiàn	5	Adv/Vs-attr
+全體	全体	quántǐ	5	N
+拳頭	拳头	quántou	5	N
+區別	区别	qūbié	5	N/V
+取得		qǔdé	5	Vpt
+缺		quē	5	Vst
+缺乏		quēfá	5	Vst
+缺少		quēshǎo	5	Vst
+確實	确实	quèshí	5	Vs
+缺席		quēxí	5	Vs
+群		qún	5	M
+羣	群	qún	5	M
+群眾	群众	qúnzhòng	5	N
+取笑		qǔxiào	5	V
+取消		qǔxiāo	5	V
+區域	区域	qūyù	5	N
+曲折		qūzhé	5	Vs
+染		rǎn	5	V
+然而		rán'ér	5	Conj
+讓步	让步	ràngbù	5	Vi
+燃料		ránliào	5	N
+燃燒	燃烧	ránshāo	5	V
+繞	绕	rào	5	V
+惹		rě	5	V/Vst
+熱愛	热爱	rè'ài	5	Vst
+熱量	热量	rèliàng	5	N
+熱烈	热烈	rèliè	5	Vs
+熱門	热门	rèmén	5	Vs
+任		rèn	5	Vst
+忍不住		rěnbùzhù	5	Vs
+人才		réncái	5	N
+人格		réngé	5	N
+人工		réngōng	5	N
+人力		rénlì	5	N
+人情味		rénqíngwèi	5	N
+人情味兒	人情味儿	rénqíngwèir	5	N
+人權	人权	rénquán	5	N
+人生		rénshēng	5	N
+人事		rénshì	5	N
+忍受		rěnshòu	5	Vst
+人體	人体	réntǐ	5	N
+人心		rénxīn	5	N
+忍心		rěnxīn	5	Vs
+任性		rènxìng	5	Vs
+人行道		rénxíngdào	5	N
+人員	人员	rényuán	5	N
+熱情	热情	rèqíng	5	N/Vs
+熱心	热心	rèxīn	5	Vs
+日常		rìcháng	5	Vs-attr
+日後	日后	rìhòu	5	N
+日用品		rìyòngpǐn	5	N
+容		róng	5	Vst/V
+融化		rónghuà	5	Vp
+榮幸	荣幸	róngxìng	5	Vs
+如		rú	5	Vst
+入		rù	5	V
+軟	软	ruǎn	5	Vs
+如果說	如果说	rúguǒshuō	5	Conj
+如何		rúhé	5	Adv/Vs
+如今		rújīn	5	N
+入境		rùjìng	5	V
+如同		rútóng	5	Vst
+入學	入学	rùxué	5	Vp
+塞		sāi	5	V
+塞車	塞车	sāichē	5	Vs
+賽跑	赛跑	sàipǎo	5	Vi
+散		sàn	5	V/Vp
+喪失	丧失	sàngshī	5	Vpt
+三角形		sānjiǎoxíng	5	N
+掃	扫	sǎo	5	V
+艘		sāo	5	M
+色彩		sècǎi	5	N
+色情		sèqíng	5	N
+傻		shǎ	5	Vs
+沙		shā	5	N
+殺價	杀价	shājià	5	V-sep
+沙漠		shāmò	5	N
+閃	闪	shǎn	5	Vi/Vp
+山地		shāndì	5	N
+上		shàng	5	V
+傷	伤	shāng	5	N/Vs
+商標	商标	shāngbiāo	5	N
+商場	商场	shāngchǎng	5	N
+上級	上级	shàngjí	5	N
+商量		shāngliáng	5	V
+傷腦筋	伤脑筋	shāngnǎojīn	5	Vs
+上升		shàngshēng	5	Vi
+上市		shàngshì	5	Vp
+上述		shàngshù	5	N
+上台		shàngtái	5	V-sep
+上臺	上台	shàngtái	5	V-sep
+上頭	上头	shàngtou	5	N
+上下		shàngxià	5	N
+上游		shàngyóu	5	N
+善於	善于	shànyú	5	Vst
+扇子		shànzi	5	N
+稍		shāo	5	Adv
+少年		shàonián	5	N
+少女		shàonǚ	5	N
+少數	少数	shǎoshù	5	Det
+稍微		shāowéi	5	Adv
+沙灘	沙滩	shātān	5	N
+沙子		shāzi	5	N
+射		shè	5	V
+捨不得	舍不得	shěbùde	5	Vst
+捨得	舍得	shěde	5	Vst
+社交		shèjiāo	5	N
+設立	设立	shèlì	5	V
+神		shén	5	N
+伸		shēn	5	V
+身材		shēncái	5	N
+審查	审查	shěnchá	5	V
+身分		shēnfèn	5	N
+身分證	身分证	shēnfènzhèng	5	N
+勝	胜	shèng	5	Vp
+省		shěng	5	Vs
+升		shēng	5	Vp
+生		shēng	5	Vs-attr
+繩	绳	shéng	5	N
+繩子	绳子	shéngzi	5	N
+生詞	生词	shēngcí	5	N
+生存		shēngcún	5	Vs
+省得		shěngde	5	Vaux
+升高		shēnggāo	5	Vp
+升級	升级	shēngjí	5	Vp
+勝利	胜利	shènglì	5	Vp
+生肖		shēngxiào	5	N
+升學	升学	shēngxué	5	Vi
+生長	生长	shēngzhǎng	5	Vs
+神話	神话	shénhuà	5	N
+神經	神经	shénjīng	5	N
+深刻		shēnkè	5	Vs
+神秘		shénmì	5	Vs
+神祕	神秘	shénmì	5	Vs
+神奇		shénqí	5	Vs
+神氣	神气	shénqì	5	Vs
+深淺	深浅	shēnqiǎn	5	N
+申請	申请	shēnqǐng	5	V
+神聖	神圣	shénshèng	5	Vs
+伸手		shēnshǒu	5	Vi
+神仙		shénxiān	5	N
+深夜		shēnyè	5	N
+慎重		shènzhòng	5	Vs
+社區	社区	shèqū	5	N
+舌頭	舌头	shétou	5	N
+舌		shé	5	N
+社團	社团	shètuán	5	N
+攝影	摄影	shèyǐng	5	Vi
+設置	设置	shèzhì	5	V
+使		shǐ	5	V
+世		shì	5	N
+視	视	shì	5	Prep
+詩	诗	shī	5	N
+失敗	失败	shībài	5	Vs
+時常	时常	shícháng	5	Adv
+適當	适当	shìdàng	5	Vs
+失掉		shīdiào	5	Vpt
+是非		shìfēi	5	N
+是否		shìfǒu	5	Adv
+師父	师父	shīfù	5	N
+師傅	师傅	shīfù	5	N
+施工		shīgōng	5	Vi
+時機	时机	shíjī	5	N
+世紀	世纪	shìjì	5	N
+事件		shìjiàn	5	N
+市立		shìlì	5	Vs-attr
+勢力	势力	shìlì	5	N
+失眠		shīmián	5	Vp
+市民		shìmín	5	N
+師母	师母	shīmǔ	5	N
+食品		shípǐn	5	N
+時期	时期	shíqí	5	N
+詩人	诗人	shīrén	5	N
+時時	时时	shíshí	5	Adv
+實施	实施	shíshī	5	V
+事實上	事实上	shìshíshàng	5	Adv
+失望		shīwàng	5	Vs
+示威		shìwēi	5	Vi
+事物		shìwù	5	N
+實現	实现	shíxiàn	5	V
+事先		shìxiān	5	Adv
+實驗	实验	shíyàn	5	N/Vi
+試驗	试验	shìyàn	5	V
+式樣	式样	shìyàng	5	N
+視野	视野	shìyě	5	N
+失業	失业	shīyè	5	Vp
+實用	实用	shíyòng	5	Vs
+適用	适用	shìyòng	5	Vst
+實在	实在	shízài	5	Adv
+始終	始终	shǐzhōng	5	Adv
+受		shòu	5	Prep/Vst
+售		shòu	5	V
+首		shǒu	5	Det
+受不了		shòubùliǎo	5	Vst
+受到		shòudào	5	Vpt
+手電筒	手电筒	shǒudiàntǒng	5	N
+首都		shǒudū	5	N
+手段		shǒuduàn	5	N
+收費	收费	shōufèi	5	V-sep
+手工		shǒugōng	5	N
+收集		shōují	5	V
+收據	收据	shōujù	5	N
+收看		shōukàn	5	V
+壽命	寿命	shòumìng	5	N
+收入		shōurù	5	N
+收拾		shōushí	5	V
+手術	手术	shǒushù	5	N
+首先		shǒuxiān	5	Adv
+束		shù	5	M
+數	数	shù	5	N
+屬	属	shǔ	5	Vst
+鼠		shǔ	5	N
+老鼠		lǎoshǔ	5	N
+耍		shuǎ	5	V
+甩		shuǎi	5	V
+摔		shuāi	5	V
+率領	率领	shuàilǐng	5	V
+衰退		shuāituì	5	Vp
+雙胞胎	双胞胎	shuāngbāotāi	5	N
+雙方	双方	shuāngfāng	5	N
+輸出	输出	shūchū	5	V
+疏忽		shūhū	5	Vp
+稅	税	shuì	5	N
+水分		shuǐfèn	5	N
+水份		shuǐfèn	5	N
+說服	说服	shuìfú	5	V
+睡眠		shuìmián	5	N
+水災	水灾	shuǐzāi	5	N
+書籍	书籍	shūjí	5	N
+熟練	熟练	shúliàn	5	Vs
+數量	数量	shùliàng	5	N
+樹林	树林	shùlín	5	N
+數目	数目	shùmù	5	N
+順	顺	shùn	5	Prep/Vs
+順手	顺手	shùnshǒu	5	Vs
+順序	顺序	shùnxù	5	N
+說不定	说不定	shuōbùdìng	5	Adv
+碩士	硕士	shuòshì	5	N
+暑期		shǔqí	5	N
+熟人		shúrén	5	N
+輸入	输入	shūrù	5	V
+屬於	属于	shǔyú	5	Vst
+死		sǐ	5	Adv
+絲	丝	sī	5	N
+撕		sī	5	V
+四處	四处	sìchù	5	Adv/N
+四方		sìfāng	5	N
+四季		sìjì	5	N
+私立		sīlì	5	Vs-attr
+私人		sīrén	5	N
+思索		sīsuǒ	5	V
+死亡		sǐwáng	5	Vp
+飼養	饲养	sìyǎng	5	V
+四周		sìzhōu	5	N
+鬆	松	sōng	5	Vs
+送行		sòngxíng	5	Vi
+俗		sú	5	Vs
+算起來	算起来	suànqǐlái	5	Adv
+算是		suànshì	5	Vst
+算帳	算帐	suànzhàng	5	V-sep
+俗話	俗话	súhuà	5	N
+俗話說	俗话说	súhuàshuō	5	
+隨	随	suí	5	Vst
+碎		suì	5	Vp
+隨手	随手	suíshǒu	5	Adv
+歲數	岁数	suìshù	5	N
+隨意	随意	suíyì	5	Vs
+隨著	随着	suízhe	5	Prep
+塑膠	塑胶	sùjiāo	5	N
+損失	损失	sǔnshī	5	N/Vpt
+縮	缩	suō	5	V
+縮短	缩短	suōduǎn	5	V
+縮水	缩水	suōshuǐ	5	Vp
+素食		sùshí	5	N
+牠	它	tā	5	N
+踏		tà	5	V
+塌		tā	5	Vp
+太極拳	太极拳	tàijíquán	5	N
+太空		tàikōng	5	N
+抬頭	抬头	táitóu	5	V-sep
+彈	弹	tán	5	V
+探		tàn	5	V
+趟		tàng	5	M
+燙	烫	tàng	5	V/Vs
+湯圓	汤圆	tāngyuán	5	N
+談判	谈判	tánpàn	5	Vi
+探親	探亲	tànqīn	5	V-sep
+探討	探讨	tàntǎo	5	V
+攤位	摊位	tānwèi	5	N
+毯子		tǎnzi	5	N
+攤子	摊子	tānzi	5	N
+套		tào	5	V
+逃		táo	5	Vi
+討	讨	tǎo	5	V
+掏		tāo	5	V
+逃避		táobì	5	V
+陶瓷		táocí	5	N
+淘氣	淘气	táoqì	5	Vs
+桃		táo	5	N
+桃子		táozi	5	N
+逃走		táozǒu	5	Vp
+特別	特别	tèbié	5	Adv
+特點	特点	tèdiǎn	5	N
+提		tí	5	V
+天才		tiāncái	5	N
+天空		tiānkōng	5	N
+天然		tiānrán	5	Vs
+天文		tiānwén	5	N
+田野		tiányě	5	N
+天真		tiānzhēn	5	Vs
+天主教		Tiānzhǔjiào	5	N
+調	调	tiáo	5	V
+挑		tiāo	5	V
+跳高		tiàogāo	5	Vi
+挑選	挑选	tiāoxuǎn	5	V
+跳遠	跳远	tiàoyuǎn	5	Vi
+條約	条约	tiáoyuē	5	N
+調整	调整	tiáozhěng	5	V
+貼心	贴心	tiēxīn	5	Vs
+挺		tǐng	5	V/Vs
+停止		tíngzhǐ	5	Vpt
+提起		tíqǐ	5	V
+提前		tíqián	5	Vp
+體溫	体温	tǐwēn	5	N
+提醒		tíxǐng	5	V
+體驗	体验	tǐyàn	5	V
+提早		tízǎo	5	Vp
+通		tōng	5	M/Vst
+同		tóng	5	Adv/Vs
+銅	铜	tóng	5	N
+桶		tǒng	5	M
+同胞		tóngbāo	5	N
+通常		tōngcháng	5	Adv
+通過	通过	tōngguò	5	V
+統計	统计	tǒngjì	5	V
+痛快		tòngkuài	5	Vs
+通信		tōngxìn	5	V-sep
+通訊	通讯	tōngxùn	5	N
+統一	统一	tǒngyī	5	Vs
+同志		tóngzhì	5	N
+統治	统治	tǒngzhì	5	V
+頭	头	tóu	5	M
+透		tòu	5	Vs
+偷		tōu	5	Adv
+偷偷		tōutōu	5	Adv
+透過	透过	tòuguò	5	Prep
+頭腦	头脑	tóunǎo	5	N
+投票		tóupiào	5	V-sep
+投入		tóurù	5	V
+投降		tóuxiáng	5	Vi
+投資	投资	tóuzī	5	N
+吐		tǔ	5	V
+禿	秃	tū	5	Vs
+團	团	tuán	5	M
+團結	团结	tuánjié	5	Vs
+突出		túchū	5	Vs
+圖畫	图画	túhuà	5	N
+退		tuì	5	Vpt
+退出		tuìchū	5	Vpt
+推動	推动	tuīdòng	5	V
+推翻		tuīfān	5	V
+推廣	推广	tuīguǎng	5	V
+退回		tuìhuí	5	Vpt
+途徑	途径	tújìng	5	N
+吞		tūn	5	V
+拖		tuō	5	V
+妥當	妥当	tuǒdàng	5	Vs
+托兒所	托儿所	tuō'érsuǒ	5	N
+脫離	脱离	tuōlí	5	V
+妥善		tuǒshàn	5	Vs
+妥協	妥协	tuǒxié	5	Vi
+突破		túpò	5	N/V
+圖書	图书	túshū	5	N
+圖章	图章	túzhāng	5	N
+挖		wā	5	V
+歪		wāi	5	Vs
+外表		wàibiǎo	5	N
+外部		wàibù	5	N
+外出		wàichū	5	Vi
+外地		wàidì	5	N
+外觀	外观	wàiguān	5	N
+外行		wàiháng	5	Vs
+外匯	外汇	wàihuì	5	N
+外交		wàijiāo	5	N
+外界		wàijiè	5	N
+外科		wàikē	5	N
+彎	弯	wān	5	Vs
+晚輩	晚辈	wǎnbèi	5	N
+完畢	完毕	wánbì	5	Vp
+望		wàng	5	V
+往		wǎng	5	V
+完美		wánměi	5	Vs
+完善		wánshàn	5	Vs
+玩笑		wánxiào	5	N
+彎腰	弯腰	wānyāo	5	V-sep
+完整		wánzhěng	5	Vs
+瓦斯		wǎsī	5	N
+圍	围	wéi	5	V
+未		wèi	5	Adv
+尾巴		wěibā	5	N
+尾		wěi	5	N
+違反	违反	wéifǎn	5	Vst
+為何	为何	wèihé	5	Adv
+維護	维护	wéihù	5	V
+未婚		wèihūn	5	Vs
+危機	危机	wéijī	5	N
+味精		wèijīng	5	N
+為難	为难	wéinán	5	Vs
+委屈		wěiqū	5	Vs
+衛生	卫生	wèishēng	5	Vs
+維生素	维生素	wéishēngsù	5	N
+維他命	维他命	wéitāmìng	5	N
+委託	委托	wěituō	5	V
+慰問	慰问	wèiwèn	5	V
+威脅	威胁	wēixié	5	N/V
+衛星	卫星	wèixīng	5	N
+唯一		wéiyī	5	Vs-attr
+位於	位于	wèiyú	5	Vst
+委員	委员	wěiyuán	5	N
+吻		wěn	5	N/V
+穩	稳	wěn	5	Vs
+溫	温	wēn	5	Vs
+溫和	温和	wēnhé	5	Vs
+文具		wénjù	5	N
+文憑	文凭	wénpíng	5	N
+文物		wénwù	5	N
+文藝	文艺	wényì	5	N
+握		wò	5	V
+勿		wù	5	Adv
+誤	误	wù	5	Adv/Vst
+霧	雾	wù	5	N
+舞蹈		wǔdào	5	N
+誤點	误点	wùdiǎn	5	Vp
+誤會	误会	wùhuì	5	Vst
+無可奈何	无可奈何	wúkěnàihé	5	Vs
+物理		wùlǐ	5	N
+無論	无论	wúlùn	5	Conj
+武器		wǔqì	5	N
+無情	无情	wúqíng	5	Vs
+無數	无数	wúshù	5	Det
+武術	武术	wǔshù	5	N
+舞台		wǔtái	5	N
+舞臺	舞台	wǔtái	5	N
+舞廳	舞厅	wǔtīng	5	N
+無限	无限	wúxiàn	5	Vs
+無意	无意	wúyì	5	Vs
+物質	物质	wùzhí	5	N
+系		xì	5	N
+吸		xī	5	V
+瞎		xiā	5	Vp
+蝦	虾	xiā	5	N
+蝦子	虾子	xiāzi	5	N
+下巴		xiàbā	5	N
+下降		xiàjiàng	5	Vp
+下來	下来	xiàlái	5	N
+蝦米	虾米	xiāmǐ	5	N
+閒	闲	xián	5	Vs
+嫌		xián	5	Vst
+現	现	xiàn	5	Adv
+鮮	鲜	xiān	5	Vs
+現場	现场	xiànchǎng	5	N
+現成	现成	xiànchéng	5	Vs-attr
+顯得	显得	xiǎnde	5	Vs
+相		xiāng	5	Adv
+巷		xiàng	5	N
+巷子		xiàngzi	5	N
+象		xiàng	5	N
+大象		dàxiàng	5	N
+想不到		xiǎngbùdào	5	
+香腸	香肠	xiāngcháng	5	N
+相處	相处	xiāngchǔ	5	Vi
+鄉村	乡村	xiāngcūn	5	N
+相當	相当	xiāngdāng	5	Vs
+相互		xiānghù	5	Adv
+向來	向来	xiànglái	5	Adv
+項目	项目	xiàngmù	5	N
+想念		xiǎngniàn	5	Vst
+相親	相亲	xiàngqīn	5	V-sep
+相親相愛	相亲相爱	xiāngqīnxiāng'ài	5	Vs
+享受		xiǎngshòu	5	Vst
+相似		xiāngsì	5	Vs
+響應	响应	xiǎngyìng	5	V
+享有		xiǎngyǒu	5	Vst
+鮮花	鲜花	xiānhuā	5	N
+現金	现金	xiànjīn	5	N
+先進	先进	xiānjìn	5	Vs
+羨慕	羡慕	xiànmù	5	Vst
+鮮奶	鲜奶	xiānnǎi	5	N
+顯然	显然	xiǎnrán	5	Adv
+顯示	显示	xiǎnshì	5	V
+鮮血	鲜血	xiānxiě	5	N
+限制		xiànzhì	5	V
+顯著	显著	xiǎnzhù	5	Vs
+消		xiāo	5	Vp
+小便		xiǎobiàn	5	Vi
+校車	校车	xiàochē	5	N
+消除		xiāochú	5	V
+曉得	晓得	xiǎode	5	Vst
+小販	小贩	xiǎofàn	5	N
+消費	消费	xiāofèi	5	N/V
+消化		xiāohuà	5	V
+消極	消极	xiāojí	5	Vs
+效率		xiàolǜ	5	N
+銷路	销路	xiāolù	5	N
+小麥	小麦	xiǎomài	5	N
+消滅	消灭	xiāomiè	5	Vpt
+小氣	小气	xiǎoqì	5	Vs
+笑容		xiàoróng	5	N
+消失		xiāoshī	5	Vp
+銷售	销售	xiāoshòu	5	V
+小腿		xiǎotuǐ	5	N
+消夜		xiāoyè	5	N
+宵夜		xiāoyè	5	N
+校友		xiàoyǒu	5	N
+小子		xiǎozi	5	N
+下棋		xiàqí	5	V-sep
+下去		xiàqù	5	Ptc
+下午茶		xiàwǔchá	5	N
+下游		xiàyóu	5	N
+細胞	细胞	xìbāo	5	N
+斜		xié	5	Vs
+歇		xiē	5	Vi
+血管		xiěguǎn	5	N
+血型		xiěxíng	5	N
+血液		xiěyè	5	N
+寫作	写作	xiězuò	5	Vi
+媳婦	媳妇	xífù	5	N
+細節	细节	xìjié	5	N
+喜酒		xǐjiǔ	5	N
+喜劇	喜剧	xǐjù	5	N
+細菌	细菌	xìjùn	5	N
+系列		xìliè	5	N
+行程		xíngchéng	5	N
+形成		xíngchéng	5	Vpt
+行動	行动	xíngdòng	5	Vi
+星光		xīngguāng	5	N
+行人		xíngrén	5	N
+形式		xíngshì	5	N
+形象		xíngxiàng	5	N
+性質	性质	xìngzhí	5	N
+形狀	形状	xíngzhuàng	5	N
+信號	信号	xìnhào	5	N
+新郎		xīnláng	5	N
+心靈	心灵	xīnlíng	5	N
+心目中		xīnmùzhōng	5	N
+新娘		xīnniáng	5	N
+信任		xìnrèn	5	Vst
+心聲	心声	xīnshēng	5	N
+新式		xīnshì	5	Vs-attr
+薪水		xīnshuǐ	5	N
+心跳		xīntiào	5	N
+新興	新兴	xīnxīng	5	Vs-attr
+信仰		xìnyǎng	5	N/Vst
+信用		xìnyòng	5	N
+心臟	心脏	xīnzàng	5	N
+雄偉	雄伟	xióngwěi	5	Vs
+吸取		xīqǔ	5	V
+吸食		xīshí	5	V
+休假		xiūjià	5	V-sep
+休閒	休闲	xiūxián	5	Vi
+修正		xiūzhèng	5	V
+細小	细小	xìxiǎo	5	Vs
+吸菸	吸烟	xīyān	5	V-sep
+西裝	西装	xīzhuāng	5	N
+許	许	xǔ	5	V
+懸	悬	xuán	5	V
+宣布		xuānbù	5	V
+宣佈	宣布	xuānbù	5	V
+宣傳	宣传	xuānchuán	5	N/V
+選手	选手	xuǎnshǒu	5	N
+靴		xuē	5	N
+靴子		xuēzi	5	N
+雪花		xuěhuā	5	N
+學會	学会	xuéhuì	5	N
+削減	削减	xuèjiǎn	5	V
+學歷	学历	xuélì	5	N
+學術	学术	xuéshù	5	N
+學位	学位	xuéwèi	5	N
+學業	学业	xuéyè	5	N
+學者	学者	xuézhě	5	N
+尋	寻	xún	5	V
+循環	循环	xúnhuán	5	Vi
+迅速		xùnsù	5	Vs
+許願	许愿	xǔyuàn	5	V-sep
+須知	须知	xūzhī	5	N
+壓	压	yā	5	V
+壓力	压力	yālì	5	N
+煙	烟	yān	5	N
+菸	烟	yān	5	N
+沿		yán	5	Prep
+嚴	严	yán	5	Vs
+鹽巴	盐巴	yánbā	5	N
+延長	延长	yáncháng	5	V
+演唱		yǎnchàng	5	V
+癢	痒	yǎng	5	Vs
+掩蓋	掩盖	yǎngài	5	V
+嚴格	严格	yángé	5	Vs
+樣品	样品	yàngpǐn	5	N
+氧氣	氧气	yǎngqì	5	N
+宴會	宴会	yànhuì	5	N
+研究所		yánjiùsuǒ	5	N
+嚴肅	严肃	yánsù	5	Vs
+厭惡	厌恶	yànwù	5	Vs
+演奏		yǎnzòu	5	V
+搖	摇	yáo	5	V
+喲	哟	yāo	5	Ptc
+腰		yāo	5	N
+搖擺	摇摆	yáobǎi	5	V
+要不		yàobù	5	Conj
+藥方	药方	yàofāng	5	N
+要好		yàohǎo	5	Vs
+要命		yàomìng	5	Vs
+藥水	药水	yàoshuǐ	5	N
+搖頭	摇头	yáotóu	5	V-sep
+藥物	药物	yàowù	5	N
+壓迫	压迫	yāpò	5	V
+野		yě	5	Vs
+葉	叶	yè	5	M/N
+葉子	叶子	yèzi	5	M/N
+夜景		yèjǐng	5	N
+野獸	野兽	yěshòu	5	N
+業務	业务	yèwù	5	N
+野心		yěxīn	5	N
+業餘	业余	yèyú	5	Vs-attr
+乙		yǐ	5	N
+以		yǐ	5	Conj
+移		yí	5	V
+易		yì	5	Vs
+億	亿	yì	5	N
+醫	医	yī	5	V
+一般而言		yībān'éryán	5	Conj
+以便		yǐbiàn	5	Conj
+一帶	一带	yīdài	5	N
+一旦		yīdàn	5	Conj
+一大早		yīdàzǎo	5	N
+移動	移动	yídòng	5	V
+議會	议会	yìhuì	5	N
+已婚		yǐhūn	5	Vs
+依據	依据	yījù	5	N
+一口氣	一口气	yīkǒuqì	5	Adv
+一面		yīmiàn	5	Adv
+移民		yímín	5	Vp
+銀	银	yín	5	N
+印		yìn	5	V
+飲	饮	yǐn	5	V
+因而		yīn'ér	5	Conj
+引發	引发	yǐnfā	5	V
+硬		yìng	5	Vs
+影		yǐng	5	N
+影子		yǐngzi	5	N
+影本		yǐngběn	5	N
+應當	应当	yīngdāng	5	Adv
+贏得	赢得	yíngdé	5	Vpt
+嬰兒	婴儿	yīng'ér	5	N
+應付	应付	yìngfù	5	V
+迎接		yíngjiē	5	V
+英雄		yīngxióng	5	N
+營養	营养	yíngyǎng	5	Vs
+應邀	应邀	yìngyāo	5	Vi
+營業	营业	yíngyè	5	Vi
+影印		yǐngyìn	5	V
+應用	应用	yìngyòng	5	V
+飲食	饮食	yǐnshí	5	N
+印刷		yìnshuā	5	Vi
+因素		yīnsù	5	N
+印象		yìnxiàng	5	N
+印章		yìnzhāng	5	N
+一旁		yīpáng	5	N
+儀器	仪器	yíqì	5	N
+一齊	一齐	yīqí	5	Adv
+依然		yīrán	5	Adv
+衣裳		yīshang	5	N
+儀式	仪式	yíshì	5	N
+意識	意识	yìshì	5	N
+一天到晚		yītiāndàowǎn	5	Adv
+意外		yìwài	5	Vs
+以往		yǐwǎng	5	N
+疑問	疑问	yíwèn	5	N
+義務	义务	yìwù	5	N
+醫學	医学	yīxué	5	N
+一一		yīyī	5	Adv
+意願	意愿	yìyuàn	5	N
+一再		yīzài	5	Adv
+意志		yìzhì	5	N
+一致		yīzhì	5	Vs
+擁抱	拥抱	yǒngbào	5	V
+用不著	用不着	yòngbùzháo	5	Adv
+用處	用处	yòngchù	5	N
+用得著	用得着	yòngdezháo	5	Vs
+擁護	拥护	yǒnghù	5	V
+擁擠	拥挤	yǒngjǐ	5	Vs
+用具		yòngjù	5	N
+用力		yònglì	5	Vs-sep
+勇氣	勇气	yǒngqì	5	N
+用心		yòngxīn	5	Vs-sep/N
+由		yóu	5	Prep
+油		yóu	5	Vs
+郵差	邮差	yóuchāi	5	N
+有關	有关	yǒuguān	5	Prep/Vs
+友好		yǒuhǎo	5	Vs
+優惠	优惠	yōuhuì	5	Vs
+有力		yǒulì	5	Vs
+有利		yǒulì	5	Vs
+優良	优良	yōuliáng	5	Vs
+優美	优美	yōuměi	5	Vs
+油膩	油腻	yóunì	5	Vs
+有些		yǒuxiē	5	Adv/Det
+遊行	游行	yóuxíng	5	Vi
+猶豫	犹豫	yóuyù	5	Vs
+憂鬱	忧郁	yōuyù	5	Vs
+優越	优越	yōuyuè	5	Vs
+遇		yù	5	Vst
+願	愿	yuàn	5	Vst
+原本		yuánběn	5	Adv
+遠大	远大	yuǎndà	5	Vs
+元旦		Yuándàn	5	N
+緣故	缘故	yuángù	5	N
+原來	原来	yuánlái	5	Vs-attr
+原理		yuánlǐ	5	N
+原料		yuánliào	5	N
+圓滿	圆满	yuánmǎn	5	Vs
+原始		yuánshǐ	5	Vs
+冤枉		yuānwǎng	5	Vs/Vst
+原先		yuánxiān	5	Adv
+圓形	圆形	yuánxíng	5	N
+原則	原则	yuánzé	5	N
+原則上	原则上	yuánzéshàng	5	Adv
+原子筆	原子笔	yuánzǐbǐ	5	N
+預報	预报	yùbào	5	N
+語調	语调	yǔdiào	5	N
+預定	预定	yùdìng	5	V
+預訂	预订	yùdìng	5	V
+月分		yuèfèn	5	N
+月光		yuèguāng	5	N
+月球		yuèqiú	5	N
+預計	预计	yùjì	5	Vaux
+遇見	遇见	yùjiàn	5	Vpt
+娛樂	娱乐	yúlè	5	N
+暈	晕	yūn	5	Vs
+運輸	运输	yùnshū	5	V
+運送	运送	yùnsòng	5	V
+允許	允许	yǔnxǔ	5	V
+運用	运用	yùnyòng	5	V
+運轉	运转	yùnzhuǎn	5	Vi
+與其	与其	yǔqí	5	Conj
+語氣	语气	yǔqì	5	N
+預算	预算	yùsuàn	5	N
+預先	预先	yùxiān	5	Adv
+預	预	yù	5	Adv
+語音	语音	yǔyīn	5	N
+砸		zá	5	V
+雜	杂	zá	5	Vs
+載	载	zài	5	V
+再度		zàidù	5	Adv
+災害	灾害	zāihài	5	N
+在乎		zàihū	5	Vst
+災難	灾难	zāinàn	5	N
+再三		zàisān	5	Adv
+再說	再说	zàishuō	5	Conj
+贊成	赞成	zànchéng	5	Vst
+葬禮	葬礼	zànglǐ	5	N
+讚美	赞美	zànměi	5	V
+咱們	咱们	zánmen	5	N
+贊同	赞同	zàntóng	5	Vst
+造		zào	5	V
+糟		zāo	5	Vs
+早晨		zǎochén	5	N
+遭到		zāodào	5	Vpt
+糟糕		zāogāo	5	Vs
+造句		zàojù	5	V-sep
+遭受		zāoshòu	5	Vst
+早晚		zǎowǎn	5	Adv
+早已		zǎoyǐ	5	Adv
+遭遇		zāoyù	5	N
+則	则	zé	5	Adv/M
+怎		zěn	5	Adv
+贈	赠	zèng	5	V
+贈品	赠品	zèngpǐn	5	N
+贈送	赠送	zèngsòng	5	V
+增長	增长	zēngzhǎng	5	Vst
+窄		zhǎi	5	Vs
+占		zhàn	5	V/Vst
+佔	占	zhàn	5	V/Vst
+戰場	战场	zhànchǎng	5	N
+展出		zhǎnchū	5	V
+漲	涨	zhǎng	5	Vp
+張	张	zhāng	5	V
+章		zhāng	5	M
+長輩	长辈	zhǎngbèi	5	N
+帳單	帐单	zhàngdān	5	N
+丈夫		zhàngfū	5	N
+漲價	涨价	zhǎngjià	5	Vp-sep
+張開	张开	zhāngkāi	5	V
+掌聲	掌声	zhǎngshēng	5	N
+展開	展开	zhǎnkāi	5	V
+展覽	展览	zhǎnlǎn	5	N/V
+展示		zhǎnshì	5	V
+占有		zhànyǒu	5	Vst
+佔有	占有	zhànyǒu	5	Vst
+站住		zhànzhù	5	Vi
+照		zhào	5	Adv
+照常		zhàocháng	5	Vs
+招呼		zhāohū	5	V
+召開	召开	zhàokāi	5	V
+招手		zhāoshǒu	5	V-sep
+折		zhé	5	V
+者		zhě	5	N
+折合		zhéhé	5	Vst
+折扣		zhékòu	5	N
+折磨		zhémó	5	V
+陣	阵	zhèn	5	M
+針	针	zhēn	5	N
+震動	震动	zhèndòng	5	Vi
+針對	针对	zhēnduì	5	Prep
+正		zhèng	5	Vs
+整		zhěng	5	N/Vs
+爭	争	zhēng	5	V
+睜	睁	zhēng	5	V
+政策		zhèngcè	5	N
+政黨	政党	zhèngdǎng	5	N
+正方形		zhèngfāngxíng	5	N
+政府		zhèngfǔ	5	N
+正規	正规	zhèngguī	5	Vs-attr
+證件	证件	zhèngjiàn	5	N
+整潔	整洁	zhěngjié	5	Vs
+正經	正经	zhèngjīng	5	Vs
+證據	证据	zhèngjù	5	N
+爭論	争论	zhēnglùn	5	V
+正面		zhèngmiàn	5	N
+證明	证明	zhèngmíng	5	N
+徵求	征求	zhēngqiú	5	V
+爭取	争取	zhēngqǔ	5	V
+證實	证实	zhèngshí	5	Vpt
+整數	整数	zhěngshù	5	N
+整體	整体	zhěngtǐ	5	N
+正月		Zhēngyuè	5	N
+症狀	症状	zhèngzhuàng	5	N
+偵探	侦探	zhēntàn	5	N
+珍惜		zhēnxí	5	Vst
+真心		zhēnxīn	5	N
+珍珠		zhēnzhū	5	N
+陣子	阵子	zhènzi	5	N
+只		zhǐ	5	M
+止		zhǐ	5	Vs
+直		zhí	5	Adv
+值		zhí	5	Vst
+擲	掷	zhí	5	V
+治		zhì	5	V
+至		zhì	5	V
+之		zhī	5	N/Ptc
+支持		zhīchí	5	V
+指出		zhǐchū	5	Vpt
+支出		zhīchū	5	Vpt
+指導	指导	zhǐdǎo	5	V
+制定		zhìdìng	5	V
+制訂	制订	zhìdìng	5	V
+指定		zhǐdìng	5	V
+之間	之间	zhījiān	5	N
+之類	之类	zhīlèi	5	N
+支票		zhīpiào	5	N
+志氣	志气	zhìqì	5	N
+只是		zhǐshì	5	Adv
+指示		zhǐshì	5	N/V
+職位	职位	zhíwèi	5	N
+直線	直线	zhíxiàn	5	Adv
+執行	执行	zhíxíng	5	V
+秩序		zhìxù	5	N
+志願	志愿	zhìyuàn	5	N
+支援		zhīyuán	5	V
+製造	制造	zhìzào	5	V
+製	制	zhì	5	V
+指責	指责	zhǐzé	5	V
+紙張	纸张	zhǐzhāng	5	N
+制止		zhìzhǐ	5	V
+製作	制作	zhìzuò	5	V
+中		zhòng	5	Vp
+重		zhòng	5	Vst
+腫	肿	zhǒng	5	Vs
+重大		zhòngdà	5	Vs
+中毒		zhòngdú	5	Vp-sep
+中級	中级	zhōngjí	5	N
+種類	种类	zhǒnglèi	5	N
+重量		zhòngliàng	5	N
+中年		zhōngnián	5	N
+重傷	重伤	zhòngshāng	5	N/Vs
+中途		zhōngtú	5	N
+重心		zhòngxīn	5	N
+中央		zhōngyāng	5	N
+中藥	中药	zhōngyào	5	N
+種子	种子	zhǒngzǐ	5	N
+種族	种族	zhǒngzú	5	N
+州		zhōu	5	N
+周		zhōu	5	M
+週	周	zhōu	5	M
+粥		zhōu	5	N
+周到		zhōudào	5	Vs
+竹		zhú	5	N
+竹子		zhúzi	5	N
+賺	赚	zhuàn	5	V
+轉	转	zhuǎn	5	V/Vp
+轉變	转变	zhuǎnbiàn	5	Vpt
+轉播	转播	zhuǎnbò	5	V
+轉達	转达	zhuǎndá	5	V
+壯	壮	zhuàng	5	Vs
+撞		zhuàng	5	V
+轉告	转告	zhuǎngào	5	V
+狀況	状况	zhuàngkuàng	5	N
+裝飾	装饰	zhuāngshì	5	V
+轉機	转机	zhuǎnjī	5	Vi
+專家	专家	zhuānjiā	5	N
+專利	专利	zhuānlì	5	N
+專門	专门	zhuānmén	5	Vs
+專人	专人	zhuānrén	5	N
+轉身	转身	zhuǎnshēn	5	Vi
+轉向	转向	zhuǎnxiàng	5	V/Vi
+專業	专业	zhuānyè	5	N
+主辦	主办	zhǔbàn	5	V
+註冊	注册	zhùcè	5	V-sep
+主持		zhǔchí	5	V
+主觀	主观	zhǔguān	5	Vs
+祝賀	祝贺	zhùhè	5	V
+住戶	住户	zhùhù	5	N
+追		zhuī	5	V
+逐漸	逐渐	zhújiàn	5	Adv
+主角		zhǔjué	5	N
+准		zhǔn	5	V
+準	准	zhǔn	5	Vs
+准考證	准考证	zhǔnkǎozhèng	5	N
+准考証	准考证	zhǔnkǎozhèng	5	N
+準確	准确	zhǔnquè	5	Vs
+捉		zhuō	5	V
+桌		zhuō	5	M
+注射		zhùshè	5	V
+主席		zhǔxí	5	N
+住院		zhùyuàn	5	V-sep
+住宅		zhùzhái	5	N
+主張	主张	zhǔzhāng	5	N/V
+紫		zǐ	5	Vs-attr
+資本	资本	zīběn	5	N
+資格	资格	zīgé	5	N
+資金	资金	zījīn	5	N
+自來水	自来水	zìláishuǐ	5	N
+字幕		zìmù	5	N
+字母		zìmǔ	5	N
+子女		zǐnǚ	5	N
+自然		zìrán	5	N
+自私		zìsī	5	Vs
+自我		zìwǒ	5	N
+自信		zìxìn	5	Vs
+資訊	资讯	zīxùn	5	N
+自願	自愿	zìyuàn	5	Vs
+自主		zìzhǔ	5	Vs
+總共	总共	zǒnggòng	5	Adv
+綜合	综合	zònghé	5	V/Vs-attr
+總理	总理	zǒnglǐ	5	N
+走道		zǒudào	5	N
+走私		zǒusī	5	V
+足		zú	5	Vs/Det
+組	组	zǔ	5	V
+阻礙	阻碍	zǔ'ài	5	V
+鑽	钻	zuān	5	V
+鑽石	钻石	zuànshí	5	N
+足夠	足够	zúgòu	5	Vs
+祖國	祖国	zǔguó	5	N
+罪		zuì	5	N
+最少		zuìshǎo	5	Adv
+遵守		zūnshǒu	5	Vst
+尊重		zūnzhòng	5	Vst
+作家		zuòjiā	5	N
+做客		zuòkè	5	Vi
+作客		zuòkè	5	Vi
+作為	作为	zuòwéi	5	Vst/N
+作用		zuòyòng	5	N
+足以		zúyǐ	5	Vaux
+阻止		zǔzhǐ	5	V
+組織	组织	zǔzhī	5	N/V
+挨		āi	6	Vst
+欸		ǎi	6	Ptc
+愛戴	爱戴	àidài	6	Vst
+愛國	爱国	àiguó	6	Vs
+愛滋病	爱滋病	àizībìng	6	N
+安頓	安顿	āndùn	6	V
+安撫	安抚	ānfǔ	6	V
+安寧	安宁	ānníng	6	Vs
+安詳	安详	ānxiáng	6	Vs
+安置		ānzhì	6	V
+暗暗		àn'àn	6	Adv
+案件		ànjiàn	6	N
+案情		ànqíng	6	N
+按摩		ànmó	6	V
+昂貴	昂贵	ángguì	6	Vs
+奧妙	奥妙	àomiào	6	Vs
+懊惱	懊恼	àonǎo	6	Vs
+八卦		bāguà	6	N
+八字		bāzì	6	N
+把持		bǎchí	6	V
+把手		bǎshǒu	6	N
+白皮書	白皮书	báipíshū	6	N
+拜會	拜会	bàihuì	6	V
+頒發	颁发	bānfā	6	V
+頒	颁	bān	6	V
+頒獎	颁奖	bānjiǎng	6	V-sep
+辦案	办案	bàn'àn	6	V-sep
+半島	半岛	bàndǎo	6	N
+半導體	半导体	bàndǎotǐ	6	N
+幫	帮	bāng	6	M
+綁	绑	bǎng	6	V
+包袱		bāofú	6	N
+包圍	包围	bāowéi	6	V
+寶貝	宝贝	bǎobèi	6	Vst
+寶石	宝石	bǎoshí	6	N
+飽和	饱和	bǎohé	6	Vs
+飽滿	饱满	bǎomǎn	6	Vs
+保安		bǎo'ān	6	N
+保管		bǎoguǎn	6	V
+保齡球	保龄球	bǎolíngqiú	6	N
+保姆		bǎomǔ	6	N
+保全		bǎoquán	6	Vs-attr
+保險	保险	bǎoxiǎn	6	Vs
+保佑		bǎoyòu	6	V
+保重		bǎozhòng	6	Vi
+報案	报案	bào'àn	6	V-sep
+報表	报表	bàobiǎo	6	N
+報酬	报酬	bàochóu	6	N
+報復	报复	bàofù	6	V
+報關	报关	bàoguān	6	V-sep
+報價	报价	bàojià	6	N
+報刊	报刊	bàokān	6	N
+報應	报应	bàoyìng	6	N
+報章	报章	bàozhāng	6	N
+暴雨		bàoyǔ	6	N
+爆發	爆发	bàofā	6	Vpt
+抱負	抱负	bàofù	6	N
+碑		bēi	6	N
+悲哀		bēi'āi	6	Vs
+悲觀	悲观	bēiguān	6	Vs
+貝殼	贝壳	bèiké	6	N
+倍數	倍数	bèishù	6	N
+背誦	背诵	bèisòng	6	V
+奔騰	奔腾	bēnténg	6	Vi
+本		běn	6	Adv
+本事		běnshì	6	N
+本位		běnwèi	6	N
+本性		běnxìng	6	N
+本質	本质	běnzhí	6	N
+崩潰	崩溃	bēngkuì	6	Vp
+甭		béng	6	Adv
+敝		bì	6	Det
+必		bì	6	Adv
+編輯	编辑	biānjí	6	N/V
+編寫	编写	biānxiě	6	V
+編織	编织	biānzhī	6	V
+編制	编制	biānzhì	6	N
+編製	编制	biānzhì	6	V
+邊界	边界	biānjiè	6	N
+邊緣	边缘	biānyuán	6	N
+貶	贬	biǎn	6	Vp
+貶值	贬值	biǎnzhí	6	Vp
+匾額	匾额	biǎn'é	6	N
+辨認	辨认	biànrèn	6	V
+辨識	辨识	biànshì	6	V
+辯	辩	biàn	6	V
+辯護	辩护	biànhù	6	Vi
+辯論	辩论	biànlùn	6	Vi
+變革	变革	biàngé	6	N
+變遷	变迁	biànqiān	6	Vs
+變通	变通	biàntōng	6	Vi
+變形	变形	biànxíng	6	Vp
+標籤	标签	biāoqiān	6	N
+標語	标语	biāoyǔ	6	N
+表白		biǎobái	6	Vi
+表明		biǎomíng	6	Vi
+鼻孔		bíkǒng	6	N
+筆錄	笔录	bǐlù	6	N
+筆友	笔友	bǐyǒu	6	N
+比率		bǐlǜ	6	N
+比擬	比拟	bǐnǐ	6	V
+比喻		bǐyù	6	N
+比重		bǐzhòng	6	N
+必備	必备	bìbèi	6	Vs-attr
+必定		bìdìng	6	Adv
+必然		bìrán	6	Adv
+閉幕	闭幕	bìmù	6	Vp
+閉塞	闭塞	bìsè	6	Vs
+避難	避难	bìnàn	6	Vi
+避孕		bìyùn	6	V-sep
+畢生	毕生	bìshēng	6	N
+幣值	币值	bìzhí	6	N
+憋		biē	6	V
+別	别	bié	6	V
+別墅	别墅	biéshù	6	N
+兵		bīng	6	N
+賓館	宾馆	bīnguǎn	6	N
+柄		bǐng	6	N
+並列	并列	bìngliè	6	Vst
+並重	并重	bìngzhòng	6	Vs
+併發	并发	bìngfā	6	Vpt
+病床		bìngchuáng	6	N
+病菌		bìngjùn	6	N
+病患		bìnghuàn	6	N
+波		bō	6	M
+波及		bōjí	6	Vst
+波浪		bōlàng	6	N
+剝	剥	bō	6	V
+剝削	剥削	bōxuè	6	V
+搏鬥	搏斗	bódòu	6	Vi
+播出		bòchū	6	V
+補給	补给	bǔjǐ	6	V
+補救	补救	bǔjiù	6	V
+哺乳動物	哺乳动物	bǔrǔdòngwù	6	N
+不便		bùbiàn	6	Vs
+不得		bùdé	6	Adv
+不等		bùděng	6	N
+不動產	不动产	bùdòngchǎn	6	N
+不法		bùfǎ	6	Vs-attr
+不凡		bùfán	6	Vs
+不妨		bùfáng	6	Adv
+不公		bùgōng	6	Vs
+不及		bùjí	6	Vs-pred
+不禁		bùjīn	6	Vaux
+不堪		bùkān	6	Vs
+不力		bùlì	6	Vs-pred
+不料		bùliào	6	Adv
+不免		bùmiǎn	6	Adv
+不容		bùróng	6	Adv
+不時	不时	bùshí	6	Adv
+不惜		bùxí	6	Vs
+不下		bùxià	6	Adv
+不肖		bùxiào	6	Vs-attr
+不懈		bùxiè	6	Vs
+不再		bùzài	6	Vs-pred
+不致		bùzhì	6	Adv
+不知不覺	不知不觉	bùzhībùjué	6	Adv
+不至於	不至于	bùzhìyú	6	Adv
+不致於	不致于	bùzhìyú	6	Adv
+部落		bùluò	6	N
+部署		bùshù	6	V
+步調	步调	bùdiào	6	N
+步驟	步骤	bùzòu	6	N
+猜測	猜测	cāicè	6	V
+猜忌		cāijì	6	Vst
+猜想		cāixiǎng	6	V
+裁縫	裁缝	cáiféng	6	N
+裁減	裁减	cáijiǎn	6	V
+財團	财团	cáituán	6	N
+財政	财政	cáizhèng	6	N
+才智		cáizhì	6	N
+採訪	采访	cǎifǎng	6	V
+採光	采光	cǎiguāng	6	N
+採納	采纳	cǎinà	6	V
+採取	采取	cǎiqǔ	6	V
+彩繪	彩绘	cǎihuì	6	V
+餐具		cānjù	6	N
+參謀	参谋	cānmóu	6	N
+殘暴	残暴	cánbào	6	Vs
+殘酷	残酷	cánkù	6	Vs
+殘殺	残杀	cánshā	6	V
+慘重	惨重	cǎnzhòng	6	Vs
+燦爛	灿烂	cànlàn	6	Vs
+蒼白	苍白	cāngbái	6	Vs
+蒼蠅	苍蝇	cāngyíng	6	N
+操縱	操纵	cāozòng	6	V
+草案		cǎo'àn	6	N
+草叢	草丛	cǎocóng	6	N
+草率		cǎoshuài	6	Vs
+草藥	草药	cǎoyào	6	N
+測	测	cè	6	V
+策畫	策画	cèhuà	6	V
+策劃	策划	cèhuà	6	V
+差額	差额	chā'é	6	N
+插曲		chāqǔ	6	N
+插嘴		chāzuǐ	6	V-sep
+茶具		chájù	6	N
+察覺	察觉	chájué	6	Vpt
+查明		chámíng	6	V
+蟬	蝉	chán	6	N
+饞	馋	chán	6	Vs
+潺潺		chánchán	6	Vs
+猖獗		chāngjué	6	Vs
+腸	肠	cháng	6	N
+腸子	肠子	chángzi	6	N
+長遠	长远	chángyuǎn	6	Vs
+場次	场次	chǎngcì	6	N
+場面	场面	chǎngmiàn	6	N
+倡導	倡导	chàngdǎo	6	V
+唱腔		chàngqiāng	6	N
+暢銷	畅销	chàngxiāo	6	Vs
+產物	产物	chǎnwù	6	N
+產值	产值	chǎnzhí	6	N
+超速		chāosù	6	Vp
+超脫	超脱	chāotuō	6	Vst
+抄襲	抄袭	chāoxí	6	V
+吵嘴		chǎozuǐ	6	Vi
+車輛	车辆	chēliàng	6	N
+車廂	车厢	chēxiāng	6	N
+撤回		chèhuí	6	V
+撤銷	撤销	chèxiāo	6	V
+沉默		chénmò	6	Vs
+沈默	沉默	chénmò	6	Vs
+沉思		chénsī	6	Vi
+沉重		chénzhòng	6	Vs
+沈重		chénzhòng	6	Vs
+塵土	尘土	chéntǔ	6	N
+呈		chéng	6	Vst
+乘		chéng	6	Vst
+承包		chéngbāo	6	V
+承擔	承担	chéngdān	6	V
+承諾	承诺	chéngnuò	6	N
+成敗	成败	chéngbài	6	N
+成見	成见	chéngjiàn	6	N
+成就		chéngjiù	6	V
+成品		chéngpǐn	6	N
+成全		chéngquán	6	V
+成效		chéngxiào	6	N
+成衣		chéngyī	6	N
+成員	成员	chéngyuán	6	N
+成長	成长	chéngzhǎng	6	N
+稱號	称号	chēnghào	6	N
+稱呼	称呼	chēnghū	6	V
+撐腰	撑腰	chēngyāo	6	Vi
+程式		chéngshì	6	N
+呈獻	呈献	chéngxiàn	6	V
+誠心	诚心	chéngxīn	6	N
+誠心誠意	诚心诚意	chéngxīnchéngyì	6	Vs
+誠摯	诚挚	chéngzhì	6	Vs
+稱	称	chèng	6	V
+吃驚	吃惊	chījīng	6	Vs
+吃苦		chīkǔ	6	Vs
+吃力		chīlì	6	Vs
+持		chí	6	V
+持久		chíjiǔ	6	Vs
+持平		chípíng	6	Vs
+池		chí	6	N
+池子		chízi	6	N
+遲鈍	迟钝	chídùn	6	Vs
+充斥		chōngchì	6	Vst
+充裕		chōngyù	6	Vs
+沖淡	冲淡	chōngdàn	6	V
+沖天	冲天	chōngtiān	6	Vs
+衝動	冲动	chōngdòng	6	Vs
+衝擊	冲击	chōngjí	6	V
+憧憬		chōngjǐng	6	Vst
+重疊	重叠	chóngdié	6	Vs
+崇尚		chóngshàng	6	Vst
+寵愛	宠爱	chǒng'ài	6	Vst
+寵物	宠物	chǒngwù	6	N
+抽查		chōuchá	6	V
+抽空		chōukòng	6	Vi
+抽象		chōuxiàng	6	Vs
+抽樣	抽样	chōuyàng	6	V-sep
+仇		chóu	6	N
+仇恨		chóuhèn	6	N
+稠密		chóumì	6	Vs
+出超		chūchāo	6	Vs
+出錯	出错	chūcuò	6	Vp-sep
+出發點	出发点	chūfādiǎn	6	N
+出局		chūjú	6	Vp
+出力		chūlì	6	V-sep
+出路		chūlù	6	N
+出馬	出马	chūmǎ	6	Vi
+出賣	出卖	chūmài	6	V
+出面		chūmiàn	6	Vi
+出名		chūmíng	6	Vs
+出品		chūpǐn	6	N
+出示		chūshì	6	V
+出手		chūshǒu	6	Vi
+出頭	出头	chūtóu	6	Vp
+出土		chūtǔ	6	Vp
+出息		chūxi	6	N
+出血		chūxiě	6	Vp
+初期		chūqí	6	N
+儲備	储备	chúbèi	6	V
+除此之外		chúcǐzhīwài	6	Conj
+鋤頭	锄头	chútou	6	N
+處	处	chǔ	6	Vi
+處方	处方	chǔfāng	6	N
+處分	处分	chǔfèn	6	N/V
+處境	处境	chǔjìng	6	N
+處事	处事	chǔshì	6	Vi
+處於	处于	chǔyú	6	Vst
+處女	处女	chǔnǚ	6	N
+穿梭		chuānsuō	6	Vi
+傳	传	chuán	6	V
+傳遞	传递	chuándì	6	V
+傳奇	传奇	chuánqí	6	N/Vs
+傳神	传神	chuánshén	6	Vs
+傳授	传授	chuánshòu	6	V
+船隻	船只	chuánzhī	6	N
+喘		chuǎn	6	V
+創傷	创伤	chuāngshāng	6	N
+創	创	chuàng	6	V
+創辦	创办	chuàngbàn	6	V
+創立	创立	chuànglì	6	V
+創業	创业	chuàngyè	6	V-sep
+吹牛		chuīniú	6	V-sep
+垂		chuí	6	V
+垂直		chuízhí	6	Vs
+辭	辞	cí	6	V
+辭行	辞行	cíxíng	6	Vi
+慈善		císhàn	6	Vs
+此刻		cǐkè	6	N
+次		cì	6	Det
+次要		cìyào	6	Vs-attr
+伺候		cìhòu	6	V
+刺殺	刺杀	cìshā	6	V
+匆忙		cōngmáng	6	Vs
+從容	从容	cōngróng	6	Vs
+從而	从而	cóng'ér	6	Conj
+湊巧	凑巧	còuqiǎo	6	Vs
+粗糙		cūcāo	6	Vs
+粗魯	粗鲁	cūlǔ	6	Vs
+促		cù	6	V
+促成		cùchéng	6	Vpt
+促使		cùshǐ	6	Vst
+促銷	促销	cùxiāo	6	V
+簇擁	簇拥	cùyǒng	6	V
+摧殘	摧残	cuīcán	6	V
+摧毀	摧毁	cuīhuǐ	6	V
+催眠		cuīmián	6	V
+脆弱		cuìruò	6	Vs
+存貨	存货	cúnhuò	6	N
+磋商		cuōshāng	6	Vi
+撮合		cuòhé	6	V
+搭配		dāpèi	6	V
+達	达	dá	6	Vst
+答覆	答复	dáfù	6	V
+打		dǎ	6	Prep
+打鬥	打斗	dǎdòu	6	Vi
+打賭	打赌	dǎdǔ	6	V-sep
+打發	打发	dǎfā	6	V
+打擊	打击	dǎjí	6	V
+打量		dǎliàng	6	V
+打獵	打猎	dǎliè	6	V-sep
+打牌		dǎpái	6	V-sep
+打手		dǎshǒu	6	N
+打烊		dǎyáng	6	Vp
+大道		dàdào	6	N
+大隊	大队	dàduì	6	N
+大使		dàshǐ	6	N
+大選	大选	dàxuǎn	6	N
+大洋洲		Dàyángzhōu	6	N
+呆		dāi	6	Vs
+歹徒		dǎitú	6	N
+逮捕		dǎibǔ	6	V
+代課	代课	dàikè	6	V-sep
+怠慢		dàimàn	6	Vst
+擔	担	dān	6	V
+擔當	担当	dāndāng	6	V
+擔負	担负	dānfù	6	V
+單獨	单独	dāndú	6	Adv
+單價	单价	dānjià	6	N
+單據	单据	dānjù	6	N
+單親	单亲	dānqīn	6	Vs-attr
+單行道	单行道	dānxíngdào	6	N
+膽	胆	dǎn	6	N
+膽固醇	胆固醇	dǎngùchún	6	N
+但		dàn	6	Adv
+淡季		dànjì	6	N
+淡水		dànshuǐ	6	N
+刀		dāo	6	M
+導師	导师	dǎoshī	6	N
+導致	导致	dǎozhì	6	Vst
+島嶼	岛屿	dǎoyǔ	6	N
+道		dào	6	Vi
+道別	道别	dàobié	6	Vi
+道地		dàodì	6	Vs
+道士		dàoshì	6	N
+道義	道义	dàoyì	6	N
+到頭來	到头来	dàotóulái	6	Adv
+倒數	倒数	dàoshǔ	6	Vi
+當	当	dāng	6	Det
+當兵	当兵	dāngbīng	6	V-sep
+當代	当代	dāngdài	6	N
+當局	当局	dāngjú	6	N
+當前	当前	dāngqián	6	N
+當心	当心	dāngxīn	6	Vs
+黨派	党派	dǎngpài	6	N
+黨員	党员	dǎngyuán	6	N
+得以		déyǐ	6	Adv
+登場	登场	dēngchǎng	6	Vi
+登陸	登陆	dēnglù	6	Vi
+燈火	灯火	dēnghuǒ	6	N
+燈籠	灯笼	dēnglóng	6	N
+等候		děnghòu	6	Vst
+等價	等价	děngjià	6	Vs
+瞪		dèng	6	V
+嘀咕		dígū	6	Vi
+底片		dǐpiàn	6	N
+抵押		dǐyā	6	V
+抵制		dǐzhì	6	V
+地表		dìbiǎo	6	N
+地步		dìbù	6	N
+地勢	地势	dìshì	6	N
+地域		dìyù	6	N
+地獄	地狱	dìyù	6	N
+地質	地质	dìzhí	6	N
+地主		dìzhǔ	6	N
+締結	缔结	dìjié	6	V
+締造	缔造	dìzào	6	V
+弟兄		dìxiōng	6	N
+顛覆	颠覆	diānfù	6	V
+典雅		diǎnyǎ	6	Vs
+點子	点子	diǎnzi	6	N
+奠定		diàndìng	6	Vpt
+惦記	惦记	diànjì	6	Vst
+電工	电工	diàngōng	6	N
+電力	电力	diànlì	6	N
+電流	电流	diànliú	6	N
+電壓	电压	diànyā	6	N
+凋零		diāolíng	6	Vs
+調	调	diào	6	V
+調查	调查	diàochá	6	N
+調度	调度	diàodù	6	Vi
+吊橋	吊桥	diàoqiáo	6	N
+疊	叠	dié	6	V
+頂	顶	dǐng	6	Adv/V
+定額	定额	dìng'é	6	N
+定義	定义	dìngyì	6	N
+釘	钉	dìng	6	V
+丟棄	丢弃	diūqì	6	V
+凍結	冻结	dòngjié	6	V
+洞穴		dòngxuè	6	N
+動產	动产	dòngchǎn	6	N
+動機	动机	dòngjī	6	N
+動靜	动静	dòngjìng	6	N
+動力	动力	dònglì	6	N
+動亂	动乱	dòngluàn	6	Vs
+動脈	动脉	dòngmài	6	N
+動態	动态	dòngtài	6	N
+動向	动向	dòngxiàng	6	N
+動員	动员	dòngyuán	6	V
+抖		dǒu	6	V
+陡		dǒu	6	Vs
+逗留		dòuliú	6	Vi
+鬥志	斗志	dòuzhì	6	N
+督促		dūcù	6	V
+獨創	独创	dúchuàng	6	V
+獨到	独到	dúdào	6	Vs
+獨占	独占	dúzhàn	6	V
+獨佔	独占	dúzhàn	6	V
+讀物	读物	dúwù	6	N
+堵		dǔ	6	V
+堵塞		dǔsè	6	Vst
+賭博	赌博	dǔbó	6	Vi
+賭場	赌场	dǔchǎng	6	N
+渡		dù	6	V
+度量衡		dùliànghéng	6	N
+端正		duānzhèng	6	Vs
+短缺		duǎnquē	6	Vs
+短暫	短暂	duǎnzhàn	6	Vs
+斷絕	断绝	duànjué	6	V
+堆積	堆积	duījī	6	V
+隊伍	队伍	duìwǔ	6	N
+兌現	兑现	duìxiàn	6	V
+對比	对比	duìbǐ	6	N
+對照	对照	duìzhào	6	Vst
+對峙	对峙	duìzhì	6	Vs
+頓	顿	dùn	6	Adv/Vi
+頓時	顿时	dùnshí	6	Adv
+多寡		duōguǎ	6	N
+多虧	多亏	duōkuī	6	Adv
+多媒體	多媒体	duōméitǐ	6	N
+多元		duōyuán	6	Vs
+奪魁	夺魁	duókuí	6	Vp
+躲避		duǒbì	6	V
+墮胎	堕胎	duòtāi	6	V-sep
+額外	额外	éwài	6	Vs-attr
+惡	恶	è	6	Vs-attr
+惡化	恶化	èhuà	6	Vp
+惡性	恶性	èxìng	6	Vs-attr
+惡意	恶意	èyì	6	N
+恩愛	恩爱	ēn'ài	6	Vs
+恩情		ēnqíng	6	N
+恩人		ēnrén	6	N
+恩怨		ēnyuàn	6	N
+而是		érshì	6	Conj
+而言		éryán	6	
+兒女	儿女	érnǚ	6	N
+耳光		ěrguāng	6	N
+發	发	fā	6	M
+發電	发电	fādiàn	6	Vi
+發瘋	发疯	fāfēng	6	Vp
+發掘	发掘	fājué	6	V
+發誓	发誓	fāshì	6	V-sep
+發育	发育	fāyù	6	Vs
+發作	发作	fāzuò	6	Vp
+法定		fǎdìng	6	Vs-attr
+法官		fǎguān	6	N
+法令		fǎlìng	6	N
+法人		fǎrén	6	N
+法則	法则	fǎzé	6	N
+法制		fǎzhì	6	N
+法治		fǎzhì	6	N
+翻臉	翻脸	fānliǎn	6	Vp
+翻身		fānshēn	6	V-sep
+翻新		fānxīn	6	V
+繁多		fánduō	6	Vs
+繁體	繁体	fántǐ	6	N
+藩籬	藩篱	fánlí	6	N
+凡		fán	6	Conj
+凡是		fánshì	6	Conj
+返		fǎn	6	V
+反擊	反击	fǎnjí	6	V
+反射		fǎnshè	6	Vi
+反省		fǎnxǐng	6	Vi
+反之		fǎnzhī	6	Conj
+犯規	犯规	fànguī	6	V-sep
+販毒	贩毒	fàndú	6	Vi
+販賣	贩卖	fànmài	6	V
+方位		fāngwèi	6	N
+方向盤	方向盘	fāngxiàngpán	6	N
+方針	方针	fāngzhēn	6	N
+方正		fāngzhèng	6	Vs
+妨礙	妨碍	fáng'ài	6	V
+防備	防备	fángbèi	6	V
+防範	防范	fángfàn	6	V
+防水		fángshuǐ	6	Vs
+防衛	防卫	fángwèi	6	V
+防禦	防御	fángyù	6	V
+防治		fángzhì	6	V
+仿冒		fǎngmào	6	V
+仿造		fǎngzào	6	V
+紡織	纺织	fǎngzhī	6	Vi
+放蕩	放荡	fàngdàng	6	Vs
+放寬	放宽	fàngkuān	6	V
+放款		fàngkuǎn	6	Vi
+放任		fàngrèn	6	Vst
+放映		fàngyìng	6	V
+放逐		fàngzhú	6	Vi
+非凡		fēifán	6	Vs
+飛彈	飞弹	fēidàn	6	N
+飛快	飞快	fēikuài	6	Adv
+飛翔	飞翔	fēixiáng	6	Vi
+飛行	飞行	fēixíng	6	Vi
+肥料		féiliào	6	N
+廢	废	fèi	6	V
+廢除	废除	fèichú	6	V
+廢棄	废弃	fèiqì	6	V
+廢墟	废墟	fèixū	6	N
+廢止	废止	fèizhǐ	6	V
+費力	费力	fèilì	6	Vs
+沸騰	沸腾	fèiténg	6	Vp
+肺炎		fèiyán	6	N
+分貝	分贝	fēnbèi	6	M
+分辨		fēnbiàn	6	V
+分寸		fēncùn	6	N
+分擔	分担	fēndān	6	V
+分發	分发	fēnfā	6	Vi
+分割		fēngē	6	V
+分化		fēnhuà	6	Vpt
+分級	分级	fēnjí	6	V-sep
+分家		fēnjiā	6	V-sep
+分解		fēnjiě	6	V
+分離	分离	fēnlí	6	Vs
+分裂		fēnliè	6	Vp
+分泌		fēnmì	6	V
+分子		fēnzǐ	6	N
+墳墓	坟墓	fénmù	6	N
+墳	坟	fén	6	N
+墓		mù	6	N
+粉刷		fěnshuā	6	V
+分量		fènliàng	6	N
+糞	粪	fèn	6	N
+封閉	封闭	fēngbì	6	Vs
+封鎖	封锁	fēngsuǒ	6	V
+封條	封条	fēngtiáo	6	N
+風暴	风暴	fēngbào	6	N
+風潮	风潮	fēngcháo	6	N
+風光	风光	fēngguāng	6	N/Vs
+風化	风化	fēnghuà	6	Vp
+風力	风力	fēnglì	6	N
+風尚	风尚	fēngshàng	6	N
+風水	风水	fēngshuǐ	6	N
+風行	风行	fēngxíng	6	Vs
+鋒面	锋面	fēngmiàn	6	N
+豐盛	丰盛	fēngshèng	6	Vs
+豐收	丰收	fēngshōu	6	Vs
+縫	缝	fèng	6	N
+奉獻	奉献	fèngxiàn	6	V
+奉養	奉养	fèngyàng	6	V
+佛經	佛经	Fójīng	6	N
+佛像		fóxiàng	6	N
+否決	否决	fǒujué	6	V
+膚淺	肤浅	fūqiǎn	6	Vs
+敷衍		fūyǎn	6	V
+俘虜	俘虏	fúlǔ	6	N/V
+浮動	浮动	fúdòng	6	Vi
+服從	服从	fúcóng	6	V
+服飾	服饰	fúshì	6	N
+服務	服务	fúwù	6	N
+服刑		fúxíng	6	V-sep
+幅度		fúdù	6	N
+福氣	福气	fúqì	6	N
+輻射	辐射	fúshè	6	N
+斧頭	斧头	fǔtou	6	N
+斧		fǔ	6	N
+撫養	抚养	fǔyǎng	6	V
+撫育	抚育	fǔyù	6	V
+腐爛	腐烂	fǔlàn	6	Vp
+腐蝕	腐蚀	fǔshí	6	Vst
+腐朽		fǔxiǔ	6	Vp
+付款		fùkuǎn	6	V-sep
+負	负	fù	6	Vst
+負面	负面	fùmiàn	6	N
+富貴	富贵	fùguì	6	N
+富有		fùyǒu	6	Vst
+婦人	妇人	fùrén	6	N
+附上		fùshàng	6	Vpt
+復甦	复苏	fùsū	6	Vp
+復原	复原	fùyuán	6	Vp
+賦予	赋予	fùyǔ	6	V
+該死	该死	gāisǐ	6	Vs
+改編	改编	gǎibiān	6	V
+改觀	改观	gǎiguān	6	Vp
+改良		gǎiliáng	6	V
+改選	改选	gǎixuǎn	6	V
+鈣	钙	gài	6	N
+概		gài	6	Adv
+概括		gàiguā	6	Vst
+概況	概况	gàikuàng	6	N
+蓋章	盖章	gàizhāng	6	V-sep
+尷尬	尴尬	gāngà	6	Vs
+干擾	干扰	gānrǎo	6	V
+干涉		gānshè	6	V
+乾燥	干燥	gānzào	6	Vs
+感觸	感触	gǎnchù	6	N
+感性		gǎnxìng	6	Vs
+趕忙	赶忙	gǎnmáng	6	Adv
+綱領	纲领	gānglǐng	6	N
+剛強	刚强	gāngqiáng	6	Vs
+鋼鐵	钢铁	gāngtiě	6	N
+崗位	岗位	gǎngwèi	6	N
+高見	高见	gāojiàn	6	N
+高壓	高压	gāoyā	6	N
+告別	告别	gàobié	6	V
+告狀	告状	gàozhuàng	6	V-sep
+胳膊		gēbó	6	N
+歌頌	歌颂	gēsòng	6	V
+疙瘩		gēda	6	N
+鴿	鸽	gē	6	N
+鴿子	鸽子	gēzi	6	N
+隔閡	隔阂	géhé	6	N
+隔天		gétiān	6	N
+格局		géjú	6	N
+格式		géshì	6	N
+格外		géwài	6	Adv
+革新		géxīn	6	V
+各界		gèjiè	6	N
+個數	个数	gèshù	6	N
+個體	个体	gètǐ	6	N
+給予	给予	gěiyǔ	6	V
+跟進	跟进	gēnjìn	6	Vi
+跟前		gēnqián	6	N
+根源		gēnyuán	6	N
+耕地		gēngdì	6	N
+更動	更动	gēngdòng	6	V
+弓		gōng	6	N
+工地		gōngdì	6	N
+工讀	工读	gōngdú	6	Vi
+工藝品	工艺品	gōngyìpǐn	6	N
+公安		gōng'ān	6	N
+公費	公费	gōngfèi	6	N
+公會	公会	gōnghuì	6	N
+公民		gōngmín	6	N
+公認	公认	gōngrèn	6	V
+公事		gōngshì	6	N
+公文		gōngwén	6	N
+公務	公务	gōngwù	6	N
+公務員	公务员	gōngwùyuán	6	N
+公益		gōngyì	6	N
+公債	公债	gōngzhài	6	N
+功勞	功劳	gōngláo	6	N
+功利		gōnglì	6	Vs
+攻		gōng	6	V
+攻讀	攻读	gōngdú	6	V
+攻擊	攻击	gōngjí	6	V
+供給	供给	gōngjǐ	6	V
+宮殿	宫殿	gōngdiàn	6	N
+恭敬		gōngjìng	6	Vs
+恭維	恭维	gōngwéi	6	V
+鞏固	巩固	gǒnggù	6	Vs
+共產	共产	gòngchǎn	6	Vs-attr
+共和國	共和国	gònghéguó	6	N
+共鳴	共鸣	gòngmíng	6	N
+供養	供养	gòngyàng	6	V
+勾結	勾结	gōujié	6	V
+溝	沟	gōu	6	N
+購	购	gòu	6	V
+構想	构想	gòuxiǎng	6	N
+孤獨	孤独	gūdú	6	Vs
+孤兒	孤儿	gū'ér	6	N
+孤立		gūlì	6	Vs
+辜負	辜负	gūfù	6	Vst
+估價	估价	gūjià	6	V-sep
+古怪		gǔguài	6	Vs
+古籍		gǔjí	6	N
+古物		gǔwù	6	N
+股		gǔ	6	M
+股市		gǔshì	6	N
+鼓吹		gǔchuī	6	V
+鼓動	鼓动	gǔdòng	6	V
+故		gù	6	Conj
+雇		gù	6	V
+僱	雇	gù	6	V
+雇用		gùyòng	6	V
+僱用	雇用	gùyòng	6	V
+固然		gùrán	6	Conj
+固體	固体	gùtǐ	6	N
+固有		gùyǒu	6	Vs-attr
+固執	固执	gùzhí	6	Vs
+顧全	顾全	gùquán	6	V
+蝸牛	蜗牛	guāniú	6	N
+寡婦	寡妇	guǎfù	6	N
+拐		guǎi	6	V
+官		guān	6	N
+官司		guānsī	6	N
+棺材		guāncái	6	N
+棺		guān	6	N
+觀	观	guàn	6	V
+觀測	观测	guāncè	6	V
+觀感	观感	guāngǎn	6	N
+觀看	观看	guānkàn	6	V
+觀摩	观摩	guānmó	6	V
+觀望	观望	guānwàng	6	Vi
+關稅	关税	guānshuì	6	N
+關切	关切	guānqiè	6	Vst
+關懷	关怀	guānhuái	6	Vst
+關頭	关头	guāntóu	6	N
+關係	关系	guānxì	6	Vst
+關照	关照	guānzhào	6	Vst
+管教		guǎnjiào	6	V
+管理		guǎnlǐ	6	N
+管線	管线	guǎnxiàn	6	N
+管		guǎn	6	N
+管子		guǎnzi	6	N
+貫徹	贯彻	guànchè	6	Vst
+灌		guàn	6	V
+灌溉		guàngài	6	V
+灌輸	灌输	guànshū	6	V
+光顧	光顾	guānggù	6	V
+光滑		guānghuá	6	Vs
+光輝	光辉	guānghuī	6	N
+光芒		guāngmáng	6	N
+規範	规范	guīfàn	6	N
+規格	规格	guīgé	6	N
+規矩	规矩	guījǔ	6	Vs
+歸	归	guī	6	V/Vst
+歸還	归还	guīhuán	6	V
+歸納	归纳	guīnà	6	V
+軌道	轨道	guǐdào	6	N
+鬼怪		guǐguài	6	N
+貴	贵	guì	6	Det
+貴賓	贵宾	guìbīn	6	N
+棍		gùn	6	N
+棍子		gùnzi	6	N
+國產	国产	guóchǎn	6	Vs-attr
+國防	国防	guófáng	6	N
+國境	国境	guójìng	6	N
+國君	国君	guójūn	6	N
+國民	国民	guómín	6	N
+國營	国营	guóyíng	6	Vs-attr
+果斷	果断	guǒduàn	6	Vs
+果實	果实	guǒshí	6	N
+果樹	果树	guǒshù	6	N
+果真		guǒzhēn	6	Adv
+過關	过关	guòguān	6	V-sep
+過量	过量	guòliàng	6	Vs
+過目	过目	guòmù	6	Vi
+過人	过人	guòrén	6	Vs
+過失	过失	guòshī	6	N
+過癮	过瘾	guòyǐn	6	Vs
+過重	过重	guòzhòng	6	Vs
+海拔		hǎibá	6	N
+海面		hǎimiàn	6	N
+海嘯	海啸	hǎixiào	6	N
+海運	海运	hǎiyùn	6	N
+害蟲	害虫	hàichóng	6	N
+行號	行号	hánghào	6	N
+行列		hángliè	6	N
+航空信		hángkōngxìn	6	N
+航行		hángxíng	6	Vi
+毫不		háobù	6	Adv
+好比		hǎobǐ	6	Vst
+好手		hǎoshǒu	6	N
+好受		hǎoshòu	6	Vs
+號	号	hào	6	Vst
+號子	号子	hàozi	6	N
+證券行	证券行	zhèngquànháng	6	N
+合併	合并	hébìng	6	V
+合同		hétóng	6	N
+合意		héyì	6	Vs
+何		hé	6	Det
+何在		hézài	6	Vs
+和解		héjiě	6	Vi
+和睦		hémù	6	Vs
+和諧	和谐	héxié	6	Vs
+核定		hédìng	6	V
+核對	核对	héduì	6	V
+核算		hésuàn	6	V
+核准		hézhǔn	6	V
+核子		hézǐ	6	N
+黑名單	黑名单	hēimíngdān	6	N
+黑社會	黑社会	hēishèhuì	6	N
+狠		hěn	6	Vs
+狠心		hěnxīn	6	Vs
+哼		hēng	6	Ptc/Vi
+橫	横	héng	6	Vi
+衡量		héngliáng	6	V
+轟動	轰动	hōngdòng	6	Vs
+轟轟烈烈	轰轰烈烈	hōnghōnglièliè	6	Vs
+紅利	红利	hónglì	6	N
+紅燒	红烧	hóngshāo	6	V
+洪水		hóngshuǐ	6	N
+宏偉	宏伟	hóngwěi	6	Vs
+哄		hǒng	6	V
+後輩	后辈	hòubèi	6	N
+候選人	候选人	hòuxuǎnrén	6	N
+呼籲	呼吁	hūyù	6	Vi
+壺	壶	hú	6	M
+胡亂	胡乱	húluàn	6	Adv
+狐疑		húyí	6	Vs
+戶口	户口	hùkǒu	6	N
+互補	互补	hùbǔ	6	Vs
+互惠		hùhuì	6	Vs
+護	护	hù	6	V
+花瓣		huābàn	6	N
+花朵		huāduǒ	6	N
+花卉		huāhuì	6	N
+花紋	花纹	huāwén	6	N
+花樣	花样	huāyàng	6	N
+划不來	划不来	huábùlái	6	Vs
+划得來	划得来	huádelái	6	Vs
+華裔	华裔	Huáyì	6	N
+化工		huàgōng	6	N
+化石		huàshí	6	N
+話劇	话剧	huàjù	6	N
+畫展	画展	huàzhǎn	6	N
+劃時代	划时代	huàshídài	6	Vs-attr
+懷	怀	huái	6	Vst
+歡送	欢送	huānsòng	6	V
+幻象		huànxiàng	6	N
+換取	换取	huànqǔ	6	V
+患		huàn	6	Vst
+患者		huànzhě	6	N
+荒唐		huāngtáng	6	Vs
+慌張	慌张	huāngzhāng	6	Vs
+惶恐		huángkǒng	6	Vs
+恍惚		huǎnghū	6	Vs
+灰塵	灰尘	huīchén	6	N
+輝煌	辉煌	huīhuáng	6	Vs
+回合		huíhé	6	N
+回絕	回绝	huíjué	6	V
+回升		huíshēng	6	Vp
+迴響	回响	huíxiǎng	6	N
+回響	回响	huíxiǎng	6	N
+毀	毁	huǐ	6	V
+毀損	毁损	huǐsǔn	6	V
+悔恨		huǐhèn	6	Vs
+匯	汇	huì	6	V
+匯票	汇票	huìpiào	6	N
+會見	会见	huìjiàn	6	V
+會談	会谈	huìtán	6	Vi
+會意	会意	huìyì	6	Vp
+繪畫	绘画	huìhuà	6	N
+賄賂	贿赂	huìlù	6	V
+彗星		huìxīng	6	N
+昏		hūn	6	Vs
+渾身	浑身	húnshēn	6	N
+混		hùn	6	Vs
+混淆		hùnyáo	6	Vs
+混濁	混浊	hùnzhuó	6	Vs
+活		huó	6	N
+活兒	活儿	huór	6	N
+活期		huóqí	6	Vs-attr
+火箭		huǒjiàn	6	N
+火力		huǒlì	6	N
+火焰		huǒyàn	6	N
+火藥	火药	huǒyào	6	N
+伙伴		huǒbàn	6	N
+夥伴	伙伴	huǒbàn	6	N
+貨幣	货币	huòbì	6	N
+貨品	货品	huòpǐn	6	N
+豁達	豁达	huòdá	6	Vs
+積	积	jī	6	Vst
+基層	基层	jīcéng	6	N
+基地		jīdì	6	N
+基督		Jīdū	6	N
+基因		jīyīn	6	N
+機動	机动	jīdòng	6	Vs-attr
+機警	机警	jījǐng	6	Vs
+機率	机率	jīlǜ	6	N
+機密	机密	jīmì	6	N
+機器人	机器人	jīqìrén	6	N
+機制	机制	jīzhì	6	N
+肌膚	肌肤	jīfū	6	N
+飢餓	饥饿	jī'è	6	Vs
+饑餓	饥饿	jī'è	6	Vs
+畸形		jīxíng	6	Vs
+激增		jīzēng	6	Vs
+及早		jízǎo	6	Adv
+吉利		jílì	6	Vs
+吉祥		jíxiáng	6	Vs
+汲取		jíqǔ	6	V
+即		jí	6	Vst
+即日		jírì	6	N
+即時	即时	jíshí	6	Adv
+極端	极端	jíduān	6	N/Vs
+極力	极力	jílì	6	Adv
+極為	极为	jíwéi	6	Adv
+集合		jíhé	6	N
+集結	集结	jíjié	6	V
+集權	集权	jíquán	6	Vs
+集體	集体	jítǐ	6	Adv
+集團	集团	jítuán	6	N
+急救		jíjiù	6	Vi
+急躁		jízào	6	Vs
+籍貫	籍贯	jíguàn	6	N
+擊	击	jí	6	V
+擊落	击落	jíluò	6	V
+計	计	jì	6	Vst
+暨		jì	6	Conj
+繼承	继承	jìchéng	6	Vpt
+季風	季风	jìfēng	6	N
+劑量	剂量	jìliàng	6	N
+紀律	纪律	jìlǜ	6	N
+技能		jìnéng	6	N
+技藝	技艺	jìyì	6	N
+祭祀		jìsì	6	V
+傢伙	家伙	jiāhuǒ	6	N
+家家戶戶	家家户户	jiājiāhùhù	6	N
+家屬	家属	jiāshǔ	6	N
+佳節	佳节	jiājié	6	N
+佳人		jiārén	6	N
+加緊	加紧	jiājǐn	6	V
+加快		jiākuài	6	V
+加薪		jiāxīn	6	V-sep
+加重		jiāzhòng	6	V
+枷鎖	枷锁	jiāsuǒ	6	N
+夾雜	夹杂	jiázá	6	Vpt
+假		jiǎ	6	Prep
+假若		jiǎruò	6	Conj
+假使		jiǎshǐ	6	Conj
+假象		jiǎxiàng	6	N
+架		jià	6	V/N
+架子		jiàzi	6	V/N
+架構	架构	jiàgòu	6	N
+監督	监督	jiāndū	6	V
+尖端		jiānduān	6	Vs-attr
+堅固	坚固	jiāngù	6	Vs
+堅忍	坚忍	jiānrěn	6	Vs
+堅信	坚信	jiānxìn	6	Vst
+堅硬	坚硬	jiānyìng	6	Vs
+兼職	兼职	jiānzhí	6	Vi
+艱鉅	艰巨	jiānjù	6	Vs
+艱苦	艰苦	jiānkǔ	6	Vs
+艱難	艰难	jiānnán	6	Vs
+簡便	简便	jiǎnbiàn	6	Vs
+簡稱	简称	jiǎnchēng	6	Vst
+簡化	简化	jiǎnhuà	6	Vpt
+簡體	简体	jiǎntǐ	6	N
+檢討	检讨	jiǎntǎo	6	V
+賤	贱	jiàn	6	Vs
+濺	溅	jiàn	6	V
+見解	见解	jiànjiě	6	N
+見識	见识	jiànshì	6	V
+見證	见证	jiànzhèng	6	V
+建造		jiànzào	6	V
+健身		jiànshēn	6	Vi
+健身房		jiànshēnfáng	6	N
+健壯	健壮	jiànzhuàng	6	Vs
+將	将	jiāng	6	Prep
+將軍	将军	jiāngjūn	6	N
+獎勵	奖励	jiǎnglì	6	V
+獎賞	奖赏	jiǎngshǎng	6	N
+獎狀	奖状	jiǎngzhuàng	6	N
+講理	讲理	jiǎnglǐ	6	Vs
+講習	讲习	jiǎngxí	6	N
+講義	讲义	jiǎngyì	6	N
+講座	讲座	jiǎngzuò	6	N
+交錯	交错	jiāocuò	6	Vs
+交貨	交货	jiāohuò	6	V-sep
+交集		jiāojí	6	N
+交情		jiāoqíng	6	N
+交涉		jiāoshè	6	Vi
+交談	交谈	jiāotán	6	Vi
+焦急		jiāojí	6	Vs
+腳本	脚本	jiǎoběn	6	N
+攪和	搅和	jiǎohuò	6	Vi
+轎車	轿车	jiàochē	6	N
+叫好		jiàohǎo	6	Vi
+教官		jiàoguān	6	N
+教化		jiàohuà	6	V
+教誨	教诲	jiàohuì	6	N
+教徒		jiàotú	6	N
+教學	教学	jiàoxué	6	N
+教員	教员	jiàoyuán	6	N
+較量	较量	jiàoliàng	6	Vi
+皆		jiē	6	Adv
+階層	阶层	jiēcéng	6	N
+階級	阶级	jiējí	6	N
+街坊		jiēfāng	6	N
+接管		jiēguǎn	6	V
+接連	接连	jiēlián	6	Adv
+接納	接纳	jiēnà	6	V
+接洽		jiēqià	6	V
+揭幕		jiēmù	6	Vp
+揭曉	揭晓	jiēxiǎo	6	V
+截		jié	6	M/V
+潔白	洁白	jiébái	6	Vs
+節儉	节俭	jiéjiǎn	6	Vs
+竭力		jiélì	6	Adv
+結實	结实	jiéshi	6	Vs
+結業	结业	jiéyè	6	Vp
+結緣	结缘	jiéyuán	6	Vi
+解答		jiědá	6	N
+解放		jiěfàng	6	V
+解渴		jiěkě	6	Vs
+解剖		jiěpǒu	6	V
+解說	解说	jiěshuō	6	V
+解體	解体	jiětǐ	6	Vp
+解脫	解脱	jiětuō	6	V
+解約	解约	jiěyuē	6	Vp-sep
+屆	届	jiè	6	Vst
+屆時	届时	jièshí	6	Adv
+戒		jiè	6	V
+戒備	戒备	jièbèi	6	Vi
+借貸	借贷	jièdài	6	V
+藉口	借口	jièkǒu	6	N
+介入		jièrù	6	V
+金魚	金鱼	jīnyú	6	N
+津貼	津贴	jīntiē	6	N
+緊湊	紧凑	jǐncòu	6	Vs
+緊密	紧密	jǐnmì	6	Vs
+緊縮	紧缩	jǐnsuō	6	Vi
+謹慎	谨慎	jǐnshèn	6	Vs
+近		jìn	6	Det
+勁	劲	jìn	6	N
+勁兒	劲儿	jìnr	6	N
+進場	进场	jìnchǎng	6	Vi
+進度	进度	jìndù	6	N
+進而	进而	jìn'ér	6	Conj
+進攻	进攻	jìngōng	6	V
+進化	进化	jìnhuà	6	Vp
+進軍	进军	jìnjūn	6	V
+進修	进修	jìnxiū	6	V
+進展	进展	jìnzhǎn	6	Vi
+晉級	晋级	jìnjí	6	Vp
+禁令		jìnlìng	6	N
+精		jīng	6	Vs
+精光		jīngguāng	6	Vs
+精華	精华	jīnghuá	6	N
+精明		jīngmíng	6	Vs
+精髓		jīngsuǐ	6	N
+精緻	精致	jīngzhì	6	Vs
+經典	经典	jīngdiǎn	6	N
+經濟	经济	jīngjì	6	Vs
+經書	经书	jīngshū	6	N
+驚惶	惊惶	jīnghuáng	6	Vs
+驚奇	惊奇	jīngqí	6	Vs
+驚喜	惊喜	jīngxǐ	6	Vs
+驚險	惊险	jīngxiǎn	6	Vs
+鯨魚	鲸鱼	jīngyú	6	N
+井		jǐng	6	N
+警報	警报	jǐngbào	6	N
+警覺	警觉	jǐngjué	6	Vs
+警惕		jǐngtì	6	V
+警衛	警卫	jǐngwèi	6	N
+景觀	景观	jǐngguān	6	N
+景氣	景气	jǐngqì	6	N
+景物		jǐngwù	6	N
+景象		jǐngxiàng	6	N
+淨	净	jìng	6	Adv
+敬		jìng	6	V
+敬佩		jìngpèi	6	Vst
+境地		jìngdì	6	N
+靜脈	静脉	jìngmài	6	N
+靜態	静态	jìngtài	6	N
+競賽	竞赛	jìngsài	6	Vi
+競選	竞选	jìngxuǎn	6	V
+競爭	竞争	jìngzhēng	6	N
+揪		jiū	6	V
+糾紛	纠纷	jiūfēn	6	N
+酒店		jiǔdiàn	6	N
+酒館	酒馆	jiǔguǎn	6	N
+酒精		jiǔjīng	6	N
+就		jiù	6	Vst
+就緒	就绪	jiùxù	6	Vs
+救濟	救济	jiùjì	6	V
+救援		jiùyuán	6	V
+居		jū	6	Vst
+局部		júbù	6	Det
+局面		júmiàn	6	N
+沮喪	沮丧	jǔsàng	6	Vs
+舉止	举止	jǔzhǐ	6	N
+舉重	举重	jǔzhòng	6	N
+巨人		jùrén	6	N
+拒		jù	6	V
+據悉	据悉	jùxī	6	Conj
+俱全		jùquán	6	Vs-pred
+捐獻	捐献	juānxiàn	6	V
+捐贈	捐赠	juānzèng	6	V
+決賽	决赛	juésài	6	N
+決議	决议	juéyì	6	N
+抉擇	抉择	juézé	6	N
+絕大多數	绝大多数	juédàduōshù	6	Det
+絕跡	绝迹	juéjī	6	Vp
+均		jūn	6	Adv
+均衡		jūnhéng	6	Vs
+均勻	均匀	jūnyún	6	Vs
+軍備	军备	jūnbèi	6	N
+軍閥	军阀	jūnfá	6	N
+軍官	军官	jūnguān	6	N
+軍艦	军舰	jūnjiàn	6	N
+開辦	开办	kāibàn	6	V
+開導	开导	kāidǎo	6	V
+開發	开发	kāifā	6	N
+開飯	开饭	kāifàn	6	Vp
+開放	开放	kāifàng	6	Vs
+開口	开口	kāikǒu	6	V-sep
+開闊	开阔	kāikuò	6	Vs
+開路	开路	kāilù	6	V-sep
+開幕	开幕	kāimù	6	Vp
+開盤	开盘	kāipán	6	Vp
+開闢	开辟	kāipì	6	V
+開啟	开启	kāiqǐ	6	Vpt
+開頭	开头	kāitóu	6	N
+開頭兒	开头儿	kāitóur	6	N
+開銷	开销	kāixiāo	6	N
+開業	开业	kāiyè	6	Vp
+開展	开展	kāizhǎn	6	V
+開張	开张	kāizhāng	6	Vp
+刊物		kānwù	6	N
+刊登		kāndēng	6	V
+看守		kānshǒu	6	V
+康復	康复	kāngfù	6	Vp
+慷慨		kāngkǎi	6	Vs
+扛		káng	6	V
+抗爭	抗争	kàngzhēng	6	Vi
+考場	考场	kǎochǎng	6	N
+考古		kǎogǔ	6	Vi
+考量		kǎoliáng	6	N
+考生		kǎoshēng	6	N
+考驗	考验	kǎoyàn	6	V
+烤肉		kǎoròu	6	N
+靠		kào	6	Vst
+刻畫	刻画	kèhuà	6	Vi
+刻劃	刻划	kèhuà	6	Vi
+科幻		kēhuàn	6	Vs
+苛責	苛责	kēzé	6	V
+殼	壳	ké	6	N
+可觀	可观	kěguān	6	Vs
+可見	可见	kějiàn	6	Conj
+可望		kěwàng	6	Vaux
+可行		kěxíng	6	Vs
+刻薄		kèbó	6	Vs
+刻苦		kèkǔ	6	Vs
+刻意		kèyì	6	Adv
+客機	客机	kèjī	6	N
+課業	课业	kèyè	6	N
+克制		kèzhì	6	V
+吭聲	吭声	kēngshēng	6	Vi
+空曠	空旷	kōngkuàng	6	Vs
+空難	空难	kōngnàn	6	N
+空談	空谈	kōngtán	6	Vi
+空運	空运	kōngyùn	6	V
+孔		kǒng	6	N
+恐嚇	恐吓	kǒnghè	6	V
+恐懼	恐惧	kǒngjù	6	Vs
+口頭	口头	kǒutóu	6	N
+口吻		kǒuwěn	6	N
+扣除		kòuchú	6	V
+苦工		kǔgōng	6	N
+苦難	苦难	kǔnàn	6	N
+苦惱	苦恼	kǔnǎo	6	Vs
+苦衷		kǔzhōng	6	N
+庫存	库存	kùcún	6	N
+誇耀	夸耀	kuāyào	6	V
+跨越		kuàyuè	6	V
+快活		kuàihuó	6	Vs
+寬廣	宽广	kuānguǎng	6	Vs
+寬闊	宽阔	kuānkuò	6	Vs
+款		kuǎn	6	M
+款待		kuǎndài	6	V
+狂風	狂风	kuángfēng	6	N
+狂妄		kuángwàng	6	Vs
+礦產	矿产	kuàngchǎn	6	N
+礦工	矿工	kuànggōng	6	N
+虧	亏	kuī	6	Vp
+昆蟲	昆虫	kūnchóng	6	N
+捆		kǔn	6	V
+困		kùn	6	Vi
+困境		kùnjìng	6	N
+困擾	困扰	kùnrǎo	6	N/Vs
+擴建	扩建	kuòjiàn	6	V
+擴散	扩散	kuòsàn	6	Vs
+擴張	扩张	kuòzhāng	6	Vst
+拉票		lāpiào	6	V-sep
+臘月	腊月	Làyuè	6	N
+來賓	来宾	láibīn	6	N
+來得	来得	láide	6	Adv
+來客	来客	láikè	6	N
+欄	栏	lán	6	M
+攔	拦	lán	6	V
+懶惰	懒惰	lǎnduò	6	Vs
+懶散	懒散	lǎnsǎn	6	Vs
+朗讀	朗读	lǎngdú	6	V
+朗誦	朗诵	lǎngsòng	6	V
+牢		láo	6	N
+勞改	劳改	láogǎi	6	Vi
+勞累	劳累	láolèi	6	Vs
+老人家		lǎorénjia	6	N
+老天爺	老天爷	lǎotiānyé	6	N
+老頭兒	老头儿	lǎotóur	6	N
+老頭	老头	lǎotóu	6	N
+老頭子	老头子	lǎotóuzi	6	N
+老鄉	老乡	lǎoxiāng	6	N
+老子		lǎozi	6	N
+雷		léi	6	N
+雷達	雷达	léidá	6	N
+雷同		léitóng	6	Vs
+累積	累积	lěijī	6	V
+類似	类似	lèisì	6	Vst
+冷凍	冷冻	lěngdòng	6	V
+冷汗		lěnghàn	6	N
+冷清		lěngqīng	6	Vs
+勒索		lèsuǒ	6	V
+哩		lī	6	Ptc
+黎明		límíng	6	N
+罹難	罹难	línàn	6	Vp
+里程		lǐchéng	6	N
+理財	理财	lǐcái	6	Vi
+理論	理论	lǐlùn	6	Vi
+理所當然	理所当然	lǐsuǒdāngrán	6	Vs
+理性		lǐxìng	6	Vs
+理學	理学	lǐxué	6	N
+理智		lǐzhì	6	Vs
+禮服	礼服	lǐfú	6	N
+禮節	礼节	lǐjié	6	N
+禮貌	礼貌	lǐmào	6	Vs
+力求		lìqiú	6	V
+力行		lìxíng	6	V
+力學	力学	lìxué	6	N
+立國	立国	lìguó	6	Vi
+立即		lìjí	6	Vs-attr
+立體	立体	lìtǐ	6	Vs
+利率		lìlǜ	6	N
+利弊		lìbì	6	N
+例		lì	6	Prep
+歷屆	历届	lìjiè	6	N
+歷來	历来	lìlái	6	N
+歷年	历年	lìnián	6	N
+聯	联	lián	6	N/V
+聯盟	联盟	liánméng	6	N
+聯繫	联系	liánxì	6	V
+連繫	连系	liánxì	6	V
+聯想	联想	liánxiǎng	6	V
+連帶	连带	liándài	6	Vs-attr
+連結	连结	liánjié	6	V
+聯結	联结	liánjié	6	V
+連任	连任	liánrèn	6	Vst
+連線	连线	liánxiàn	6	V-sep
+廉價	廉价	liánjià	6	Vs
+廉潔	廉洁	liánjié	6	Vs
+臉龐	脸庞	liǎnpáng	6	N
+臉譜	脸谱	liǎnpǔ	6	N
+良機	良机	liángjī	6	N
+兩極	两极	liǎngjí	6	N
+兩口子	两口子	liǎngkǒuzi	6	N
+遼闊	辽阔	liáokuò	6	Vs
+列		liè	6	V
+列車	列车	lièchē	6	N
+列國	列国	lièguó	6	N
+列入		lièrù	6	Vst
+獵人	猎人	lièrén	6	N
+烈士		lièshì	6	N
+臨	临	lín	6	Adv/Prep
+臨床	临床	línchuáng	6	Vs-attr
+鄰里	邻里	línlǐ	6	N
+鈴	铃	líng	6	N
+靈	灵	líng	6	Vs
+靈感	灵感	línggǎn	6	N
+靈驗	灵验	língyàn	6	Vs
+領隊	领队	lǐngduì	6	N
+領會	领会	lǐnghuì	6	Vst
+領悟	领悟	lǐngwù	6	Vpt
+令		lìng	6	V
+另		lìng	6	Adv
+流程		liúchéng	6	N
+流傳	流传	liúchuán	6	V
+流落		liúluò	6	Vi
+流氓		liúmáng	6	N
+流失		liúshī	6	Vst
+流水		liúshuǐ	6	N
+流通		liútōng	6	Vi
+流星		liúxīng	6	N
+流域		liúyù	6	N
+柳樹	柳树	liǔshù	6	N
+籠	笼	lóng	6	N
+籠子	笼子	lóngzi	6	N
+籠罩	笼罩	lóngzhào	6	Vs
+壟斷	垄断	lǒngduàn	6	V
+樓房	楼房	lóufáng	6	N
+漏		lòu	6	Vpt
+爐	炉	lú	6	N
+爐子	炉子	lúzi	6	N
+陸地	陆地	lùdì	6	N
+路過	路过	lùguò	6	V
+露天		lùtiān	6	N
+錄影	录影	lùyǐng	6	V-sep
+錄影機	录影机	lùyǐngjī	6	N
+輪廓	轮廓	lúnkuò	6	N
+倫理	伦理	lúnlǐ	6	N
+淪陷	沦陷	lúnxiàn	6	Vp
+論點	论点	lùndiǎn	6	N
+卵		luǎn	6	N
+囉嗦	啰嗦	luōsuō	6	Vs
+囉唆	啰唆	luōsuō	6	Vs
+鑼	锣	luó	6	N
+邏輯	逻辑	luójí	6	N
+落得		luòdé	6	Vst
+落魄		luòtuò	6	Vs
+落選	落选	luòxuǎn	6	Vp
+駱駝	骆驼	luòtuó	6	N
+驢	驴	lǘ	6	N
+鋁	铝	lǚ	6	N
+旅費	旅费	lǚfèi	6	N
+旅途		lǚtú	6	N
+履歷	履历	lǚlì	6	N
+履行		lǚxíng	6	V
+略		lüè	6	Adv
+麻醉		mázuì	6	V
+馬鈴薯	马铃薯	mǎlíngshǔ	6	N
+埋伏		máifú	6	Vi
+買賣	买卖	mǎimài	6	N
+買主	买主	mǎizhǔ	6	N
+邁	迈	mài	6	V
+邁進	迈进	màijìn	6	Vi
+麥	麦	mài	6	N
+麥子	麦子	màizi	6	N
+瞞	瞒	mán	6	V
+蠻橫	蛮横	mánhèng	6	Vs
+滿懷	满怀	mǎnhuái	6	Vst
+漫長	漫长	màncháng	6	Vs
+蔓延		mànyán	6	Vs
+盲從	盲从	mángcóng	6	Vs
+盲人		mángrén	6	N
+茫然		mángrán	6	Vs
+毛毯		máotǎn	6	N
+茂密		màomì	6	Vs
+冒險	冒险	màoxiǎn	6	Vi
+枚		méi	6	M
+眉毛		méimáo	6	N
+眉		méi	6	N
+眉頭	眉头	méitóu	6	N
+每每		měiměi	6	Adv
+美滿	美满	měimǎn	6	Vs
+悶	闷	mēn	6	Vs
+門戶	门户	ménhù	6	N
+蒙		méng	6	Vst
+猛		měng	6	Adv
+猛烈		měngliè	6	Vs
+夢見	梦见	mèngjiàn	6	Vpt
+謎	谜	mí	6	N
+謎語	谜语	míyǔ	6	N
+迷宮	迷宫	mígōng	6	N
+迷惑		míhuò	6	Vs
+迷戀	迷恋	míliàn	6	Vst
+彌補	弥补	míbǔ	6	V
+密集		mìjí	6	Vs
+蜜		mì	6	N
+鳴	鸣	míng	6	Vi
+明白		míngbái	6	Adv
+明理		mínglǐ	6	Vs
+明日		míngrì	6	N
+明智		míngzhì	6	Vs
+名額	名额	míng'é	6	N
+名號	名号	mínghào	6	N
+名氣	名气	míngqì	6	N
+名勝	名胜	míngshèng	6	N
+名聲	名声	míngshēng	6	N
+名堂		míngtáng	6	N
+名下		míngxià	6	N
+冥想		míngxiǎng	6	Vi
+命名		mìngmíng	6	V-sep
+命中		mìngzhòng	6	Vpt
+綿延	绵延	miányán	6	Vst
+勉強	勉强	miǎnqiǎng	6	V
+免稅	免税	miǎnshuì	6	Vs
+免疫		miǎnyì	6	Vs
+面孔		miànkǒng	6	N
+描繪	描绘	miáohuì	6	V
+描述		miáoshù	6	V
+民俗		mínsú	6	N
+民營	民营	mínyíng	6	Vs-attr
+敏感		mǐngǎn	6	Vs
+敏捷		mǐnjié	6	Vs
+滅	灭	miè	6	V
+模範	模范	mófàn	6	N
+模具		mójù	6	N
+模式		móshì	6	N
+魔術	魔术	móshù	6	N
+末期		mòqí	6	N
+墨		mò	6	N
+沒落	没落	mòluò	6	Vs
+沒收	没收	mòshōu	6	V
+默默		mòmò	6	Adv
+默		mò	6	Adv
+默契		mòqì	6	N
+漠視	漠视	mòshì	6	V
+謀生	谋生	móushēng	6	Vi
+某些		mǒuxiē	6	Det
+畝	亩	mǔ	6	M
+木材		mùcái	6	N
+木刻		mùkè	6	N
+木料		mùliào	6	N
+木偶		mù'ǒu	6	N
+沐浴		mùyù	6	Vi
+目睹		mùdǔ	6	Vpt
+目光		mùguāng	6	N
+目擊	目击	mùjí	6	Vpt
+牧場	牧场	mùchǎng	6	N
+幕		mù	6	N
+募集		mùjí	6	V
+拿		ná	6	Prep
+納悶	纳闷	nàmèn	6	Vs
+納入	纳入	nàrù	6	V
+納稅	纳税	nàshuì	6	V-sep
+乃		nǎi	6	Adv
+乃是		nǎishì	6	Adv
+耐		nài	6	Vs-pred
+耐力		nàilì	6	N
+男方		nánfāng	6	N
+南極洲	南极洲	Nánjízhōu	6	N
+難度	难度	nándù	6	N
+難關	难关	nánguān	6	N
+難免	难免	nánmiǎn	6	Vs
+難題	难题	nántí	6	N
+難民	难民	nànmín	6	N
+囊括		nángguā	6	V
+腦海	脑海	nǎohǎi	6	N
+腦力	脑力	nǎolì	6	N
+內閣	内阁	nèigé	6	N
+內涵	内涵	nèihán	6	N
+內銷	内销	nèixiāo	6	Vs-attr
+內在	内在	nèizài	6	N
+內戰	内战	nèizhàn	6	N
+內政	内政	nèizhèng	6	N
+能量		néngliàng	6	N
+擬	拟	nǐ	6	V
+擬定	拟定	nǐdìng	6	V
+念頭	念头	niàntou	6	N
+娘		niáng	6	N
+娘家		niángjiā	6	N
+凝固		nínggù	6	Vp
+凝結	凝结	níngjié	6	V
+凝聚		níngjù	6	V
+凝視	凝视	níngshì	6	V
+扭轉	扭转	niǔzhuǎn	6	V
+農具	农具	nóngjù	6	N
+農田	农田	nóngtián	6	N
+農作物	农作物	nóngzuòwù	6	N
+奴隸	奴隶	núlì	6	N
+努力		nǔlì	6	N
+怒氣	怒气	nùqì	6	N
+挪		nuó	6	V
+懦弱		nuòruò	6	Vs
+諾言	诺言	nuòyán	6	N
+女方		nǚfāng	6	N
+虐待		nüèdài	6	V
+趴		pā	6	Vi
+拍馬屁	拍马屁	pāimǎpì	6	Vi
+拍攝	拍摄	pāishè	6	V
+拍子		pāizi	6	N
+排除		páichú	6	V
+排擠	排挤	páijǐ	6	V
+排名		páimíng	6	Vi
+派出所		pàichūsuǒ	6	N
+派遣		pàiqiǎn	6	V
+派頭	派头	pàitóu	6	N
+判		pàn	6	V
+盼		pàn	6	Vst
+旁人		pángrén	6	N
+旁聽	旁听	pángtīng	6	V
+拋	抛	pāo	6	V
+拋棄	抛弃	pāoqì	6	V
+跑道		pǎodào	6	N
+泡		pào	6	M
+泡沫		pàomò	6	N
+陪伴		péibàn	6	V
+培訓	培训	péixùn	6	V
+培育		péiyù	6	V
+配		pèi	6	V/Vs
+配給	配给	pèijǐ	6	V
+配音		pèiyīn	6	V-sep
+噴漆	喷漆	pēnqī	6	V-sep
+盆地		péndì	6	N
+蓬勃		péngbó	6	Vs
+捧場	捧场	pěngchǎng	6	Vi
+批發	批发	pīfā	6	V
+批准		pīzhǔn	6	Vpt
+疲憊	疲惫	píbèi	6	Vs
+匹		pǐ	6	M
+譬如		pìrú	6	Prep
+譬如說	譬如说	pìrúshuō	6	Prep
+偏差		piānchā	6	N
+便宜		piányí	6	N/Vst
+片刻		piànkè	6	N
+票		piào	6	M
+拼		pīn	6	V
+貧苦	贫苦	pínkǔ	6	Vs
+貧民	贫民	pínmín	6	N
+品味		pǐnwèi	6	N
+品種	品种	pǐnzhǒng	6	N
+平凡		píngfán	6	Vs
+平面		píngmiàn	6	N
+平穩	平稳	píngwěn	6	Vs
+平行		píngxíng	6	Vs
+評估	评估	pínggū	6	V
+評價	评价	píngjià	6	N
+評論	评论	pínglùn	6	V
+潑	泼	pō	6	V
+婆家		pójiā	6	N
+破案		pò'àn	6	V-sep
+破產	破产	pòchǎn	6	Vp
+破除		pòchú	6	V
+破獲	破获	pòhuò	6	V
+破例		pòlì	6	Vp-sep
+破碎		pòsuì	6	Vs
+迫害		pòhài	6	V
+魄力		pòlì	6	N
+樸素	朴素	púsù	6	Vs
+曝光		pùguāng	6	Vp
+暴露		pùlù	6	Vs
+漆		qī	6	N
+淒涼	凄凉	qīliáng	6	Vs
+欺侮		qīwǔ	6	V
+奇觀	奇观	qíguān	6	N
+奇蹟	奇迹	qíjī	6	N
+奇妙		qímiào	6	Vs
+奇異	奇异	qíyì	6	Vs
+期貨	期货	qíhuò	6	N
+旗幟	旗帜	qízhì	6	N
+乞丐		qǐgài	6	N
+啟	启	qǐ	6	Vi
+啟發	启发	qǐfā	6	V
+啟示	启示	qǐshì	6	N
+啟事	启事	qǐshì	6	N
+起步		qǐbù	6	Vi
+起伏		qǐfú	6	Vi
+起碼	起码	qǐmǎ	6	Adv
+起源		qǐyuán	6	N
+氣概	气概	qìgài	6	N
+氣管	气管	qìguǎn	6	N
+氣派	气派	qìpài	6	Vs
+氣勢	气势	qìshì	6	N
+氣體	气体	qìtǐ	6	N
+氣壓	气压	qìyā	6	N
+契機	契机	qìjī	6	N
+棄權	弃权	qìquán	6	Vi
+恰當	恰当	qiàdàng	6	Vs
+恰好		qiàhǎo	6	Adv
+恰恰		qiàqià	6	Adv
+洽商		qiàshāng	6	Vi
+洽談	洽谈	qiàtán	6	Vi
+鉛	铅	qiān	6	N
+牽連	牵连	qiānlián	6	Vst
+簽署	签署	qiānshù	6	V
+千萬	千万	qiānwàn	6	Det
+謙遜	谦逊	qiānxùn	6	Vs
+前輩	前辈	qiánbèi	6	N
+前程		qiánchéng	6	N
+前後	前后	qiánhòu	6	N
+前景		qiánjǐng	6	N
+前科		qiánkē	6	N
+前提		qiántí	6	N
+潛藏	潜藏	qiáncáng	6	Vi
+潛力	潜力	qiánlì	6	N
+虔誠	虔诚	qiánchéng	6	Vs
+淺薄	浅薄	qiǎnbó	6	Vs
+淺顯	浅显	qiǎnxiǎn	6	Vs
+腔調	腔调	qiāngdiào	6	N
+牆角	墙角	qiángjiǎo	6	N
+強勁	强劲	qiángjìng	6	Vs
+強求	强求	qiǎngqiú	6	V
+強權	强权	qiángquán	6	N
+強壯	强壮	qiángzhuàng	6	Vs
+瞧不起		qiáobùqǐ	6	Vst
+橋樑	桥梁	qiáoliáng	6	N
+橋梁	桥梁	qiáoliáng	6	N
+巧合		qiǎohé	6	Vs
+俏		qiào	6	Vs
+翹	翘	qiào	6	Vs
+峭壁		qiàobì	6	N
+翹課	翘课	qiàokè	6	V-sep
+切磋		qiēcuō	6	V
+且		qiě	6	Adv
+切實	切实	qièshí	6	Vs
+竊賊	窃贼	qièzéi	6	N
+親	亲	qīn	6	Vs
+親熱	亲热	qīnrè	6	Vs
+親身	亲身	qīnshēn	6	Adv
+親生	亲生	qīnshēng	6	Vs-attr
+侵犯		qīnfàn	6	V
+侵略		qīnlüè	6	V
+侵蝕	侵蚀	qīnshí	6	V
+侵襲	侵袭	qīnxí	6	V
+欽佩	钦佩	qīnpèi	6	Vst
+琴		qín	6	N
+勤奮	勤奋	qínfèn	6	Vs
+青春		qīngchūn	6	N
+青翠		qīngcuì	6	Vs
+青蛙		qīngwā	6	N
+清澈		qīngchè	6	Vs
+清潔	清洁	qīngjié	6	Vs
+清靜	清静	qīngjìng	6	Vs
+清廉		qīnglián	6	Vs
+清幽		qīngyōu	6	Vs
+清掃	清扫	qīngsǎo	6	V
+傾向	倾向	qīngxiàng	6	N
+輕薄	轻薄	qīngbó	6	Vs
+輕蔑	轻蔑	qīngmiè	6	Vs
+輕易	轻易	qīngyì	6	Adv
+情報	情报	qíngbào	6	N
+情操		qíngcāo	6	N
+情婦	情妇	qíngfù	6	N
+情節	情节	qíngjié	6	N
+情景		qíngjǐng	6	N
+情侶	情侣	qínglǚ	6	N
+情趣		qíngqù	6	N
+慶幸	庆幸	qìngxìng	6	Vs
+丘陵		qiūlíng	6	N
+求學	求学	qiúxué	6	Vi
+求助		qiúzhù	6	Vi
+屈服		qūfú	6	Vs
+趨勢	趋势	qūshì	6	N
+渠道		qúdào	6	N
+取材		qǔcái	6	Vs
+取締	取缔	qǔdì	6	V
+取樣	取样	qǔyàng	6	N
+取悅	取悦	qǔyuè	6	V
+趣味		qùwèi	6	N
+圈		quān	6	V
+圈子		quānzi	6	N
+拳		quán	6	M
+全力		quánlì	6	Adv
+全盤	全盘	quánpán	6	Det
+權力	权力	quánlì	6	N
+權威	权威	quánwēi	6	N
+權益	权益	quányì	6	N
+泉源		quányuán	6	N
+勸導	劝导	quàndǎo	6	V
+勸告	劝告	quàngào	6	N
+缺陷		quēxiàn	6	N
+確保	确保	quèbǎo	6	V
+確切	确切	quèqiè	6	Vs
+確實	确实	quèshí	6	Adv
+群島	群岛	qúndǎo	6	N
+群居		qúnjū	6	Vs
+染料		rǎnliào	6	N
+嚷		rǎng	6	Vi
+饒	饶	ráo	6	V
+熱潮	热潮	rècháo	6	N
+熱帶	热带	rèdài	6	N
+熱水瓶	热水瓶	rèshuǐpíng	6	N
+仁愛	仁爱	rén'ài	6	N
+人次		réncì	6	N
+人道		réndào	6	N
+人禍	人祸	rénhuò	6	N
+人際	人际	rénjì	6	N
+人情		rénqíng	6	N
+人群		rénqún	6	N
+人士		rénshì	6	N
+人手		rénshǒu	6	N
+人選	人选	rénxuǎn	6	N
+人造		rénzào	6	Vs-attr
+忍痛		rěntòng	6	Vs
+任		rèn	6	M
+任期		rènqí	6	N
+任意		rènyì	6	Adv
+認錯	认错	rèncuò	6	Vp
+認定	认定	rèndìng	6	V
+日程		rìchéng	6	N
+日光燈	日光灯	rìguāngdēng	6	N
+日益		rìyì	6	Adv
+容量		róngliàng	6	N
+容納	容纳	róngnà	6	Vst
+容器		róngqì	6	N
+容許	容许	róngxǔ	6	V
+溶		róng	6	Vs
+溶化		rónghuà	6	Vp
+融合		rónghé	6	V
+融洽		róngqià	6	Vs
+榮譽	荣誉	róngyù	6	N
+揉		róu	6	V
+柔軟	柔软	róuruǎn	6	Vs
+肉麻		ròumá	6	Vs
+肉體	肉体	ròutǐ	6	N
+如此		rúcǐ	6	Adv
+儒家		Rújiā	6	N
+入超		rùchāo	6	Vs
+入口		rùkǒu	6	Vi
+入世		rùshì	6	Vs
+軟弱	软弱	ruǎnruò	6	Vs
+軟體	软体	ruǎntǐ	6	N
+若		ruò	6	Conj
+若干		ruògān	6	Det
+撒謊	撒谎	sāhuǎng	6	V-sep
+撒		sǎ	6	V
+灑	洒	sǎ	6	V
+賽	赛	sài	6	V
+散文		sǎnwén	6	N
+散布		sànbù	6	V
+散佈	散布	sànbù	6	V
+喪事	丧事	sāngshì	6	N
+嗓子		sǎngzi	6	N
+喪生	丧生	sàngshēng	6	Vp
+騷動	骚动	sāodòng	6	Vi
+嫂子		sǎozi	6	N
+色澤	色泽	sèzé	6	N
+剎車	刹车	shāchē	6	V-sep
+煞車	煞车	shāchē	6	V-sep
+沙啞	沙哑	shāyǎ	6	Vs
+傻瓜		shǎguā	6	N
+山峰		shānfēng	6	N
+山谷		shāngǔ	6	N
+山脈	山脉	shānmài	6	N
+閃電	闪电	shǎndiàn	6	N
+閃爍	闪烁	shǎnshuò	6	Vi
+閃耀	闪耀	shǎnyào	6	Vs
+擅長	擅长	shàncháng	6	Vst
+傷害	伤害	shānghài	6	N
+傷口	伤口	shāngkǒu	6	N
+傷亡	伤亡	shāngwáng	6	Vp
+商榷		shāngquè	6	Vi
+商討	商讨	shāngtǎo	6	V
+賞	赏	shǎng	6	V
+尚		shàng	6	Adv
+上吊		shàngdiào	6	Vi
+上好		shànghǎo	6	Vs-attr
+上進	上进	shàngjìn	6	Vs
+上空		shàngkōng	6	N
+上路		shànglù	6	Vp
+上門	上门	shàngmén	6	Vi
+上司		shàngsī	6	N
+上下		shàngxià	6	N
+上旬		shàngxún	6	N
+上演		shàngyǎn	6	V
+上癮	上瘾	shàngyǐn	6	Vp
+上漲	上涨	shàngzhǎng	6	Vp
+燒香	烧香	shāoxiāng	6	V-sep
+奢侈		shēchǐ	6	Vs
+奢望		shēwàng	6	Vst
+設	设	shè	6	V
+設施	设施	shèshī	6	N
+設想	设想	shèxiǎng	6	Vi
+射擊	射击	shèjí	6	V
+射手		shèshǒu	6	N
+涉及		shèjí	6	Vpt
+涉嫌		shèxián	6	Vst
+社論	社论	shèlùn	6	N
+攝取	摄取	shèqǔ	6	V
+攝氏	摄氏	Shèshì	6	N
+攝影機	摄影机	shèyǐngjī	6	N
+深奧	深奥	shēn'ào	6	Vs
+深沉		shēnchén	6	Vs
+深度		shēndù	6	N
+深厚		shēnhòu	6	Vs
+深切		shēnqiè	6	Vs
+深入		shēnrù	6	V
+深造		shēnzào	6	Vi
+身段		shēnduàn	6	N
+身教		shēnjiào	6	N
+身為	身为	shēnwéi	6	Vst
+身子		shēnzi	6	N
+伸張	伸张	shēnzhāng	6	V
+神		shén	6	Vs
+神情		shénqíng	6	N
+審核	审核	shěnhé	6	V
+審判	审判	shěnpàn	6	V
+審慎	审慎	shěnshèn	6	Vs
+審議	审议	shěnyì	6	V
+甚		shèn	6	Adv
+滲入	渗入	shènrù	6	V
+生火		shēnghuǒ	6	V-sep
+生理		shēnglǐ	6	N
+生平		shēngpíng	6	N
+生氣	生气	shēngqì	6	N
+生前		shēngqián	6	N
+生人		shēngrén	6	N
+生死		shēngsǐ	6	N
+生態	生态	shēngtài	6	N
+生物		shēngwù	6	N
+生效		shēngxiào	6	Vp
+生硬		shēngyìng	6	Vs
+生育		shēngyù	6	N/V
+生殖		shēngzhí	6	Vi
+升遷	升迁	shēngqiān	6	Vi
+升值		shēngzhí	6	Vp
+聲稱	声称	shēngchēng	6	V
+聲明	声明	shēngmíng	6	N
+聲勢	声势	shēngshì	6	N
+省		shěng	6	N
+省事		shěngshì	6	Vs
+盛		shèng	6	Vs
+盛情		shèngqíng	6	N
+盛行		shèngxíng	6	Vs
+盛裝	盛装	shèngzhuāng	6	Vs
+勝地	胜地	shèngdì	6	N
+聖賢	圣贤	shèngxián	6	N
+失		shī	6	Vpt
+失靈	失灵	shīlíng	6	Vp
+失落		shīluò	6	Vs
+失明		shīmíng	6	Vp
+失事		shīshì	6	Vp
+失手		shīshǒu	6	Vs
+失蹤	失踪	shīzōng	6	Vp
+師範	师范	shīfàn	6	Vs-attr
+施肥		shīféi	6	V-sep
+施行		shīxíng	6	V
+屍體	尸体	shītǐ	6	N
+石膏		shígāo	6	N
+十足		shízú	6	Vs
+拾		shí	6	V
+時光	时光	shíguāng	6	N
+時節	时节	shíjié	6	N
+時髦	时髦	shímáo	6	Vs
+時效	时效	shíxiào	6	N
+實地	实地	shídì	6	Adv
+實踐	实践	shíjiàn	6	V
+實況	实况	shíkuàng	6	N
+實例	实例	shílì	6	N
+實習	实习	shíxí	6	Vi
+實證	实证	shízhèng	6	N
+實質	实质	shízhí	6	N
+屎		shǐ	6	N
+史料		shǐliào	6	N
+使喚	使唤	shǐhuàn	6	V
+使節	使节	shǐjié	6	N
+使勁	使劲	shǐjìng	6	Vi
+使命		shǐmìng	6	N
+士兵		shìbīng	6	N
+仕女		shìnǚ	6	N
+示範	示范	shìfàn	6	Vi
+市面		shìmiàn	6	N
+市容		shìróng	6	N
+世代		shìdài	6	N
+世間	世间	shìjiān	6	N
+世事		shìshì	6	N
+試卷	试卷	shìjuàn	6	N
+試圖	试图	shìtú	6	Vaux
+逝世		shìshì	6	Vp
+勢必	势必	shìbì	6	Adv
+事故		shìgù	6	N
+事變	事变	shìbiàn	6	N
+事態	事态	shìtài	6	N
+事務	事务	shìwù	6	N
+事宜		shìyí	6	N
+釋放	释放	shìfàng	6	V
+嗜好		shìhào	6	N
+視為	视为	shìwéi	6	V
+適宜	适宜	shìyí	6	Vs
+適中	适中	shìzhōng	6	Vs
+收藏		shōucáng	6	V
+收買	收买	shōumǎi	6	V
+收縮	收缩	shōusuō	6	Vi
+收聽	收听	shōutīng	6	V
+收益		shōuyì	6	N
+手冊	手册	shǒucè	6	N
+手槍	手枪	shǒuqiāng	6	N
+手勢	手势	shǒushì	6	N
+守		shǒu	6	V
+守護	守护	shǒuhù	6	V
+首府		shǒufǔ	6	N
+首領	首领	shǒulǐng	6	N
+首席		shǒuxí	6	N
+首飾	首饰	shǒushì	6	N
+首先		shǒuxiān	6	Conj
+首長	首长	shǒuzhǎng	6	N
+受害		shòuhài	6	Vp
+受訓	受训	shòuxùn	6	V-sep
+售貨員	售货员	shòuhuòyuán	6	N
+授課	授课	shòukè	6	V-sep
+狩獵	狩猎	shòuliè	6	V
+壽星	寿星	shòuxīng	6	N
+疏導	疏导	shūdǎo	6	V
+疏散		shūsàn	6	V
+梳		shū	6	V
+書本	书本	shūběn	6	N
+書面	书面	shūmiàn	6	N
+書寫	书写	shūxiě	6	V
+舒暢	舒畅	shūchàng	6	Vs
+舒展		shūzhǎn	6	V
+輸血	输血	shūxiě	6	V-sep
+束縛	束缚	shùfú	6	V
+樹苗	树苗	shùmiáo	6	N
+數據	数据	shùjù	6	N
+率		shuài	6	V
+霜		shuāng	6	N
+雙重	双重	shuāngchóng	6	Vs-attr
+雙打	双打	shuāngdǎ	6	N
+爽快		shuǎngkuài	6	Vs
+水道		shuǐdào	6	N
+水稻		shuǐdào	6	N
+水晶		shuǐjīng	6	N
+水庫	水库	shuǐkù	6	N
+水力		shuǐlì	6	N
+水泥		shuǐní	6	N
+水源		shuǐyuán	6	N
+水蒸氣	水蒸气	shuǐzhēngqì	6	N
+順從	顺从	shùncóng	6	Vs
+順應	顺应	shùnyìng	6	Vst
+瞬間	瞬间	shùnjiān	6	N
+說謊	说谎	shuōhuǎng	6	V-sep
+說笑	说笑	shuōxiào	6	Vi
+思潮		sīcháo	6	N
+思念		sīniàn	6	Vst
+思維	思维	sīwéi	6	N
+絲毫	丝毫	sīháo	6	Det
+司令		sīlìng	6	N
+斯文		sīwén	6	Vs
+私心		sīxīn	6	N
+賜	赐	sì	6	V
+似的		sìde	6	
+似地		sìde	6	
+松樹	松树	sōngshù	6	N
+松		sōng	6	N
+慫恿	怂恿	sǒngyǒng	6	V
+搜集		sōují	6	V
+俗稱	俗称	súchēng	6	Vst
+俗語	俗语	súyǔ	6	N
+訴苦	诉苦	sùkǔ	6	Vi
+素質	素质	sùzhí	6	N
+算命		suànmìng	6	V-sep
+算術	算术	suànshù	6	N
+雖說	虽说	suīshuō	6	Conj
+隨	随	suí	6	Adv/Prep
+隨後	随后	suíhòu	6	N
+隨即	随即	suíjí	6	Adv
+隨身	随身	suíshēn	6	Adv
+隨同	随同	suítóng	6	Prep
+隧道		suìdào	6	N
+歲月	岁月	suìyuè	6	N
+損	损	sǔn	6	V
+損害	损害	sǔnhài	6	V
+損壞	损坏	sǔnhuài	6	V
+損傷	损伤	sǔnshāng	6	Vst
+縮小	缩小	suōxiǎo	6	Vp
+所得		suǒdé	6	N
+所在		suǒzài	6	N
+索賠	索赔	suǒpéi	6	Vi
+瑣碎	琐碎	suǒsuì	6	Vs
+他人		tārén	6	N
+塔		tǎ	6	N
+踏實	踏实	tàshí	6	Vs
+台階	台阶	táijiē	6	N
+太平		tàipíng	6	Vs
+態勢	态势	tàishì	6	N
+貪	贪	tān	6	Vs
+貪心	贪心	tānxīn	6	Vs
+痰		tán	6	N
+談論	谈论	tánlùn	6	V
+彈性	弹性	tánxìng	6	N
+坦克		tǎnkè	6	N
+坦然		tǎnrán	6	Vs
+探病		tànbìng	6	V-sep
+探究		tànjiù	6	V
+探索		tànsuǒ	6	V
+探望		tànwàng	6	V
+探險	探险	tànxiǎn	6	Vi
+堂堂		tángtáng	6	Vs
+倘若		tǎngruò	6	Conj
+陶器		táoqì	6	N
+逃生		táoshēng	6	Vi
+逃稅	逃税	táoshuì	6	V-sep
+淘汰		táotài	6	V
+套房		tàofáng	6	N
+套裝	套装	tàozhuāng	6	N
+特此		tècǐ	6	Adv
+特區	特区	tèqū	6	N
+特權	特权	tèquán	6	N
+特約	特约	tèyuē	6	Vs-attr
+特徵	特征	tèzhēng	6	N
+疼愛	疼爱	téng'ài	6	Vst
+剔除		tīchú	6	V
+啼		tí	6	Vi
+提拔		tíbá	6	V
+提倡		tíchàng	6	V
+提出		tíchū	6	Vpt
+提及		tíjí	6	V
+提名		tímíng	6	V
+提升		tíshēng	6	V
+提昇	提升	tíshēng	6	V
+提議	提议	tíyì	6	V
+體操	体操	tǐcāo	6	N
+體格	体格	tǐgé	6	N
+體積	体积	tǐjī	6	N
+體諒	体谅	tǐliàng	6	Vst
+體面	体面	tǐmiàn	6	Vs
+體系	体系	tǐxì	6	N
+體質	体质	tǐzhí	6	N
+替代		tìdài	6	Vst
+添		tiān	6	V
+天敵	天敌	tiāndí	6	N
+天然氣	天然气	tiānránqì	6	N
+天性		tiānxìng	6	N
+天災	天灾	tiānzāi	6	N
+田地		tiándì	6	N
+田徑	田径	tiánjìng	6	N
+甜美		tiánměi	6	Vs
+挑剔		tiāotī	6	V
+調和	调和	tiáohé	6	V/Vs
+調節	调节	tiáojié	6	V
+調皮	调皮	tiáopí	6	Vs
+條例	条例	tiáolì	6	N
+挑戰	挑战	tiǎozhàn	6	N
+聽寫	听写	tīngxiě	6	V
+停頓	停顿	tíngdùn	6	Vi
+停留		tíngliú	6	Vi
+停滯	停滞	tíngzhì	6	Vi
+通		tōng	6	M
+通報	通报	tōngbào	6	V
+通車	通车	tōngchē	6	Vp
+通稱	通称	tōngchēng	6	Vst
+通貨膨脹	通货膨胀	tōnghuòpéngzhàng	6	Vs
+通緝	通缉	tōngqì	6	V
+通行		tōngxíng	6	Vi
+通用		tōngyòng	6	Vs-attr
+同伴		tóngbàn	6	N
+同化		tónghuà	6	V
+同鄉	同乡	tóngxiāng	6	N
+同心		tóngxīn	6	Vs
+同性戀	同性恋	tóngxìngliàn	6	N
+同業	同业	tóngyè	6	N
+統計	统计	tǒngjì	6	N
+統統	统统	tǒngtǒng	6	Adv
+統制	统制	tǒngzhì	6	V
+痛恨		tònghèn	6	Vst
+偷渡		tōudù	6	Vi
+偷懶	偷懒	tōulǎn	6	Vs
+投保		tóubǎo	6	V
+投機	投机	tóujī	6	Vs
+投入		tóurù	6	Vs
+透明		tòumíng	6	Vs
+徒弟		túdì	6	N
+突擊	突击	tújí	6	V
+突兀		túwù	6	Vs
+塗	涂	tú	6	V
+圖	图	tú	6	V
+圖表	图表	túbiǎo	6	N
+圖騰	图腾	túténg	6	N
+土壤		tǔrǎng	6	N
+團	团	tuán	6	M
+團聚	团聚	tuánjù	6	Vs
+團員	团员	tuányuán	6	N
+推測	推测	tuīcè	6	V
+推崇		tuīchóng	6	Vst
+推出		tuīchū	6	Vpt
+推選	推选	tuīxuǎn	6	V
+退化		tuìhuà	6	Vp
+吞吞吐吐		tūntūntǔtǔ	6	Vi
+托		tuō	6	V
+拖累		tuōlèi	6	V
+拖延		tuōyán	6	Vst
+脫身	脱身	tuōshēn	6	Vp
+脫手	脱手	tuōshǒu	6	Vp
+外號	外号	wàihào	6	N
+外力		wàilì	6	N
+外貿	外贸	wàimào	6	N
+外線	外线	wàixiàn	6	N
+外銷	外销	wàixiāo	6	V
+外遇		wàiyù	6	N
+外在		wàizài	6	N
+外資	外资	wàizī	6	N
+彎曲	弯曲	wānqū	6	Vs
+完備	完备	wánbèi	6	Vs
+玩弄		wánnòng	6	V
+頑強	顽强	wánqiáng	6	Vs
+挽		wǎn	6	V
+挽救		wǎnjiù	6	V
+萬分	万分	wànfēn	6	Adv
+萬事	万事	wànshì	6	N
+萬歲	万岁	wànsuì	6	Vs
+萬萬	万万	wànwàn	6	Adv
+萬物	万物	wànwù	6	N
+惋惜		wànxí	6	Vs
+亡國	亡国	wángguó	6	Vp
+往來	往来	wǎnglái	6	Vi
+旺季		wàngjì	6	N
+旺盛		wàngshèng	6	Vs
+威風	威风	wēifēng	6	Vs
+威力		wēilì	6	N
+萎縮	萎缩	wēisuō	6	Vs
+為	为	wéi	6	Vst
+為人	为人	wéirén	6	N
+為生	为生	wéishēng	6	Vs
+為首	为首	wéishǒu	6	Vs
+為止	为止	wéizhǐ	6	N
+違背	违背	wéibèi	6	Vpt
+違約	违约	wéiyuē	6	V-sep
+危害		wéihài	6	V
+圍巾	围巾	wéijīn	6	N
+圍牆	围墙	wéiqiáng	6	N
+圍繞	围绕	wéirào	6	V
+微弱		wéiruò	6	Vs
+微小		wéixiǎo	6	Vs
+胃		wèi	6	N
+胃口		wèikǒu	6	N
+未必		wèibì	6	Adv
+未婚夫		wèihūnfū	6	N
+未婚妻		wèihūnqī	6	N
+未免		wèimiǎn	6	Adv
+衛生	卫生	wèishēng	6	N
+溫帶	温带	wēndài	6	N
+溫習	温习	wēnxí	6	V
+溫馴	温驯	wēnxún	6	Vs
+瘟疫		wēnyì	6	N
+文明		wénmíng	6	N
+文壇	文坛	wéntán	6	N
+文獻	文献	wénxiàn	6	N
+聞名	闻名	wénmíng	6	Vst
+穩健	稳健	wěnjiàn	6	Vs
+紊亂	紊乱	wènluàn	6	Vs
+問世	问世	wènshì	6	Vp
+臥	卧	wò	6	Vi
+烏龜	乌龟	wūguī	6	N
+龜	龟	guī	6	N
+烏鴉	乌鸦	wūyā	6	N
+汙染	污染	wūrǎn	6	N
+無比	无比	wúbǐ	6	Vs
+無線電	无线电	wúxiàndiàn	6	N
+無形	无形	wúxíng	6	Vs
+無疑	无疑	wúyí	6	Adv
+五金		wǔjīn	6	N
+武力		wǔlì	6	N
+武士		wǔshì	6	N
+武裝	武装	wǔzhuāng	6	N
+侮辱		wǔrù	6	V
+物產	物产	wùchǎn	6	N
+物品		wùpǐn	6	N
+物體	物体	wùtǐ	6	N
+物資	物资	wùzī	6	N
+誤差	误差	wùchā	6	N
+誤解	误解	wùjiě	6	Vst
+務實	务实	wùshí	6	Vs
+西服		xīfú	6	N
+西洋		Xīyáng	6	N
+西醫	西医	xīyī	6	N
+溪流		xīliú	6	N
+席		xí	6	M
+席位		xíwèi	6	N
+錫	锡	xí	6	N
+襲擊	袭击	xíjí	6	V
+昔日		xírì	6	N
+習題	习题	xítí	6	N
+洗禮	洗礼	xǐlǐ	6	N
+喜氣	喜气	xǐqì	6	N
+喜悅	喜悦	xǐyuè	6	Vs
+戲曲	戏曲	xìqǔ	6	N
+瑕疵		xiácī	6	N
+峽谷	峡谷	xiágǔ	6	N
+狹小	狭小	xiáxiǎo	6	Vs
+狹窄	狭窄	xiázhǎi	6	Vs
+下筆	下笔	xiàbǐ	6	Vi
+下跌		xiàdié	6	Vp
+下滑		xiàhuá	6	Vp
+下列		xiàliè	6	Vs-attr
+下水		xiàshuǐ	6	V-sep
+下水道		xiàshuǐdào	6	N
+下旬		xiàxún	6	N
+掀		xiān	6	V
+仙丹		xiāndān	6	N
+先後	先后	xiānhòu	6	N
+先進	先进	xiānjìn	6	N
+先驅	先驱	xiānqū	6	N
+先天		xiāntiān	6	Vs-attr
+鮮明	鲜明	xiānmíng	6	Vs
+鮮艶	鲜艳	xiānyàn	6	Vs
+鮮豔	鲜艳	xiānyàn	6	Vs
+纖維	纤维	xiānwéi	6	N
+嫌疑		xiányí	6	N
+顯現	显现	xiǎnxiàn	6	Vst
+限度		xiàndù	6	N
+憲法	宪法	xiànfǎ	6	N
+線路	线路	xiànlù	6	N
+陷入		xiànrù	6	V
+獻身	献身	xiànshēn	6	V-sep
+現今	现今	xiànjīn	6	N
+現行	现行	xiànxíng	6	Vs-attr
+現狀	现状	xiànzhuàng	6	N
+相傳	相传	xiāngchuán	6	Vi
+相仿		xiāngfǎng	6	Vs
+相符		xiāngfú	6	Vs
+相繼	相继	xiāngjì	6	Adv
+相配		xiāngpèi	6	Vs
+鄉土	乡土	xiāngtǔ	6	Vs
+香皂		xiāngzào	6	N
+鑲	镶	xiāng	6	V
+想開	想开	xiǎngkāi	6	Vp
+響亮	响亮	xiǎngliàng	6	Vs
+向		xiàng	6	Adv
+嚮導	向导	xiàngdǎo	6	N
+嚮往	向往	xiàngwǎng	6	Vst
+象徵	象征	xiàngzhēng	6	N/Vst
+消毒		xiāodú	6	V-sep
+消防		xiāofáng	6	Vs-attr
+消耗		xiāohào	6	V
+消遣		xiāoqiǎn	6	N/V
+瀟灑	潇洒	xiāosǎ	6	Vs
+逍遙	逍遥	xiāoyáo	6	Vs
+小伙子		xiǎohuǒzi	6	N
+小夥子	小伙子	xiǎohuǒzi	6	N
+效法		xiàofǎ	6	V
+效勞	效劳	xiàoláo	6	Vi
+效力		xiàolì	6	N
+效忠		xiàozhōng	6	V
+笑嘻嘻		xiàoxīxī	6	Vi
+孝子		xiàozǐ	6	N
+協辦	协办	xiébàn	6	V
+協定	协定	xiédìng	6	N
+協會	协会	xiéhuì	6	N
+協商	协商	xiéshāng	6	V
+協調	协调	xiétiáo	6	V/Vs
+協議	协议	xiéyì	6	N/V
+血汗		xiěhàn	6	N
+血跡	血迹	xiějī	6	N
+血壓	血压	xiěyā	6	N
+寫實	写实	xiěshí	6	Vs
+洩氣	泄气	xièqì	6	Vs
+心愛	心爱	xīn'ài	6	Vs-attr
+心軟	心软	xīnruǎn	6	Vs
+心事		xīnshì	6	N
+心思		xīnsī	6	N
+心酸		xīnsuān	6	Vs
+心態	心态	xīntài	6	N
+心疼		xīnténg	6	Vst
+心胸		xīnxiōng	6	N
+辛勤		xīnqín	6	Vs
+辛酸		xīnsuān	6	Vs
+新潮		xīncháo	6	Vs
+新手		xīnshǒu	6	N
+新穎	新颖	xīnyǐng	6	Vs
+信賴	信赖	xìnlài	6	Vst
+信念		xìnniàn	6	N
+信徒		xìntú	6	N
+信息		xìnxí	6	N
+星辰		xīngchén	6	N
+星座		xīngzuò	6	N
+興建	兴建	xīngjiàn	6	V
+興隆	兴隆	xīnglóng	6	Vs
+興起	兴起	xīngqǐ	6	Vpt
+行善		xíngshàn	6	Vi
+行使		xíngshǐ	6	V
+行星		xíngxīng	6	N
+行政		xíngzhèng	6	N
+刑事		xíngshì	6	N
+形勢	形势	xíngshì	6	N
+形態	形态	xíngtài	6	N
+形體	形体	xíngtǐ	6	N
+形形色色		xíngxíngsèsè	6	Vs
+型態	型态	xíngtài	6	N
+性		xìng	6	N
+性能		xìngnéng	6	N
+性情		xìngqíng	6	N
+興致	兴致	xìngzhì	6	N
+胸		xiōng	6	N
+胸口		xiōngkǒu	6	N
+修補	修补	xiūbǔ	6	V
+修訂	修订	xiūdìng	6	V
+修建		xiūjiàn	6	V
+修女		xiūnǚ	6	N
+修養	修养	xiūyǎng	6	N
+修築	修筑	xiūzhú	6	V
+繡	绣	xiù	6	V
+虛擬	虚拟	xūnǐ	6	V
+虛心	虚心	xūxīn	6	Vs
+許	许	xǔ	6	N
+許多	许多	xǔduō	6	Adv
+許久	许久	xǔjiǔ	6	N
+許可	许可	xǔkě	6	V
+酗酒		xùjiǔ	6	Vi
+序幕		xùmù	6	N
+敘述	叙述	xùshù	6	V
+宣稱	宣称	xuānchēng	6	V
+宣告		xuāngào	6	V
+宣示		xuānshì	6	V
+宣誓		xuānshì	6	Vi
+宣言		xuānyán	6	N
+宣揚	宣扬	xuānyáng	6	V
+旋律		xuánlǜ	6	N
+旋轉	旋转	xuánzhuǎn	6	Vi
+懸殊	悬殊	xuánshū	6	Vs
+懸崖	悬崖	xuányái	6	N
+崖		yái	6	N
+選拔	选拔	xuǎnbá	6	V
+選購	选购	xuǎngòu	6	V
+選民	选民	xuǎnmín	6	N
+選票	选票	xuǎnpiào	6	N
+選修	选修	xuǎnxiū	6	V
+學分	学分	xuéfēn	6	N
+學科	学科	xuékē	6	N
+學年	学年	xuénián	6	N
+學識	学识	xuéshì	6	N
+學說	学说	xuéshuō	6	N
+學徒	学徒	xuétú	6	N
+學員	学员	xuéyuán	6	N
+學制	学制	xuézhì	6	N
+雪人		xuěrén	6	N
+削弱		xuèruò	6	V
+循環	循环	xúnhuán	6	N
+巡邏	巡逻	xúnluó	6	Vi
+巡視	巡视	xúnshì	6	V
+詢問	询问	xúnwèn	6	V
+訓	训	xùn	6	V
+押		yā	6	V
+鴉片	鸦片	yāpiàn	6	N
+壓歲錢	压岁钱	yāsuìqián	6	N
+壓縮	压缩	yāsuō	6	V
+壓制	压制	yāzhì	6	V
+牙科		yákē	6	N
+芽		yá	6	N
+啞	哑	yǎ	6	Vp
+亞軍	亚军	yàjūn	6	N
+淹		yān	6	V
+言論	言论	yánlùn	6	N
+岩石		yánshí	6	N
+延遲	延迟	yánchí	6	Vpt
+延伸		yánshēn	6	Vs
+延誤	延误	yánwù	6	Vpt
+延續	延续	yánxù	6	Vst
+沿海		yánhǎi	6	N
+沿途		yántú	6	N
+沿襲	沿袭	yánxí	6	Vst
+沿用		yányòng	6	V
+嚴禁	严禁	yánjìn	6	V
+嚴厲	严厉	yánlì	6	Vs
+嚴密	严密	yánmì	6	Vs
+演變	演变	yǎnbiàn	6	Vs
+演講	演讲	yǎnjiǎng	6	N
+演說	演说	yǎnshuō	6	N
+演習	演习	yǎnxí	6	Vi
+眼界		yǎnjiè	6	N
+眼看		yǎnkàn	6	V
+衍生		yǎnshēng	6	V
+燕窩	燕窝	yànwō	6	N
+燕		yàn	6	N
+燕子		yànzi	6	N
+央求		yāngqiú	6	V
+仰		yǎng	6	V
+仰慕		yǎngmù	6	Vst
+養分	养分	yǎngfèn	6	N
+養份	养份	yǎngfèn	6	N
+養老	养老	yǎnglǎo	6	Vs
+養育	养育	yǎngyù	6	V
+邀		yāo	6	V
+窯	窑	yáo	6	N
+搖晃	摇晃	yáohuàng	6	Vi
+謠言	谣言	yáoyán	6	N
+遙遠	遥远	yáoyuǎn	6	Vs
+要點	要点	yàodiǎn	6	N
+要犯		yàofàn	6	N
+藥品	药品	yàopǐn	6	N
+業績	业绩	yèjī	6	N
+依		yī	6	Prep
+依舊	依旧	yījiù	6	Adv
+依據	依据	yījù	6	Prep
+依賴	依赖	yīlài	6	Vst
+依照		yīzhào	6	Prep
+醫療	医疗	yīliáo	6	N
+醫術	医术	yīshù	6	N
+醫藥	医药	yīyào	6	N
+一定		yīdìng	6	Vs-attr
+一道		yīdào	6	Adv
+一度		yīdù	6	Adv
+一概		yīgài	6	Adv
+一貫	一贯	yīguàn	6	Vs-attr
+一律		yīlǜ	6	Adv
+一味		yīwèi	6	Adv
+咦		yí	6	Ptc
+儀表	仪表	yíbiǎo	6	N
+遺產	遗产	yíchǎn	6	N
+遺傳	遗传	yíchuán	6	Vst
+遺憾	遗憾	yíhàn	6	Vs
+遺留	遗留	yíliú	6	V
+遺棄	遗弃	yíqì	6	V
+遺體	遗体	yítǐ	6	N
+遺忘	遗忘	yíwàng	6	Vpt
+遺志	遗志	yízhì	6	N
+遺址	遗址	yízhǐ	6	N
+疑慮	疑虑	yílǜ	6	N
+移植		yízhí	6	V
+倚		yǐ	6	V
+以至		yǐzhì	6	Conj
+以致		yǐzhì	6	Conj
+以至於	以至于	yǐzhìyú	6	Conj
+以致於	以致于	yǐzhìyú	6	Conj
+亦		yì	6	Adv/Conj
+一連串	一连串	yīliánchuàn	6	Vs-attr
+一流		yīliú	6	Vs
+一如		yīrú	6	Prep
+一心		yīxīn	6	Adv
+液體	液体	yètǐ	6	N
+抑制		yìzhì	6	V
+意識到	意识到	yìshìdào	6	Vpt
+意圖	意图	yìtú	6	N
+意味		yìwèi	6	Vst
+毅力		yìlì	6	N
+翌日		yìrì	6	N
+異常	异常	yìcháng	6	Vs
+異鄉	异乡	yìxiāng	6	N
+議定	议定	yìdìng	6	V
+議論	议论	yìlùn	6	V
+議題	议题	yìtí	6	N
+議員	议员	yìyuán	6	N
+音		yīn	6	N
+因果		yīnguǒ	6	N
+陰謀	阴谋	yīnmóu	6	N
+陰影	阴影	yīnyǐng	6	N
+銀幕	银幕	yínmù	6	N
+銀色	银色	yínsè	6	N
+銀子	银子	yínzi	6	N
+引		yǐn	6	V
+引導	引导	yǐndǎo	6	V
+引進	引进	yǐnjìn	6	V
+引擎		yǐnqíng	6	N
+隱藏	隐藏	yǐncáng	6	V
+隱士	隐士	yǐnshì	6	N
+隱約	隐约	yǐnyuē	6	Adv
+印證	印证	yìnzhèng	6	V
+櫻桃	樱桃	yīngtáo	6	N
+英勇		yīngyǒng	6	Vs
+應	应	yìng	6	Prep/V
+鷹	鹰	yīng	6	N
+老鷹	老鹰	lǎoyīng	6	N
+營地	营地	yíngdì	6	N
+營造	营造	yíngzào	6	V
+迎		yíng	6	V
+迎合		yínghé	6	Vst
+影射		yǐngshè	6	Vst
+硬		yìng	6	Adv
+硬體	硬体	yìngtǐ	6	N
+應變	应变	yìngbiàn	6	Vi
+應酬	应酬	yìngchóu	6	Vi
+應急	应急	yìngjí	6	Vs
+應驗	应验	yìngyàn	6	Vpt
+應徵	应征	yìngzhēng	6	V
+唷		yō	6	Ptc
+湧	涌	yǒng	6	V
+踴躍	踊跃	yǒngyuè	6	Vs
+用戶	用户	yònghù	6	N
+用途		yòngtú	6	N
+悠久		yōujiǔ	6	Vs
+悠閒	悠闲	yōuxián	6	Vs
+優待	优待	yōudài	6	V
+優勢	优势	yōushì	6	N
+優先	优先	yōuxiān	6	Adv
+優異	优异	yōuyì	6	Vs
+鈾	铀	yòu	6	N
+由來	由来	yóulái	6	N
+遊覽	游览	yóulǎn	6	V
+油田		yóutián	6	N
+油條	油条	yóutiáo	6	N
+友愛	友爱	yǒu'ài	6	Vst
+有機	有机	yǒujī	6	Vs-attr
+有理		yǒulǐ	6	Vs
+有所		yǒusuǒ	6	Vst
+有為	有为	yǒuwéi	6	Vs
+有限		yǒuxiàn	6	Vs
+有形		yǒuxíng	6	Vs
+有心人		yǒuxīnrén	6	N
+有益		yǒuyì	6	Vst
+有意		yǒuyì	6	Vaux
+有緣	有缘	yǒuyuán	6	Vs
+誘惑	诱惑	yòuhuò	6	V
+幼稚		yòuzhì	6	Vs
+于		yú	6	Prep
+於	于	yú	6	Prep
+逾		yú	6	Vst
+餘	余	yú	6	N/Vst
+語法	语法	yǔfǎ	6	N
+愚蠢		yúchǔn	6	Vs
+輿論	舆论	yúlùn	6	N
+漁民	渔民	yúmín	6	N
+予		yǔ	6	V
+予以		yǔyǐ	6	V
+與會	与会	yùhuì	6	Vi
+雨季		yǔjì	6	N
+語文	语文	yǔwén	6	N
+宇宙		yǔzhòu	6	N
+愈		yù	6	Adv
+玉器		yùqì	6	N
+預測	预测	yùcè	6	V
+預防	预防	yùfáng	6	V
+預告	预告	yùgào	6	V
+預估	预估	yùgū	6	V
+預賽	预赛	yùsài	6	N
+預約	预约	yùyuē	6	V
+寓言		yùyán	6	N
+園林	园林	yuánlín	6	N
+元氣	元气	yuánqì	6	N
+元首		yuánshǒu	6	N
+元素		yuánsù	6	N
+原		yuán	6	Adv
+原形		yuánxíng	6	N
+原野		yuányě	6	N
+原狀	原状	yuánzhuàng	6	N
+原住民		yuánzhùmín	6	N
+原子		yuánzǐ	6	N
+原子彈	原子弹	yuánzǐdàn	6	N
+援助		yuánzhù	6	V
+遠景	远景	yuǎnjǐng	6	N
+怨		yuàn	6	Vst
+約束	约束	yuēshù	6	V
+躍	跃	yuè	6	Vi
+樂隊	乐队	yuèduì	6	N
+運	运	yùn	6	V
+運行	运行	yùnxíng	6	Vi
+孕婦	孕妇	yùnfù	6	N
+醞釀	酝酿	yùnniàng	6	V
+栽		zāi	6	V
+災禍	灾祸	zāihuò	6	N
+災情	灾情	zāiqíng	6	N
+在場	在场	zàichǎng	6	Vi
+在世		zàishì	6	Vs
+在座		zàizuò	6	Vi
+再生		zàishēng	6	Vs-attr
+咱		zán	6	N
+贊助	赞助	zànzhù	6	V
+讚嘆	赞叹	zàntàn	6	Vi
+讚歎	赞叹	zàntàn	6	Vi
+贓物	赃物	zāngwù	6	N
+遭		zāo	6	M/Prep/Vst
+遭遇		zāoyù	6	Vst
+造反		zàofǎn	6	Vi
+造化		zàohuà	6	N
+造物主		Zàowùzhǔ	6	N
+造型		zàoxíng	6	N
+責備	责备	zébèi	6	V
+增進	增进	zēngjìn	6	V
+增強	增强	zēngqiáng	6	Vp
+增值		zēngzhí	6	Vp
+扎		zhā	6	V
+炸藥	炸药	zhàyào	6	N
+沾		zhān	6	V
+盞	盏	zhǎn	6	M
+展望		zhǎnwàng	6	Vst
+展現	展现	zhǎnxiàn	6	V
+嶄新	崭新	zhǎnxīn	6	Vs-attr
+占據	占据	zhànjù	6	V
+佔據	占据	zhànjù	6	V
+占領	占领	zhànlǐng	6	V
+佔領	占领	zhànlǐng	6	V
+顫抖	颤抖	zhàndǒu	6	Vi
+戰火	战火	zhànhuǒ	6	N
+戰機	战机	zhànjī	6	N
+戰亂	战乱	zhànluàn	6	N
+戰略	战略	zhànlüè	6	N
+戰勝	战胜	zhànshèng	6	V
+戰士	战士	zhànshì	6	N
+戰術	战术	zhànshù	6	N
+戰線	战线	zhànxiàn	6	N
+戰友	战友	zhànyǒu	6	N
+戰戰兢兢	战战兢兢	zhànzhànjīngjīng	6	Vs
+張貼	张贴	zhāngtiē	6	V
+長子	长子	zhǎngzǐ	6	N
+帳篷	帐篷	zhàngpéng	6	N
+丈		zhàng	6	M
+朝氣	朝气	zhāoqì	6	N
+著想	着想	zháoxiǎng	6	Vs
+找尋	找寻	zhǎoxún	6	V
+沼澤	沼泽	zhǎozé	6	N
+召集		zhàojí	6	V
+照例		zhàolì	6	Adv
+照耀		zhàoyào	6	V
+遮		zhē	6	V
+遮蔽		zhēbì	6	V
+折騰	折腾	zhēténg	6	V
+針灸	针灸	zhēnjiǔ	6	Vi
+真情		zhēnqíng	6	N
+診斷	诊断	zhěnduàn	6	V
+診所	诊所	zhěnsuǒ	6	N
+鎮定	镇定	zhèndìng	6	Vs
+鎮壓	镇压	zhènyā	6	V
+振動	振动	zhèndòng	6	Vi
+震驚	震惊	zhènjīng	6	Vs
+陣營	阵营	zhènyíng	6	N
+蒸		zhēng	6	V
+蒸發	蒸发	zhēngfā	6	Vi
+蒸氣	蒸气	zhēngqì	6	N
+爭辯	争辩	zhēngbiàn	6	Vi
+爭奪	争夺	zhēngduó	6	V
+爭論	争论	zhēnglùn	6	N
+爭氣	争气	zhēngqì	6	Vs
+爭議	争议	zhēngyì	6	N
+徵收	征收	zhēngshōu	6	V
+掙扎	挣扎	zhēngzhá	6	Vi
+整		zhěng	6	V
+整頓	整顿	zhěngdùn	6	V
+整整		zhěngzhěng	6	Adv
+正當	正当	zhèngdāng	6	Vs
+正面		zhèngmiàn	6	Adv
+正統	正统	zhèngtǒng	6	N
+正義	正义	zhèngyì	6	N
+政績	政绩	zhèngjī	6	N
+政見	政见	zhèngjiàn	6	N
+政權	政权	zhèngquán	6	N
+證券	证券	zhèngquàn	6	N
+證人	证人	zhèngrén	6	N
+掙	挣	zhèng	6	V
+之內	之内	zhīnèi	6	N
+之所以		zhīsuǒyǐ	6	Conj
+支撐	支撑	zhīchēng	6	V
+支付		zhīfù	6	V
+支配		zhīpèi	6	V
+支應	支应	zhīyìng	6	V
+知足		zhīzú	6	Vs
+脂肪		zhīfáng	6	N
+織	织	zhī	6	V
+直徑	直径	zhíjìng	6	N
+值班		zhíbān	6	V-sep
+值錢	值钱	zhíqián	6	Vs
+殖民		zhímín	6	Vi
+質量	质量	zhíliàng	6	N
+質疑	质疑	zhíyí	6	V
+職務	职务	zhíwù	6	N
+職責	职责	zhízé	6	N
+執照	执照	zhízhào	6	N
+執政	执政	zhízhèng	6	Vi
+執著	执着	zhízhuó	6	Vs
+止		zhǐ	6	N
+只得		zhǐdé	6	Adv
+指標	指标	zhǐbiāo	6	N
+指點	指点	zhǐdiǎn	6	V
+指揮	指挥	zhǐhuī	6	N/V
+指控		zhǐkòng	6	V
+指南針	指南针	zhǐnánzhēn	6	N
+指數	指数	zhǐshù	6	N
+指望		zhǐwàng	6	Vst
+指紋	指纹	zhǐwén	6	N
+指引		zhǐyǐn	6	V
+指正		zhǐzhèng	6	V
+至		zhì	6	Conj/Prep
+至今		zhìjīn	6	Adv
+治安		zhì'ān	6	N
+治本		zhìběn	6	Vi
+治標	治标	zhìbiāo	6	Vi
+治理		zhìlǐ	6	V
+治療	治疗	zhìliáo	6	V
+志趣		zhìqù	6	N
+志向		zhìxiàng	6	N
+致詞	致词	zhìcí	6	Vi
+致富		zhìfù	6	Vs
+致力		zhìlì	6	Vst
+致命		zhìmìng	6	Vs
+致意		zhìyì	6	Vi
+智力		zhìlì	6	N
+制裁		zhìcái	6	V
+製品	制品	zhìpǐn	6	N
+滯留	滞留	zhìliú	6	Vi
+中斷	中断	zhōngduàn	6	V
+中和		zhōnghé	6	V
+中立		zhōnglì	6	Vs
+中旬		zhōngxún	6	N
+中葉	中叶	zhōngyè	6	N
+中醫	中医	Zhōngyī	6	N
+中庸		zhōngyōng	6	Vs
+忠實	忠实	zhōngshí	6	Vs
+衷心		zhōngxīn	6	Adv
+終場	终场	zhōngchǎng	6	N
+終結	终结	zhōngjié	6	V
+終究	终究	zhōngjiù	6	Adv
+終身	终身	zhōngshēn	6	N
+種種	种种	zhǒngzhǒng	6	Det
+種植	种植	zhòngzhí	6	V
+中風	中风	zhòngfēng	6	Vp
+中獎	中奖	zhòngjiǎng	6	Vp
+中肯		zhòngkěn	6	Vs
+中暑		zhòngshǔ	6	Vp
+重用		zhòngyòng	6	V
+重鎮	重镇	zhòngzhèn	6	N
+周邊	周边	zhōubiān	6	N
+周密		zhōumì	6	Vs
+周詳	周详	zhōuxiáng	6	Vs
+周遊	周游	zhōuyóu	6	V
+周轉	周转	zhōuzhuǎn	6	V
+皺	皱	zhòu	6	Vs
+皺紋	皱纹	zhòuwén	6	N
+株		zhū	6	M
+諸多	诸多	zhūduō	6	Det
+逐		zhú	6	Prep/V
+逐步		zhúbù	6	Adv
+主導	主导	zhǔdǎo	6	V
+主管		zhǔguǎn	6	V
+主見	主见	zhǔjiàn	6	N
+主力		zhǔlì	6	N
+主流		zhǔliú	6	N
+主權	主权	zhǔquán	6	N
+主人翁		zhǔrénwēng	6	N
+主義	主义	zhǔyì	6	N
+主宰		zhǔzǎi	6	V
+主旨		zhǔzhǐ	6	N
+主軸	主轴	zhǔzhóu	6	N
+囑咐	嘱咐	zhǔfù	6	V
+矚目	瞩目	zhǔmù	6	Vi
+注定		zhùdìng	6	Vaux
+註定	注定	zhùdìng	6	Vaux
+注目		zhùmù	6	Vi
+注視	注视	zhùshì	6	V
+注重		zhùzhòng	6	Vst
+住宿		zhùsù	6	Vi
+柱		zhù	6	N
+柱子		zhùzi	6	N
+助教		zhùjiào	6	N
+助手		zhùshǒu	6	N
+佇立	伫立	zhùlì	6	Vi
+著作		zhùzuò	6	N
+駐	驻	zhù	6	V
+抓緊	抓紧	zhuājǐn	6	V
+專櫃	专柜	zhuānguì	6	N
+專員	专员	zhuānyuán	6	N
+專制	专制	zhuānzhì	6	Vs
+磚	砖	zhuān	6	N
+轉動	转动	zhuǎndòng	6	V
+轉化	转化	zhuǎnhuà	6	Vp
+轉機	转机	zhuǎnjī	6	N
+轉手	转手	zhuǎnshǒu	6	V
+轉眼	转眼	zhuǎnyǎn	6	Adv
+轉移	转移	zhuǎnyí	6	V
+轉帳	转帐	zhuǎnzhàng	6	V-sep
+撰寫	撰写	zhuànxiě	6	V
+莊嚴	庄严	zhuāngyán	6	Vs
+裝備	装备	zhuāngbèi	6	N
+裝潢	装潢	zhuānghuáng	6	V
+裝配	装配	zhuāngpèi	6	V
+裝運	装运	zhuāngyùn	6	V
+裝置	装置	zhuāngzhì	6	V
+壯觀	壮观	zhuàngguān	6	Vs
+壯麗	壮丽	zhuànglì	6	Vs
+狀元	状元	zhuàngyuán	6	N
+追捕		zhuībǔ	6	V
+追查		zhuīchá	6	V
+追究		zhuījiù	6	V
+準	准	zhǔn	6	Adv
+準備	准备	zhǔnbèi	6	N
+準則	准则	zhǔnzé	6	N
+准許	准许	zhǔnxǔ	6	V
+卓越		zhuóyuè	6	Vs
+著手	着手	zhuóshǒu	6	Vi
+著眼	着眼	zhuóyǎn	6	Vi
+著重	着重	zhuózhòng	6	Vst
+酌量		zhuóliáng	6	Adv
+資深	资深	zīshēn	6	Vs
+資助	资助	zīzhù	6	V
+姿勢	姿势	zīshì	6	N
+姿態	姿态	zītài	6	N
+滋味		zīwèi	6	N
+子彈	子弹	zǐdàn	6	N
+子弟		zǐdì	6	N
+子孫	子孙	zǐsūn	6	N
+紫外線	紫外线	zǐwàixiàn	6	N
+自		zì	6	Prep
+自稱	自称	zìchēng	6	Vst
+自費	自费	zìfèi	6	Vi
+自豪		zìháo	6	Vs
+自覺	自觉	zìjué	6	Vst
+自立		zìlì	6	Vs
+自滿	自满	zìmǎn	6	Vs
+自然		zìrán	6	Adv
+自身		zìshēn	6	N
+自行		zìxíng	6	Adv
+自制		zìzhì	6	Vi
+自治		zìzhì	6	Vi
+自傳	自传	zìzhuàn	6	N
+字體	字体	zìtǐ	6	N
+字眼		zìyǎn	6	N
+字眼兒	字眼儿	zìyǎnr	6	N
+字樣	字样	zìyàng	6	N
+宗旨		zōngzhǐ	6	N
+總裁	总裁	zǒngcái	6	N
+總得	总得	zǒngděi	6	Adv
+總額	总额	zǒng'é	6	N
+總和	总和	zǒnghé	6	N
+總結	总结	zǒngjié	6	N
+總經理	总经理	zǒngjīnglǐ	6	N
+總數	总数	zǒngshù	6	N
+縱火	纵火	zònghuǒ	6	V-sep
+縱容	纵容	zòngróng	6	Vst
+縱使	纵使	zòngshǐ	6	Conj
+走廊		zǒuláng	6	N
+揍		zòu	6	V
+租賃	租赁	zūlìn	6	V
+祖宗		zǔzōng	6	N
+阻擋	阻挡	zǔdǎng	6	V
+阻力		zǔlì	6	N
+阻撓	阻挠	zǔnáo	6	V
+阻塞		zǔsè	6	Vs
+組裝	组装	zǔzhuāng	6	V
+鑽研	钻研	zuānyán	6	V
+嘴唇		zuǐchún	6	N
+嘴脣	嘴唇	zuǐchún	6	N
+唇		chún	6	N
+脣	唇	chún	6	N
+罪惡	罪恶	zuì'è	6	N
+罪名		zuìmíng	6	N
+罪行		zuìxìng	6	N
+尊		zūn	6	M/Vst
+尊嚴	尊严	zūnyán	6	N
+遵循		zūnxún	6	Vst
+作風	作风	zuòfēng	6	N
+作怪		zuòguài	6	Vi
+作物		zuòwù	6	N
+作戰	作战	zuòzhàn	6	Vi
+作證	作证	zuòzhèng	6	V-sep
+做證	做证	zuòzhèng	6	V-sep
+坐牢		zuòláo	6	V-sep
+坐鎮	坐镇	zuòzhèn	6	Vi
+座談	座谈	zuòtán	6	Vi
+座右銘	座右铭	zuòyòumíng	6	N

@@ -849,6 +849,18 @@ function trPublish(){
   });
 }
 // 簡報頁（iframe）開了房間：不管有沒有按「開始上課」，都記下這個房間，翻譯機就會同步給房間裡的學生
+// 生詞表製作工具準備好時，把目前這一課的生詞（生詞、拼音、英文）傳進去
+function vtoolWords(key){
+  var pk = parseKey(key); if(!pk) return [];
+  var l = (S.bank || []).filter(function(x){ return (x.book || DEFAULT_BOOK) === pk.book && Number(x.lesson) === pk.no; })[0];
+  return ((l && l.vocab) || []).map(function(v){ return { w: String(v["生詞"] || "").trim(), p: v["拼音"] || "", m: v["英文翻譯"] || "" }; }).filter(function(x){ return x.w; });
+}
+window.addEventListener("message", function(e){
+  var d = e.data; if(!d || d.mmVocab !== "ready" || !S.lib || !S.lib.vtool) return;
+  var fr = document.getElementById("fr"); if(!fr || e.source !== fr.contentWindow) return;
+  var pk = parseKey(S.lib.key), lt = ((S.plat.lessons || {})[S.lib.key] || {}).title || "", ttl = pk ? (bookShort(pk.book) + " 第" + pk.no + "課" + (lt ? " " + lt : "")).trim() : lessonTitle(S.lib.key);
+  fr.contentWindow.postMessage({ mmVocab: "load", title: ttl, words: vtoolWords(S.lib.key) }, "*");
+});
 window.addEventListener("message", function(e){
   if(!S.teacher || !e.data || e.data.mm !== "room" || !e.data.id) return;
   TR_PUB.rooms = TR_PUB.rooms || {}; TR_PUB.rooms[e.data.id] = 1; trPublishSoon();
@@ -1656,6 +1668,10 @@ function renderLibrary(){
   if(editing){
     var src = S.lib.pid ? "slides/practice.html?v=" + MM_V + "&embed=1&project=" + encodeURIComponent(S.lib.pid) : "slides/practice.html?v=" + MM_V + "&embed=1&newproject=" + encodeURIComponent(S.lib.creating ? lessonTitle(S.lib.creating) : "新的簡報");
     html = '<div class="tabs"><button class="tab" data-pback="1">‹ 回' + esc(key.charAt(0) === "_" ? "教材" : lessonTitle(key)) + '</button></div><iframe class="frame" id="fr" src="' + esc(src) + '" allow="microphone; camera; autoplay; clipboard-write"></iframe>';
+  } else if(S.lib.vtool){
+    // 備課工具：生詞表製作（tools/vocab），開啟後自動帶入這一課的生詞
+    html = '<div class="tabs"><button class="tab" data-bankback="1">‹ 回' + esc(lessonTitle(key)) + '</button><span class="note" style="align-self:center;margin-left:8px;">生詞表製作（備課工具）：已帶入這一課的生詞，整理好可以匯出 Word、PPT、字卡</span></div>' +
+      '<iframe class="frame" id="fr" src="' + esc("tools/vocab/?embed=1&v=" + MM_V) + '" allow="clipboard-write"></iframe>';
   } else if(S.lib.bank){
     var pk = parseKey(key), lno = pk && pk.book === cur ? pk.no : (S.lib.lesson || "");
     html = '<div class="tabs"><button class="tab" data-bankback="1">‹ 回' + esc(key.charAt(0) === "_" ? "教材" : lessonTitle(key)) + '</button><span class="note" style="align-self:center;margin-left:8px;">編輯生詞・語法・課文（改完會自動存到雲端）</span></div>' +
@@ -1695,6 +1711,7 @@ function renderLibrary(){
     if(b.dataset.libbook){ S.lib = { book: b.dataset.libbook }; renderLibrary(); return; }
     if(b.dataset.libtidy){ S.lib = S.lib.tidy ? { book: cur } : { book: cur, tidy: true }; renderLibrary(); return; }
     if(b.dataset.bank){ S.lib = { book: cur, key: key, bank: true }; renderLibrary(); return; }
+    if(b.dataset.vtool){ S.lib = { book: cur, key: key, vtool: true }; renderLibrary(); return; }
     if(b.dataset.bankback){ S.lib = { book: cur, key: key }; await syncLessonIndex(); renderLibrary(); return; }
     if(b.dataset.pe){ S.lib = { book: cur, key: key, pid: b.dataset.pe, tidy: tidy }; renderLibrary(); return; }
     if(b.dataset.pnew != null){ S.lib = { book: cur, key: key, creating: b.dataset.pnew, tidy: tidy }; renderLibrary(); return; }
@@ -1841,7 +1858,7 @@ async function libImportLesson(file, cur){
 function libLessonHtml(key){
   var L = S.plat.lessons || {}, l = L[key] || {}, c = lessonCounts(key), ps = l.projects || {}, pids = Object.keys(ps), dup = libDupSet();
   var h = '<div class="head-row" style="margin-bottom:10px;"><div style="flex:1;"><h2>' + esc(lessonTitle(key)) + '</h2></div>' + (l.unit ? '' : '<button class="btn sm" data-lesexp="' + esc(key) + '" title="把這一課的生詞・語法・課文和簡報、練習打包成一個檔案，可以傳給別的老師">⬇ 匯出這一課</button> <button class="btn sm danger" data-lesdel="' + esc(key) + '" title="沒有內容的課才能刪">刪除這一課</button>') + '</div>';
-  h += '<div class="panel"><div class="lh" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><h3 style="margin:0;flex:1;">📖 生詞・語法・課文</h3>' + (l.unit ? '' : '<button class="btn sm primary" data-bank="1">編輯生詞・語法・課文</button>') + '</div>' +
+  h += '<div class="panel"><div class="lh" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><h3 style="margin:0;flex:1;">📖 生詞・語法・課文</h3>' + (l.unit ? '' : '<button class="btn sm" data-vtool="1" title="把這一課的生詞整理成生詞表：自動補拼音／注音、英文、TOCFL／HSK 級別，加例句、挖空練習，匯出 Word、PPT、字卡">📋 生詞表製作</button> <button class="btn sm primary" data-bank="1">編輯生詞・語法・課文</button>') + '</div>' +
     '<div class="tools" style="margin-top:8px;"><span class="chip">生詞 ' + c.vocab + '</span><span class="chip">語法 ' + c.grammar + '</span><span class="chip">課文 ' + c.text + '</span></div>' + (l.unit ? '<p class="note" style="margin:6px 0 0;">複習單元的生詞・語法・課文是 ' + esc(memberRange(l.members)) + ' 的合計，請到各課編輯。</p>' : (c.vocab + c.grammar + c.text ? '' : '<p class="note" style="margin:6px 0 0;">這一課還沒有生詞・語法・課文。按右上角開始編輯，或用 Excel 匯入。</p>')) + '</div>';
   h += '<div class="panel"><div class="lh" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><h3 style="margin:0;flex:1;">🖥️ 簡報與練習（' + pids.length + '）</h3><button class="btn sm" data-pnew="' + esc(key) + '">＋ 新增簡報／測驗</button></div>' +
     (pids.length ? pids.map(function(pid){ return libProjRow(pid, ps[pid], key, dup[pid]); }).join("") : '<p class="note" style="margin:6px 0 0;">這一課還沒有簡報或測驗。</p>') + '</div>';
