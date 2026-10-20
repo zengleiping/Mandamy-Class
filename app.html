@@ -5854,6 +5854,8 @@ function brkOpenDialog(){
       '<div class="tools" id="brk-pre"><button type="button" class="btn" data-m="5">5 分鐘</button><button type="button" class="btn" data-m="10">10 分鐘</button><button type="button" class="btn" data-m="15">15 分鐘</button></div>' +
       '<label style="display:block;margin-top:12px;font-weight:700;font-size:13px;">自訂</label><div style="display:flex;align-items:center;gap:8px;font-size:15px;"><input type="number" id="brk-min" min="0" step="any" value="10" style="width:90px;padding:8px 10px;border:1.5px solid var(--line);border-radius:10px;font-size:15px;"> 分 <input type="number" id="brk-sec" min="0" step="any" value="0" style="width:90px;padding:8px 10px;border:1.5px solid var(--line);border-radius:10px;font-size:15px;"> 秒</div>' +
       '<label style="display:flex;align-items:center;gap:8px;margin-top:12px;font-size:14px;"><input type="checkbox" id="brk-snd"> 時間到響鈴</label>' +
+      '<div id="brk-tw" style="margin-top:8px;"><label style="display:block;font-weight:700;font-size:13px;margin-bottom:4px;">鈴聲</label><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;"><select id="brk-tone" style="flex:1;min-width:160px;padding:8px 10px;border:1.5px solid var(--line);border-radius:10px;font-size:14px;"></select><button type="button" class="btn sm" id="brk-try">試聽</button></div>' +
+      '<div style="margin-top:6px;font-size:13px;"><button type="button" class="btn sm" id="brk-up">上傳自己的鈴聲</button> <span class="note" id="brk-upn">mp3、m4a、wav 都可以，5 MB 以內</span><input type="file" id="brk-file" accept="audio/*" style="display:none;"></div></div>' +
       '<div class="row"><button type="button" class="btn" id="brk-no">取消</button><button type="submit" class="btn primary">開始倒數</button></div></form>';
     document.body.appendChild(d);
     d.querySelector("#brk-pre").onclick = function(e){ var b = e.target.closest("[data-m]"); if(!b) return; d.querySelector("#brk-min").value = b.dataset.m; d.querySelector("#brk-sec").value = 0; d.querySelectorAll("#brk-pre .btn").forEach(function(x){ x.classList.toggle("primary", x === b); }); };
@@ -5867,12 +5869,30 @@ function brkOpenDialog(){
     };
   }
   d.querySelector("#brk-snd").checked = brkSoundOn();
+  brkToneFill(d);
+  d.querySelector("#brk-snd").onchange = function(){ d.querySelector("#brk-tw").style.opacity = d.querySelector("#brk-snd").checked ? "1" : ".45"; };
+  d.querySelector("#brk-snd").onchange();
+  d.querySelector("#brk-tone").onchange = function(){ brkToneSave(d.querySelector("#brk-tone").value); };
+  d.querySelector("#brk-try").onclick = function(){ brkStopSound(); var t = brkToneGet(); brkPlayTone(t.id, t.url, true); };
+  d.querySelector("#brk-up").onclick = function(){ d.querySelector("#brk-file").click(); };
+  d.querySelector("#brk-file").onchange = async function(){
+    var f = this.files && this.files[0]; this.value = ""; if(!f) return;
+    if(!/^audio\//.test(f.type) && !/\.(mp3|m4a|wav|ogg|aac)$/i.test(f.name)){ alert("請選音檔（mp3、m4a、wav）。"); return; }
+    if(f.size > 5 * 1024 * 1024){ alert("音檔太大了，請選 5 MB 以內的檔案。"); return; }
+    var n = d.querySelector("#brk-upn"); n.textContent = "上傳中…";
+    try{
+      var ext = (f.name.match(/\.[a-z0-9]+$/i) || [".mp3"])[0].toLowerCase();
+      var up = await uploadFile("teacherMedia/" + S.teacher.id + "/brk-sound-" + Date.now() + ext, f, function(r){ n.textContent = "上傳中… " + Math.round(r * 100) + "%"; });
+      brkToneSave("custom", { url: up.url, name: f.name.replace(/\.[^.]+$/, "") });
+      brkToneFill(d); n.textContent = "已設定：" + f.name;
+    }catch(e){ n.textContent = "上傳失敗：" + (e.message || "請檢查網路後再試"); }
+  };
   d.querySelectorAll("#brk-pre .btn").forEach(function(x){ x.classList.toggle("primary", x.dataset.m === d.querySelector("#brk-min").value && !Number(d.querySelector("#brk-sec").value)); });
   ["#brk-min", "#brk-sec"].forEach(function(id){ d.querySelector(id).oninput = function(){ d.querySelectorAll("#brk-pre .btn").forEach(function(x){ x.classList.toggle("primary", x.dataset.m === d.querySelector("#brk-min").value && !Number(d.querySelector("#brk-sec").value)); }); }; });
   d.showModal();
 }
 function brkStart(sec, sound){
-  var data = { until: Date.now() + sec * 1000, sec: sec, sound: !!sound, at: Date.now() };
+  var tn = brkToneGet(), data = { until: Date.now() + sec * 1000, sec: sec, sound: !!sound, tone: tn.id, url: tn.id === "custom" ? tn.url : null, at: Date.now() };
   brkSave(data); brkSync(data, true);
 }
 function brkSave(data){
@@ -5885,21 +5905,75 @@ function brkRestore(){
   else { try{ data = JSON.parse(localStorage.getItem("mm_brk") || "null"); }catch(e){} }
   if(data && data.until && Date.now() - data.until < 30 * 60000) brkSync(data, true);
 }
-function brkChime(){
-  try{
-    var AC = window.AudioContext || window.webkitAudioContext; if(!AC) return;
-    var ctx = BRK.ctx || (BRK.ctx = new AC()); if(ctx.state === "suspended") ctx.resume();
-    [[880, 0], [659.25, 0.45], [880, 0.9], [659.25, 1.35]].forEach(function(n){   // 叮咚、叮咚
-      var o = ctx.createOscillator(), g = ctx.createGain(), t0 = ctx.currentTime + n[1];
-      o.type = "sine"; o.frequency.value = n[0]; o.connect(g); g.connect(ctx.destination);
-      g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(0.35, t0 + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t0 + 1.1);
-      o.start(t0); o.stop(t0 + 1.15);
-    });
-  }catch(e){}
+var BRK_TONES = [["soft", "叮咚（柔和）"], ["school", "學校鐘聲"], ["digital", "電子鬧鈴"], ["bell", "鬧鐘鈴鐺"], ["loud", "響亮警報"]];
+function brkToneGet(){
+  var t = ((S.plat && S.plat.meta) || {}).brkTone;
+  if(!t){ try{ t = JSON.parse(localStorage.getItem("mm_brk_tone") || "null"); }catch(e){} }
+  if(!t || !t.id) t = { id: "soft" };
+  if(t.id === "custom" && !t.url) t = { id: "soft" };
+  return t;
+}
+function brkToneSave(id, custom){
+  var cur = brkToneGet(), t = { id: id };
+  if(id === "custom"){ var c = custom || (cur.customUrl ? { url: cur.customUrl, name: cur.customName } : null); if(!c) return; t.url = c.url; t.name = c.name || "自己的鈴聲"; }
+  var keep = custom || (cur.customUrl ? { url: cur.customUrl, name: cur.customName } : (cur.id === "custom" ? { url: cur.url, name: cur.name } : null));
+  if(keep){ t.customUrl = keep.url; t.customName = keep.name; }
+  try{ localStorage.setItem("mm_brk_tone", JSON.stringify(t)); }catch(e){}
+  if(S.plat){ S.plat.meta = S.plat.meta || {}; S.plat.meta.brkTone = t; }
+  if(S.teacher && S.teacher.role !== "ta") fbSet("teacherPlatform/" + S.teacher.id + "/meta/brkTone", t).catch(function(){});
+}
+function brkToneFill(d){
+  var t = brkToneGet(), sel = d.querySelector("#brk-tone"), cu = t.customUrl || (t.id === "custom" ? t.url : null), cn = t.customName || t.name || "自己的鈴聲";
+  sel.innerHTML = BRK_TONES.map(function(x){ return '<option value="' + x[0] + '">' + x[1] + '</option>'; }).join("") + (cu ? '<option value="custom">自己的鈴聲：' + esc(cn) + '</option>' : '');
+  sel.value = t.id;
+}
+function brkCtx(){ var AC = window.AudioContext || window.webkitAudioContext; if(!AC) return null; var ctx = BRK.ctx || (BRK.ctx = new AC()); if(ctx.state === "suspended") ctx.resume(); return ctx; }
+function brkNote(ctx, f, t0, dur, type, vol, harm){
+  [[1, 1]].concat(harm || []).forEach(function(h){
+    var o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = type || "sine"; o.frequency.value = f * h[0]; o.connect(g); g.connect(ctx.destination);
+    g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(vol * h[1], t0 + 0.015); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    o.start(t0); o.stop(t0 + dur + 0.05);
+  });
+}
+// 播一次鈴聲；回傳這個鈴聲一輪大約幾秒（用來決定多久再響一次）
+function brkPlayTone(id, url, once){
+  if(id === "custom" && url){
+    try{ var a = BRK.audio; if(!a || a.dataset.src !== url){ a = BRK.audio = new Audio(url); a.dataset.src = url; } a.currentTime = 0; a.play().catch(function(){}); }catch(e){}
+    return once ? 0 : Math.max(2, ((BRK.audio && BRK.audio.duration) || 4) + 0.8);
+  }
+  var ctx = brkCtx(); if(!ctx) return 4; var t = ctx.currentTime + 0.02, i;
+  if(id === "school"){   // 學校的「噹噹噹噹」鐘聲（西敏寺鐘聲）
+    [[329.63, 0], [261.63, .6], [293.66, 1.2], [196, 1.8], [196, 3], [293.66, 3.6], [329.63, 4.2], [261.63, 4.8]].forEach(function(n){ brkNote(ctx, n[0], t + n[1], 1.6, "sine", .45, [[2.76, .25], [5.4, .1]]); });
+    return 7;
+  }
+  if(id === "digital"){  // 電子鬧鐘「嗶嗶嗶嗶」
+    for(i = 0; i < 4; i++) brkNote(ctx, 1046.5, t + i * .16, .1, "square", .18);
+    for(i = 0; i < 4; i++) brkNote(ctx, 1046.5, t + .9 + i * .16, .1, "square", .18);
+    return 2;
+  }
+  if(id === "bell"){     // 傳統鬧鐘鈴鐺：快速「鈴鈴鈴鈴」
+    for(i = 0; i < 26; i++) brkNote(ctx, i % 2 ? 1760 : 2093, t + i * .055, .09, "triangle", .22);
+    return 2.6;
+  }
+  if(id === "loud"){     // 響亮警報：高低起伏
+    var o = ctx.createOscillator(), g = ctx.createGain(); o.type = "sawtooth"; o.connect(g); g.connect(ctx.destination);
+    for(i = 0; i < 4; i++){ o.frequency.setValueAtTime(620, t + i * .6); o.frequency.linearRampToValueAtTime(1240, t + i * .6 + .3); o.frequency.linearRampToValueAtTime(620, t + i * .6 + .6); }
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(.16, t + .05); g.gain.setValueAtTime(.16, t + 2.3); g.gain.exponentialRampToValueAtTime(0.0001, t + 2.45);
+    o.start(t); o.stop(t + 2.5);
+    return 3.2;
+  }
+  [[880, 0], [659.25, 0.45], [880, 0.9], [659.25, 1.35]].forEach(function(n){ brkNote(ctx, n[0], t + n[1], 1.1, "sine", .35); });   // 叮咚、叮咚
+  return 4;
+}
+function brkStopSound(){ if(BRK.ring){ clearTimeout(BRK.ring); BRK.ring = null; } try{ if(BRK.audio){ BRK.audio.pause(); BRK.audio.currentTime = 0; } }catch(e){} }
+function brkRingStart(){
+  brkStopSound(); var d0 = BRK.data || {}, until = Date.now() + 60000;   // 響一分鐘就停，畫面上的時鐘繼續跳
+  (function loop(){ if(!BRK.el || Date.now() > until){ brkStopSound(); return; } var gap = brkPlayTone(d0.tone || "soft", d0.url); BRK.ring = setTimeout(loop, gap * 1000); })();
 }
 function brkFmt(ms){ var t = Math.max(0, Math.ceil(ms / 1000)), m = Math.floor(t / 60), s2 = t % 60; return (m < 10 ? "0" : "") + m + ":" + (s2 < 10 ? "0" : "") + s2; }
 function brkClose(byUser){
-  if(BRK.timer){ clearInterval(BRK.timer); BRK.timer = null; } if(BRK.ring){ clearInterval(BRK.ring); BRK.ring = null; }
+  if(BRK.timer){ clearInterval(BRK.timer); BRK.timer = null; } brkStopSound();
   if(BRK.el){ BRK.el.remove(); BRK.el = null; }
   if(byUser && !BRK.teacher && BRK.data) BRK.closedAt = BRK.data.at;   // 學生自己關掉：同一次鬧鐘不再跳出來
   if(byUser && BRK.teacher) brkSave(null);
@@ -5928,9 +6002,9 @@ function brkSync(data, teacher){
       el.onclick = function(e){
         var b = e.target.closest("[data-bk]"); if(!b) return;
         if(b.dataset.bk === "close"){ brkClose(true); return; }
-        if(b.dataset.bk === "snd"){ var on = !brkSoundOn(); brkSetSound(on); BRK.data.sound = on; if(BRK.teacher) brkSave(BRK.data); b.textContent = on ? "鈴聲：開" : "鈴聲：關"; if(!on && BRK.ring){ clearInterval(BRK.ring); BRK.ring = null; } else if(on && phase === "done" && !BRK.ring){ brkChime(); BRK.ring = setInterval(brkChime, 4000); } }
+        if(b.dataset.bk === "snd"){ var on = !brkSoundOn(); brkSetSound(on); BRK.data.sound = on; if(BRK.teacher) brkSave(BRK.data); b.textContent = on ? "鈴聲：開" : "鈴聲：關"; if(!on) brkStopSound(); else if(phase === "done" && !BRK.ring) brkRingStart(); }
       };
-      if(done && snd){ brkChime(); BRK.ring = setInterval(brkChime, 4000); setTimeout(function(){ if(BRK.ring && BRK.el === el){ clearInterval(BRK.ring); BRK.ring = null; } }, 60000); }   // 響一分鐘就停，畫面上的時鐘繼續跳
+      if(done && snd) brkRingStart();
     }
     var t = el.querySelector("#brk-time"); if(t) t.textContent = brkFmt(left);
   }
