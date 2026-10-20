@@ -684,6 +684,7 @@
   /* 選擇題與多選題 */
   .circle-prompt{font-family:"MM Kai","LXGW WenKai TC",serif;font-size:21px;margin:0 0 20px;line-height:1.6;color:var(--ink);}
   .mc-ink-host{position:relative;max-width:860px;margin:0 auto;}
+  .mc-ink-wrap{position:relative;padding-bottom:140px;}
   .mc-ink-host .mc-choices-container{max-width:none;}
   .mc-ink-canvas{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:3;touch-action:none;}
   .mc-ink-texts{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:4;}
@@ -4521,9 +4522,30 @@ window.mmTA = (function(){
   function isAnswerSec(sec){ return !!sec && ["choice", "match", "fill", "reorder", "open", "record"].indexOf(sec.type) !== -1; }
   function examPrivateFor(qId){
     if(!(inRoom() && currentClassMode === "exam") || window.__attempt || window.__grade) return null;
-    var info = findSectionForQuestion(qId); if(!info || !isAnswerSec(info.sec)) return null;
+    var info = findSectionForQuestion(qId); if(!info) return null;
+    // 小白板：每位學生寫在自己的一份上（底下照樣看得到老師出的題目內容）；老師沒選學生時看／改的是題目本身
+    if(info.sec.type === "whiteboard") return isStudent ? myId : (examViewId || null);
+    if(!isAnswerSec(info.sec)) return null;
     if(isStudent) return myId;
     return examViewId || "__none__";   // 老師沒選學生＝空白，不會看到任何人的答案
+  }
+  // 正式考試的小白板：老師的題目內容（共用）＋這位學生自己寫的（各自一份）疊在一起顯示；寫入時只存學生自己的部分
+  var WB_KEYS = ["strokes", "texts", "images", "shapes", "tables", "groups"];
+  function wbList(x){ return Array.isArray(x) ? x.filter(Boolean) : (x && typeof x === "object" ? Object.keys(x).sort(function(a, b){ return Number(a) - Number(b); }).map(function(k){ return x[k]; }).filter(Boolean) : []); }
+  function isWhiteboardQ(qId){ var info = findSectionForQuestion(qId); return !!(info && info.sec.type === "whiteboard"); }
+  function wbMerge(base, priv){
+    var out = Object.assign({}, base, priv);
+    WB_KEYS.forEach(function(k){ out[k] = wbList(base[k]).concat(wbList(priv[k])); });
+    return out;
+  }
+  function wbPrivatePatch(qId, patch){
+    var base = (roomData && roomData.sharedProgress && roomData.sharedProgress[qId]) || {}, out = Object.assign({}, patch);
+    WB_KEYS.forEach(function(k){
+      if(!Array.isArray(patch[k])) return;
+      var ids = {}; wbList(base[k]).forEach(function(x){ if(x.id) ids[x.id] = 1; });
+      out[k] = patch[k].filter(function(x){ return x && !(x.id && ids[x.id]); });
+    });
+    return out;
   }
   function examStudentList(){
     var out = {}, rd = roomData || {};
@@ -4538,13 +4560,23 @@ window.mmTA = (function(){
     return '<select id="exam-view-sel" title="正式考試：每位學生的作答互相看不到，請選一位來查看" style="margin-left:8px;font-size:12px;padding:2px 6px;border-radius:8px;border:1px solid var(--grid-line);">' +
       '<option value="">👁 查看學生作答…</option>' + list.map(function(x){ return '<option value="' + escapeHtml(x.id) + '"' + (x.id === examViewId ? " selected" : "") + '>' + escapeHtml(x.name) + (x.online ? "" : "（離線）") + '</option>'; }).join("") + '</select>';
   }
+  // 小白板只做局部刷新（不重畫整個畫面），學生陸續進來時，選單的名單要另外更新
+  function refreshExamPicker(){
+    var sel = document.getElementById("exam-view-sel"); if(!sel) return;
+    var tmp = document.createElement("div"); tmp.innerHTML = examPickerHtml(); var ns = tmp.firstChild;
+    if(ns && ns.innerHTML !== sel.innerHTML){ sel.innerHTML = ns.innerHTML; sel.value = examViewId || ""; }
+  }
   document.addEventListener("change", function(e){
     if(e.target && e.target.id === "exam-view-sel"){ examViewId = e.target.value || null; renderStage(); }
   });
   function getProgress(qId){
     if(inRoom()){
       var pk = examPrivateFor(qId);
-      if(pk) return (roomData && roomData.examProg && roomData.examProg[pk] && roomData.examProg[pk][qId]) || {};
+      if(pk){
+        var priv = (roomData && roomData.examProg && roomData.examProg[pk] && roomData.examProg[pk][qId]) || {};
+        if(isWhiteboardQ(qId)) return wbMerge((roomData && roomData.sharedProgress && roomData.sharedProgress[qId]) || {}, priv);
+        return priv;
+      }
       var shp = (roomData && roomData.sharedProgress && roomData.sharedProgress[qId]) || {};
       // 測驗模式的選擇題：每位學生各自作答（記在 votes），自己畫面只看到自己的選擇
       if(isStudent && choiceVoteOn() && isChoiceQ(qId)){ var mv = choiceVotes(qId)[myId]; return Object.assign({}, shp, { multiPicks: Object.assign({}, (mv && mv.picks) || {}) }); }
@@ -4615,7 +4647,7 @@ window.mmTA = (function(){
   }
   function writeProgress(qId, patch){
     var pk = inRoom() ? examPrivateFor(qId) : null;
-    if(pk && pk !== "__none__"){ update(ref(db, "rooms/" + activeRoomId + "/examProg/" + pk + "/" + qId), patch); return; }
+    if(pk && pk !== "__none__"){ update(ref(db, "rooms/" + activeRoomId + "/examProg/" + pk + "/" + qId), isWhiteboardQ(qId) ? wbPrivatePatch(qId, patch) : patch); return; }
     if(isStudent && choiceVoteOn() && patch.multiPicks && isChoiceQ(qId)){ set(ref(db, "rooms/" + activeRoomId + "/votes/" + qId + "/" + myId), { name: myName || "學生", picks: patch.multiPicks, at: Date.now() }); return; }
     if(inRoom()){ protectTeacherInk(qId, patch); update(ref(db, "rooms/" + activeRoomId + "/sharedProgress/" + qId), patch); }
     else { Object.assign(getProgress(qId), patch); saveFS(); renderStage(); }
@@ -6623,7 +6655,7 @@ window.mmTA = (function(){
       // 要手動點回大廳再進來才看得到東西
       lobbyView.style.display = "none"; classroomView.style.display = "grid";
       if(roomData.project) document.getElementById("brand-sub").textContent = roomData.project.title;
-      renderTopbar(); renderSidebar(); renderStage(); renderTimerWidget();
+      renderTopbar(); renderSidebar(); renderStage(); renderTimerWidget(); refreshExamPicker();
       if(window.__attempt) attemptBarRender();
       if(window.__grade) gradeBarRender();
       if(window.__embedReveal) setTimeout(window.__embedReveal, 80);
@@ -9787,16 +9819,19 @@ window.mmTA = (function(){
       stageEl.appendChild(noteBlock);
     }
 
+    // 選擇題：閱讀文本、題目媒體、題目與選項，連同周圍空白都包在同一塊，老師可以在整塊上手寫、打字
+    var stageTarget = stageEl;
+    if(sec.type === "choice"){ stageTarget = document.createElement("div"); stageTarget.className = "mc-ink-wrap"; stageEl.appendChild(stageTarget); }
     // 閱讀文本：獨立的一塊，放在題幹（題目文字與選項）上方，長文章可以在區塊內捲動
     if(q.passage && !isCanvasSec(sec) && sec.type !== "hanzi" && sec.type !== "match"){
       var psg = document.createElement("div"); psg.className = "passage-card";
       psg.innerHTML = '<div class="passage-label">📖 閱讀文本 Reading</div><div class="passage-text zh">' + escapeHtml(q.passage).replace(/\n/g, "<br>") + '</div>';
-      stageEl.appendChild(psg);
+      stageTarget.appendChild(psg);
     }
     var mediaBlock = renderMediaBlock(sec, q);
-    if(mediaBlock) stageEl.appendChild(mediaBlock);
+    if(mediaBlock) stageTarget.appendChild(mediaBlock);
 
-    var boardArea = document.createElement("div"); boardArea.className = "board-area"; boardArea.id = "board-area"; stageEl.appendChild(boardArea);
+    var boardArea = document.createElement("div"); boardArea.className = "board-area"; boardArea.id = "board-area"; stageTarget.appendChild(boardArea);
     var cursorBox = document.createElement("div"); cursorBox.className = "multi-cursor-container"; cursorBox.id = "multi-cursor-box"; boardArea.appendChild(cursorBox);
 
     if(sec.type === "match") renderMatchBoard(q, boardArea);
@@ -10001,7 +10036,7 @@ window.mmTA = (function(){
     function drawStroke(ctx, s, W, H){
       var pts = String(s.p || "").split(" ").map(function(x){ var a = x.split(","); return [Number(a[0]) * W, Number(a[1]) * H]; }).filter(function(a){ return !isNaN(a[0]) && !isNaN(a[1]); });
       if(!pts.length) return;
-      ctx.strokeStyle = s.c || "#E63946"; ctx.lineWidth = (s.w || 3) * W / 860; ctx.lineCap = "round"; ctx.lineJoin = "round";
+      ctx.strokeStyle = s.c || "#E63946"; ctx.lineWidth = (s.w || 3) * Math.min(W, 860) / 860; ctx.lineCap = "round"; ctx.lineJoin = "round";
       ctx.beginPath(); ctx.moveTo(pts[0][0], pts[0][1]);
       if(pts.length === 1) ctx.lineTo(pts[0][0] + 0.1, pts[0][1]); else pts.slice(1).forEach(function(a){ ctx.lineTo(a[0], a[1]); });
       ctx.stroke();
@@ -10016,7 +10051,7 @@ window.mmTA = (function(){
       Array.prototype.slice.call(layer.querySelectorAll(".mc-ink-note")).forEach(function(n){ n.parentNode.removeChild(n); });
       ink.t.forEach(function(t){
         var d = document.createElement("div"); d.className = "mc-ink-note zh"; d.textContent = t.v || ""; d.dataset.id = t.id;
-        d.style.left = (t.x * 100) + "%"; d.style.top = (t.y * 100) + "%"; d.style.color = t.c || "#E63946"; d.style.fontSize = Math.max(12, z.w * 0.028) + "px";
+        d.style.left = (t.x * 100) + "%"; d.style.top = (t.y * 100) + "%"; d.style.color = t.c || "#E63946"; d.style.fontSize = Math.max(14, Math.min(26, z.w * 0.028)) + "px";
         if(editing && editing.dataset.id === t.id) d.style.visibility = "hidden";
         layer.appendChild(d);
       });
@@ -10029,7 +10064,7 @@ window.mmTA = (function(){
       var old = layer.querySelector("input.mc-ink-input"); if(old) old.blur();
       var z = sizeOf(), inp = document.createElement("input"); inp.type = "text"; inp.className = "mc-ink-input zh"; inp.value = t ? t.v : ""; inp.placeholder = "打字…";
       if(t) inp.dataset.id = t.id;
-      inp.style.left = (x * 100) + "%"; inp.style.top = (y * 100) + "%"; inp.style.color = t ? t.c : mcInkColor; inp.style.fontSize = Math.max(12, z.w * 0.028) + "px";
+      inp.style.left = (x * 100) + "%"; inp.style.top = (y * 100) + "%"; inp.style.color = t ? t.c : mcInkColor; inp.style.fontSize = Math.max(14, Math.min(26, z.w * 0.028)) + "px";
       layer.appendChild(inp); redraw(); setTimeout(function(){ inp.focus(); }, 0);
       var done = false;
       function commit(){
@@ -10064,12 +10099,12 @@ window.mmTA = (function(){
   function mcInkToolbarHtml(){
     var cols = [["#E63946", "紅"], ["#1E66D0", "藍"], ["#2D7A36", "綠"], ["#222222", "黑"], ["rgba(255,214,0,0.45)", "螢光"]];
     return '<div class="mc-ink-bar">' +
-      '<button type="button" class="btn btn-sm' + (mcInkTool === "pen" ? ' btn-primary' : '') + '" data-ink="pen" title="在題目上手寫、畫重點">✏️ 手寫</button>' +
-      '<button type="button" class="btn btn-sm' + (mcInkTool === "text" ? ' btn-primary' : '') + '" data-ink="text" title="點題目上任何位置打字；點已經打的字可以修改（清空就刪掉）">🔤 打字</button>' +
+      '<button type="button" class="btn btn-sm' + (mcInkTool === "pen" ? ' btn-primary' : '') + '" data-ink="pen" title="在題目上手寫、畫重點">手寫</button>' +
+      '<button type="button" class="btn btn-sm' + (mcInkTool === "text" ? ' btn-primary' : '') + '" data-ink="text" title="點題目上任何位置打字；點已經打的字可以修改（清空就刪掉）">打字</button>' +
       (mcInkTool ? cols.map(function(c){ return '<button type="button" class="mc-ink-col' + (mcInkColor === c[0] ? ' on' : '') + '" data-col="' + c[0] + '" title="' + c[1] + '" style="background:' + c[0] + ';"></button>'; }).join("") : '') +
-      '<button type="button" class="btn btn-sm btn-ghost" data-ink="undo" title="復原上一筆">↶ 復原</button>' +
-      '<button type="button" class="btn btn-sm btn-ghost" data-ink="clear" title="清掉這一題所有手寫和打字">🧹 清除</button>' +
-      (mcInkTool ? '<button type="button" class="btn btn-sm btn-ghost" data-ink="off" title="收起筆，回到點選選項">✋ 收起筆</button>' : '') +
+      '<button type="button" class="btn btn-sm btn-ghost" data-ink="undo" title="復原上一筆">復原</button>' +
+      '<button type="button" class="btn btn-sm btn-ghost" data-ink="clear" title="清掉這一題所有手寫和打字">清除</button>' +
+      (mcInkTool ? '<button type="button" class="btn btn-sm btn-ghost" data-ink="off" title="收起筆，回到點選選項">收起筆</button>' : '') +
       '</div>';
   }
 
@@ -10108,7 +10143,10 @@ window.mmTA = (function(){
     wrap.appendChild(host);
     names = document.createElement("div"); names.className = "mc-vote-names"; wrap.appendChild(names);
     container.appendChild(wrap);
-    var ink = mcInkSetup(q, host);
+    // 書寫範圍＝整塊作答區（文本、題目、選項和周圍空白）；工具列和作答狀況放在書寫範圍上方，拿著筆也按得到
+    var inkHost = container.closest(".mc-ink-wrap") || host;
+    if(inkHost !== host && inkHost.parentNode){ if(bar) inkHost.parentNode.insertBefore(bar, inkHost); inkHost.parentNode.insertBefore(panel, inkHost); }
+    var ink = mcInkSetup(q, inkHost);
 
     function paint(){
       var progress = getProgress(q.id), multiPicks = progress.multiPicks || {};
@@ -10140,11 +10178,11 @@ window.mmTA = (function(){
         var allDone = st.allDone && !revealed;
         panel.style.display = "";
         panel.className = "mc-vote-panel" + (allDone ? " done" : "");
-        panel.innerHTML = '<div class="mc-vp-line"><b>📊 ' + st.answered.length + ' / ' + Math.max(st.online.length, st.answered.length) + ' 人已作答</b>' +
-          (allDone ? '<span class="mc-vp-msg">✅ 全部同學都作答了，可以公布答案！</span>' : (st.pending.length ? '<span class="mc-vp-wait">還沒作答：' + st.pending.map(function(k){ return escapeHtml(st.nm(k)); }).join("、") + '</span>' : (st.online.length ? '' : '<span class="mc-vp-wait">還沒有學生進教室</span>'))) +
+        panel.innerHTML = '<div class="mc-vp-line"><b>' + st.answered.length + ' / ' + Math.max(st.online.length, st.answered.length) + ' 人已作答</b>' +
+          (allDone ? '<span class="mc-vp-msg">全部同學都作答了，可以公布答案！</span>' : (st.pending.length ? '<span class="mc-vp-wait">還沒作答：' + st.pending.map(function(k){ return escapeHtml(st.nm(k)); }).join("、") + '</span>' : (st.online.length ? '' : '<span class="mc-vp-wait">還沒有學生進教室</span>'))) +
           '<span style="flex:1;"></span>' +
-          '<button type="button" class="btn btn-sm btn-ghost" data-vp="names">' + (showN ? "🙈 隱藏名字" : "👀 顯示名字") + '</button>' +
-          (revealed ? '<button type="button" class="btn btn-sm" data-vp="hide">↩ 收回答案</button>' : '<button type="button" class="btn btn-sm btn-primary' + (allDone ? ' mc-pulse' : '') + '" data-vp="reveal">📢 公布答案</button>') +
+          '<button type="button" class="btn btn-sm btn-ghost" data-vp="names">' + (showN ? "隱藏名字" : "顯示名字") + '</button>' +
+          (revealed ? '<button type="button" class="btn btn-sm" data-vp="hide">收回答案</button>' : '<button type="button" class="btn btn-sm btn-primary' + (allDone ? ' mc-pulse' : '') + '" data-vp="reveal">公布答案</button>') +
           '</div>';
         panel.onclick = function(e){
           var b = e.target.closest("[data-vp]"); if(!b) return;
@@ -10155,11 +10193,11 @@ window.mmTA = (function(){
         names.style.display = showN && st.answered.length ? "" : "none";
         names.innerHTML = keys.map(function(cid, idx){ var w = who[cid] || []; if(!w.length) return ""; var ok = revealed && correctIds.indexOf(cid) !== -1; return '<div class="mc-vn-row' + (ok ? ' ok' : '') + '"><span class="mc-vn-l">' + (letters[idx] || idx + 1) + '</span>' + w.map(function(x){ return '<span class="mc-vn-n">' + escapeHtml(x) + '</span>'; }).join("") + '</div>'; }).join("");
         var key = q.id + "|" + st.answered.length + "|" + st.online.length;
-        if(allDone && choiceDoneSeen[q.id] !== key){ choiceDoneSeen[q.id] = key; mcToast("✅ 全部同學都作答了（" + st.answered.length + " 人），可以公布答案！"); try{ playVictorySound(); }catch(er){} }
+        if(allDone && choiceDoneSeen[q.id] !== key){ choiceDoneSeen[q.id] = key; mcToast("全部同學都作答了（" + st.answered.length + " 人），可以公布答案！"); try{ playVictorySound(); }catch(er){} }
       } else if(voteOn && isStudent){
         var mine = Object.keys(multiPicks).some(function(k){ return multiPicks[k]; });
         panel.style.display = ""; panel.className = "mc-vote-panel student";
-        panel.innerHTML = revealed ? (keys.some(function(cid){ return !!multiPicks[cid] !== (correctIds.indexOf(cid) !== -1); }) ? '老師公布答案了：綠色是正確答案。' : '🎉 答對了！') : (mine ? '已作答，等老師公布答案（可以再改）。' : '請選出你的答案。');
+        panel.innerHTML = revealed ? (keys.some(function(cid){ return !!multiPicks[cid] !== (correctIds.indexOf(cid) !== -1); }) ? '老師公布答案了：綠色是正確答案。' : '答對了！') : (mine ? '已作答，等老師公布答案（可以再改）。' : '請選出你的答案。');
         names.style.display = "none";
       } else { panel.style.display = "none"; names.style.display = "none"; }
       if(bar){

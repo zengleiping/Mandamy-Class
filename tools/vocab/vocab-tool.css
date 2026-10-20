@@ -490,10 +490,8 @@ html.mm-embed .tool-footer .footer-end-actions{display:none!important}
 
 /* 格式設定：放在分頁上方，可收合，平常只顯示目前的設定 */
 .mm-prefs{margin:0 0 12px!important;padding:0!important;background:var(--white)!important}
-.mm-prefs>summary{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;padding:10px 14px;cursor:pointer;list-style:none;font-size:14px}
-.mm-prefs>summary::-webkit-details-marker{display:none}
-.mm-prefs>summary::after{content:"▾";margin-left:auto;color:var(--muted)}
-.mm-prefs[open]>summary::after{content:"▴"}
+.mm-prefs>summary{padding:10px 14px;cursor:pointer;font-size:14px}
+.mm-prefs-sum{margin-left:10px}
 .mm-prefs>summary b{color:var(--ink)}
 .mm-prefs-sum{color:var(--muted);font-size:13px}
 .mm-prefs>:not(summary){margin-left:14px;margin-right:14px}

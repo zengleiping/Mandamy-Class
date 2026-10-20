@@ -706,8 +706,8 @@ function setMode(m){
  inputMode=m;$('#tab-list').setAttribute('aria-selected',m==='list');$('#tab-text').setAttribute('aria-selected',m==='text');
  $('#text-options').hidden=m!=='text';$('#candidates').hidden=true;$('#input-message').textContent='';
  const ta=$('#word-input');
- if(m==='list'){$('#input-hint').textContent='每行一個詞，也可以用 Tab 依序貼上「生詞、拼音、英文翻譯」。貼上後都能再修改。';ta.placeholder='例如：\n咖啡\n備課\n領養';$('#make-list').textContent='✨ 整理成生詞表';ta.previousElementSibling.textContent='生詞清單'}
- else{$('#input-hint').textContent='貼上課文、對話或文章，工具會自動斷詞，列出可能的生詞讓你挑選。';ta.placeholder='例如：今天太太帶我去動物收容所，我們決定領養一隻小狗。';$('#make-list').textContent='🔍 找出生詞';ta.previousElementSibling.textContent='課文內容'}
+ if(m==='list'){$('#input-hint').textContent='每行一個詞，也可以用 Tab 依序貼上「生詞、拼音、英文翻譯」。貼上後都能再修改。';ta.placeholder='例如：\n咖啡\n備課\n領養';$('#make-list').textContent='整理成生詞表';ta.previousElementSibling.textContent='生詞清單'}
+ else{$('#input-hint').textContent='貼上課文、對話或文章，工具會自動斷詞，列出可能的生詞讓你挑選。';ta.placeholder='例如：今天太太帶我去動物收容所，我們決定領養一隻小狗。';$('#make-list').textContent='找出生詞';ta.previousElementSibling.textContent='課文內容'}
 }
 /* 加入生詞前的共同處理：表裡已有詞時，依「加在後面／取代整張表」決定；取代可以復原 */
 function addMode(){return document.querySelector('input[name="add-mode"]:checked')?.value||'append'}
@@ -859,7 +859,7 @@ $('#copy-prompt').addEventListener('click',()=>{buildPrompt();copyText($('#ai-pr
 $('#fill-sentences').addEventListener('click',fillSentences);
 /* 清空生詞表（按兩次確認，可復原） */
 let clearArmed=null;
-function resetClearBtn(){clearTimeout(clearArmed);clearArmed=null;const b=$('#clear-list');b.textContent='🗑️ 清空';b.classList.remove('armed')}
+function resetClearBtn(){clearTimeout(clearArmed);clearArmed=null;const b=$('#clear-list');b.textContent='清空';b.classList.remove('armed')}
 $('#clear-list').addEventListener('click',()=>{
  const msg=$('#list-message');
  if(!rows().length){msg.textContent='生詞表已經是空的。';return}
@@ -891,7 +891,7 @@ setTimeout(()=>{
  restoreDraft();
  /* 第一次使用不放範例詞，避免和老師自己的詞混在一起；空白列可以直接輸入 */
  const restored=rows().filter(r=>val(r,'word')).length;
- $('#list-message').textContent=restored?`已恢復上次的生詞表（${restored} 個詞）。`:'還沒有生詞：在「📥 貼上生詞」分頁貼上生詞，或直接在下面的空白列輸入。';
+ $('#list-message').textContent=restored?`已恢復上次的生詞表（${restored} 個詞）。`:'還沒有生詞：在「貼上生詞」分頁貼上生詞，或直接在下面的空白列輸入。';
  $('#input-message').textContent='';refreshAll();syncWsOptions();ensureDict();updatePrefsSummary();showStep(restored?'step-list':'step-input');updateSteps();
  if(window.matchMedia('(min-width: 900px)').matches)$('#sheet-preview').open=true;
 },20);

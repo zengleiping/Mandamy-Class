@@ -29,7 +29,7 @@ if(MMV.embed)document.documentElement.classList.add('mm-embed');
 <main id="main" class="vocab-app wrap">
 
   <details class="prefs-box mm-prefs" id="prefs-box">
-    <summary><b>⚙️ 格式設定</b><span class="mm-prefs-sum" id="prefs-summary"></span></summary>
+    <summary><b>格式設定</b><span class="mm-prefs-sum" id="prefs-summary"></span></summary>
         <div class="prefs-grid">
           <label class="pref"><span>分級標準</span>
             <select id="pref-standard">
@@ -49,10 +49,10 @@ if(MMV.embed)document.documentElement.classList.add('mm-embed');
         <p class="hint">可切換本調與變調；拼音、注音同步，手動修改會保留。</p>
   </details>
   <nav class="mm-tabs" role="tablist" aria-label="生詞表製作">
-    <button type="button" class="mm-tab on" role="tab" data-step="step-input" aria-selected="true">📥 貼上生詞</button>
-    <button type="button" class="mm-tab" role="tab" data-step="step-list" aria-selected="false">📇 生詞表 <span class="mm-count" id="tab-count"></span></button>
-    <button type="button" class="mm-tab" role="tab" data-step="step-extend" aria-selected="false">✏️ 例句・近反義詞</button>
-    <button type="button" class="mm-tab" role="tab" data-step="step-export" aria-selected="false">📤 匯出</button>
+    <button type="button" class="mm-tab on" role="tab" data-step="step-input" aria-selected="true">貼上生詞</button>
+    <button type="button" class="mm-tab" role="tab" data-step="step-list" aria-selected="false">生詞表 <span class="mm-count" id="tab-count"></span></button>
+    <button type="button" class="mm-tab" role="tab" data-step="step-extend" aria-selected="false">例句・近反義詞</button>
+    <button type="button" class="mm-tab" role="tab" data-step="step-export" aria-selected="false">匯出</button>
   </nav>
 
   <section class="vocab-panel input-panel" id="step-input" aria-labelledby="input-title">
@@ -60,8 +60,8 @@ if(MMV.embed)document.documentElement.classList.add('mm-embed');
 
 
     <div class="mode-tabs" role="tablist" aria-label="貼上的內容">
-      <button type="button" role="tab" id="tab-list" aria-selected="true" aria-controls="word-input">📋 生詞清單</button>
-      <button type="button" role="tab" id="tab-text" aria-selected="false" aria-controls="word-input">📖 整段課文</button>
+      <button type="button" role="tab" id="tab-list" aria-selected="true" aria-controls="word-input">生詞清單</button>
+      <button type="button" role="tab" id="tab-text" aria-selected="false" aria-controls="word-input">整段課文</button>
     </div>
     <p class="hint" id="input-hint">每行一個詞，也可以用 Tab 依序貼上「生詞、拼音、英文或意思」。貼上後都能再修改。</p>
     <div class="input-clear-tools"><button id="clear-input" type="button">清空</button></div>
@@ -82,7 +82,7 @@ if(MMV.embed)document.documentElement.classList.add('mm-embed');
       <label><input type="radio" name="add-mode" value="append" checked=""> 加在後面</label>
       <label><input type="radio" name="add-mode" value="replace"> 取代整張表</label>
     </div>
-    <div class="form-actions"><button class="button primary" id="make-list" type="button">✨ 整理成生詞表</button><span id="input-message" class="status" aria-live="polite"></span></div>
+    <div class="form-actions"><button class="button primary" id="make-list" type="button">整理成生詞表</button><span id="input-message" class="status" aria-live="polite"></span></div>
     <div class="candidates" id="candidates" hidden="">
       <div class="candidates-head"><p><strong>找到這些詞</strong>　取消勾選不需要的詞，再加入生詞表。</p>
         <div class="candidates-tools"><button class="text-link" type="button" id="cand-all">全選</button><button class="text-link" type="button" id="cand-none">全不選</button></div></div>
@@ -92,9 +92,9 @@ if(MMV.embed)document.documentElement.classList.add('mm-embed');
   </section>
 
   <section class="vocab-panel list-panel" id="step-list" aria-labelledby="list-title">
-    <div class="list-toolbar"><div><h2 id="list-title"><label class="sr-only" for="doc-title">生詞表名稱</label><span class="title-edit"><input id="doc-title" class="editable-sheet-title" type="text" maxlength="60" value="我的生詞表" placeholder="輸入課名，例如：第三課 去銀行" aria-label="生詞表名稱，可自行修改" title="點一下修改名稱，會用在匯出的標題與檔名"><span class="title-pencil" aria-hidden="true">✎</span></span> <span id="word-count" class="count">0 個詞</span></h2></div><div class="list-buttons"><button class="button secondary" id="clear-list" type="button">🗑️ 清空</button><button class="button secondary" id="add-row" type="button">＋ 新增生詞</button><button class="button primary" id="mm-save-lesson" type="button" hidden title="把拼音／注音、詞性、英文翻譯、TOCFL 等級、例句存回這一課的教材：只補空白欄位、加新生詞，已經有內容的不會被改">💾 存回本課教材</button></div></div>
+    <div class="list-toolbar"><div><h2 id="list-title"><label class="sr-only" for="doc-title">生詞表名稱</label><span class="title-edit"><input id="doc-title" class="editable-sheet-title" type="text" maxlength="60" value="我的生詞表" placeholder="輸入課名，例如：第三課 去銀行" aria-label="生詞表名稱，可自行修改" title="點一下修改名稱，會用在匯出的標題與檔名"></span> <span id="word-count" class="count">0 個詞</span></h2></div><div class="list-buttons"><button class="button secondary" id="clear-list" type="button">清空</button><button class="button secondary" id="add-row" type="button">＋ 新增生詞</button><button class="button primary" id="mm-save-lesson" type="button" hidden title="把拼音／注音、詞性、英文翻譯、TOCFL 等級、例句存回這一課的教材：只補空白欄位、加新生詞，已經有內容的不會被改">存回本課教材</button></div></div>
     <p class="hint list-hint">每一格都能直接修改。標有 <span class="auto-tag-sample">自動</span> 的英文翻譯由詞典推測，匯出時不顯示此標記。</p>
-    <p class="status list-message" id="list-message" aria-live="polite">還沒有生詞：在「📥 貼上生詞」分頁貼上生詞，或直接在下面的空白列輸入。</p>
+    <p class="status list-message" id="list-message" aria-live="polite">還沒有生詞：在「貼上生詞」分頁貼上生詞，或直接在下面的空白列輸入。</p>
     <p class="status dict-status" id="dict-status" hidden=""></p>
     <div class="table-scroll"><table id="vocab-table" class="print-no-level"><thead><tr><th scope="col">生詞</th><th scope="col" id="th-phonetic">拼音</th><th scope="col" id="th-pos" class="pos-col">詞性</th><th scope="col">英文翻譯</th><th scope="col" id="th-level">TOCFL 等級</th><th scope="col" class="synonym-column" hidden="">近義詞</th><th scope="col" class="antonym-column" hidden="">反義詞</th><th scope="col" class="sentence-column" hidden="">例句</th><th scope="col" class="action-column">刪除</th></tr></thead><tbody id="vocab-body"></tbody></table></div>
     <p class="source-note" id="source-note"><span>級別依華測會公開的《華語八千詞表》（2024 年 9 月版）比對，供教學備課參考；未收錄詞、異體字或多筆對應請再確認。工具不是華測會官方服務。 <a href="https://tocfl.edu.tw/tocfl/index.php/teach/download" target="_blank" rel="noopener noreferrer">查看華測會詞表與教學資源</a></span><span>常用詞的英文意思採整理過的教學常用義；其餘標「自動」的意思與拼音由程式帶入，參考 <a href="https://www.mdbg.net/chinese/dictionary?page=cc-cedict" target="_blank" rel="noopener noreferrer">CC-CEDICT</a> 詞典（MDBG，<a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>），請以教學判斷為準。</span></p>
@@ -154,17 +154,17 @@ if(MMV.embed)document.documentElement.classList.add('mm-embed');
       <p class="hint">預設保留生詞與標音；勾選留白後，預覽與匯出會留空格供學生填寫。</p>
     </div>
     <details id="sheet-preview" class="sheet-preview">
-      <summary>👀 預覽<span class="preview-summary-hint">點開查看，再點一次收起</span></summary>
+      <summary>預覽<span class="preview-summary-hint">點開查看，再點一次收起</span></summary>
       <div class="preview-content"><p class="hint">預覽依目前的匯出設定呈現，內容會自動更新；實際分頁以 Word 或列印結果為準。</p><p id="preview-empty" class="hint">先加入生詞，就能在這裡預覽表格。</p><iframe id="sheet-preview-frame" title="生詞表匯出樣式預覽" sandbox="" loading="lazy" hidden=""></iframe></div>
     </details>
     <div class="export-actions">
-      <button class="button primary" id="download-doc" type="button" title="下載 Word 檔（.docx）"><span class="export-label-full">📄 Word</span><span class="export-label-short">📄 Word</span></button>
-      <button class="button primary" id="download-pptx" type="button" title="下載 PPT 投影片（一詞一頁＋生詞總覽）"><span class="export-label-full">🖥️ PPT</span><span class="export-label-short">🖥️ PPT</span></button>
+      <button class="button primary" id="download-doc" type="button" title="下載 Word 檔（.docx）"><span class="export-label-full">Word</span><span class="export-label-short">Word</span></button>
+      <button class="button primary" id="download-pptx" type="button" title="下載 PPT 投影片（一詞一頁＋生詞總覽）"><span class="export-label-full">PPT</span><span class="export-label-short">PPT</span></button>
       <button class="button secondary" id="download-slides" type="button" title="下載 Google 簡報版（.pptx，上傳到 Google 雲端硬碟後用 Google 簡報開啟）"><span class="export-label-full">Google 簡報</span><span class="export-label-short">Google 簡報</span></button>
-      <button class="button secondary" id="download-csv" type="button" title="下載 CSV（Excel、Google 試算表）"><span class="export-label-full">📊 CSV</span><span class="export-label-short">📊 CSV</span></button>
+      <button class="button secondary" id="download-csv" type="button" title="下載 CSV（Excel、Google 試算表）"><span class="export-label-full">CSV</span><span class="export-label-short">CSV</span></button>
       <button class="button secondary" id="download-cards" type="button" title="下載字卡檔（Anki／Quizlet）"><span class="export-label-full">🃏 字卡</span><span class="export-label-short">🃏 字卡</span></button>
-      <button class="button secondary" id="print-list" type="button" title="列印／另存 PDF"><span class="export-label-full">🖨️ 列印／PDF</span><span class="export-label-short">🖨️ 列印／PDF</span></button>
-      <button class="button secondary" id="copy-table" type="button" title="複製表格（可貼到 Word、PPT、Google 簡報）"><span class="export-label-full">📋 複製表格</span><span class="export-label-short">📋 複製表格</span></button>
+      <button class="button secondary" id="print-list" type="button" title="列印／另存 PDF"><span class="export-label-full">列印／PDF</span><span class="export-label-short">列印／PDF</span></button>
+      <button class="button secondary" id="copy-table" type="button" title="複製表格（可貼到 Word、PPT、Google 簡報）"><span class="export-label-full">複製表格</span><span class="export-label-short">複製表格</span></button>
     </div>
     <p class="hint export-hint">「Google 簡報」是可匯入 Google 簡報的 .pptx 檔：上傳到 Google 雲端硬碟後，按右鍵 →「開啟工具」→「Google 簡報」。「PPT 檔」可直接用 PowerPoint 或 Keynote 開啟；「複製表格」可貼到 Word、PPT、Google 簡報。</p>
     <p id="dict-export-status" class="status" role="status" aria-live="polite"></p>
