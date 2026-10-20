@@ -1317,6 +1317,17 @@ async function applyVocabFill(fx){
   await fbUpdate("teacherVocabBanks/" + t, { courseData: cd, updatedAt: Date.now(), updatedBy: S.teacher.name || t });
   await syncLessonIndex();
 }
+// 已經加進測驗庫的練習題，之後的修改：每個欄位只有在老師沒改過（跟原本一模一樣）時才換成新版
+function fixSame(a, b){ function norm(x){ if(Array.isArray(x)) return x.map(norm); if(x && typeof x === "object"){ var o = {}; Object.keys(x).sort().forEach(function(k){ o[k] = norm(x[k]); }); return o; } return x == null ? null : x; } return JSON.stringify(norm(a)) === JSON.stringify(norm(b)); }
+async function applyProjectEdit(fx){
+  var base = "teacherLibraries/" + S.teacher.id + "/projects/" + fx.projectId, n = 0;
+  if(!(await fbGet(base + "/id"))) return;
+  for(var i = 0; i < (fx.edits || []).length; i++){
+    var e = fx.edits[i], cur = await fbGet(base + "/" + e.path);
+    if(fixSame(cur, e.from)){ await fbSet(base + "/" + e.path, e.to); n++; }
+  }
+  return n;
+}
 async function applyContentFixes(){
   if(!S.teacher || S.teacher.role === "ta") return;
   var list = null; try{ var r = await fetch("content/fixes.json?v=" + MM_V, { cache: "no-store" }); if(r.ok) list = await r.json(); }catch(e){}
@@ -1324,6 +1335,7 @@ async function applyContentFixes(){
   var base = "teacherPlatform/" + S.teacher.id, done = ((S.plat.meta || {}).fixesApplied) || {}, nWords = 0, nRec = 0;
   for(var f = 0; f < list.fixes.length; f++){
     var fx = list.fixes[f]; if(!fx || !fx.id || done[fx.id]) continue;
+    if(fx.kind === "projectEdit"){ try{ await applyProjectEdit(fx); }catch(e){ console.warn("projectEdit", e); continue; } done[fx.id] = Date.now(); S.plat.meta = S.plat.meta || {}; S.plat.meta.fixesApplied = done; try{ await fbSet(base + "/meta/fixesApplied/" + fx.id, done[fx.id]); }catch(e){} continue; }
     if(fx.kind === "vocabFill"){ try{ await applyVocabFill(fx); }catch(e){ console.warn("vocabFill", e); continue; } done[fx.id] = Date.now(); S.plat.meta = S.plat.meta || {}; S.plat.meta.fixesApplied = done; try{ await fbSet(base + "/meta/fixesApplied/" + fx.id, done[fx.id]); }catch(e){} continue; }
     var tl = {}; try{ tl = (await fbGet(base + "/transList")) || {}; }catch(e){ continue; }
     var touched = {};

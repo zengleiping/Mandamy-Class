@@ -493,9 +493,10 @@
   #grade-bar .gb-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;} #grade-bar .gb-st{color:var(--ink-soft);} #grade-bar .gb-q{color:var(--ink-soft);}
   #grade-bar input[type=text],#grade-bar input[type=number]{padding:5px 8px;border:1.5px solid var(--grid-line);border-radius:8px;font:inherit;}
   html.grading .stage-wrap, html.grading #stage{padding-bottom:150px;}
-  .fill-line{font-size:22px;line-height:2.4;max-width:840px;margin:0 auto;padding:10px 4px;}
-  .fill-input{font:inherit;font-size:20px;text-align:center;border:0;border-bottom:2.5px solid var(--seal);background:var(--seal-soft);border-radius:6px 6px 0 0;padding:2px 6px;margin:0 4px;min-width:4em;}
-  .fill-input:focus{outline:none;background:#fff;}
+  .fill-line{font-family:"MM Kai","LXGW WenKai TC",serif;font-size:24px;line-height:2.4;max-width:900px;margin:0 auto;padding:10px 4px;color:var(--ink);}
+  /* 填空：句子和輸入框都跟題目指示一樣大（用 .fill-line .fill-input 提高優先順序，避免被一般輸入框的小字樣式蓋掉） */
+  .fill-line .fill-input,.fill-input{font-family:inherit;font-size:24px;line-height:1.3;height:auto;min-height:1.7em;text-align:center;border:0;border-bottom:2.5px solid var(--seal);background:var(--seal-soft);border-radius:8px 8px 0 0;padding:4px 10px;margin:0 6px;min-width:4em;vertical-align:baseline;box-sizing:content-box;}
+  .fill-line .fill-input:focus,.fill-input:focus{outline:none;background:#fff;}
   .fill-input.fill-ok{border-bottom-color:var(--bamboo);background:var(--bamboo-soft);}
   .fill-input.fill-bad{border-bottom-color:#E63946;background:rgba(230,57,70,.1);}
   .rec-box{display:flex;flex-direction:column;align-items:center;gap:12px;max-width:520px;margin:14px auto;padding:20px;border:2px dashed var(--grid-line);border-radius:16px;background:var(--surface);}

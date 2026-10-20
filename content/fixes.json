@@ -87,6 +87,326 @@
     "符號": "🔣",
     "打字": "⌨️"
    }
+  },
+  {
+   "id": "b9-1-quiz-zh",
+   "kind": "projectEdit",
+   "note": "第九冊第一課練習題改成只有中文",
+   "projectId": "proj_b9l1quiz",
+   "edits": [
+    {
+     "path": "sections/s91_1/title",
+     "from": "第 1 大題：連連看（生詞與注音、英文）",
+     "to": "第 1 大題：連連看（生詞、注音與意思）"
+    },
+    {
+     "path": "sections/s91_1/questions/q91_03/pairs",
+     "from": {
+      "p1": {
+       "id": "p1",
+       "left": "象形文字",
+       "right": "pictographs"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "指事字",
+       "right": "indicative characters"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "會意字",
+       "right": "compound ideographs"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "形聲字",
+       "right": "phono-semantic compound characters"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "部首",
+       "right": "radical"
+      }
+     },
+     "to": {
+      "p1": {
+       "id": "p1",
+       "left": "象形文字",
+       "right": "按照東西的形狀畫出來的字"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "指事字",
+       "right": "在象形字上加符號表示意思的字"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "會意字",
+       "right": "把兩個字合在一起表示意思的字"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "形聲字",
+       "right": "一部分表示意思、一部分表示聲音的字"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "部首",
+       "right": "字典裡把漢字分類的部件"
+      }
+     }
+    },
+    {
+     "path": "sections/s91_1/questions/q91_03/rightLabel",
+     "from": "英文",
+     "to": "意思"
+    },
+    {
+     "path": "sections/s91_2/questions/q91_04/prompt",
+     "from": "請問這是什麼字？\nWhat type of character is this?\nอักษรนี้เป็นอักษรประเภทใดคะ/ครับ\n\n「休」：一個「人」在樹「木」下休息",
+     "to": "請問這是什麼字？\n\n「休」：一個「人」在樹「木」下休息"
+    },
+    {
+     "path": "sections/s91_2/questions/q91_05/prompt",
+     "from": "請問這是什麼字？\nWhat type of character is this?\nอักษรนี้เป็นอักษรประเภทใดคะ/ครับ\n\n「木」：按照樹的樣子畫出來",
+     "to": "請問這是什麼字？\n\n「木」：按照樹的樣子畫出來"
+    },
+    {
+     "path": "sections/s91_2/questions/q91_06/prompt",
+     "from": "請問這是什麼字？\nWhat type of character is this?\nอักษรนี้เป็นอักษรประเภทใดคะ/ครับ\n\n「本」：「木」的下面加一畫",
+     "to": "請問這是什麼字？\n\n「本」：「木」的下面加一畫"
+    },
+    {
+     "path": "sections/s91_2/questions/q91_07/prompt",
+     "from": "請問這是什麼字？\nWhat type of character is this?\nอักษรนี้เป็นอักษรประเภทใดคะ/ครับ\n\n「但」：「人」加上「旦」的聲音",
+     "to": "請問這是什麼字？\n\n「但」：「人」加上「旦」的聲音"
+    },
+    {
+     "path": "sections/s91_2/questions/q91_08/prompt",
+     "from": "請問這是什麼字？\nWhat type of character is this?\nอักษรนี้เป็นอักษรประเภทใดคะ/ครับ\n\n「旦」：「日」的下面加一畫",
+     "to": "請問這是什麼字？\n\n「旦」：「日」的下面加一畫"
+    },
+    {
+     "path": "sections/s91_2/questions/q91_09/prompt",
+     "from": "請問這是什麼字？\nWhat type of character is this?\nอักษรนี้เป็นอักษรประเภทใดคะ/ครับ\n\n「火」、「山」、「川」、「田」",
+     "to": "請問這是什麼字？\n\n「火」、「山」、「川」、「田」"
+    },
+    {
+     "path": "sections/s91_2/questions/q91_10/prompt",
+     "from": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n「說」、「話」、「講」的部首是什麼？",
+     "to": "選出正確的答案。\n\n「說」、「話」、「講」的部首是什麼？"
+    },
+    {
+     "path": "sections/s91_2/questions/q91_11/prompt",
+     "from": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n部首一樣的字，它們的意思……",
+     "to": "選出正確的答案。\n\n部首一樣的字，它們的意思……"
+    },
+    {
+     "path": "sections/s91_3/questions/q91_12/prompt",
+     "from": "判斷對錯。\nTrue or false?\nถูกหรือผิดคะ/ครับ\n\n「木」的下面加一畫就是「本」。",
+     "to": "判斷對錯。\n\n「木」的下面加一畫就是「本」。"
+    },
+    {
+     "path": "sections/s91_3/questions/q91_13/prompt",
+     "from": "判斷對錯。\nTrue or false?\nถูกหรือผิดคะ/ครับ\n\n最早的漢字是形聲字。",
+     "to": "判斷對錯。\n\n最早的漢字是形聲字。"
+    },
+    {
+     "path": "sections/s91_3/questions/q91_14/prompt",
+     "from": "判斷對錯。\nTrue or false?\nถูกหรือผิดคะ/ครับ\n\n象形文字是按照東西的形狀畫出來的。",
+     "to": "判斷對錯。\n\n象形文字是按照東西的形狀畫出來的。"
+    },
+    {
+     "path": "sections/s91_3/questions/q91_15/prompt",
+     "from": "判斷對錯。\nTrue or false?\nถูกหรือผิดคะ/ครับ\n\n「但」是一個會意字。",
+     "to": "判斷對錯。\n\n「但」是一個會意字。"
+    },
+    {
+     "path": "sections/s91_3/questions/q91_16/prompt",
+     "from": "判斷對錯。\nTrue or false?\nถูกหรือผิดคะ/ครับ\n\n電腦發明以後，寫漢字更簡單、更方便了。",
+     "to": "判斷對錯。\n\n電腦發明以後，寫漢字更簡單、更方便了。"
+    },
+    {
+     "path": "sections/s91_4/questions/q91_17/prompt",
+     "from": "讀課文，選出正確的答案。\nRead the text and choose the correct answer.\nอ่านบทเรียนแล้วเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n現在使用的漢字經過多久才變成目前的樣子？",
+     "to": "讀課文，選出正確的答案。\n\n現在使用的漢字經過多久才變成目前的樣子？"
+    },
+    {
+     "path": "sections/s91_4/questions/q91_18/prompt",
+     "from": "讀課文，選出正確的答案。\nRead the text and choose the correct answer.\nอ่านบทเรียนแล้วเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n為什麼要創造指事字？",
+     "to": "讀課文，選出正確的答案。\n\n為什麼要創造指事字？"
+    },
+    {
+     "path": "sections/s91_4/questions/q91_19/prompt",
+     "from": "讀課文，選出正確的答案。\nRead the text and choose the correct answer.\nอ่านบทเรียนแล้วเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n「休」為什麼是會意字？",
+     "to": "讀課文，選出正確的答案。\n\n「休」為什麼是會意字？"
+    },
+    {
+     "path": "sections/s91_4/questions/q91_20/prompt",
+     "from": "讀課文，選出正確的答案。\nRead the text and choose the correct answer.\nอ่านบทเรียนแล้วเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n很多人認為漢字很難寫，是因為……",
+     "to": "讀課文，選出正確的答案。\n\n很多人認為漢字很難寫，是因為……"
+    },
+    {
+     "path": "sections/s91_4/questions/q91_21/prompt",
+     "from": "讀課文，選出正確的答案。\nRead the text and choose the correct answer.\nอ่านบทเรียนแล้วเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n什麼讓「寫漢字」更簡單、更方便了？",
+     "to": "讀課文，選出正確的答案。\n\n什麼讓「寫漢字」更簡單、更方便了？"
+    },
+    {
+     "path": "sections/s91_5/questions/q91_22/prompt",
+     "from": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n爺爺每天練習書法，所以可以寫＿＿那麼漂亮的字來。",
+     "to": "選出正確的答案。\n\n爺爺每天練習書法，所以可以寫＿＿那麼漂亮的字來。"
+    },
+    {
+     "path": "sections/s91_5/questions/q91_23/prompt",
+     "from": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n拼音文字寫＿＿很簡單，但是漢字寫起來比較難。",
+     "to": "選出正確的答案。\n\n拼音文字寫＿＿很簡單，但是漢字寫起來比較難。"
+    },
+    {
+     "path": "sections/s91_5/questions/q91_24/prompt",
+     "from": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n＿＿歷史上，孫中山先生是一位了不起的人。",
+     "to": "選出正確的答案。\n\n＿＿歷史上，孫中山先生是一位了不起的人。"
+    },
+    {
+     "path": "sections/s91_5/questions/q91_25/prompt",
+     "from": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n他難過得說＿＿話來。",
+     "to": "選出正確的答案。\n\n他難過得說＿＿話來。"
+    },
+    {
+     "path": "sections/s91_5/questions/q91_26/prompt",
+     "from": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n今天歷史老師說的故事聽＿＿很有趣。",
+     "to": "選出正確的答案。\n\n今天歷史老師說的故事聽＿＿很有趣。"
+    },
+    {
+     "path": "sections/s91_5/questions/q91_27/prompt",
+     "from": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n在生活＿＿，他常常做錯事。",
+     "to": "選出正確的答案。\n\n在生活＿＿，他常常做錯事。"
+    },
+    {
+     "path": "sections/s91_6/questions/q91_28/prompt",
+     "from": "根據課文填入適當的生詞，完成「安娜的日記」。\nFill in the blanks with the vocabulary to complete Anna's diary.\nเติมคำศัพท์ให้เหมาะสมตามบทเรียน เพื่อให้บันทึกของแอนนาสมบูรณ์ค่ะ/ครับ\n詞庫：圖畫、符號、基礎、變成、抽象、概念、意思、複雜、加上、例如、認為、目前、象形文字",
+     "to": "根據課文填入適當的生詞，完成「安娜的日記」。\n詞庫：圖畫、符號、基礎、變成、抽象、概念、意思、複雜、加上、例如、認為、目前、象形文字"
+    },
+    {
+     "path": "sections/s91_6/questions/q91_29/prompt",
+     "from": "根據課文填入適當的生詞，完成「安娜的日記」。\nFill in the blanks with the vocabulary to complete Anna's diary.\nเติมคำศัพท์ให้เหมาะสมตามบทเรียน เพื่อให้บันทึกของแอนนาสมบูรณ์ค่ะ/ครับ\n詞庫：圖畫、符號、基礎、變成、抽象、概念、意思、複雜、加上、例如、認為、目前、象形文字",
+     "to": "根據課文填入適當的生詞，完成「安娜的日記」。\n詞庫：圖畫、符號、基礎、變成、抽象、概念、意思、複雜、加上、例如、認為、目前、象形文字"
+    },
+    {
+     "path": "sections/s91_6/questions/q91_30/prompt",
+     "from": "根據課文填入適當的生詞，完成「安娜的日記」。\nFill in the blanks with the vocabulary to complete Anna's diary.\nเติมคำศัพท์ให้เหมาะสมตามบทเรียน เพื่อให้บันทึกของแอนนาสมบูรณ์ค่ะ/ครับ\n詞庫：圖畫、符號、基礎、變成、抽象、概念、意思、複雜、加上、例如、認為、目前、象形文字",
+     "to": "根據課文填入適當的生詞，完成「安娜的日記」。\n詞庫：圖畫、符號、基礎、變成、抽象、概念、意思、複雜、加上、例如、認為、目前、象形文字"
+    },
+    {
+     "path": "sections/s91_6/questions/q91_31/prompt",
+     "from": "根據課文填入適當的生詞，完成「安娜的日記」。\nFill in the blanks with the vocabulary to complete Anna's diary.\nเติมคำศัพท์ให้เหมาะสมตามบทเรียน เพื่อให้บันทึกของแอนนาสมบูรณ์ค่ะ/ครับ\n詞庫：圖畫、符號、基礎、變成、抽象、概念、意思、複雜、加上、例如、認為、目前、象形文字",
+     "to": "根據課文填入適當的生詞，完成「安娜的日記」。\n詞庫：圖畫、符號、基礎、變成、抽象、概念、意思、複雜、加上、例如、認為、目前、象形文字"
+    },
+    {
+     "path": "sections/s91_6/questions/q91_32/prompt",
+     "from": "根據課文填入適當的生詞，完成「安娜的日記」。\nFill in the blanks with the vocabulary to complete Anna's diary.\nเติมคำศัพท์ให้เหมาะสมตามบทเรียน เพื่อให้บันทึกของแอนนาสมบูรณ์ค่ะ/ครับ\n詞庫：圖畫、符號、基礎、變成、抽象、概念、意思、複雜、加上、例如、認為、目前、象形文字",
+     "to": "根據課文填入適當的生詞，完成「安娜的日記」。\n詞庫：圖畫、符號、基礎、變成、抽象、概念、意思、複雜、加上、例如、認為、目前、象形文字"
+    },
+    {
+     "path": "sections/s91_7/questions/q91_33/prompt",
+     "from": "選出最適合的句子，完成對話。\nChoose the best sentence to complete the dialogue.\nเลือกประโยคที่เหมาะสมที่สุดเพื่อให้บทสนทนาสมบูรณ์ค่ะ/ครับ\n\n小萱：「聽說你媽媽做菜做得又快又好。」\n華國：「對呀！＿＿＿＿」",
+     "to": "選出最適合的句子，完成對話。\n\n小萱：「聽說你媽媽做菜做得又快又好。」\n華國：「對呀！＿＿＿＿」"
+    },
+    {
+     "path": "sections/s91_7/questions/q91_34/prompt",
+     "from": "選出最適合的句子，完成對話。\nChoose the best sentence to complete the dialogue.\nเลือกประโยคที่เหมาะสมที่สุดเพื่อให้บทสนทนาสมบูรณ์ค่ะ/ครับ\n\n書霆：「＿＿＿＿」\n寶拉：「難怪你越來越瘦，希望你快點習慣美國的生活。」",
+     "to": "選出最適合的句子，完成對話。\n\n書霆：「＿＿＿＿」\n寶拉：「難怪你越來越瘦，希望你快點習慣美國的生活。」"
+    },
+    {
+     "path": "sections/s91_7/questions/q91_35/prompt",
+     "from": "選出最適合的句子，完成對話。\nChoose the best sentence to complete the dialogue.\nเลือกประโยคที่เหมาะสมที่สุดเพื่อให้บทสนทนาสมบูรณ์ค่ะ/ครับ\n\n方晴：「＿＿＿＿」\n媽媽：「我在做宮保雞丁，是一個很有名的菜。」",
+     "to": "選出最適合的句子，完成對話。\n\n方晴：「＿＿＿＿」\n媽媽：「我在做宮保雞丁，是一個很有名的菜。」"
+    },
+    {
+     "path": "sections/s91_7/questions/q91_36/prompt",
+     "from": "選出最適合的句子，完成對話。\nChoose the best sentence to complete the dialogue.\nเลือกประโยคที่เหมาะสมที่สุดเพื่อให้บทสนทนาสมบูรณ์ค่ะ/ครับ\n\n明真：「聽說埃及金字塔是用大石頭蓋的，即使用現代的技術來看，能蓋成也是很不可思議的。」\n凱文：「＿＿＿＿」",
+     "to": "選出最適合的句子，完成對話。\n\n明真：「聽說埃及金字塔是用大石頭蓋的，即使用現代的技術來看，能蓋成也是很不可思議的。」\n凱文：「＿＿＿＿」"
+    },
+    {
+     "path": "sections/s91_8/questions/q91_37/prompt",
+     "from": "選出最適合放在（　）裡的句子，完成短文。\nChoose the sentence that best fits the blank.\nเลือกประโยคที่เหมาะสมที่สุดเติมในวงเล็บค่ะ/ครับ\n\n漢字的歷史很長，（　）。下面我們來看看四種漢字的種類。",
+     "to": "選出最適合放在（　）裡的句子，完成短文。\n\n漢字的歷史很長，（　）。下面我們來看看四種漢字的種類。"
+    },
+    {
+     "path": "sections/s91_8/questions/q91_38/prompt",
+     "from": "選出最適合放在（　）裡的句子，完成短文。\nChoose the sentence that best fits the blank.\nเลือกประโยคที่เหมาะสมที่สุดเติมในวงเล็บค่ะ/ครับ\n\n最早的漢字是象形文字，（　），例如，「人」、「木」、「日」。",
+     "to": "選出最適合放在（　）裡的句子，完成短文。\n\n最早的漢字是象形文字，（　），例如，「人」、「木」、「日」。"
+    },
+    {
+     "path": "sections/s91_8/questions/q91_39/prompt",
+     "from": "選出最適合放在（　）裡的句子，完成短文。\nChoose the sentence that best fits the blank.\nเลือกประโยคที่เหมาะสมที่สุดเติมในวงเล็บค่ะ/ครับ\n\n但是，有些抽象的概念不能用圖畫表示，（　），例如，「木」的下面加一畫就是「本」。",
+     "to": "選出最適合放在（　）裡的句子，完成短文。\n\n但是，有些抽象的概念不能用圖畫表示，（　），例如，「木」的下面加一畫就是「本」。"
+    },
+    {
+     "path": "sections/s91_8/questions/q91_40/prompt",
+     "from": "選出最適合放在（　）裡的句子，完成短文。\nChoose the sentence that best fits the blank.\nเลือกประโยคที่เหมาะสมที่สุดเติมในวงเล็บค่ะ/ครับ\n\n後來還有可以表達更複雜的概念的會意字，比方說，（　）。",
+     "to": "選出最適合放在（　）裡的句子，完成短文。\n\n後來還有可以表達更複雜的概念的會意字，比方說，（　）。"
+    },
+    {
+     "path": "sections/s91_8/questions/q91_41/prompt",
+     "from": "選出最適合放在（　）裡的句子，完成短文。\nChoose the sentence that best fits the blank.\nเลือกประโยคที่เหมาะสมที่สุดเติมในวงเล็บค่ะ/ครับ\n\n以及帶有聲音的形聲字，例如：（　）。",
+     "to": "選出最適合放在（　）裡的句子，完成短文。\n\n以及帶有聲音的形聲字，例如：（　）。"
+    },
+    {
+     "path": "sections/s91_9/questions/q91_42/prompt",
+     "from": "請將下列詞語重組為正確句子 Rearrange the words into a correct sentence",
+     "to": "請將下列詞語重組為正確的句子。"
+    },
+    {
+     "path": "sections/s91_9/questions/q91_43/prompt",
+     "from": "請將下列詞語重組為正確句子 Rearrange the words into a correct sentence",
+     "to": "請將下列詞語重組為正確的句子。"
+    },
+    {
+     "path": "sections/s91_9/questions/q91_44/prompt",
+     "from": "請將下列詞語重組為正確句子 Rearrange the words into a correct sentence",
+     "to": "請將下列詞語重組為正確的句子。"
+    },
+    {
+     "path": "sections/s91_9/questions/q91_45/prompt",
+     "from": "請將下列詞語重組為正確句子 Rearrange the words into a correct sentence",
+     "to": "請將下列詞語重組為正確的句子。"
+    },
+    {
+     "path": "sections/s91_11/questions/q91_56/prompt",
+     "from": "用「目前、經過、變成」寫一段話，說說漢字的歷史。\nUse 目前, 經過, 變成 to write about the history of Chinese characters.\nใช้ 目前 經過 變成 เขียนเล่าประวัติของอักษรจีนค่ะ/ครับ",
+     "to": "用「目前、經過、變成」寫一段話，說說漢字的歷史。"
+    },
+    {
+     "path": "sections/s91_11/questions/q91_57/prompt",
+     "from": "用「在……上、基礎、創造」寫一段話，說說指事字。\nUse 在……上, 基礎, 創造 to write about indicative characters.\nใช้ 在……上 基礎 創造 เขียนเรื่องอักษรชี้เฉพาะค่ะ/ครับ",
+     "to": "用「在……上、基礎、創造」寫一段話，說說指事字。"
+    },
+    {
+     "path": "sections/s91_11/questions/q91_58/prompt",
+     "from": "用「認為、可是、打出來」寫一段話。\nUse 認為, 可是, 打出來 to write a short paragraph.\nใช้ 認為 可是 打出來 เขียนย่อหน้าสั้น ๆ ค่ะ/ครับ",
+     "to": "用「認為、可是、打出來」寫一段話。"
+    },
+    {
+     "path": "sections/s91_11/questions/q91_59/prompt",
+     "from": "「火」、「山」、「川」、「田」是哪一類的漢字？請再寫三個也屬於這一類的漢字。\nWhat type are 火, 山, 川, 田? Write three more characters of the same type.\n“火” “山” “川” “田” เป็นอักษรประเภทใด เขียนอักษรประเภทเดียวกันอีกสามตัวค่ะ/ครับ",
+     "to": "「火」、「山」、「川」、「田」是哪一類的漢字？請再寫三個也屬於這一類的漢字。"
+    },
+    {
+     "path": "sections/s91_12/questions/q91_60/prompt",
+     "from": "請念出課文第一段。\nRead the first paragraph aloud.\nอ่านย่อหน้าแรกของบทเรียนออกเสียงค่ะ/ครับ",
+     "to": "請念出課文第一段。"
+    },
+    {
+     "path": "sections/s91_12/questions/q91_61/prompt",
+     "from": "用「V起來」說一說：對你來說，什麼事情做起來很簡單？\nUse “V起來”: what is easy for you to do?\nใช้ “V起來” พูดว่า สำหรับคุณ อะไรทำแล้วง่ายคะ/ครับ",
+     "to": "用「V起來」說一說：對你來說，什麼事情做起來很簡單？"
+    },
+    {
+     "path": "sections/s91_12/questions/q91_62/prompt",
+     "from": "說一說：你認為漢字難不難？為什麼？\nDo you think Chinese characters are difficult? Why?\nคุณคิดว่าอักษรจีนยากไหม เพราะอะไรคะ/ครับ",
+     "to": "說一說：你認為漢字難不難？為什麼？"
+    }
+   ]
   }
  ]
 }
