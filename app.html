@@ -1745,6 +1745,13 @@ function renderLibrary(){
     if(b.dataset.libbook){ S.lib = { book: b.dataset.libbook }; renderLibrary(); return; }
     if(b.dataset.libtidy){ S.lib = S.lib.tidy ? { book: cur } : { book: cur, tidy: true }; renderLibrary(); return; }
     if(b.dataset.bank){ S.lib = { book: cur, key: key, bank: true }; renderLibrary(); return; }
+    if(b.dataset.lesren){
+      if(!needOwner()) return;
+      var rk = b.dataset.lesren, oldT = ((S.plat.lessons || {})[rk] || {}).title || "";
+      var nt = await askText("這一課的名稱（例如：天氣變涼了）", oldT, "儲存"); if(!nt || nt === oldT) return;
+      if(await renameLesson(rk, nt)){ toast("已改成「" + lessonTitle(rk) + "」"); renderLibrary(); }
+      return;
+    }
     if(b.dataset.vtool){ S.lib = { book: cur, key: key, vtool: true }; renderLibrary(); return; }
     if(b.dataset.bankback){ S.lib = { book: cur, key: key }; await syncLessonIndex(); renderLibrary(); return; }
     if(b.dataset.pe){ S.lib = { book: cur, key: key, pid: b.dataset.pe, tidy: tidy }; renderLibrary(); return; }
@@ -1820,6 +1827,21 @@ function libTrashHtml(){
   return '<div class="head-row" style="margin-bottom:10px;"><div style="flex:1;"><h2>🗑️ 最近刪除</h2><div class="note">刪除的簡報和測驗會在這裡保留 30 天，之後自動清掉。</div></div></div><div class="panel">' +
     (ks.length ? ks.map(function(pid){ var x = t[pid], left = Math.max(0, 30 - Math.floor((Date.now() - (x.at || 0)) / 86400000)); return '<div class="slot"><div class="slot-main"><b>' + esc((x.proj || {}).title || "（未命名）") + '</b><div class="note">' + esc(hwFmt(x.at)) + ' 刪除' + (x.lesson && (S.plat.lessons || {})[x.lesson] ? '・原本在' + esc(lessonTitle(x.lesson)) : '') + '・還剩 ' + left + ' 天</div></div><div class="slot-act"><button class="btn sm primary" data-trestore="' + esc(pid) + '">還原</button><button class="btn sm danger" data-tpurge="' + esc(pid) + '">永久刪除</button></div></div>'; }).join("") : '<p class="note" style="margin:0;">沒有刪除的項目。</p>') + '</div>';
 }
+// 改課名：教材庫（生詞・語法・課文）和自己新增的課次都一起改，各頁面顯示的課名就會一致
+async function renameLesson(key, title){
+  var pk = parseKey(key); if(!pk) return false;
+  var t = S.teacher.id, done = false;
+  try{
+    var cl = S.plat.customLessons || {};
+    if(cl[key]){ cl[key].title = title; await fbSet("teacherPlatform/" + t + "/customLessons/" + key + "/title", title); done = true; }
+    var bank = await fbGet("teacherVocabBanks/" + t), cd = arrOf(bank && bank.courseData);
+    var L = cd.filter(function(x){ return x && (x.book || DEFAULT_BOOK) === pk.book && Number(x.lesson) === pk.no; })[0];
+    if(L){ L.title = title; await fbUpdate("teacherVocabBanks/" + t, { courseData: cd, updatedAt: Date.now(), updatedBy: S.teacher.name || t }); done = true; }
+    if(!done){ S.plat.customLessons = cl; cl[key] = { book: pk.book, no: pk.no, title: title }; await fbSet("teacherPlatform/" + t + "/customLessons/" + key, cl[key]); }
+  }catch(e){ toast("儲存失敗，請檢查網路後再試"); return false; }
+  await syncLessonIndex();
+  return true;
+}
 // 刪除一課：只有沒有內容（生詞・語法・課文都是 0、也沒有簡報／測驗）時才能刪，避免誤刪教材
 async function libDeleteLesson(key){
   var L = S.plat.lessons || {}, l = L[key]; if(!l || l.unit) return false;
@@ -1891,7 +1913,7 @@ async function libImportLesson(file, cur){
 }
 function libLessonHtml(key){
   var L = S.plat.lessons || {}, l = L[key] || {}, c = lessonCounts(key), ps = l.projects || {}, pids = Object.keys(ps), dup = libDupSet();
-  var h = '<div class="head-row" style="margin-bottom:10px;"><div style="flex:1;"><h2>' + esc(lessonTitle(key)) + '</h2></div>' + (l.unit ? '' : '<button class="btn sm" data-lesexp="' + esc(key) + '" title="把這一課的生詞・語法・課文和簡報、練習打包成一個檔案，可以傳給別的老師">⬇ 匯出這一課</button> <button class="btn sm danger" data-lesdel="' + esc(key) + '" title="沒有內容的課才能刪">刪除這一課</button>') + '</div>';
+  var h = '<div class="head-row" style="margin-bottom:10px;"><div style="flex:1;"><h2>' + esc(lessonTitle(key)) + '</h2></div>' + (l.unit ? '' : '<button class="btn sm" data-lesren="' + esc(key) + '">改課名</button> <button class="btn sm" data-lesexp="' + esc(key) + '" title="把這一課的生詞・語法・課文和簡報、練習打包成一個檔案，可以傳給別的老師">⬇ 匯出這一課</button> <button class="btn sm danger" data-lesdel="' + esc(key) + '" title="沒有內容的課才能刪">刪除這一課</button>') + '</div>';
   h += '<div class="panel"><div class="lh" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><h3 style="margin:0;flex:1;">📖 生詞・語法・課文</h3>' + (l.unit ? '' : '<button class="btn sm" data-vtool="1" title="把這一課的生詞整理成生詞表：自動補拼音／注音、英文、TOCFL／HSK 級別，加例句、挖空練習，匯出 Word、PPT、字卡">生詞表製作</button> <button class="btn sm primary" data-bank="1">編輯生詞・語法・課文</button>') + '</div>' +
     '<div class="tools" style="margin-top:8px;"><span class="chip">生詞 ' + c.vocab + '</span><span class="chip">語法 ' + c.grammar + '</span><span class="chip">課文 ' + c.text + '</span></div>' + (l.unit ? '<p class="note" style="margin:6px 0 0;">複習單元的生詞・語法・課文是 ' + esc(memberRange(l.members)) + ' 的合計，請到各課編輯。</p>' : (c.vocab + c.grammar + c.text ? '' : '<p class="note" style="margin:6px 0 0;">這一課還沒有生詞・語法・課文。按右上角開始編輯，或用 Excel 匯入。</p>')) + '</div>';
   h += '<div class="panel"><div class="lh" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><h3 style="margin:0;flex:1;">🖥️ 簡報與練習（' + pids.length + '）</h3><button class="btn sm" data-pnew="' + esc(key) + '">＋ 新增簡報／測驗</button></div>' +
