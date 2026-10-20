@@ -31,6 +31,19 @@
    "bookTitle": "《學華語向前走》第三冊",
    "lesson": 5,
    "file": "content/b3-lesson5.json"
+  },
+  {
+   "id": "b9-1",
+   "bookTitle": "《學華語向前走》第九冊",
+   "lesson": 1,
+   "file": "content/b9-lesson1.json"
+  },
+  {
+   "id": "b9-1-quiz",
+   "type": "project",
+   "bookTitle": "《學華語向前走》第九冊",
+   "lesson": 1,
+   "file": "content/b9-lesson1-quiz.json"
   }
  ]
 }

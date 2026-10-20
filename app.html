@@ -1351,8 +1351,10 @@ async function autoAddContentPacks(t, bank){
     var pk = list.packs[i]; if(!pk || !pk.id || done[pk.id]) continue;
     // 指定「教材名稱」的包（例如第三冊）：找老師同一本教材（同系列同冊別），沒有就幫忙建一本
     if(pk.bookTitle && !pk.book){
-      var want = String(pk.bookTitle).replace(/\s+/g, ""), wSer = (/《([^》]+)》/.exec(want) || [])[1], wVol = (/第\s*([0-9零〇一二兩三四五六七八九十]+)\s*冊/.exec(want) || [])[1];
-      var hit = bookIds(true).filter(function(b){ var tt = bookTitle(b).replace(/\s+/g, ""); if(tt === want) return true; var s2 = (/《([^》]+)》/.exec(tt) || [])[1], v2 = (/第\s*([0-9零〇一二兩三四五六七八九十]+)\s*冊/.exec(tt) || [])[1]; return wSer && wVol && s2 === wSer && v2 && cnNum(v2) === cnNum(wVol); })[0];
+      // 書名比對不管有沒有《》、空白：系列名稱一樣、冊數一樣就是同一本（例如「學華語向前走 第九冊」＝「《學華語向前走》第九冊」）
+      var bkNorm = function(t){ t = String(t || "").replace(/[\s《》〈〉「」]/g, ""); var m = /^(.*?)第([0-9零〇一二兩三四五六七八九十]+)冊/.exec(t); return { all: t, ser: m ? m[1] : null, vol: m ? cnNum(m[2]) : null }; };
+      var want = bkNorm(pk.bookTitle);
+      var hit = bookIds(true).filter(function(b){ var h = bkNorm(bookTitle(b)); if(h.all === want.all) return true; return !!(want.ser && want.vol && h.ser === want.ser && h.vol === want.vol); })[0];
       if(!hit){ hit = uid("b_"); S.plat.books = S.plat.books || {}; S.plat.books[hit] = { title: pk.bookTitle, order: Date.now() }; var ob = {}; ob[hit] = S.plat.books[hit]; if(!S.plat.books.b1) ob.b1 = booksObj().b1; try{ await fbUpdate("teacherPlatform/" + t + "/books", ob); }catch(e){ continue; } }
       pk = Object.assign({}, pk, { book: hit });
     }
