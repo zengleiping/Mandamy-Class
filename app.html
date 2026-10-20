@@ -5852,23 +5852,27 @@ function brkOpenDialog(){
     d = document.createElement("dialog"); d.id = "brkdlg"; d.style.width = "min(420px,94vw)";
     d.innerHTML = '<form method="dialog"><h3 style="margin-bottom:6px;">下課鬧鐘</h3><p class="note" style="margin:0 0 12px;">休息幾分鐘？時間到會提醒大家回來上課。上課中，學生的畫面也會一起倒數。</p>' +
       '<div class="tools" id="brk-pre"><button type="button" class="btn" data-m="5">5 分鐘</button><button type="button" class="btn" data-m="10">10 分鐘</button><button type="button" class="btn" data-m="15">15 分鐘</button></div>' +
-      '<label style="display:block;margin-top:12px;font-weight:700;font-size:13px;">自訂（分鐘）</label><input type="number" id="brk-min" min="1" max="120" step="1" value="10" style="width:100%;padding:8px 10px;border:1.5px solid var(--line);border-radius:10px;font-size:15px;">' +
+      '<label style="display:block;margin-top:12px;font-weight:700;font-size:13px;">自訂</label><div style="display:flex;align-items:center;gap:8px;font-size:15px;"><input type="number" id="brk-min" min="0" step="any" value="10" style="width:90px;padding:8px 10px;border:1.5px solid var(--line);border-radius:10px;font-size:15px;"> 分 <input type="number" id="brk-sec" min="0" step="any" value="0" style="width:90px;padding:8px 10px;border:1.5px solid var(--line);border-radius:10px;font-size:15px;"> 秒</div>' +
       '<label style="display:flex;align-items:center;gap:8px;margin-top:12px;font-size:14px;"><input type="checkbox" id="brk-snd"> 時間到響鈴</label>' +
       '<div class="row"><button type="button" class="btn" id="brk-no">取消</button><button type="submit" class="btn primary">開始倒數</button></div></form>';
     document.body.appendChild(d);
-    d.querySelector("#brk-pre").onclick = function(e){ var b = e.target.closest("[data-m]"); if(!b) return; d.querySelector("#brk-min").value = b.dataset.m; d.querySelectorAll("#brk-pre .btn").forEach(function(x){ x.classList.toggle("primary", x === b); }); };
+    d.querySelector("#brk-pre").onclick = function(e){ var b = e.target.closest("[data-m]"); if(!b) return; d.querySelector("#brk-min").value = b.dataset.m; d.querySelector("#brk-sec").value = 0; d.querySelectorAll("#brk-pre .btn").forEach(function(x){ x.classList.toggle("primary", x === b); }); };
     d.querySelector("#brk-no").onclick = function(){ d.close(); };
     d.querySelector("form").onsubmit = function(e){
-      e.preventDefault(); var m = Math.max(1, Math.min(120, Number(d.querySelector("#brk-min").value) || 0)); if(!m) return;
-      var snd = d.querySelector("#brk-snd").checked; brkSetSound(snd); d.close(); brkStart(m, snd);
+      e.preventDefault();
+      var sec = Math.round((Number(d.querySelector("#brk-min").value) || 0) * 60 + (Number(d.querySelector("#brk-sec").value) || 0));
+      if(sec < 1){ alert("請輸入休息時間（例如 0 分 30 秒）。"); return; }
+      sec = Math.min(sec, 3 * 3600);
+      var snd = d.querySelector("#brk-snd").checked; brkSetSound(snd); d.close(); brkStart(sec, snd);
     };
   }
   d.querySelector("#brk-snd").checked = brkSoundOn();
-  d.querySelectorAll("#brk-pre .btn").forEach(function(x){ x.classList.toggle("primary", x.dataset.m === d.querySelector("#brk-min").value); });
+  d.querySelectorAll("#brk-pre .btn").forEach(function(x){ x.classList.toggle("primary", x.dataset.m === d.querySelector("#brk-min").value && !Number(d.querySelector("#brk-sec").value)); });
+  ["#brk-min", "#brk-sec"].forEach(function(id){ d.querySelector(id).oninput = function(){ d.querySelectorAll("#brk-pre .btn").forEach(function(x){ x.classList.toggle("primary", x.dataset.m === d.querySelector("#brk-min").value && !Number(d.querySelector("#brk-sec").value)); }); }; });
   d.showModal();
 }
-function brkStart(min, sound){
-  var data = { until: Date.now() + min * 60000, min: min, sound: !!sound, at: Date.now() };
+function brkStart(sec, sound){
+  var data = { until: Date.now() + sec * 1000, sec: sec, sound: !!sound, at: Date.now() };
   brkSave(data); brkSync(data, true);
 }
 function brkSave(data){
