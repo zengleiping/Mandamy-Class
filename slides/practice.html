@@ -3618,6 +3618,14 @@ window.mmTA = (function(){
   /* ================== 主題與模式引擎 ================== */
   var currentBgMode = localStorage.getItem("hanyu_theme_bg") || "light";
   var currentAccentColor = localStorage.getItem("hanyu_theme_accent") || "seal";
+// Mac 等系統在「密碼欄」有游標時會暫時關掉輸入法；按 Enter 或按鈕送出後，先讓密碼欄失去焦點再換畫面，
+// 否則密碼欄被移除時輸入法可能一直卡在只能打英文
+(function(){
+  function releasePw(e){ var a = document.activeElement; if(a && a.tagName === "INPUT" && a.type === "password" && !(e.type === "click" && e.target === a)){ try{ a.blur(); }catch(er){} } }
+  document.addEventListener("keydown", function(e){ if(e.key === "Enter") setTimeout(function(){ releasePw(e); }, 0); }, true);   // 等送出的動作做完再離開密碼欄
+  document.addEventListener("click", releasePw, true);
+  document.addEventListener("submit", releasePw, true);
+})();
   var currentClassMode = localStorage.getItem("hanyu_class_mode") || "practice";
   // 測驗模式與正式考試模式：都不即時顯示對錯，交卷／結算後才公布
   function isTestMode(){ return currentClassMode === 'test' || currentClassMode === 'exam'; }

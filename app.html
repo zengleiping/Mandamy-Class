@@ -418,13 +418,21 @@ var params = new URLSearchParams(location.search);
 function esc(s){ return String(s == null ? "" : s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
 function uid(p){ return p + Math.random().toString(36).slice(2, 9); }
 function toast(msg){ var t = document.createElement("div"); t.className = "toast"; t.textContent = msg; document.body.appendChild(t); setTimeout(function(){ t.remove(); }, 2200); }
+// Mac 等系統在「密碼欄」有游標時會暫時關掉輸入法；按 Enter 或按鈕送出後，先讓密碼欄失去焦點再換畫面，
+// 否則密碼欄被移除時輸入法可能一直卡在只能打英文
+(function(){
+  function releasePw(e){ var a = document.activeElement; if(a && a.tagName === "INPUT" && a.type === "password" && !(e.type === "click" && e.target === a)){ try{ a.blur(); }catch(er){} } }
+  document.addEventListener("keydown", function(e){ if(e.key === "Enter") setTimeout(function(){ releasePw(e); }, 0); }, true);   // 等送出的動作做完再離開密碼欄
+  document.addEventListener("click", releasePw, true);
+  document.addEventListener("submit", releasePw, true);
+})();
 function askText(title, value, okLabel, type){
   return new Promise(function(resolve){
     var d = document.getElementById("ask"), i = document.getElementById("ask-i"); i.type = type || "text";
     document.getElementById("ask-t").textContent = title; i.value = value || "";
     document.getElementById("ask-ok").textContent = okLabel || "確定";
     var done = false;
-    function fin(v){ if(done) return; done = true; i.type = "text"; try{ d.close(); }catch(e){} resolve(v); }
+    function fin(v){ if(done) return; done = true; try{ i.blur(); }catch(e){} i.type = "text"; try{ d.close(); }catch(e){} resolve(v); }
     document.getElementById("ask-no").onclick = function(){ fin(null); };
     d.oncancel = function(e){ e.preventDefault(); fin(null); };
     d.querySelector("form").onsubmit = function(e){ e.preventDefault(); var v = i.value.trim(); fin(v || null); };
