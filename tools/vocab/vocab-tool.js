@@ -1,17 +1,18 @@
 /*!
  * 曼米中文 Mandamy · 生詞表製作（備課工具）
  * 原始工具：厭世華師教學筆記（作者授權改寫）。功能與互動邏輯完整保留；
- * 曼米版只調整：資料檔路徑（MMV.data）、元件路徑（MMV.vendor）、回報與統計後端（MMV.api）、
- * 品牌字樣（MMV.brand）、匯出配色，以及嵌入用的訊息介面（見檔案最後）。
+ * 曼米版調整：資料檔路徑（MMV.data）、元件路徑（MMV.vendor）、品牌字樣（MMV.brand）、匯出配色、
+ * 欄位名稱對齊教材庫（英文翻譯、TOCFL 等級）、分頁切換、每一課各自保存，以及嵌入用的訊息介面（見檔案最後）。
+ * 已移除：錯誤回報、使用統計、贊助邀請。
  * 設定請看 index.html 的 window.MMV_CONFIG 與 README.md。
  */
 /* ===== 語言資料引擎：詞典、分級、拼音／注音、繁簡轉換、斷詞 ===== */
 const Lang=(()=>{
 const LEVELS={
-  tocfl:{label:'華測會參考級別',names:['準備級一級','準備級二級','入門級','基礎級','進階級','高階級','流利級']},
-  hsk26:{label:'HSK 3.0 級別（2026 新版）',prefix:'t',names:['HSK 1','HSK 2','HSK 3','HSK 4','HSK 5','HSK 6','HSK 7–9']},
-  hsk21:{label:'HSK 3.0 級別（2021 版）',prefix:'n',names:['HSK 1','HSK 2','HSK 3','HSK 4','HSK 5','HSK 6','HSK 7–9']},
-  hsk20:{label:'HSK 2.0 級別（舊版）',prefix:'o',names:['HSK 1','HSK 2','HSK 3','HSK 4','HSK 5','HSK 6']}
+  tocfl:{label:'TOCFL 等級',names:['準備一級','準備二級','入門級','基礎級','進階級','高階級','流利級']},
+  hsk26:{label:'HSK 等級（2026 新版）',prefix:'t',names:['HSK 1','HSK 2','HSK 3','HSK 4','HSK 5','HSK 6','HSK 7–9']},
+  hsk21:{label:'HSK 等級（2021 版）',prefix:'n',names:['HSK 1','HSK 2','HSK 3','HSK 4','HSK 5','HSK 6','HSK 7–9']},
+  hsk20:{label:'HSK 等級（舊版）',prefix:'o',names:['HSK 1','HSK 2','HSK 3','HSK 4','HSK 5','HSK 6']}
 };
 let ready=false;
 const E={T:[],S:[],P:[],TW:[],D:[]};
@@ -529,8 +530,8 @@ function renderRelationReference(row){
 /* ---------- 列 ---------- */
 function newRow(word='',pinyin='',meaning='',sentence=''){
  const tr=document.createElement('tr');
- const fields=[['word',word,'生詞'],['pinyin',pinyin,phoneticLabel()],['pos','','詞性'],['meaning',meaning,'意思']];
- for(const [key,value,label] of fields){const td=document.createElement('td'),input=document.createElement(key==='meaning'?'textarea':'input');if(key==='meaning')input.rows=1;else input.type='text';input.dataset.field=key;input.value=value;input.setAttribute('aria-label',label);td.dataset.label=label;if(key==='word')input.placeholder='輸入生詞';if(key==='meaning')input.placeholder='輸入意思';td.append(input);if(key==='pinyin'){td.className='phonetic-cell';const alt=document.createElement('div');alt.className='alt-readings';alt.hidden=true;td.append(alt)}if(key==='pos'){td.className='pos-cell';input.placeholder=posLabel();td.dataset.label=posLabel();input.setAttribute('aria-label',posLabel())}if(key==='meaning'){td.className='meaning-cell';const note=document.createElement('div');note.className='auto-note';note.hidden=true;const tag=document.createElement('span');tag.className='auto-tag-sample';tag.textContent='自動';note.append(tag,'詞典推測');td.append(note);const alt=document.createElement('div');alt.className='alt-readings alt-senses';alt.hidden=true;td.append(alt)}tr.append(td)}
+ const fields=[['word',word,'生詞'],['pinyin',pinyin,phoneticLabel()],['pos','','詞性'],['meaning',meaning,'英文翻譯']];
+ for(const [key,value,label] of fields){const td=document.createElement('td'),input=document.createElement(key==='meaning'?'textarea':'input');if(key==='meaning')input.rows=1;else input.type='text';input.dataset.field=key;input.value=value;input.setAttribute('aria-label',label);td.dataset.label=label;if(key==='word')input.placeholder='輸入生詞';if(key==='meaning')input.placeholder='輸入英文翻譯';td.append(input);if(key==='pinyin'){td.className='phonetic-cell';const alt=document.createElement('div');alt.className='alt-readings';alt.hidden=true;td.append(alt)}if(key==='pos'){td.className='pos-cell';input.placeholder=posLabel();td.dataset.label=posLabel();input.setAttribute('aria-label',posLabel())}if(key==='meaning'){td.className='meaning-cell';const note=document.createElement('div');note.className='auto-note';note.hidden=true;const tag=document.createElement('span');tag.className='auto-tag-sample';tag.textContent='自動';note.append(tag,'詞典推測');td.append(note);const alt=document.createElement('div');alt.className='alt-readings alt-senses';alt.hidden=true;td.append(alt)}tr.append(td)}
  const levelCell=document.createElement('td');levelCell.className='level-cell';levelCell.dataset.field='level';levelCell.dataset.label='級別';tr.append(levelCell);
  for(const [key,label] of [['synonym','近義詞'],['antonym','反義詞']]){const td=document.createElement('td'),input=document.createElement('input');td.className=key+'-column';td.dataset.label=label;td.hidden=!withRelation(key);input.type='text';input.dataset.field=key;input.setAttribute('aria-label',label);input.placeholder='可留白';td.append(input);const ref=document.createElement('div');ref.className='relation-reference';td.append(ref);tr.append(td)}
  const sentenceCell=document.createElement('td');sentenceCell.className='sentence-column';sentenceCell.dataset.label='例句';sentenceCell.hidden=!$('#sentences-toggle').checked;const sentenceInput=document.createElement('textarea');sentenceInput.rows=1;sentenceInput.className='sentence-input';sentenceInput.dataset.field='sentence';sentenceInput.value=sentence;sentenceInput.placeholder='輸入例句';sentenceInput.setAttribute('aria-label','例句');sentenceCell.append(sentenceInput);const preview=document.createElement('span');preview.className='sentence-preview';preview.hidden=true;sentenceCell.append(preview);const check=document.createElement('span');check.className='sentence-check';check.hidden=true;check.setAttribute('role','status');sentenceCell.append(check);tr.append(sentenceCell);
@@ -617,7 +618,7 @@ function renderPreview(row){
 function ensureBlankRows(){if(!rows().length)for(let i=0;i<3;i++)newRow()}
 function removeBlankRows(){rows().forEach(r=>{if(!val(r,'word')&&!val(r,'sentence'))r.remove()})}
 function refreshAll(){ensureBlankRows();for(const r of rows()){updateLevel(r);renderPreview(r)}updateCount();buildPrompt();if(typeof scheduleSave==='function'){scheduleSave();syncWsOptions()}}
-function updateCount(){const n=rows().filter(r=>val(r,'word')).length;if(!n)beginSponsorAttempt();$('#word-count').textContent=`${n} 個詞`;$('#add-mode').hidden=!n;$('#add-mode-count').textContent=n;if(typeof updateSteps==='function')updateSteps()}
+function updateCount(){const n=rows().filter(r=>val(r,'word')).length;$('#word-count').textContent=`${n} 個詞`;$('#add-mode').hidden=!n;$('#add-mode-count').textContent=n;if(typeof updateSteps==='function')updateSteps()}
 function setSentences(){const on=$('#sentences-toggle').checked;$('#sentence-options').hidden=!on;document.querySelectorAll('.sentence-column').forEach(e=>e.hidden=!on);rows().forEach(renderPreview);autosizeAll()}
 
 /* ---------- 格式設定 ---------- */
@@ -658,7 +659,7 @@ function applyStandard(old){
  const note=$('#source-note');
  const lv=off?'':pref.standard==='tocfl'
   ?'級別依華測會公開的《華語八千詞表》（2024 年 9 月版）比對，供教學備課參考；未收錄詞、異體字或多筆對應請再確認。工具不是華測會官方服務。 <a href="https://tocfl.edu.tw/tocfl/index.php/teach/download" target="_blank" rel="noopener noreferrer">查看華測會詞表與教學資源</a>'
-  :`級別依 ${Lang.LEVELS[pref.standard].label.replace(' 級別','')} 詞彙表比對（整理自 <a href="https://github.com/drkameleon/complete-hsk-vocabulary" target="_blank" rel="noopener noreferrer">complete-hsk-vocabulary</a>，MIT 授權），供教學備課參考；未收錄詞或多筆對應請再確認。工具不是 HSK 官方服務。`;
+  :`級別依 ${Lang.LEVELS[pref.standard].label.replace(/\s*等級/,'')} 詞彙表比對（整理自 <a href="https://github.com/drkameleon/complete-hsk-vocabulary" target="_blank" rel="noopener noreferrer">complete-hsk-vocabulary</a>，MIT 授權），供教學備課參考；未收錄詞或多筆對應請再確認。工具不是 HSK 官方服務。`;
  note.innerHTML=`${lv?`<span>${lv}</span>`:''}<span>常用詞的英文意思採本站整理的教學常用義；其餘標「自動」的意思與拼音由程式帶入，參考 <a href="https://www.mdbg.net/chinese/dictionary?page=cc-cedict" target="_blank" rel="noopener noreferrer">CC-CEDICT</a> 詞典（MDBG，<a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>），請以教學判斷為準。</span>`;
  rows().forEach(r=>{if(val(r,'word'))fillRow(r)});buildPrompt();
 }
@@ -688,17 +689,16 @@ function bindPref(id,key,fn){const el=$(id);el.value=pref[key];el.addEventListen
 function updatePrefsSummary(){if(!$('#prefs-summary'))return;const t=id=>{const s=$(id);return (s.options[s.selectedIndex]?.text||'').replace(/（.*?）/,'')};$('#prefs-summary').textContent=[t('#pref-standard'),t('#pref-script'),t('#pref-phonetic'),t('#pref-region'),t('#pref-tone')].join(' · ')}
 
 
-/* ---------- 步驟列：標示目前位置與已完成的步驟 ---------- */
+/* ---------- 分頁：貼上生詞／生詞表／例句・近反義詞／匯出（跟曼米其他頁面一樣用分頁切換） ---------- */
 const STEP_IDS=['step-input','step-list','step-extend','step-export'];
-function updateSteps(){
- const n=rows().filter(r=>val(r,'word')).length;
- document.querySelector('.step-nav a[data-step="step-input"]').classList.toggle('done',n>0);
- const line=window.innerHeight*0.35;let cur=STEP_IDS[0];
- for(const id of STEP_IDS){const el=document.getElementById(id);if(el&&el.getBoundingClientRect().top<=line)cur=id}
- if(window.innerHeight+window.scrollY>=document.documentElement.scrollHeight-4)cur=STEP_IDS[STEP_IDS.length-1];
- document.querySelectorAll('.step-nav a').forEach(a=>{if(a.dataset.step===cur)a.setAttribute('aria-current','step');else a.removeAttribute('aria-current')});
+function showStep(id){
+ if(!STEP_IDS.includes(id))id='step-input';
+ for(const s of STEP_IDS){const el=document.getElementById(s);if(el)el.hidden=s!==id}
+ document.querySelectorAll('.mm-tab[data-step]').forEach(t=>{const on=t.dataset.step===id;t.classList.toggle('on',on);t.setAttribute('aria-selected',String(on))});
+ autosizeAll();if(id==='step-export')schedulePreview();window.scrollTo({top:0});
 }
-let stepTick=false;window.addEventListener('scroll',()=>{if(stepTick)return;stepTick=true;requestAnimationFrame(()=>{stepTick=false;updateSteps()})},{passive:true});
+function updateSteps(){const n=rows().filter(r=>val(r,'word')).length,c=document.getElementById('tab-count');if(c)c.textContent=n?String(n):''}
+document.addEventListener('click',e=>{const b=e.target.closest('.mm-tab[data-step],[data-goto]');if(!b)return;e.preventDefault();showStep(b.dataset.step||b.dataset.goto)});
 window.addEventListener('resize',()=>{clearTimeout(window._rz);window._rz=setTimeout(autosizeAll,150)});
 
 /* ---------- 輸入 ---------- */
@@ -706,8 +706,8 @@ function setMode(m){
  inputMode=m;$('#tab-list').setAttribute('aria-selected',m==='list');$('#tab-text').setAttribute('aria-selected',m==='text');
  $('#text-options').hidden=m!=='text';$('#candidates').hidden=true;$('#input-message').textContent='';
  const ta=$('#word-input');
- if(m==='list'){$('#input-hint').textContent='每行一個詞，也可以用 Tab 依序貼上「生詞、拼音、英文或意思」。貼上後都能再修改。';ta.placeholder='例如：\n咖啡\n備課\n領養';$('#make-list').textContent='整理成生詞表';ta.previousElementSibling.textContent='生詞清單'}
- else{$('#input-hint').textContent='貼上課文、對話或文章，工具會自動斷詞，列出可能的生詞讓你挑選。';ta.placeholder='例如：今天太太帶我去動物收容所，我們決定領養一隻小狗。';$('#make-list').textContent='找出生詞';ta.previousElementSibling.textContent='課文內容'}
+ if(m==='list'){$('#input-hint').textContent='每行一個詞，也可以用 Tab 依序貼上「生詞、拼音、英文翻譯」。貼上後都能再修改。';ta.placeholder='例如：\n咖啡\n備課\n領養';$('#make-list').textContent='✨ 整理成生詞表';ta.previousElementSibling.textContent='生詞清單'}
+ else{$('#input-hint').textContent='貼上課文、對話或文章，工具會自動斷詞，列出可能的生詞讓你挑選。';ta.placeholder='例如：今天太太帶我去動物收容所，我們決定領養一隻小狗。';$('#make-list').textContent='🔍 找出生詞';ta.previousElementSibling.textContent='課文內容'}
 }
 /* 加入生詞前的共同處理：表裡已有詞時，依「加在後面／取代整張表」決定；取代可以復原 */
 function addMode(){return document.querySelector('input[name="add-mode"]:checked')?.value||'append'}
@@ -728,7 +728,7 @@ function reportAdd(added,dup,{replaced,before}){
  $('#input-message').textContent=text;
  if(replaced)offerUndo(replaced,text);else{undoRows=null;$('#list-message').textContent=text}
  refreshAll();autosizeAll();
- $('#step-list').scrollIntoView({behavior:'smooth',block:'start'});
+ showStep('step-list');
 }
 function parseList(){
  const lines=$('#word-input').value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
@@ -784,7 +784,7 @@ function fillSentences(){
  rows().forEach(renderPreview);
  autosizeAll();
  const fm=$('#fill-message');fm.textContent=filled?`已填入 ${filled} 句例句。${checked.size?` ${checked.size} 句請確認，提示已標在例句下方。`:''}${missed.length?` 這些詞沒有對到：${missed.join('、')}。`:''}${invalid?` ${invalid} 行格式無法辨識，未填入。`:''}`:'沒有對到任何生詞。請確認 AI 回覆是「生詞｜例句」的格式。';
- if(filled){const go=document.createElement('button');go.type='button';go.className='text-link';go.textContent='到生詞表查看 ↑';go.addEventListener('click',()=>$('#step-list').scrollIntoView({behavior:'smooth',block:'start'}));fm.append(' ',go)}
+ if(filled){const go=document.createElement('button');go.type='button';go.className='text-link';go.textContent='到生詞表看看 ›';go.addEventListener('click',()=>showStep('step-list'));fm.append(' ',go)}
 }
 
 /* ---------- 匯出 ---------- */
@@ -792,7 +792,7 @@ const withSent=()=>$('#sentences-toggle').checked;
 const showPos=()=>pref.pos==='on';
 const exportPos=()=>showPos();
 const exportLevel=()=>!noLevel()&&$('#export-level').checked;
-const headers=()=>['生詞',phoneticLabel(),...(exportPos()?[posLabel()]:[]),'意思',...(!exportLevel()?[]:[levelLabel()]),...relationHeaders(),...(withSent()?['例句']:[])].map(toScript);
+const headers=()=>['生詞',phoneticLabel(),...(exportPos()?[posLabel()]:[]),'英文翻譯',...(!exportLevel()?[]:[levelLabel()]),...relationHeaders(),...(withSent()?['例句']:[])].map(toScript);
 function relationAttribution(){return relationFields.some(([k])=>withRelation(k))?'詞彙參考來源：中華民國教育部（Ministry of Education, R.O.C.）。《國語辭典簡編本》（版本編號：2014_20260929），https://dict.concised.moe.edu.tw/ 。CC BY-ND 3.0 TW。公眾授權使用說明：https://language.moe.gov.tw/001/Upload/Files/site_content/M0001/respub/conciseddict_10312.pdf 。手動修改內容為使用者編輯，請與辭典原文分別核對。':''}
 function copySentenceHtml(row,index){
  const marked=makeMarked(val(row,'sentence'),val(row,'word'),index);
@@ -812,24 +812,16 @@ function copyTableBySelection(html){
  finally{temp.remove();selection.removeAllRanges();for(const range of ranges)selection.addRange(range);active?.focus?.({preventScroll:true})}
 }
 async function copyFormattedTable(){
- beginSponsorAttempt();const html=tableHtml(),plain=rows().map(r=>rowValues(r).join('\t')).join('\n');let copied=false;
+ const html=tableHtml(),plain=rows().map(r=>rowValues(r).join('\t')).join('\n');let copied=false;
  try{await navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([html],{type:'text/html'}),'text/plain':new Blob([plain],{type:'text/plain'})})]);copied=true}catch{try{copied=copyTableBySelection(html)}catch{}}
- $('#export-message').textContent=copied?'表格已複製，包含顏色與格式。':'瀏覽器未允許複製，請改用下載 Word。';if(copied)showSponsorAck();
+ $('#export-message').textContent=copied?'表格已複製，包含顏色與格式。':'瀏覽器未允許複製，請改用下載 Word。';
 }
 function documentHtml(){return `<!doctype html><html><head><meta charset="utf-8"><style>body{font-family:Arial,'Noto Sans TC',sans-serif;color:#2B2320}h1{font-size:22pt}p{font-size:10pt;color:#555}table{margin-top:1rem}th{background:#F2EAE0}</style><style>.relation-reference{font-size:.78rem;color:var(--muted);padding:.2rem .5rem;line-height:1.5}.relation-reference details{margin:.25rem 0}.relation-reference button{font-size:.8rem;margin:.2rem 0}.relation-reference a{color:var(--ink)}.relation-reference .original{white-space:pre-wrap;overflow-wrap:anywhere}</style></head><body><h1>${escaped(docTitle())}</h1><p>${escaped(MMV.brand)}${!exportLevel()?'':'｜'+escaped(levelLabel())+'為詞表參考'}</p>${tableHtml()}<p>${escaped(relationAttribution())}</p></body></html>`}
-let sponsorAckShown=false;
-function beginSponsorAttempt(){$('#sponsor-ack').hidden=true}
-const SPONSOR_DISMISS_KEY='yanshi-vocab-sponsor-dismissed';
-function sponsorDismissed(){try{return localStorage.getItem(SPONSOR_DISMISS_KEY)==='1'}catch{return false}}
-let lastExportWasCopy=false;
-function showSponsorAck(){if(!MMV.sponsor)return;if(sponsorAckShown||sponsorDismissed()||!exportRows().length)return;sponsorAckShown=true;$('#sponsor-ack-done').textContent=lastExportWasCopy?'已複製':'已下載';$('#sponsor-ack').hidden=false}
-document.querySelector('.export-actions').addEventListener('click',e=>{const b=e.target.closest('button');if(b)lastExportWasCopy=b.id==='copy-table'},true);
-document.getElementById('sponsor-ack-close').addEventListener('click',()=>{$('#sponsor-ack').hidden=true;try{localStorage.setItem(SPONSOR_DISMISS_KEY,'1')}catch{}});
-function download(name,content,type){const blob=new Blob([content],{type}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);showSponsorAck()}
+function download(name,content,type){const blob=new Blob([content],{type}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
 function csvCell(x){return '"'+String(x??'').replaceAll('"','""')+'"'}
 function rowValues(r){return [blankWord()?'':val(r,'word'),blankPhonetic()?'':val(r,'pinyin'),...(exportPos()?[val(r,'pos')]:[]),val(r,'meaning'),...(!exportLevel()?[]:[val(r,'level')]),...relationValues(r),...(withSent()?[val(r,'sentence')]:[])].map(toScript)}
-function csv(){beginSponsorAttempt();const out=[headers().map(csvCell).join(',')];rows().filter(r=>val(r,'word')).forEach(r=>out.push(rowValues(r).map(csvCell).join(',')));if(relationAttribution())out.push(csvCell(relationAttribution()));download(safeDocName()+'.csv','﻿'+out.join('\r\n'),'text/csv;charset=utf-8')}
-async function cards(){beginSponsorAttempt();const clean=s=>String(s??'').replace(/[\t\r\n\u2028\u2029]+/g,' ').trim();const cardRows=rows().filter(r=>val(r,'word'));const out=cardRows.map(r=>{const back=[val(r,'pinyin'),...(exportPos()?[val(r,'pos')]:[]),val(r,'meaning'),...relationFields.filter(([k])=>withRelation(k)&&val(r,k)).map(([k,label])=>label+'：'+val(r,k))].filter(Boolean).join('｜')+(withSent()&&val(r,'sentence')?'｜'+val(r,'sentence'):'');return clean(val(r,'word'))+'\t'+clean(back)});
+function csv(){const out=[headers().map(csvCell).join(',')];rows().filter(r=>val(r,'word')).forEach(r=>out.push(rowValues(r).map(csvCell).join(',')));if(relationAttribution())out.push(csvCell(relationAttribution()));download(safeDocName()+'.csv','﻿'+out.join('\r\n'),'text/csv;charset=utf-8')}
+async function cards(){const clean=s=>String(s??'').replace(/[\t\r\n\u2028\u2029]+/g,' ').trim();const cardRows=rows().filter(r=>val(r,'word'));const out=cardRows.map(r=>{const back=[val(r,'pinyin'),...(exportPos()?[val(r,'pos')]:[]),val(r,'meaning'),...relationFields.filter(([k])=>withRelation(k)&&val(r,k)).map(([k,label])=>label+'：'+val(r,k))].filter(Boolean).join('｜')+(withSent()&&val(r,'sentence')?'｜'+val(r,'sentence'):'');return clean(val(r,'word'))+'\t'+clean(back)});
  if(!out.length){$('#export-message').textContent='生詞表還是空的。';return}
  const name=safeDocName()+'_字卡_Anki_Quizlet',content=out.join('\r\n');
  const instructions='字卡匯入說明\r\n\r\nQuizlet：解壓縮後，用文字編輯器開啟字卡 .txt，複製全部內容，貼到 Quizlet 的「匯入」。詞語與定義之間選「Tab／定位點」，卡片之間選「換行」。不要把本說明檔貼進匯入框。\r\nAnki：匯入字卡 .txt，編碼選 UTF-8、分隔符號選 Tab，第一欄為正面，第二欄為背面。\r\n\r\n每行一張卡；中文在正面，拼音／注音、詞性、意思及所選內容在背面。\r\n\r\n';
@@ -865,9 +857,9 @@ $('#ai-level').addEventListener('change',()=>{pref.aiLevel=$('#ai-level').value;
 $('#skip-level').addEventListener('change',()=>{const v=$('#skip-level').value;pref.skip=v;$('#ai-level').value=v;pref.aiLevel=v;buildPrompt();savePrefs();updateRangeHint();if(!$('#candidates').hidden)findWords()});$('#ai-helper').addEventListener('toggle',buildPrompt);
 $('#copy-prompt').addEventListener('click',()=>{buildPrompt();copyText($('#ai-prompt').value,$('#prompt-message'),'已複製！貼到你的 ChatGPT 或 Claude 就可以了。')});
 $('#fill-sentences').addEventListener('click',fillSentences);
-/* 一鍵清空（按兩次確認，可復原） */
+/* 清空生詞表（按兩次確認，可復原） */
 let clearArmed=null;
-function resetClearBtn(){clearTimeout(clearArmed);clearArmed=null;const b=$('#clear-list');b.textContent='一鍵清空';b.classList.remove('armed')}
+function resetClearBtn(){clearTimeout(clearArmed);clearArmed=null;const b=$('#clear-list');b.textContent='🗑️ 清空';b.classList.remove('armed')}
 $('#clear-list').addEventListener('click',()=>{
  const msg=$('#list-message');
  if(!rows().length){msg.textContent='生詞表已經是空的。';return}
@@ -899,26 +891,13 @@ setTimeout(()=>{
  restoreDraft();
  /* 第一次使用不放範例詞，避免和老師自己的詞混在一起；空白列可以直接輸入 */
  const restored=rows().filter(r=>val(r,'word')).length;
- $('#list-message').textContent=restored?`已恢復上次的生詞表（${restored} 個詞）。`:'還沒有生詞：在步驟 1 貼上生詞，或直接在下面的空白列輸入。';
- $('#input-message').textContent='';refreshAll();syncWsOptions();ensureDict();updatePrefsSummary();autosizeAll();updateSteps();
+ $('#list-message').textContent=restored?`已恢復上次的生詞表（${restored} 個詞）。`:'還沒有生詞：在「📥 貼上生詞」分頁貼上生詞，或直接在下面的空白列輸入。';
+ $('#input-message').textContent='';refreshAll();syncWsOptions();ensureDict();updatePrefsSummary();showStep(restored?'step-list':'step-input');updateSteps();
  if(window.matchMedia('(min-width: 900px)').matches)$('#sheet-preview').open=true;
 },20);
 
-/* ---------- 瀏覽統計（與拼音工具相同的 /api/stats） ---------- */
-let usageRecorded=false;
-function showMetrics(data){if(!data||!Number.isFinite(data.views)||!Number.isFinite(data.uses))return;const el=$('#site-statistics');el.hidden=false;if(data.enabled===false){el.textContent='尚未開始統計\n（製作完成後開始計算）';return}el.textContent='累計瀏覽 '+data.views.toLocaleString()+' 次 · 製表使用 '+data.uses.toLocaleString()+' 次'+(data.since?'\n（'+data.since+' 起）':'')}
-function hideMetrics(){$('#site-statistics').hidden=true}
-async function recordMetric(kind){
- try{if(!MMV.api||location.protocol==='file:'||!window.crypto?.randomUUID){hideMetrics();return}
-  const res=await fetch(MMV.api+'api/stats',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:window.crypto.randomUUID(),kind}),keepalive:true});
-  if(res.ok)showMetrics(await res.json());else if(kind==='view')hideMetrics()}catch{if(kind==='view')hideMetrics()}
-}
-function recordUse(){if(!usageRecorded){usageRecorded=true;recordMetric('use')}}
-$('#make-list').addEventListener('click',recordUse);
-recordMetric('view');
-
 /* ===== 自動保存草稿 ===== */
-const DRAFT_KEY='vocab-draft-v1';
+const DRAFT_KEY='vocab-draft-v1'+(MMV.lesson?'|'+MMV.lesson:'');
 let saveTimer=null,restoring=false;
 function snapshot(){
  return {v:1,rows:rows().map(r=>({w:val(r,'word'),p:val(r,'pinyin'),o:val(r,'pos'),m:val(r,'meaning'),s:val(r,'sentence'),synonym:val(r,'synonym'),antonym:val(r,'antonym'),synonymTouched:!!r.dataset.synonymTouched,antonymTouched:!!r.dataset.antonymTouched,relationChoice:r._relationChoice,pt:!!r.dataset.ptouched,mt:!!r.dataset.mtouched,ot:!!r.dataset.otouched,ch:r._chosen||0})),
@@ -1017,7 +996,7 @@ function sheetHtml(){
  const practice=practiceHtml(cellSentence),paged=hasBankPractice()&&practiceRows().length>0;
  const ws=$('#ws-header').checked?'<p class="ws">班級：<span></span>姓名：<span></span>日期：<span></span></p>':'';
  const sub=exportLevel()?`<p class="sub">${escaped(levelLabel())}為詞表參考</p>`:'';
- const W={'生詞':1.1,'拼音':1.4,'注音':1.6,'詞性':1.3,'意思':2.4,'例句':3.6},ks=[...(num?['#']:[]),...heads],wt=ks.map(k=>k==='#'?0.45:(W[Lang.toTrad(k)]||1.5)),tot=wt.reduce((x,y)=>x+y,0),cols='<colgroup>'+wt.map(w=>`<col style="width:${(100*w/tot).toFixed(1)}%">`).join('')+'</colgroup>';
+ const W={'生詞':1.1,'拼音':1.4,'注音':1.6,'詞性':1.3,'英文翻譯':2.4,'例句':3.6},ks=[...(num?['#']:[]),...heads],wt=ks.map(k=>k==='#'?0.45:(W[Lang.toTrad(k)]||1.5)),tot=wt.reduce((x,y)=>x+y,0),cols='<colgroup>'+wt.map(w=>`<col style="width:${(100*w/tot).toFixed(1)}%">`).join('')+'</colgroup>';
  return toScript(`<!doctype html><html lang="${pref.script==='simp'?'zh-Hans':'zh-Hant'}"><head><meta charset="utf-8"><title>${escaped(docTitle())}</title><style>
  @page{size:A4;margin:16mm 14mm}body{font-family:"Noto Sans TC","Microsoft JhengHei","PingFang TC",sans-serif;color:#2B2320;font-size:11pt;margin:0}
  h1{font-size:18pt;margin:0 0 2mm}h2{font-size:14pt;margin:0 0 3mm}.sub{font-size:9pt;color:#666;margin:0 0 3mm}
@@ -1059,7 +1038,7 @@ function wordRuby(word,reading){
 }
 function docxXml(){
  const heads=headers(),list=exportRows(),num=$('#ws-header').checked||wantAnswers(),TOTAL=10204;
- const weight={'生詞':1.1,'拼音':1.4,'注音':1.6,'詞性':1.3,'意思':2.4,'例句':3.6};
+ const weight={'生詞':1.1,'拼音':1.4,'注音':1.6,'詞性':1.3,'英文翻譯':2.4,'例句':3.6};
  const keys=[...(num?['#']:[]),...heads];const ws=keys.map(k=>k==='#'?0.45:(weight[Lang.toTrad(k)]||1.5));const sum=ws.reduce((a,x)=>a+x,0);
  const widths=ws.map(x=>Math.floor(TOTAL*x/sum));widths[widths.length-1]+=TOTAL-widths.reduce((a,x)=>a+x,0);
  const H=t=>({runs:wrun(t,{size:19,bold:true}),center:false});
@@ -1100,7 +1079,7 @@ function docxXml(){
  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>${x}${sect}</w:body></w:document>`;
 }
 async function downloadDocx(){
- beginSponsorAttempt();
+ 
  if(!checkExportSentences())return;
  if(!exportRows().length){$('#export-message').textContent='生詞表還是空的。';return}
  if(!window.JSZip){$('#export-message').textContent='Word 元件尚未載入，請重新整理後再試。';return}
@@ -1110,7 +1089,7 @@ async function downloadDocx(){
  zip.file('word/document.xml',docxXml());
  const blob=await zip.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=safeDocName()+'.docx';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500);
- $('#export-message').textContent='已下載 Word 檔（.docx），Word、Pages、Google 文件都能打開編輯。';showSponsorAck();
+ $('#export-message').textContent='已下載 Word 檔（.docx），Word、Pages、Google 文件都能打開編輯。';
 }
 /* ===== PPT／Google 簡報：一詞一頁＋生詞總覽（例句照匯出設定的呈現方式） ===== */
 let pptxLoading=null;
@@ -1158,7 +1137,7 @@ function buildVocabPptx(Ctor){
   foot(sl);
  });
  // 生詞總覽（每頁 6 個詞，字放大方便投影）
- const heads=headers(),W={'生詞':1.1,'拼音':1.4,'注音':1.6,'詞性':1.2,'意思':2.4,'例句':3.6},ws=[0.45,...heads.map(h=>W[h]||1.4)],tot=ws.reduce((a,b)=>a+b,0),colW=ws.map(w=>+(12.3*w/tot).toFixed(2));
+ const heads=headers(),W={'生詞':1.1,'拼音':1.4,'注音':1.6,'詞性':1.2,'英文翻譯':2.4,'例句':3.6},ws=[0.45,...heads.map(h=>W[h]||1.4)],tot=ws.reduce((a,b)=>a+b,0),colW=ws.map(w=>+(12.3*w/tot).toFixed(2));
  const per=6,pages=Math.ceil(N/per);
  for(let pg=0;pg<pages;pg++){
   const sl=p.addSlide();sl.background={color:'FFFFFF'};
@@ -1174,7 +1153,7 @@ function buildVocabPptx(Ctor){
  return p;
 }
 async function exportVocabSlides(kind){
- beginSponsorAttempt();
+ 
  const msg=$('#export-message');
  if(!exportRows().length){msg.textContent='生詞表還是空的。';return}
  const btn=$(kind==='google'?'#download-slides':'#download-pptx');btn.disabled=true;msg.textContent='投影片製作中…';
@@ -1182,27 +1161,11 @@ async function exportVocabSlides(kind){
   const Ctor=await loadPptx();
   await buildVocabPptx(Ctor).writeFile({fileName:safeDocName()+(kind==='google'?'_Google簡報版.pptx':'_投影片.pptx'),compression:true});
   msg.textContent=kind==='google'?'已下載 Google 簡報版（.pptx）：上傳到 Google 雲端硬碟後，按右鍵 →「開啟工具」→「Google 簡報」。':'已下載 PPT 投影片：一詞一頁，最後附生詞總覽，可直接編輯。';
-  showSponsorAck();
+  
  }catch(e){msg.textContent=(e&&e.message)||'投影片匯出失敗，請再試一次。'}
  finally{btn.disabled=false}
 }
 function syncWsOptions(){const ok=isWorksheetBlank()||blankWord()||blankPhonetic();$('#ws-answers').disabled=!ok;$('#ws-answers-label').classList.toggle('disabled',!ok)}
-
-/* ===== 錯誤回報 ===== */
-function openReport(prefill=''){const d=$('#error-report-dialog');$('#report-status').textContent='';if(prefill)$('#report-original').value=prefill;if(d.showModal)d.showModal();else d.setAttribute('open','')}
-$('#error-report-open').addEventListener('click',()=>openReport());
-$('#error-report-close').addEventListener('click',()=>$('#error-report-dialog').close());
-$('#error-report-form').addEventListener('submit',async e=>{
- e.preventDefault();const st=$('#report-status'),btn=$('#error-report-submit');
- const data={category:$('#report-category').value,original:$('#report-original').value.trim(),correction:$('#report-correction').value.trim(),
-  context:[`分級：${pref.standard}`,`字體：${pref.script}`,`標音：${pref.phonetic}`,`讀音：${pref.region}`,$('#report-context').value.trim()].join('｜').slice(0,2000),details:$('#report-details').value.trim()};
- if(!data.original){st.textContent='請填寫出錯的詞語或問題。';return}
- if(!MMV.api||location.protocol==='file:'){await reportFallback(data,st);return}
- btn.disabled=true;st.textContent='送出中…';
- try{const res=await fetch(MMV.api+'api/error-reports',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});const out=await res.json().catch(()=>({}));
-  if(res.ok){st.textContent=`已收到回報，編號 ${out.id}。謝謝你幫忙讓工具更準確！`;$('#error-report-form').reset()}else st.textContent=out.error||'回報暫時無法送出，請稍後再試。'}
- catch{st.textContent='回報暫時無法送出，請確認網路後再試。'}finally{btn.disabled=false}
-});
 
 /* ===== 詞典背景載入（網站版） ===== */
 const dictionaryExportButtons=['download-doc','download-csv','download-cards','print-list','copy-table'];
@@ -1233,32 +1196,36 @@ $('#sheet-preview').addEventListener('toggle',updateSheetPreview);
 document.addEventListener('input',schedulePreview,true);document.addEventListener('change',schedulePreview,true);document.addEventListener('click',schedulePreview,true);
 new MutationObserver(schedulePreview).observe(body,{childList:true,subtree:true,characterData:true});
 
-/* ===== 曼米嵌入：沒有回報後端時改成複製回報內容；接收教材頁傳來的生詞；回報高度給外層頁面 ===== */
-async function reportFallback(data,st){
- const names={reading:'拼音、注音或聲調',meaning:'英文意思',level:'級別或詞性',segmentation:'整段課文的斷詞',export:'下載、列印或複製',other:'其他問題'};
- const text=['【生詞表製作・錯誤回報】','問題類型：'+(names[data.category]||data.category),'出錯的詞語或問題：'+data.original,data.correction?'正確的寫法：'+data.correction:'','背景：'+data.context,data.details?'補充說明：'+data.details:''].filter(Boolean).join('\n');
- try{await navigator.clipboard.writeText(text);st.textContent='回報內容已複製，可以貼到 LINE 或 Email 傳給負責的老師。'}
- catch{st.textContent='請手動複製下面的內容：\n'+text}
- if(window.parent!==window)try{window.parent.postMessage({mmVocab:'report',text},'*')}catch{}
-}
+/* ===== 曼米嵌入：接收教材頁傳來的生詞、存回本課教材、回報高度給外層頁面 ===== */
 function mmLoadWords(d){
  const list=(d.words||[]).filter(x=>x&&x.w);if(!list.length)return;
  const title=d.title?toScript(String(d.title)):'';
  const hasRows=rows().some(r=>val(r,'word'));
  setMode('list');
  $('#word-input').value=list.map(x=>[x.w,x.p||'',x.m||''].map(v=>String(v).replace(/[\t\r\n]+/g,' ').trim()).join('\t')).join('\n');
- if(hasRows&&title&&$('#doc-title').value.trim()===title){
-  $('#input-message').textContent='已帶入「'+title+'」的 '+list.length+' 個生詞。生詞表裡是上次編輯的內容，要重新整理請按「整理成生詞表」。';scheduleSave();return}
+ if(hasRows){$('#list-message').textContent='這是你上次編輯的生詞表。教材裡的 '+list.length+' 個生詞已經放在「貼上生詞」，要重新整理請到那裡按「整理成生詞表」。';showStep('step-list');scheduleSave();return}
  if(title)$('#doc-title').value=title;
- const rep=document.querySelector('input[name="add-mode"][value="replace"]');if(hasRows&&rep)rep.checked=true;
  parseList();
 }
+/* 把整理好的拼音／注音、詞性、英文翻譯、TOCFL 等級、例句交給平台，存回這一課的教材（平台只補空白欄位、加新生詞） */
+function mmLessonRows(){
+ return exportRows().map(r=>{
+  let lv='';if(pref.standard==='tocfl'){const t=Lang.toTrad(val(r,'level'));lv=t==='未收錄'?'未收錄':(t.replace(/^依詞性分級：/,'').split(/[；（]/)[0].split(' · ')[0]||'').trim()}
+  return {w:val(r,'word'),ph:val(r,'pinyin'),pos:pref.posLanguage==='zh'?val(r,'pos'):'',m:val(r,'meaning'),lv,s:withSent()?val(r,'sentence'):''};
+ });
+}
 (function mmEmbed(){
- const inFrame=window.parent!==window;
- if(MMV.embed)document.documentElement.classList.add('mm-embed');
+ const inFrame=window.parent!==window,save=$('#mm-save-lesson');
+ if(save&&MMV.lesson&&inFrame){save.hidden=false;save.addEventListener('click',()=>{
+  const list=mmLessonRows();if(!list.length){$('#list-message').textContent='生詞表還是空的。';return}
+  save.disabled=true;$('#list-message').textContent='存回本課教材中…';
+  try{window.parent.postMessage({mmVocab:'save',lesson:MMV.lesson,phonetic:pref.phonetic,rows:list},'*')}catch{save.disabled=false}
+ })}
  let pending=null;
- window.addEventListener('message',e=>{const d=e.data;if(!d||d.mmVocab!=='load')return;if(Lang.isReady())mmLoadWords(d);else pending=d});
+ window.addEventListener('message',e=>{const d=e.data;if(!d||!d.mmVocab)return;
+  if(d.mmVocab==='load'){if(Lang.isReady())mmLoadWords(d);else pending=d}
+  if(d.mmVocab==='saved'&&save){save.disabled=false;$('#list-message').textContent=d.text||'已存回本課教材。'}
+ });
  const wait=setInterval(()=>{if(!Lang.isReady())return;clearInterval(wait);if(pending){mmLoadWords(pending);pending=null}if(inFrame)try{window.parent.postMessage({mmVocab:'ready'},'*')}catch{}},60);
  if(inFrame&&window.ResizeObserver){let last=0;new ResizeObserver(()=>{const h=Math.ceil(document.documentElement.scrollHeight);if(Math.abs(h-last)>4){last=h;try{window.parent.postMessage({mmVocab:'height',h},'*')}catch{}}}).observe(document.body)}
 })();
-

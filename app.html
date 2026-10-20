@@ -849,6 +849,32 @@ function trPublish(){
   });
 }
 // 簡報頁（iframe）開了房間：不管有沒有按「開始上課」，都記下這個房間，翻譯機就會同步給房間裡的學生
+// 生詞表製作「💾 存回本課教材」：只補空白欄位、加新生詞，已經有內容的欄位不改
+window.addEventListener("message", async function(e){
+  var d = e.data; if(!d || d.mmVocab !== "save" || !S.lib || !S.lib.vtool) return;
+  var fr = document.getElementById("fr"); if(!fr || e.source !== fr.contentWindow) return;
+  function reply(t){ try{ fr.contentWindow.postMessage({ mmVocab: "saved", text: t }, "*"); }catch(er){} }
+  var key = S.lib.key, pk = parseKey(key);
+  if(!pk || d.lesson !== key || !S.teacher || S.teacher.role === "ta"){ reply("這裡不能修改教材，沒有存。"); return; }
+  var t = S.teacher.id, bank = null; try{ bank = await fbGet("teacherVocabBanks/" + t); }catch(er){ reply("讀取教材失敗，請檢查網路後再試。"); return; }
+  var cd = arrOf(bank && bank.courseData);
+  var L = cd.filter(function(x){ return x && (x.book || DEFAULT_BOOK) === pk.book && Number(x.lesson) === pk.no; })[0];
+  if(!L){ L = { lesson: pk.no, title: ((S.plat.lessons || {})[key] || {}).title || "", vocab: [], grammar: [], texts: [] }; if(pk.book !== DEFAULT_BOOK) L.book = pk.book; cd.push(L); }
+  L.vocab = arrOf(L.vocab);
+  var phKey = d.phonetic === "zhuyin" ? "注音" : "拼音", added = 0, filled = 0, today = new Date().toISOString().slice(0, 10);
+  (d.rows || []).forEach(function(r){
+    if(!r || !String(r.w || "").trim()) return; var w = String(r.w).trim();
+    var pairs = [[phKey, r.ph], ["詞性", r.pos], ["英文翻譯", r.m], ["TOCFL等級", r.lv], ["例句（中文）", r.s]];
+    var v = L.vocab.filter(function(x){ return x && String(x["生詞"] || "").trim() === w; })[0];
+    if(!v){ v = { "生詞": w }; pairs.forEach(function(p){ if(p[1]) v[p[0]] = String(p[1]); }); v["新增日期"] = today; L.vocab.push(v); added++; return; }
+    pairs.forEach(function(p){ if(p[1] && !String(v[p[0]] || "").trim()){ v[p[0]] = String(p[1]); filled++; } });
+  });
+  if(!added && !filled){ reply("這一課的教材都已經有這些內容了，沒有需要補的。"); return; }
+  if(!confirm("存回「" + lessonTitle(key) + "」的教材：\n新增 " + added + " 個生詞、補上 " + filled + " 個空白欄位。\n已經有內容的欄位不會被改。確定嗎？")){ reply("已取消，教材沒有改動。"); return; }
+  try{ await fbUpdate("teacherVocabBanks/" + t, { courseData: cd, updatedAt: Date.now(), updatedBy: S.teacher.name || t }); }catch(er){ reply("存檔失敗，請檢查網路後再試。"); return; }
+  try{ await syncLessonIndex(); }catch(er){}
+  reply("已存回本課教材：新增 " + added + " 個生詞、補上 " + filled + " 個空白欄位。");
+});
 // 生詞表製作工具準備好時，把目前這一課的生詞（生詞、拼音、英文）傳進去
 function vtoolWords(key){
   var pk = parseKey(key); if(!pk) return [];
@@ -1670,8 +1696,8 @@ function renderLibrary(){
     html = '<div class="tabs"><button class="tab" data-pback="1">‹ 回' + esc(key.charAt(0) === "_" ? "教材" : lessonTitle(key)) + '</button></div><iframe class="frame" id="fr" src="' + esc(src) + '" allow="microphone; camera; autoplay; clipboard-write"></iframe>';
   } else if(S.lib.vtool){
     // 備課工具：生詞表製作（tools/vocab），開啟後自動帶入這一課的生詞
-    html = '<div class="tabs"><button class="tab" data-bankback="1">‹ 回' + esc(lessonTitle(key)) + '</button><span class="note" style="align-self:center;margin-left:8px;">生詞表製作（備課工具）：已帶入這一課的生詞，整理好可以匯出 Word、PPT、字卡</span></div>' +
-      '<iframe class="frame" id="fr" src="' + esc("tools/vocab/?embed=1&v=" + MM_V) + '" allow="clipboard-write"></iframe>';
+    html = '<div class="tabs"><button class="tab" data-bankback="1">‹ 回' + esc(lessonTitle(key)) + '</button><span class="note" style="align-self:center;margin-left:8px;">生詞表製作：已帶入這一課的生詞，整理好可以「💾 存回本課教材」或匯出 Word、PPT、字卡</span></div>' +
+      '<iframe class="frame" id="fr" src="' + esc("tools/vocab/?embed=1&v=" + MM_V + (S.teacher && S.teacher.role !== "ta" ? "&lesson=" + encodeURIComponent(key) : "")) + '" allow="clipboard-write"></iframe>';
   } else if(S.lib.bank){
     var pk = parseKey(key), lno = pk && pk.book === cur ? pk.no : (S.lib.lesson || "");
     html = '<div class="tabs"><button class="tab" data-bankback="1">‹ 回' + esc(key.charAt(0) === "_" ? "教材" : lessonTitle(key)) + '</button><span class="note" style="align-self:center;margin-left:8px;">編輯生詞・語法・課文（改完會自動存到雲端）</span></div>' +
