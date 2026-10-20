@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#E8825A">
+<title>生詞遊戲｜曼米中文</title>
+<link rel="icon" href="../icons/logo.svg">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&amp;family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;display=swap">
+<link rel="stylesheet" href="games.css?v=20261021">
+<script>
+  if(/[?&]embed=1(&|$)/.test(location.search)) document.documentElement.classList.add("mg-embed");
+  window.FIREBASE_CONFIG = {
+    apiKey: "AIzaSyC6DjPDuRCdSKuZYKKiCSlbWI_eLVM05oc",
+    authDomain: "chinese-onlineboard.firebaseapp.com",
+    databaseURL: "https://chinese-onlineboard-default-rtdb.asia-southeast1.firebasedatabase.app/",
+    projectId: "chinese-onlineboard",
+    storageBucket: "chinese-onlineboard.firebasestorage.app",
+    messagingSenderId: "635462964030",
+    appId: "1:635462964030:web:4059918956a649bf6a926f"
+  };
+</script>
+<script type="module">
+(async function(){
+  try{
+    var mods = await Promise.all([
+      import("https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js"),
+      import("https://www.gstatic.com/firebasejs/12.18.0/firebase-database.js"),
+      import("https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js")
+    ]);
+    var fbApp = mods[0].initializeApp(window.FIREBASE_CONFIG);
+    window.db = mods[1].getDatabase(fbApp);
+    window.ref = mods[1].ref; window.get = mods[1].get; window.set = mods[1].set; window.update = mods[1].update; window.onValue = mods[1].onValue; window.onDisconnect = mods[1].onDisconnect;
+    window.auth = mods[2].getAuth(fbApp);
+    // 老師在平台已經登入的話沿用同一個身分；沒有就用匿名登入（學生只要輸入名字）
+    var first = await new Promise(function(resolve){ var un = mods[2].onAuthStateChanged(window.auth, function(u){ try{ if(un) un(); }catch(e){} resolve(u); }); });
+    if(!first){
+      await new Promise(function(resolve, reject){
+        mods[2].onAuthStateChanged(window.auth, function(u){ if(u) resolve(u); });
+        mods[2].signInAnonymously(window.auth).catch(reject);
+      });
+    }
+    window.__firebaseReady = true;
+  }catch(e){ console.error("Firebase 連線失敗：", e); window.__firebaseFailed = true; }
+  window.dispatchEvent(new Event("firebase-bridge-ready"));
+})();
+</script>
+</head>
+<body>
+<div id="app"><div class="mg-loading">載入中…</div></div>
+<script src="vendor/qrcode.js"></script>
+<script src="core.js?v=20261021"></script>
+<script src="themes.js?v=20261021"></script>
+<script src="match.js?v=20261021"></script>
+<script src="blast.js?v=20261021"></script>
+<script src="groups.js?v=20261021"></script>
+<script src="live.js?v=20261021"></script>
+<script src="app.js?v=20261021"></script>
+</body>
+</html>

@@ -5643,6 +5643,8 @@ async function deleteUnit(key){
 }
 // ---------- 🎲 課堂活動：全部活動集中一頁（常用、最近用過），選課次／班級就開始 ----------
 var ACTS = [
+  { id: "match", e: "", t: "配對 Match", d: "詞語和拼音／翻譯配對，比速度或限時；可以全班即時比賽、分組、出作業連結", need: "lesson", game: true },
+  { id: "blast", e: "", t: "Blast", d: "答案從畫面掉下來，點對的那個；四種主題，可以全班即時比賽", need: "lesson", game: true },
   { id: "flashcard", e: "🎴", t: "字卡練習", d: "生詞字卡，翻面看注音和意思", need: "lesson" },
   { id: "flip", e: "🃏", t: "翻卡遊戲", d: "翻牌配對，記憶生詞", need: "lesson" },
   { id: "bingo", e: "🎉", t: "賓果卡", d: "產生賓果卡、老師念詞", need: "lesson" },
@@ -5687,9 +5689,10 @@ function renderActHub(){
   var keys = cls ? lessonKeys(cls) : lessonKeys(null), lk = A.lesson && keys.indexOf(A.lesson) >= 0 ? A.lesson : actDefaultLesson(keys, cls ? classProgress(cls, sel).cur : null);
   var ls = (A.ls || []).filter(function(k){ return keys.indexOf(k) >= 0; }); if(!ls.length && lk) ls = [lk];
   if(A.run){
-    var a = actById(A.run), lp = actLessonsParam(ls);
-    var html0 = '<div class="tabs"><button class="tab" data-actback="1">‹ 回課堂活動</button><span class="note" style="align-self:center;margin-left:8px;">' + esc(a ? a.e + " " + a.t : "") + '　｜　' + esc(ls.map(lessonTitle).join("、")) + '（' + actVocabCount(ls) + ' 個生詞）</span><button class="tab" data-actmore="1" style="margin-left:auto;">📚 選課次（可多選）</button></div>' +
-      (lp ? '<iframe class="frame" id="fr" src="' + esc("index.html?v=" + MM_V + "&embed=1&" + lp + "&tab=activities&activity=" + encodeURIComponent(A.run)) + '" allow="microphone; autoplay; clipboard-write"></iframe>' : '<div class="empty"><p class="note">這一課還沒有生詞，活動沒有內容可以用。</p></div>');
+    var a = actById(A.run), lp = a && a.game ? null : actLessonsParam(ls);
+    if(a && a.game) S.gameCtx = { game: a.id, sel: sel, ls: ls };
+    var html0 = '<div class="tabs"><button class="tab" data-actback="1">‹ 回課堂活動</button><span class="note" style="align-self:center;margin-left:8px;">' + esc(a ? a.e + " " + a.t : "") + (a && a.game ? '' : '　｜　' + esc(ls.map(lessonTitle).join("、")) + '（' + actVocabCount(ls) + ' 個生詞）') + '</span>' + (a && a.game ? '' : '<button class="tab" data-actmore="1" style="margin-left:auto;">📚 選課次（可多選）</button>') + '</div>' +
+      (a && a.game ? gameFrameHtml(a.id) : lp ? '<iframe class="frame" id="fr" src="' + esc("index.html?v=" + MM_V + "&embed=1&" + lp + "&tab=activities&activity=" + encodeURIComponent(A.run)) + '" allow="microphone; autoplay; clipboard-write"></iframe>' : '<div class="empty"><p class="note">這一課還沒有生詞，活動沒有內容可以用。</p></div>');
     shell(html0, { flush: true }); setCrumb([]);
     document.getElementById("main").onclick = async function(e){ if(e.target.closest("[data-actback]")){ S.act = { cls: A.cls, lesson: A.lesson, ls: A.ls }; render(); } else if(e.target.closest("[data-actmore]")){ var nk = await actPickLessons(keys, ls); if(nk){ S.act = Object.assign({}, A, { ls: nk }); render(); } } };
     return;
@@ -5741,6 +5744,32 @@ function actDefaultLesson(keys, cur){
   for(var j = (i >= 0 ? i : keys.length) - 1; j >= 0; j--){ if(!isUnit(keys[j]) && lessonCounts(keys[j]).vocab) return keys[j]; }
   return keys.filter(function(k){ return lessonCounts(k).vocab; })[0] || keys[0] || "";
 }
+// ---------- 生詞遊戲（配對 Match、Blast）：games/ 資料夾；這裡只負責把班級、課次、生詞交給遊戲頁 ----------
+function gameFrameHtml(id){ return '<iframe class="frame" id="fr" src="' + esc("games/index.html?v=" + MM_V + "&embed=1&g=" + encodeURIComponent(id)) + '" allow="autoplay; clipboard-write; fullscreen"></iframe>'; }
+function gameWords(key){
+  var pk = parseKey(key); if(!pk) return [];
+  var l = (S.bank || []).filter(function(x){ return (x.book || DEFAULT_BOOK) === pk.book && Number(x.lesson) === pk.no; })[0];
+  return arrOf(l && l.vocab).map(function(v){ v = v || {}; var tr = {}; if(v["英文翻譯"]) tr.en = String(v["英文翻譯"]).trim(); if(v["泰文翻譯"]) tr.th = String(v["泰文翻譯"]).trim(); return { w: String(v["生詞"] || "").trim(), p: String(v["拼音"] || "").trim(), zy: String(v["注音"] || "").trim(), tr: tr, e: String(v["Emoji／圖示"] || "").trim() }; }).filter(function(x){ return x.w; });
+}
+async function gameCtx(){
+  var G = S.gameCtx || {}, sel = G.sel || null, cls = sel ? getCls(sel) : null;
+  var keys = lessonKeys(cls).filter(function(k){ return !isUnit(k); });
+  var lessons = keys.map(function(k){ return { key: k, title: lessonTitle(k), short: lessonTitle(k).replace(/^.*?(第 \d+ 課)/, "$1"), words: gameWords(k) }; }).filter(function(l){ return l.words.length; });
+  var selK = []; (G.ls || []).forEach(function(k){ var l = (S.plat.lessons || {})[k]; (l && l.unit ? (l.members || []) : [k]).forEach(function(m){ if(selK.indexOf(m) < 0) selK.push(m); }); });
+  var roster = []; if(sel && cls){ try{ var r = await fbGet(hwBase(S.teacher.id, sel.c) + "/roster"); roster = Array.isArray(r) ? r.filter(Boolean) : (r ? Object.keys(r).map(function(k){ return r[k]; }) : []); }catch(e){} }
+  return { t: S.teacher.id, game: G.game, cls: sel && cls ? { c: sel.c, s: sel.s, tm: sel.t, name: cls.name } : null, roster: roster, lessons: lessons, recent: selK[0] || null, sel: selK, selExplicit: selK.length > 1 };
+}
+window.addEventListener("message", async function(e){
+  var d = e.data; if(!d || !d.mmGame || !S.teacher) return;
+  var fr = document.getElementById("fr"); if(!fr || e.source !== fr.contentWindow) return;
+  if(d.mmGame === "ready"){
+    if(S.live && S.live.on && S.live.game){ S.live.game = null; fbUpdate(liveRef(), { game: null }).catch(function(){}); }
+    var ctx = await gameCtx(); try{ fr.contentWindow.postMessage({ mmGame: "init", ctx: ctx }, "*"); }catch(er){}
+  } else if(d.mmGame === "room"){
+    // 上課中開了遊戲房間：學生的畫面自動加入（不用輸入代碼和名字）
+    if(S.live && S.live.on && S.sel){ S.live.game = d.code || null; fbUpdate(liveRef(), { game: d.code || null }).catch(function(){}); }
+  }
+});
 // 選好幾課的小視窗
 function actPickLessons(keys, cur, title){
   return new Promise(function(res){
@@ -5806,6 +5835,15 @@ function renderLessonCommon(no, open, teacher, liveStudent){
     var actOk = subId && actById(subId) && actById(subId).need === "lesson";
     if(actOk && subLs){ var lpM = actLessonsParam(subLs); if(lpM) lp2 = lpM; }
     if(teacher && !actOk){ S.sub = null; frame = lessonActPickerHtml(); }
+    else if(actOk && actById(subId).game){
+      if(teacher){
+        S.gameCtx = { game: subId, sel: S.sel, ls: subLs || [String(no)] };
+        sub = '<div class="subbar"><button class="tab" data-actback="1" style="padding:5px 14px;font-size:13.5px;">‹ 其他活動</button><span class="note">生詞遊戲（配對 Match／Blast）　｜　出題範圍在下面設定，可以選好幾課</span></div>';
+        frame = gameFrameHtml(subId);
+      } else {
+        frame = (S.live && S.live.game) ? lessonHtmlFrame("games/index.html?v=" + MM_V + "&embed=1&code=" + encodeURIComponent(S.live.game) + "&auto=1&name=" + encodeURIComponent(S.student ? S.student.name : "")) : '<div class="empty"><h3 style="margin-bottom:8px;">' + esc(actById(subId).t) + '</h3><p class="note">老師正在設定遊戲，開好房間後這裡會自動加入，請稍候…</p></div>';
+      }
+    }
     else {
       var curLs = subLs || [String(no)];
       if(teacher) sub = '<div class="subbar"><button class="tab" data-actback="1" style="padding:5px 14px;font-size:13.5px;">‹ 其他活動</button><span class="note">' + esc((actById(subId) || {}).e + " " + (actById(subId) || {}).t) + '　｜　' + esc(curLs.map(function(k){ return lessonTitle(k).replace(/^.*?(第 \d+ 課)/, "$1"); }).join("、")) + '（' + actVocabCount(curLs) + ' 個生詞）</span><button class="tab" data-actmore="1" style="padding:5px 14px;font-size:13.5px;margin-left:auto;">📚 加入其他課的生詞</button></div>';
@@ -6367,7 +6405,7 @@ function renderStudent(){
 function renderStudentLive(){
   var live = S.live;
   S.focus = true;
-  var key = [live.lesson, live.tab, live.sub, live.room].join("|");
+  var key = [live.lesson, live.tab, live.sub, live.room, live.game].join("|");
   if(S.liveRendered === key && document.getElementById("main")) return;
   S.liveRendered = key;
   if(!live.lesson){
