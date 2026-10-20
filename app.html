@@ -1304,6 +1304,19 @@ async function trSyncRecord(ent){
   try{ await fbSet("teacherPlatform/" + S.teacher.id + "/classRecords/" + ent.imp.rec + "/vocab", r.vocab); return true; }catch(e){ return false; }
 }
 // 老師指出的翻譯錯誤：統一修正（翻譯機清單、記住的修正、課堂記錄），每一包只做一次
+// 已經加進教材庫的課，之後補上的欄位（例如生詞卡圖示）：只補空白的，老師自己填過的不動
+function bookNorm(t){ t = String(t || "").replace(/[\s《》〈〉「」]/g, ""); var m = /^(.*?)第([0-9零〇一二兩三四五六七八九十]+)冊/.exec(t); return { all: t, ser: m ? m[1] : null, vol: m ? cnNum(m[2]) : null }; }
+function findBookByTitle(title){ var w = bookNorm(title); return bookIds(true).filter(function(b){ var h = bookNorm(bookTitle(b)); return h.all === w.all || !!(w.ser && w.vol && h.ser === w.ser && h.vol === w.vol); })[0] || null; }
+async function applyVocabFill(fx){
+  var bid = fx.book || (fx.bookTitle ? findBookByTitle(fx.bookTitle) : DEFAULT_BOOK); if(!bid) return;
+  var t = S.teacher.id, bank = await fbGet("teacherVocabBanks/" + t), cd = arrOf(bank && bank.courseData);
+  var L = cd.filter(function(x){ return x && (x.book || DEFAULT_BOOK) === bid && Number(x.lesson) === Number(fx.lesson); })[0]; if(!L) return;
+  var vs = arrOf(L.vocab), n = 0;
+  vs.forEach(function(v){ var val = v && (fx.values || {})[String(v["生詞"] || "").trim()]; if(val && !String(v[fx.field] || "").trim()){ v[fx.field] = val; n++; } });
+  if(!n) return; L.vocab = vs;
+  await fbUpdate("teacherVocabBanks/" + t, { courseData: cd, updatedAt: Date.now(), updatedBy: S.teacher.name || t });
+  await syncLessonIndex();
+}
 async function applyContentFixes(){
   if(!S.teacher || S.teacher.role === "ta") return;
   var list = null; try{ var r = await fetch("content/fixes.json?v=" + MM_V, { cache: "no-store" }); if(r.ok) list = await r.json(); }catch(e){}
@@ -1311,6 +1324,7 @@ async function applyContentFixes(){
   var base = "teacherPlatform/" + S.teacher.id, done = ((S.plat.meta || {}).fixesApplied) || {}, nWords = 0, nRec = 0;
   for(var f = 0; f < list.fixes.length; f++){
     var fx = list.fixes[f]; if(!fx || !fx.id || done[fx.id]) continue;
+    if(fx.kind === "vocabFill"){ try{ await applyVocabFill(fx); }catch(e){ console.warn("vocabFill", e); continue; } done[fx.id] = Date.now(); S.plat.meta = S.plat.meta || {}; S.plat.meta.fixesApplied = done; try{ await fbSet(base + "/meta/fixesApplied/" + fx.id, done[fx.id]); }catch(e){} continue; }
     var tl = {}; try{ tl = (await fbGet(base + "/transList")) || {}; }catch(e){ continue; }
     var touched = {};
     (fx.items || []).forEach(function(it){
