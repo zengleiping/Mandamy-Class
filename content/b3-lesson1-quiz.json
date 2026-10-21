@@ -1,0 +1,1041 @@
+{
+ "id": "proj_b3l1quiz",
+ "title": "第三冊 第一課 上課了 練習題",
+ "desc": "依第三冊第一課簡報（生詞、句型、課文、習寫漢字、練習、綜合活動、任務活動）整理；題目說明附英文",
+ "sections": {
+  "s31_1": {
+   "id": "s31_1",
+   "title": "第 1 大題：連連看（生詞和注音） Match the words with zhuyin",
+   "type": "match",
+   "order": 0,
+   "questions": {
+    "q31_01": {
+     "id": "q31_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "回來",
+       "right": "ㄏㄨㄟˊ ㄌㄞˊ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "放假",
+       "right": "ㄈㄤˋ ㄐㄧㄚˋ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "練習",
+       "right": "ㄌㄧㄢˋ ㄒㄧˊ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "開始",
+       "right": "ㄎㄞ ㄕˇ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "遊戲",
+       "right": "ㄧㄡˊ ㄒㄧˋ"
+      }
+     }
+    },
+    "q31_02": {
+     "id": "q31_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "上午",
+       "right": "ㄕㄤˋ ㄨˇ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "下午",
+       "right": "ㄒㄧㄚˋ ㄨˇ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "書法",
+       "right": "ㄕㄨ ㄈㄚˇ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "下棋",
+       "right": "ㄒㄧㄚˋ ㄑㄧˊ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "課本",
+       "right": "ㄎㄜˋ ㄅㄣˇ"
+      }
+     }
+    }
+   }
+  },
+  "s31_2": {
+   "id": "s31_2",
+   "title": "第 2 大題：連連看（生詞和意思） Match the words with their meanings",
+   "type": "match",
+   "order": 1,
+   "questions": {
+    "q31_03": {
+     "id": "q31_03",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "上課",
+       "right": "to have class; to start class"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "放假",
+       "right": "to have a holiday; to be on vacation"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "天天",
+       "right": "every day"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "書法",
+       "right": "calligraphy"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "念",
+       "right": "to read aloud"
+      }
+     }
+    },
+    "q31_04": {
+     "id": "q31_04",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "寫字",
+       "right": "to write characters"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "下棋",
+       "right": "to play chess (or a board game)"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "遊戲",
+       "right": "game"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "打開",
+       "right": "to open"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "課本",
+       "right": "textbook"
+      }
+     }
+    }
+   }
+  },
+  "s31_3": {
+   "id": "s31_3",
+   "title": "第 3 大題：我會寫（寫出正確的漢字） Write the characters",
+   "type": "fill",
+   "order": 2,
+   "questions": {
+    "q31_05": {
+     "id": "q31_05",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "今天老師歡迎我們{回}來上課。"
+    },
+    "q31_06": {
+     "id": "q31_06",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "老師問我們{放}{假}的時候做了什麼。"
+    },
+    "q31_07": {
+     "id": "q31_07",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "友朋上{午}在家{練}{習}寫{字}，下午去游泳。"
+    },
+    "q31_08": {
+     "id": "q31_08",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "開{始}上課的時候，大文問老師今天會玩遊戲{嗎}？"
+    },
+    "q31_09": {
+     "id": "q31_09",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "老師請大文{等}一下，要大家先打開課本一起{念}課文。"
+    }
+   }
+  },
+  "s31_4": {
+   "id": "s31_4",
+   "title": "第 4 大題：友朋的日記 Youpeng's diary",
+   "type": "fill",
+   "order": 3,
+   "questions": {
+    "q31_10": {
+     "id": "q31_10",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "下面是友朋的日記（九月一號），請根據課文寫上正確的漢字。 This is Youpeng's diary. Fill in the correct characters.",
+     "template": "今天老師歡迎我們{回}來上課。他問我們{放}{假}的時候做了什麼。我說上{午}在家{練}{習}寫{字}，下午去游泳。"
+    },
+    "q31_11": {
+     "id": "q31_11",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "下面是友朋的日記（九月一號），請根據課文寫上正確的漢字。 This is Youpeng's diary. Fill in the correct characters.",
+     "template": "張莉天天在家寫書法，也跟爸爸下棋。開{始}上課的時候，大文問老師「今天會玩遊戲{嗎}？」"
+    },
+    "q31_12": {
+     "id": "q31_12",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "下面是友朋的日記（九月一號），請根據課文寫上正確的漢字。 This is Youpeng's diary. Fill in the correct characters.",
+     "template": "老師請大文{等}一下，要大家先打開課本一起{念}課文。"
+    }
+   }
+  },
+  "s31_5": {
+   "id": "s31_5",
+   "title": "第 5 大題：綜合活動（看圖寫漢字） Look at the pictures",
+   "type": "fill",
+   "order": 4,
+   "questions": {
+    "q31_13": {
+     "id": "q31_13",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "請看圖，在空格寫上正確的漢字。 Look at the picture and fill in the correct characters.",
+     "template": "老師，我們今天會玩遊戲{嗎}？",
+     "media": [
+      {
+       "id": "m_class",
+       "type": "image",
+       "src": "../content/b3l1/class.jpg",
+       "name": "教室"
+      }
+     ]
+    },
+    "q31_14": {
+     "id": "q31_14",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "請看圖，在空格寫上正確的漢字。 Look at the picture and fill in the correct characters.",
+     "template": "等一下，我們現在開始{上}{課}。",
+     "media": [
+      {
+       "id": "m_class",
+       "type": "image",
+       "src": "../content/b3l1/class.jpg",
+       "name": "教室"
+      }
+     ]
+    },
+    "q31_15": {
+     "id": "q31_15",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "請看圖，在空格寫上正確的漢字。 Look at the picture and fill in the correct characters.",
+     "template": "文文，你該{開}{始}寫功課了。——等一下，我想先喝牛奶。",
+     "media": [
+      {
+       "id": "m_homework",
+       "type": "image",
+       "src": "../content/b3l1/homework.jpg",
+       "name": "寫功課"
+      }
+     ]
+    },
+    "q31_16": {
+     "id": "q31_16",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "請看圖，在空格寫上正確的漢字。 Look at the picture and fill in the correct characters.",
+     "template": "明天有書法課，你練習了{嗎}？",
+     "media": [
+      {
+       "id": "m_calligraphy",
+       "type": "image",
+       "src": "../content/b3l1/calligraphy.jpg",
+       "name": "書法課"
+      }
+     ]
+    },
+    "q31_17": {
+     "id": "q31_17",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "請看圖，在空格寫上正確的漢字。 Look at the picture and fill in the correct characters.",
+     "template": "我該{開}{始}練習了。",
+     "media": [
+      {
+       "id": "m_calligraphy",
+       "type": "image",
+       "src": "../content/b3l1/calligraphy.jpg",
+       "name": "書法課"
+      }
+     ]
+    }
+   }
+  },
+  "s31_6": {
+   "id": "s31_6",
+   "title": "第 6 大題：句型填空 Fill in the sentence patterns",
+   "type": "fill",
+   "order": 5,
+   "questions": {
+    "q31_18": {
+     "id": "q31_18",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "用「（時間）在（地方）做（事）」完成句子。 Use (time) 在 (place) do (something).",
+     "template": "上午我{在}家練習寫字，下午{在}外面跑步。"
+    },
+    "q31_19": {
+     "id": "q31_19",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "用「等一下」完成句子。 Use 等一下 (wait a moment).",
+     "template": "{等一下}，你先洗手，再吃飯。"
+    },
+    "q31_20": {
+     "id": "q31_20",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "用「打開」完成句子。 Use 打開 (open).",
+     "template": "媽媽，小狗要出去，我可以{打開}門嗎？"
+    },
+    "q31_21": {
+     "id": "q31_21",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "用「開始＋V」完成句子。 Use 開始 + verb (start doing).",
+     "template": "上午天氣很冷，{開始}下雪了。"
+    }
+   }
+  },
+  "s31_7": {
+   "id": "s31_7",
+   "title": "第 7 大題：選擇題（句型） Choose the correct answer",
+   "type": "choice",
+   "order": 6,
+   "questions": {
+    "q31_22": {
+     "id": "q31_22",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n上午我＿＿家練習寫字。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "在"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "再"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "跟"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    },
+    "q31_23": {
+     "id": "q31_23",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n請你們＿＿課本。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "打開"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "開始"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "練習"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    },
+    "q31_24": {
+     "id": "q31_24",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n我們現在＿＿上課吧！",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "開始"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "打開"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "回來"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    },
+    "q31_25": {
+     "id": "q31_25",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n＿＿，請先打開課本，大家跟我一起念。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "等一下"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "天天"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "下午"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    },
+    "q31_26": {
+     "id": "q31_26",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n我＿＿在家寫書法。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "天天"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "上課"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "放假"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    }
+   }
+  },
+  "s31_8": {
+   "id": "s31_8",
+   "title": "第 8 大題：閱讀理解（課文） Reading comprehension",
+   "type": "choice",
+   "order": 7,
+   "questions": {
+    "q31_27": {
+     "id": "q31_27",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n放假的時候，友朋下午做了什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "去游泳"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "寫書法"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "下棋"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "老師：同學們，歡迎你們回來上課。\n學生：老師好！\n老師：你們放假的時候做了什麼？\n友朋：上午我在家練習寫字，下午我去游泳。\n張莉：我天天在家寫書法，也跟爸爸下棋。\n老師：很好！很有意思！我們現在開始上課吧！\n大文：老師，我們今天會玩遊戲嗎？\n老師：等一下。請先打開課本，大家跟我一起念。"
+    },
+    "q31_28": {
+     "id": "q31_28",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n張莉天天在家做什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "寫書法"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "練習寫字"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "游泳"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "老師：同學們，歡迎你們回來上課。\n學生：老師好！\n老師：你們放假的時候做了什麼？\n友朋：上午我在家練習寫字，下午我去游泳。\n張莉：我天天在家寫書法，也跟爸爸下棋。\n老師：很好！很有意思！我們現在開始上課吧！\n大文：老師，我們今天會玩遊戲嗎？\n老師：等一下。請先打開課本，大家跟我一起念。"
+    },
+    "q31_29": {
+     "id": "q31_29",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n張莉跟誰下棋？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "爸爸"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "媽媽"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "老師"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "老師：同學們，歡迎你們回來上課。\n學生：老師好！\n老師：你們放假的時候做了什麼？\n友朋：上午我在家練習寫字，下午我去游泳。\n張莉：我天天在家寫書法，也跟爸爸下棋。\n老師：很好！很有意思！我們現在開始上課吧！\n大文：老師，我們今天會玩遊戲嗎？\n老師：等一下。請先打開課本，大家跟我一起念。"
+    },
+    "q31_30": {
+     "id": "q31_30",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n大文問老師什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "今天會不會玩遊戲"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "今天要不要上課"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "放假的時候做了什麼"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "老師：同學們，歡迎你們回來上課。\n學生：老師好！\n老師：你們放假的時候做了什麼？\n友朋：上午我在家練習寫字，下午我去游泳。\n張莉：我天天在家寫書法，也跟爸爸下棋。\n老師：很好！很有意思！我們現在開始上課吧！\n大文：老師，我們今天會玩遊戲嗎？\n老師：等一下。請先打開課本，大家跟我一起念。"
+    },
+    "q31_31": {
+     "id": "q31_31",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n老師請大家先做什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "打開課本，跟老師一起念"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "玩遊戲"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "寫書法"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "老師：同學們，歡迎你們回來上課。\n學生：老師好！\n老師：你們放假的時候做了什麼？\n友朋：上午我在家練習寫字，下午我去游泳。\n張莉：我天天在家寫書法，也跟爸爸下棋。\n老師：很好！很有意思！我們現在開始上課吧！\n大文：老師，我們今天會玩遊戲嗎？\n老師：等一下。請先打開課本，大家跟我一起念。"
+    }
+   }
+  },
+  "s31_9": {
+   "id": "s31_9",
+   "title": "第 9 大題：是非題（課文） True or false",
+   "type": "choice",
+   "order": 8,
+   "questions": {
+    "q31_32": {
+     "id": "q31_32",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "判斷對錯。 True or false?\n\n友朋上午在家練習寫字。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "老師：同學們，歡迎你們回來上課。\n學生：老師好！\n老師：你們放假的時候做了什麼？\n友朋：上午我在家練習寫字，下午我去游泳。\n張莉：我天天在家寫書法，也跟爸爸下棋。\n老師：很好！很有意思！我們現在開始上課吧！\n大文：老師，我們今天會玩遊戲嗎？\n老師：等一下。請先打開課本，大家跟我一起念。"
+    },
+    "q31_33": {
+     "id": "q31_33",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "判斷對錯。 True or false?\n\n張莉天天去游泳。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c2"
+     ],
+     "passage": "老師：同學們，歡迎你們回來上課。\n學生：老師好！\n老師：你們放假的時候做了什麼？\n友朋：上午我在家練習寫字，下午我去游泳。\n張莉：我天天在家寫書法，也跟爸爸下棋。\n老師：很好！很有意思！我們現在開始上課吧！\n大文：老師，我們今天會玩遊戲嗎？\n老師：等一下。請先打開課本，大家跟我一起念。"
+    },
+    "q31_34": {
+     "id": "q31_34",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "判斷對錯。 True or false?\n\n老師說現在先玩遊戲。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c2"
+     ],
+     "passage": "老師：同學們，歡迎你們回來上課。\n學生：老師好！\n老師：你們放假的時候做了什麼？\n友朋：上午我在家練習寫字，下午我去游泳。\n張莉：我天天在家寫書法，也跟爸爸下棋。\n老師：很好！很有意思！我們現在開始上課吧！\n大文：老師，我們今天會玩遊戲嗎？\n老師：等一下。請先打開課本，大家跟我一起念。"
+    }
+   }
+  },
+  "s31_10": {
+   "id": "s31_10",
+   "title": "第 10 大題：讀讀看，寫上漢字 Read the zhuyin and write the characters",
+   "type": "fill",
+   "order": 9,
+   "questions": {
+    "q31_35": {
+     "id": "q31_35",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "讀出注音，寫出正確的漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄐㄧㄝˋ ㄕㄠˋ ㄗˋ ㄐㄧˇ → {介紹自己}"
+    },
+    "q31_36": {
+     "id": "q31_36",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "讀出注音，寫出正確的漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄒㄩㄝˊ ㄓㄨㄥ ㄨㄣˊ → {學中文}"
+    },
+    "q31_37": {
+     "id": "q31_37",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "讀出注音，寫出正確的漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄧㄡˊ ㄩㄥˇ → {游泳}"
+    },
+    "q31_38": {
+     "id": "q31_38",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "讀出注音，寫出正確的漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄎㄢˋ ㄕㄨ → {看書}"
+    }
+   }
+  },
+  "s31_11": {
+   "id": "s31_11",
+   "title": "第 11 大題：任務活動（猜猜看） Guess who",
+   "type": "choice",
+   "order": 10,
+   "questions": {
+    "q31_39": {
+     "id": "q31_39",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "根據課文猜猜看，誰是同學 A？誰是同學 B？ Guess who student A and student B are.\n\n同學 A：「上午我在家練習寫字，下午我去游泳。」同學 A 是誰？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "友朋"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "張莉"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "大文"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "media": [
+      {
+       "id": "m_guess",
+       "type": "image",
+       "src": "../content/b3l1/guess.jpg",
+       "name": "猜猜看"
+      }
+     ]
+    },
+    "q31_40": {
+     "id": "q31_40",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "根據課文猜猜看，誰是同學 A？誰是同學 B？ Guess who student A and student B are.\n\n同學 B：「我天天在家寫書法，也跟爸爸下棋。」同學 B 是誰？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "張莉"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "友朋"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "大文"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "media": [
+      {
+       "id": "m_guess",
+       "type": "image",
+       "src": "../content/b3l1/guess.jpg",
+       "name": "猜猜看"
+      }
+     ]
+    }
+   }
+  },
+  "s31_12": {
+   "id": "s31_12",
+   "title": "第 12 大題：說說看（句型、畫畫看） Speaking",
+   "type": "record",
+   "order": 11,
+   "questions": {
+    "q31_41": {
+     "id": "q31_41",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "週末的時候，你做什麼？請用「（時間）在（地方）做（事）」回答。 Answer with (time) 在 (place) do (something).",
+     "reference": "星期六上午我在家寫功課，下午在公園跑步。",
+     "maxSec": 30
+    },
+    "q31_42": {
+     "id": "q31_42",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "媽媽叫你吃飯，可是你還沒洗手。請用「等一下，先……，再……」回答。 Answer with 等一下，先…，再…",
+     "reference": "等一下，我先洗手，再吃飯。",
+     "maxSec": 30
+    },
+    "q31_43": {
+     "id": "q31_43",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "上課了，老師會說什麼？請用「打開」和「開始」說一說。 Use 打開 and 開始.",
+     "reference": "請你們打開課本，我們現在開始上課。",
+     "maxSec": 30
+    },
+    "q31_44": {
+     "id": "q31_44",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": "課本「畫畫看」活動改成口說；也可以請學生先畫在紙上再說。",
+     "prompt": "你放假的時候做了什麼？請說說看（也可以先畫下來）。 What did you do during the holiday? Talk about it (you can draw it first).",
+     "reference": "我放假的時候，上午在家練習寫字，下午去游泳。",
+     "maxSec": 60
+    }
+   }
+  },
+  "s31_13": {
+   "id": "s31_13",
+   "title": "第 13 大題：習寫漢字 Write the characters",
+   "type": "hanzi",
+   "order": 12,
+   "questions": {
+    "q31_45": {
+     "id": "q31_45",
+     "order": 0,
+     "title": "第 1 題：回",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "回",
+     "desc": "6畫，部首：口"
+    },
+    "q31_46": {
+     "id": "q31_46",
+     "order": 1,
+     "title": "第 2 題：放",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "放",
+     "desc": "8畫，部首：攴"
+    },
+    "q31_47": {
+     "id": "q31_47",
+     "order": 2,
+     "title": "第 3 題：假",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "假",
+     "desc": "11畫，部首：人"
+    },
+    "q31_48": {
+     "id": "q31_48",
+     "order": 3,
+     "title": "第 4 題：午",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "午",
+     "desc": "4畫，部首：十"
+    },
+    "q31_49": {
+     "id": "q31_49",
+     "order": 4,
+     "title": "第 5 題：練",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "練",
+     "desc": "15畫，部首：糸"
+    },
+    "q31_50": {
+     "id": "q31_50",
+     "order": 5,
+     "title": "第 6 題：習",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "習",
+     "desc": "11畫，部首：羽"
+    },
+    "q31_51": {
+     "id": "q31_51",
+     "order": 6,
+     "title": "第 7 題：字",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "字",
+     "desc": "6畫，部首：子"
+    },
+    "q31_52": {
+     "id": "q31_52",
+     "order": 7,
+     "title": "第 8 題：始",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "始",
+     "desc": "8畫，部首：女"
+    },
+    "q31_53": {
+     "id": "q31_53",
+     "order": 8,
+     "title": "第 9 題：嗎",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "嗎",
+     "desc": "13畫，部首：口"
+    },
+    "q31_54": {
+     "id": "q31_54",
+     "order": 9,
+     "title": "第 10 題：等",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "等",
+     "desc": "12畫，部首：竹"
+    },
+    "q31_55": {
+     "id": "q31_55",
+     "order": 10,
+     "title": "第 11 題：念",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "念",
+     "desc": "8畫，部首：心"
+    }
+   }
+  },
+  "s31_14": {
+   "id": "s31_14",
+   "title": "第 14 大題：我會念（課文） Read aloud",
+   "type": "record",
+   "order": 13,
+   "questions": {
+    "q31_56": {
+     "id": "q31_56",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "請念出課文第一段。 Read the first part of the text.",
+     "passage": "老師：同學們，歡迎你們回來上課。\n學生：老師好！\n老師：你們放假的時候做了什麼？\n友朋：上午我在家練習寫字，下午我去游泳。",
+     "reference": "老師：同學們，歡迎你們回來上課。\n學生：老師好！\n老師：你們放假的時候做了什麼？\n友朋：上午我在家練習寫字，下午我去游泳。",
+     "maxSec": 60
+    },
+    "q31_57": {
+     "id": "q31_57",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "請念出課文第二段。 Read the second part of the text.",
+     "passage": "張莉：我天天在家寫書法，也跟爸爸下棋。\n老師：很好！很有意思！我們現在開始上課吧！\n大文：老師，我們今天會玩遊戲嗎？\n老師：等一下。請先打開課本，大家跟我一起念。",
+     "reference": "張莉：我天天在家寫書法，也跟爸爸下棋。\n老師：很好！很有意思！我們現在開始上課吧！\n大文：老師，我們今天會玩遊戲嗎？\n老師：等一下。請先打開課本，大家跟我一起念。",
+     "maxSec": 60
+    }
+   }
+  }
+ },
+ "currentQId": "q31_01"
+}

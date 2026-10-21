@@ -27,6 +27,32 @@
    "file": "content/b1-lesson6-quiz.json"
   },
   {
+   "id": "b3-1",
+   "bookTitle": "《學華語向前走》第三冊",
+   "lesson": 1,
+   "file": "content/b3-lesson1.json"
+  },
+  {
+   "id": "b3-1-quiz",
+   "type": "project",
+   "bookTitle": "《學華語向前走》第三冊",
+   "lesson": 1,
+   "file": "content/b3-lesson1-quiz.json"
+  },
+  {
+   "id": "b3-2",
+   "bookTitle": "《學華語向前走》第三冊",
+   "lesson": 2,
+   "file": "content/b3-lesson2.json"
+  },
+  {
+   "id": "b3-2-quiz",
+   "type": "project",
+   "bookTitle": "《學華語向前走》第三冊",
+   "lesson": 2,
+   "file": "content/b3-lesson2-quiz.json"
+  },
+  {
    "id": "b3-5",
    "bookTitle": "《學華語向前走》第三冊",
    "lesson": 5,

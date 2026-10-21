@@ -1,0 +1,985 @@
+{
+ "id": "proj_b3l2quiz",
+ "title": "第三冊 第二課 我跑得最快 練習題",
+ "desc": "依第三冊第二課簡報（生詞、句型、課文、習寫漢字、練習、綜合活動、任務活動）整理；題目說明附英文",
+ "sections": {
+  "s32_1": {
+   "id": "s32_1",
+   "title": "第 1 大題：連連看（生詞和注音） Match the words with zhuyin",
+   "type": "match",
+   "order": 0,
+   "questions": {
+    "q32_01": {
+     "id": "q32_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "怎麼樣",
+       "right": "ㄗㄣˇ ˙ㄇㄜ ㄧㄤˋ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "開心",
+       "right": "ㄎㄞ ㄒㄧㄣ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "體育課",
+       "right": "ㄊㄧˇ ㄩˋ ㄎㄜˋ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "餅乾",
+       "right": "ㄅㄧㄥˇ ㄍㄢ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "功課",
+       "right": "ㄍㄨㄥ ㄎㄜˋ"
+      }
+     }
+    },
+    "q32_02": {
+     "id": "q32_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "一點",
+       "right": "ㄧˋ ㄉㄧㄢˇ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "叫",
+       "right": "ㄐㄧㄠˋ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "讀",
+       "right": "ㄉㄨˊ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "那麼",
+       "right": "ㄋㄚˋ ˙ㄇㄜ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "洗手",
+       "right": "ㄒㄧˇ ㄕㄡˇ"
+      }
+     }
+    }
+   }
+  },
+  "s32_2": {
+   "id": "s32_2",
+   "title": "第 2 大題：連連看（生詞和意思） Match the words with their meanings",
+   "type": "match",
+   "order": 1,
+   "questions": {
+    "q32_03": {
+     "id": "q32_03",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "開心",
+       "right": "happy"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "體育課",
+       "right": "PE class"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "快",
+       "right": "fast; quick"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "餅乾",
+       "right": "cookie; biscuit"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "功課",
+       "right": "homework"
+      }
+     }
+    },
+    "q32_04": {
+     "id": "q32_04",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "怎麼樣",
+       "right": "how; how is it"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "一點",
+       "right": "a little; a bit"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "讀",
+       "right": "to read"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "那麼",
+       "right": "then; in that case"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "洗手",
+       "right": "to wash one's hands"
+      }
+     }
+    }
+   }
+  },
+  "s32_3": {
+   "id": "s32_3",
+   "title": "第 3 大題：我會寫（寫出正確的漢字） Write the characters",
+   "type": "fill",
+   "order": 2,
+   "questions": {
+    "q32_05": {
+     "id": "q32_05",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "媽媽問張莉今天在學校怎麼{樣}。"
+    },
+    "q32_06": {
+     "id": "q32_06",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "張莉說她很開心，上體育課的時候，她{跑}{得}{最}快。"
+    },
+    "q32_07": {
+     "id": "q32_07",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "張莉說她很累，也很{餓}。"
+    },
+    "q32_08": {
+     "id": "q32_08",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "張莉想先吃餅乾，再做{功}課。"
+    },
+    "q32_09": {
+     "id": "q32_09",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "今天老師{叫}他們{讀}一本書。"
+    }
+   }
+  },
+  "s32_4": {
+   "id": "s32_4",
+   "title": "第 4 大題：張莉的日記 Zhang Li's diary",
+   "type": "fill",
+   "order": 3,
+   "questions": {
+    "q32_10": {
+     "id": "q32_10",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "下面是張莉的日記（三月十一號），請根據課文寫上正確的漢字。 This is Zhang Li's diary. Fill in the correct characters.",
+     "template": "今天媽媽問我在學校怎麼{樣}，我跟媽媽說我很開{心}，上體育課的時候我{跑}{得}{最}快。"
+    },
+    "q32_11": {
+     "id": "q32_11",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "下面是張莉的日記（三月十一號），請根據課文寫上正確的漢字。 This is Zhang Li's diary. Fill in the correct characters.",
+     "template": "到家以後，我很累，也很{餓}。所以我先吃了餅乾，再做{功}課。"
+    },
+    "q32_12": {
+     "id": "q32_12",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "下面是張莉的日記（三月十一號），請根據課文寫上正確的漢字。 This is Zhang Li's diary. Fill in the correct characters.",
+     "template": "今天老師{叫}我們{讀}一本{書}，媽媽跟我一起看書，真開{心}。"
+    }
+   }
+  },
+  "s32_5": {
+   "id": "s32_5",
+   "title": "第 5 大題：綜合活動（看圖寫漢字） Look at the pictures",
+   "type": "fill",
+   "order": 4,
+   "questions": {
+    "q32_13": {
+     "id": "q32_13",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "請看圖，在空格寫上正確的漢字。 Look at the picture and fill in the correct characters.",
+     "template": "張莉{跑}得最快。",
+     "media": [
+      {
+       "id": "m_run",
+       "type": "image",
+       "src": "../content/b3l2/run.jpg",
+       "name": "跑步"
+      }
+     ]
+    },
+    "q32_14": {
+     "id": "q32_14",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "請看圖，在空格寫上正確的漢字。 Look at the picture and fill in the correct characters.",
+     "template": "友朋跳{得}最遠。",
+     "media": [
+      {
+       "id": "m_jump",
+       "type": "image",
+       "src": "../content/b3l2/jump.jpg",
+       "name": "跳遠"
+      }
+     ]
+    },
+    "q32_15": {
+     "id": "q32_15",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "「很好聽」可以換成學生自己的答案，例如「唱得不錯」。",
+     "prompt": "請看圖，在空格寫上正確的漢字。 Look at the picture and fill in the correct characters.\n\n你喜歡唱歌嗎？你唱得怎麼樣？",
+     "template": "喜歡，我{唱}得很好聽。",
+     "media": [
+      {
+       "id": "m_sing",
+       "type": "image",
+       "src": "../content/b3l2/sing.jpg",
+       "name": "唱歌"
+      }
+     ]
+    }
+   }
+  },
+  "s32_6": {
+   "id": "s32_6",
+   "title": "第 6 大題：句型填空 Fill in the sentence patterns",
+   "type": "fill",
+   "order": 5,
+   "questions": {
+    "q32_16": {
+     "id": "q32_16",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "用「怎麼樣」完成句子。 Use 怎麼樣 (how is…?).",
+     "template": "奶奶，臺灣冬天的天氣{怎麼樣}？"
+    },
+    "q32_17": {
+     "id": "q32_17",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "用「V 得……」完成句子。 Use V 得… (how an action is done).",
+     "template": "大文的功課寫{得}非常好。"
+    },
+    "q32_18": {
+     "id": "q32_18",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "用「Vs 不 Vs」完成句子。 Use Vs 不 Vs (yes-no question).",
+     "template": "院子的花{漂亮不漂亮}？"
+    },
+    "q32_19": {
+     "id": "q32_19",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "用「……了……，再……」完成句子。 Use V1 了…，再 V2 (after A, then B).",
+     "template": "吃{了}飯，{再}吃糖果。"
+    }
+   }
+  },
+  "s32_7": {
+   "id": "s32_7",
+   "title": "第 7 大題：選擇題（句型） Choose the correct answer",
+   "type": "choice",
+   "order": 6,
+   "questions": {
+    "q32_20": {
+     "id": "q32_20",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n你今天在學校＿＿？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "怎麼樣"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "那麼"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "什麼"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    },
+    "q32_21": {
+     "id": "q32_21",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n上體育課的時候，我跑＿＿最快。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "得"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "的"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "再"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    },
+    "q32_22": {
+     "id": "q32_22",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n你累＿＿累？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "不"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "很"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "也"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    },
+    "q32_23": {
+     "id": "q32_23",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n吃了餅乾，我們＿＿一起看書。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "再"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "在"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "也"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    },
+    "q32_24": {
+     "id": "q32_24",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n今天老師＿＿我們讀一本書。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "叫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "讀"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "洗"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    }
+   }
+  },
+  "s32_8": {
+   "id": "s32_8",
+   "title": "第 8 大題：閱讀理解（課文） Reading comprehension",
+   "type": "choice",
+   "order": 7,
+   "questions": {
+    "q32_25": {
+     "id": "q32_25",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n張莉今天在學校怎麼樣？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "很開心"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "很不開心"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "很想睡覺"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "張莉：媽媽，我回來了。\n媽媽：你回來了，今天在學校怎麼樣？\n張莉：我很開心！上體育課的時候，我跑得最快。\n媽媽：太好了！你累不累？餓不餓？\n張莉：我很累，也很餓。\n媽媽：要不要吃一點東西？\n張莉：要，我想先吃餅乾，再做功課。今天老師叫我們讀一本書。\n媽媽：那麼，吃了餅乾，我們再一起看書。\n張莉：好，我先去洗手。"
+    },
+    "q32_26": {
+     "id": "q32_26",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n上體育課的時候，張莉怎麼樣？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "跑得最快"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "跳得最遠"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "唱得最好聽"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "張莉：媽媽，我回來了。\n媽媽：你回來了，今天在學校怎麼樣？\n張莉：我很開心！上體育課的時候，我跑得最快。\n媽媽：太好了！你累不累？餓不餓？\n張莉：我很累，也很餓。\n媽媽：要不要吃一點東西？\n張莉：要，我想先吃餅乾，再做功課。今天老師叫我們讀一本書。\n媽媽：那麼，吃了餅乾，我們再一起看書。\n張莉：好，我先去洗手。"
+    },
+    "q32_27": {
+     "id": "q32_27",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n張莉想先做什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "吃餅乾"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "做功課"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "看書"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "張莉：媽媽，我回來了。\n媽媽：你回來了，今天在學校怎麼樣？\n張莉：我很開心！上體育課的時候，我跑得最快。\n媽媽：太好了！你累不累？餓不餓？\n張莉：我很累，也很餓。\n媽媽：要不要吃一點東西？\n張莉：要，我想先吃餅乾，再做功課。今天老師叫我們讀一本書。\n媽媽：那麼，吃了餅乾，我們再一起看書。\n張莉：好，我先去洗手。"
+    },
+    "q32_28": {
+     "id": "q32_28",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n今天老師叫他們做什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "讀一本書"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "寫書法"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "洗手"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "張莉：媽媽，我回來了。\n媽媽：你回來了，今天在學校怎麼樣？\n張莉：我很開心！上體育課的時候，我跑得最快。\n媽媽：太好了！你累不累？餓不餓？\n張莉：我很累，也很餓。\n媽媽：要不要吃一點東西？\n張莉：要，我想先吃餅乾，再做功課。今天老師叫我們讀一本書。\n媽媽：那麼，吃了餅乾，我們再一起看書。\n張莉：好，我先去洗手。"
+    },
+    "q32_29": {
+     "id": "q32_29",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n吃餅乾以前，張莉要先去做什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "洗手"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "做功課"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "看書"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "張莉：媽媽，我回來了。\n媽媽：你回來了，今天在學校怎麼樣？\n張莉：我很開心！上體育課的時候，我跑得最快。\n媽媽：太好了！你累不累？餓不餓？\n張莉：我很累，也很餓。\n媽媽：要不要吃一點東西？\n張莉：要，我想先吃餅乾，再做功課。今天老師叫我們讀一本書。\n媽媽：那麼，吃了餅乾，我們再一起看書。\n張莉：好，我先去洗手。"
+    }
+   }
+  },
+  "s32_9": {
+   "id": "s32_9",
+   "title": "第 9 大題：是非題（課文） True or false",
+   "type": "choice",
+   "order": 8,
+   "questions": {
+    "q32_30": {
+     "id": "q32_30",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "判斷對錯。 True or false?\n\n張莉很累，也很餓。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "張莉：媽媽，我回來了。\n媽媽：你回來了，今天在學校怎麼樣？\n張莉：我很開心！上體育課的時候，我跑得最快。\n媽媽：太好了！你累不累？餓不餓？\n張莉：我很累，也很餓。\n媽媽：要不要吃一點東西？\n張莉：要，我想先吃餅乾，再做功課。今天老師叫我們讀一本書。\n媽媽：那麼，吃了餅乾，我們再一起看書。\n張莉：好，我先去洗手。"
+    },
+    "q32_31": {
+     "id": "q32_31",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "判斷對錯。 True or false?\n\n張莉想先做功課，再吃餅乾。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c2"
+     ],
+     "passage": "張莉：媽媽，我回來了。\n媽媽：你回來了，今天在學校怎麼樣？\n張莉：我很開心！上體育課的時候，我跑得最快。\n媽媽：太好了！你累不累？餓不餓？\n張莉：我很累，也很餓。\n媽媽：要不要吃一點東西？\n張莉：要，我想先吃餅乾，再做功課。今天老師叫我們讀一本書。\n媽媽：那麼，吃了餅乾，我們再一起看書。\n張莉：好，我先去洗手。"
+    },
+    "q32_32": {
+     "id": "q32_32",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "判斷對錯。 True or false?\n\n媽媽要跟張莉一起看書。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "張莉：媽媽，我回來了。\n媽媽：你回來了，今天在學校怎麼樣？\n張莉：我很開心！上體育課的時候，我跑得最快。\n媽媽：太好了！你累不累？餓不餓？\n張莉：我很累，也很餓。\n媽媽：要不要吃一點東西？\n張莉：要，我想先吃餅乾，再做功課。今天老師叫我們讀一本書。\n媽媽：那麼，吃了餅乾，我們再一起看書。\n張莉：好，我先去洗手。"
+    }
+   }
+  },
+  "s32_10": {
+   "id": "s32_10",
+   "title": "第 10 大題：讀讀看，寫上漢字 Read the zhuyin and write the characters",
+   "type": "fill",
+   "order": 9,
+   "questions": {
+    "q32_33": {
+     "id": "q32_33",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "讀出注音，寫出正確的漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄗㄨㄛˋ ㄕㄥ ㄧˋ → {做生意}"
+    },
+    "q32_34": {
+     "id": "q32_34",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "讀出注音，寫出正確的漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄗㄞˋ ㄉㄧㄢˋ ㄋㄠˇ ㄍㄨㄥ ㄙ ㄕㄤˋ ㄅㄢ → {在電腦公司上班}"
+    },
+    "q32_35": {
+     "id": "q32_35",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "讀出注音，寫出正確的漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄗㄞˋ ㄧㄣˊ ㄏㄤˊ ㄍㄨㄥ ㄗㄨㄛˋ → {在銀行工作}"
+    }
+   }
+  },
+  "s32_11": {
+   "id": "s32_11",
+   "title": "第 11 大題：任務活動（完成對話） Complete the dialogue",
+   "type": "fill",
+   "order": 10,
+   "questions": {
+    "q32_36": {
+     "id": "q32_36",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "和另一位同學一起完成對話，寫上正確的漢字。 Complete the dialogue with a partner.（同學 A）",
+     "template": "A：今天在學校怎麼樣？\nB：我很{開}{心}！上體育課的時候，我{跑}得最快。"
+    },
+    "q32_37": {
+     "id": "q32_37",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "和另一位同學一起完成對話，寫上正確的漢字。 Complete the dialogue with a partner.（同學 A）",
+     "template": "A：太好了！你累不累？餓不餓？\nB：我很{累}，也很{餓}。"
+    },
+    "q32_38": {
+     "id": "q32_38",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "和另一位同學一起完成對話，寫上正確的漢字。 Complete the dialogue with a partner.（同學 A）",
+     "template": "A：要不要吃一點東西？\nB：要，我想先吃餅乾，再做{功}{課}。"
+    },
+    "q32_39": {
+     "id": "q32_39",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "和另一位同學一起完成對話，寫上正確的漢字。 Complete the dialogue with a partner.（同學 B）",
+     "template": "A：今天在{學}{校}怎麼樣？\nB：我很開心！上體育課的時候，我跑得最快。"
+    },
+    "q32_40": {
+     "id": "q32_40",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "和另一位同學一起完成對話，寫上正確的漢字。 Complete the dialogue with a partner.（同學 B）",
+     "template": "A：太好了！你累不累？{餓}{不}{餓}？\nB：我很累，也很餓。"
+    },
+    "q32_41": {
+     "id": "q32_41",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "和另一位同學一起完成對話，寫上正確的漢字。 Complete the dialogue with a partner.（同學 B）",
+     "template": "A：要不要吃一點{東}{西}？\nB：要，我想先吃餅乾，再做功課。"
+    }
+   }
+  },
+  "s32_12": {
+   "id": "s32_12",
+   "title": "第 12 大題：說說看（句型、綜合活動） Speaking",
+   "type": "record",
+   "order": 11,
+   "questions": {
+    "q32_42": {
+     "id": "q32_42",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "你今天在學校怎麼樣？請用「V 得……」回答。 Answer with V 得…",
+     "reference": "我很開心！上體育課的時候，我跑得很快。",
+     "maxSec": 30
+    },
+    "q32_43": {
+     "id": "q32_43",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "看圖回答：你喜歡唱歌嗎？你唱得怎麼樣？ Look at the picture and answer.",
+     "reference": "喜歡，我唱得很好聽。",
+     "maxSec": 30,
+     "media": [
+      {
+       "id": "m_sing",
+       "type": "image",
+       "src": "../content/b3l2/sing.jpg",
+       "name": "唱歌"
+      }
+     ]
+    },
+    "q32_44": {
+     "id": "q32_44",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "放學回家以後，你先做什麼，再做什麼？請用「……了……，再……」回答。 Answer with V1 了…，再 V2.",
+     "reference": "我吃了餅乾，再做功課。",
+     "maxSec": 30
+    },
+    "q32_45": {
+     "id": "q32_45",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "請用「Vs 不 Vs」問同學兩個問題。 Ask a partner two questions with Vs 不 Vs.",
+     "reference": "你累不累？你餓不餓？",
+     "maxSec": 30
+    }
+   }
+  },
+  "s32_13": {
+   "id": "s32_13",
+   "title": "第 13 大題：習寫漢字 Write the characters",
+   "type": "hanzi",
+   "order": 12,
+   "questions": {
+    "q32_46": {
+     "id": "q32_46",
+     "order": 0,
+     "title": "第 1 題：樣",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "樣",
+     "desc": "15畫，部首：木"
+    },
+    "q32_47": {
+     "id": "q32_47",
+     "order": 1,
+     "title": "第 2 題：心",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "心",
+     "desc": "4畫，部首：心"
+    },
+    "q32_48": {
+     "id": "q32_48",
+     "order": 2,
+     "title": "第 3 題：跑",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "跑",
+     "desc": "12畫，部首：足"
+    },
+    "q32_49": {
+     "id": "q32_49",
+     "order": 3,
+     "title": "第 4 題：得",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "得",
+     "desc": "11畫，部首：彳"
+    },
+    "q32_50": {
+     "id": "q32_50",
+     "order": 4,
+     "title": "第 5 題：最",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "最",
+     "desc": "12畫，部首：冂"
+    },
+    "q32_51": {
+     "id": "q32_51",
+     "order": 5,
+     "title": "第 6 題：餓",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "餓",
+     "desc": "15畫，部首：食"
+    },
+    "q32_52": {
+     "id": "q32_52",
+     "order": 6,
+     "title": "第 7 題：功",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "功",
+     "desc": "5畫，部首：力"
+    },
+    "q32_53": {
+     "id": "q32_53",
+     "order": 7,
+     "title": "第 8 題：叫",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "叫",
+     "desc": "5畫，部首：口"
+    },
+    "q32_54": {
+     "id": "q32_54",
+     "order": 8,
+     "title": "第 9 題：讀",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "讀",
+     "desc": "22畫，部首：言"
+    },
+    "q32_55": {
+     "id": "q32_55",
+     "order": 9,
+     "title": "第 10 題：書",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "書",
+     "desc": "10畫，部首：曰"
+    }
+   }
+  },
+  "s32_14": {
+   "id": "s32_14",
+   "title": "第 14 大題：我會念（課文） Read aloud",
+   "type": "record",
+   "order": 13,
+   "questions": {
+    "q32_56": {
+     "id": "q32_56",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "請念出課文第一段。 Read the first part of the text.",
+     "passage": "張莉：媽媽，我回來了。\n媽媽：你回來了，今天在學校怎麼樣？\n張莉：我很開心！上體育課的時候，我跑得最快。\n媽媽：太好了！你累不累？餓不餓？\n張莉：我很累，也很餓。",
+     "reference": "張莉：媽媽，我回來了。\n媽媽：你回來了，今天在學校怎麼樣？\n張莉：我很開心！上體育課的時候，我跑得最快。\n媽媽：太好了！你累不累？餓不餓？\n張莉：我很累，也很餓。",
+     "maxSec": 60
+    },
+    "q32_57": {
+     "id": "q32_57",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "請念出課文第二段。 Read the second part of the text.",
+     "passage": "媽媽：要不要吃一點東西？\n張莉：要，我想先吃餅乾，再做功課。今天老師叫我們讀一本書。\n媽媽：那麼，吃了餅乾，我們再一起看書。\n張莉：好，我先去洗手。",
+     "reference": "媽媽：要不要吃一點東西？\n張莉：要，我想先吃餅乾，再做功課。今天老師叫我們讀一本書。\n媽媽：那麼，吃了餅乾，我們再一起看書。\n張莉：好，我先去洗手。",
+     "maxSec": 60
+    }
+   }
+  }
+ },
+ "currentQId": "q32_01"
+}
