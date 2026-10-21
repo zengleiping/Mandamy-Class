@@ -10,17 +10,19 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="曼米中文">
 
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Iansui&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Iansui&display=swap"><style>
+/* 英文、數字、拼音用 Times New Roman（只限拉丁字母範圍，注音的聲調符號才會跟注音一樣用芫荽）；中文、注音用芫荽 */
+@font-face{font-family:"MM Latin";src:local("Times New Roman"),local("TimesNewRomanPSMT"),local("Times");unicode-range:U+0000-02AF,U+0300-036F,U+1E00-1EFF,U+2000-206F,U+20A0-20CF,U+2100-214F;}@font-face{font-family:"MM Latin";font-weight:700;src:local("Times New Roman Bold"),local("TimesNewRomanPS-BoldMT"),local("Times Bold"),local("Times-Bold");unicode-range:U+0000-02AF,U+0300-036F,U+1E00-1EFF,U+2000-206F,U+20A0-20CF,U+2100-214F;}
+@font-face{font-family:"MM Latin";src:local("Times New Roman"),local("TimesNewRomanPSMT"),local("Times");unicode-range:U+0000-02AF,U+0300-036F,U+1E00-1EFF,U+2000-206F,U+20A0-20CF,U+2100-214F;}@font-face{font-family:"MM Latin";font-weight:700;src:local("Times New Roman Bold"),local("TimesNewRomanPS-BoldMT"),local("Times Bold"),local("Times-Bold");unicode-range:U+0000-02AF,U+0300-036F,U+1E00-1EFF,U+2000-206F,U+20A0-20CF,U+2100-214F;}</style>
 <style>
-  @font-face{ font-family:"MM Kai"; src: local("DFKai-SB"), local("DFKaiShu-SB-Estd-BF"), local("標楷體"), local("BiauKai"), local("BiauKaiTC"), local("BiauKaiTC-Regular"); unicode-range: U+2E80-2FFF, U+3001-303F, U+3100-312F, U+31A0-31BF, U+3400-4DBF, U+4E00-9FFF, U+F900-FAFF, U+FE30-FE4F, U+FF01-FF5E, U+20000-2FFFF; }
 
   :root{ --paper:#FAF7F2; --surface:#fff; --surface-2:#F2EAE0; --ink:#2B2320; --ink-soft:#6B5F55; --line:rgba(43,35,32,.12); --seal:#E8825A; --seal-soft:#FBE8DE; --bamboo:#4C8577; --bamboo-soft:#E3F0EC; --shadow:0 8px 24px -10px rgba(28,33,30,.18); }
   *{ box-sizing:border-box; }
   html,body{ margin:0; height:100%; }
   #root{ height:100%; }
   a.btn{ text-decoration:none; color:var(--ink); display:inline-block; }
-  body{ background:var(--paper); color:var(--ink); font-family:"Plus Jakarta Sans","Iansui","Noto Sans TC",-apple-system,sans-serif; -webkit-tap-highlight-color:transparent; }
-  h1,h2,h3{ font-family:"Iansui","Noto Serif TC",serif; margin:0; }
+  body{ background:var(--paper); color:var(--ink); font-family:MM Latin,Iansui,serif; -webkit-tap-highlight-color:transparent; }
+  h1,h2,h3{ font-family:MM Latin,Iansui,serif; margin:0; }
   button{ font:inherit; color:inherit; cursor:pointer; }
   .btn{ border:1.5px solid var(--line); background:var(--surface); border-radius:10px; padding:8px 14px; font-weight:700; font-size:13.5px; }
   .btn:hover{ border-color:var(--seal); color:var(--seal); }
@@ -34,7 +36,7 @@
   .brk-box{ text-align:center; padding:24px; }
   .brk-glass{ width:min(220px,40vw); height:auto; animation:brkFlip 3s ease-in-out infinite; }
   .brk-clock{ width:min(300px,52vw); height:auto; animation:brkJump .7s cubic-bezier(.3,1.6,.5,1) infinite alternate; transform-origin:50% 90%; }
-  .brk-title{ font-family:"Iansui","Noto Serif TC",serif; font-size:clamp(28px,5vw,52px); font-weight:700; color:var(--ink); margin-top:14px; }
+  .brk-title{ font-family:MM Latin,Iansui,serif; font-size:clamp(28px,5vw,52px); font-weight:700; color:var(--ink); margin-top:14px; }
   .brk-time{ font-size:clamp(56px,12vw,128px); font-weight:800; letter-spacing:.04em; color:var(--seal); font-variant-numeric:tabular-nums; line-height:1.1; }
   .brk-sub{ font-size:clamp(16px,2.4vw,22px); color:var(--ink-soft); margin-top:6px; }
   .brk-act{ display:flex; gap:10px; justify-content:center; margin-top:22px; flex-wrap:wrap; }
@@ -50,8 +52,8 @@
   .err{ background:var(--seal-soft); color:#B23B32; border-radius:10px; padding:8px 12px; font-size:13px; margin-top:10px; display:none; }
   .shell{ display:flex; flex-direction:column; height:100%; }
   .top{ display:flex; align-items:center; gap:12px; padding:8px 16px; background:var(--surface); border-bottom:1px solid var(--line); flex-wrap:wrap; }
-  .brand{ font-family:"Iansui",serif; font-size:19px; font-weight:700; letter-spacing:.04em; }
-  .brand small{ font-family:"Plus Jakarta Sans",sans-serif; font-size:11.5px; color:var(--ink-soft); margin-left:6px; letter-spacing:0; }
+  .brand{ font-family:MM Latin,Iansui,serif; font-size:19px; font-weight:700; letter-spacing:.04em; }
+  .brand small{ font-family:MM Latin,Iansui,serif; font-size:11.5px; color:var(--ink-soft); margin-left:6px; letter-spacing:0; }
   .top .grow{ flex:1; }
   .crumb{ font-size:13px; color:var(--ink-soft); font-weight:600; }
   .body{ flex:1; min-height:0; display:flex; }
@@ -79,7 +81,7 @@
   .tools{ display:flex; gap:8px; flex-wrap:wrap; }
   .lesson{ background:var(--surface); border:1.5px solid var(--line); border-radius:16px; padding:14px 16px; margin-bottom:12px; }
   .lesson .lh{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
-  .lesson .lt{ font-family:"Iansui",serif; font-size:18px; font-weight:700; flex:1; min-width:150px; }
+  .lesson .lt{ font-family:MM Latin,Iansui,serif; font-size:18px; font-weight:700; flex:1; min-width:150px; }
   .lesson .counts{ font-size:12.5px; color:var(--ink-soft); margin:4px 0 10px; }
   .toggles{ display:flex; gap:6px; flex-wrap:wrap; }
   .tg{ border:1.5px solid var(--line); background:var(--surface-2); border-radius:99px; padding:5px 12px; font-size:13px; font-weight:700; color:var(--ink-soft); }
@@ -89,7 +91,7 @@
   .ctab{ border:none; background:none; padding:9px 14px; font-size:15px; font-weight:700; color:var(--ink-soft); border-bottom:3px solid transparent; cursor:pointer; }
   .ctab.on{ color:var(--seal); border-bottom-color:var(--seal); }
   .tl-row{ display:flex; gap:12px; align-items:flex-start; padding:10px 14px; border:1.5px solid var(--line); border-radius:14px; background:var(--surface); margin-bottom:8px; flex-wrap:wrap; }
-  .tl-row .lt{ font-family:"Iansui",serif; font-size:17px; font-weight:700; }
+  .tl-row .lt{ font-family:MM Latin,Iansui,serif; font-size:17px; font-weight:700; }
   .tl-row.s-cur{ border-color:var(--seal); box-shadow:0 0 0 3px rgba(232,128,90,.15); }
   .tl-row.s-done{ background:var(--surface-2); }
   .tl-row.s-done .lt, .tl-row.s-skip .lt{ color:var(--ink-soft); }
@@ -110,7 +112,7 @@
   @media (max-width:760px){ .lib-wrap{ flex-direction:column; overflow:auto; } .lib-nav{ width:auto; border-right:none; border-bottom:1px solid var(--line); max-height:none; } .lib-pane{ overflow:visible; } }
   .hc-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:10px; }
   .hc{ display:flex; flex-direction:column; gap:2px; text-align:left; border:1.5px solid var(--line); background:var(--surface-2); border-radius:14px; padding:10px 12px; font:inherit; cursor:pointer; color:var(--ink); }
-  .hc b{ font-size:16px; font-family:"Iansui",serif; }
+  .hc b{ font-size:16px; font-family:MM Latin,Iansui,serif; }
   .hc:hover{ border-color:var(--seal); background:#FBE3D6; }
   .gbar{ height:5px; background:var(--surface-2); border-radius:3px; margin-top:3px; min-width:60px; } .gbar div{ height:100%; background:var(--bamboo); border-radius:3px; }
   .mic-on{ background:#C0392B !important; color:#fff !important; border-color:#C0392B !important; animation:micpulse 1.2s infinite; }
@@ -156,7 +158,7 @@
   .sv-day{ border-top:1px solid var(--line); padding:6px 0; } .sv-day summary{ cursor:pointer; }
   .sv-dlg{ width:min(520px,94vw); border:none; border-radius:18px; padding:16px; }
   .sv-card{ margin:12px 0; min-height:200px; border:2px solid var(--line); border-radius:16px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; cursor:pointer; background:var(--surface-2); padding:16px; text-align:center; }
-  .sv-w{ font-size:56px; font-family:"MM Kai","Iansui",serif; font-weight:700; } .sv-s{ font-size:20px; color:var(--seal); } .sv-t{ font-size:16px; }
+  .sv-w{ font-size:56px; font-family:MM Latin,Iansui,serif; font-weight:700; } .sv-s{ font-size:20px; color:var(--seal); } .sv-t{ font-size:16px; }
   .tabs{ display:flex; gap:4px; padding:8px 14px 0; background:var(--surface); border-bottom:1px solid var(--line); flex-wrap:wrap; }
   .tab{ border:none; background:none; padding:9px 16px; font-size:14.5px; font-weight:700; color:var(--ink-soft); border-bottom:3px solid transparent; }
   .tab.on{ color:var(--seal); border-bottom-color:var(--seal); }
@@ -1044,7 +1046,7 @@ function trInjectStyle(){
     '.tr-seg button.on{background:var(--tr-org);color:#fff}.tr-chip{background:var(--tr-soft);border:1px solid var(--tr-line)}.tr-chip.on{background:var(--tr-grn);border-color:var(--tr-grn);color:#fff}' +
     '.tr-row{background:var(--tr-card);border-radius:14px;padding:9px 12px 7px;margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,.06);position:relative}' +
     '.tr-ck{position:absolute;left:8px;top:10px;width:18px;height:18px;margin:0;cursor:pointer;accent-color:var(--tr-grn)}.tr-row{padding-left:36px !important}.tr-row.done{opacity:.55}.tr-zh{display:flex;align-items:flex-start;gap:2px;flex-wrap:wrap;padding-right:26px}' +
-    '.tr-ch{display:inline-flex;align-items:flex-start;margin-right:8px}.tr-c{font-size:34px;line-height:1.15;font-weight:700;font-family:"Noto Serif TC","Songti TC",serif}' +
+    '.tr-ch{display:inline-flex;align-items:flex-start;margin-right:8px}.tr-c{font-size:34px;line-height:1.15;font-weight:700;font-family:MM Latin,Iansui,serif}' +
     '.tr-zs{display:inline-flex;align-items:center;margin-left:3px;margin-top:2px;padding-right:11px;position:relative;color:var(--tr-grn);font-weight:600}' +
     '.tr-zm{display:flex;flex-direction:column;font-size:17px;line-height:1.08;font-style:normal}.tr-zm i{font-style:normal}' +
     '.tr-zt{position:absolute;right:0;top:44%;font-style:normal;font-size:17px;line-height:1}.tr-zn{position:absolute;top:-10px;left:0;font-style:normal;font-size:15px}' +
@@ -3884,11 +3886,11 @@ async function renderWheel(cls){
   function draw(){
     if(!document.getElementById("wheel")) return;
     var n = pool.length, R = 200, c = 210; ctx.clearRect(0, 0, 420, 420);
-    if(!n){ ctx.fillStyle = "#999"; ctx.font = "20px sans-serif"; ctx.textAlign = "center"; ctx.fillText("都抽完了", 210, 215); return; }
+    if(!n){ ctx.fillStyle = "#999"; ctx.font = "20px MM Latin,Iansui,serif"; ctx.textAlign = "center"; ctx.fillText("都抽完了", 210, 215); return; }
     for(var i = 0; i < n; i++){
       var a0 = ang + i * 2 * Math.PI / n, a1 = a0 + 2 * Math.PI / n;
       ctx.beginPath(); ctx.moveTo(c, c); ctx.arc(c, c, R, a0, a1); ctx.closePath(); ctx.fillStyle = cols[i % cols.length]; ctx.fill(); ctx.strokeStyle = "#fff"; ctx.lineWidth = 2; ctx.stroke();
-      ctx.save(); ctx.translate(c, c); ctx.rotate((a0 + a1) / 2); ctx.fillStyle = "#222"; ctx.font = (n > 18 ? 13 : 18) + "px sans-serif"; ctx.textAlign = "right"; ctx.textBaseline = "middle"; ctx.fillText(pool[i], R - 14, 0); ctx.restore();
+      ctx.save(); ctx.translate(c, c); ctx.rotate((a0 + a1) / 2); ctx.fillStyle = "#222"; ctx.font = (n > 18 ? 13 : 18) + "px MM Latin,Iansui,serif"; ctx.textAlign = "right"; ctx.textBaseline = "middle"; ctx.fillText(pool[i], R - 14, 0); ctx.restore();
     }
     ctx.beginPath(); ctx.moveTo(c + R + 4, c); ctx.lineTo(c + R + 28, c - 12); ctx.lineTo(c + R + 28, c + 12); ctx.closePath(); ctx.fillStyle = "#B23B32"; ctx.fill();
     var wl = document.getElementById("wleft"); if(wl) wl.textContent = "還剩 " + n + " 位";
@@ -4540,7 +4542,7 @@ function openReportCards(label, names, rng, texts, hwBy){
       '<h3>各項學習表現（佔滿分的百分比）</h3><table class="dims">' + dimRows + '</table>' +
       '<h3>老師的話</h3><div class="cmt">' + (function(){ var hh = S.rec && S.rec.html && S.rec.html[label + "|" + n]; return hh ? rteClean(hh) : rteFromText(txt) || esc(txt).replace(/\n/g, "<br>"); })() + '</div><div class="sign">老師簽名：＿＿＿＿＿＿＿＿　　日期：＿＿＿＿＿＿＿＿</div></section>';
   }).join("");
-  w.document.write('<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8"><title>學期學習報告 ' + esc(label) + '</title><style>body{font-family:"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;color:#222;margin:0}section{padding:28px 36px;page-break-after:always;max-width:720px;margin:0 auto}h1{font-size:24px;margin:0 0 4px}.meta{color:#666;margin-bottom:14px}h2{font-size:20px;border-bottom:2px solid #B23B32;padding-bottom:6px}h3{font-size:15px;margin:18px 0 6px;color:#B23B32}table{width:100%;border-collapse:collapse}.kv td{padding:6px 8px;border:1px solid #ddd}.kv td:nth-child(odd){background:#f6f1ea;width:18%;font-weight:700}.dims td{padding:5px 6px}.bar{background:#eee;border-radius:6px;height:12px;overflow:hidden}.bar div{background:#B23B32;height:100%}.cmt{line-height:1.9;white-space:normal}.sign{margin-top:36px;color:#444}@media print{section{padding:0}}</style></head><body>' + pages + '<script>setTimeout(function(){window.print();},400);<\/script></body></html>');
+  w.document.write('<!DOCTYPE html><html lang="zh-Hant"><head><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Iansui&display=swap"><style>@font-face{font-family:"MM Latin";src:local("Times New Roman"),local("TimesNewRomanPSMT"),local("Times");unicode-range:U+0000-02AF,U+0300-036F,U+1E00-1EFF,U+2000-206F,U+20A0-20CF,U+2100-214F;}@font-face{font-family:"MM Latin";font-weight:700;src:local("Times New Roman Bold"),local("TimesNewRomanPS-BoldMT"),local("Times Bold"),local("Times-Bold");unicode-range:U+0000-02AF,U+0300-036F,U+1E00-1EFF,U+2000-206F,U+20A0-20CF,U+2100-214F;}</style><meta charset="UTF-8"><title>學期學習報告 ' + esc(label) + '</title><style>body{font-family:MM Latin,Iansui,serif;color:#222;margin:0}section{padding:28px 36px;page-break-after:always;max-width:720px;margin:0 auto}h1{font-size:24px;margin:0 0 4px}.meta{color:#666;margin-bottom:14px}h2{font-size:20px;border-bottom:2px solid #B23B32;padding-bottom:6px}h3{font-size:15px;margin:18px 0 6px;color:#B23B32}table{width:100%;border-collapse:collapse}.kv td{padding:6px 8px;border:1px solid #ddd}.kv td:nth-child(odd){background:#f6f1ea;width:18%;font-weight:700}.dims td{padding:5px 6px}.bar{background:#eee;border-radius:6px;height:12px;overflow:hidden}.bar div{background:#B23B32;height:100%}.cmt{line-height:1.9;white-space:normal}.sign{margin-top:36px;color:#444}@media print{section{padding:0}}</style></head><body>' + pages + '<script>setTimeout(function(){window.print();},400);<\/script></body></html>');
   w.document.close();
 }
 // ---------- 助教 ----------
@@ -6502,11 +6504,11 @@ function bingoAnnounceCheck(d){
 function bgWheelRender(keys, ang, d){
   var cv = document.getElementById("bg-wheel"); if(!cv) return; var ctx = cv.getContext("2d"), n = keys.length, R = 200, c = 210;
   ctx.clearRect(0, 0, 420, 420);
-  if(!n){ ctx.fillStyle = "#999"; ctx.font = "20px sans-serif"; ctx.textAlign = "center"; ctx.fillText("順序都抽完了", 210, 215); return; }
+  if(!n){ ctx.fillStyle = "#999"; ctx.font = "20px MM Latin,Iansui,serif"; ctx.textAlign = "center"; ctx.fillText("順序都抽完了", 210, 215); return; }
   for(var i = 0; i < n; i++){
     var a0 = ang + i * 2 * Math.PI / n, a1 = a0 + 2 * Math.PI / n;
     ctx.beginPath(); ctx.moveTo(c, c); ctx.arc(c, c, R, a0, a1); ctx.closePath(); ctx.fillStyle = bColor(d, keys[i]); ctx.fill(); ctx.strokeStyle = "#fff"; ctx.lineWidth = 2; ctx.stroke();
-    ctx.save(); ctx.translate(c, c); ctx.rotate((a0 + a1) / 2); ctx.fillStyle = "#fff"; ctx.font = "bold " + (n > 14 ? 13 : 18) + "px sans-serif"; ctx.textAlign = "right"; ctx.textBaseline = "middle"; ctx.fillText(bName(d, keys[i]), R - 14, 0); ctx.restore();
+    ctx.save(); ctx.translate(c, c); ctx.rotate((a0 + a1) / 2); ctx.fillStyle = "#fff"; ctx.font = "bold " + (n > 14 ? 13 : 18) + "px MM Latin,Iansui,serif"; ctx.textAlign = "right"; ctx.textBaseline = "middle"; ctx.fillText(bName(d, keys[i]), R - 14, 0); ctx.restore();
   }
   ctx.beginPath(); ctx.moveTo(c + R + 4, c); ctx.lineTo(c + R + 28, c - 12); ctx.lineTo(c + R + 28, c + 12); ctx.closePath(); ctx.fillStyle = "#B23B32"; ctx.fill();
 }
