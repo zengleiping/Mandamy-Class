@@ -280,3 +280,7 @@ img.pic{ max-width:100%; max-height:100%; object-fit:contain; border-radius:8px;
 .mt-card.zy .fit, .mt-card.zy .fit:first-child{ font-family:var(--zh); }
 
 .pic.emo, .th-card .sw, .bl-item svg{ -webkit-text-stroke-width:0; }
+
+/* 聲音還沒解鎖時的提示 */
+.gm-sndhint{ position:absolute; left:50%; top:64px; transform:translateX(-50%); z-index:40; background:var(--ink); color:#fff; padding:8px 18px; border-radius:99px; font-weight:700; box-shadow:var(--shadow); pointer-events:none; animation:gmBeat 1.6s ease-out infinite; white-space:nowrap; }
+.lv-snd{ margin-top:12px; }

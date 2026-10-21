@@ -113,7 +113,7 @@
       if(o.mode === "timed") r.time = endAt - startAt;
       if(o.onEnd) o.onEnd(r);
     }
-    hud(); render(); tick(); timer = setInterval(tick, 200); if(o.music) MG.music.play(o.music);
+    hud(); render(); tick(); timer = setInterval(tick, 200); if(o.music) MG.music.play(o.music); MG.audioHint(el);
     window.addEventListener("resize", function(){ if(!ended) MG.fitAll(el); });
     return { stop: function(){ MG.music.stop(); if(!ended){ ended = now(); clearInterval(timer); } }, finish: function(){ finish(false); }, score: function(){ return sc; }, result: function(){ return result(false); } };
   }

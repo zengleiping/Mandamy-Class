@@ -183,6 +183,7 @@
     if(!words.length){ stage.insertAdjacentHTML("beforeend", '<div class="bl-ans" style="animation:none">這個題型沒有可以用的詞語（可能缺拼音或翻譯）</div>'); return { stop: function(){}, finish: function(){}, score: function(){ return sc; }, result: result }; }
     if(maxLives && lives <= 0){ if(o.revive){ raf = requestAnimationFrame(frame); if(o.music) MG.music.play(o.music); setTimeout(startRevive, 0); } else setTimeout(finish, 0); }
     else { newRound(); raf = requestAnimationFrame(frame); if(o.music) MG.music.play(o.music); }
+    MG.audioHint(el);
     return { stop: function(){ MG.music.stop(); if(!ended){ ended = now(); cancelAnimationFrame(raf); clearItems(); } }, finish: finish, score: function(){ return sc; }, result: result };
   }
   MG.Blast = { create: create };

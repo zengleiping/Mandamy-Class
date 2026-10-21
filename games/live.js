@@ -98,7 +98,7 @@
     // 即時 Blast：命用完預設「復活挑戰」，沒有設時間就用 90 秒（不然遊戲不會結束）
     var blast = Object.assign({}, c.blast);
     if(blast.liveOut !== "end" && Number(blast.lives) > 0){ blast.revive = true; if(!blast.seconds) blast.seconds = 90; }
-    return { game: c.game, lang: c.lang, phon: c.phon || "py", match: c.match, blast: blast, words: words, seed: seed, title: (c.game === "match" ? "配對 Match" : "Blast"), scoring: (TL && TL.cfg && TL.cfg.scoring) || (c.live || {}).scoring || "avg", studentMusic: !!(c.live || {}).studentMusic, cls: G.ctx.cls ? G.ctx.cls.name : "" };
+    return { game: c.game, lang: c.lang, phon: c.phon || "py", match: c.match, blast: blast, words: words, seed: seed, title: (c.game === "match" ? "配對 Match" : "Blast"), scoring: (TL && TL.cfg && TL.cfg.scoring) || (c.live || {}).scoring || "avg", studentMusic: (c.live || {}).stuMusic !== false, cls: G.ctx.cls ? G.ctx.cls.name : "" };
   }
   // 換遊戲／改設定：學生留在等待室，老師回設定頁改好再「套用到房間」
   function changeMode(){ if(!TL) return; TL.editing = true; MG.viewSetup(); }
@@ -373,6 +373,16 @@
     app.innerHTML = '<div class="lv-wait"><div class="brand-line" style="justify-content:center;"><img src="../icons/logo.svg" alt="">曼米中文・房間 ' + SL.code + '</div><div class="note">你好！</div><div class="me">' + MG.esc(SL.name) + '</div>' + (gname ? '<div class="note" style="font-size:16px;">你在：<b>' + MG.esc(gname) + '</b></div>' : '') +
       '<div class="mg-panel" style="margin-top:14px;"><b>' + MG.esc(c.game === "match" ? "配對 Match" : "Blast") + '</b><div class="note">' + MG.esc(c.game === "match" ? (c.match.mode === "timed" ? "限時 " + c.match.seconds + " 秒，配越多越好" : "比速度，全部配完") + "・" + MG.ph(MG.MATCH_PAIRS[c.match.pair], c.phon) : (c.blast.input === "type" ? "看詞語，打拼音（數字標調）" : MG.ph(MG.BLAST_Q[c.blast.q], c.phon)) + (c.blast.lives ? "・" + c.blast.lives + " 條命" : "")) + '</div><p style="margin:10px 0 0;font-weight:700;color:var(--seal);">等老師開始…</p></div>' +
       '<div class="note">已經有 ' + ps.length + ' 人加入</div><div class="lv-pl">' + ps.map(function(p){ return '<span' + (p.uid === SL.uid ? ' class="me"' : '') + '>' + MG.esc(p.name) + '</span>'; }).join("") + '</div></div>';
+    // 還沒點過畫面（例如上課中自動加入）：先點一下把聲音打開，遊戲開始時才有音樂和音效
+    if(!MG.audioReady()){
+      MG.audioCtx();   // 先試著開聲音：有些瀏覽器不用點就可以，就不必顯示按鈕
+      setTimeout(function(){
+        var w = MG.$(".lv-wait"); if(!w || MG.audioReady() || MG.$(".lv-snd", w)) return;
+        var sb = document.createElement("button"); sb.className = "mg-btn big primary lv-snd"; sb.textContent = "點一下這裡打開聲音";
+        sb.onclick = function(){ MG.beep("ok"); sb.remove(); };
+        w.appendChild(sb);
+      }, 500);
+    }
   }
   var writeScore = throttle(function(v){ if(SL) MG.fb.set(SL.base + "/scores/" + SL.uid, v).catch(function(){}); }, 1500);
   async function playStudent(){

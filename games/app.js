@@ -12,7 +12,7 @@
       game: game || "match", lessons: {}, sample: "fixed", cap: 30, lang: "en", phon: "zy",
       match: { mode: "speed", seconds: 60, pair: "p", batch: 6, theme: "plain", themeFree: true, music: "happy" },
       blast: { q: "w2p", input: "tap", lives: 3, speed: 3, seconds: 0, theme: "space", themeFree: true, music: "space", liveOut: "revive" },
-      live: { scoring: "avg", seconds: 90, studentMusic: false }
+      live: { scoring: "avg", seconds: 90, stuMusic: true }
     };
   }
   function merge(a, b){ Object.keys(b || {}).forEach(function(k){ if(b[k] && typeof b[k] === "object" && !Array.isArray(b[k]) && a[k] && typeof a[k] === "object") merge(a[k], b[k]); else if(b[k] !== undefined) a[k] = b[k]; }); return a; }
@@ -65,7 +65,7 @@
     gameOpts += '<div class="mg-opt" style="margin-top:12px;"><label>主題（背景）</label><div><div class="th-list">' + thList.map(function(id){ return '<button type="button" class="th-card' + (gm.theme === id ? " on" : "") + '" data-theme="' + id + '">' + MG.themeSwatch(id) + '<b>' + MG.esc(MG.THEMES[id].name) + '</b></button>'; }).join("") + '</div>' +
       '<label style="display:flex;gap:6px;align-items:center;margin-top:8px;font-weight:400;"><input type="checkbox" data-chk="' + c.game + '.themeFree"' + (gm.themeFree !== false ? " checked" : "") + '> 學生自己練習時可以換主題</label><div class="note" style="margin-top:4px;">選主題時，背景音樂會換成搭配的曲子（下面還可以改）。</div></div></div>' +
       '<div class="mg-opt" style="margin-top:12px;"><label>背景音樂</label><div class="mg-row">' + seg(c.game + ".music", gm.music || "", [["", "關"]].concat(MG.MUSIC_ORDER.map(function(k){ return [k, MG.MUSIC[k].name]; }))) + (gm.music ? '<button type="button" class="mg-btn sm" data-preview="' + gm.music + '">試聽</button>' : '') + '</div>' +
-      '<label></label><label style="display:flex;gap:6px;align-items:center;font-weight:400;"><input type="checkbox" data-chk="live.studentMusic"' + (c.live.studentMusic ? " checked" : "") + '> 即時多人時，學生的裝置也播放音樂（預設只有老師的畫面播放）</label></div>';
+      '<label></label><label style="display:flex;gap:6px;align-items:center;font-weight:400;"><input type="checkbox" data-chk="live.stuMusic"' + (c.live.stuMusic !== false ? " checked" : "") + '> 即時多人時，學生的裝置也播放音樂和音效（學生可以自己關掉）</label></div>';
     app.innerHTML = '<div class="mg-wrap">' +
       '<div id="lv-resume"></div><div class="mg-head"><h2>生詞遊戲</h2><span class="note">' + MG.esc(ctx.cls ? ctx.cls.name : "沒有指定班級") + '</span><span class="grow"></span></div>' +
       '<div class="mg-panel"><div class="mg-games">' +

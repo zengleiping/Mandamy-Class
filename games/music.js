@@ -10,7 +10,22 @@
     if(ctx.state === "suspended") try{ ctx.resume(); }catch(e){}
     return ctx;
   };
-  document.addEventListener("pointerdown", function(){ if(ctx && ctx.state === "suspended") try{ ctx.resume(); }catch(e){} }, true);
+  // 瀏覽器（尤其 iPad／iPhone）要在「點一下」的當下才肯讓網頁出聲：任何一種點擊、按鍵都順便解鎖聲音
+  // （在點擊當下建立 AudioContext、播一段無聲的音，iOS 才算解鎖；卡片用的 pointerdown 在 iOS 不算，所以 touchend、click 也要聽）
+  var unlockedOnce = false;
+  function unlock(){
+    var c = MG.audioCtx(); if(!c) return;
+    if(c.state !== "running") try{ c.resume(); }catch(e){}
+    if(!unlockedOnce){ try{ var b = c.createBuffer(1, 1, 22050), s = c.createBufferSource(); s.buffer = b; s.connect(c.destination); s.start(0); unlockedOnce = true; }catch(e){} }
+  }
+  ["pointerdown", "pointerup", "touchend", "click", "keydown"].forEach(function(ev){ document.addEventListener(ev, unlock, true); });
+  MG.audioReady = function(){ return !!(ctx && ctx.state === "running"); };
+  // 遊戲開始時聲音還沒解鎖（例如上課中自動加入、還沒點過畫面）：上方出現小提示，點一下就有聲音
+  MG.audioHint = function(root){
+    if(MG.audioReady() || !root) return;
+    var h = document.createElement("div"); h.className = "gm-sndhint"; h.textContent = "點一下畫面就有聲音"; root.appendChild(h);
+    var t = setInterval(function(){ if(MG.audioReady() || !h.isConnected){ clearInterval(t); h.remove(); } }, 300);
+  };
 
   // 旋律寫法：音階的第幾音（1～7），後面加 + 高八度、- 低八度；「.」是休止（每格是八分音符，32 格＝4 小節）
   var MAJOR = [0, 2, 4, 5, 7, 9, 11], MINOR = [0, 2, 3, 5, 7, 8, 10];
@@ -94,7 +109,8 @@
   MG.musicBtn = function(track){ return track ? '<button class="mg-btn sm ghost gm-mus">' + (MG.music.on ? "音樂 開" : "音樂 關") + '</button>' : ''; };
   MG.bindMusicBtn = function(root, track){
     var b = MG.$(".gm-mus", root); if(!b) return;
-    b.onclick = function(){ MG.music.on = !MG.music.on; try{ localStorage.setItem("mm_game_music", MG.music.on ? "1" : "0"); }catch(e){} b.textContent = MG.music.on ? "音樂 開" : "音樂 關"; if(MG.music.on) MG.music.play(track); else MG.music.stop(); };
+    b.onclick = function(){ MG.music.on = !MG.music.on; b.textContent = MG.music.on ? "音樂 開" : "音樂 關"; if(MG.music.on) MG.music.play(track); else MG.music.stop(); };
   };
-  try{ if(localStorage.getItem("mm_game_music") === "0") MG.music.on = false; }catch(e){}
+  // 每次打開遊戲，音樂和音效都是開的；玩家關掉只在這次有效（不記住，下次打開又是開的）
+  try{ localStorage.removeItem("mm_game_music"); }catch(e){}
 })();
