@@ -709,6 +709,7 @@ img.vimg{ width:100%; height:100%; object-fit:contain; border-radius:10px; displ
   }
   .activity-card:hover{ transform:translateY(-3px); border-color:var(--brand); }
   .activity-card .ac-emoji{ font-size:44px; }
+  .activity-card .ac-img{ width:64px; height:64px; object-fit:contain; }
   .activity-card .ac-label{ font-size:17px; font-weight:800; }
   .back-btn{
     border:none; background:var(--card-alt); color:var(--ink-soft); padding:9px 16px; border-radius:12px;
@@ -1397,8 +1398,8 @@ img.vimg{ width:100%; height:100%; object-fit:contain; border-radius:10px; displ
   <div id="focusView" class="focus-view" style="display:none;"></div>
   <div id="activitiesPickerView" class="activity-picker" style="display:none;">
     <button class="activity-card" data-activity="flashcard"><span class="ac-label">字卡練習<span class="en" style="display:block;">Flashcards</span></span></button>
-    <button class="activity-card" data-activity="bingo"><span class="ac-label">賓果卡<span class="en" style="display:block;">Bingo Cards</span></span></button>
-    <button class="activity-card" data-activity="flip"><span class="ac-label">翻卡遊戲<span class="en" style="display:block;">Memory Game</span></span></button>
+    <button class="activity-card" data-activity="bingo"><img class="ac-img" src="icons/act-bingo.png" alt=""><span class="ac-label">賓果卡<span class="en" style="display:block;">Bingo Cards</span></span></button>
+    <button class="activity-card" data-activity="flip"><img class="ac-img" src="icons/act-flip.png" alt=""><span class="ac-label">翻卡遊戲<span class="en" style="display:block;">Memory Game</span></span></button>
     <button class="activity-card" data-activity="kinship"><span class="ac-label">語法遊戲<span class="en" style="display:block;">Grammar Game</span></span></button>
     <button class="activity-card" data-activity="qa"><span class="ac-label">回答問題<span class="en" style="display:block;">Q&amp;A</span></span></button>
     <button class="activity-card" data-activity="order"><span class="ac-label">點餐練習<span class="en" style="display:block;">Ordering Food</span></span></button>

@@ -144,6 +144,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .act-fav{ position:absolute; top:10px; right:10px; border:1.5px solid var(--line); background:var(--surface); border-radius:99px; padding:2px 10px; font-size:12.5px; font-weight:700; cursor:pointer; color:var(--ink-soft); } .act-fav:hover{ border-color:var(--seal); color:var(--seal); } .act-fav.on{ color:var(--seal); border-color:var(--seal); background:var(--seal-soft); }
   .act-go b{ padding-right:84px; }
   .act-et{ font-size:.78em; color:var(--ink-soft); font-weight:700; }
+  .act-img{ width:56px; height:56px; object-fit:contain; margin-bottom:4px; }
   .act-en{ font-size:.92em; opacity:.85; }
   .act-ctx{ display:flex; gap:8px 12px; align-items:center; flex-wrap:wrap; } .act-ctx label{ margin:0; font-weight:700; font-size:15px; } .act-ctx select{ padding:6px 10px; border-radius:8px; border:1.5px solid var(--line); background:var(--surface-2); max-width:100%; }
   .cl-school{ margin-top:10px; } .cl-sh{ display:flex; align-items:center; gap:8px; margin-bottom:6px; flex-wrap:wrap; }
@@ -5692,12 +5693,12 @@ async function deleteUnit(key){
 }
 // ---------- 🎲 課堂活動：全部活動集中一頁（常用、最近用過），選課次／班級就開始 ----------
 var ACTS = [
-  { id: "match", e: "", t: "配對 Match", d: "詞語和拼音／翻譯配對，比速度或限時；可以全班即時比賽、分組、出作業連結", et: "Match", en: "Match words with pinyin, meanings or pictures", need: "lesson", game: true },
-  { id: "blast", e: "", t: "Blast", d: "答案從畫面掉下來，點對的那個；四種主題，可以全班即時比賽", et: "Blast", en: "Tap the right answer as it falls", need: "lesson", game: true },
+  { id: "match", e: "", img: "icons/act-match.png", t: "配對 Match", d: "詞語和拼音／翻譯配對，比速度或限時；可以全班即時比賽、分組、出作業連結", et: "Match", en: "Match words with pinyin, meanings or pictures", need: "lesson", game: true },
+  { id: "blast", e: "", img: "icons/act-blast.png", t: "Blast", d: "答案從畫面掉下來，點對的那個；四種主題，可以全班即時比賽", et: "Blast", en: "Tap the right answer as it falls", need: "lesson", game: true },
   { id: "flashcard", e: "", t: "字卡練習", d: "生詞字卡，翻面看注音和意思", et: "Flashcards", en: "Flip a card to see zhuyin and meaning", need: "lesson" },
-  { id: "flip", e: "", t: "翻卡遊戲", d: "翻牌配對，記憶生詞", et: "Memory Game", en: "Flip two cards and find a pair", need: "lesson" },
-  { id: "bingo", e: "", t: "賓果卡", d: "產生賓果卡、老師念詞", et: "Bingo Cards", en: "Print bingo cards; the teacher calls words", need: "lesson" },
-  { id: "pbingo", e: "", t: "線上賓果（全班一起）", d: "學生用自己的裝置連進來一起玩", et: "Online Bingo", en: "Play bingo together on your own devices", need: "class" },
+  { id: "flip", e: "", img: "icons/act-flip.png", t: "翻卡遊戲", d: "翻牌配對，記憶生詞", et: "Memory Game", en: "Flip two cards and find a pair", need: "lesson" },
+  { id: "bingo", e: "", img: "icons/act-bingo.png", t: "賓果卡", d: "產生賓果卡、老師念詞", et: "Bingo Cards", en: "Print bingo cards; the teacher calls words", need: "lesson" },
+  { id: "pbingo", e: "", img: "icons/act-bingo.png", t: "線上賓果（全班一起）", d: "學生用自己的裝置連進來一起玩", et: "Online Bingo", en: "Play bingo together on your own devices", need: "class" },
   { id: "qa", e: "", t: "回答問題", d: "用生詞的延伸問題練口說", et: "Q&A", en: "Answer questions using the new words", need: "lesson" },
   { id: "kinship", e: "", t: "語法遊戲", d: "句型練習遊戲", et: "Grammar Game", en: "Practice sentence patterns", need: "lesson" },
   { id: "order", e: "", t: "點餐練習", d: "情境對話：點餐", et: "Ordering Food", en: "Role-play ordering breakfast", need: "lesson" },
@@ -5711,7 +5712,7 @@ function actRecent(){ try{ var v = JSON.parse(localStorage.getItem("mm_act_recen
 function actNoteRecent(id){ try{ var r = actRecent().filter(function(x){ return x !== id; }); r.unshift(id); localStorage.setItem("mm_act_recent_" + S.teacher.id, JSON.stringify(r.slice(0, 6))); }catch(e){} }
 function actCardHtml(a, attr){
   var fav = actFavs().indexOf(a.id) >= 0;
-  return '<div class="act-card"><button class="act-go" ' + attr + '="' + a.id + '"><b>' + esc(a.t) + (a.et && a.et !== a.t && a.t.indexOf(a.et) < 0 ? ' <span class="act-et">' + esc(a.et) + '</span>' : '') + '</b><span class="note">' + esc(a.d) + '</span>' + (a.en ? '<span class="note act-en">' + esc(a.en) + '</span>' : '') + '</button><button class="act-fav' + (fav ? ' on' : '') + '" data-actfav="' + a.id + '" title="' + (fav ? '取消常用' : '設為常用：釘在最上面') + '">' + (fav ? '常用 ✓' : '設為常用') + '</button></div>';
+  return '<div class="act-card"><button class="act-go' + (a.img ? ' has-img' : '') + '" ' + attr + '="' + a.id + '">' + (a.img ? '<img class="act-img" src="' + a.img + '" alt="">' : '') + '<b>' + esc(a.t) + (a.et && a.et !== a.t && a.t.indexOf(a.et) < 0 ? ' <span class="act-et">' + esc(a.et) + '</span>' : '') + '</b><span class="note">' + esc(a.d) + '</span>' + (a.en ? '<span class="note act-en">' + esc(a.en) + '</span>' : '') + '</button><button class="act-fav' + (fav ? ' on' : '') + '" data-actfav="' + a.id + '" title="' + (fav ? '取消常用' : '設為常用：釘在最上面') + '">' + (fav ? '常用 ✓' : '設為常用') + '</button></div>';
 }
 function actGridHtml(attr, filter){
   var list = ACTS.filter(filter || function(){ return true; }), favs = actFavs().map(actById).filter(Boolean).filter(function(a){ return list.indexOf(a) >= 0; }), rec = actRecent().map(actById).filter(Boolean).filter(function(a){ return list.indexOf(a) >= 0 && favs.indexOf(a) < 0; }).slice(0, 4);

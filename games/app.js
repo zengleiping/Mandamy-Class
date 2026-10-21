@@ -69,8 +69,8 @@
     app.innerHTML = '<div class="mg-wrap">' +
       '<div id="lv-resume"></div><div class="mg-head"><h2>生詞遊戲</h2><span class="note">' + MG.esc(ctx.cls ? ctx.cls.name : "沒有指定班級") + '</span><span class="grow"></span></div>' +
       '<div class="mg-panel"><div class="mg-games">' +
-      '<button class="mg-game' + (c.game === "match" ? " on" : "") + '" data-game="match"><b>配對 Match</b><span class="note">詞語和拼音／翻譯配成一對，比速度或限時。</span></button>' +
-      '<button class="mg-game' + (c.game === "blast" ? " on" : "") + '" data-game="blast"><b>Blast</b><span class="note">答案從畫面掉下來，點對的那個。可以選主題。</span></button></div></div>' +
+      '<button class="mg-game' + (c.game === "match" ? " on" : "") + '" data-game="match"><img class="mg-game-img" src="../icons/act-match.png" alt=""><b>配對 Match</b><span class="note">詞語和拼音／翻譯配成一對，比速度或限時。</span></button>' +
+      '<button class="mg-game' + (c.game === "blast" ? " on" : "") + '" data-game="blast"><img class="mg-game-img" src="../icons/act-blast.png" alt=""><b>Blast</b><span class="note">答案從畫面掉下來，點對的那個。可以選主題。</span></button></div></div>' +
       '<div class="mg-panel"><h3>出題範圍 <span class="note">勾選課次，設定每一課抽幾成的生詞</span></h3>' +
       '<div class="mg-row" style="margin-bottom:10px;"><span class="note">從最近一課往前：100%、80%、60%、40%、20%</span><select class="mg-sel" id="sc-rec" style="max-width:280px;">' + recOpts + '</select><button class="mg-btn sm" id="sc-preset">套用</button><button class="mg-btn sm ghost" id="sc-clear">全部不用</button></div>' +
       (rows ? '<div class="sc-list"><div class="sc-row head"><span></span><span>課次</span><span class="n">生詞</span><span>抽幾成</span><span></span></div>' + rows + '</div>' : '<p class="note">這個班的教材還沒有生詞。</p>') +
