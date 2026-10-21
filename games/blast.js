@@ -5,7 +5,7 @@
                            theme, seed, startAt, endAt, now, init, onScore, onEnd, onQuit, title }) */
 (function(){
   var MG = window.MG;
-  var Q_NAME = { w2p: "看詞語，選拼音", w2t: "看詞語，選翻譯", p2w: "看拼音，選詞語", t2w: "看翻譯，選詞語", w2i: "看詞語，選圖片", i2w: "看圖片，選詞語" };
+  var Q_NAME = { w2p: "看詞語，選拼音 Word → pinyin", w2t: "看詞語，選翻譯 Word → meaning", p2w: "看拼音，選詞語 Pinyin → word", t2w: "看翻譯，選詞語 Meaning → word", w2i: "看詞語，選圖片 Word → picture", i2w: "看圖片，選詞語 Picture → word" };
   MG.BLAST_Q = Q_NAME;
   var DUR = [11, 9, 7.2, 5.8, 4.6];   // 速度 1～5：從畫面一頭到另一頭要幾秒
 
@@ -24,15 +24,15 @@
     var speedIdx = MG.clamp(Number(o.speed) || 3, 1, 5) - 1;
 
     root.innerHTML = '<div class="gm bl">' +
-      '<div class="gm-hud"><span class="gm-title">' + MG.esc(o.title || "Blast") + '</span><span class="note">' + MG.esc(typeMode ? "看詞語，打拼音（數字標調）" : MG.ph(Q_NAME[q], o.phon)) + '</span><span class="grow"></span>' +
-      (maxLives ? '<div class="gm-stat"><small>生命</small><span class="bl-lives"></span></div>' : '') +
-      '<div class="gm-stat time"><small>' + (endAt ? "剩下" : "時間") + '</small><b class="bl-time">0:00</b></div>' +
-      '<div class="gm-stat"><small>答錯</small><b class="bl-err">0</b></div>' +
-      '<div class="gm-stat score"><small>分數</small><b class="bl-score">0</b></div>' +
-      MG.musicBtn(o.music) + '<button class="mg-btn sm ghost bl-snd">' + (MG.sound.on ? "音效 開" : "音效 關") + '</button>' +
-      (o.onQuit ? '<button class="mg-btn sm bl-quit">結束</button>' : '') + '</div>' +
+      '<div class="gm-hud"><span class="gm-title">' + MG.esc(o.title || "Blast") + '</span><span class="note">' + MG.esc(typeMode ? "看詞語，打拼音（數字標調）Type the pinyin with tone numbers" : MG.ph(Q_NAME[q], o.phon)) + '</span><span class="grow"></span>' +
+      (maxLives ? '<div class="gm-stat"><small>生命 Lives</small><span class="bl-lives"></span></div>' : '') +
+      '<div class="gm-stat time"><small>' + (endAt ? "剩下 Left" : "時間 Time") + '</small><b class="bl-time">0:00</b></div>' +
+      '<div class="gm-stat"><small>答錯 Wrong</small><b class="bl-err">0</b></div>' +
+      '<div class="gm-stat score"><small>分數 Score</small><b class="bl-score">0</b></div>' +
+      MG.musicBtn(o.music) + '<button class="mg-btn sm ghost bl-snd">' + (MG.sound.on ? "音效 開 Sound on" : "音效 關 Sound off") + '</button>' +
+      (o.onQuit ? '<button class="mg-btn sm bl-quit">結束 Quit</button>' : '') + '</div>' +
       '<div class="bl-stage"><div class="bl-bg" style="background:' + T.bg + '">' + (T.deco ? T.deco() : '') + '</div>' +
-      '<div class="bl-q"><small>' + (typeMode ? "打出這個詞語的拼音" : ansKind === "w" ? "找出這個詞語" : ansKind === "p" ? MG.ph("找出拼音", o.phon) : ansKind === "i" ? "找出圖片" : "找出意思") + '</small><span class="fit" data-fmax="34" data-fmin="14"></span></div>' +
+      '<div class="bl-q"><small>' + (typeMode ? "打出這個詞語的拼音 Type the pinyin" : ansKind === "w" ? "找出這個詞語 Find the word" : ansKind === "p" ? MG.ph("找出拼音 Find the pinyin", o.phon) : ansKind === "i" ? "找出圖片 Find the picture" : "找出意思 Find the meaning") + '</small><span class="fit" data-fmax="34" data-fmin="14"></span></div>' +
       (typeMode ? '<form class="bl-type" autocomplete="off"><input type="text" placeholder="例如 ni3 hao3" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="done"><button class="mg-btn primary">送出</button></form>' : '') +
       '</div></div>';
     var el = root.firstChild, stage = MG.$(".bl-stage", el), qEl = MG.$(".bl-q .fit", el);
@@ -122,7 +122,7 @@
       var prompt = picQ ? MG.picHtml(MG.picOf(w)) : '<span class="fit' + (q === "p2w" || q === "t2w" ? "" : " zh") + '" data-fmax="40" data-fmin="14">' + MG.esc(typeMode ? w.w : promptOf(w)) + '</span>';
       var box = MG.$(".bl-rev", stage) || stage.appendChild(Object.assign(document.createElement("div"), { className: "bl-rev" }));
       var dots = ""; for(var k = 0; k < rev.need; k++) dots += '<i class="' + (k < rev.got ? "on" : "") + '"></i>';
-      box.innerHTML = '<div class="bl-rev-card"><h3>復活挑戰</h3><div class="note">連續答對 ' + rev.need + ' 題就能回到遊戲</div><div class="bl-rev-dots">' + dots + '</div><div class="bl-rev-q">' + prompt + '</div><div class="bl-rev-opts">' +
+      box.innerHTML = '<div class="bl-rev-card"><h3>復活挑戰<span class="en">Comeback challenge</span></h3><div class="note">連續答對 ' + rev.need + ' 題就能回到遊戲<br>Get ' + rev.need + ' right in a row to get back in the game</div><div class="bl-rev-dots">' + dots + '</div><div class="bl-rev-q">' + prompt + '</div><div class="bl-rev-opts">' +
         opts.map(function(x){ var a = MG.sideText(x, kind, o.lang); return '<button class="bl-rev-o' + (kind === "w" ? " zh" : "") + '" data-ok="' + (x.w === w.w ? 1 : 0) + '">' + (kind === "i" ? MG.picHtml(a) : '<span class="fit" data-fmax="' + (kind === "w" ? 28 : 20) + '" data-fmin="10">' + MG.esc(a) + '</span>') + '</button>'; }).join("") + '</div></div>';
       MG.fitAll(box);
       box.onclick = function(e){
@@ -176,7 +176,7 @@
       if(ended) return; ended = now(); cancelAnimationFrame(raf); clearItems(); MG.music.stop(); MG.beep("end");
       if(o.onEnd) o.onEnd(result());
     }
-    MG.$(".bl-snd", el).onclick = function(){ MG.sound.on = !MG.sound.on; this.textContent = MG.sound.on ? "音效 開" : "音效 關"; };
+    MG.$(".bl-snd", el).onclick = function(){ MG.sound.on = !MG.sound.on; this.textContent = MG.sound.on ? "音效 開 Sound on" : "音效 關 Sound off"; };
     if(o.onQuit) MG.$(".bl-quit", el).onclick = function(){ MG.music.stop(); o.onQuit(); };
     MG.bindMusicBtn(el, o.music);
     hud();

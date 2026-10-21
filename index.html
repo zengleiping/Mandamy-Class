@@ -31,6 +31,19 @@
 <style>
 /* 芫荽只有一種粗細、筆畫偏細：整站文字稍微加粗一點，比較好讀 */
 body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; text-rendering:optimizeLegibility; -webkit-font-smoothing:antialiased; }
+/* 生詞的圖片（老師上傳） */
+img.vimg{ width:100%; height:100%; object-fit:contain; border-radius:10px; display:block; }
+.card-top .emoji{ position:relative; }
+.card-top .emoji img.vimg{ width:64px; height:64px; }
+.fc-emoji img.vimg{ width:min(180px,40vw); height:min(180px,40vw); margin:0 auto; }
+.flip-emoji img.vimg{ width:70%; height:70%; margin:0 auto; }
+.vimg-tools{ position:absolute; left:0; top:-38px; display:flex; gap:4px; opacity:0; transition:opacity .15s; z-index:3; white-space:nowrap; }
+.vocab-card:hover .vimg-tools, .card:hover .vimg-tools, .vimg-tools:focus-within{ opacity:1; }
+.vimg-tools button{ font:inherit; font-size:12px; font-weight:700; padding:2px 8px; border-radius:99px; border:1.5px solid var(--border, #ddd); background:var(--card, #fff); color:var(--ink); cursor:pointer; }
+.vimg-tools button:hover{ border-color:var(--brand, #E8825A); }
+@media (hover:none){ .vimg-tools{ opacity:1; } }
+/* 給學生看的英文說明 */
+.en{ font-size:.82em; font-weight:600; opacity:.8; }
 /* 英文、數字、拼音用 Times New Roman（只限拉丁字母範圍，注音的聲調符號才會跟注音一樣用芫荽）；中文、注音用芫荽 */
 @font-face{font-family:"MM Latin";src:local("Times New Roman"),local("TimesNewRomanPSMT"),local("Times");unicode-range:U+0000-02AF,U+0300-036F,U+1E00-1EFF,U+2000-206F,U+20A0-20CF,U+2100-214F;}@font-face{font-family:"MM Latin";font-weight:700;src:local("Times New Roman Bold"),local("TimesNewRomanPS-BoldMT"),local("Times Bold"),local("Times-Bold");unicode-range:U+0000-02AF,U+0300-036F,U+1E00-1EFF,U+2000-206F,U+20A0-20CF,U+2100-214F;}
 
@@ -1383,13 +1396,13 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   <div id="textView" style="display:none;"></div>
   <div id="focusView" class="focus-view" style="display:none;"></div>
   <div id="activitiesPickerView" class="activity-picker" style="display:none;">
-    <button class="activity-card" data-activity="flashcard"><span class="ac-emoji">🎴</span><span class="ac-label">字卡練習</span></button>
-    <button class="activity-card" data-activity="bingo"><span class="ac-emoji">🎉</span><span class="ac-label">賓果卡</span></button>
-    <button class="activity-card" data-activity="flip"><span class="ac-emoji">🃏</span><span class="ac-label">翻卡遊戲</span></button>
-    <button class="activity-card" data-activity="kinship"><span class="ac-emoji">🗣️</span><span class="ac-label">語法遊戲</span></button>
-    <button class="activity-card" data-activity="qa"><span class="ac-emoji">💬</span><span class="ac-label">回答問題</span></button>
-    <button class="activity-card" data-activity="order"><span class="ac-emoji">🧾</span><span class="ac-label">點餐練習</span></button>
-    <button class="activity-card" data-activity="dtq"><span class="ac-emoji">📅</span><span class="ac-label">年月日問答</span></button>
+    <button class="activity-card" data-activity="flashcard"><span class="ac-label">字卡練習<span class="en" style="display:block;">Flashcards</span></span></button>
+    <button class="activity-card" data-activity="bingo"><span class="ac-label">賓果卡<span class="en" style="display:block;">Bingo Cards</span></span></button>
+    <button class="activity-card" data-activity="flip"><span class="ac-label">翻卡遊戲<span class="en" style="display:block;">Memory Game</span></span></button>
+    <button class="activity-card" data-activity="kinship"><span class="ac-label">語法遊戲<span class="en" style="display:block;">Grammar Game</span></span></button>
+    <button class="activity-card" data-activity="qa"><span class="ac-label">回答問題<span class="en" style="display:block;">Q&amp;A</span></span></button>
+    <button class="activity-card" data-activity="order"><span class="ac-label">點餐練習<span class="en" style="display:block;">Ordering Food</span></span></button>
+    <button class="activity-card" data-activity="dtq"><span class="ac-label">年月日問答<span class="en" style="display:block;">Dates &amp; Days</span></span></button>
   </div>
   <div id="flashcardView" class="flashcard-view" style="display:none;">
     <div class="flashcard-stage" id="flashcardStage"></div>
@@ -2883,7 +2896,7 @@ function renderMistakePanel(){
           <span class="mistake-word">${v['生詞']}</span>
           <span class="mistake-en">第${v['課別']}課・${v['英文翻譯']||''}</span>
         </div>`).join('')
-    : `<div class="mistake-empty">目前沒有待加強的生詞 🎉</div>`;
+    : `<div class="mistake-empty">目前沒有待加強的生詞 <span class="en">No words to review yet.</span></div>`;
   panel.innerHTML = `
     <div class="mistake-panel">
       <div class="mistake-list">${listHtml}</div>
@@ -2915,7 +2928,7 @@ function renderFlashcard(){
       cardHtml = `
         <div class="empty">
           <div class="big">🎴</div>
-          <p>${pool.length ? '點一下上面的「抽一張字卡」開始練習吧！' : '請至少選擇一個課次'}</p>
+          <p>${pool.length ? '點一下上面的「抽一張字卡」開始練習吧！<br><span class="en">Tap “抽一張字卡 Draw a card” above to start.</span>' : '請至少選擇一個課次'}</p>
         </div>`;
     }
   } else {
@@ -2924,7 +2937,7 @@ function renderFlashcard(){
     if(revealed){
       inner = `
         <div class="fc-lesson-chip" style="background:${lessonColor(v['課別'])}">第${v['課別']}課</div>
-        <div class="fc-emoji">${v['Emoji／圖示']||'✨'}</div>
+        <div class="fc-emoji">${vPicHtml(v)}</div>
         <div class="fc-word">${zhuyinWordHtml(v['生詞'], v['注音'])}</div>
         <div class="fc-pos">${v['詞性']||''}</div>
         <div class="fc-trans">${v['英文翻譯']||''}<span class="th">${v['泰文翻譯']||''}</span></div>
@@ -3000,6 +3013,50 @@ function getWritingFilteredList(){
   return WRITING_CHARS.filter(c => selectedWritingLessons.has(c.lesson));
 }
 
+// 生詞的圖片：老師上傳的圖片（「圖片」欄）優先，沒有就用 Emoji
+function vPicHtml(v){
+  const u = String((v && v['圖片']) || '').trim();
+  if(/^(https?:|blob:|data:image)/.test(u)) return `<img class="vimg" src="${escAttr(u)}" alt="" loading="lazy" draggable="false">`;
+  return (v && v['Emoji／圖示']) || '✨';
+}
+// 在平台裡打開的老師畫面（不是學生）：生詞卡上可以上傳／更換／移除圖片
+const VPIC_TEACHER = (function(){ try{ const q = new URLSearchParams(location.search); return !!q.get('embed') && q.get('role') !== 'student' && window.parent !== window && !q.get('activity'); }catch(e){ return false; } })();
+function vPicTools(v){
+  if(!VPIC_TEACHER) return '';
+  const has = !!String(v['圖片'] || '').trim();
+  return `<div class="vimg-tools"><button type="button" class="vimg-up" data-vw="${escAttr(v['生詞'])}" data-vl="${escAttr(v['課別'])}">${has ? '換圖片' : '上傳圖片'}</button>${has ? `<button type="button" class="vimg-rm" data-vw="${escAttr(v['生詞'])}" data-vl="${escAttr(v['課別'])}">移除</button>` : ''}</div>`;
+}
+function vPicSet(word, lesson, url){
+  VOCAB.forEach(x=>{ if(x['生詞'] === word && String(x['課別']) === String(lesson)){ if(url) x['圖片'] = url; else delete x['圖片']; } });
+  try{ render(); }catch(e){}
+}
+// 選了圖片：先在畫面上換掉，再交給平台存到教材（平台負責上傳到雲端、存進「圖片」欄）
+document.addEventListener('click', e=>{
+  const up = e.target.closest && e.target.closest('.vimg-up, .vimg-rm');
+  if(!up) return;
+  e.stopPropagation();
+  const word = up.dataset.vw, lesson = up.dataset.vl, book = new URLSearchParams(location.search).get('book') || '';
+  if(up.classList.contains('vimg-rm')){
+    if(!confirm('移除「' + word + '」的圖片？（會改回顯示 Emoji）')) return;
+    vPicSet(word, lesson, '');
+    window.parent.postMessage({ mm: 'vocabImg', word, lesson, book, remove: true }, '*');
+    return;
+  }
+  const fi = document.createElement('input'); fi.type = 'file'; fi.accept = 'image/*';
+  fi.onchange = ()=>{
+    const f = fi.files && fi.files[0]; if(!f) return;
+    if(!/^image\//.test(f.type)){ alert('請選圖片檔'); return; }
+    vPicSet(word, lesson, URL.createObjectURL(f));
+    window.parent.postMessage({ mm: 'vocabImg', word, lesson, book, file: f }, '*');
+  };
+  fi.click();
+}, true);
+window.addEventListener('message', e=>{
+  const d = e.data; if(!d || (d.mm !== 'vocabImgSaved' && d.mm !== 'vocabImgFail')) return;
+  if(d.mm === 'vocabImgSaved') vPicSet(d.word, d.lesson, d.url);
+  else { vPicSet(d.word, d.lesson, d.prev || ''); alert('圖片沒有存成功：' + (d.msg || '請檢查網路後再試')); }
+});
+
 function vocabCardInnerHtml(v){
   const speakBtnHtml = `<button type="button" class="speak-btn" data-word="${escAttr(v['生詞'])}" title="播放發音" aria-label="播放「${escAttr(v['生詞'])}」發音">🔊</button>`;
   if(state.lang === 'bare' || state.lang === 'zhuyin'){
@@ -3015,7 +3072,7 @@ function vocabCardInnerHtml(v){
   return `
     <span class="lesson-chip" style="background:${lessonColor(v['課別'])}">第${v['課別']}課</span>
     <div class="card-top">
-      <div class="emoji">${v['Emoji／圖示']||'✨'}</div>
+      <div class="emoji">${vPicHtml(v)}${vPicTools(v)}</div>
       <div>
         <div class="word">${zhuyinWordHtml(v['生詞'], v['注音'])}${speakBtnHtml}</div>
         <div class="py">${v['拼音']||''}</div>
@@ -3105,7 +3162,7 @@ function writingDetailHtml(item){
   const strokeCount = data ? data.strokes.length : 0;
   const thumbs = data
     ? data.strokes.map((_, i) => strokeThumbSvg(data.strokes, i+1)).join('')
-    : '<p class="caller-sub">目前沒有這個字的筆順資料。</p>';
+    : '<p class="caller-sub">目前沒有這個字的筆順資料。 <span class="en">No stroke order for this character yet.</span></p>';
   const wordsHtml = (item.words||[]).map(w=>`<span class="word-chip">${w}</span>`).join('');
   return `
     <span style="display:inline-block; background:${lessonColor(item.lesson)}; color:#fff; font-size:13px; font-weight:700; padding:3px 10px; border-radius:999px;">第${item.lesson}課</span>
@@ -3320,7 +3377,7 @@ function renderTextView(){
   const wrap = document.getElementById('textView');
   const texts = getTextsForLesson(textLesson);
   if(!texts.length){
-    wrap.innerHTML = `<div class="empty"><div class="big">📖</div><p>尚未新增課文。</p></div>`;
+    wrap.innerHTML = `<div class="empty"><div class="big">📖</div><p>尚未新增課文。 <span class="en">No text yet.</span></p></div>`;
     return;
   }
   if(textIndex < 0 || textIndex >= texts.length) textIndex = 0;
@@ -3465,7 +3522,7 @@ function renderCallerPanel(){
   const calledCount = bingoCallerWords.filter(w=>w.called).length;
   const bingoStudents = getBingoStudents();
   const alertHtml = bingoStudents.length
-    ? `<div class="caller-alert">🔔 提醒：${bingoStudents.map(n=>boardLabel(n-1)).join('、')} 已經賓果了！</div>`
+    ? `<div class="caller-alert">🔔 提醒：${bingoStudents.map(n=>boardLabel(n-1)).join('、')} 已經賓果了！ BINGO!</div>`
     : '';
   const q = callerSearchQuery.trim().toLowerCase();
   const matches = (w) => {
@@ -3488,7 +3545,7 @@ function renderCallerPanel(){
     <div class="caller-panel">
       <h3>🧑‍🏫 老師標記卡（已叫 ${calledCount} / ${bingoCallerWords.length} 個）</h3>
       ${alertHtml}
-      <input type="text" id="callerSearch" class="caller-search" placeholder="🔍 輸入生詞、拼音、英文或注音開頭搜尋…" value="${callerSearchQuery.replace(/"/g,'&quot;')}">
+      <input type="text" id="callerSearch" class="caller-search" placeholder="輸入生詞、拼音、英文或注音開頭搜尋… Search" value="${callerSearchQuery.replace(/"/g,'&quot;')}">
       <div class="caller-chips">${chipsHtml}</div>
     </div>`;
 }
@@ -3560,7 +3617,7 @@ function renderQuadBingo(pool){
       <div class="bingo-board" style="--board-color:${color.hex}">
         <div class="bingo-board-label">
           <span class="board-color-dot" style="background:${color.hex}" title="${color.label}色"></span>
-          <input type="text" class="board-name-input" data-board-name="${bi}" placeholder="第 ${bi+1} 位學生" value="${(bingoBoardNames[bi]||'').replace(/"/g,'&quot;')}">
+          <input type="text" class="board-name-input" data-board-name="${bi}" placeholder="第 ${bi+1} 位學生 Student ${bi+1}" value="${(bingoBoardNames[bi]||'').replace(/"/g,'&quot;')}">
         </div>
         <div class="bingo-grid">${gridHtml}</div>
         ${lineIdx.size ? `<div class="bingo-msg small">🎉 ${boardLabel(bi)} BINGO！</div>` : ''}
@@ -3777,10 +3834,10 @@ function showWinner(teams){
     const names = winners.map((t, i) => {
       const idx = teams.indexOf(t);
       const name = (t.name || '').trim();
-      return name || `第 ${idx + 1} 組`;
+      return name || `第 ${idx + 1} 組 Team ${idx + 1}`;
     }).join('、');
     nameEl.textContent = names;
-    scoreEl.textContent = `${maxScore} 分`;
+    scoreEl.textContent = `${maxScore} 分 pts`;
   }
   overlay.style.display = 'flex';
 }
@@ -3822,7 +3879,7 @@ function renderKinship(){
       <div class="kinship-q">${kinshipCurrent.q}</div>
       ${kinshipRevealed
         ? `<div class="kinship-a">💡 ${kinshipCurrent.a}</div>`
-        : `<button class="reveal-btn" id="kinshipRevealBtn">🔎 顯示答案</button>`}
+        : `<button class="reveal-btn" id="kinshipRevealBtn">顯示答案 Show answer</button>`}
     </div>
     <button class="draw-btn" id="kinshipNextBtn" style="margin-top:4px;">🔀 換一題</button>
   `;
@@ -3960,7 +4017,7 @@ function renderDtq(){
       <div class="kinship-q">${dtqCurrent.q}</div>
       ${dtqRevealed
         ? `<div class="kinship-a">💡 ${dtqCurrent.a}</div>`
-        : `<button class="reveal-btn" id="dtqRevealBtn">🔎 顯示答案</button>`}
+        : `<button class="reveal-btn" id="dtqRevealBtn">顯示答案 Show answer</button>`}
     </div>
     <button class="draw-btn" id="dtqNextBtn" style="margin-top:4px;">🔀 換一題</button>
   `;
@@ -4042,7 +4099,7 @@ function renderQa(){
     stage.innerHTML = `
       <div class="empty">
         <div class="big">💬</div>
-        <p>${pool.length ? '選好要看幾題後，點一下上面的「抽一個生詞」，讓學生看問題、用剛學過的生詞口頭回答！' : '請先在上面選擇至少一個課次'}</p>
+        <p>${pool.length ? '選好要看幾題後，點一下上面的「抽一個生詞」，讓學生看問題、用剛學過的生詞口頭回答！<br><span class="en">Draw a word, read the question, and answer out loud using the new word.</span>' : '請先在上面選擇至少一個課次'}</p>
       </div>`;
     return;
   }
@@ -4106,7 +4163,7 @@ function moneyKuaiQianHtml(amount){
 
 function orderBudgetBannerHtml(){
   if(orderBudget === null){
-    return `<div class="order-budget-banner empty">💵 請先按上面的「抽籤決定預算」，看看客人今天有多少錢可以買早餐！</div>`;
+    return `<div class="order-budget-banner empty">請先按上面的「抽籤決定預算」，看看客人今天有多少錢可以買早餐！<br><span class="en">First tap “抽籤決定預算 Draw a budget” to see how much money the customer has for breakfast.</span></div>`;
   }
   return `<div class="order-budget-banner"><span class="order-budget-ticket">💵</span><span>你有${moneyKuaiQianHtml(orderBudget)}。</span></div>`;
 }
@@ -4134,7 +4191,7 @@ function renderOrderDialogue(){
       : `<span class="order-budget-badge" title="錢不夠買！">⚠️</span>`);
   // 錢夠：總金額這句維持原樣收尾，後面接付錢／找錢的對話（本來就有自己的「謝謝光臨」）。
   // 錢不夠：老闆要明講「你的錢不夠喔！」，不能還若無其事地說「謝謝光臨」。
-  const totalLineText = canPay ? `這樣一共${totalHtml}。` : `這樣一共${totalHtml}，你的錢不夠喔！`;
+  const totalLineText = canPay ? `這樣一共${totalHtml}。` : `這樣一共${totalHtml}，你的錢不夠喔！ <span class="en">Not enough money!</span>`;
   const closingHtml = canPay ? `
       <div class="dialogue-line"><div class="dialogue-speaker">客人</div><div class="dialogue-text">謝謝，這裡是${moneyKuaiQianHtml(orderBudget)}。</div></div>
       <div class="dialogue-line"><div class="dialogue-speaker">老闆</div><div class="dialogue-text">收您${moneyKuaiQianHtml(orderBudget)}，找您${moneyKuaiQianHtml(orderBudget - total)}，謝謝光臨。</div></div>
@@ -4180,8 +4237,8 @@ function orderMenuHtml(){
     <div class="menu-board">
       <div class="menu-board-header">🍳 早餐店菜單</div>
       <div class="menu-board-body">
-        ${orderMenuSectionHtml('食物', ORDER_FOOD_ITEMS)}
-        ${orderMenuSectionHtml('飲料', ORDER_DRINK_ITEMS)}
+        ${orderMenuSectionHtml('食物 Food', ORDER_FOOD_ITEMS)}
+        ${orderMenuSectionHtml('飲料 Drinks', ORDER_DRINK_ITEMS)}
       </div>
     </div>
   `;
@@ -4466,7 +4523,7 @@ function renderFlip(){
     if(c.revealed){
       return `
         <div class="flip-card revealed" data-idx="${i}">
-          <div class="flip-emoji">${c.word['Emoji／圖示']||'✨'}</div>
+          <div class="flip-emoji">${vPicHtml(c.word)}</div>
           ${flipDisplayMode==='both'
             ? `<div class="flip-word">${zhuyinWordHtml(c.word['生詞'], c.word['注音'])}</div>`
             : showZh ? `<div class="flip-word">${c.word['生詞']}</div>` : ''}
@@ -5891,6 +5948,7 @@ window.mmTA = (function(){
     { key: "例句（泰文）", label: "例句（泰文）", type: "text" },
     { key: "建議補充生詞", label: "建議補充生詞", type: "text" },
     { key: "Emoji／圖示", label: "Emoji／圖示", type: "text" },
+    { key: "圖片", label: "圖片（網址；也可以在生詞卡上直接上傳）", type: "text" },
     { key: "圖片搜尋關鍵字（英文）", label: "圖片搜尋關鍵字（英文）", type: "text" },
     { key: "備註", label: "備註", type: "text" },
     { key: "問題", label: "延伸問題（每行一題）", type: "textarea" }

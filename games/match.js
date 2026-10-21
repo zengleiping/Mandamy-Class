@@ -4,7 +4,7 @@
                            startAt, endAt, now, init, onScore, onEnd, onQuit, title, side }) */
 (function(){
   var MG = window.MG;
-  var PAIR_NAME = { p: "詞語 ↔ 拼音", t: "詞語 ↔ 翻譯", pt: "詞語 ↔ 拼音＋翻譯", i: "詞語 ↔ 圖片" };
+  var PAIR_NAME = { p: "詞語 ↔ 拼音 Word ↔ pinyin", t: "詞語 ↔ 翻譯 Word ↔ meaning", pt: "詞語 ↔ 拼音＋翻譯 Word ↔ pinyin + meaning", i: "詞語 ↔ 圖片 Word ↔ picture" };
   MG.MATCH_PAIRS = PAIR_NAME;
 
   function create(root, o){
@@ -32,11 +32,11 @@
     root.innerHTML = '<div class="gm mt">' +
       '<div class="gm-hud"><span class="gm-title">' + MG.esc(o.title || "配對 Match") + '</span><span class="note">' + MG.esc(MG.ph(PAIR_NAME[o.pair] || "", o.phon)) + '</span>' +
       (o.mode === "timed" ? '' : '<div class="mt-prog"><i style="width:0%"></i></div><span class="note mt-pn"></span>') + '<span class="grow"></span>' +
-      '<div class="gm-stat time"><small>' + (o.mode === "timed" ? "剩下" : "時間") + '</small><b class="mt-time">0:00</b></div>' +
-      '<div class="gm-stat"><small>答錯</small><b class="mt-err">0</b></div>' +
-      '<div class="gm-stat score"><small>分數</small><b class="mt-score">0</b></div>' +
-      MG.musicBtn(o.music) + '<button class="mg-btn sm ghost mt-snd">' + (MG.sound.on ? "音效 開" : "音效 關") + '</button>' +
-      (o.onQuit ? '<button class="mg-btn sm mt-quit">結束</button>' : '') + '</div>' +
+      '<div class="gm-stat time"><small>' + (o.mode === "timed" ? "剩下 Left" : "時間 Time") + '</small><b class="mt-time">0:00</b></div>' +
+      '<div class="gm-stat"><small>答錯 Wrong</small><b class="mt-err">0</b></div>' +
+      '<div class="gm-stat score"><small>分數 Score</small><b class="mt-score">0</b></div>' +
+      MG.musicBtn(o.music) + '<button class="mg-btn sm ghost mt-snd">' + (MG.sound.on ? "音效 開 Sound on" : "音效 關 Sound off") + '</button>' +
+      (o.onQuit ? '<button class="mg-btn sm mt-quit">結束 Quit</button>' : '') + '</div>' +
       '<div class="mt-stage" style="background:' + (TH.bg || "var(--paper)") + '">' + (TH.deco ? '<div class="bl-bg">' + TH.deco() + '</div>' : '') + '<div class="mt-board"><div class="mt-col mt-l"></div><div class="mt-col mt-r"></div></div></div></div>';
     var el = root.firstChild, colL = MG.$(".mt-l", el), colR = MG.$(".mt-r", el);
 
@@ -89,7 +89,7 @@
       if(sel.dataset.side === c.dataset.side){ sel.classList.remove("sel"); sel = c; c.classList.add("sel"); return; }
       check(sel, c);
     });
-    MG.$(".mt-snd", el).onclick = function(){ MG.sound.on = !MG.sound.on; this.textContent = MG.sound.on ? "音效 開" : "音效 關"; };
+    MG.$(".mt-snd", el).onclick = function(){ MG.sound.on = !MG.sound.on; this.textContent = MG.sound.on ? "音效 開 Sound on" : "音效 關 Sound off"; };
     if(o.onQuit) MG.$(".mt-quit", el).onclick = function(){ MG.music.stop(); o.onQuit(); };
     MG.bindMusicBtn(el, o.music);
 

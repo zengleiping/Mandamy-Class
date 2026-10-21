@@ -86,6 +86,7 @@
   };
   MG.fitAll = function(root){ MG.$$(".fit", root).forEach(function(el){ MG.fit(el); }); };
 
+  MG.en = function(zh, en){ return zh + '<span class="en">' + en + '</span>'; };
   MG.toast = function(msg, ms){
     var t = document.createElement("div"); t.className = "mg-toast"; t.textContent = msg; document.body.appendChild(t);
     setTimeout(function(){ t.classList.add("on"); }, 10); setTimeout(function(){ t.classList.remove("on"); setTimeout(function(){ t.remove(); }, 300); }, ms || 2600);
@@ -161,7 +162,7 @@
   // 詞語格式：{ id, w: 生詞, p: 拼音, zy: 注音, tr: { en, th, ja, vi… }, e: Emoji }
   MG.fromBank = function(v, i){
     var tr = {}; if(v["英文翻譯"]) tr.en = String(v["英文翻譯"]).trim(); if(v["泰文翻譯"]) tr.th = String(v["泰文翻譯"]).trim();
-    return { id: String(i), w: String(v["生詞"] || "").trim(), p: String(v["拼音"] || "").trim(), zy: String(v["注音"] || "").trim(), tr: tr, e: String(v["Emoji／圖示"] || "").trim() };
+    return { id: String(i), w: String(v["生詞"] || "").trim(), p: String(v["拼音"] || "").trim(), zy: String(v["注音"] || "").trim(), tr: tr, e: String(v["Emoji／圖示"] || "").trim(), pic: String(v["圖片"] || "").trim() };
   };
   // ---------- 注音 ----------
   var ZY_STAND = { yi:"ㄧ", ya:"ㄧㄚ", ye:"ㄧㄝ", yao:"ㄧㄠ", you:"ㄧㄡ", yan:"ㄧㄢ", yin:"ㄧㄣ", yang:"ㄧㄤ", ying:"ㄧㄥ", yong:"ㄩㄥ", wu:"ㄨ", wa:"ㄨㄚ", wo:"ㄨㄛ", wai:"ㄨㄞ", wei:"ㄨㄟ", wan:"ㄨㄢ", wen:"ㄨㄣ", wang:"ㄨㄤ", weng:"ㄨㄥ", yu:"ㄩ", yue:"ㄩㄝ", yuan:"ㄩㄢ", yun:"ㄩㄣ" };
@@ -183,7 +184,7 @@
   MG.zyFromPy = function(py){ return MG.pySyllables(py).map(function(x){ return zySyl(x.l, x.t || 0); }).join(" "); };
   MG.zyOf = function(w){ return String((w && w.zy) || "").trim() || (w && w.p ? MG.zyFromPy(w.p) : ""); };
   MG.phonName = function(phon){ return phon === "zy" ? "注音" : "拼音"; };
-  MG.ph = function(text, phon){ return phon === "zy" ? String(text).replace(/拼音/g, "注音") : text; };
+  MG.ph = function(text, phon){ return phon === "zy" ? String(text).replace(/拼音/g, "注音").replace(/pinyin/g, "zhuyin").replace(/Pinyin/g, "Zhuyin") : text; };
   // 用注音玩：把每個詞的「讀音」換成注音（原本的拼音留在 py），遊戲裡出現拼音的地方就都變成注音
   MG.withPhon = function(words, phon){
     if(phon !== "zy") return words || [];
@@ -191,7 +192,7 @@
   };
 
   // 圖片：老師另外設定的（Emoji 或圖片網址）優先，沒有就用生詞庫的「Emoji／圖示」
-  MG.picOf = function(w){ if(!w) return ""; if(w.img) return w.img === "-" ? "" : String(w.img).trim(); return String(w.e || "").trim(); };   // "-"＝老師刻意不要圖片
+  MG.picOf = function(w){ if(!w) return ""; if(w.img) return w.img === "-" ? "" : String(w.img).trim(); return String(w.pic || w.e || "").trim(); };   // 老師在遊戲裡改的 > 教材上傳的圖片 > Emoji   // "-"＝老師刻意不要圖片
   MG.isUrl = function(v){ return /^(https?:|blob:|data:image)/.test(String(v || "")); };
   MG.picHtml = function(v){ return MG.isUrl(v) ? '<img class="pic" src="' + MG.esc(v) + '" alt="" draggable="false">' : '<span class="pic emo">' + MG.esc(v) + '</span>'; };
   MG.trOf = function(w, lang){ var t = (w.tr || {})[lang] || ""; return String(t).split(/[;；]/)[0].trim(); };

@@ -23,7 +23,7 @@
   // 遊戲開始時聲音還沒解鎖（例如上課中自動加入、還沒點過畫面）：上方出現小提示，點一下就有聲音
   MG.audioHint = function(root){
     if(MG.audioReady() || !root) return;
-    var h = document.createElement("div"); h.className = "gm-sndhint"; h.textContent = "點一下畫面就有聲音"; root.appendChild(h);
+    var h = document.createElement("div"); h.className = "gm-sndhint"; h.textContent = "點一下畫面就有聲音 Tap the screen for sound"; root.appendChild(h);
     var t = setInterval(function(){ if(MG.audioReady() || !h.isConnected){ clearInterval(t); h.remove(); } }, 300);
   };
 
@@ -106,10 +106,10 @@
     preview: function(track){ MG.music.play(track); clearTimeout(st.pv); st.pv = setTimeout(function(){ if(st.track === track) MG.music.stop(); }, 6000); }
   };
   // 遊戲畫面上的「音樂 開／關」
-  MG.musicBtn = function(track){ return track ? '<button class="mg-btn sm ghost gm-mus">' + (MG.music.on ? "音樂 開" : "音樂 關") + '</button>' : ''; };
+  MG.musicBtn = function(track){ return track ? '<button class="mg-btn sm ghost gm-mus">' + (MG.music.on ? "音樂 開 Music on" : "音樂 關 Music off") + '</button>' : ''; };
   MG.bindMusicBtn = function(root, track){
     var b = MG.$(".gm-mus", root); if(!b) return;
-    b.onclick = function(){ MG.music.on = !MG.music.on; b.textContent = MG.music.on ? "音樂 開" : "音樂 關"; if(MG.music.on) MG.music.play(track); else MG.music.stop(); };
+    b.onclick = function(){ MG.music.on = !MG.music.on; b.textContent = MG.music.on ? "音樂 開 Music on" : "音樂 關 Music off"; if(MG.music.on) MG.music.play(track); else MG.music.stop(); };
   };
   // 每次打開遊戲，音樂和音效都是開的；玩家關掉只在這次有效（不記住，下次打開又是開的）
   try{ localStorage.removeItem("mm_game_music"); }catch(e){}

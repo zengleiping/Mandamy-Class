@@ -133,13 +133,18 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .udrop.open{ display:block; } .udrop button{ display:block; width:100%; text-align:left; border:none; background:none; padding:8px 10px; border-radius:8px; font:inherit; cursor:pointer; color:var(--ink); } .udrop button:hover{ background:var(--surface-2); }
   @media (max-width:1100px){ .umenu .mn-t{ display:none; } .mn{ padding:6px 7px; font-size:15px; } }
   @media (max-width:640px){ .mainnav{ order:10; width:100%; overflow-x:auto; } .top{ flex-wrap:wrap; } }
-  .act-h{ font-size:17px; margin:14px 0 8px; }
-  .act-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:10px; }
+  .act-h{ font-size:17px; margin:18px 0 10px; }
+  .act-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:14px; }
+  #actdlg{ padding:22px 26px 26px; max-height:88vh; overflow:auto; }
+  #actdlg .act-h:first-of-type{ margin-top:12px; }
   .act-card{ position:relative; }
-  .act-go{ display:flex; flex-direction:column; gap:3px; width:100%; height:100%; text-align:left; border:1.5px solid var(--line); background:var(--surface); border-radius:14px; padding:12px 14px; font:inherit; cursor:pointer; color:var(--ink); }
+  .act-go{ display:flex; flex-direction:column; gap:3px; width:100%; height:100%; text-align:left; border:1.5px solid var(--line); background:var(--surface); border-radius:14px; padding:16px 18px 18px; gap:6px; font:inherit; cursor:pointer; color:var(--ink); }
   .act-go:hover{ border-color:var(--seal); background:#FBE3D6; }
   .act-e{ font-size:28px; line-height:1.1; } .act-go b{ font-size:17.5px; }
-  .act-fav{ position:absolute; top:6px; right:8px; border:none; background:none; font-size:19px; cursor:pointer; color:var(--ink-soft); } .act-fav.on{ color:#E8B04A; }
+  .act-fav{ position:absolute; top:10px; right:10px; border:1.5px solid var(--line); background:var(--surface); border-radius:99px; padding:2px 10px; font-size:12.5px; font-weight:700; cursor:pointer; color:var(--ink-soft); } .act-fav:hover{ border-color:var(--seal); color:var(--seal); } .act-fav.on{ color:var(--seal); border-color:var(--seal); background:var(--seal-soft); }
+  .act-go b{ padding-right:84px; }
+  .act-et{ font-size:.78em; color:var(--ink-soft); font-weight:700; }
+  .act-en{ font-size:.92em; opacity:.85; }
   .act-ctx{ display:flex; gap:8px 12px; align-items:center; flex-wrap:wrap; } .act-ctx label{ margin:0; font-weight:700; font-size:15px; } .act-ctx select{ padding:6px 10px; border-radius:8px; border:1.5px solid var(--line); background:var(--surface-2); max-width:100%; }
   .cl-school{ margin-top:10px; } .cl-sh{ display:flex; align-items:center; gap:8px; margin-bottom:6px; flex-wrap:wrap; }
   .rte{ border:1.5px solid var(--line); border-radius:10px; background:var(--surface); overflow:hidden; margin-top:4px; }
@@ -215,6 +220,15 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .bg-count.bad{ color:#B23B32; font-weight:700; }
   .bg-pend{ text-align:center; padding:10px; background:#FBEBC8; border-radius:12px; font-size:19px; }
   .bg-order,.bg-score,.bg-picks{ display:flex; flex-wrap:wrap; gap:4px; }
+  .bg-team-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:10px; }
+  .bg-team{ border:2px solid var(--line); border-radius:14px; padding:10px; background:var(--surface); cursor:pointer; min-height:74px; }
+  .bg-team.un{ border-style:dashed; background:var(--surface-2); }
+  .bg-team-h{ display:flex; align-items:center; gap:6px; margin-bottom:6px; }
+  .bg-tname{ flex:1; min-width:0; font:inherit; font-weight:700; padding:4px 8px; border:1.5px solid var(--line); border-radius:8px; }
+  .bg-dot{ width:12px; height:12px; border-radius:50%; flex:none; }
+  .bg-who{ background:#fff; color:var(--ink); border-radius:99px; padding:2px 10px; margin-left:4px; box-shadow:0 0 0 2px var(--seal) inset; white-space:nowrap; display:inline-block; }
+  .bg-pick.on{ border-color:var(--bamboo); }
+  .bg-en{ display:block; font-size:.6em; font-weight:600; color:var(--ink-soft); margin-top:2px; }
   .bg-opts{ display:flex; flex-wrap:wrap; gap:10px; }
   .bg-opt{ flex:1 1 260px; display:flex; flex-direction:column; gap:4px; padding:10px 12px; border:1.5px solid var(--line); border-radius:12px; cursor:pointer; background:var(--surface); }
   .bg-opt input{ margin-right:6px; }
@@ -898,6 +912,37 @@ window.addEventListener("message", async function(e){
   try{ await fbUpdate("teacherVocabBanks/" + t, { courseData: cd, updatedAt: Date.now(), updatedBy: S.teacher.name || t }); }catch(er){ reply("存檔失敗，請檢查網路後再試。"); return; }
   try{ await syncLessonIndex(); }catch(er){}
   reply("已存回本課教材：新增 " + added + " 個生詞、補上 " + filled + " 個空白欄位。");
+});
+// ---------- 生詞圖片：老師在生詞卡或生詞遊戲上傳的圖片，存進教材的「圖片」欄（生詞卡、配對、Blast 都用這張）----------
+async function saveVocabPic(spots, word, url){
+  var t = S.teacher.id, bank = await fbGet("teacherVocabBanks/" + t), cd = arrOf(bank && bank.courseData), hit = 0;
+  function apply(list){
+    list.forEach(function(L){
+      if(!L) return;
+      var ok = spots.some(function(sp){ return (L.book || DEFAULT_BOOK) === sp.book && (!sp.no || Number(L.lesson) === sp.no); }); if(!ok) return;
+      var vs = arrOf(L.vocab), ch = false;
+      vs.forEach(function(v){ if(v && String(v["生詞"] || "").trim() === word){ if(url) v["圖片"] = url; else delete v["圖片"]; ch = true; } });
+      if(ch){ L.vocab = vs; hit++; }
+    });
+  }
+  apply(cd); if(!hit) return false;
+  await fbUpdate("teacherVocabBanks/" + t, { courseData: cd, updatedAt: Date.now(), updatedBy: S.teacher.name || t });
+  apply(S.bank || []);   // 畫面上的資料也一起改，不用重新整理
+  spots.forEach(function(sp){ embedBankSet(sp.book); });
+  return true;
+}
+async function uploadVocabPic(file){ return (await uploadFile("teacherMedia/" + S.teacher.id + "/vocab-img-" + Date.now() + "-" + Math.random().toString(36).slice(2, 6), file)).url; }
+window.addEventListener("message", async function(e){
+  var d = e.data; if(!d || d.mm !== "vocabImg" || !S.teacher) return;
+  var fr = document.getElementById("fr"); if(!fr || e.source !== fr.contentWindow) return;
+  function reply(ok, url, msg){ try{ fr.contentWindow.postMessage({ mm: ok ? "vocabImgSaved" : "vocabImgFail", word: d.word, lesson: d.lesson, url: url || "", msg: msg || "" }, "*"); }catch(er){} }
+  if(S.teacher.role === "ta"){ reply(false, "", "助教不能修改教材"); return; }
+  try{
+    var url = d.remove ? "" : await uploadVocabPic(d.file);
+    var ok = await saveVocabPic([{ book: d.book || DEFAULT_BOOK, no: Number(d.lesson) || 0 }], String(d.word || "").trim(), url);
+    reply(ok, url, ok ? "" : "教材裡找不到這個生詞");
+    if(ok) toast(d.remove ? "已移除圖片" : "圖片已存到教材");
+  }catch(er){ reply(false, "", (er && er.message) || "上傳失敗"); }
 });
 // 生詞表製作工具準備好時，把目前這一課的生詞（生詞、拼音、英文）傳進去
 function vtoolWords(key){
@@ -5647,18 +5692,18 @@ async function deleteUnit(key){
 }
 // ---------- 🎲 課堂活動：全部活動集中一頁（常用、最近用過），選課次／班級就開始 ----------
 var ACTS = [
-  { id: "match", e: "", t: "配對 Match", d: "詞語和拼音／翻譯配對，比速度或限時；可以全班即時比賽、分組、出作業連結", need: "lesson", game: true },
-  { id: "blast", e: "", t: "Blast", d: "答案從畫面掉下來，點對的那個；四種主題，可以全班即時比賽", need: "lesson", game: true },
-  { id: "flashcard", e: "🎴", t: "字卡練習", d: "生詞字卡，翻面看注音和意思", need: "lesson" },
-  { id: "flip", e: "🃏", t: "翻卡遊戲", d: "翻牌配對，記憶生詞", need: "lesson" },
-  { id: "bingo", e: "🎉", t: "賓果卡", d: "產生賓果卡、老師念詞", need: "lesson" },
-  { id: "pbingo", e: "🎯", t: "線上賓果（全班一起）", d: "學生用自己的裝置連進來一起玩", need: "class" },
-  { id: "qa", e: "💬", t: "回答問題", d: "用生詞的延伸問題練口說", need: "lesson" },
-  { id: "kinship", e: "🗣️", t: "語法遊戲", d: "句型練習遊戲", need: "lesson" },
-  { id: "order", e: "🧾", t: "點餐練習", d: "情境對話：點餐", need: "lesson" },
-  { id: "dtq", e: "📅", t: "年月日問答", d: "日期、星期的問答練習", need: "lesson" },
-  { id: "wheel", e: "🎡", t: "點名輪盤", d: "用班級名單隨機抽人", need: "classOnly" },
-  { id: "capsule", e: "⏳", t: "時空膠囊", d: "學生寫給未來的自己", need: "classOnly" }
+  { id: "match", e: "", t: "配對 Match", d: "詞語和拼音／翻譯配對，比速度或限時；可以全班即時比賽、分組、出作業連結", et: "Match", en: "Match words with pinyin, meanings or pictures", need: "lesson", game: true },
+  { id: "blast", e: "", t: "Blast", d: "答案從畫面掉下來，點對的那個；四種主題，可以全班即時比賽", et: "Blast", en: "Tap the right answer as it falls", need: "lesson", game: true },
+  { id: "flashcard", e: "", t: "字卡練習", d: "生詞字卡，翻面看注音和意思", et: "Flashcards", en: "Flip a card to see zhuyin and meaning", need: "lesson" },
+  { id: "flip", e: "", t: "翻卡遊戲", d: "翻牌配對，記憶生詞", et: "Memory Game", en: "Flip two cards and find a pair", need: "lesson" },
+  { id: "bingo", e: "", t: "賓果卡", d: "產生賓果卡、老師念詞", et: "Bingo Cards", en: "Print bingo cards; the teacher calls words", need: "lesson" },
+  { id: "pbingo", e: "", t: "線上賓果（全班一起）", d: "學生用自己的裝置連進來一起玩", et: "Online Bingo", en: "Play bingo together on your own devices", need: "class" },
+  { id: "qa", e: "", t: "回答問題", d: "用生詞的延伸問題練口說", et: "Q&A", en: "Answer questions using the new words", need: "lesson" },
+  { id: "kinship", e: "", t: "語法遊戲", d: "句型練習遊戲", et: "Grammar Game", en: "Practice sentence patterns", need: "lesson" },
+  { id: "order", e: "", t: "點餐練習", d: "情境對話：點餐", et: "Ordering Food", en: "Role-play ordering breakfast", need: "lesson" },
+  { id: "dtq", e: "", t: "年月日問答", d: "日期、星期的問答練習", et: "Dates & Days", en: "Ask and answer about dates and days", need: "lesson" },
+  { id: "wheel", e: "", t: "點名輪盤", d: "用班級名單隨機抽人", et: "Name Wheel", en: "Spin to pick a student", need: "classOnly" },
+  { id: "capsule", e: "", t: "時空膠囊", d: "學生寫給未來的自己", et: "Time Capsule", en: "Write a letter to your future self", need: "classOnly" }
 ];
 function actById(id){ return ACTS.filter(function(a){ return a.id === id; })[0]; }
 function actFavs(){ var f = (S.plat.meta || {}).actFav; return Array.isArray(f) ? f : []; }
@@ -5666,14 +5711,14 @@ function actRecent(){ try{ var v = JSON.parse(localStorage.getItem("mm_act_recen
 function actNoteRecent(id){ try{ var r = actRecent().filter(function(x){ return x !== id; }); r.unshift(id); localStorage.setItem("mm_act_recent_" + S.teacher.id, JSON.stringify(r.slice(0, 6))); }catch(e){} }
 function actCardHtml(a, attr){
   var fav = actFavs().indexOf(a.id) >= 0;
-  return '<div class="act-card"><button class="act-go" ' + attr + '="' + a.id + '"><span class="act-e">' + a.e + '</span><b>' + esc(a.t) + '</b><span class="note">' + esc(a.d) + '</span></button><button class="act-fav' + (fav ? ' on' : '') + '" data-actfav="' + a.id + '" title="' + (fav ? '取消常用' : '設為常用') + '">' + (fav ? '★' : '☆') + '</button></div>';
+  return '<div class="act-card"><button class="act-go" ' + attr + '="' + a.id + '"><b>' + esc(a.t) + (a.et && a.et !== a.t && a.t.indexOf(a.et) < 0 ? ' <span class="act-et">' + esc(a.et) + '</span>' : '') + '</b><span class="note">' + esc(a.d) + '</span>' + (a.en ? '<span class="note act-en">' + esc(a.en) + '</span>' : '') + '</button><button class="act-fav' + (fav ? ' on' : '') + '" data-actfav="' + a.id + '" title="' + (fav ? '取消常用' : '設為常用：釘在最上面') + '">' + (fav ? '常用 ✓' : '設為常用') + '</button></div>';
 }
 function actGridHtml(attr, filter){
   var list = ACTS.filter(filter || function(){ return true; }), favs = actFavs().map(actById).filter(Boolean).filter(function(a){ return list.indexOf(a) >= 0; }), rec = actRecent().map(actById).filter(Boolean).filter(function(a){ return list.indexOf(a) >= 0 && favs.indexOf(a) < 0; }).slice(0, 4);
-  return (favs.length ? '<h3 class="act-h">⭐ 常用</h3><div class="act-grid">' + favs.map(function(a){ return actCardHtml(a, attr); }).join("") + '</div>' : '') +
-    (rec.length ? '<h3 class="act-h">🕘 最近用過</h3><div class="act-grid">' + rec.map(function(a){ return actCardHtml(a, attr); }).join("") + '</div>' : '') +
+  return (favs.length ? '<h3 class="act-h">常用</h3><div class="act-grid">' + favs.map(function(a){ return actCardHtml(a, attr); }).join("") + '</div>' : '') +
+    (rec.length ? '<h3 class="act-h">最近用過</h3><div class="act-grid">' + rec.map(function(a){ return actCardHtml(a, attr); }).join("") + '</div>' : '') +
     '<h3 class="act-h">全部活動</h3><div class="act-grid">' + list.map(function(a){ return actCardHtml(a, attr); }).join("") + '</div>' +
-    '<p class="note" style="margin-top:10px;">按 ☆ 把常用的活動釘在最上面。簡報裡另外有計時器、白板等工具。</p>';
+    '<p class="note" style="margin-top:12px;">按「設為常用」把常用的活動釘在最上面。簡報裡另外有計時器、白板等工具。</p>';
 }
 async function actToggleFav(id){
   var f = actFavs().slice(), i = f.indexOf(id); if(i >= 0) f.splice(i, 1); else f.push(id);
@@ -5695,15 +5740,15 @@ function renderActHub(){
   if(A.run){
     var a = actById(A.run), lp = a && a.game ? null : actLessonsParam(ls);
     if(a && a.game) S.gameCtx = { game: a.id, sel: sel, ls: ls };
-    var html0 = '<div class="tabs"><button class="tab" data-actback="1">‹ 回課堂活動</button><span class="note" style="align-self:center;margin-left:8px;">' + esc(a ? a.e + " " + a.t : "") + (a && a.game ? '' : '　｜　' + esc(ls.map(lessonTitle).join("、")) + '（' + actVocabCount(ls) + ' 個生詞）') + '</span>' + (a && a.game ? '' : '<button class="tab" data-actmore="1" style="margin-left:auto;">📚 選課次（可多選）</button>') + '</div>' +
+    var html0 = '<div class="tabs"><button class="tab" data-actback="1">‹ 回課堂活動</button><span class="note" style="align-self:center;margin-left:8px;">' + esc(a ? a.e + " " + a.t : "") + (a && a.game ? '' : '　｜　' + esc(ls.map(lessonTitle).join("、")) + '（' + actVocabCount(ls) + ' 個生詞）') + '</span>' + (a && a.game ? '' : '<button class="tab" data-actmore="1" style="margin-left:auto;">選課次（可多選）</button>') + '</div>' +
       (a && a.game ? gameFrameHtml(a.id) : lp ? '<iframe class="frame" id="fr" src="' + esc("index.html?v=" + MM_V + "&embed=1&" + lp + "&tab=activities&activity=" + encodeURIComponent(A.run)) + '" allow="microphone; autoplay; clipboard-write"></iframe>' : '<div class="empty"><p class="note">這一課還沒有生詞，活動沒有內容可以用。</p></div>');
     shell(html0, { flush: true }); setCrumb([]);
     document.getElementById("main").onclick = async function(e){ if(e.target.closest("[data-actback]")){ S.act = { cls: A.cls, lesson: A.lesson, ls: A.ls }; render(); } else if(e.target.closest("[data-actmore]")){ var nk = await actPickLessons(keys, ls); if(nk){ S.act = Object.assign({}, A, { ls: nk }); render(); } } };
     return;
   }
   var copts = '<option value="">（不指定班級）</option>' + allClassesList().map(function(x){ var v = x.sel.s + "|" + x.sel.t + "|" + x.sel.c; return '<option value="' + esc(v) + '"' + (v === cv ? ' selected' : '') + '>' + esc((x.latest ? "" : x.year + " ") + x.school + " " + x.cls.name) + '</option>'; }).join("");
-  var lsHtml = '<span class="act-ls">' + esc(ls.map(function(k){ return lessonTitle(k).replace(/^.*?(第 \d+ 課)/, "$1"); }).join("、") || "（還沒選）") + '<span class="note">　共 ' + actVocabCount(ls) + ' 個生詞</span></span><button class="btn sm" id="act-les">📚 選課次（可多選）</button>';
-  var html = '<div class="head-row"><div style="flex:1;"><h2>🎲 課堂活動</h2><div class="note">先選班級和課次，再點活動就開始。上課中也可以按課次頁右上的「⚡ 活動選單」叫出這個選單。</div></div></div>' +
+  var lsHtml = '<span class="act-ls">' + esc(ls.map(function(k){ return lessonTitle(k).replace(/^.*?(第 \d+ 課)/, "$1"); }).join("、") || "（還沒選）") + '<span class="note">　共 ' + actVocabCount(ls) + ' 個生詞</span></span><button class="btn sm" id="act-les">選課次（可多選）</button>';
+  var html = '<div class="head-row"><div style="flex:1;"><h2>課堂活動</h2><div class="note">先選班級和課次，再點活動就開始。上課中也可以按課次頁右上的「⚡ 活動選單」叫出這個選單。</div></div></div>' +
     '<div class="panel act-ctx"><label>班級</label><select id="act-cls">' + copts + '</select><label>課次（用哪幾課的生詞）</label>' + lsHtml + '' +
     (cls ? '<span class="note">選了班級：活動會在這個班的課次頁開啟，「開始上課」時學生會跟著看到。</span>' : '<span class="note">沒選班級也可以直接玩（投影給學生看）；線上賓果、點名輪盤、時空膠囊需要選班級。</span>') + '</div>' +
     actGridHtml("data-actrun");
@@ -5753,7 +5798,7 @@ function gameFrameHtml(id){ return '<iframe class="frame" id="fr" src="' + esc("
 function gameWords(key){
   var pk = parseKey(key); if(!pk) return [];
   var l = (S.bank || []).filter(function(x){ return (x.book || DEFAULT_BOOK) === pk.book && Number(x.lesson) === pk.no; })[0];
-  return arrOf(l && l.vocab).map(function(v){ v = v || {}; var tr = {}; if(v["英文翻譯"]) tr.en = String(v["英文翻譯"]).trim(); if(v["泰文翻譯"]) tr.th = String(v["泰文翻譯"]).trim(); return { w: String(v["生詞"] || "").trim(), p: String(v["拼音"] || "").trim(), zy: String(v["注音"] || "").trim(), tr: tr, e: String(v["Emoji／圖示"] || "").trim() }; }).filter(function(x){ return x.w; });
+  return arrOf(l && l.vocab).map(function(v){ v = v || {}; var tr = {}; if(v["英文翻譯"]) tr.en = String(v["英文翻譯"]).trim(); if(v["泰文翻譯"]) tr.th = String(v["泰文翻譯"]).trim(); return { w: String(v["生詞"] || "").trim(), p: String(v["拼音"] || "").trim(), zy: String(v["注音"] || "").trim(), tr: tr, e: String(v["Emoji／圖示"] || "").trim(), pic: String(v["圖片"] || "").trim() }; }).filter(function(x){ return x.w; });
 }
 async function gameCtx(){
   var G = S.gameCtx || {}, sel = G.sel || null, cls = sel ? getCls(sel) : null;
@@ -5769,6 +5814,10 @@ window.addEventListener("message", async function(e){
   if(d.mmGame === "ready"){
     if(S.live && S.live.on && S.live.game){ S.live.game = null; fbUpdate(liveRef(), { game: null }).catch(function(){}); }
     var ctx = await gameCtx(); try{ fr.contentWindow.postMessage({ mmGame: "init", ctx: ctx }, "*"); }catch(er){}
+  } else if(d.mmGame === "img"){
+    // 生詞遊戲的表格裡上傳的圖片：存進教材，生詞卡也會用這張
+    var spots = (d.keys || []).map(parseKey).filter(Boolean).map(function(pk){ return { book: pk.book, no: pk.no }; });
+    try{ var okg = spots.length && await saveVocabPic(spots, String(d.w || "").trim(), d.url || ""); if(okg) toast("圖片已存到教材"); }catch(er){ toast("圖片沒有存到教材：" + ((er && er.message) || "")); }
   } else if(d.mmGame === "room"){
     // 上課中開了遊戲房間：學生的畫面自動加入（不用輸入代碼和名字）
     if(S.live && S.live.on && S.sel){ S.live.game = d.code || null; fbUpdate(liveRef(), { game: d.code || null }).catch(function(){}); }
@@ -5793,8 +5842,8 @@ function lessonActPickerHtml(){ return '<div class="page" style="padding:16px 20
 // 上課中的「🎲 活動」快速選單
 function openActMenu(){
   var d = document.getElementById("actdlg");
-  if(!d){ d = document.createElement("dialog"); d.id = "actdlg"; d.style.cssText = "max-width:760px;width:94vw;"; document.body.appendChild(d); }
-  d.innerHTML = '<div style="display:flex;align-items:center;"><h3 style="flex:1;margin:0;">🎲 選一個活動</h3><button class="btn sm ghost" data-x="1">關閉</button></div><div class="note" style="margin:4px 0 6px;">用「' + esc(lessonTitle(S.lesson)) + '」的生詞；學生會跟著你的畫面。</div>' + actGridHtml("data-actgo", function(a){ return a.id !== "capsule"; });
+  if(!d){ d = document.createElement("dialog"); d.id = "actdlg"; d.style.cssText = "max-width:880px;width:94vw;"; document.body.appendChild(d); }
+  d.innerHTML = '<div style="display:flex;align-items:center;"><h3 style="flex:1;margin:0;">選一個活動</h3><button class="btn sm ghost" data-x="1">關閉</button></div><div class="note" style="margin:4px 0 6px;">用「' + esc(lessonTitle(S.lesson)) + '」的生詞；學生會跟著你的畫面。</div>' + actGridHtml("data-actgo", function(a){ return a.id !== "capsule"; });
   d.onclick = async function(e){
     if(e.target.closest("[data-x]")){ d.close(); return; }
     var f = e.target.closest("[data-actfav]"); if(f){ await actToggleFav(f.dataset.actfav); d.close(); openActMenu(); return; }
@@ -5850,7 +5899,7 @@ function renderLessonCommon(no, open, teacher, liveStudent){
     }
     else {
       var curLs = subLs || [String(no)];
-      if(teacher) sub = '<div class="subbar"><button class="tab" data-actback="1" style="padding:5px 14px;font-size:15px;">‹ 其他活動</button><span class="note">' + esc((actById(subId) || {}).e + " " + (actById(subId) || {}).t) + '　｜　' + esc(curLs.map(function(k){ return lessonTitle(k).replace(/^.*?(第 \d+ 課)/, "$1"); }).join("、")) + '（' + actVocabCount(curLs) + ' 個生詞）</span><button class="tab" data-actmore="1" style="padding:5px 14px;font-size:15px;margin-left:auto;">📚 加入其他課的生詞</button></div>';
+      if(teacher) sub = '<div class="subbar"><button class="tab" data-actback="1" style="padding:5px 14px;font-size:15px;">‹ 其他活動</button><span class="note">' + esc((actById(subId) || {}).e + " " + (actById(subId) || {}).t) + '　｜　' + esc(curLs.map(function(k){ return lessonTitle(k).replace(/^.*?(第 \d+ 課)/, "$1"); }).join("、")) + '（' + actVocabCount(curLs) + ' 個生詞）</span><button class="tab" data-actmore="1" style="padding:5px 14px;font-size:15px;margin-left:auto;">加入其他課的生詞</button></div>';
       frame = lp2 ? lessonHtmlFrame("index.html?v=" + MM_V + "&embed=1&" + lp2 + "&tab=activities" + (actOk ? "&activity=" + encodeURIComponent(subId) : "") + role) : '<div class="empty"><p class="note">這本教材還沒有生詞庫，所以活動暫時沒有可用的生詞。</p></div>';
     }
   } else {
@@ -6437,6 +6486,26 @@ function bColor(d, k){ var m = (d.members || {})[k]; return m ? m.color : "#888"
 function bChip(d, k, extra){ return '<span class="bg-chip" style="background:' + bColor(d, k) + ';">' + esc(bName(d, k)) + (extra || "") + '</span>'; }
 function bCellHtml(c, d){ c = c || {}; return '<div class="bg-w">' + esc(c.w || "") + '</div>' + (d.cfg && d.cfg.pinyin && c.p ? '<div class="bg-p">' + esc(c.p) + '</div>' : ''); }
 function bSave(patch){ return fbUpdate(bBase(), patch); }
+// 分組模式：每一組是一個「參加者」（有自己的顏色、輪次、格子）；組裡的同學輪流回答（tturn 記每組輪到第幾位）
+function bTeamCur(d, k){ var m = (d.members || {})[k]; if(!m || !m.team) return null; var st = bA(m.students); if(!st.length) return null; return st[((d.tturn || {})[k] || 0) % st.length]; }
+function bStuName(d, k, sk){ var m = (d.members || {})[k]; return (m && m.names && m.names[sk]) || (function(){ try{ return decodeURIComponent(sk); }catch(e){ return sk; } })(); }
+function bMyTeam(d){ var me = bMyKey(); if(!me) return null; var ms = d.members || {}; for(var k in ms){ if(ms[k] && ms[k].team && bA(ms[k].students).indexOf(me) >= 0) return k; } return null; }
+// 學生不能按：老師設定「由老師代按」，或老師中途鎖住
+function bLocked(d){ return !!(d.lock || (d.cfg && d.cfg.press === "teacher")); }
+// 現在這台裝置可以替 k 操作嗎（老師永遠可以；學生要輪到自己、而且沒被鎖住）
+function bCanAct(d, k){ if(B.teacher) return true; if(bLocked(d)) return false; var m = (d.members || {})[k]; if(!m) return false; return m.team ? bTeamCur(d, k) === bMyKey() : k === bMyKey(); }
+function bIsMyTurn(d, k){ if(B.teacher || !k) return false; var m = (d.members || {})[k]; if(!m) return false; return m.team ? bTeamCur(d, k) === bMyKey() : k === bMyKey(); }
+// 換下一位：分組時，剛結束的那一組也換下一個同學
+function bNextTurn(d){
+  var ord = bA(d.order), cur = ord.length ? ord[(d.turn || 0) % ord.length] : null, p = { turn: ord.length ? ((d.turn || 0) + 1) % ord.length : 0 };
+  if(cur && ((d.members || {})[cur] || {}).team){ var tt = Object.assign({}, d.tturn || {}); tt[cur] = (tt[cur] || 0) + 1; p.tturn = tt; }
+  return p;
+}
+function bLockBtn(d){
+  if(d.cfg && d.cfg.press === "teacher") return '<span class="note">這局由老師代按</span>';
+  return '<button class="btn sm' + (d.lock ? ' primary' : '') + '" data-b="lock" title="鎖住後，學生的裝置不能按，只有老師能按">' + (d.lock ? '解除鎖定（讓學生自己按）' : '鎖住學生操作') + '</button>';
+}
+function bWho(d, k){ var sk = bTeamCur(d, k); return sk ? '<b class="bg-who">' + esc(bStuName(d, k, sk)) + '</b>' : ''; }
 
 function bingoStop(){ if(!B) return; try{ if(B.unsub) B.unsub(); }catch(e){} if(B.hb) clearInterval(B.hb); if(B.rf) clearInterval(B.rf); B = null; }
 function bingoMount(teacher){
@@ -6498,7 +6567,7 @@ function bingoAnnounceCheck(d){
   if(first && nowMs() - (a.at || 0) > 20000) return;
   var old = document.getElementById("bingo-ov"); if(old) old.remove();
   var ov = document.createElement("div"); ov.id = "bingo-ov";
-  ov.innerHTML = '<div class="bg-ov-box"><div class="bg-ov-t">🎉 賓果！BINGO 🎉</div><div class="bg-ov-n">' + bA(a.keys).map(function(k){ return bChip(d, k); }).join(" ") + '</div><div class="note" style="margin-top:14px;color:#fff;opacity:.8;">點一下關閉</div></div>';
+  ov.innerHTML = '<div class="bg-ov-box"><div class="bg-ov-t">賓果！BINGO!</div><div class="bg-ov-n">' + bA(a.keys).map(function(k){ return bChip(d, k); }).join(" ") + '</div><div class="note" style="margin-top:14px;color:#fff;opacity:.8;">點一下關閉 Tap to close</div></div>';
   ov.onclick = function(){ ov.remove(); }; document.body.appendChild(ov); setTimeout(function(){ if(ov.parentNode) ov.remove(); }, 8000);
 }
 
@@ -6542,7 +6611,7 @@ function bingoDraw(){
   var root = document.getElementById("bingo-root"); if(!root || !B) return; B.root = root;
   var d = B.data || {}, ph = d.phase || "setup";
   if(ph === "setup"){
-    if(!B.teacher){ root.innerHTML = '<div class="bg-wrap"><div class="empty"><h2>🎯 賓果</h2><p class="note">老師準備中，馬上開始…<br>你已經在線上了，不用做任何事。</p></div></div>'; return; }
+    if(!B.teacher){ root.innerHTML = '<div class="bg-wrap"><div class="empty"><h2>賓果 Bingo</h2><p class="note">老師準備中，馬上開始…<br>你已經在線上了，不用做任何事。<br>The teacher is getting ready. You are online — just wait.</p></div></div>'; return; }
     return bingoDrawSetup(d);
   }
   if(ph === "order") return bingoDrawOrder(d);
@@ -6551,18 +6620,25 @@ function bingoDraw(){
 }
 function bgMyBar(d){
   if(B.teacher) return '';
+  var lock = bLocked(d) && (d.phase === "play" || d.phase === "fill") ? '<span class="note">　老師代按中 The teacher is tapping for you</span>' : '';
+  var tk = bMyTeam(d);
+  if(tk){
+    var ord = bA(d.order), curK = ord.length ? ord[(d.turn || 0) % ord.length] : null, next = bTeamCur(d, tk) === bMyKey();
+    var now = next && (d.cfg && d.cfg.mode === "personal" && d.phase === "play" ? true : curK === tk && (d.phase === "play" || d.phase === "fill"));
+    return '<div class="bg-me">你在 Your team：' + bChip(d, tk) + (now ? '　<b>輪到你回答！ Your turn to answer!</b>' : next && (d.phase === "play" || d.phase === "fill") ? '　<span class="note">你的組下一次輪到你 You\'re next for your team</span>' : '') + lock + '</div>';
+  }
   var k = bMyKey(), m = (d.members || {})[k];
-  return '<div class="bg-me">' + (m ? '你是 ' + bChip(d, k) : '你這局還沒有加入，先看看吧（請老師把你加進來）') + '</div>';
+  return '<div class="bg-me">' + (m ? '你是 You are ' + bChip(d, k) : '你這局還沒有加入，先看看吧（請老師把你加進來） You are not in this round yet.') + lock + '</div>';
 }
 function bgTurnBar(d){
   var ord = bA(d.order); if(!ord.length) return '';
   var k = ord[(d.turn || 0) % ord.length];
-  var mine = !B.teacher && k === bMyKey();
-  return '<div class="bg-turn">輪到 ' + bChip(d, k) + (mine ? '　<b>就是你！</b>' : '') + '</div>';
+  var mine = bIsMyTurn(d, k), sk = bTeamCur(d, k);
+  return '<div class="bg-turn">輪到 Turn：' + bChip(d, k) + (sk ? '　回答 Answering：' + bWho(d, k) : '') + (mine ? '　<b>就是你！ It\'s you!</b>' : '') + (B.teacher && sk ? '　<span class="note">請叫 ' + esc(bStuName(d, k, sk)) + ' 回答</span>' : '') + '</div>';
 }
 function bgOrderStrip(d){
   var ord = bA(d.order), cur = ord.length ? ord[(d.turn || 0) % ord.length] : null;
-  return '<div class="bg-order">' + ord.map(function(k, i){ return '<span class="bg-chip' + (k === cur && (d.phase === "play" || d.phase === "fill") ? ' now' : '') + '" style="background:' + bColor(d, k) + ';">' + (i + 1) + '. ' + esc(bName(d, k)) + '</span>'; }).join("") + '</div>';
+  return '<div class="bg-order">' + ord.map(function(k, i){ var m = (d.members || {})[k] || {}, nx = m.team ? bTeamCur(d, k) : null; return '<span class="bg-chip' + (k === cur && (d.phase === "play" || d.phase === "fill") ? ' now' : '') + '" style="background:' + bColor(d, k) + ';">' + (i + 1) + '. ' + esc(bName(d, k)) + (nx ? ' <small>（' + esc(bStuName(d, k, nx)) + '）</small>' : '') + '</span>'; }).join("") + '</div>';
 }
 
 // --- 設定（老師）---
@@ -6588,7 +6664,8 @@ function bgFormInit(d){
   if(B.form) return;
   var cfg = d.cfg || {}, ls = {}; if(S.lesson) ls[S.lesson] = true;
   var mem = {}; Object.keys(d.members || {}).forEach(function(k){ mem[k] = d.members[k].name; });
-  B.form = { mode: cfg.mode || "claim", win: cfg.win || "first", pinyin: cfg.pinyin !== false, source: cfg.source || "vocab", lessons: ls, manual: "", cells: null, pool: null, members: mem };
+  B.form = { mode: cfg.mode || "claim", win: cfg.win || "first", pinyin: cfg.pinyin !== false, source: cfg.source || "vocab", lessons: ls, manual: "", cells: null, pool: null, members: mem, group: !!cfg.group, press: cfg.press || "student", teams: null, tsel: null };
+  if(cfg.group && d.members){ B.form.members = {}; B.form.teams = Object.keys(d.members).filter(function(k){ return d.members[k].team; }).map(function(k){ var m = d.members[k]; bA(m.students).forEach(function(sk){ B.form.members[sk] = (m.names || {})[sk] || sk; }); return { name: m.name, members: bA(m.students) }; }); }
 }
 function bgParseManual(txt){
   var seen = {}, out = [];
@@ -6603,7 +6680,7 @@ function bingoDrawSetup(d){
   if(root.querySelector('[data-lay="setup"]')){ bingoDrawMembers(); return; }
   var cands = bgVocabCandidates();
   var lessonBoxes = cands.length ? cands.map(function(c){ return '<label class="bg-chk"><input type="checkbox" data-bl="' + esc(c.k) + '"' + (f.lessons[c.k] ? ' checked' : '') + '> ' + esc(lessonTitle(c.k)) + ' <span class="note">（' + c.n + ' 個生詞）</span></label>'; }).join("") : '<p class="note">這個班的教材還沒有雲端生詞庫，請改用「自己打」或「學生輪流填寫」。</p>';
-  root.innerHTML = '<div class="bg-wrap" data-lay="setup"><div class="head-row"><div style="flex:1;"><h2>🎯 賓果</h2><div class="note">設定好玩法與內容，選好參加的同學，按「開始」。學生用班級連結進來、跟著你的畫面就能玩。</div></div></div>' +
+  root.innerHTML = '<div class="bg-wrap" data-lay="setup"><div class="head-row"><div style="flex:1;"><h2>賓果 Bingo</h2><div class="note">設定好玩法與內容，選好參加的同學，按「開始」。學生用班級連結進來、跟著你的畫面就能玩。</div></div></div>' +
     (S.live && S.live.on ? '' : '<div class="panel" style="background:#FBEBC8;"><b>提醒：</b>還沒按右上角「開始上課」，學生不會跟著進到賓果畫面。</div>') +
     '<div class="panel"><h3>玩法</h3><div class="bg-opts">' +
     '<label class="bg-opt"><input type="radio" name="bg-mode" value="claim"' + (f.mode === "claim" ? ' checked' : '') + '><b>全班共用一張盤</b><span class="note">輪到的人點一格，老師判定答對才佔格（變成他的顏色），先連成線的人賓果</span></label>' +
@@ -6611,6 +6688,12 @@ function bingoDrawSetup(d){
     '<h3 style="margin-top:12px;">賓果成立後</h3><div class="bg-opts">' +
     '<label class="bg-opt"><input type="radio" name="bg-win" value="first"' + (f.win === "first" ? ' checked' : '') + '><b>第一個賓果就結束</b><span class="note">所有人螢幕顯示得主</span></label>' +
     '<label class="bg-opt"><input type="radio" name="bg-win" value="full"' + (f.win === "full" ? ' checked' : '') + '><b>繼續玩到結束</b><span class="note">每次有人連成新的線都會提示，最後比誰的線多</span></label></div>' +
+    '<h3 style="margin-top:12px;">參加方式</h3><div class="bg-opts">' +
+    '<label class="bg-opt"><input type="radio" name="bg-grp" value="0"' + (f.group ? '' : ' checked') + '><b>個人</b><span class="note">每位同學一個顏色，輪流上場</span></label>' +
+    '<label class="bg-opt"><input type="radio" name="bg-grp" value="1"' + (f.group ? ' checked' : '') + '><b>分組</b><span class="note">每組一個顏色；輪到這一組時，系統會跳到組裡的下一位同學，告訴你這次要叫誰回答</span></label></div>' +
+    '<h3 style="margin-top:12px;">誰來按</h3><div class="bg-opts">' +
+    '<label class="bg-opt"><input type="radio" name="bg-press" value="student"' + (f.press === "teacher" ? '' : ' checked') + '><b>學生自己按</b><span class="note">輪到的同學用自己的裝置點；遊戲中你可以隨時「鎖住學生操作」</span></label>' +
+    '<label class="bg-opt"><input type="radio" name="bg-press" value="teacher"' + (f.press === "teacher" ? ' checked' : '') + '><b>老師代按</b><span class="note">學生操作電腦不順時用：學生說答案，由你替他點</span></label></div>' +
     '<label class="bg-chk" style="margin-top:10px;"><input type="checkbox" id="bg-py"' + (f.pinyin ? ' checked' : '') + '> 格子裡顯示拼音</label></div>' +
     '<div class="panel"><h3>賓果內容</h3><div class="bg-opts">' +
     '<label class="bg-opt"><input type="radio" name="bg-src" value="vocab"' + (f.source === "vocab" ? ' checked' : '') + '><b>從生詞庫匯入</b></label>' +
@@ -6625,6 +6708,9 @@ function bingoDrawSetup(d){
   var $ = function(s){ return root.querySelector(s); };
   root.querySelectorAll('[name="bg-mode"]').forEach(function(r){ r.onchange = function(){ f.mode = r.value; bgDrawPreview(); }; });
   root.querySelectorAll('[name="bg-win"]').forEach(function(r){ r.onchange = function(){ f.win = r.value; }; });
+  root.querySelectorAll('[name="bg-grp"]').forEach(function(r){ r.onchange = function(){ f.group = r.value === "1"; bingoDrawMembers(true); }; });
+  root.querySelectorAll('[name="bg-press"]').forEach(function(r){ r.onchange = function(){ f.press = r.value; }; });
+  root.oninput = function(e){ var t = e.target; if(t.dataset && t.dataset.tn != null && B && B.form && B.form.teams){ var tm = B.form.teams[Number(t.dataset.tn)]; if(tm) tm.name = t.value.slice(0, 20); } };
   $("#bg-py").onchange = function(){ f.pinyin = this.checked; bgDrawPreview(); };
   root.querySelectorAll('[name="bg-src"]').forEach(function(r){ r.onchange = function(){ f.source = r.value; f.cells = null; f.pool = null; ["vocab", "manual", "fill"].forEach(function(s){ $("#bg-src-" + s).style.display = s === f.source ? '' : 'none'; }); bgDrawPreview(); }; });
   root.querySelectorAll("[data-bl]").forEach(function(c){ c.onchange = function(){ if(c.checked) f.lessons[c.dataset.bl] = true; else delete f.lessons[c.dataset.bl]; f.cells = null; f.pool = null; bgDrawPreview(); }; });
@@ -6646,18 +6732,34 @@ function bgDrawPreview(){
   if(!f.cells) f.cells = bShuffle(pool).slice(0, 25);
   box.innerHTML = '<div class="bg-count">共 ' + pool.length + ' 個詞' + (pool.length > 25 ? '，隨機抽了 25 個：' : '：') + ' <button class="btn sm" data-b="reroll">重新抽 25 個</button></div><div class="bg-grid small">' + f.cells.map(function(c){ return '<div class="bg-cell">' + bCellHtml(c, { cfg: { pinyin: f.pinyin } }) + '</div>'; }).join("") + '</div>';
 }
-function bingoDrawMembers(){
+function bingoDrawMembers(force){
   var box = B.root.querySelector("#bg-members"); if(!box || !B.form) return; var f = B.form, d = B.data || {}, now = nowMs();
+  if(!force && document.activeElement && document.activeElement.classList && document.activeElement.classList.contains("bg-tname")) return;   // 正在改組名：先不要重畫
   var pres = d.presence || {}, online = Object.keys(pres).filter(function(k){ return pres[k] && now - (pres[k].t || 0) < 25000; });
   var roster = (B.roster || []).map(function(n){ return { k: hwSkey(n), n: n }; });
   online.forEach(function(k){ if(!f.members[k] && false) f.members[k] = pres[k].n; });
   var on = online.map(function(k){ return { k: k, n: pres[k].n || bName(d, k) }; });
-  function chip(x, isOn){ var sel = f.members[x.k] !== undefined; return '<button class="bg-pick' + (sel ? ' sel' : '') + '" data-b="mem" data-k="' + esc(x.k) + '" data-n="' + esc(x.n) + '">' + (isOn ? '🟢 ' : '') + esc(x.n) + (sel ? ' ✓' : '') + '</button>'; }
+  function chip(x, isOn){ var sel = f.members[x.k] !== undefined; return '<button class="bg-pick' + (sel ? ' sel' : '') + (isOn ? ' on' : '') + '" data-b="mem" data-k="' + esc(x.k) + '" data-n="' + esc(x.n) + '">' + esc(x.n) + (sel ? ' ✓' : '') + '</button>'; }
   var others = roster.filter(function(r){ return !online.some(function(k){ return k === r.k; }); });
   var count = Object.keys(f.members).length;
-  box.innerHTML = '<div class="note" style="margin-bottom:6px;">🟢 目前在線上的同學（學生用班級連結進來就會出現）：</div><div class="bg-picks">' + (on.length ? on.map(function(x){ return chip(x, true); }).join("") : '<span class="note">還沒有同學上線</span>') + '</div>' +
+  box.innerHTML = '<div class="note" style="margin-bottom:6px;">目前在線上的同學（學生用班級連結進來就會出現）：</div><div class="bg-picks">' + (on.length ? on.map(function(x){ return chip(x, true); }).join("") : '<span class="note">還沒有同學上線</span>') + '</div>' +
     (others.length ? '<div class="note" style="margin:10px 0 6px;">班級名單上的其他同學（沒有裝置時，由老師代他點）：</div><div class="bg-picks">' + others.map(function(x){ return chip(x, false); }).join("") + '</div>' : '') +
-    '<div class="tools" style="margin-top:10px;"><button class="btn sm" data-b="memon">全選在線的同學</button><button class="btn sm" data-b="memall">全選名單上的同學</button><button class="btn sm" data-b="memnone">全部取消</button><span class="note">已選 <b>' + count + '</b> 位</span></div>';
+    '<div class="tools" style="margin-top:10px;"><button class="btn sm" data-b="memon">全選在線的同學</button><button class="btn sm" data-b="memall">全選名單上的同學</button><button class="btn sm" data-b="memnone">全部取消</button><span class="note">已選 <b>' + count + '</b> 位</span></div>' +
+    (f.group ? bgTeamsHtml(f) : '');
+}
+var BG_CN = ["一", "二", "三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二"];
+function bgTeamName(i){ return "第" + (BG_CN[i] || (i + 1)) + "組"; }
+function bgTeamsHtml(f){
+  var keys = Object.keys(f.members);
+  if(!f.teams) f.teams = [{ name: bgTeamName(0), members: [] }, { name: bgTeamName(1), members: [] }];
+  f.teams.forEach(function(t){ t.members = t.members.filter(function(k){ return f.members[k] !== undefined; }); });
+  var done = {}; f.teams.forEach(function(t){ t.members.forEach(function(k){ done[k] = 1; }); });
+  var un = keys.filter(function(k){ return !done[k]; });
+  var chip = function(k){ return '<button class="bg-pick' + (f.tsel === k ? ' sel' : '') + '" data-b="tmsel" data-k="' + esc(k) + '">' + esc(f.members[k]) + '</button>'; };
+  return '<div class="bg-teams"><h3 style="margin:14px 0 6px;">分組</h3><div class="tools">分成 <input type="number" id="bg-tn" min="2" max="12" value="' + f.teams.length + '" style="width:64px;"> 組 <button class="btn sm primary" data-b="tmrand">隨機分組</button>' + (S.sel && S.sel.c ? '<button class="btn sm" data-b="tmload">載入班級分組</button>' : '') + '<button class="btn sm" data-b="tmadd">＋ 加一組</button></div>' +
+    '<p class="note" style="margin:6px 0;">點一位同學，再點要去的組；組名可以直接改。組裡的同學照這裡的順序輪流回答。</p><div class="bg-team-grid">' +
+    (un.length ? '<div class="bg-team un" data-b="tmto" data-t="-1"><div class="bg-team-h"><b>還沒分組（' + un.length + '）</b></div><div class="bg-picks">' + un.map(chip).join("") + '</div></div>' : '') +
+    f.teams.map(function(t, i){ return '<div class="bg-team" data-b="tmto" data-t="' + i + '" style="border-color:' + BG_COLORS[i % BG_COLORS.length] + ';"><div class="bg-team-h"><span class="bg-dot" style="background:' + BG_COLORS[i % BG_COLORS.length] + ';"></span><input class="bg-tname" data-tn="' + i + '" value="' + esc(t.name) + '" maxlength="20"><span class="note">' + t.members.length + ' 人</span>' + (t.members.length ? '' : '<button class="btn sm ghost" data-b="tmdel" data-t="' + i + '">刪除</button>') + '</div><div class="bg-picks">' + (t.members.length ? t.members.map(chip).join("") : '<span class="note">點同學再點這裡</span>') + '</div></div>'; }).join("") + '</div></div>';
 }
 async function bingoStart(){
   var f = B.form, err = function(m){ var e = B.root.querySelector("#bg-err"); if(e) e.textContent = m; };
@@ -6666,10 +6768,18 @@ async function bingoStart(){
   if(!keys.length){ err("請先選好參加的同學（至少 1 位）。"); return; }
   var pool = f.source === "fill" ? [] : bgSourcePool();
   if(f.source !== "fill" && pool.length < 25){ err("目前只有 " + pool.length + " 個詞，至少要 25 個。"); return; }
-  var members = {}; keys.forEach(function(k, i){ members[k] = { name: f.members[k], color: BG_COLORS[i % BG_COLORS.length] }; });
+  var members = {};
+  if(f.group){
+    var teams = (f.teams || []).filter(function(t){ return t.members.length; });
+    if(teams.length < 2){ err("分組模式至少要兩組有同學。"); return; }
+    var inTeam = {}; teams.forEach(function(t){ t.members.forEach(function(k){ inTeam[k] = 1; }); });
+    var left = keys.filter(function(k){ return !inTeam[k]; });
+    if(left.length && !confirm("還有 " + left.length + " 位同學沒有分組，他們這局不會參加。確定開始嗎？")) return;
+    teams.forEach(function(t, i){ var names = {}; t.members.forEach(function(k){ names[k] = f.members[k]; }); members["t" + (i + 1)] = { name: (t.name || "").trim() || bgTeamName(i), color: BG_COLORS[i % BG_COLORS.length], team: true, students: t.members.slice(), names: names }; });
+  } else keys.forEach(function(k, i){ members[k] = { name: f.members[k], color: BG_COLORS[i % BG_COLORS.length] }; });
   var cells = []; for(var i = 0; i < 25; i++) cells.push(f.source === "fill" ? { w: "", p: "" } : (f.mode === "claim" ? (f.cells || bShuffle(pool).slice(0, 25))[i] : { w: "", p: "" }));
   var needOrder = f.mode === "claim" || f.source === "fill";
-  var base = { cfg: { mode: f.mode, win: f.win, pinyin: f.pinyin, source: f.source }, phase: needOrder ? "order" : "play", members: members, pool: f.source === "fill" ? null : pool, cells: f.mode === "claim" || f.source === "fill" ? cells : null,
+  var base = { cfg: { mode: f.mode, win: f.win, pinyin: f.pinyin, source: f.source, group: !!f.group, press: f.press || "student" }, phase: needOrder ? "order" : "play", members: members, tturn: null, lock: null, pool: f.source === "fill" ? null : pool, cells: f.mode === "claim" || f.source === "fill" ? cells : null,
     order: null, turn: 0, owner: null, pending: null, boards: null, marks: null, called: null, current: null, lines: null, winners: null, wheel: null, announce: null };
   if(!needOrder) Object.assign(base, bgPlayPatch(base));
   B.form = null; B.wheelId = undefined; B.seenAnn = undefined;
@@ -6689,7 +6799,7 @@ function bgPlayPatch(d){
 function bingoDrawOrder(d){
   var root = B.root;
   if(!root.querySelector('[data-lay="order"]')){
-    root.innerHTML = '<div class="bg-wrap" data-lay="order"><div class="head-row"><div style="flex:1;"><h2>🎡 抽出場順序</h2><div class="note">每個人有自己的代表顏色，轉到誰就排下一位。</div></div></div>' + bgMyBar(d) +
+    root.innerHTML = '<div class="bg-wrap" data-lay="order"><div class="head-row"><div style="flex:1;"><h2>抽出場順序<span class="bg-en">Who goes first?</span></h2><div class="note">每個人（每一組）有自己的代表顏色，轉到誰就排下一位。</div></div></div>' + bgMyBar(d) +
       '<div class="panel" style="text-align:center;"><canvas id="bg-wheel" width="420" height="420" style="max-width:100%;"></canvas><div id="bg-wres" style="font-size:26px;font-weight:700;margin:10px 0;min-height:40px;"></div><div id="bg-ordbtns" class="tools" style="justify-content:center;"></div></div>' +
       '<div class="panel"><h3>順序</h3><div id="bg-orderlist"></div></div></div>';
   }
@@ -6698,17 +6808,17 @@ function bingoDrawOrder(d){
   if(B.teacher){
     btn.innerHTML = left.length ? '<button class="btn primary" data-b="spin"' + (d.wheel ? ' disabled' : '') + '>轉！</button><button class="btn sm" data-b="shuf"' + (d.wheel ? ' disabled' : '') + '>剩下的全部隨機排</button><button class="btn sm ghost" data-b="ordreset">重新抽</button>' :
       '<button class="btn primary" data-b="ordnext">' + (d.cfg.source === "fill" ? '開始填寫 ▶' : '開始遊戲 ▶') + '</button><button class="btn sm ghost" data-b="ordreset">重新抽</button>';
-  } else btn.innerHTML = left.length ? '<span class="note">老師正在抽順序…還剩 ' + left.length + ' 位</span>' : '<span class="note">順序抽好了，等老師開始！</span>';
+  } else btn.innerHTML = left.length ? '<span class="note">老師正在抽順序…還剩 ' + left.length + ' 位 The teacher is drawing the order…</span>' : '<span class="note">順序抽好了，等老師開始！ Order ready — wait for the teacher.</span>';
   root.querySelector("#bg-orderlist").innerHTML = bA(d.order).length ? bgOrderStrip(d) : '<span class="note">還沒有人</span>';
 }
 
 // --- 學生輪流填寫 ---
 function bingoDrawFill(d){
-  var cells = bCells(d.cells), n = cells.filter(function(c){ return c && c.w; }).length, ord = bA(d.order), k = ord.length ? ord[(d.turn || 0) % ord.length] : null, mine = !B.teacher && k === bMyKey();
-  var canAct = d.phase === "fill" && (B.teacher || mine);
-  var html = '<div class="bg-wrap"><div class="head-row"><div style="flex:1;"><h2>✏️ 輪流填格子</h2><div class="note">已填 ' + n + ' / 25 格。輪到的人點一個空格，打一個詞。</div></div>' +
+  var cells = bCells(d.cells), n = cells.filter(function(c){ return c && c.w; }).length, ord = bA(d.order), k = ord.length ? ord[(d.turn || 0) % ord.length] : null, mine = bIsMyTurn(d, k);
+  var canAct = d.phase === "fill" && !!k && bCanAct(d, k);
+  var html = '<div class="bg-wrap"><div class="head-row"><div style="flex:1;"><h2>輪流填格子<span class="bg-en">Fill in the board</span></h2><div class="note">已填 ' + n + ' / 25 格。輪到的人點一個空格，打一個詞。 Take turns: tap an empty square and type a word.</div></div>' +
     (B.teacher && d.phase === "ready" ? '<div><button class="btn primary" data-b="ordnext">開始遊戲 ▶</button></div>' : '') + '</div>' + bgMyBar(d) +
-    (d.phase === "fill" ? '<div class="bg-turn">輪到 ' + bChip(d, k) + (mine ? '　<b>就是你！點一個空格</b>' : '') + (B.teacher ? '　<button class="btn sm" data-b="skip">跳過這位</button>' : '') + '</div>' : '<div class="bg-turn">25 格都填好了！</div>') +
+    (d.phase === "fill" ? '<div class="bg-turn">輪到 Turn：' + bChip(d, k) + (bTeamCur(d, k) ? '　' + bWho(d, k) : '') + (mine ? (bLocked(d) ? '　<b>就是你！請告訴老師要填什麼 Tell the teacher your word</b>' : '　<b>就是你！點一個空格 Your turn — tap an empty square</b>') : '') + (B.teacher ? '　<button class="btn sm" data-b="skip">跳過這位</button>' + bLockBtn(d) : '') + '</div>' : '<div class="bg-turn">25 格都填好了！ The board is full!</div>') +
     '<div class="bg-grid">' + cells.map(function(c, i){
       c = c || {}; var filled = !!c.w;
       return '<div class="bg-cell' + (filled ? ' filled' : ' empty') + (canAct && !filled ? ' tap' : '') + '" data-b="fill" data-i="' + i + '"' + (filled && c.by ? ' style="border-color:' + bColor(d, c.by) + ';box-shadow:inset 0 0 0 3px ' + bColor(d, c.by) + ';"' : '') + '>' + (filled ? bCellHtml(c, d) : '<span class="note">' + (i + 1) + '</span>') + '</div>';
@@ -6719,25 +6829,26 @@ function bingoDrawFill(d){
 // --- 遊戲中／結束 ---
 function bgOwnerCount(d){ var o = d.owner || {}; return Object.keys(o).length; }
 function bingoDrawPlay(d){
-  var cfg = d.cfg, done = d.phase === "done", html = '<div class="bg-wrap play"><div class="head-row"><div style="flex:1;"><h2>🎯 賓果' + (done ? '　結束！' : '') + '</h2></div>' +
-    (B.teacher ? '<div class="tools"><button class="btn sm" data-b="end">' + (done ? '再來一局' : '結束這局') + '</button>' + (done ? '<button class="btn sm ghost" data-b="close">關閉賓果</button>' : '') + '</div>' : '') + '</div>' + bgMyBar(d);
+  var cfg = d.cfg, done = d.phase === "done", html = '<div class="bg-wrap play"><div class="head-row"><div style="flex:1;"><h2>賓果 Bingo' + (done ? '　結束！ Finished!' : '') + '</h2></div>' +
+    (B.teacher ? '<div class="tools">' + (done ? '' : bLockBtn(d)) + '<button class="btn sm" data-b="end">' + (done ? '再來一局' : '結束這局') + '</button>' + (done ? '<button class="btn sm ghost" data-b="close">關閉賓果</button>' : '') + '</div>' : '') + '</div>' + bgMyBar(d);
   if(done){
     var win = bA(d.winners);
-    html += '<div class="panel bg-win">' + (win.length ? '🏆 賓果得主：' + win.map(function(k){ return bChip(d, k, ' <small>' + ((d.lines || {})[k] || 0) + ' 條線</small>'); }).join(" ") : '這局沒有人連成線。') + '</div>';
+    html += '<div class="panel bg-win">' + (win.length ? '賓果得主 Winner：' + win.map(function(k){ return bChip(d, k, ' <small>' + ((d.lines || {})[k] || 0) + ' 條線 lines</small>'); }).join(" ") : '這局沒有人連成線。 No lines this round.') + '</div>';
   }
   if(cfg.mode === "claim") html += bingoClaimHtml(d, done); else html += bingoPersonalHtml(d, done);
-  html += '<div class="panel"><h3>計分</h3><div class="bg-score">' + Object.keys(d.members || {}).map(function(k){ return bChip(d, k, '　' + ((d.lines || {})[k] || 0) + ' 條線' + (cfg.mode === "claim" ? '・佔 ' + Object.keys(d.owner || {}).filter(function(c){ return d.owner[c] === k; }).length + ' 格' : '')); }).join(" ") + '</div></div></div>';
+  html += '<div class="panel"><h3>計分 Score</h3><div class="bg-score">' + Object.keys(d.members || {}).map(function(k){ return bChip(d, k, '　' + ((d.lines || {})[k] || 0) + ' 條線 lines' + (cfg.mode === "claim" ? '・佔 ' + Object.keys(d.owner || {}).filter(function(c){ return d.owner[c] === k; }).length + ' 格' : '')); }).join(" ") + '</div></div></div>';
   B.root.innerHTML = html;
 }
 function bingoClaimHtml(d, done){
-  var cells = bCells(d.cells), owner = d.owner || {}, ord = bA(d.order), k = ord.length ? ord[(d.turn || 0) % ord.length] : null, pend = d.pending, mine = !B.teacher && k === bMyKey();
+  var cells = bCells(d.cells), owner = d.owner || {}, ord = bA(d.order), k = ord.length ? ord[(d.turn || 0) % ord.length] : null, pend = d.pending, mine = !!k && !B.teacher && bCanAct(d, k);
   var out = '';
   if(!done){
     out += bgTurnBar(d);
     if(pend){
       var c = cells[pend.cell] || {};
-      out += '<div class="bg-pend">' + bChip(d, pend.by) + ' 選了「<b>' + esc(c.w || "") + '</b>」' + (cfg_py(d) && c.p ? ' <span class="note">' + esc(c.p) + '</span>' : '') + (B.teacher ? '　<button class="btn sm primary" data-b="right">✔ 答對</button><button class="btn sm danger" data-b="wrong">✘ 答錯</button><button class="btn sm ghost" data-b="cancel">取消</button>' : '　<span class="note">請唸出這個詞，等老師判定…</span>') + '</div>';
-    } else if(B.teacher) out += '<div class="tools" style="margin-bottom:8px;"><span class="note">請輪到的同學點一格（或你代他點）。</span><button class="btn sm" data-b="skip">跳過這位</button></div>';
+      out += '<div class="bg-pend">' + bChip(d, pend.by) + (pend.who ? ' <b class="bg-who">' + esc(bStuName(d, pend.by, pend.who)) + '</b>' : '') + ' 選了「<b>' + esc(c.w || "") + '</b>」' + (cfg_py(d) && c.p ? ' <span class="note">' + esc(c.p) + '</span>' : '') + (B.teacher ? '　<button class="btn sm primary" data-b="right">✔ 答對</button><button class="btn sm danger" data-b="wrong">✘ 答錯</button><button class="btn sm ghost" data-b="cancel">取消</button>' : '　<span class="note">請唸出這個詞，等老師判定… Read the word out loud and wait for the teacher.</span>') + '</div>';
+    } else if(B.teacher) out += '<div class="tools" style="margin-bottom:8px;"><span class="note">' + (bLocked(d) ? '學生的操作鎖住了：請你代輪到的同學點一格。' : '請輪到的同學點一格（或你代他點）。') + '</span><button class="btn sm" data-b="skip">跳過這位</button></div>';
+    else if(mine) out += '<div class="note" style="margin-bottom:8px;">點一個格子，再唸出那個詞。 Tap a square, then read the word.</div>';
   }
   out += '<div class="bg-grid">' + cells.map(function(c, i){
     var o = owner[i], isP = d.pending && d.pending.cell === i;
@@ -6750,15 +6861,16 @@ function cfg_py(d){ return d.cfg && d.cfg.pinyin; }
 function bingoPersonalHtml(d, done){
   var pool = bA(d.pool), called = bA(d.called), calledSet = {}; called.forEach(function(i){ calledSet[i] = 1; });
   var cur = d.current, curW = cur != null && pool[cur] ? pool[cur] : null, out = '';
-  out += '<div class="bg-call"><div class="note">' + (called.length ? '剛剛叫到的詞（第 ' + called.length + ' 個）' : '還沒開始叫詞') + '</div><div class="bg-callw">' + (curW ? esc(curW.w) : '—') + '</div>' + (curW && cfg_py(d) && curW.p ? '<div class="bg-p" style="font-size:19px;">' + esc(curW.p) + '</div>' : '') +
+  out += '<div class="bg-call"><div class="note">' + (called.length ? '剛剛叫到的詞（第 ' + called.length + ' 個） Word just called' : '還沒開始叫詞 No word yet') + '</div><div class="bg-callw">' + (curW ? esc(curW.w) : '—') + '</div>' + (curW && cfg_py(d) && curW.p ? '<div class="bg-p" style="font-size:19px;">' + esc(curW.p) + '</div>' : '') +
     (B.teacher && !done ? '<div style="margin-top:8px;"><button class="btn primary" data-b="call"' + (called.length >= pool.length ? ' disabled' : '') + '>抽下一個詞</button></div>' : '') + '</div>';
-  var viewKey = B.teacher ? (B.viewKey && (d.members || {})[B.viewKey] ? B.viewKey : Object.keys(d.members || {})[0]) : bMyKey();
+  var viewKey = B.teacher ? (B.viewKey && (d.members || {})[B.viewKey] ? B.viewKey : Object.keys(d.members || {})[0]) : (bMyTeam(d) || bMyKey());
+  if(d.cfg && d.cfg.group && !done){ out += '<div class="bg-turn">這一題回答 Answering now：' + Object.keys(d.members || {}).map(function(k){ return bChip(d, k) + ' ' + bWho(d, k); }).join("　") + '</div>'; }
   if(B.teacher){ B.viewKey = viewKey; out += '<div class="tools" style="margin-bottom:8px;">看／代點：' + Object.keys(d.members || {}).map(function(k){ return '<button class="bg-pick' + (k === viewKey ? ' sel' : '') + '" data-b="view" data-k="' + esc(k) + '" style="border-color:' + bColor(d, k) + ';">' + esc(bName(d, k)) + ' <small>' + ((d.lines || {})[k] || 0) + '</small></button>'; }).join("") + '</div>'; }
   var board = bA((d.boards || {})[viewKey]);
-  if(!board.length){ out += '<div class="panel"><p class="note">你這局沒有盤子，請老師把你加進來。</p></div>'; return out; }
+  if(!board.length){ out += '<div class="panel"><p class="note">你這局沒有盤子，請老師把你加進來。 You don\'t have a board this round.</p></div>'; return out; }
   var marks = (d.marks || {})[viewKey] || {};
   out += '<div class="bg-grid">' + board.map(function(pi, pos){
-    var c = pool[pi] || {}, mk = !!marks[pos], ready = !mk && calledSet[pi] && !done && (B.teacher || viewKey === bMyKey());
+    var c = pool[pi] || {}, mk = !!marks[pos], ready = !mk && calledSet[pi] && !done && bCanAct(d, viewKey);
     return '<div class="bg-cell' + (mk ? ' owned' : '') + (ready ? ' tap' : '') + '" data-b="mark" data-k="' + esc(viewKey) + '" data-i="' + pos + '"' + (mk ? ' style="background:' + bColor(d, viewKey) + ';color:#fff;border-color:' + bColor(d, viewKey) + ';"' : '') + '>' + bCellHtml(c, d) + '</div>';
   }).join("") + '</div>';
   return out;
@@ -6772,6 +6884,23 @@ async function bingoClick(e){
     if(a === "memon"){ var now = nowMs(), pres = d.presence || {}; Object.keys(pres).forEach(function(k){ if(now - (pres[k].t || 0) < 25000) B.form.members[k] = pres[k].n; }); bingoDrawMembers(); return; }
     if(a === "memall"){ (B.roster || []).forEach(function(n){ B.form.members[hwSkey(n)] = n; }); bingoDrawMembers(); return; }
     if(a === "memnone"){ B.form.members = {}; bingoDrawMembers(); return; }
+    if(a === "tmsel"){ e.stopPropagation(); B.form.tsel = B.form.tsel === b.dataset.k ? null : b.dataset.k; bingoDrawMembers(true); return; }
+    if(a === "tmto"){ var ff = B.form; if(!ff.tsel) return; var ti = Number(b.dataset.t); ff.teams.forEach(function(t){ t.members = t.members.filter(function(k){ return k !== ff.tsel; }); }); if(ti >= 0 && ff.teams[ti]) ff.teams[ti].members.push(ff.tsel); ff.tsel = null; bingoDrawMembers(true); return; }
+    if(a === "tmadd"){ B.form.teams.push({ name: bgTeamName(B.form.teams.length), members: [] }); bingoDrawMembers(true); return; }
+    if(a === "tmdel"){ B.form.teams.splice(Number(b.dataset.t), 1); bingoDrawMembers(true); return; }
+    if(a === "tmrand"){
+      var fr = B.form, n = Math.max(2, Math.min(12, Number((B.root.querySelector("#bg-tn") || {}).value) || 2)), ks = bShuffle(Object.keys(fr.members));
+      if(!ks.length){ toast("請先選參加的同學"); return; }
+      var nt = []; for(var ti2 = 0; ti2 < n; ti2++) nt.push({ name: (fr.teams && fr.teams[ti2] && fr.teams[ti2].name) || bgTeamName(ti2), members: [] });
+      ks.forEach(function(k, i){ nt[i % n].members.push(k); }); fr.teams = nt; bingoDrawMembers(true); return;
+    }
+    if(a === "tmload"){
+      var gg = await fbGet("teacherPlatform/" + S.teacher.id + "/gameGroups/" + S.sel.c).catch(function(){ return null; });
+      var gl = gg && (Array.isArray(gg.groups) ? gg.groups : Object.keys(gg.groups || {}).map(function(k){ return gg.groups[k]; }));
+      if(!gl || !gl.length){ toast("這個班還沒有存過分組（可以在生詞遊戲的「分組」設定）"); return; }
+      var fl = B.form; fl.teams = gl.filter(Boolean).map(function(g, i){ var mem = Array.isArray(g.members) ? g.members : Object.keys(g.members || {}).map(function(x){ return g.members[x]; }); return { name: g.name || bgTeamName(i), members: mem.filter(Boolean).map(function(nm){ var k = hwSkey(nm); fl.members[k] = nm; return k; }) }; });
+      bingoDrawMembers(true); toast("已載入班級分組"); return;
+    }
     if(a === "reroll"){ B.form.cells = null; bgDrawPreview(); return; }
     if(a === "start"){ await bingoStart(); return; }
     if(a === "spin"){
@@ -6784,39 +6913,44 @@ async function bingoClick(e){
       if(d.cfg.source === "fill" && d.phase !== "ready"){ await bSave({ phase: "fill", turn: 0 }); return; }
       await bSave(bgPlayPatch(d)); return;
     }
-    if(a === "skip"){ var ord = bA(d.order); if(ord.length) await bSave({ turn: ((d.turn || 0) + 1) % ord.length, pending: null }); return; }
+    if(a === "skip"){ var ord = bA(d.order); if(ord.length) await bSave(Object.assign(bNextTurn(d), { pending: null })); return; }
+    if(a === "lock"){ if(!B.teacher) return; await bSave({ lock: !d.lock }); toast(d.lock ? "學生可以自己按了" : "已鎖住學生的操作，現在只有老師能按"); return; }
     if(a === "fill"){
       if(d.phase !== "fill") return; var ord2 = bA(d.order), k = ord2[(d.turn || 0) % ord2.length], i = Number(b.dataset.i), cells = bCells(d.cells);
-      if((cells[i] || {}).w) return; if(!B.teacher && k !== bMyKey()) return;
+      if((cells[i] || {}).w) return; if(!bCanAct(d, k)) return;
       var v = await askText("第 " + (i + 1) + " 格要放哪個詞？（要加拼音就空一格再打拼音）", "", "放進去"); if(v == null) return; v = v.trim(); if(!v) return;
       var sp = v.search(/[\s,，]/), w = sp < 0 ? v : v.slice(0, sp), p = sp < 0 ? "" : v.slice(sp + 1).trim();
       await fbSet(base + "/cells/" + i, { w: w, p: p, by: k });
-      await bSave({ turn: ((d.turn || 0) + 1) % ord2.length }); return;
+      await bSave(bNextTurn(d)); return;
     }
     if(a === "tap"){
       if(d.phase !== "play" || d.cfg.mode !== "claim" || d.pending) return; var ord3 = bA(d.order), k3 = ord3[(d.turn || 0) % ord3.length], i3 = Number(b.dataset.i);
-      if((d.owner || {})[i3] || (!B.teacher && k3 !== bMyKey())) return;
-      await fbSet(base + "/pending", { cell: i3, by: k3, at: nowMs() }); return;
+      if((d.owner || {})[i3] || !bCanAct(d, k3)) return;
+      await fbSet(base + "/pending", { cell: i3, by: k3, who: bTeamCur(d, k3) || null, at: nowMs() }); return;
     }
     if(a === "cancel"){ await fbSet(base + "/pending", null); return; }
     if(a === "right" || a === "wrong"){
-      var p0 = d.pending; if(!p0 || !B.teacher) return; var ord4 = bA(d.order), patch = { pending: null, turn: ((d.turn || 0) + 1) % ord4.length };
+      var p0 = d.pending; if(!p0 || !B.teacher) return; var patch = Object.assign(bNextTurn(d), { pending: null });
       if(a === "right"){ var ow = Object.assign({}, d.owner || {}); ow[p0.cell] = p0.by; patch.owner = ow; }
       await bSave(patch); return;
     }
     if(a === "call"){
       var pool = bA(d.pool), called = bA(d.called), rest = pool.map(function(_, i){ return i; }).filter(function(i){ return called.indexOf(i) === -1; });
-      if(!rest.length) return; var pick = rest[Math.floor(Math.random() * rest.length)]; called.push(pick); await bSave({ called: called, current: pick }); return;
+      if(!rest.length) return; var pick = rest[Math.floor(Math.random() * rest.length)]; called.push(pick);
+      // 分組：每叫一個詞，每一組都換下一位同學回答（第一個詞從每組第一位開始）
+      var cp = { called: called, current: pick };
+      if(d.cfg && d.cfg.group && called.length > 1){ var tt = Object.assign({}, d.tturn || {}); Object.keys(d.members || {}).forEach(function(k){ tt[k] = (tt[k] || 0) + 1; }); cp.tturn = tt; }
+      await bSave(cp); return;
     }
     if(a === "view"){ B.viewKey = b.dataset.k; bingoDraw(); return; }
     if(a === "mark"){
-      if(d.phase !== "play") return; var mk = b.dataset.k, pos = Number(b.dataset.i); if(!B.teacher && mk !== bMyKey()) return;
+      if(d.phase !== "play") return; var mk = b.dataset.k, pos = Number(b.dataset.i); if(!bCanAct(d, mk)) return;
       var pi = bA((d.boards || {})[mk])[pos], called2 = bA(d.called);
-      if(called2.indexOf(pi) === -1){ toast("這個詞還沒有被叫到喔"); return; }
+      if(called2.indexOf(pi) === -1){ toast("這個詞還沒有被叫到喔 This word hasn't been called yet"); return; }
       await fbSet(base + "/marks/" + mk + "/" + pos, true); return;
     }
     if(a === "end"){
-      if(d.phase === "done"){ B.form = null; await bSave({ phase: "setup", order: null, turn: 0, owner: null, pending: null, boards: null, marks: null, called: null, current: null, lines: null, winners: null, wheel: null, announce: null, cells: null, pool: null }); return; }
+      if(d.phase === "done"){ B.form = null; await bSave({ phase: "setup", order: null, turn: 0, tturn: null, lock: null, owner: null, pending: null, boards: null, marks: null, called: null, current: null, lines: null, winners: null, wheel: null, announce: null, cells: null, pool: null }); return; }
       if(!confirm("結束這一局？")) return;
       var best = 0, lines = d.lines || {}, keys = Object.keys(d.members || {}); keys.forEach(function(k){ best = Math.max(best, lines[k] || 0); });
       await bSave({ phase: "done", winners: best ? keys.filter(function(k){ return (lines[k] || 0) === best; }) : [] }); return;
