@@ -1,3 +1,5 @@
+/* 芫荽只有一種粗細、筆畫偏細：整站文字稍微加粗一點，比較好讀 */
+body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; text-rendering:optimizeLegibility; -webkit-font-smoothing:antialiased; }
 /* 英文、數字、拼音用 Times New Roman（只限拉丁字母範圍，注音的聲調符號才會跟注音一樣用芫荽）；中文、注音用芫荽 */
 @font-face{font-family:"MM Latin";src:local("Times New Roman"),local("TimesNewRomanPSMT"),local("Times");unicode-range:U+0000-02AF,U+0300-036F,U+1E00-1EFF,U+2000-206F,U+20A0-20CF,U+2100-214F;}@font-face{font-family:"MM Latin";font-weight:700;src:local("Times New Roman Bold"),local("TimesNewRomanPS-BoldMT"),local("Times Bold"),local("Times-Bold");unicode-range:U+0000-02AF,U+0300-036F,U+1E00-1EFF,U+2000-206F,U+20A0-20CF,U+2100-214F;}
 /*!
@@ -18,7 +20,7 @@ dialog{border:0;border-radius:4px;background:var(--white);color:var(--text);padd
 @media(max-width:600px){.tool-footer{display:grid;grid-template-columns:minmax(0,1fr);justify-items:center;text-align:center;padding-inline:14px;gap:8px}.tool-footer .usage-notes{width:100%;max-width:none;text-align:left;margin-top:4px}.tool-footer>span{line-height:1.4}}
 @media print{#vocab-table.print-no-pos #th-pos,#vocab-table.print-no-pos .pos-cell{display:none!important}}
 
-.brand-home-button.brand-home-button{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:7px 18px;border:1px solid var(--accent);border-radius:4px;background:var(--accent);color:var(--white);font-family:MM Latin,Iansui,serif;font-size:14px;font-weight:600;line-height:1.65;letter-spacing:normal;text-decoration:none;white-space:nowrap;gap:0;margin:0;box-sizing:border-box}.brand-home-button.brand-home-button:hover{background:var(--accent-hover);border-color:var(--accent-hover);color:var(--white)}.brand-home-button.brand-home-button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.brand-home-button.brand-home-button{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:7px 18px;border:1px solid var(--accent);border-radius:4px;background:var(--accent);color:var(--white);font-family:MM Latin,Iansui,serif;font-size:15.5px;font-weight:600;line-height:1.65;letter-spacing:normal;text-decoration:none;white-space:nowrap;gap:0;margin:0;box-sizing:border-box}.brand-home-button.brand-home-button:hover{background:var(--accent-hover);border-color:var(--accent-hover);color:var(--white)}.brand-home-button.brand-home-button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
 /* Footer actions keep their size when the notes expand. */
 footer .footer-end-actions{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);width:100%;align-items:center;gap:12px}
 
@@ -377,7 +379,7 @@ footer .footer-end-actions .return-home{justify-self:center}
    色彩、字型、圓角與平台一致（app.html）；放在最後，覆蓋原工具主題
    ===================================================================== */
 :root{
- --ink:#2B2320;--text:#2B2320;--muted:#6B5F55;
+ --ink:#2B2320;--text:#2B2320;--muted:#574C44;
  --paper:#FAF7F2;--white:#FFFFFF;--soft:#F2EAE0;--line:#E6DDD2;
  --seal:#E8825A;--seal-soft:#FBE8DE;--accent:#C4623A;--accent-hover:#A9502C;--warm:#FBE8DE;
  --bamboo:#4C8577;--bamboo-soft:#E3F0EC;--blue:#2B2320;--brand-hover:#4A3D37;
@@ -473,10 +475,10 @@ html.mm-embed .tool-footer{padding-bottom:2rem;margin-top:10px}
 /* 分頁（跟平台的 .tabs／.tab 一樣：文字分頁、目前分頁蜜桃橘底線） */
 .mm-tabs{position:sticky;top:0;z-index:15;display:flex;gap:4px;padding:8px 6px 0;margin:0 0 14px;background:var(--white);border:1.5px solid var(--line);border-radius:16px 16px 0 0;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
 .mm-tabs::-webkit-scrollbar{display:none}
-.mm-tab{flex:0 0 auto;border:0;background:none;padding:9px 16px;font:inherit;font-size:14.5px;font-weight:700;color:var(--muted);border-bottom:3px solid transparent;white-space:nowrap;cursor:pointer}
+.mm-tab{flex:0 0 auto;border:0;background:none;padding:9px 16px;font:inherit;font-size:16px;font-weight:700;color:var(--muted);border-bottom:3px solid transparent;white-space:nowrap;cursor:pointer}
 .mm-tab:hover{color:var(--ink)}
 .mm-tab.on{color:var(--seal);border-bottom-color:var(--seal)}
-.mm-count{display:inline-block;min-width:1.4em;padding:0 7px;margin-left:2px;border-radius:99px;background:var(--surface-2,var(--soft));border:1px solid var(--line);font-size:12px;line-height:1.6;color:var(--ink);text-align:center}
+.mm-count{display:inline-block;min-width:1.4em;padding:0 7px;margin-left:2px;border-radius:99px;background:var(--surface-2,var(--soft));border:1px solid var(--line);font-size:13.5px;line-height:1.6;color:var(--ink);text-align:center}
 .mm-count:empty{display:none}
 .mm-tab.on .mm-count{background:var(--seal-soft);border-color:var(--seal);color:var(--accent)}
 .vocab-panel{margin-top:0}
@@ -486,15 +488,15 @@ html.mm-embed .tool-footer{padding-bottom:2rem;margin-top:10px}
 #mm-save-lesson[hidden]{display:none!important}
 footer .footer-end-actions{display:flex!important;justify-content:center}
 html.mm-embed .tool-footer .footer-end-actions{display:none!important}
-@media(max-width:600px){.mm-tab{padding:10px 12px;font-size:14px}.mm-tabs{border-radius:12px 12px 0 0}}
+@media(max-width:600px){.mm-tab{padding:10px 12px;font-size:15.5px}.mm-tabs{border-radius:12px 12px 0 0}}
 @media print{.mm-tabs,.mm-next{display:none!important}}
 
 /* 格式設定：放在分頁上方，可收合，平常只顯示目前的設定 */
 .mm-prefs{margin:0 0 12px!important;padding:0!important;background:var(--white)!important}
-.mm-prefs>summary{padding:10px 14px;cursor:pointer;font-size:14px}
+.mm-prefs>summary{padding:10px 14px;cursor:pointer;font-size:15.5px}
 .mm-prefs-sum{margin-left:10px}
 .mm-prefs>summary b{color:var(--ink)}
-.mm-prefs-sum{color:var(--muted);font-size:13px}
+.mm-prefs-sum{color:var(--muted);font-size:14.5px}
 .mm-prefs>:not(summary){margin-left:14px;margin-right:14px}
 .mm-prefs[open]{padding-bottom:10px!important}
 /* 分頁列和下面的內容接成同一張卡片 */

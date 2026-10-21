@@ -11,12 +11,14 @@
 <meta name="apple-mobile-web-app-title" content="曼米中文">
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Iansui&display=swap"><style>
+/* 芫荽只有一種粗細、筆畫偏細：整站文字稍微加粗一點，比較好讀 */
+body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; text-rendering:optimizeLegibility; -webkit-font-smoothing:antialiased; }
 /* 英文、數字、拼音用 Times New Roman（只限拉丁字母範圍，注音的聲調符號才會跟注音一樣用芫荽）；中文、注音用芫荽 */
 @font-face{font-family:"MM Latin";src:local("Times New Roman"),local("TimesNewRomanPSMT"),local("Times");unicode-range:U+0000-02AF,U+0300-036F,U+1E00-1EFF,U+2000-206F,U+20A0-20CF,U+2100-214F;}@font-face{font-family:"MM Latin";font-weight:700;src:local("Times New Roman Bold"),local("TimesNewRomanPS-BoldMT"),local("Times Bold"),local("Times-Bold");unicode-range:U+0000-02AF,U+0300-036F,U+1E00-1EFF,U+2000-206F,U+20A0-20CF,U+2100-214F;}
 @font-face{font-family:"MM Latin";src:local("Times New Roman"),local("TimesNewRomanPSMT"),local("Times");unicode-range:U+0000-02AF,U+0300-036F,U+1E00-1EFF,U+2000-206F,U+20A0-20CF,U+2100-214F;}@font-face{font-family:"MM Latin";font-weight:700;src:local("Times New Roman Bold"),local("TimesNewRomanPS-BoldMT"),local("Times Bold"),local("Times-Bold");unicode-range:U+0000-02AF,U+0300-036F,U+1E00-1EFF,U+2000-206F,U+20A0-20CF,U+2100-214F;}</style>
 <style>
 
-  :root{ --paper:#FAF7F2; --surface:#fff; --surface-2:#F2EAE0; --ink:#2B2320; --ink-soft:#6B5F55; --line:rgba(43,35,32,.12); --seal:#E8825A; --seal-soft:#FBE8DE; --bamboo:#4C8577; --bamboo-soft:#E3F0EC; --shadow:0 8px 24px -10px rgba(28,33,30,.18); }
+  :root{ --paper:#FAF7F2; --surface:#fff; --surface-2:#F2EAE0; --ink:#2B2320; --ink-soft:#574C44; --line:rgba(43,35,32,.12); --seal:#E8825A; --seal-soft:#FBE8DE; --bamboo:#4C8577; --bamboo-soft:#E3F0EC; --shadow:0 8px 24px -10px rgba(28,33,30,.18); }
   *{ box-sizing:border-box; }
   html,body{ margin:0; height:100%; }
   #root{ height:100%; }
@@ -24,11 +26,11 @@
   body{ background:var(--paper); color:var(--ink); font-family:MM Latin,Iansui,serif; -webkit-tap-highlight-color:transparent; }
   h1,h2,h3{ font-family:MM Latin,Iansui,serif; margin:0; }
   button{ font:inherit; color:inherit; cursor:pointer; }
-  .btn{ border:1.5px solid var(--line); background:var(--surface); border-radius:10px; padding:8px 14px; font-weight:700; font-size:13.5px; }
+  .btn{ border:1.5px solid var(--line); background:var(--surface); border-radius:10px; padding:8px 14px; font-weight:700; font-size:15px; }
   .btn:hover{ border-color:var(--seal); color:var(--seal); }
   .btn.primary{ background:var(--seal); border-color:var(--seal); color:#fff; }
   .btn.primary:hover{ filter:brightness(1.07); color:#fff; }
-  .btn.sm{ padding:5px 10px; font-size:12.5px; border-radius:8px; }
+  .btn.sm{ padding:5px 10px; font-size:14px; border-radius:8px; }
   .btn.danger{ color:#C0392B; }
   .btn.ghost{ background:transparent; border-color:transparent; color:var(--ink-soft); }
   #brk{ position:fixed; inset:0; z-index:99990; display:flex; align-items:center; justify-content:center; background:rgba(250,247,242,.8); backdrop-filter:blur(1.5px); -webkit-backdrop-filter:blur(1.5px); }
@@ -40,58 +42,58 @@
   .brk-time{ font-size:clamp(56px,12vw,128px); font-weight:800; letter-spacing:.04em; color:var(--seal); font-variant-numeric:tabular-nums; line-height:1.1; }
   .brk-sub{ font-size:clamp(16px,2.4vw,22px); color:var(--ink-soft); margin-top:6px; }
   .brk-act{ display:flex; gap:10px; justify-content:center; margin-top:22px; flex-wrap:wrap; }
-  .brk-act .btn{ font-size:16px; padding:10px 20px; }
+  .brk-act .btn{ font-size:17px; padding:10px 20px; }
   @keyframes brkJump{ 0%{ transform:translateY(0) rotate(-6deg); } 100%{ transform:translateY(-34px) rotate(6deg); } }
   @keyframes brkFlip{ 0%,40%{ transform:rotate(0); } 50%,90%{ transform:rotate(180deg); } 100%{ transform:rotate(360deg); } }
-  input[type=text], input[type=password]{ width:100%; padding:10px 12px; border:1.5px solid var(--line); border-radius:10px; font-size:15px; background:var(--surface-2); color:var(--ink); }
+  input[type=text], input[type=password]{ width:100%; padding:10px 12px; border:1.5px solid var(--line); border-radius:10px; font-size:17px; background:var(--surface-2); color:var(--ink); }
   .center-wrap{ min-height:100%; display:flex; align-items:center; justify-content:center; padding:24px; }
   .card{ background:var(--surface); border:1.5px solid var(--line); border-radius:18px; box-shadow:var(--shadow); padding:26px; width:min(420px,100%); }
   .card h2{ font-size:21px; margin-bottom:6px; text-align:center; }
-  .card .sub{ text-align:center; color:var(--ink-soft); font-size:13px; margin:0 0 16px; }
-  .card label{ display:block; font-size:12.5px; font-weight:700; color:var(--ink-soft); margin:12px 0 5px; }
-  .err{ background:var(--seal-soft); color:#B23B32; border-radius:10px; padding:8px 12px; font-size:13px; margin-top:10px; display:none; }
+  .card .sub{ text-align:center; color:var(--ink-soft); font-size:14.5px; margin:0 0 16px; }
+  .card label{ display:block; font-size:14px; font-weight:700; color:var(--ink-soft); margin:12px 0 5px; }
+  .err{ background:var(--seal-soft); color:#B23B32; border-radius:10px; padding:8px 12px; font-size:14.5px; margin-top:10px; display:none; }
   .shell{ display:flex; flex-direction:column; height:100%; }
   .top{ display:flex; align-items:center; gap:12px; padding:8px 16px; background:var(--surface); border-bottom:1px solid var(--line); flex-wrap:wrap; }
   .brand{ font-family:MM Latin,Iansui,serif; font-size:19px; font-weight:700; letter-spacing:.04em; }
-  .brand small{ font-family:MM Latin,Iansui,serif; font-size:11.5px; color:var(--ink-soft); margin-left:6px; letter-spacing:0; }
+  .brand small{ font-family:MM Latin,Iansui,serif; font-size:13px; color:var(--ink-soft); margin-left:6px; letter-spacing:0; }
   .top .grow{ flex:1; }
-  .crumb{ font-size:13px; color:var(--ink-soft); font-weight:600; }
+  .crumb{ font-size:14.5px; color:var(--ink-soft); font-weight:600; }
   .body{ flex:1; min-height:0; display:flex; }
   .side{ width:270px; flex:none; background:var(--surface); border-right:1px solid var(--line); overflow-y:auto; padding:12px; }
-  .side h3{ font-size:13px; color:var(--ink-soft); margin:2px 0 8px; font-family:inherit; }
+  .side h3{ font-size:14.5px; color:var(--ink-soft); margin:2px 0 8px; font-family:inherit; }
   .tree-school{ margin-bottom:8px; }
-  .tree-row{ display:flex; align-items:center; gap:4px; padding:5px 6px; border-radius:8px; font-size:13.5px; font-weight:700; }
+  .tree-row{ display:flex; align-items:center; gap:4px; padding:5px 6px; border-radius:8px; font-size:15px; font-weight:700; }
   .tree-row.school{ background:var(--surface-2); }
-  .tree-row.term{ margin-left:12px; color:var(--ink-soft); font-size:13px; }
+  .tree-row.term{ margin-left:12px; color:var(--ink-soft); font-size:14.5px; }
   .tree-row.cls{ margin-left:26px; cursor:pointer; font-weight:600; }
   .tree-row.cls:hover{ background:var(--seal-soft); }
   .tree-row.cls.on{ background:var(--seal); color:#fff; }
   .tree-row .nm{ flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .tree-row .mini{ border:none; background:transparent; font-size:12px; padding:2px 5px; border-radius:6px; opacity:.6; }
+  .tree-row .mini{ border:none; background:transparent; font-size:13.5px; padding:2px 5px; border-radius:6px; opacity:.6; }
   .tree-row .mini:hover{ opacity:1; background:rgba(0,0,0,.07); }
   .main{ flex:1; min-width:0; overflow-y:auto; padding:18px clamp(12px,3vw,32px); }
   .main.flush{ padding:0; display:flex; flex-direction:column; overflow:hidden; }
   .empty{ text-align:center; color:var(--ink-soft); padding:60px 20px; }
   .head-row{ display:flex; align-items:flex-start; gap:12px; flex-wrap:wrap; margin-bottom:14px; }
   .head-row h2{ font-size:24px; }
-  .chip{ display:inline-block; font-size:12px; font-weight:700; padding:3px 10px; border-radius:99px; background:var(--surface-2); border:1px solid var(--line); }
-  .code{ font-family:ui-monospace,monospace; letter-spacing:.12em; font-size:15px; font-weight:800; color:var(--seal); }
+  .chip{ display:inline-block; font-size:13.5px; font-weight:700; padding:3px 10px; border-radius:99px; background:var(--surface-2); border:1px solid var(--line); }
+  .code{ font-family:ui-monospace,monospace; letter-spacing:.12em; font-size:17px; font-weight:800; color:var(--seal); }
   .panel{ background:var(--surface); border:1.5px solid var(--line); border-radius:16px; padding:14px 16px; margin-bottom:16px; }
-  .panel h3{ font-size:16px; margin-bottom:10px; }
+  .panel h3{ font-size:17px; margin-bottom:10px; }
   .tools{ display:flex; gap:8px; flex-wrap:wrap; }
   .lesson{ background:var(--surface); border:1.5px solid var(--line); border-radius:16px; padding:14px 16px; margin-bottom:12px; }
   .lesson .lh{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
-  .lesson .lt{ font-family:MM Latin,Iansui,serif; font-size:18px; font-weight:700; flex:1; min-width:150px; }
-  .lesson .counts{ font-size:12.5px; color:var(--ink-soft); margin:4px 0 10px; }
+  .lesson .lt{ font-family:MM Latin,Iansui,serif; font-size:19px; font-weight:700; flex:1; min-width:150px; }
+  .lesson .counts{ font-size:14px; color:var(--ink-soft); margin:4px 0 10px; }
   .toggles{ display:flex; gap:6px; flex-wrap:wrap; }
-  .tg{ border:1.5px solid var(--line); background:var(--surface-2); border-radius:99px; padding:5px 12px; font-size:13px; font-weight:700; color:var(--ink-soft); }
+  .tg{ border:1.5px solid var(--line); background:var(--surface-2); border-radius:99px; padding:5px 12px; font-size:14.5px; font-weight:700; color:var(--ink-soft); }
   .tg.on{ background:var(--bamboo); border-color:var(--bamboo); color:#fff; }
   .tg.na{ opacity:.4; cursor:default; }
   .ctabs{ display:flex; gap:4px; flex-wrap:wrap; margin:0 0 14px; border-bottom:1px solid var(--line); }
-  .ctab{ border:none; background:none; padding:9px 14px; font-size:15px; font-weight:700; color:var(--ink-soft); border-bottom:3px solid transparent; cursor:pointer; }
+  .ctab{ border:none; background:none; padding:9px 14px; font-size:17px; font-weight:700; color:var(--ink-soft); border-bottom:3px solid transparent; cursor:pointer; }
   .ctab.on{ color:var(--seal); border-bottom-color:var(--seal); }
   .tl-row{ display:flex; gap:12px; align-items:flex-start; padding:10px 14px; border:1.5px solid var(--line); border-radius:14px; background:var(--surface); margin-bottom:8px; flex-wrap:wrap; }
-  .tl-row .lt{ font-family:MM Latin,Iansui,serif; font-size:17px; font-weight:700; }
+  .tl-row .lt{ font-family:MM Latin,Iansui,serif; font-size:18px; font-weight:700; }
   .tl-row.s-cur{ border-color:var(--seal); box-shadow:0 0 0 3px rgba(232,128,90,.15); }
   .tl-row.s-done{ background:var(--surface-2); }
   .tl-row.s-done .lt, .tl-row.s-skip .lt{ color:var(--ink-soft); }
@@ -102,17 +104,17 @@
   .tl-act{ display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
   .lib-wrap{ display:flex; flex:1; min-height:0; overflow:hidden; }
   .lib-nav{ width:250px; flex:none; overflow:auto; padding:12px 10px; border-right:1px solid var(--line); background:var(--surface); }
-  .lib-it{ display:block; width:100%; text-align:left; border:1.5px solid transparent; background:none; border-radius:12px; padding:8px 10px; margin-bottom:4px; font:inherit; font-size:14px; cursor:pointer; color:var(--ink); }
-  .lib-it .note{ display:block; font-size:12px; margin-top:2px; }
+  .lib-it{ display:block; width:100%; text-align:left; border:1.5px solid transparent; background:none; border-radius:12px; padding:8px 10px; margin-bottom:4px; font:inherit; font-size:15.5px; cursor:pointer; color:var(--ink); }
+  .lib-it .note{ display:block; font-size:13.5px; margin-top:2px; }
   .lib-it:hover{ background:var(--surface-2); }
   .lib-it.on{ background:#FBE3D6; border-color:var(--seal); }
-  .lib-sep{ font-size:12px; font-weight:700; color:var(--ink-soft); margin:12px 6px 6px; border-top:1px solid var(--line); padding-top:8px; }
+  .lib-sep{ font-size:13.5px; font-weight:700; color:var(--ink-soft); margin:12px 6px 6px; border-top:1px solid var(--line); padding-top:8px; }
   .lib-sep:empty{ padding-top:4px; }
   .lib-pane{ flex:1; min-width:0; overflow:auto; padding:16px 20px; }
   @media (max-width:760px){ .lib-wrap{ flex-direction:column; overflow:auto; } .lib-nav{ width:auto; border-right:none; border-bottom:1px solid var(--line); max-height:none; } .lib-pane{ overflow:visible; } }
   .hc-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:10px; }
   .hc{ display:flex; flex-direction:column; gap:2px; text-align:left; border:1.5px solid var(--line); background:var(--surface-2); border-radius:14px; padding:10px 12px; font:inherit; cursor:pointer; color:var(--ink); }
-  .hc b{ font-size:16px; font-family:MM Latin,Iansui,serif; }
+  .hc b{ font-size:17px; font-family:MM Latin,Iansui,serif; }
   .hc:hover{ border-color:var(--seal); background:#FBE3D6; }
   .gbar{ height:5px; background:var(--surface-2); border-radius:3px; margin-top:3px; min-width:60px; } .gbar div{ height:100%; background:var(--bamboo); border-radius:3px; }
   .mic-on{ background:#C0392B !important; color:#fff !important; border-color:#C0392B !important; animation:micpulse 1.2s infinite; }
@@ -122,63 +124,63 @@
   .rb-st{ display:flex; gap:6px; align-items:center; flex-wrap:wrap; padding:4px 0; } .rb-st b{ min-width:70px; }
   .lib-grp{ display:inline-flex; align-items:flex-end; gap:0; margin-right:10px; padding-left:8px; border-left:1px solid var(--line); }
   .lib-grp:first-of-type{ border-left:none; }
-  .lib-grp-t{ font-size:11.5px; font-weight:700; color:var(--ink-soft); align-self:center; margin-right:2px; white-space:nowrap; }
+  .lib-grp-t{ font-size:13px; font-weight:700; color:var(--ink-soft); align-self:center; margin-right:2px; white-space:nowrap; }
   .mainnav{ display:flex; gap:2px; margin-right:6px; }
-  .mn{ border:none; background:none; padding:6px 10px; border-radius:10px; font:inherit; font-size:14px; font-weight:700; color:var(--ink-soft); cursor:pointer; display:inline-flex; gap:4px; align-items:center; white-space:nowrap; }
+  .mn{ border:none; background:none; padding:6px 10px; border-radius:10px; font:inherit; font-size:15.5px; font-weight:700; color:var(--ink-soft); cursor:pointer; display:inline-flex; gap:4px; align-items:center; white-space:nowrap; }
   .mn:hover{ background:var(--surface-2); } .mn.on{ background:#FBE3D6; color:var(--seal); }
   .umenu{ position:relative; } .ughost{ display:inline-flex; align-items:center; }
   .udrop{ display:none; position:absolute; right:0; top:calc(100% + 6px); background:var(--surface); border:1.5px solid var(--line); border-radius:12px; padding:6px; min-width:140px; box-shadow:0 8px 24px rgba(0,0,0,.12); z-index:50; }
   .udrop.open{ display:block; } .udrop button{ display:block; width:100%; text-align:left; border:none; background:none; padding:8px 10px; border-radius:8px; font:inherit; cursor:pointer; color:var(--ink); } .udrop button:hover{ background:var(--surface-2); }
-  @media (max-width:1100px){ .umenu .mn-t{ display:none; } .mn{ padding:6px 7px; font-size:13.5px; } }
+  @media (max-width:1100px){ .umenu .mn-t{ display:none; } .mn{ padding:6px 7px; font-size:15px; } }
   @media (max-width:640px){ .mainnav{ order:10; width:100%; overflow-x:auto; } .top{ flex-wrap:wrap; } }
-  .act-h{ font-size:15px; margin:14px 0 8px; }
+  .act-h{ font-size:17px; margin:14px 0 8px; }
   .act-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:10px; }
   .act-card{ position:relative; }
   .act-go{ display:flex; flex-direction:column; gap:3px; width:100%; height:100%; text-align:left; border:1.5px solid var(--line); background:var(--surface); border-radius:14px; padding:12px 14px; font:inherit; cursor:pointer; color:var(--ink); }
   .act-go:hover{ border-color:var(--seal); background:#FBE3D6; }
-  .act-e{ font-size:28px; line-height:1.1; } .act-go b{ font-size:15.5px; }
-  .act-fav{ position:absolute; top:6px; right:8px; border:none; background:none; font-size:18px; cursor:pointer; color:var(--ink-soft); } .act-fav.on{ color:#E8B04A; }
-  .act-ctx{ display:flex; gap:8px 12px; align-items:center; flex-wrap:wrap; } .act-ctx label{ margin:0; font-weight:700; font-size:13.5px; } .act-ctx select{ padding:6px 10px; border-radius:8px; border:1.5px solid var(--line); background:var(--surface-2); max-width:100%; }
+  .act-e{ font-size:28px; line-height:1.1; } .act-go b{ font-size:17.5px; }
+  .act-fav{ position:absolute; top:6px; right:8px; border:none; background:none; font-size:19px; cursor:pointer; color:var(--ink-soft); } .act-fav.on{ color:#E8B04A; }
+  .act-ctx{ display:flex; gap:8px 12px; align-items:center; flex-wrap:wrap; } .act-ctx label{ margin:0; font-weight:700; font-size:15px; } .act-ctx select{ padding:6px 10px; border-radius:8px; border:1.5px solid var(--line); background:var(--surface-2); max-width:100%; }
   .cl-school{ margin-top:10px; } .cl-sh{ display:flex; align-items:center; gap:8px; margin-bottom:6px; flex-wrap:wrap; }
   .rte{ border:1.5px solid var(--line); border-radius:10px; background:var(--surface); overflow:hidden; margin-top:4px; }
   .rte-bar{ display:flex; flex-wrap:wrap; gap:2px; padding:4px 6px; background:var(--surface-2); border-bottom:1px solid var(--line); }
-  .rte-bar button{ border:none; background:none; padding:4px 9px; border-radius:6px; font:inherit; font-size:13px; cursor:pointer; color:var(--ink); }
+  .rte-bar button{ border:none; background:none; padding:4px 9px; border-radius:6px; font:inherit; font-size:14.5px; cursor:pointer; color:var(--ink); }
   .rte-bar button:hover{ background:var(--surface); } .rte-bar .rte-exp{ margin-left:auto; font-weight:700; color:var(--seal); }
-  .rte-ed{ min-height:90px; max-height:420px; overflow:auto; padding:10px 14px; line-height:1.8; outline:none; font-size:15px; }
+  .rte-ed{ min-height:90px; max-height:420px; overflow:auto; padding:10px 14px; line-height:1.8; outline:none; font-size:17px; }
   .rte-ed:empty::before{ content:attr(data-ph); color:var(--ink-soft); }
-  .rte-ed h4, .rte-view h4{ font-size:16px; margin:10px 0 4px; color:var(--seal); } .rte-ed p, .rte-view p{ margin:0 0 6px; }
+  .rte-ed h4, .rte-view h4{ font-size:17px; margin:10px 0 4px; color:var(--seal); } .rte-ed p, .rte-view p{ margin:0 0 6px; }
   .rte-ed ul, .rte-ed ol, .rte-view ul, .rte-view ol{ margin:4px 0 8px; padding-left:1.8em; } .rte-ed blockquote, .rte-view blockquote{ margin:0 0 0 2em; padding:0; border:none; }
   .rq-sum{ margin:12px 0 4px; padding:10px 12px; border:1.5px dashed var(--line); border-radius:12px; background:var(--surface); } .rq-sum > label{ margin-top:0; }
   .pr-cmt{ margin-top:6px; padding:8px 10px; background:var(--surface-2); border-radius:10px; } .pr-trout{ white-space:pre-wrap; margin-top:4px; } .pr-voc{ margin-top:6px; }
-  .rte-live{ padding:4px 12px 8px; font-size:13px; color:var(--seal); }
-  .rte-dlg{ width:min(1000px,96vw); max-width:96vw; padding:16px 18px; border:none; border-radius:16px; } .rte-dlg .rte-ed{ max-height:72vh; font-size:16px; }
+  .rte-live{ padding:4px 12px 8px; font-size:14.5px; color:var(--seal); }
+  .rte-dlg{ width:min(1000px,96vw); max-width:96vw; padding:16px 18px; border:none; border-radius:16px; } .rte-dlg .rte-ed{ max-height:72vh; font-size:17px; }
   .sroster{ display:flex; flex-wrap:wrap; gap:6px; margin:2px 0 8px; } .sroster .note{ width:100%; }
   .sr-n{ border:1.5px solid var(--line); background:var(--surface-2); border-radius:99px; padding:6px 14px; font:inherit; font-weight:700; cursor:pointer; color:var(--ink); }
   .sr-n.on{ background:var(--seal); border-color:var(--seal); color:#fff; }
   .sv-day{ border-top:1px solid var(--line); padding:6px 0; } .sv-day summary{ cursor:pointer; }
   .sv-dlg{ width:min(520px,94vw); border:none; border-radius:18px; padding:16px; }
   .sv-card{ margin:12px 0; min-height:200px; border:2px solid var(--line); border-radius:16px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; cursor:pointer; background:var(--surface-2); padding:16px; text-align:center; }
-  .sv-w{ font-size:56px; font-family:MM Latin,Iansui,serif; font-weight:700; } .sv-s{ font-size:20px; color:var(--seal); } .sv-t{ font-size:16px; }
+  .sv-w{ font-size:56px; font-family:MM Latin,Iansui,serif; font-weight:700; } .sv-s{ font-size:20px; color:var(--seal); } .sv-t{ font-size:17px; }
   .tabs{ display:flex; gap:4px; padding:8px 14px 0; background:var(--surface); border-bottom:1px solid var(--line); flex-wrap:wrap; }
-  .tab{ border:none; background:none; padding:9px 16px; font-size:14.5px; font-weight:700; color:var(--ink-soft); border-bottom:3px solid transparent; }
+  .tab{ border:none; background:none; padding:9px 16px; font-size:16px; font-weight:700; color:var(--ink-soft); border-bottom:3px solid transparent; }
   .tab.on{ color:var(--seal); border-bottom-color:var(--seal); }
   .subbar{ display:flex; gap:6px; padding:8px 14px; flex-wrap:wrap; align-items:center; background:var(--paper); border-bottom:1px solid var(--line); }
   .frame{ flex:1; width:100%; border:0; background:var(--paper); min-height:0; }
-  .note{ color:var(--ink-soft); font-size:13px; line-height:1.7; }
+  .note{ color:var(--ink-soft); font-size:14.5px; line-height:1.7; }
   .join{ display:flex; gap:8px; align-items:center; margin-top:10px; flex-wrap:wrap; }
   dialog{ border:none; border-radius:16px; padding:0; box-shadow:0 20px 40px rgba(0,0,0,.25); width:min(380px,92vw); }
   dialog::backdrop{ background:rgba(20,20,18,.5); }
   dialog form{ padding:20px; }
-  dialog h3{ font-size:17px; margin-bottom:10px; }
+  dialog h3{ font-size:18px; margin-bottom:10px; }
   dialog .row{ display:flex; justify-content:flex-end; gap:8px; margin-top:14px; }
   .cal-head{ display:flex; align-items:center; gap:10px; margin-bottom:10px; }
   .cal-grid{ display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:4px; }
-  .cal-w{ text-align:center; font-size:12px; font-weight:700; color:var(--ink-soft); padding:2px 0; }
+  .cal-w{ text-align:center; font-size:13.5px; font-weight:700; color:var(--ink-soft); padding:2px 0; }
   .cal-d{ min-height:84px; background:var(--surface-2); border-radius:10px; padding:5px 6px; cursor:pointer; overflow:hidden; }
   .cal-d:hover{ outline:2px solid var(--seal); }
   .cal-d.empty{ background:transparent; cursor:default; } .cal-d.empty:hover{ outline:none; }
   .cal-d.today{ background:#F6DCCF; }
-  .cal-n{ font-weight:700; font-size:13px; margin-bottom:2px; }
+  .cal-n{ font-weight:700; font-size:14.5px; margin-bottom:2px; }
   .bingo-root{ flex:1; min-height:0; overflow:auto; background:var(--paper); }
   .bg-wrap{ padding:16px; max-width:900px; margin:0 auto; }
   /* 電腦版：賓果盤整個塞進一個螢幕，不用捲動（格子隨可用高度伸縮，不再強制正方形） */
@@ -188,7 +190,7 @@
     .bg-wrap.play{ flex:1; min-height:0; width:100%; max-width:1200px; padding:8px 20px 10px; display:flex; flex-direction:column; }
     .bg-wrap.play .head-row{ margin-bottom:4px; flex-wrap:nowrap; align-items:center; } .bg-wrap.play .head-row h2{ font-size:20px; margin:0; }
     .bg-wrap.play .bg-call{ margin:4px 0; padding:6px 10px; flex:none; } .bg-wrap.play .bg-callw{ font-size:clamp(28px,6vh,52px); line-height:1.1; }
-    .bg-wrap.play .bg-turn,.bg-wrap.play .bg-me,.bg-wrap.play .bg-pend,.bg-wrap.play .bg-count{ margin:3px 0; font-size:15px; padding:4px; flex:none; }
+    .bg-wrap.play .bg-turn,.bg-wrap.play .bg-me,.bg-wrap.play .bg-pend,.bg-wrap.play .bg-count{ margin:3px 0; font-size:17px; padding:4px; flex:none; }
     .bg-wrap.play .tools{ margin-bottom:4px !important; flex:none; }
     .bg-wrap.play .bg-grid{ flex:1; min-height:0; max-width:none; width:100%; margin:4px 0; grid-auto-rows:1fr; gap:8px; }
     .bg-wrap.play .bg-cell{ aspect-ratio:auto; min-height:0; }
@@ -205,13 +207,13 @@
   .bg-cell.empty{ background:var(--surface-2); }
   .bg-w{ font-weight:700; font-size:clamp(14px,2.6vw,26px); line-height:1.2; }
   .bg-p{ font-size:clamp(10px,1.6vw,15px); opacity:.85; }
-  .bg-grid.small .bg-w{ font-size:15px; } .bg-grid.small .bg-p{ font-size:11px; }
+  .bg-grid.small .bg-w{ font-size:17px; } .bg-grid.small .bg-p{ font-size:12.5px; }
   .bg-chip{ display:inline-block; color:#fff; font-weight:700; padding:3px 12px; border-radius:99px; margin:2px; }
   .bg-chip.now{ outline:3px solid var(--ink); }
-  .bg-turn,.bg-me,.bg-pend,.bg-count{ margin:8px 0; font-size:16px; }
+  .bg-turn,.bg-me,.bg-pend,.bg-count{ margin:8px 0; font-size:17px; }
   .bg-turn{ font-size:20px; text-align:center; }
   .bg-count.bad{ color:#B23B32; font-weight:700; }
-  .bg-pend{ text-align:center; padding:10px; background:#FBEBC8; border-radius:12px; font-size:18px; }
+  .bg-pend{ text-align:center; padding:10px; background:#FBEBC8; border-radius:12px; font-size:19px; }
   .bg-order,.bg-score,.bg-picks{ display:flex; flex-wrap:wrap; gap:4px; }
   .bg-opts{ display:flex; flex-wrap:wrap; gap:10px; }
   .bg-opt{ flex:1 1 260px; display:flex; flex-direction:column; gap:4px; padding:10px 12px; border:1.5px solid var(--line); border-radius:12px; cursor:pointer; background:var(--surface); }
@@ -228,27 +230,27 @@
   .bg-ov-t{ font-size:clamp(34px,8vw,84px); font-weight:900; animation:bgpop .6s ease; }
   .bg-ov-n{ margin-top:18px; } .bg-ov-n .bg-chip{ font-size:clamp(22px,5vw,48px); padding:6px 26px; }
   @keyframes bgpop{ 0%{ transform:scale(.3); opacity:0; } 70%{ transform:scale(1.15); } 100%{ transform:scale(1); opacity:1; } }
-  .mine-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:10px; } .mine-grid b{ font-size:18px; }
+  .mine-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:10px; } .mine-grid b{ font-size:19px; }
   .mine-row{ padding:6px 0; border-bottom:1px solid var(--line); } .mine-row.over{ color:#B23B32; }
   .sw-row{ display:flex; flex-wrap:wrap; gap:6px; margin-top:4px; }
   .sw{ width:26px; height:26px; border-radius:8px; border:2px solid rgba(0,0,0,.12); padding:0; cursor:pointer; }
   .sw.on{ outline:3px solid var(--ink); outline-offset:1px; }
-  .cal-s{ font-size:11.5px; line-height:1.35; color:#fff; font-weight:600; padding:2px 7px; border-radius:8px; margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .cal-s{ font-size:13px; line-height:1.35; color:#fff; font-weight:600; padding:2px 7px; border-radius:8px; margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .slot{ display:flex; align-items:center; gap:14px; padding:10px 0; border-top:1px solid var(--line); flex-wrap:wrap; }
   .slot:first-of-type{ border-top:none; }
   .slot-time{ font-weight:700; min-width:110px; font-variant-numeric:tabular-nums; }
   .slot-main{ flex:1; min-width:180px; }
   .slot-act{ display:flex; gap:6px; align-items:center; }
-  #sch form label{ display:block; font-size:12.5px; font-weight:700; color:var(--ink-soft); margin:10px 0 4px; }
+  #sch form label{ display:block; font-size:14px; font-weight:700; color:var(--ink-soft); margin:10px 0 4px; }
   #sch select, #sch input[type=date], #sch input[type=time], #sch input[type=text]{ width:100%; padding:8px 10px; border-radius:8px; border:1.5px solid var(--line); background:var(--surface-2); font:inherit; }
-  @media (max-width:640px){ .cal-d{ min-height:60px; } .cal-s{ font-size:10px; } }
-  .rec-form label{ display:block; font-size:12.5px; font-weight:700; color:var(--ink-soft); margin:14px 0 4px; }
+  @media (max-width:640px){ .cal-d{ min-height:60px; } .cal-s{ font-size:11px; } }
+  .rec-form label{ display:block; font-size:14px; font-weight:700; color:var(--ink-soft); margin:14px 0 4px; }
   .rec-form input[type=text], .rec-form input[type=date], .rec-form input[type=number], .rec-form textarea{ width:100%; padding:8px 10px; border-radius:8px; border:1.5px solid var(--line); background:var(--surface-2); font:inherit; }
   .rstu{ border:1px solid var(--line); border-radius:12px; padding:10px; margin-bottom:8px; background:var(--surface-2); }
   .rgrid{ display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin:8px 0 4px; }
   .rgrid input{ text-align:center; font-weight:700; background:var(--surface) !important; }
   @media (max-width:640px){ .rgrid{ grid-template-columns:repeat(3,1fr); } }
-  .hw-table{ border-collapse:collapse; font-size:13px; }
+  .hw-table{ border-collapse:collapse; font-size:14.5px; }
   .hw-table th, .hw-table td{ border:1px solid var(--line); padding:6px 10px; text-align:center; white-space:nowrap; }
   .hw-table td:first-child, .hw-table th:first-child{ text-align:left; }
   .hw-table .st-ok{ background:#E3F1E8; } .hw-table .st-late{ background:#FBEBC8; } .hw-table .st-missing{ background:#F7D9D5; }
@@ -257,26 +259,26 @@
   @media (max-width:820px){ .bd-wrap{ grid-template-columns:1fr; } .bd-cal{ position:static; } }
   .mc-head{ display:flex; align-items:center; gap:6px; margin-bottom:8px; } .mc-head b{ flex:1; text-align:center; }
   .mc-grid{ display:grid; grid-template-columns:repeat(7,1fr); gap:3px; }
-  .mc-w{ text-align:center; font-size:11px; color:var(--ink-soft); font-weight:700; }
-  .mc-d{ border:none; background:var(--surface-2); border-radius:8px; padding:4px 0 3px; min-height:40px; display:flex; flex-direction:column; align-items:center; gap:2px; font-size:13px; font-weight:700; color:var(--ink); cursor:pointer; }
+  .mc-w{ text-align:center; font-size:12.5px; color:var(--ink-soft); font-weight:700; }
+  .mc-d{ border:none; background:var(--surface-2); border-radius:8px; padding:4px 0 3px; min-height:40px; display:flex; flex-direction:column; align-items:center; gap:2px; font-size:14.5px; font-weight:700; color:var(--ink); cursor:pointer; }
   .mc-d.today{ background:#F6DCCF; } .mc-d.sel{ outline:2.5px solid var(--seal); background:#fff; }
   .mc-dots{ display:flex; gap:2px; min-height:7px; } .mc-dots i, i.dot{ display:inline-block; width:6px; height:6px; border-radius:50%; }
-  .bd-card h3{ font-size:17px; } .bd-body{ line-height:1.75; } .bd-body ul{ margin:4px 0 4px 20px; }
+  .bd-card h3{ font-size:18px; } .bd-body{ line-height:1.75; } .bd-body ul{ margin:4px 0 4px 20px; }
   .bd-plan{ background:#E8F3EC; border-radius:10px; padding:8px 12px; margin:8px 0; }
   .cmt-row{ padding:6px 0; border-top:1px solid var(--line); }
   #hwed{ max-height:92vh; overflow-y:auto; } #hwed select, #hwed input[type=date], #hwed input[type=time], #hwed input[type=text], #hwed textarea{ width:100%; padding:8px 10px; border-radius:8px; border:1.5px solid var(--line); background:var(--surface-2); font:inherit; }
-  .cal-title{ font-size:16px; font-weight:800; padding:6px 12px; }
+  .cal-title{ font-size:17px; font-weight:800; padding:6px 12px; }
   .cal-pick{ background:var(--surface); border:1.5px solid var(--line); border-radius:14px; padding:10px; margin:0 0 10px; box-shadow:var(--shadow); max-width:360px; }
   .cp-head{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px; } .cp-head b{ flex:1; text-align:center; }
-  .cp-year{ font-size:15px; font-weight:800; flex:1; }
+  .cp-year{ font-size:17px; font-weight:800; flex:1; }
   .cp-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:6px; }
-  .cp-b{ border:1.5px solid var(--line); background:var(--surface-2); border-radius:10px; padding:10px 0; font-weight:700; font-size:14px; color:var(--ink); cursor:pointer; }
+  .cp-b{ border:1.5px solid var(--line); background:var(--surface-2); border-radius:10px; padding:10px 0; font-weight:700; font-size:15.5px; color:var(--ink); cursor:pointer; }
   .cp-b.cur{ outline:2px solid var(--line); } .cp-b.sel{ background:var(--seal); border-color:var(--seal); color:#fff; }
   .cal-cnt{ display:none; }
   body.ta .owner-only, body.ta .danger{ display:none !important; }
   @media (pointer:coarse), (max-width:1024px){
     .btn{ min-height:42px; } .btn.sm{ min-height:38px; padding:7px 12px; }
-    input[type=text], input[type=password], input[type=date], input[type=time], input[type=number], select, textarea{ font-size:16px !important; }
+    input[type=text], input[type=password], input[type=date], input[type=time], input[type=number], select, textarea{ font-size:17px !important; }
     .tab{ padding:11px 14px; }
   }
   @media (max-width:640px){
@@ -284,27 +286,27 @@
     .head-row > div{ min-width:100%; }
     .slot{ gap:8px; } .slot-time{ min-width:0 !important; }
     .slot-act{ width:100%; flex-wrap:wrap; }
-    .cal-s{ display:none; } .cal-cnt{ display:block; font-size:11px; color:var(--seal); font-weight:700; }
-    .hw-table th, .hw-table td{ padding:5px 6px; font-size:12px; }
+    .cal-s{ display:none; } .cal-cnt{ display:block; font-size:12.5px; color:var(--seal); font-weight:700; }
+    .hw-table th, .hw-table td{ padding:5px 6px; font-size:13.5px; }
     .main{ padding:12px 10px; }
     .tabs{ overflow-x:auto; flex-wrap:nowrap; } .tab{ white-space:nowrap; }
     dialog{ width:94vw !important; }
   }
   .frame.fs-full{ position:fixed !important; inset:0 !important; width:100vw !important; height:100vh !important; max-width:none !important; z-index:9970; border:0 !important; border-radius:0 !important; background:var(--bg,#fff); }
   body.frame-fs{ overflow:hidden; }
-  .toast{ position:fixed; left:50%; bottom:24px; transform:translateX(-50%); background:var(--ink); color:#fff; padding:9px 16px; border-radius:99px; font-size:13px; z-index:9999; }
+  .toast{ position:fixed; left:50%; bottom:24px; transform:translateX(-50%); background:var(--ink); color:#fff; padding:9px 16px; border-radius:99px; font-size:14.5px; z-index:9999; }
   @media (max-width:820px){ .side{ display:none; } .side.show{ display:block; position:fixed; z-index:50; top:48px; bottom:0; left:0; box-shadow:var(--shadow); } .menu-btn{ display:inline-block !important; } }
   .menu-btn{ display:none; }
   .crumb a.cr{ color:var(--seal); text-decoration:none; } .crumb a.cr:hover{ text-decoration:underline; }
   .shell.focus .top, .shell.focus .side{ display:none; }
   .shell.focus .main:not(.flush){ padding:12px; }
-  .tab.focus-btn{ margin-left:auto; color:var(--seal); border:1.5px solid var(--seal); border-radius:10px; padding:4px 12px; margin-bottom:5px; font-size:13px; }
+  .tab.focus-btn{ margin-left:auto; color:var(--seal); border:1.5px solid var(--seal); border-radius:10px; padding:4px 12px; margin-bottom:5px; font-size:14.5px; }
 </style>
 </head>
 <body>
 <div id="root"></div>
-<dialog id="unitdlg"><form method="dialog"><h3 id="unit-t">複習單元</h3><label style="display:block;font-size:12.5px;font-weight:700;color:var(--ink-soft);margin:4px 0 5px;">名稱</label><input type="text" id="unit-name" autocomplete="off" placeholder="例如：第一到六課複習"><label style="display:block;font-size:12.5px;font-weight:700;color:var(--ink-soft);margin:12px 0 5px;">包含哪幾課（教材與活動會合併這幾課的生詞）</label><div id="unit-lessons" style="display:flex;flex-wrap:wrap;gap:8px;"></div><div class="row"><button type="button" class="btn" id="unit-no">取消</button><button type="submit" class="btn primary">儲存</button></div></form></dialog>
-<dialog id="sch" style="width:min(460px,94vw);"><form method="dialog"><h3 id="sch-t"></h3><label>學校／班級</label><select id="sch-c"></select><label>行事曆上顯示的字（不填就顯示學校名稱）</label><input type="text" id="sch-title" placeholder="例如：五結國中、開會、備課"><label>日期</label><div style="display:flex;gap:10px;align-items:center;"><input type="date" id="sch-d" style="flex:1;min-width:0;"><span id="sch-d2w" style="display:none;flex:1;min-width:0;align-items:center;gap:8px;">到 <input type="date" id="sch-d2" style="flex:1;min-width:0;"></span></div><div id="sch-d2n" class="note" style="display:none;margin-top:4px;">跨好幾天的行程填「到」哪一天；只有一天就不用填。跨天的行程可以不填時間，就是整天。</div><div style="display:flex;gap:10px;"><div style="flex:1;"><label>開始</label><input type="time" id="sch-s"></div><div style="flex:1;"><label>結束</label><input type="time" id="sch-e"></div></div><label>節數（不填就依時間自動推算，一節約 50 分鐘）</label><input type="number" id="sch-p" min="0" max="12" step="1" placeholder="例如 2"><div id="sch-lw"><label>要上哪一課（可不選）</label><select id="sch-l"></select></div><label>備註（例如第二節改線上）</label><input type="text" id="sch-n"><label>超連結（可不填，例如線上教室或文件網址）</label><input type="text" id="sch-url" placeholder="https://..."><label>顏色</label><div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;"><label style="display:flex;align-items:center;gap:6px;margin:0;">底色 <input type="color" id="sch-bg" value="#2E75B6" style="width:44px;height:30px;padding:0;"></label><label style="display:flex;align-items:center;gap:6px;margin:0;">文字 <input type="color" id="sch-fg" value="#ffffff" style="width:44px;height:30px;padding:0;"></label><label style="display:flex;align-items:center;gap:6px;margin:0;font-weight:400;"><input type="checkbox" id="sch-auto" checked> 用預設顏色</label></div><div style="margin-top:8px;font-size:12px;color:var(--ink-soft);">點色塊直接選底色：</div><div id="sch-swb" class="sw-row"></div><div style="margin-top:6px;font-size:12px;color:var(--ink-soft);">文字顏色：</div><div id="sch-swf" class="sw-row"></div><div id="sch-sug" style="margin-top:8px;"></div><div id="sch-prev" style="margin-top:8px;"></div><div id="sch-rep" style="margin-top:12px;font-size:13px;"><label style="display:flex;align-items:center;gap:6px;font-weight:600;margin:0;flex-wrap:wrap;"><input type="checkbox" id="sch-r"> <span id="sch-rt">每週同一時間重複，共</span> <input type="number" id="sch-w" value="8" min="2" max="40" style="width:64px;"> 週</label></div><div id="sch-serw" style="margin-top:8px;font-size:13px;display:none;"><label style="display:flex;align-items:center;gap:6px;font-weight:600;margin:0;"><input type="checkbox" id="sch-ser"> 同系列「之後」的課也套用這次修改（班級、文字、顏色、連結、時間）</label></div><div class="row"><button type="button" class="btn" id="sch-no">取消</button><button type="submit" class="btn primary">儲存</button></div></form></dialog>
+<dialog id="unitdlg"><form method="dialog"><h3 id="unit-t">複習單元</h3><label style="display:block;font-size:14px;font-weight:700;color:var(--ink-soft);margin:4px 0 5px;">名稱</label><input type="text" id="unit-name" autocomplete="off" placeholder="例如：第一到六課複習"><label style="display:block;font-size:14px;font-weight:700;color:var(--ink-soft);margin:12px 0 5px;">包含哪幾課（教材與活動會合併這幾課的生詞）</label><div id="unit-lessons" style="display:flex;flex-wrap:wrap;gap:8px;"></div><div class="row"><button type="button" class="btn" id="unit-no">取消</button><button type="submit" class="btn primary">儲存</button></div></form></dialog>
+<dialog id="sch" style="width:min(460px,94vw);"><form method="dialog"><h3 id="sch-t"></h3><label>學校／班級</label><select id="sch-c"></select><label>行事曆上顯示的字（不填就顯示學校名稱）</label><input type="text" id="sch-title" placeholder="例如：五結國中、開會、備課"><label>日期</label><div style="display:flex;gap:10px;align-items:center;"><input type="date" id="sch-d" style="flex:1;min-width:0;"><span id="sch-d2w" style="display:none;flex:1;min-width:0;align-items:center;gap:8px;">到 <input type="date" id="sch-d2" style="flex:1;min-width:0;"></span></div><div id="sch-d2n" class="note" style="display:none;margin-top:4px;">跨好幾天的行程填「到」哪一天；只有一天就不用填。跨天的行程可以不填時間，就是整天。</div><div style="display:flex;gap:10px;"><div style="flex:1;"><label>開始</label><input type="time" id="sch-s"></div><div style="flex:1;"><label>結束</label><input type="time" id="sch-e"></div></div><label>節數（不填就依時間自動推算，一節約 50 分鐘）</label><input type="number" id="sch-p" min="0" max="12" step="1" placeholder="例如 2"><div id="sch-lw"><label>要上哪一課（可不選）</label><select id="sch-l"></select></div><label>備註（例如第二節改線上）</label><input type="text" id="sch-n"><label>超連結（可不填，例如線上教室或文件網址）</label><input type="text" id="sch-url" placeholder="https://..."><label>顏色</label><div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;"><label style="display:flex;align-items:center;gap:6px;margin:0;">底色 <input type="color" id="sch-bg" value="#2E75B6" style="width:44px;height:30px;padding:0;"></label><label style="display:flex;align-items:center;gap:6px;margin:0;">文字 <input type="color" id="sch-fg" value="#ffffff" style="width:44px;height:30px;padding:0;"></label><label style="display:flex;align-items:center;gap:6px;margin:0;font-weight:400;"><input type="checkbox" id="sch-auto" checked> 用預設顏色</label></div><div style="margin-top:8px;font-size:13.5px;color:var(--ink-soft);">點色塊直接選底色：</div><div id="sch-swb" class="sw-row"></div><div style="margin-top:6px;font-size:13.5px;color:var(--ink-soft);">文字顏色：</div><div id="sch-swf" class="sw-row"></div><div id="sch-sug" style="margin-top:8px;"></div><div id="sch-prev" style="margin-top:8px;"></div><div id="sch-rep" style="margin-top:12px;font-size:14.5px;"><label style="display:flex;align-items:center;gap:6px;font-weight:600;margin:0;flex-wrap:wrap;"><input type="checkbox" id="sch-r"> <span id="sch-rt">每週同一時間重複，共</span> <input type="number" id="sch-w" value="8" min="2" max="40" style="width:64px;"> 週</label></div><div id="sch-serw" style="margin-top:8px;font-size:14.5px;display:none;"><label style="display:flex;align-items:center;gap:6px;font-weight:600;margin:0;"><input type="checkbox" id="sch-ser"> 同系列「之後」的課也套用這次修改（班級、文字、顏色、連結、時間）</label></div><div class="row"><button type="button" class="btn" id="sch-no">取消</button><button type="submit" class="btn primary">儲存</button></div></form></dialog>
 <dialog id="remind" style="width:min(420px,92vw);"><form method="dialog"><h3>📝 該填課堂記錄表了</h3><p id="remind-t" style="margin:6px 0 4px;font-weight:700;"></p><p class="note">趁記憶還新鮮，趕快記下今天的上課內容和學生表現吧。</p><div class="row" style="flex-wrap:wrap;"><button type="button" class="btn" id="remind-skip">今天不用提醒</button><button type="button" class="btn" id="remind-later">10 分鐘後再提醒</button><button type="button" class="btn primary" id="remind-go">填寫課堂記錄</button></div></form></dialog>
 <dialog id="bell-d" style="width:min(460px,94vw);"><form method="dialog" onsubmit="return false;"><h3>🔔 新的繳交</h3><div id="bell-list" style="max-height:50vh;overflow-y:auto;"></div><div class="row" style="flex-wrap:wrap;"><button type="button" class="btn sm" id="bell-perm" style="display:none;">開啟桌面通知</button><button type="button" class="btn" id="bell-clear">全部標為已讀</button><button type="button" class="btn primary" id="bell-close">關閉</button></div></form></dialog>
 <dialog id="hwed"></dialog>
@@ -591,7 +593,7 @@ function bookFromTitle(title){
 function viewLogin(msg){
   i18nStart(false);
   root.innerHTML = '<div class="center-wrap"><div class="card"><img src="icons/logo.svg" alt="曼米中文" style="width:84px;height:84px;display:block;margin:0 auto 8px;"><h2 style="text-align:center;">曼米中文平台</h2><p class="sub">老師登入　Teacher login</p>' +
-    '<label>帳號</label><input type="text" id="lu" autocomplete="username"><label>密碼</label><input type="password" id="lp" autocomplete="current-password" style="width:100%;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;font-size:15px;background:var(--surface-2);">' +
+    '<label>帳號</label><input type="text" id="lu" autocomplete="username"><label>密碼</label><input type="password" id="lp" autocomplete="current-password" style="width:100%;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;font-size:17px;background:var(--surface-2);">' +
     '<label style="margin-top:10px;">助教登入（不是助教請留空）<span class="note" style="font-weight:400;"> 要協助哪位老師？填那位老師的帳號</span></label><input type="text" id="lo" autocomplete="off">' +
     '<div class="err" id="le"></div><button class="btn primary" id="lgo" style="width:100%;margin-top:14px;padding:11px;">登入</button>' +
     '<p class="sub" style="margin-top:16px;">學生請使用老師給的班級連結，或 <a href="#" id="tostu">輸入班級代碼</a></p></div></div>';
@@ -943,17 +945,17 @@ function stuTransDraw(){
   trInjectStyle();
   if(!document.getElementById("sl-style")){
     var st = document.createElement("style"); st.id = "sl-style";
-    st.textContent = '#sl-btn{position:fixed;right:0;top:46%;z-index:9980;padding:12px 9px;border-radius:14px 0 0 14px;background:#E8805A;color:#fff;font-size:13px;font-weight:700;cursor:pointer;border:0;box-shadow:0 2px 10px rgba(0,0,0,.25);writing-mode:vertical-rl;letter-spacing:2px}' +
+    st.textContent = '#sl-btn{position:fixed;right:0;top:46%;z-index:9980;padding:12px 9px;border-radius:14px 0 0 14px;background:#E8805A;color:#fff;font-size:14.5px;font-weight:700;cursor:pointer;border:0;box-shadow:0 2px 10px rgba(0,0,0,.25);writing-mode:vertical-rl;letter-spacing:2px}' +
       '#sl-btn b{background:#fff;color:#E8805A;border-radius:99px;padding:0 6px;margin-top:4px;writing-mode:horizontal-tb;letter-spacing:0}' +
       '#sl-box{position:fixed;right:12px;bottom:12px;width:min(380px,calc(100vw - 24px));height:min(62vh,640px);z-index:9981;display:none;flex-direction:column;background:linear-gradient(160deg,#FCEFE4,#EBF1EA);border:1.5px solid #EBDDD0;border-radius:16px;box-shadow:0 10px 34px rgba(0,0,0,.28);color:#3a312b;--tr-grn:#4E7F6E}' +
-      '#sl-head{display:flex;align-items:center;gap:6px;padding:9px 12px;border-bottom:1px solid #EBDDD0}#sl-head b{flex:1;font-size:15px}#sl-head button{background:#fff;border:1px solid #EBDDD0;border-radius:99px;padding:4px 12px;font-size:12.5px;cursor:pointer;font-weight:700}' +
-      '#sl-list{flex:1;overflow:auto;padding:10px 12px}.sl-row{background:#fff;border-radius:14px;padding:9px 12px;margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,.06)}.sl-t{font-size:15px;line-height:1.5;margin-top:2px}.sl-t i{font-style:normal;font-size:11px;font-weight:700;color:#7a6c60;margin-right:6px}';
+      '#sl-head{display:flex;align-items:center;gap:6px;padding:9px 12px;border-bottom:1px solid #EBDDD0}#sl-head b{flex:1;font-size:17px}#sl-head button{background:#fff;border:1px solid #EBDDD0;border-radius:99px;padding:4px 12px;font-size:14px;cursor:pointer;font-weight:700}' +
+      '#sl-list{flex:1;overflow:auto;padding:10px 12px}.sl-row{background:#fff;border-radius:14px;padding:9px 12px;margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,.06)}.sl-t{font-size:17px;line-height:1.5;margin-top:2px}.sl-t i{font-style:normal;font-size:12.5px;font-weight:700;color:#7a6c60;margin-right:6px}';
     document.head.appendChild(st);
   }
   if(!SL.box){
     SL.btn = document.createElement("button"); SL.btn.id = "sl-btn"; SL.btn.type = "button"; SL.btn.onclick = function(){ SL.open = true; stuTransDraw(); };
     SL.box = document.createElement("div"); SL.box.id = "sl-box";
-    SL.box.innerHTML = '<div id="sl-head"><b>📝 今天的生詞 Words</b><button type="button" id="sl-zo" title="縮小">A−</button><button type="button" id="sl-zi" title="放大">A＋</button><button type="button" id="sl-close">收起 ▾</button></div><div id="sl-typing" style="display:none;padding:6px 12px;font-size:14px;background:#FFF8F1;border-bottom:1px solid #EBDDD0;"></div><div id="sl-list"></div>';
+    SL.box.innerHTML = '<div id="sl-head"><b>📝 今天的生詞 Words</b><button type="button" id="sl-zo" title="縮小">A−</button><button type="button" id="sl-zi" title="放大">A＋</button><button type="button" id="sl-close">收起 ▾</button></div><div id="sl-typing" style="display:none;padding:6px 12px;font-size:15.5px;background:#FFF8F1;border-bottom:1px solid #EBDDD0;"></div><div id="sl-list"></div>';
     SL.box.querySelector("#sl-zo").onclick = function(){ SL.scale = Math.max(0.6, (SL.scale || 1) - 0.2); stuTransDraw(); };
     SL.box.querySelector("#sl-zi").onclick = function(){ SL.scale = Math.min(3, (SL.scale || 1) + 0.2); stuTransDraw(); };
     document.body.appendChild(SL.btn); document.body.appendChild(SL.box);
@@ -984,8 +986,8 @@ function trZyHtml(sym){
 function trWordHtml(e){
   var chars = Array.from(e.zh), mode = TR.show.mode;
   var zya = e.zya || (e.zy ? e.zy.split(" ") : []), pya = e.pya || (e.py ? e.py.split(" ") : []);
-  if(mode === "zy" && !e.zya && e.zy) return '<span class="tr-ch"><span class="tr-c">' + esc(e.zh) + '</span></span><span class="tr-r" style="align-self:center;margin-left:6px;color:var(--tr-grn);font-size:16px;">' + esc(e.zy) + '</span>';
-  if(mode === "py" && !e.pya && e.py) return '<span class="tr-ch"><span class="tr-c">' + esc(e.zh) + '</span></span><span class="tr-r" style="align-self:center;margin-left:6px;color:var(--tr-grn);font-size:16px;">' + esc(e.py) + '</span>';
+  if(mode === "zy" && !e.zya && e.zy) return '<span class="tr-ch"><span class="tr-c">' + esc(e.zh) + '</span></span><span class="tr-r" style="align-self:center;margin-left:6px;color:var(--tr-grn);font-size:17px;">' + esc(e.zy) + '</span>';
+  if(mode === "py" && !e.pya && e.py) return '<span class="tr-ch"><span class="tr-c">' + esc(e.zh) + '</span></span><span class="tr-r" style="align-self:center;margin-left:6px;color:var(--tr-grn);font-size:17px;">' + esc(e.py) + '</span>';
   return chars.map(function(ch, i){
     var han = /[\u3400-\u9fff]/.test(ch);
     if(mode === "zy" && han && zya[i]) return '<span class="tr-ch"><span class="tr-c">' + esc(ch) + '</span>' + trZyHtml(zya[i]) + '</span>';
@@ -1031,32 +1033,32 @@ function trInjectStyle(){
   if(document.getElementById("tr-style")) return false;
   var st = document.createElement("style"); st.id = "tr-style";
   st.textContent = '#tr-box{--tr-bg:#FBF1E8;--tr-card:#fff;--tr-ink:#3a312b;--tr-org:#E8805A;--tr-grn:#4E7F6E;--tr-line:#EBDDD0;--tr-soft:#FFF8F1}' +
-    '#tr-btn{position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:9980;display:flex;align-items:center;gap:4px;padding:12px 9px;border-radius:14px 0 0 14px;background:#E8805A;color:#fff;font-size:13px;font-weight:700;cursor:pointer;border:0;box-shadow:0 2px 10px rgba(0,0,0,.25);opacity:.9;writing-mode:vertical-rl;letter-spacing:2px}#tr-btn:hover{opacity:1}' +
+    '#tr-btn{position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:9980;display:flex;align-items:center;gap:4px;padding:12px 9px;border-radius:14px 0 0 14px;background:#E8805A;color:#fff;font-size:14.5px;font-weight:700;cursor:pointer;border:0;box-shadow:0 2px 10px rgba(0,0,0,.25);opacity:.9;writing-mode:vertical-rl;letter-spacing:2px}#tr-btn:hover{opacity:1}' +
     '#tr-box{position:fixed;z-index:9981;display:none;flex-direction:column;background:linear-gradient(160deg,#FCEFE4,#EBF1EA);border:1.5px solid var(--tr-line);border-radius:16px;box-shadow:0 10px 34px rgba(0,0,0,.28);overflow:hidden;touch-action:none;color:var(--tr-ink)}' +
     '#tr-head{display:flex;align-items:center;gap:6px;padding:9px 12px;cursor:move;user-select:none;touch-action:none;border-bottom:1px solid var(--tr-line)}' +
-    '#tr-head b{flex:1;font-size:15px}#tr-head button{background:#fff;color:var(--tr-ink);border:1px solid var(--tr-line);border-radius:99px;padding:4px 12px;font-size:12.5px;cursor:pointer;font-weight:600}' +
+    '#tr-head b{flex:1;font-size:17px}#tr-head button{background:#fff;color:var(--tr-ink);border:1px solid var(--tr-line);border-radius:99px;padding:4px 12px;font-size:14px;cursor:pointer;font-weight:600}' +
     '#tr-body{flex:1;overflow:auto;padding:10px 12px;display:flex;flex-direction:column;gap:10px;touch-action:pan-y}' +
     '.tr-card{background:var(--tr-card);border-radius:14px;padding:10px;box-shadow:0 1px 4px rgba(0,0,0,.06)}' +
-    '#tr-body .tr-in{display:flex;gap:6px}#tr-in{flex:1;padding:9px 12px;border:1.5px solid var(--tr-line);border-radius:12px;font-size:16px;min-width:0;background:var(--tr-soft);color:var(--tr-ink)}' +
-    '.tr-fields{display:grid;grid-template-columns:1fr 1fr;gap:6px 8px;margin-top:8px}.tr-fields label{display:flex;flex-direction:column;font-size:11.5px;font-weight:700;color:#7a6c60;gap:2px;margin:0}.tr-fields input{padding:6px 8px;border:1.5px solid var(--tr-line);border-radius:9px;font-size:14px;background:var(--tr-soft);color:var(--tr-ink);min-width:0;width:100%;box-sizing:border-box}.tr-addbtn{background:#E3F1EA;color:var(--tr-grn);border:0;border-radius:10px;padding:7px 14px;font-weight:700;font-size:13.5px;cursor:pointer}.tr-direct{font-size:12px;font-weight:600;display:inline-flex;gap:4px;align-items:center;margin:0;cursor:pointer}' +
-    '#tr-go{background:var(--tr-org);color:#fff;border:0;border-radius:12px;padding:0 14px;font-weight:700;font-size:14px;cursor:pointer;white-space:nowrap}' +
-    '.tr-opts{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px;font-size:12.5px;color:#7a6c60;font-weight:600}' +
+    '#tr-body .tr-in{display:flex;gap:6px}#tr-in{flex:1;padding:9px 12px;border:1.5px solid var(--tr-line);border-radius:12px;font-size:17px;min-width:0;background:var(--tr-soft);color:var(--tr-ink)}' +
+    '.tr-fields{display:grid;grid-template-columns:1fr 1fr;gap:6px 8px;margin-top:8px}.tr-fields label{display:flex;flex-direction:column;font-size:13px;font-weight:700;color:#7a6c60;gap:2px;margin:0}.tr-fields input{padding:6px 8px;border:1.5px solid var(--tr-line);border-radius:9px;font-size:15.5px;background:var(--tr-soft);color:var(--tr-ink);min-width:0;width:100%;box-sizing:border-box}.tr-addbtn{background:#E3F1EA;color:var(--tr-grn);border:0;border-radius:10px;padding:7px 14px;font-weight:700;font-size:15px;cursor:pointer}.tr-direct{font-size:13.5px;font-weight:600;display:inline-flex;gap:4px;align-items:center;margin:0;cursor:pointer}' +
+    '#tr-go{background:var(--tr-org);color:#fff;border:0;border-radius:12px;padding:0 14px;font-weight:700;font-size:15.5px;cursor:pointer;white-space:nowrap}' +
+    '.tr-opts{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px;font-size:14px;color:#7a6c60;font-weight:600}' +
     '.tr-seg{display:inline-flex;background:var(--tr-soft);border:1px solid var(--tr-line);border-radius:99px;padding:2px}' +
-    '.tr-seg button,.tr-chip{border:0;background:transparent;border-radius:99px;padding:4px 12px;font-size:13px;font-weight:700;color:#7a6c60;cursor:pointer}' +
+    '.tr-seg button,.tr-chip{border:0;background:transparent;border-radius:99px;padding:4px 12px;font-size:14.5px;font-weight:700;color:#7a6c60;cursor:pointer}' +
     '.tr-seg button.on{background:var(--tr-org);color:#fff}.tr-chip{background:var(--tr-soft);border:1px solid var(--tr-line)}.tr-chip.on{background:var(--tr-grn);border-color:var(--tr-grn);color:#fff}' +
     '.tr-row{background:var(--tr-card);border-radius:14px;padding:9px 12px 7px;margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,.06);position:relative}' +
     '.tr-ck{position:absolute;left:8px;top:10px;width:18px;height:18px;margin:0;cursor:pointer;accent-color:var(--tr-grn)}.tr-row{padding-left:36px !important}.tr-row.done{opacity:.55}.tr-zh{display:flex;align-items:flex-start;gap:2px;flex-wrap:wrap;padding-right:26px}' +
     '.tr-ch{display:inline-flex;align-items:flex-start;margin-right:8px}.tr-c{font-size:34px;line-height:1.15;font-weight:700;font-family:MM Latin,Iansui,serif}' +
     '.tr-zs{display:inline-flex;align-items:center;margin-left:3px;margin-top:2px;padding-right:11px;position:relative;color:var(--tr-grn);font-weight:600}' +
-    '.tr-zm{display:flex;flex-direction:column;font-size:17px;line-height:1.08;font-style:normal}.tr-zm i{font-style:normal}' +
-    '.tr-zt{position:absolute;right:0;top:44%;font-style:normal;font-size:17px;line-height:1}.tr-zn{position:absolute;top:-10px;left:0;font-style:normal;font-size:15px}' +
-    '.tr-ch.py{flex-direction:column;align-items:center}.tr-pp{font-size:15px;color:var(--tr-grn);font-weight:600;line-height:1.1}' +
-    '.tr-x{position:absolute;right:8px;top:8px;border:0;background:none;cursor:pointer;color:#aaa;font-size:15px;opacity:.7}' +
-    '.tr-ts{display:flex;flex-direction:column;gap:0;margin-top:2px}.tr-retry{border:0;background:#FFF1E6;color:#B5502F;border-radius:99px;padding:1px 9px;font-size:11px;font-weight:700;cursor:pointer}.tr-t{border:1px solid transparent !important;border-radius:6px !important;padding:2px 4px !important;font-size:16px !important;background:transparent !important;width:100% !important;resize:none;overflow:hidden;font-family:inherit;line-height:1.35;display:block;box-sizing:border-box;color:#B5502F !important;box-shadow:none !important}.tr-t-th,.tr-t-ja{color:var(--tr-grn) !important}.tr-t:focus{border-color:var(--tr-line) !important;background:var(--tr-soft) !important;outline:0}' +
-    '.tr-destrow{margin-top:4px;font-size:12px;color:#7a6c60;font-weight:600}.tr-dest{max-width:100%;font-size:12.5px;padding:3px 6px;border:1.5px solid var(--tr-line);border-radius:8px;background:var(--tr-soft);color:var(--tr-ink)}.tr-dest.warn{border-color:#D9784A;background:#FFF1E6}.tr-time{font-size:10.5px;color:#a89a8d;margin-top:1px}.tr-empty{font-size:13px;color:#8a7c70;padding:6px 4px}' +
-    '#tr-foot{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:7px 30px 7px 12px;border-top:1px solid var(--tr-line);font-size:12.5px;color:#7a6c60;font-weight:600}' +
-    '#tr-foot span{white-space:nowrap}#tr-foot button{white-space:nowrap;background:#fff;border:1px solid var(--tr-line);border-radius:99px;padding:4px 12px;font-size:12.5px;font-weight:700;cursor:pointer;color:var(--tr-ink)}#tr-foot .danger{color:#B23B32}' +
-    '#tr-rs{position:absolute;right:0;bottom:0;width:26px;height:26px;cursor:nwse-resize;touch-action:none;display:flex;align-items:flex-end;justify-content:flex-end;font-size:16px;color:#999;padding:0 4px 2px 0;user-select:none}';
+    '.tr-zm{display:flex;flex-direction:column;font-size:18px;line-height:1.08;font-style:normal}.tr-zm i{font-style:normal}' +
+    '.tr-zt{position:absolute;right:0;top:44%;font-style:normal;font-size:18px;line-height:1}.tr-zn{position:absolute;top:-10px;left:0;font-style:normal;font-size:17px}' +
+    '.tr-ch.py{flex-direction:column;align-items:center}.tr-pp{font-size:17px;color:var(--tr-grn);font-weight:600;line-height:1.1}' +
+    '.tr-x{position:absolute;right:8px;top:8px;border:0;background:none;cursor:pointer;color:#aaa;font-size:17px;opacity:.7}' +
+    '.tr-ts{display:flex;flex-direction:column;gap:0;margin-top:2px}.tr-retry{border:0;background:#FFF1E6;color:#B5502F;border-radius:99px;padding:1px 9px;font-size:12.5px;font-weight:700;cursor:pointer}.tr-t{border:1px solid transparent !important;border-radius:6px !important;padding:2px 4px !important;font-size:17px !important;background:transparent !important;width:100% !important;resize:none;overflow:hidden;font-family:inherit;line-height:1.35;display:block;box-sizing:border-box;color:#B5502F !important;box-shadow:none !important}.tr-t-th,.tr-t-ja{color:var(--tr-grn) !important}.tr-t:focus{border-color:var(--tr-line) !important;background:var(--tr-soft) !important;outline:0}' +
+    '.tr-destrow{margin-top:4px;font-size:13.5px;color:#7a6c60;font-weight:600}.tr-dest{max-width:100%;font-size:14px;padding:3px 6px;border:1.5px solid var(--tr-line);border-radius:8px;background:var(--tr-soft);color:var(--tr-ink)}.tr-dest.warn{border-color:#D9784A;background:#FFF1E6}.tr-time{font-size:12px;color:#a89a8d;margin-top:1px}.tr-empty{font-size:14.5px;color:#8a7c70;padding:6px 4px}' +
+    '#tr-foot{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:7px 30px 7px 12px;border-top:1px solid var(--tr-line);font-size:14px;color:#7a6c60;font-weight:600}' +
+    '#tr-foot span{white-space:nowrap}#tr-foot button{white-space:nowrap;background:#fff;border:1px solid var(--tr-line);border-radius:99px;padding:4px 12px;font-size:14px;font-weight:700;cursor:pointer;color:var(--tr-ink)}#tr-foot .danger{color:#B23B32}' +
+    '#tr-rs{position:absolute;right:0;bottom:0;width:26px;height:26px;cursor:nwse-resize;touch-action:none;display:flex;align-items:flex-end;justify-content:flex-end;font-size:17px;color:#999;padding:0 4px 2px 0;user-select:none}';
   document.head.appendChild(st);
   return true;
 }
@@ -1076,7 +1078,7 @@ function trBuild(){
   document.body.appendChild(btn); document.body.appendChild(box); TR.btn = btn; TR.box = box;
   // 文字轉語音（聽力題）工具：另開分頁，不影響目前的課堂畫面
   var tbtn = document.createElement("button"); tbtn.id = "tts-btn"; tbtn.type = "button"; tbtn.textContent = "🔊 語音"; tbtn.title = "文字轉語音（做聽力題音檔）";
-  tbtn.style.cssText = "position:fixed;right:0;top:calc(50% + 92px);z-index:9980;padding:12px 9px;border-radius:14px 0 0 14px;background:#C4602A;color:#fff;font-size:13px;font-weight:700;cursor:pointer;border:0;box-shadow:0 2px 10px rgba(0,0,0,.25);opacity:.9;writing-mode:vertical-rl;letter-spacing:2px";
+  tbtn.style.cssText = "position:fixed;right:0;top:calc(50% + 92px);z-index:9980;padding:12px 9px;border-radius:14px 0 0 14px;background:#C4602A;color:#fff;font-size:14.5px;font-weight:700;cursor:pointer;border:0;box-shadow:0 2px 10px rgba(0,0,0,.25);opacity:.9;writing-mode:vertical-rl;letter-spacing:2px";
   tbtn.onclick = function(){ window.open("tts.html", "_blank"); };
   document.body.appendChild(tbtn); TR.tbtn = tbtn;
   // 拖曳移動（標題列）與調整大小（右下角）：用 pointer capture，滑到簡報 iframe 上也不會斷
@@ -2476,9 +2478,9 @@ function recVocabListHtml(vocab, canMove, ro){
   if(!document.getElementById("rv-css")){
     var st = document.createElement("style"); st.id = "rv-css";
     st.textContent = ".rv-list{display:flex;flex-direction:column;gap:6px;margin-bottom:8px}.rv-row{display:grid;grid-template-columns:minmax(150px,230px) 1fr auto;gap:6px 14px;align-items:center;padding:8px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}" +
-      ".rv-main{display:flex;flex-direction:column;gap:1px}.rv-w{font-size:22px;font-weight:700;line-height:1.25}.rv-zy{font-size:15px;color:#3f7a66;font-weight:600}.rv-py{font-size:13px;color:#8a7c70}" +
-      ".rv-tr{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:14px;color:var(--ink)}.rv-t i{font-style:normal;font-size:10px;font-weight:700;color:#fff;background:#9a8f85;border-radius:5px;padding:1px 5px;margin-right:5px}.rv-t.EN i{background:#C0502F}.rv-t.TH i,.rv-t.JA i{background:#4E7F6E}" +
-      ".rv-cm{margin-top:10px;padding:10px 12px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line)}.rv-cmh{font-weight:700;margin-bottom:4px}.rv-dt{margin-top:6px;font-size:13.5px;color:var(--ink-soft,#6b6158);display:flex;flex-direction:column;gap:2px}.rdrow{display:flex;gap:8px;align-items:center;margin-bottom:4px}.rdl{min-width:64px;font-size:12px;font-weight:700;color:#7a6c60}.rdt{flex:1}.rv-btns{display:flex;gap:4px}.rv-row.ro{grid-template-columns:minmax(150px,230px) 1fr}.rv-add{display:grid;grid-template-columns:minmax(120px,1fr) 2fr auto;gap:6px;margin-bottom:6px}@media(max-width:700px){.rv-row{grid-template-columns:1fr auto}.rv-tr{grid-column:1/-1;order:3}.rv-add{grid-template-columns:1fr}}";
+      ".rv-main{display:flex;flex-direction:column;gap:1px}.rv-w{font-size:22px;font-weight:700;line-height:1.25}.rv-zy{font-size:17px;color:#3f7a66;font-weight:600}.rv-py{font-size:14.5px;color:#8a7c70}" +
+      ".rv-tr{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:15.5px;color:var(--ink)}.rv-t i{font-style:normal;font-size:11px;font-weight:700;color:#fff;background:#9a8f85;border-radius:5px;padding:1px 5px;margin-right:5px}.rv-t.EN i{background:#C0502F}.rv-t.TH i,.rv-t.JA i{background:#4E7F6E}" +
+      ".rv-cm{margin-top:10px;padding:10px 12px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line)}.rv-cmh{font-weight:700;margin-bottom:4px}.rv-dt{margin-top:6px;font-size:15px;color:var(--ink-soft,#6b6158);display:flex;flex-direction:column;gap:2px}.rdrow{display:flex;gap:8px;align-items:center;margin-bottom:4px}.rdl{min-width:64px;font-size:13.5px;font-weight:700;color:#7a6c60}.rdt{flex:1}.rv-btns{display:flex;gap:4px}.rv-row.ro{grid-template-columns:minmax(150px,230px) 1fr}.rv-add{display:grid;grid-template-columns:minmax(120px,1fr) 2fr auto;gap:6px;margin-bottom:6px}@media(max-width:700px){.rv-row{grid-template-columns:1fr auto}.rv-tr{grid-column:1/-1;order:3}.rv-add{grid-template-columns:1fr}}";
     document.head.appendChild(st);
   }
   if(!vocab.length) return '<p class="note" style="margin:0 0 8px;">還沒有生詞。可以從翻譯機加入，或在下面手動輸入。</p>';
@@ -2564,7 +2566,7 @@ async function openRecordFor(slot){
   S.rec = { edit: null, draft: d, shots: [], autoInfo: info }; S.day = null; S.lib = null; S.grades = null; S.sel = null; S.lesson = null; S.hw = null; render();
 }
 function recBadge(r){
-  var st = function(bg, fg){ return 'display:inline-block;padding:2px 10px;border-radius:99px;font-size:12px;font-weight:700;background:' + bg + ';color:' + fg + ';white-space:nowrap;'; };
+  var st = function(bg, fg){ return 'display:inline-block;padding:2px 10px;border-radius:99px;font-size:13.5px;font-weight:700;background:' + bg + ';color:' + fg + ';white-space:nowrap;'; };
   if(!r.isAbsence) return '<span style="' + st("#DCEEE6", "#3E7D68") + '">完成</span>';
   var t = r.absType || "請假／調課";
   return r.madeUp ? '<span style="' + st("#DCE8F6", "#2E75B6") + '">' + esc(t) + '・已補課</span>' : '<span style="' + st("#F7D9D5", "#B23B32") + '">' + esc(t) + '・待補課</span>';
@@ -3107,7 +3109,7 @@ async function renderRecBatch(){
   if(!R.length) html += '<div class="panel"><p class="note" style="margin:0;">最近 30 天的課都填好了 🎉</p></div>';
   R.forEach(function(r, ri){
     var d = r.d, ci = classInfo(r.slot);
-    html += '<div class="panel" style="' + (r.skip ? 'opacity:.5;' : '') + '"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;"><b style="font-size:16px;">' + md(r.slot.date) + ' ' + esc(r.slot.start || "") + '　' + esc(ci ? ci.school + " " + ci.cls : "") + '</b>' +
+    html += '<div class="panel" style="' + (r.skip ? 'opacity:.5;' : '') + '"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;"><b style="font-size:17px;">' + md(r.slot.date) + ' ' + esc(r.slot.start || "") + '　' + esc(ci ? ci.school + " " + ci.cls : "") + '</b>' +
       '<label class="note" style="display:flex;gap:4px;align-items:center;margin:0;"><input type="checkbox" data-b="abs" data-r="' + ri + '"' + (d.isAbsence ? ' checked' : '') + '> 請假／調課</label><label class="note" style="display:flex;gap:4px;align-items:center;margin:0;"><input type="checkbox" data-b="skip" data-r="' + ri + '"' + (r.skip ? ' checked' : '') + '> 這堂先不填</label><span style="flex:1;"></span><button class="btn sm ghost" data-b="full" data-r="' + ri + '">打開完整表單</button></div>' +
       '<div style="display:flex;gap:8px;align-items:center;margin-top:8px;"><span class="note" style="white-space:nowrap;">教材進度</span><input type="text" data-b="mat" data-r="' + ri + '" value="' + esc(d.material || "") + '" placeholder="例如：第六課 生詞" style="flex:1;"></div>' +
       (d.isAbsence ? '' : '<div style="margin-top:8px;">' + d.students.filter(function(s){ return (s.name || "").trim(); }).map(function(st){ var si = d.students.indexOf(st); return '<div class="rb-st"><b>' + esc(st.name) + '</b>' + [["absent", "缺席"]].concat(REC_LV).map(function(l){ var on = l[0] === "absent" ? !!st.absent : (!st.absent && st._lv === l[0]); return '<button class="btn sm' + (on ? ' primary' : '') + '" data-b="lv" data-r="' + ri + '" data-s="' + si + '" data-lv="' + l[0] + '">' + l[1] + '</button>'; }).join("") + (recHasScore(st) && !st._lv ? '<span class="note">已有分數 ' + stTotal(st) + '</span>' : '') + '</div>'; }).join("") + (d.students.some(function(s){ return (s.name || "").trim(); }) ? '' : '<p class="note">這個班還沒有學生名單，按「打開完整表單」填。</p>') + '</div>') +
@@ -3156,8 +3158,8 @@ function renderRecEditorBase(){
     '<label>本次教材進度</label><textarea id="rf-material" rows="2" placeholder="例如：第一冊第五課 生詞、語法">' + esc(d.material) + '</textarea>' +
     '<div id="rf-stu" style="' + (d.isAbsence ? 'opacity:.45;pointer-events:none;' : '') + '"><label>學生表現（聽力理解20／口語表達25／閱讀15／寫作20／課堂參與20＝總分100）</label>' +
     d.students.map(function(st, i){
-      return '<div class="rstu" data-i="' + i + '"><div style="display:flex;gap:8px;align-items:center;"><input type="text" class="rname" placeholder="學生姓名" value="' + esc(st.name) + '"><label style="display:flex;align-items:center;gap:4px;white-space:nowrap;font-size:12.5px;margin:0;"><input type="checkbox" class="rabs"' + (st.absent ? ' checked' : '') + '> 缺席</label>' + (d.students.length > 1 ? '<button class="btn sm ghost" data-r="rmstu" data-i="' + i + '">移除</button>' : '') + '</div><div class="rgrid">' +
-        RUBRIC.map(function(r){ return '<div><div class="note" style="font-size:11px;">' + r.label + ' /' + r.max + '</div><input type="number" class="rsc" data-k="' + r.key + '" min="0" max="' + r.max + '" value="' + (st[r.key] == null ? "" : st[r.key]) + '"></div>'; }).join("") +
+      return '<div class="rstu" data-i="' + i + '"><div style="display:flex;gap:8px;align-items:center;"><input type="text" class="rname" placeholder="學生姓名" value="' + esc(st.name) + '"><label style="display:flex;align-items:center;gap:4px;white-space:nowrap;font-size:14px;margin:0;"><input type="checkbox" class="rabs"' + (st.absent ? ' checked' : '') + '> 缺席</label>' + (d.students.length > 1 ? '<button class="btn sm ghost" data-r="rmstu" data-i="' + i + '">移除</button>' : '') + '</div><div class="rgrid">' +
+        RUBRIC.map(function(r){ return '<div><div class="note" style="font-size:12.5px;">' + r.label + ' /' + r.max + '</div><input type="number" class="rsc" data-k="' + r.key + '" min="0" max="' + r.max + '" value="' + (st[r.key] == null ? "" : st[r.key]) + '"></div>'; }).join("") +
         '</div><div class="note" style="text-align:right;">總分 <b class="rtot">' + stTotal(st) + '</b> / 100</div>' +
         '<label style="margin-top:6px;">評語（選填）</label><textarea class="rcm" rows="2" placeholder="例如：這堂課很專心，口說比上週流利，下次多練習聲調">' + esc(st.comment || "") + '</textarea>' +
         (function(){ var has = st.detail && RUBRIC.some(function(r){ return st.detail[r.key]; }); return '<button type="button" class="btn sm ghost" data-r="tgdt" data-i="' + i + '" style="margin-top:4px;">' + (has ? '︿ 收起細節描述' : '＋ 細節描述（聽／說／讀／寫／參與，選填）') + '</button><div class="rdetail" style="' + (has ? '' : 'display:none;') + 'margin-top:6px;">' + RUBRIC.map(function(r){ return '<div class="rdrow"><span class="rdl">' + r.label + '</span><input type="text" class="rdt" data-k="' + r.key + '" placeholder="這一項的細節（選填）" value="' + esc((st.detail || {})[r.key] || "") + '"></div>'; }).join("") + '</div>'; })() +
@@ -3366,9 +3368,9 @@ function albLightbox(photos, idx){
   var i = idx, sx = null;
   function draw(){
     var p = photos[i];
-    ov.innerHTML = '<div style="position:absolute;top:10px;right:14px;display:flex;gap:8px;"><a href="' + esc(p.url) + '" target="_blank" rel="noopener" download style="color:#fff;font-size:13px;background:rgba(255,255,255,.18);padding:6px 12px;border-radius:99px;text-decoration:none;">⬇ 開啟原圖</a><button id="alb-x" style="color:#fff;background:rgba(255,255,255,.18);border:0;border-radius:99px;padding:6px 14px;font-size:15px;cursor:pointer;">✕</button></div>' +
+    ov.innerHTML = '<div style="position:absolute;top:10px;right:14px;display:flex;gap:8px;"><a href="' + esc(p.url) + '" target="_blank" rel="noopener" download style="color:#fff;font-size:14.5px;background:rgba(255,255,255,.18);padding:6px 12px;border-radius:99px;text-decoration:none;">⬇ 開啟原圖</a><button id="alb-x" style="color:#fff;background:rgba(255,255,255,.18);border:0;border-radius:99px;padding:6px 14px;font-size:17px;cursor:pointer;">✕</button></div>' +
       '<img src="' + esc(p.url) + '" style="max-width:94vw;max-height:80vh;object-fit:contain;border-radius:8px;">' +
-      '<div style="color:#fff;font-size:15px;margin-top:10px;text-align:center;max-width:90vw;">' + (p.cap ? esc(p.cap) : "") + '<div style="font-size:12px;opacity:.7;margin-top:3px;">' + (i + 1) + ' / ' + photos.length + '</div></div>' +
+      '<div style="color:#fff;font-size:17px;margin-top:10px;text-align:center;max-width:90vw;">' + (p.cap ? esc(p.cap) : "") + '<div style="font-size:13.5px;opacity:.7;margin-top:3px;">' + (i + 1) + ' / ' + photos.length + '</div></div>' +
       (photos.length > 1 ? '<button id="alb-p" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:30px;color:#fff;background:rgba(255,255,255,.18);border:0;border-radius:99px;width:48px;height:48px;cursor:pointer;">‹</button><button id="alb-n" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:30px;color:#fff;background:rgba(255,255,255,.18);border:0;border-radius:99px;width:48px;height:48px;cursor:pointer;">›</button>' : '');
     ov.querySelector("#alb-x").onclick = close;
     var pb = ov.querySelector("#alb-p"), nb = ov.querySelector("#alb-n"); if(pb) pb.onclick = function(){ go(-1); }; if(nb) nb.onclick = function(){ go(1); };
@@ -3393,9 +3395,9 @@ function albCardsHtml(list, teacher){
 function albCss(){
   if(document.getElementById("alb-css")) return;
   var st = document.createElement("style"); st.id = "alb-css";
-  st.textContent = ".alb-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}.alb-card{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer}.alb-card:hover{border-color:var(--accent,#E8805A)}.alb-cover{aspect-ratio:4/3;background:var(--surface-2);display:flex;align-items:center;justify-content:center;overflow:hidden}.alb-cover img{width:100%;height:100%;object-fit:cover}.alb-empty{color:#9a8f85;font-size:13px}.alb-info{padding:8px 10px}" +
-    ".alb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}.alb-ph{position:relative;border-radius:10px;overflow:hidden;background:var(--surface-2);aspect-ratio:1/1}.alb-ph img{width:100%;height:100%;object-fit:cover;cursor:zoom-in}.alb-cap{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(transparent,rgba(0,0,0,.7));color:#fff;font-size:12px;padding:14px 8px 6px}" +
-    ".alb-del,.alb-capbtn{position:absolute;top:6px;width:26px;height:26px;border:0;border-radius:99px;background:rgba(0,0,0,.55);color:#fff;cursor:pointer;font-size:13px}.alb-del{right:6px}.alb-capbtn{right:38px}";
+  st.textContent = ".alb-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}.alb-card{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer}.alb-card:hover{border-color:var(--accent,#E8805A)}.alb-cover{aspect-ratio:4/3;background:var(--surface-2);display:flex;align-items:center;justify-content:center;overflow:hidden}.alb-cover img{width:100%;height:100%;object-fit:cover}.alb-empty{color:#9a8f85;font-size:14.5px}.alb-info{padding:8px 10px}" +
+    ".alb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}.alb-ph{position:relative;border-radius:10px;overflow:hidden;background:var(--surface-2);aspect-ratio:1/1}.alb-ph img{width:100%;height:100%;object-fit:cover;cursor:zoom-in}.alb-cap{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(transparent,rgba(0,0,0,.7));color:#fff;font-size:13.5px;padding:14px 8px 6px}" +
+    ".alb-del,.alb-capbtn{position:absolute;top:6px;width:26px;height:26px;border:0;border-radius:99px;background:rgba(0,0,0,.55);color:#fff;cursor:pointer;font-size:14.5px}.alb-del{right:6px}.alb-capbtn{right:38px}";
   document.head.appendChild(st);
 }
 // 老師：相簿管理
@@ -4331,7 +4333,7 @@ function refreshParentsForRecs(recs){
 }
 function parentPanelHtml(roster, links){
   var byName = {}; Object.keys(links).forEach(function(t){ byName[links[t].name] = Object.assign({ tok: t }, links[t]); });
-  var rows = roster.map(function(n){ var L = byName[n]; return '<tr><td><b>' + esc(n) + '</b></td><td>' + (L ? '<input type="text" readonly value="' + esc(parentUrl(L.tok)) + '" style="width:260px;max-width:60vw;font-size:12px;padding:5px 8px;border-radius:6px;border:1px solid var(--line);"> <label style="white-space:nowrap;"><input type="checkbox" data-h="plink-scores" data-tok="' + L.tok + '"' + (L.showScores ? ' checked' : '') + '> 顯示分數</label> <label style="white-space:nowrap;"><input type="checkbox" data-h="plink-cmts" data-tok="' + L.tok + '"' + (L.showComments !== false ? ' checked' : '') + '> 顯示評語</label>' : '<span class="note">尚未建立</span>') + '</td><td>' + (L ? '<button class="btn sm" data-h="plink-copy" data-tok="' + L.tok + '">複製</button><button class="btn sm" data-h="plink-pin" data-tok="' + L.tok + '">' + (L.pinHash ? '🔒 改密碼' : '設密碼') + '</button><button class="btn sm" data-h="plink-new" data-n="' + esc(n) + '">換新連結</button><button class="btn sm danger" data-h="plink-del" data-tok="' + L.tok + '">停用</button>' : '<button class="btn sm" data-h="plink-new" data-n="' + esc(n) + '">建立連結</button>') + '</td></tr>'; }).join("");
+  var rows = roster.map(function(n){ var L = byName[n]; return '<tr><td><b>' + esc(n) + '</b></td><td>' + (L ? '<input type="text" readonly value="' + esc(parentUrl(L.tok)) + '" style="width:260px;max-width:60vw;font-size:13.5px;padding:5px 8px;border-radius:6px;border:1px solid var(--line);"> <label style="white-space:nowrap;"><input type="checkbox" data-h="plink-scores" data-tok="' + L.tok + '"' + (L.showScores ? ' checked' : '') + '> 顯示分數</label> <label style="white-space:nowrap;"><input type="checkbox" data-h="plink-cmts" data-tok="' + L.tok + '"' + (L.showComments !== false ? ' checked' : '') + '> 顯示評語</label>' : '<span class="note">尚未建立</span>') + '</td><td>' + (L ? '<button class="btn sm" data-h="plink-copy" data-tok="' + L.tok + '">複製</button><button class="btn sm" data-h="plink-pin" data-tok="' + L.tok + '">' + (L.pinHash ? '🔒 改密碼' : '設密碼') + '</button><button class="btn sm" data-h="plink-new" data-n="' + esc(n) + '">換新連結</button><button class="btn sm danger" data-h="plink-del" data-tok="' + L.tok + '">停用</button>' : '<button class="btn sm" data-h="plink-new" data-n="' + esc(n) + '">建立連結</button>') + '</td></tr>'; }).join("");
   return '<h3 style="margin-top:16px;">家長查看連結</h3><p class="note" style="margin:0 0 8px;">每位學生一個專屬連結（不用登入）。家長可以看到孩子的作業繳交狀況、你的回饋，和每堂課的教材進度與出缺席；「顯示分數」打勾才會讓家長看到課堂分數。連結外洩時，按「換新連結」舊的就會失效。</p>' +
     (roster.length ? '<div style="overflow-x:auto;"><table class="hw-table"><thead><tr><th>學生</th><th>連結</th><th>操作</th></tr></thead><tbody>' + rows + '</tbody></table></div><div class="tools" style="margin-top:8px;"><button class="btn sm" data-h="plink-all">為名單全部建立連結</button><button class="btn sm" data-h="plink-refresh">更新家長頁面內容</button></div>' : '<p class="note">先貼上班級名單。</p>');
 }
@@ -4410,7 +4412,7 @@ async function viewParent(tok){
     try{
       var allItems = objList(await fbGet(hwBase(tid, link.c) + "/items")).filter(itemVisible).filter(function(x){ return examForMe(x, link.name); }), sched = (await fbGet(base + "/schedule")) || {}, nowT = nowMs(), nxt = null;
       Object.keys(sched).forEach(function(k){ var x = sched[k]; if(!x.date || !x.start) return; if(!(x.c === link.c || (!x.c && x.s === link.s && x.t === link.tm))) return; var ts = new Date(x.date + "T" + (x.end || x.start) + ":00").getTime(); if(ts < nowT) return; if(!nxt || x.date + x.start < nxt.date + nxt.start) nxt = x; });
-      if(nxt){ var nd = new Date(nxt.date + "T00:00:00"); extra += '<div class="panel"><h3>下次上課</h3><div style="font-size:18px;"><b>' + (nd.getMonth() + 1) + ' 月 ' + nd.getDate() + ' 日（' + ["日", "一", "二", "三", "四", "五", "六"][nd.getDay()] + '）' + esc(nxt.start + (nxt.end ? "–" + nxt.end : "")) + '</b></div>' + (nxt.note ? '<div class="note">' + esc(nxt.note) + '</div>' : '') + '</div>'; }
+      if(nxt){ var nd = new Date(nxt.date + "T00:00:00"); extra += '<div class="panel"><h3>下次上課</h3><div style="font-size:19px;"><b>' + (nd.getMonth() + 1) + ' 月 ' + nd.getDate() + ' 日（' + ["日", "一", "二", "三", "四", "五", "六"][nd.getDay()] + '）' + esc(nxt.start + (nxt.end ? "–" + nxt.end : "")) + '</b></div>' + (nxt.note ? '<div class="note">' + esc(nxt.note) + '</div>' : '') + '</div>'; }
       var exs = allItems.filter(function(x){ return x.kind === "exam"; }).sort(function(a, b){ return itemDay(b).localeCompare(itemDay(a)); }), atts = {};
       await Promise.all(exs.map(function(it){ return fbGet(examAttPath(tid, link.c, it.id, link.name)).then(function(v){ atts[it.id] = v; }); }));
       if(exs.length){
@@ -4454,7 +4456,7 @@ async function renderCapsule(cls){
   var mine = Object.keys(links).filter(function(id){ return links[id].cid === cid; }), loose = Object.keys(links).filter(function(id){ return !links[id].cid; });
   var byName = {}; mine.forEach(function(id){ byName[links[id].studentName] = id; });
   var names = roster.slice(); mine.forEach(function(id){ if(names.indexOf(links[id].studentName) === -1) names.push(links[id].studentName); });
-  function row(n){ var id = byName[n]; return '<tr><td><b>' + esc(n) + '</b></td><td>' + (id ? '<input type="text" readonly value="' + esc(capUrl(id)) + '" style="width:280px;max-width:60vw;font-size:12px;padding:5px 8px;border-radius:6px;border:1px solid var(--line);">' : '<span class="note">尚未建立</span>') + '</td><td>' + (id ? '<button class="btn sm" data-h="cap-copy" data-id="' + id + '">複製</button><button class="btn sm danger owner-only" data-h="cap-del" data-id="' + id + '">刪除</button>' : '<button class="btn sm" data-h="cap-new" data-n="' + esc(n) + '">建立連結</button>') + '</td></tr>'; }
+  function row(n){ var id = byName[n]; return '<tr><td><b>' + esc(n) + '</b></td><td>' + (id ? '<input type="text" readonly value="' + esc(capUrl(id)) + '" style="width:280px;max-width:60vw;font-size:13.5px;padding:5px 8px;border-radius:6px;border:1px solid var(--line);">' : '<span class="note">尚未建立</span>') + '</td><td>' + (id ? '<button class="btn sm" data-h="cap-copy" data-id="' + id + '">複製</button><button class="btn sm danger owner-only" data-h="cap-del" data-id="' + id + '">刪除</button>' : '<button class="btn sm" data-h="cap-new" data-n="' + esc(n) + '">建立連結</button>') + '</td></tr>'; }
   var html = '<div class="head-row"><div style="flex:1;"><h2>時空膠囊</h2><div class="note">' + esc(cls.name) + '　每位學生一組專屬連結，學生和家長各用自己的裝置打開，在生詞／語法卡上圈選、留語音、互相回應（不用註冊登入）。</div></div><div><button class="btn sm ghost" data-h="back">回班級頁</button></div></div>' +
     '<div class="panel"><h3>學生連結</h3>' + (names.length ? '<div style="overflow-x:auto;"><table class="hw-table"><thead><tr><th>學生</th><th>連結</th><th>操作</th></tr></thead><tbody>' + names.map(row).join("") + '</tbody></table></div><div class="tools" style="margin-top:8px;"><button class="btn sm" data-h="cap-all">為名單全部建立連結</button></div>' : '<p class="note">先到「聯絡簿」貼上班級名單，或在下面直接輸入名字。</p>') +
     '<div class="tools" style="margin-top:10px;"><input type="text" id="cap-name" placeholder="其他學生名字／暱稱" style="max-width:240px;"><button class="btn sm" data-h="cap-add">新增</button></div></div>' +
@@ -4542,7 +4544,7 @@ function openReportCards(label, names, rng, texts, hwBy){
       '<h3>各項學習表現（佔滿分的百分比）</h3><table class="dims">' + dimRows + '</table>' +
       '<h3>老師的話</h3><div class="cmt">' + (function(){ var hh = S.rec && S.rec.html && S.rec.html[label + "|" + n]; return hh ? rteClean(hh) : rteFromText(txt) || esc(txt).replace(/\n/g, "<br>"); })() + '</div><div class="sign">老師簽名：＿＿＿＿＿＿＿＿　　日期：＿＿＿＿＿＿＿＿</div></section>';
   }).join("");
-  w.document.write('<!DOCTYPE html><html lang="zh-Hant"><head><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Iansui&display=swap"><style>@font-face{font-family:"MM Latin";src:local("Times New Roman"),local("TimesNewRomanPSMT"),local("Times");unicode-range:U+0000-02AF,U+0300-036F,U+1E00-1EFF,U+2000-206F,U+20A0-20CF,U+2100-214F;}@font-face{font-family:"MM Latin";font-weight:700;src:local("Times New Roman Bold"),local("TimesNewRomanPS-BoldMT"),local("Times Bold"),local("Times-Bold");unicode-range:U+0000-02AF,U+0300-036F,U+1E00-1EFF,U+2000-206F,U+20A0-20CF,U+2100-214F;}</style><meta charset="UTF-8"><title>學期學習報告 ' + esc(label) + '</title><style>body{font-family:MM Latin,Iansui,serif;color:#222;margin:0}section{padding:28px 36px;page-break-after:always;max-width:720px;margin:0 auto}h1{font-size:24px;margin:0 0 4px}.meta{color:#666;margin-bottom:14px}h2{font-size:20px;border-bottom:2px solid #B23B32;padding-bottom:6px}h3{font-size:15px;margin:18px 0 6px;color:#B23B32}table{width:100%;border-collapse:collapse}.kv td{padding:6px 8px;border:1px solid #ddd}.kv td:nth-child(odd){background:#f6f1ea;width:18%;font-weight:700}.dims td{padding:5px 6px}.bar{background:#eee;border-radius:6px;height:12px;overflow:hidden}.bar div{background:#B23B32;height:100%}.cmt{line-height:1.9;white-space:normal}.sign{margin-top:36px;color:#444}@media print{section{padding:0}}</style></head><body>' + pages + '<script>setTimeout(function(){window.print();},400);<\/script></body></html>');
+  w.document.write('<!DOCTYPE html><html lang="zh-Hant"><head><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Iansui&display=swap"><style>@font-face{font-family:"MM Latin";src:local("Times New Roman"),local("TimesNewRomanPSMT"),local("Times");unicode-range:U+0000-02AF,U+0300-036F,U+1E00-1EFF,U+2000-206F,U+20A0-20CF,U+2100-214F;}@font-face{font-family:"MM Latin";font-weight:700;src:local("Times New Roman Bold"),local("TimesNewRomanPS-BoldMT"),local("Times Bold"),local("Times-Bold");unicode-range:U+0000-02AF,U+0300-036F,U+1E00-1EFF,U+2000-206F,U+20A0-20CF,U+2100-214F;}</style><meta charset="UTF-8"><title>學期學習報告 ' + esc(label) + '</title><style>body{font-family:MM Latin,Iansui,serif;color:#222;margin:0}section{padding:28px 36px;page-break-after:always;max-width:720px;margin:0 auto}h1{font-size:24px;margin:0 0 4px}.meta{color:#666;margin-bottom:14px}h2{font-size:20px;border-bottom:2px solid #B23B32;padding-bottom:6px}h3{font-size:17px;margin:18px 0 6px;color:#B23B32}table{width:100%;border-collapse:collapse}.kv td{padding:6px 8px;border:1px solid #ddd}.kv td:nth-child(odd){background:#f6f1ea;width:18%;font-weight:700}.dims td{padding:5px 6px}.bar{background:#eee;border-radius:6px;height:12px;overflow:hidden}.bar div{background:#B23B32;height:100%}.cmt{line-height:1.9;white-space:normal}.sign{margin-top:36px;color:#444}@media print{section{padding:0}}</style></head><body>' + pages + '<script>setTimeout(function(){window.print();},400);<\/script></body></html>');
   w.document.close();
 }
 // ---------- 助教 ----------
@@ -5101,7 +5103,7 @@ function renderClassList(){
         (cids.length ? cids.map(function(c){ var x = { sel: { s: y, t: t, c: c }, cls: cl[c] }, pr = classProgress(x.cls, x.sel), nx = classSlots(x.sel).filter(function(z){ return z.date >= today; }).sort(function(a, b){ return (a.date + (a.start || "")).localeCompare(b.date + (b.start || "")); })[0];
           return '<button class="hc" data-a="go" data-s="' + y + '" data-t="' + t + '" data-c="' + c + '"><b>' + esc(cl[c].name) + '</b><span class="note">' + (pr.cur ? '▶ ' + esc(lessonTitle(pr.cur)) : '還沒有進度') + '</span>' + (nx ? '<span class="note">下次 ' + (nx.date === today ? '<b style="color:var(--seal);">今天</b>' : md(nx.date)) + (nx.start ? ' ' + esc(nx.start) : '') + '</span>' : '') + '</button>'; }).join("") : '<p class="note" style="margin:0;">這間學校還沒有班級。</p>') + '</div></div>';
     }).join("");
-    var head = '<b style="font-size:17px;">' + esc(sch[y].name) + '</b>　<span class="note">' + tids.length + ' 間學校・' + n + ' 班</span>';
+    var head = '<b style="font-size:18px;">' + esc(sch[y].name) + '</b>　<span class="note">' + tids.length + ' 間學校・' + n + ' 班</span>';
     var tools = '<span class="owner-only" style="margin-left:auto;display:inline-flex;gap:6px;"><button class="btn sm ghost" data-a="add-t" data-s="' + y + '">＋ 學校</button><button class="btn sm ghost" data-a="go" data-s="' + y + '">年度設定</button></span>';
     html += yi === 0 ? '<div class="panel"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px;">' + head + tools + '</div>' + (body || '<p class="note">這個年度還沒有學校。</p>') + '</div>'
       : '<details class="panel"><summary style="cursor:pointer;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">' + head + tools + '</summary><div style="margin-top:8px;">' + (body || '<p class="note">這個年度還沒有學校。</p>') + '</div></details>';
@@ -5183,7 +5185,7 @@ function onboardHtml(){
   ];
   var n = steps.filter(function(x){ return x[2]; }).length; if(n === steps.length) return html;
   return html + '<div class="panel"><div style="display:flex;align-items:center;gap:8px;"><h3 style="margin:0;flex:1;">🚀 開始使用（' + n + '／' + steps.length + '）</h3><button class="btn sm ghost" data-ob="done">我會了，不用再顯示</button></div>' +
-    steps.map(function(x, i){ return '<div class="slot"><div class="slot-time" style="min-width:34px;font-size:18px;">' + (x[2] ? '✅' : (i + 1) + '.') + '</div><div class="slot-main"' + (x[2] ? ' style="opacity:.6;"' : '') + '><b>' + x[1] + '</b></div>' + (x[2] ? '' : '<div class="slot-act"><button class="btn sm primary" data-ob="' + x[0] + '">' + x[3] + '</button></div>') + '</div>'; }).join("") + '</div>';
+    steps.map(function(x, i){ return '<div class="slot"><div class="slot-time" style="min-width:34px;font-size:19px;">' + (x[2] ? '✅' : (i + 1) + '.') + '</div><div class="slot-main"' + (x[2] ? ' style="opacity:.6;"' : '') + '><b>' + x[1] + '</b></div>' + (x[2] ? '' : '<div class="slot-act"><button class="btn sm primary" data-ob="' + x[0] + '">' + x[3] + '</button></div>') + '</div>'; }).join("") + '</div>';
 }
 async function onboardAct(a){
   var base = "teacherPlatform/" + S.teacher.id + "/meta/";
@@ -5351,7 +5353,7 @@ function renderClassHome(cls){
   else if(ct === "tests") html += '<div id="ctests"><p class="note">讀取中…</p></div>';
   else if(ct === "students") html += '<div id="cstu"><p class="note">讀取中…</p></div>';
   else html += classToolsHtml(cls);
-  if(S.ruleErr) html += '<div class="panel" style="border-color:#C0392B;"><h3>⚠️ 需要更新 Firebase 規則</h3><p class="note" style="margin:0 0 8px;">平台資料寫不進去。請到 Firebase 主控台 › Realtime Database › 規則，在原有規則的 <code>"rules": {</code> 裡面加上下面這兩段（原本的不要刪），再按「發布」：</p><pre style="background:var(--surface-2);padding:10px;border-radius:10px;font-size:12px;overflow:auto;user-select:text;">"teacherPlatform": { "$teacherId": { ".read": "auth != null", ".write": "auth != null" } },\n"classCodes": { "$code": { ".read": "auth != null", ".write": "auth != null" } },</pre></div>';
+  if(S.ruleErr) html += '<div class="panel" style="border-color:#C0392B;"><h3>⚠️ 需要更新 Firebase 規則</h3><p class="note" style="margin:0 0 8px;">平台資料寫不進去。請到 Firebase 主控台 › Realtime Database › 規則，在原有規則的 <code>"rules": {</code> 裡面加上下面這兩段（原本的不要刪），再按「發布」：</p><pre style="background:var(--surface-2);padding:10px;border-radius:10px;font-size:13.5px;overflow:auto;user-select:text;">"teacherPlatform": { "$teacherId": { ".read": "auth != null", ".write": "auth != null" } },\n"classCodes": { "$code": { ".read": "auth != null", ".write": "auth != null" } },</pre></div>';
   shell(html); setCrumb([sc.name, tm.name, cls.name]);
   var main = document.getElementById("main");
   main.addEventListener("click", function(e){
@@ -5391,10 +5393,10 @@ function classProgressHtml(cls, pr){
   }
   cbooks.forEach(function(bid){
     var ks = lessonsOfBook(bid);
-    html += '<div style="display:flex;align-items:center;gap:8px;margin:6px 0 8px;"><h3 style="font-size:16px;flex:1;">📖 ' + esc(bookTitle(bid)) + '</h3><button class="btn sm owner-only" data-newlesson="' + esc(bid) + '">＋ 新增課次</button></div>';
+    html += '<div style="display:flex;align-items:center;gap:8px;margin:6px 0 8px;"><h3 style="font-size:17px;flex:1;">📖 ' + esc(bookTitle(bid)) + '</h3><button class="btn sm owner-only" data-newlesson="' + esc(bid) + '">＋ 新增課次</button></div>';
     html += ks.length ? '<div class="tl">' + ks.map(row).join("") + '</div>' : '<p class="note">這本教材還沒有課次。按右上角「＋ 新增課次」，或到「教材」把簡報歸進來。</p>';
   });
-  var us = unitKeys(); if(us.length) html += '<h3 style="font-size:16px;margin:16px 0 8px;">📚 複習單元</h3><div class="tl">' + us.map(row).join("") + '</div>';
+  var us = unitKeys(); if(us.length) html += '<h3 style="font-size:17px;margin:16px 0 8px;">📚 複習單元</h3><div class="tl">' + us.map(row).join("") + '</div>';
   return html;
 }
 function bindClassProgress(cls, pr){
@@ -5604,9 +5606,9 @@ function openUnitDialog(key){
   var box = document.getElementById("unit-lessons"); box.innerHTML = "";
   bookIds().forEach(function(b){
     var ks = lessonsOfBook(b); if(!ks.length) return;
-    if(multiBooks()){ var h = document.createElement("div"); h.style.cssText = "width:100%;font-size:12.5px;font-weight:700;color:var(--ink-soft);margin-top:4px;"; h.textContent = bookTitle(b); box.appendChild(h); }
+    if(multiBooks()){ var h = document.createElement("div"); h.style.cssText = "width:100%;font-size:14px;font-weight:700;color:var(--ink-soft);margin-top:4px;"; h.textContent = bookTitle(b); box.appendChild(h); }
     ks.forEach(function(k){
-      var lab = document.createElement("label"); lab.style.cssText = "display:inline-flex;align-items:center;gap:5px;border:1.5px solid var(--line);border-radius:99px;padding:5px 12px;cursor:pointer;font-weight:700;font-size:13.5px;background:var(--surface-2);";
+      var lab = document.createElement("label"); lab.style.cssText = "display:inline-flex;align-items:center;gap:5px;border:1.5px solid var(--line);border-radius:99px;padding:5px 12px;cursor:pointer;font-weight:700;font-size:15px;background:var(--surface-2);";
       lab.innerHTML = '<input type="checkbox" value="' + esc(k) + '"' + (mem.indexOf(k) !== -1 ? " checked" : "") + '> 第 ' + L[k].no + ' 課';
       box.appendChild(lab);
     });
@@ -5825,7 +5827,7 @@ function renderLessonCommon(no, open, teacher, liveStudent){
     var subs = [["vocab","生詞"],["grammar","語法"],["text","課文"]].filter(function(s){ return teacher || open[s[0]]; });
     if(liveStudent && S.sub && subs.some(function(s){ return s[0] === S.sub; })) subs = subs.filter(function(s){ return s[0] === S.sub; });
     if(!S.sub || !subs.some(function(s){ return s[0] === S.sub; })) S.sub = subs[0][0];
-    sub = liveStudent ? '' : '<div class="subbar">' + subs.map(function(s){ return '<button class="tab' + (s[0] === S.sub ? ' on' : '') + '" data-sub="' + s[0] + '" style="padding:5px 14px;font-size:13.5px;">' + s[1] + '</button>'; }).join("") + (teacher && parseKey(no) ? '<button class="tab" data-editlib="1" style="padding:5px 14px;font-size:13.5px;margin-left:auto;">編輯這一課教材</button>' : '') + '</div>';
+    sub = liveStudent ? '' : '<div class="subbar">' + subs.map(function(s){ return '<button class="tab' + (s[0] === S.sub ? ' on' : '') + '" data-sub="' + s[0] + '" style="padding:5px 14px;font-size:15px;">' + s[1] + '</button>'; }).join("") + (teacher && parseKey(no) ? '<button class="tab" data-editlib="1" style="padding:5px 14px;font-size:15px;margin-left:auto;">編輯這一課教材</button>' : '') + '</div>';
     var lp = lessonParam(no); embedBankSet(lessonBookOf(no));
     frame = lp ? lessonHtmlFrame("index.html?v=" + MM_V + "&embed=1&" + lp + "&tab=" + S.sub + role) : '<div class="empty"><p class="note">這本教材還沒有生詞庫，所以這裡暫時沒有內容。<br>之後會開放你新增自己的教材內容。</p></div>';
   } else if(S.tab === "bingo"){
@@ -5840,7 +5842,7 @@ function renderLessonCommon(no, open, teacher, liveStudent){
     else if(actOk && actById(subId).game){
       if(teacher){
         S.gameCtx = { game: subId, sel: S.sel, ls: subLs || [String(no)] };
-        sub = '<div class="subbar"><button class="tab" data-actback="1" style="padding:5px 14px;font-size:13.5px;">‹ 其他活動</button><span class="note">生詞遊戲（配對 Match／Blast）　｜　出題範圍在下面設定，可以選好幾課</span></div>';
+        sub = '<div class="subbar"><button class="tab" data-actback="1" style="padding:5px 14px;font-size:15px;">‹ 其他活動</button><span class="note">生詞遊戲（配對 Match／Blast）　｜　出題範圍在下面設定，可以選好幾課</span></div>';
         frame = gameFrameHtml(subId);
       } else {
         frame = (S.live && S.live.game) ? lessonHtmlFrame("games/index.html?v=" + MM_V + "&embed=1&code=" + encodeURIComponent(S.live.game) + "&auto=1&name=" + encodeURIComponent(S.student ? S.student.name : "")) : '<div class="empty"><h3 style="margin-bottom:8px;">' + esc(actById(subId).t) + '</h3><p class="note">老師正在設定遊戲，開好房間後這裡會自動加入，請稍候…</p></div>';
@@ -5848,7 +5850,7 @@ function renderLessonCommon(no, open, teacher, liveStudent){
     }
     else {
       var curLs = subLs || [String(no)];
-      if(teacher) sub = '<div class="subbar"><button class="tab" data-actback="1" style="padding:5px 14px;font-size:13.5px;">‹ 其他活動</button><span class="note">' + esc((actById(subId) || {}).e + " " + (actById(subId) || {}).t) + '　｜　' + esc(curLs.map(function(k){ return lessonTitle(k).replace(/^.*?(第 \d+ 課)/, "$1"); }).join("、")) + '（' + actVocabCount(curLs) + ' 個生詞）</span><button class="tab" data-actmore="1" style="padding:5px 14px;font-size:13.5px;margin-left:auto;">📚 加入其他課的生詞</button></div>';
+      if(teacher) sub = '<div class="subbar"><button class="tab" data-actback="1" style="padding:5px 14px;font-size:15px;">‹ 其他活動</button><span class="note">' + esc((actById(subId) || {}).e + " " + (actById(subId) || {}).t) + '　｜　' + esc(curLs.map(function(k){ return lessonTitle(k).replace(/^.*?(第 \d+ 課)/, "$1"); }).join("、")) + '（' + actVocabCount(curLs) + ' 個生詞）</span><button class="tab" data-actmore="1" style="padding:5px 14px;font-size:15px;margin-left:auto;">📚 加入其他課的生詞</button></div>';
       frame = lp2 ? lessonHtmlFrame("index.html?v=" + MM_V + "&embed=1&" + lp2 + "&tab=activities" + (actOk ? "&activity=" + encodeURIComponent(subId) : "") + role) : '<div class="empty"><p class="note">這本教材還沒有生詞庫，所以活動暫時沒有可用的生詞。</p></div>';
     }
   } else {
@@ -5861,7 +5863,7 @@ function renderLessonCommon(no, open, teacher, liveStudent){
         else frame = '<div class="empty"><h3 style="margin-bottom:8px;">' + lessonTitle(no) + '</h3><p class="note" style="margin-bottom:12px;">這一課還沒有' + (kind === "slides" ? "投影片" : "測驗與練習") + '。</p><button class="btn" id="mkproj">＋ 為這一課建立' + (kind === "slides" ? "投影片" : "測驗與練習") + '</button></div>';
       } else {
         if(!S.sub || pids.indexOf(S.sub) === -1) S.sub = pids[0];
-        sub = '<div class="subbar">' + (pids.length > 1 ? pids.map(function(p){ return '<button class="tab' + (p === S.sub ? ' on' : '') + '" data-sub="' + p + '" style="padding:5px 14px;font-size:13.5px;">' + esc(ps[p].title) + '</button>'; }).join("") : '') + '</div>';
+        sub = '<div class="subbar">' + (pids.length > 1 ? pids.map(function(p){ return '<button class="tab' + (p === S.sub ? ' on' : '') + '" data-sub="' + p + '" style="padding:5px 14px;font-size:15px;">' + esc(ps[p].title) + '</button>'; }).join("") : '') + '</div>';
         if(pids.length === 1) sub = '';
         html = html.replace('<!--copyto-->', '<button class="tab" data-copyto="' + kind + '">複製到其他課…</button>');
         var rjoin = (S.live && S.live.on && S.live.room && S.live.roomProject === S.sub) ? S.live.room : todayClassRoom(S.sub);   // 今天這個班已經用這份簡報上過課：回到同一個房間，課堂筆記都還在
@@ -5872,7 +5874,7 @@ function renderLessonCommon(no, open, teacher, liveStudent){
     } else if(pids.length && S.student){
       // 學生自習：老師開放這一項後，不用房間號碼也能自己看、自己練習
       if(!S.sub || pids.indexOf(S.sub) === -1) S.sub = pids[0];
-      sub = '<div class="subbar">' + (pids.length > 1 ? pids.map(function(p){ return '<button class="tab' + (p === S.sub ? ' on' : '') + '" data-sub="' + p + '" style="padding:5px 14px;font-size:13.5px;">' + esc(ps[p].title) + '</button>'; }).join("") : '') +
+      sub = '<div class="subbar">' + (pids.length > 1 ? pids.map(function(p){ return '<button class="tab' + (p === S.sub ? ' on' : '') + '" data-sub="' + p + '" style="padding:5px 14px;font-size:15px;">' + esc(ps[p].title) + '</button>'; }).join("") : '') +
         '<span style="margin-left:auto;display:flex;gap:6px;align-items:center;"><span class="note">上課中？</span><input type="text" id="roomno" placeholder="房間號碼" inputmode="numeric" style="width:110px;padding:5px 8px;border-radius:8px;border:1.5px solid var(--line);"><button class="btn sm primary" id="roomgo">加入</button></span></div>';
       frame = lessonHtmlFrame("slides/practice.html?v=" + MM_V + "&embed=1&solo=" + encodeURIComponent(S.sub) + "&tid=" + encodeURIComponent(S.student.idx.t) + "&focus=" + kind);
     } else {
@@ -5892,10 +5894,10 @@ function brkOpenDialog(){
     d = document.createElement("dialog"); d.id = "brkdlg"; d.style.width = "min(420px,94vw)";
     d.innerHTML = '<form method="dialog"><h3 style="margin-bottom:6px;">下課鬧鐘</h3><p class="note" style="margin:0 0 12px;">休息幾分鐘？時間到會提醒大家回來上課。上課中，學生的畫面也會一起倒數。</p>' +
       '<div class="tools" id="brk-pre"><button type="button" class="btn" data-m="5">5 分鐘</button><button type="button" class="btn" data-m="10">10 分鐘</button><button type="button" class="btn" data-m="15">15 分鐘</button></div>' +
-      '<label style="display:block;margin-top:12px;font-weight:700;font-size:13px;">自訂</label><div style="display:flex;align-items:center;gap:8px;font-size:15px;"><input type="number" id="brk-min" min="0" step="any" value="10" style="width:90px;padding:8px 10px;border:1.5px solid var(--line);border-radius:10px;font-size:15px;"> 分 <input type="number" id="brk-sec" min="0" step="any" value="0" style="width:90px;padding:8px 10px;border:1.5px solid var(--line);border-radius:10px;font-size:15px;"> 秒</div>' +
-      '<label style="display:flex;align-items:center;gap:8px;margin-top:12px;font-size:14px;"><input type="checkbox" id="brk-snd"> 時間到響鈴</label>' +
-      '<div id="brk-tw" style="margin-top:8px;"><label style="display:block;font-weight:700;font-size:13px;margin-bottom:4px;">鈴聲</label><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;"><select id="brk-tone" style="flex:1;min-width:160px;padding:8px 10px;border:1.5px solid var(--line);border-radius:10px;font-size:14px;"></select><button type="button" class="btn sm" id="brk-try">試聽</button></div>' +
-      '<div style="margin-top:6px;font-size:13px;"><button type="button" class="btn sm" id="brk-up">上傳自己的鈴聲</button> <span class="note" id="brk-upn">mp3、m4a、wav 都可以，5 MB 以內</span><input type="file" id="brk-file" accept="audio/*" style="display:none;"></div></div>' +
+      '<label style="display:block;margin-top:12px;font-weight:700;font-size:14.5px;">自訂</label><div style="display:flex;align-items:center;gap:8px;font-size:17px;"><input type="number" id="brk-min" min="0" step="any" value="10" style="width:90px;padding:8px 10px;border:1.5px solid var(--line);border-radius:10px;font-size:17px;"> 分 <input type="number" id="brk-sec" min="0" step="any" value="0" style="width:90px;padding:8px 10px;border:1.5px solid var(--line);border-radius:10px;font-size:17px;"> 秒</div>' +
+      '<label style="display:flex;align-items:center;gap:8px;margin-top:12px;font-size:15.5px;"><input type="checkbox" id="brk-snd"> 時間到響鈴</label>' +
+      '<div id="brk-tw" style="margin-top:8px;"><label style="display:block;font-weight:700;font-size:14.5px;margin-bottom:4px;">鈴聲</label><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;"><select id="brk-tone" style="flex:1;min-width:160px;padding:8px 10px;border:1.5px solid var(--line);border-radius:10px;font-size:15.5px;"></select><button type="button" class="btn sm" id="brk-try">試聽</button></div>' +
+      '<div style="margin-top:6px;font-size:14.5px;"><button type="button" class="btn sm" id="brk-up">上傳自己的鈴聲</button> <span class="note" id="brk-upn">mp3、m4a、wav 都可以，5 MB 以內</span><input type="file" id="brk-file" accept="audio/*" style="display:none;"></div></div>' +
       '<div class="row"><button type="button" class="btn" id="brk-no">取消</button><button type="submit" class="btn primary">開始倒數</button></div></form>';
     document.body.appendChild(d);
     d.querySelector("#brk-pre").onclick = function(e){ var b = e.target.closest("[data-m]"); if(!b) return; d.querySelector("#brk-min").value = b.dataset.m; d.querySelector("#brk-sec").value = 0; d.querySelectorAll("#brk-pre .btn").forEach(function(x){ x.classList.toggle("primary", x === b); }); };
@@ -6271,7 +6273,7 @@ function viewStudentEntry(msg, codeIn){
     '<label>你的名字</label><div id="sroster" class="sroster" style="display:none;"></div><input type="text" id="sn" value="' + esc(saved) + '" autocomplete="off">' +
     '<div id="spwbox" style="display:none;"><label>密碼</label><input type="password" id="spw" autocomplete="current-password"></div>' +
     '<div class="err" id="se"></div><button class="btn primary" id="sgo" style="width:100%;margin-top:14px;padding:11px;">進入班級</button>' +
-    '<div id="sggbox" style="display:none;"><div style="text-align:center;margin:10px 0 2px;color:var(--ink-soft);font-size:13px;">或</div><button class="btn" id="sgg" style="width:100%;padding:11px;">🔑 用 Google 帳號登入</button></div>' +
+    '<div id="sggbox" style="display:none;"><div style="text-align:center;margin:10px 0 2px;color:var(--ink-soft);font-size:14.5px;">或</div><button class="btn" id="sgg" style="width:100%;padding:11px;">🔑 用 Google 帳號登入</button></div>' +
     '<p class="sub" style="margin-top:16px;"><a href="#" id="tot">老師登入</a></p></div></div>';
   var se = document.getElementById("se"); if(msg){ se.textContent = msg; se.style.display = "block"; }
   document.getElementById("tot").onclick = function(e){ e.preventDefault(); history.replaceState(null, "", location.pathname); viewLogin(); };
@@ -6748,7 +6750,7 @@ function cfg_py(d){ return d.cfg && d.cfg.pinyin; }
 function bingoPersonalHtml(d, done){
   var pool = bA(d.pool), called = bA(d.called), calledSet = {}; called.forEach(function(i){ calledSet[i] = 1; });
   var cur = d.current, curW = cur != null && pool[cur] ? pool[cur] : null, out = '';
-  out += '<div class="bg-call"><div class="note">' + (called.length ? '剛剛叫到的詞（第 ' + called.length + ' 個）' : '還沒開始叫詞') + '</div><div class="bg-callw">' + (curW ? esc(curW.w) : '—') + '</div>' + (curW && cfg_py(d) && curW.p ? '<div class="bg-p" style="font-size:18px;">' + esc(curW.p) + '</div>' : '') +
+  out += '<div class="bg-call"><div class="note">' + (called.length ? '剛剛叫到的詞（第 ' + called.length + ' 個）' : '還沒開始叫詞') + '</div><div class="bg-callw">' + (curW ? esc(curW.w) : '—') + '</div>' + (curW && cfg_py(d) && curW.p ? '<div class="bg-p" style="font-size:19px;">' + esc(curW.p) + '</div>' : '') +
     (B.teacher && !done ? '<div style="margin-top:8px;"><button class="btn primary" data-b="call"' + (called.length >= pool.length ? ' disabled' : '') + '>抽下一個詞</button></div>' : '') + '</div>';
   var viewKey = B.teacher ? (B.viewKey && (d.members || {})[B.viewKey] ? B.viewKey : Object.keys(d.members || {})[0]) : bMyKey();
   if(B.teacher){ B.viewKey = viewKey; out += '<div class="tools" style="margin-bottom:8px;">看／代點：' + Object.keys(d.members || {}).map(function(k){ return '<button class="bg-pick' + (k === viewKey ? ' sel' : '') + '" data-b="view" data-k="' + esc(k) + '" style="border-color:' + bColor(d, k) + ';">' + esc(bName(d, k)) + ' <small>' + ((d.lines || {})[k] || 0) + '</small></button>'; }).join("") + '</div>'; }
@@ -6896,7 +6898,7 @@ function i18nStart(on){
   var box = document.getElementById("langbox");
   if(!on){ if(box) box.style.display = "none"; return; }
   if(!box){
-    box = document.createElement("div"); box.id = "langbox"; box.style.cssText = "display:block;width:max-content;margin:18px auto 24px;background:var(--surface,#fff);border:1.5px solid var(--line,#ddd);border-radius:10px;padding:4px 10px;font-size:13px;";
+    box = document.createElement("div"); box.id = "langbox"; box.style.cssText = "display:block;width:max-content;margin:18px auto 24px;background:var(--surface,#fff);border:1.5px solid var(--line,#ddd);border-radius:10px;padding:4px 10px;font-size:14.5px;";
     box.innerHTML = '🌐 <select id="langsel" style="border:0;background:transparent;font:inherit;"><option value="zh">中文</option><option value="en">English</option><option value="th">ไทย</option></select>';
     document.body.appendChild(box);
     document.getElementById("langsel").onchange = function(){ try{ localStorage.setItem("mm_lang", this.value); }catch(e){} location.reload(); };
@@ -6911,7 +6913,7 @@ function i18nStart(on){
 // ---------- 斷線提示：網路不通時，頂端出現提醒，避免學生以為答案已經存到雲端 ----------
 function startNetWatch(){
   if(document.getElementById("netbar")) return;
-  var bar = document.createElement("div"); bar.id = "netbar"; bar.style.cssText = "display:none;position:fixed;top:0;left:0;right:0;z-index:99998;background:#B23B32;color:#fff;text-align:center;padding:8px 12px;font-size:14px;font-weight:700;";
+  var bar = document.createElement("div"); bar.id = "netbar"; bar.style.cssText = "display:none;position:fixed;top:0;left:0;right:0;z-index:99998;background:#B23B32;color:#fff;text-align:center;padding:8px 12px;font-size:15.5px;font-weight:700;";
   bar.textContent = "⚠️ 網路中斷了：現在輸入的內容還沒有存到雲端，連回網路後會自動同步。請先不要關掉這個頁面。"; document.body.appendChild(bar);
   var conn = true, online = navigator.onLine !== false;
   function upd(){ bar.style.display = (!online || !conn) ? "block" : "none"; }
