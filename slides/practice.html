@@ -34,7 +34,7 @@
 <!-- 替換瀏覽器分頁標籤的灰色地球圖示 (Favicon) -->
 <link rel="icon" id="dynamic-favicon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='52' r='38' fill='%2398D7FF' stroke='%231C211E' stroke-width='4'/%3E%3Cpath d='M 14 44 C 20 22, 38 16, 50 16 C 62 16, 80 22, 86 44 C 76 52, 66 38, 50 44 C 34 38, 24 52, 14 44 Z' fill='%2395D165' stroke='%231C211E' stroke-width='3.5'/%3E%3Cpath d='M 22 75 C 36 90, 64 90, 78 75 C 66 78, 34 78, 22 75 Z' fill='%2395D165' stroke='%231C211E' stroke-width='3.5'/%3E%3Cellipse cx='37' cy='36' rx='5.5' ry='3.5' fill='%23FF859A'/%3E%3Cellipse cx='63' cy='36' rx='5.5' ry='3.5' fill='%23FF859A'/%3E%3Crect x='36' y='30' width='2.5' height='5' rx='1.2' fill='%231C211E'/%3E%3Crect x='61.5' y='30' width='2.5' height='5' rx='1.2' fill='%231C211E'/%3E%3Cellipse cx='50' cy='32' rx='4.5' ry='3.5' fill='%231C211E'/%3E%3Cpath d='M 50 67 C 36 55, 31 43, 39 37 C 45 32, 50 37, 50 40 C 50 37, 55 32, 61 37 C 69 43, 64 55, 50 67 Z' fill='%23FF7A8E' stroke='%231C211E' stroke-width='3.5'/%3E%3Cpath d='M 14 56 C 20 48, 38 52, 38 58 C 36 64, 20 64, 14 56 Z' fill='%2398D7FF' stroke='%231C211E' stroke-width='3.5'/%3E%3Cpath d='M 86 56 C 80 48, 62 52, 62 58 C 64 64, 80 64, 86 56 Z' fill='%2398D7FF' stroke='%231C211E' stroke-width='3.5'/%3E%3Cellipse cx='78' cy='18' rx='11' ry='9' fill='%23FFFFFF' stroke='%231C211E' stroke-width='3'/%3E%3Cpath d='M 71 24 L 67 29 L 75 26 Z' fill='%23FFFFFF' stroke='%231C211E' stroke-width='2'/%3E%3C/svg%3E">
 
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Iansui&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap">
 <!-- SheetJS: 支援 Excel 匯入與匯出 -->
 <script src="../tts-config.js"></script>
 <script src="vendor/xlsx.full.min.js"></script>
@@ -102,12 +102,12 @@
   body{background:var(--paper);color:var(--ink);transition:background .25s ease, color .25s ease;}
   .app{
     background:var(--paper); color:var(--ink);
-    font-family:"Plus Jakarta Sans","Noto Sans TC",-apple-system,sans-serif;
+    font-family:"Plus Jakarta Sans","Iansui","Noto Sans TC",-apple-system,sans-serif;
     height:100vh; display:flex; flex-direction:column; overflow:hidden;
   }
   /* 整個 App 固定在一個螢幕高度內，內部各區塊（大廳、側欄、舞台）各自用自己的 overflow-y 捲動，
      不會讓瀏覽器整個頁面被撐高、需要捲整頁 */
-  h1,h2,h3,.zh{ font-family:"MM Kai","LXGW WenKai TC","Noto Serif TC",serif; letter-spacing:0.02em; }
+  h1,h2,h3,.zh{ font-family:"MM Kai","Iansui","Noto Serif TC",serif; letter-spacing:0.02em; }
   button, input, textarea, select{font-family:inherit; color:var(--ink);}
   button:focus-visible{outline:2px solid var(--seal); outline-offset:2px;}
 
@@ -152,10 +152,10 @@
     display:flex; flex-direction:column; justify-content:center; line-height:1.2;
   }
   .brand-zh{
-    font-family:"MM Kai","LXGW WenKai TC", serif; font-size:18px; font-weight:700; color:var(--ink); letter-spacing:0.04em;
+    font-family:"MM Kai","Iansui", serif; font-size:18px; font-weight:700; color:var(--ink); letter-spacing:0.04em;
   }
   .brand-en{
-    font-family:"Plus Jakarta Sans", sans-serif; font-size:12px; font-weight:600; color:var(--ink-soft); letter-spacing:0.02em; margin-top:1px;
+    font-family:"Plus Jakarta Sans","Iansui", sans-serif; font-size:12px; font-weight:600; color:var(--ink-soft); letter-spacing:0.02em; margin-top:1px;
   }
   .brand-divider{
     width:1.5px; height:24px; background:var(--grid-line); margin:0 4px;
@@ -493,7 +493,7 @@
   #grade-bar .gb-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;} #grade-bar .gb-st{color:var(--ink-soft);} #grade-bar .gb-q{color:var(--ink-soft);}
   #grade-bar input[type=text],#grade-bar input[type=number]{padding:5px 8px;border:1.5px solid var(--grid-line);border-radius:8px;font:inherit;}
   html.grading .stage-wrap, html.grading #stage{padding-bottom:150px;}
-  .fill-line{font-family:"MM Kai","LXGW WenKai TC",serif;font-size:24px;line-height:2.4;max-width:900px;margin:0 auto;padding:10px 4px;color:var(--ink);}
+  .fill-line{font-family:"MM Kai","Iansui",serif;font-size:24px;line-height:2.4;max-width:900px;margin:0 auto;padding:10px 4px;color:var(--ink);}
   /* 填空：句子和輸入框都跟題目指示一樣大（用 .fill-line .fill-input 提高優先順序，避免被一般輸入框的小字樣式蓋掉） */
   .fill-line .fill-input,.fill-input{font-family:inherit;font-size:24px;line-height:1.3;height:auto;min-height:1.7em;text-align:center;border:0;border-bottom:2.5px solid var(--seal);background:var(--seal-soft);border-radius:8px 8px 0 0;padding:4px 10px;margin:0 6px;min-width:4em;vertical-align:baseline;box-sizing:content-box;}
   .fill-line .fill-input:focus,.fill-input:focus{outline:none;background:#fff;}
@@ -513,7 +513,7 @@
   .reorder-slot-zone.drag-over-zone{ background:var(--seal-soft); border-color:var(--seal); }
 
   .reorder-chip{
-    font-family:"MM Kai","LXGW WenKai TC",serif;font-size:18px;font-weight:700;padding:10px 20px;
+    font-family:"MM Kai","Iansui",serif;font-size:18px;font-weight:700;padding:10px 20px;
     background:var(--surface);border:2px solid var(--grid-line);color:var(--ink);border-radius:10px;cursor:grab;
     box-shadow:0 2px 6px rgba(0,0,0,0.03);transition:all .12s ease;user-select:none;
   }
@@ -668,11 +668,11 @@
   .match-col{ flex:1; max-width:380px; display:flex; flex-direction:column; gap:14px; }
   .match-col-label{font-size:12px;font-weight:700;color:var(--ink-soft);letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px;}
   .match-item{
-    font-family:"MM Kai","LXGW WenKai TC",serif;font-size:19px;text-align:center;padding:15px 20px;
+    font-family:"MM Kai","Iansui",serif;font-size:19px;text-align:center;padding:15px 20px;
     border:2px solid var(--grid-line);background:var(--surface-2);color:var(--ink);border-radius:14px;cursor:pointer;
     transition:border-color .15s ease, background .15s ease, transform .12s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.01);
   }
-  .match-item[data-side="right"]{font-family:"Plus Jakarta Sans",sans-serif;font-size:16.5px;}
+  .match-item[data-side="right"]{font-family:"Plus Jakarta Sans","Iansui",sans-serif;font-size:16.5px;}
   .match-item:hover:not(.matched):not(:disabled){border-color:var(--seal);background:var(--surface); transform:translateY(-1px);}
   .match-item.selected{border-color:var(--seal);box-shadow:0 0 0 3px var(--seal-ring) inset;}
   .match-item.matched{
@@ -683,7 +683,7 @@
   }
 
   /* 選擇題與多選題 */
-  .circle-prompt{font-family:"MM Kai","LXGW WenKai TC",serif;font-size:21px;margin:0 0 20px;line-height:1.6;color:var(--ink);}
+  .circle-prompt{font-family:"MM Kai","Iansui",serif;font-size:21px;margin:0 0 20px;line-height:1.6;color:var(--ink);}
   .mc-ink-host{position:relative;max-width:860px;margin:0 auto;}
   .mc-ink-wrap{position:relative;padding-bottom:140px;}
   .mc-ink-host .mc-choices-container{max-width:none;}
@@ -1070,7 +1070,7 @@
   .text-fmt-btn:hover{ border-color:var(--seal); color:var(--seal); }
   /* 注音在字右側（直式，像生字本）：字＋右邊一排直的注音符號，聲調符號在注音右邊、輕聲點在注音上方 */
   .zy-r{ display:inline-flex; align-items:center; vertical-align:middle; }
-  .zy-s{ display:inline-flex; align-items:center; margin-left:.06em; font-family:"Noto Sans TC","Plus Jakarta Sans",sans-serif; font-size:.36em; font-weight:600; line-height:1; opacity:.88; cursor:text; }
+  .zy-s{ display:inline-flex; align-items:center; margin-left:.06em; font-family:"Plus Jakarta Sans","Iansui","Noto Sans TC",sans-serif; font-size:.36em; font-weight:600; line-height:1; opacity:.88; cursor:text; }
   .zy-col{ display:inline-flex; flex-direction:column; align-items:center; }
   .zy-m{ display:flex; flex-direction:column; align-items:center; }
   .zy-ch{ display:block; line-height:1.02; }
@@ -1429,7 +1429,7 @@
   .text-layer{position:absolute;inset:0;z-index:3;pointer-events:none;}
 
   .movable-text{
-    position:absolute;pointer-events:auto;font-family:"MM Kai","LXGW WenKai TC",serif; font-weight:700;line-height:1;color:var(--ink);user-select:none; padding:0 !important;border:1.5px dashed transparent;border-radius:4px;white-space:nowrap; cursor:grab;transform:translate(-50%, -50%); background: transparent !important; width: max-content; max-width: max-content; transition:border-color .15s ease;
+    position:absolute;pointer-events:auto;font-family:"MM Kai","Iansui",serif; font-weight:700;line-height:1;color:var(--ink);user-select:none; padding:0 !important;border:1.5px dashed transparent;border-radius:4px;white-space:nowrap; cursor:grab;transform:translate(-50%, -50%); background: transparent !important; width: max-content; max-width: max-content; transition:border-color .15s ease;
     touch-action:none; /* 觸控拖曳文字方塊時，不要被瀏覽器當成捲動/縮放手勢 */
   }
   .movable-text:hover, .movable-text.active{ border:1.5px dashed #1E88E5 !important; background: transparent !important; box-shadow: none !important; cursor:move !important; }
@@ -1438,7 +1438,7 @@
      有 ruby 的時候文字方塊要多留一點高度給上面的註音，不然會跟畫布上其他內容擠在一起。 */
   .movable-text ruby{ ruby-position: over; }
   .movable-text rt{
-    font-size:0.42em; font-weight:600; font-family:"Plus Jakarta Sans",sans-serif;
+    font-size:0.42em; font-weight:600; font-family:"Plus Jakarta Sans","Iansui",sans-serif;
     color:inherit; opacity:0.8; user-select:none; text-align:center; letter-spacing:0;
     cursor:text; /* 只有注音本身可以點來改，字本身維持跟外層文字方塊一樣可以拖曳的游標 */
   }
@@ -1685,7 +1685,7 @@
     background:var(--surface-2); padding:20px; border-radius:14px; margin-bottom:18px; border:1px solid var(--grid-line);
   }
   .score-circle{
-    font-size:38px; font-weight:800; font-family:"Plus Jakarta Sans",sans-serif;
+    font-size:38px; font-weight:800; font-family:"Plus Jakarta Sans","Iansui",sans-serif;
     color:var(--seal); line-height:1; font-variant-numeric:tabular-nums;
   }
   .score-rank-badge{
@@ -3048,7 +3048,7 @@ window.mmTA = (function(){
     var w;
     try{
       if(!measureCtx){ measureCtx = document.createElement("canvas").getContext("2d"); }
-      measureCtx.font = (bold ? "700 " : "400 ") + '100px "MM Kai","LXGW WenKai TC", "Noto Sans TC", serif';
+      measureCtx.font = (bold ? "700 " : "400 ") + '100px "MM Kai","Iansui", "Noto Sans TC", serif';
       w = measureCtx.measureText(text).width / 100;
     }catch(e){ w = 0; for(var i = 0; i < text.length; i++){ var ch = text.charAt(i); w += EA_RE.test(ch) ? 1 : (ch === " " ? 0.3 : 0.55); } }
     if(Object.keys(measureCache).length > 4000) measureCache = {};
@@ -3057,7 +3057,7 @@ window.mmTA = (function(){
   function ensureFontReady(){
     try{
       if(document.fonts && document.fonts.load){
-        return Promise.race([document.fonts.load('400 40px "MM Kai","LXGW WenKai TC"', "我A"), new Promise(function(r){ setTimeout(r, 2500); })]).catch(function(){});
+        return Promise.race([document.fonts.load('400 40px "MM Kai","Iansui"', "我A"), new Promise(function(r){ setTimeout(r, 2500); })]).catch(function(){});
       }
     }catch(e){}
     return Promise.resolve();
@@ -6335,7 +6335,7 @@ window.mmTA = (function(){
           (kind === "board" ? '<div class="frame"><div class="scaler">' + body + '</div></div>' : body) + note + '</section>');
       }
     }
-    var css = '@font-face{font-family:"MM Kai";src:local("DFKai-SB"),local("DFKaiShu-SB-Estd-BF"),local("標楷體"),local("BiauKai"),local("BiauKaiTC"),local("BiauKaiTC-Regular");unicode-range:U+2E80-2FFF,U+3001-303F,U+3100-312F,U+31A0-31BF,U+3400-4DBF,U+4E00-9FFF,U+F900-FAFF,U+FE30-FE4F,U+FF01-FF5E,U+20000-2FFFF}html{background:#f4efe8}body{margin:0;padding:16px;font-family:"MM Kai","LXGW WenKai TC","Noto Serif TC","PingFang TC","Microsoft JhengHei",serif;color:#2B2320}' +
+    var css = '@font-face{font-family:"MM Kai";src:local("DFKai-SB"),local("DFKaiShu-SB-Estd-BF"),local("標楷體"),local("BiauKai"),local("BiauKaiTC"),local("BiauKaiTC-Regular");unicode-range:U+2E80-2FFF,U+3001-303F,U+3100-312F,U+31A0-31BF,U+3400-4DBF,U+4E00-9FFF,U+F900-FAFF,U+FE30-FE4F,U+FF01-FF5E,U+20000-2FFFF}html{background:#f4efe8}body{margin:0;padding:16px;font-family:"MM Kai","Iansui","Noto Serif TC","PingFang TC","Microsoft JhengHei",serif;color:#2B2320}' +
       'h1{font-size:22px;margin:4px 0 2px}.meta{color:#6B5F55;font-size:12.5px;margin-bottom:16px}' +
       '.slide{background:#fff;border-radius:14px;box-shadow:0 4px 18px rgba(0,0,0,.08);padding:14px 16px 18px;margin:0 auto 18px;max-width:1240px;break-inside:avoid;page-break-inside:avoid;page-break-after:always}' +
       '.cap{font-size:14px;font-weight:700;margin-bottom:8px}.cap .no{display:inline-block;min-width:22px;text-align:center;background:#E8825A;color:#fff;border-radius:999px;padding:0 6px;font-size:12px}.cap .sec{color:#6B5F55;font-weight:500}' +
@@ -7245,7 +7245,7 @@ window.mmTA = (function(){
             if(tb.bw !== 0){ x.strokeStyle = tb.bd || "#555"; x.lineWidth = Math.max(0.6, (tb.bw == null ? 2 : tb.bw) * sc); x.strokeRect(xx, yy, cw, rhh); }
             if(cell.t){
               var fsz = (cell.fs || tb.fs || 24) * sc, bold = cell.b != null ? cell.b : (tb.hdr && r === 0);
-              x.font = (bold ? "700 " : "400 ") + fsz + 'px "MM Kai","LXGW WenKai TC", serif'; x.fillStyle = cell.c || "#2B2320"; x.textBaseline = "middle";
+              x.font = (bold ? "700 " : "400 ") + fsz + 'px "MM Kai","Iansui", serif'; x.fillStyle = cell.c || "#2B2320"; x.textBaseline = "middle";
               var lns = String(cell.t).split("\n"), ty = yy + rhh / 2 - (lns.length - 1) * fsz * 0.65;
               lns.forEach(function(ln, i){ var w2 = x.measureText(ln).width, al = cell.a || "center"; x.fillText(ln, al === "left" ? xx + fsz * 0.3 : al === "right" ? xx + cw - w2 - fsz * 0.3 : xx + (cw - w2) / 2, ty + i * fsz * 1.3); });
             }
@@ -7269,7 +7269,7 @@ window.mmTA = (function(){
       x.drawImage(lc, 0, 0);
       (prog.texts || []).forEach(function(t){
         var fs = (t.fontSize || 36) * sc;
-        x.font = ((t.bold === undefined || t.bold) ? "700 " : "400 ") + fs + 'px "MM Kai","LXGW WenKai TC", serif';
+        x.font = ((t.bold === undefined || t.bold) ? "700 " : "400 ") + fs + 'px "MM Kai","Iansui", serif';
         x.fillStyle = (t.color && t.color.charAt(0) === "#") ? t.color : "#2B2320";
         x.textBaseline = "top";
         var lines = String(t.text || "").split("\n"), lh = fs * 1.25;
@@ -7287,7 +7287,7 @@ window.mmTA = (function(){
       });
       if(mst){
         var msc = W / 640; x.save(); x.textBaseline = "alphabetic";
-        function mtxt(tx, cfg){ x.font = "400 " + (cfg.size || 16) * msc + 'px "MM Kai","LXGW WenKai TC", serif'; x.fillStyle = cfg.color || "#7A7A7A"; var w2 = x.measureText(tx).width, pos = cfg.pos || "c"; x.fillText(tx, pos === "l" ? W * 0.03 : pos === "r" ? W * 0.97 - w2 : (W - w2) / 2, H * 0.985 - 2 * msc); }
+        function mtxt(tx, cfg){ x.font = "400 " + (cfg.size || 16) * msc + 'px "MM Kai","Iansui", serif'; x.fillStyle = cfg.color || "#7A7A7A"; var w2 = x.measureText(tx).width, pos = cfg.pos || "c"; x.fillText(tx, pos === "l" ? W * 0.03 : pos === "r" ? W * 0.97 - w2 : (W - w2) / 2, H * 0.985 - 2 * msc); }
         if(mst.footer && mst.footer.text) mtxt(mst.footer.text, mst.footer);
         if(mst.pageNum && mst.pageNum.on && fsec){ var ks = getSortedQuestionKeys(fsec.sec); mtxt(String(ks.indexOf(q.id) + 1) + (mst.pageNum.total ? " / " + ks.length : ""), mst.pageNum); }
         x.restore();
@@ -7851,7 +7851,7 @@ window.mmTA = (function(){
             else shapesXml.push('<p:sp><p:nvSpPr><p:cNvPr id="' + (nid++) + '" name="圖案"/><p:cNvSpPr/><p:nvPr/></p:nvSpPr>' + inner + '<p:txBody><a:bodyPr/><a:lstStyle/><a:p><a:endParaRPr lang="zh-TW"/></a:p></p:txBody></p:sp>');
           } else {
             var fsU = o.fontSize || 36, lines = String(o.text || "").split("\n"), bold = (o.bold === undefined || o.bold);
-            mc.font = (bold ? "700 " : "400 ") + fsU + 'px "MM Kai","LXGW WenKai TC", serif';
+            mc.font = (bold ? "700 " : "400 ") + fsU + 'px "MM Kai","Iansui", serif';
             var maxW = Math.max.apply(null, lines.map(function(t){ return mc.measureText(t).width; }).concat([fsU])), unit = WE / 640;
             var padU = (o.bgOn || o.bdW > 0) ? fsU * 0.45 : 0;
             var tw = (maxW + padU * 2) * unit * 1.08, th = lines.length * fsU * 1.3 * (o.lh || 1) * unit + (padU ? fsU * 0.24 * unit : 0);
@@ -8668,7 +8668,7 @@ window.mmTA = (function(){
       input.style.height = "auto";
       input.style.height = Math.min(input.scrollHeight, 260) + "px";
     }
-    input.style.cssText = "position:absolute; left:" + pos.x + "%; top:" + pos.y + "%; transform:translate(-50%,-50%); z-index:30; width:" + (multiline ? "240" : "160") + "px; max-width:70%; box-sizing:border-box; " + (multiline ? "resize:none; overflow:auto; line-height:1.4; " : "") + "padding:7px 12px; border:2px solid var(--seal); border-radius:10px; background:var(--surface); color:var(--ink); font-size:16px; font-family:'MM Kai','LXGW WenKai TC',serif; box-shadow:0 6px 16px rgba(0,0,0,0.15); outline:none;";
+    input.style.cssText = "position:absolute; left:" + pos.x + "%; top:" + pos.y + "%; transform:translate(-50%,-50%); z-index:30; width:" + (multiline ? "240" : "160") + "px; max-width:70%; box-sizing:border-box; " + (multiline ? "resize:none; overflow:auto; line-height:1.4; " : "") + "padding:7px 12px; border:2px solid var(--seal); border-radius:10px; background:var(--surface); color:var(--ink); font-size:16px; font-family:'MM Kai','Iansui',serif; box-shadow:0 6px 16px rgba(0,0,0,0.15); outline:none;";
     container.appendChild(input);
     setTimeout(function(){ input.focus(); input.select(); autosize(); }, 0);
     if(multiline) input.addEventListener("input", autosize);
@@ -16435,7 +16435,7 @@ window.mmTA = (function(){
       var placeholder = document.createElement("div"); placeholder.className = "hanzi-teacher-placeholder";
       placeholder.innerHTML =
         '<div class="big-icon">🖋️</div>' +
-        '<div style="font-size:16px;font-weight:700;color:var(--ink);">生字練習：<span style="font-family:\'MM Kai\',\'LXGW WenKai TC\',serif;font-size:26px;color:var(--seal);">' + escapeHtml(char) + '</span></div>' +
+        '<div style="font-size:16px;font-weight:700;color:var(--ink);">生字練習：<span style="font-family:\'MM Kai\',\'Iansui\',serif;font-size:26px;color:var(--seal);">' + escapeHtml(char) + '</span></div>' +
         '<p class="hanzi-teacher-hint">每位學生會看到自己的練習畫布，邊寫邊即時同步過來。點左側「👀 查看全班寫字」可以看全班縮圖牆，點縮圖能放大看單一學生。</p>';
       stageArea.appendChild(placeholder);
 

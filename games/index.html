@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#E8825A">
 <title>生詞遊戲｜曼米中文</title>
 <link rel="icon" href="../icons/logo.svg">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&amp;family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Iansui&amp;family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;display=swap">
 <link rel="stylesheet" href="games.css?v=20261021">
 <script>
   if(/[?&]embed=1(&|$)/.test(location.search)) document.documentElement.classList.add("mg-embed");
@@ -29,6 +29,9 @@
       import("https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js")
     ]);
     var fbApp = mods[0].initializeApp(window.FIREBASE_CONFIG);
+    import("https://www.gstatic.com/firebasejs/12.18.0/firebase-storage.js").then(function(sm){
+      window.storageApi = { storage: sm.getStorage(fbApp), ref: sm.ref, uploadBytes: sm.uploadBytes, getDownloadURL: sm.getDownloadURL };
+    }).catch(function(e){ console.warn("檔案儲存載入失敗", e); });
     window.db = mods[1].getDatabase(fbApp);
     window.ref = mods[1].ref; window.get = mods[1].get; window.set = mods[1].set; window.update = mods[1].update; window.onValue = mods[1].onValue; window.onDisconnect = mods[1].onDisconnect;
     window.auth = mods[2].getAuth(fbApp);
@@ -50,6 +53,7 @@
 <div id="app"><div class="mg-loading">載入中…</div></div>
 <script src="vendor/qrcode.js"></script>
 <script src="core.js?v=20261021"></script>
+<script src="music.js?v=20261021"></script>
 <script src="themes.js?v=20261021"></script>
 <script src="match.js?v=20261021"></script>
 <script src="blast.js?v=20261021"></script>

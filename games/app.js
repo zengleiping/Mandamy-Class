@@ -9,10 +9,10 @@
   // ---------- 預設設定 ----------
   function defaults(game){
     return {
-      game: game || "match", lessons: {}, sample: "fixed", cap: 30, lang: "en",
-      match: { mode: "speed", seconds: 60, pair: "p", batch: 6 },
-      blast: { q: "w2p", input: "tap", lives: 3, speed: 3, seconds: 0, theme: "space", themeFree: true },
-      live: { scoring: "avg", seconds: 90 }
+      game: game || "match", lessons: {}, sample: "fixed", cap: 30, lang: "en", phon: "zy",
+      match: { mode: "speed", seconds: 60, pair: "p", batch: 6, theme: "plain", themeFree: true, music: "happy" },
+      blast: { q: "w2p", input: "tap", lives: 3, speed: 3, seconds: 0, theme: "space", themeFree: true, music: "space", liveOut: "revive" },
+      live: { scoring: "avg", seconds: 90, studentMusic: false }
     };
   }
   function merge(a, b){ Object.keys(b || {}).forEach(function(k){ if(b[k] && typeof b[k] === "object" && !Array.isArray(b[k]) && a[k] && typeof a[k] === "object") merge(a[k], b[k]); else if(b[k] !== undefined) a[k] = b[k]; }); return a; }
@@ -50,16 +50,22 @@
     var gameOpts = c.game === "match" ?
       '<div class="mg-opt"><label>模式</label>' + seg("match.mode", m.mode, [["speed", "比速度：全部配完"], ["timed", "限時：時間內配越多越好"]]) +
       '<label>時間（限時模式）</label><span><input type="number" class="mg-num" min="15" max="600" step="5" data-num="match.seconds" value="' + m.seconds + '"> 秒</span>' +
-      '<label>配對方式</label>' + seg("match.pair", m.pair, [["p", "詞語 ↔ 拼音"], ["t", "詞語 ↔ 翻譯"], ["pt", "詞語 ↔ 拼音＋翻譯"]]) +
+      '<label>配對方式</label>' + seg("match.pair", m.pair, [["p", "詞語 ↔ 拼音"], ["t", "詞語 ↔ 翻譯"], ["pt", "詞語 ↔ 拼音＋翻譯"], ["i", "詞語 ↔ 圖片"]]) +
       '<label>一次幾組</label>' + seg("match.batch", m.batch, [[4, "4"], [5, "5"], [6, "6"], [8, "8"]]) + '</div>' :
-      '<div class="mg-opt"><label>題目</label>' + seg("blast.q", b.q, [["w2p", "看詞語選拼音"], ["w2t", "看詞語選翻譯"], ["p2w", "看拼音選詞語"], ["t2w", "看翻譯選詞語"]]) +
-      '<label>作答方式</label>' + seg("blast.input", b.input, [["tap", "點選"], ["type", "打拼音（數字標調）"]]) +
+      '<div class="mg-opt"><label>題目</label>' + seg("blast.q", b.q, [["w2p", "看詞語選拼音"], ["w2t", "看詞語選翻譯"], ["p2w", "看拼音選詞語"], ["t2w", "看翻譯選詞語"], ["w2i", "看詞語選圖片"], ["i2w", "看圖片選詞語"]]) +
+      '<label>作答方式</label>' + seg("blast.input", c.phon === "zy" ? "tap" : b.input, [["tap", "點選"]].concat(c.phon === "zy" ? [] : [["type", "打拼音（數字標調）"]])) +
       '<label>生命</label><span><input type="number" class="mg-num" min="0" max="10" data-num="blast.lives" value="' + b.lives + '"> 條 <span class="note">（0＝不限，要搭配時間）</span></span>' +
       '<label>速度</label>' + seg("blast.speed", b.speed, [[1, "1 很慢"], [2, "2"], [3, "3"], [4, "4"], [5, "5 很快"]]) +
       '<label>時間</label>' + seg("blast.seconds", b.seconds, [[0, "不限（命用完就結束）"], [60, "60 秒"], [90, "90 秒"], [120, "2 分鐘"], [180, "3 分鐘"]]) +
-      '<label>主題</label><div><div class="th-list">' + MG.THEME_ORDER.map(function(id){ return '<button type="button" class="th-card' + (b.theme === id ? " on" : "") + '" data-theme="' + id + '">' + MG.themeSwatch(id) + '<b>' + MG.esc(MG.THEMES[id].name) + '</b></button>'; }).join("") + '</div>' +
-      '<label style="display:flex;gap:6px;align-items:center;margin-top:8px;font-weight:400;"><input type="checkbox" data-chk="blast.themeFree"' + (b.themeFree ? " checked" : "") + '> 學生自己練習時可以換主題</label></div></div>';
+      '<label>即時多人命用完</label><div>' + seg("blast.liveOut", b.liveOut || "revive", [["revive", "復活挑戰"], ["end", "直接結束"]]) + '<div class="note" style="margin-top:4px;">復活挑戰：命用完時，連續答對自己答錯的詞（3 題起，每復活一次多 1 題）就帶 1 條命回到遊戲，挑戰本身不加分。時間選「不限」時，即時遊戲會用 90 秒。學生自己練習時命用完就結束。</div></div>' +
+      '</div>';
 
+    gameOpts = MG.ph(gameOpts, c.phon);
+    var gm = c.game === "match" ? m : b, thList = c.game === "match" ? MG.MATCH_THEMES : MG.THEME_ORDER;
+    gameOpts += '<div class="mg-opt" style="margin-top:12px;"><label>主題（背景）</label><div><div class="th-list">' + thList.map(function(id){ return '<button type="button" class="th-card' + (gm.theme === id ? " on" : "") + '" data-theme="' + id + '">' + MG.themeSwatch(id) + '<b>' + MG.esc(MG.THEMES[id].name) + '</b></button>'; }).join("") + '</div>' +
+      '<label style="display:flex;gap:6px;align-items:center;margin-top:8px;font-weight:400;"><input type="checkbox" data-chk="' + c.game + '.themeFree"' + (gm.themeFree !== false ? " checked" : "") + '> 學生自己練習時可以換主題</label><div class="note" style="margin-top:4px;">選主題時，背景音樂會換成搭配的曲子（下面還可以改）。</div></div></div>' +
+      '<div class="mg-opt" style="margin-top:12px;"><label>背景音樂</label><div class="mg-row">' + seg(c.game + ".music", gm.music || "", [["", "關"]].concat(MG.MUSIC_ORDER.map(function(k){ return [k, MG.MUSIC[k].name]; }))) + (gm.music ? '<button type="button" class="mg-btn sm" data-preview="' + gm.music + '">試聽</button>' : '') + '</div>' +
+      '<label></label><label style="display:flex;gap:6px;align-items:center;font-weight:400;"><input type="checkbox" data-chk="live.studentMusic"' + (c.live.studentMusic ? " checked" : "") + '> 即時多人時，學生的裝置也播放音樂（預設只有老師的畫面播放）</label></div>';
     app.innerHTML = '<div class="mg-wrap">' +
       '<div id="lv-resume"></div><div class="mg-head"><h2>生詞遊戲</h2><span class="note">' + MG.esc(ctx.cls ? ctx.cls.name : "沒有指定班級") + '</span><span class="grow"></span></div>' +
       '<div class="mg-panel"><div class="mg-games">' +
@@ -69,6 +75,7 @@
       '<div class="mg-row" style="margin-bottom:10px;"><span class="note">從最近一課往前：100%、80%、60%、40%、20%</span><select class="mg-sel" id="sc-rec" style="max-width:280px;">' + recOpts + '</select><button class="mg-btn sm" id="sc-preset">套用</button><button class="mg-btn sm ghost" id="sc-clear">全部不用</button></div>' +
       (rows ? '<div class="sc-list"><div class="sc-row head"><span></span><span>課次</span><span class="n">生詞</span><span>抽幾成</span><span></span></div>' + rows + '</div>' : '<p class="note">這個班的教材還沒有生詞。</p>') +
       '<div class="mg-row" style="margin-top:10px;"><span>抽題方式</span>' + seg("sample", c.sample, [["fixed", "固定（照課本順序取前面的）"], ["random", "隨機（每次不一樣）"]]) + '</div><div class="mg-row" style="margin-top:8px;"><span>一局最多</span>' + seg("cap", c.cap, [[10, "10 個"], [20, "20 個"], [30, "30 個"], [50, "50 個"], [0, "不限"]]) + '<span class="note">超過時每一課照比例一起減少</span><span class="grow" style="flex:1"></span><span class="sc-sum">共 ' + sum + ' 個生詞</span></div></div>' +
+      '<div class="mg-panel"><h3>讀音 <span class="note">遊戲裡顯示注音還是拼音</span></h3>' + seg("phon", c.phon || "zy", [["zy", "注音"], ["py", "拼音"]]) + '</div>' +
       '<div class="mg-panel"><h3>翻譯語言 <span class="note">配對的翻譯、Blast 的意思都用這個語言</span></h3><div class="mg-row"><select class="mg-sel" id="lang">' + langOpts + '</select><button class="mg-btn sm" id="tr-edit">檢查／修改翻譯</button><span class="note" id="tr-miss"></span></div></div>' +
       '<div class="mg-panel"><h3>' + (c.game === "match" ? "配對設定" : "Blast 設定") + '</h3>' + gameOpts + '</div>' +
       '<div class="mg-panel"><h3>開始</h3><div class="mg-row">' +
@@ -81,21 +88,29 @@
       '</div>';
     bindSetup();
     updateMissing();
-    if(MG.Live && MG.Live.banner) MG.Live.banner(MG.$("#lv-resume"));
+    var cur = MG.Live && MG.Live.current && MG.Live.current();
+    if(cur){
+      MG.$("#lv-resume").innerHTML = '<div class="mg-panel" style="background:var(--seal-soft);border-color:var(--seal);"><div class="mg-row"><b>房間 ' + cur.code + ' 還開著，' + cur.n + ' 位學生在等你</b><span class="note">改好遊戲或設定後按「套用到房間」，學生不用重新加入。</span><span class="grow" style="flex:1"></span><button class="mg-btn sm" id="lv-back">回到房間（不改）</button><button class="mg-btn sm primary" id="lv-apply">套用到房間</button></div></div>';
+      var gl = MG.$("#go-live"); gl.textContent = "套用到房間 " + cur.code; gl.id = "go-apply";
+      MG.$("#lv-back").onclick = function(e){ e.stopPropagation(); MG.Live.backToRoom(); };
+      MG.$("#lv-apply").onclick = function(e){ e.stopPropagation(); if(checkPool()) MG.Live.applyToRoom(); };
+    } else if(MG.Live && MG.Live.banner) MG.Live.banner(MG.$("#lv-resume"));
   }
   function setPath(path, v){ var p = path.split("."), o = G.cfg; while(p.length > 1) o = o[p.shift()]; o[p[0]] = v; }
   function bindSetup(){
     app.onclick = function(e){
       var t;
       if((t = e.target.closest("[data-game]"))){ G.cfg.game = t.dataset.game; saveCfg(); viewSetup(); return; }
-      if((t = e.target.closest("[data-seg] button"))){ var seg = t.closest("[data-seg]").dataset.seg, v = t.dataset.v; setPath(seg, /^\d+$/.test(v) ? Number(v) : v); saveCfg(); viewSetup(); return; }
-      if((t = e.target.closest("[data-theme]"))){ G.cfg.blast.theme = t.dataset.theme; saveCfg(); viewSetup(); return; }
+      if((t = e.target.closest("[data-seg] button"))){ var seg = t.closest("[data-seg]").dataset.seg, v = t.dataset.v; setPath(seg, /^\d+$/.test(v) ? Number(v) : v); if(seg === "phon" && v === "zy") G.cfg.blast.input = "tap"; saveCfg(); viewSetup(); return; }
+      if((t = e.target.closest("[data-theme]"))){ var gc = G.cfg[G.cfg.game], th = MG.THEMES[t.dataset.theme]; gc.theme = t.dataset.theme; if(gc.music && th && th.music) gc.music = th.music; saveCfg(); viewSetup(); return; }
       if(e.target.id === "sc-preset"){ presetFrom(MG.$("#sc-rec").value); saveCfg(); viewSetup(); return; }
       if(e.target.id === "sc-clear"){ G.cfg.lessons = {}; saveCfg(); viewSetup(); return; }
       if(e.target.id === "tr-edit"){ trEditor(); return; }
+      if((t = e.target.closest("[data-preview]"))){ MG.music.preview(t.dataset.preview); return; }
       if(e.target.id === "go-solo"){ if(checkPool()) teacherSolo(); return; }
       if(e.target.id === "go-link"){ if(checkPool()) makeLink(); return; }
       if(e.target.id === "go-results"){ viewResults(); return; }
+      if(e.target.id === "go-apply"){ if(checkPool()) MG.Live.applyToRoom(); return; }
       if(e.target.id === "go-live"){ if(checkPool()){ if(MG.Live) MG.Live.teacherStart(); else MG.toast("即時多人遊戲還沒準備好"); } return; }
       if(e.target.id === "go-groups"){ if(MG.Groups) MG.Groups.openEditor(); return; }
     };
@@ -114,6 +129,13 @@
     var need = G.cfg.game === "match" ? 3 : 4;
     if(pool.length < need){ MG.toast("生詞太少了，至少要 " + need + " 個，請多勾幾課或提高比例"); return false; }
     var lang = G.cfg.lang, usesTr = G.cfg.game === "match" ? G.cfg.match.pair !== "p" : (G.cfg.blast.q === "w2t" || G.cfg.blast.q === "t2w") && G.cfg.blast.input !== "type";
+    var usesPic = G.cfg.game === "match" ? G.cfg.match.pair === "i" : (G.cfg.blast.q === "w2i" || G.cfg.blast.q === "i2w") && G.cfg.blast.input !== "type";
+    if(usesPic){
+      var withPic = pool.filter(function(w){ return MG.picOf(w); }).length;
+      if(withPic < need){ MG.toast("有圖片的詞語只有 " + withPic + " 個，至少要 " + need + " 個；請在表格裡補上 Emoji 或圖片"); trEditor(); return false; }
+      if(withPic < pool.length) MG.toast("有 " + (pool.length - withPic) + " 個詞語沒有圖片，這一局先不出現");
+      return true;
+    }
     var miss = pool.filter(function(w){ return !MG.trOf(w, lang); }).length;
     if(usesTr && miss){ MG.toast("有 " + miss + " 個詞語還沒有" + MG.langShort(lang) + "翻譯，先幫你自動翻譯"); trEditor(); return false; }
     return true;
@@ -127,12 +149,28 @@
   async function trEditor(){
     var lang = G.cfg.lang, pool = MG.buildPool(lessonsSel().map(cloneLesson), "fixed", 1, 0);
     MG.applyTr(pool, G.trStore);
-    var d = MG.dialog('<h3>翻譯（' + MG.esc(MG.langName(lang)) + '）和拼音</h3><p class="note">空白的會自動翻譯。可以直接修改，改好按「儲存」，以後所有遊戲都用這個版本（不會改到教材）。拼音可以打數字標調，例如 ni3 hao3。</p>' +
-      '<div class="tr-wrap"><table class="tr-table"><thead><tr><th>詞語</th><th>拼音</th><th>' + MG.esc(MG.langShort(lang)) + '</th></tr></thead><tbody>' +
-      pool.map(function(w, i){ return '<tr><td class="zh">' + MG.esc(w.w) + '</td><td><input data-i="' + i + '" data-f="p" value="' + MG.esc(w.p) + '"></td><td><input data-i="' + i + '" data-f="t" value="' + MG.esc(MG.trOf(w, lang)) + '"' + (MG.trOf(w, lang) ? "" : ' class="miss" placeholder="翻譯中…"') + '></td></tr>'; }).join("") +
+    var d = MG.dialog('<h3>翻譯（' + MG.esc(MG.langName(lang)) + '）、拼音和圖片</h3><p class="note">空白的翻譯會自動翻譯。可以直接修改，改好按「儲存」，以後所有遊戲都用這個版本（不會改到教材）。拼音可以打數字標調，例如 ni3 hao3。圖片可以貼 Emoji、圖片網址，或按「上傳」用自己的圖。</p>' +
+      '<div class="tr-wrap"><table class="tr-table"><thead><tr><th>詞語</th><th>拼音</th><th>' + MG.esc(MG.langShort(lang)) + '</th><th>圖片</th></tr></thead><tbody>' +
+      pool.map(function(w, i){ var pic = MG.picOf(w); return '<tr><td class="zh">' + MG.esc(w.w) + '</td><td><input data-i="' + i + '" data-f="p" value="' + MG.esc(w.p) + '"></td><td><input data-i="' + i + '" data-f="t" value="' + MG.esc(MG.trOf(w, lang)) + '"' + (MG.trOf(w, lang) ? "" : ' class="miss" placeholder="翻譯中…"') + '></td>' +
+        '<td><div class="tr-pic"><span class="pv">' + (pic ? MG.picHtml(pic) : '') + '</span><input data-i="' + i + '" data-f="i" value="' + MG.esc(pic) + '" placeholder="Emoji 或網址"><button type="button" class="mg-btn sm" data-up="' + i + '">上傳</button></div></td></tr>'; }).join("") +
       '</tbody></table></div><div class="mg-row end"><span class="note" id="tr-st" style="margin-right:auto;"></span><button class="mg-btn" data-close>取消</button><button class="mg-btn primary" id="tr-save">儲存</button></div>', { wide: true });
     var auto = {};
     d.addEventListener("change", function(e){ var t = e.target; if(t.dataset.f === "p") t.value = MG.pyNum(t.value); });
+    d.addEventListener("input", function(e){ var t = e.target; if(t.dataset.f === "i"){ var v = t.value.trim(); t.parentNode.querySelector(".pv").innerHTML = v ? MG.picHtml(v) : ""; } });
+    d.addEventListener("click", function(e){
+      var b = e.target.closest("[data-up]"); if(!b) return;
+      var fi = document.createElement("input"); fi.type = "file"; fi.accept = "image/*";
+      fi.onchange = async function(){
+        var f = fi.files && fi.files[0]; if(!f) return;
+        b.disabled = true; b.textContent = "上傳中";
+        try{
+          var url = await MG.uploadImage(f, "teacherMedia/" + G.ctx.t + "/game-img-" + Date.now() + "-" + Math.random().toString(36).slice(2, 6));
+          var inp = d.querySelector('input[data-i="' + b.dataset.up + '"][data-f="i"]'); inp.value = url; inp.dispatchEvent(new Event("input", { bubbles: true }));
+        }catch(er){ MG.toast("上傳失敗：" + (er && er.message || "")); }
+        b.disabled = false; b.textContent = "上傳";
+      };
+      fi.click();
+    });
     var st = MG.$("#tr-st", d), left = pool.filter(function(w){ return !MG.trOf(w, lang); }).length;
     if(left){
       st.textContent = "自動翻譯中…（" + left + " 個）";
@@ -150,6 +188,8 @@
         if(pv && orig && pv !== orig.p){ up["_py/" + k] = pv; } else if(orig && pv === orig.p && (G.trStore._py || {})[k]){ up["_py/" + k] = null; }
         var base = orig ? (orig.tr || {})[lang] || "" : "";
         if(tv && tv !== base) up[lang + "/" + k] = tv; else if(tv === base && (G.trStore[lang] || {})[k]) up[lang + "/" + k] = null;
+        var iv = d.querySelector('input[data-i="' + i + '"][data-f="i"]').value.trim(), ib = orig ? orig.e || "" : "";
+        if(iv !== ib) up["_img/" + k] = iv || "-"; else if((G.trStore._img || {})[k]) up["_img/" + k] = null;
       });
       Object.keys(up).forEach(function(p){ var a = p.split("/"); G.trStore[a[0]] = G.trStore[a[0]] || {}; if(up[p] == null) delete G.trStore[a[0]][a[1]]; else G.trStore[a[0]][a[1]] = up[p]; });
       if(Object.keys(up).length && t){ try{ await MG.fb.update("teacherPlatform/" + t + "/gameTr", up); }catch(e){ MG.toast("存檔失敗，請檢查網路"); return; } }
@@ -161,7 +201,7 @@
   // ---------- 開始一局（老師試玩、學生練習、即時遊戲都用這個） ----------
   MG.playGame = function(root, game, words, o){
     var opts = Object.assign({ words: words, lang: o.lang }, o);
-    if(game === "match") return MG.Match.create(root, Object.assign(opts, o.match || {}));
+    if(game === "match") return MG.Match.create(root, Object.assign(opts, o.match || {}, o.theme ? { theme: o.theme } : {}));
     return MG.Blast.create(root, Object.assign(opts, o.blast || {}, { theme: o.theme || (o.blast || {}).theme }));
   };
   MG.resultHtml = function(game, r, title){
@@ -171,7 +211,7 @@
     var miss = (r.missed || []).length ? '<div class="gm-miss"><div class="note">再複習一下：</div>' + r.missed.map(function(w){ return '<span>' + MG.esc(w.w) + '<i>' + MG.esc(w.p || "") + '</i></span>'; }).join("") + '</div>' : '';
     return '<h2>' + MG.esc(title || (r.done ? "全部配完了！" : "時間到！")) + '</h2><div class="note">分數</div><div class="big">' + r.s + '</div><div class="grid">' + stats + '</div>' + miss;
   };
-  function gameOpts(cfg){ return { lang: cfg.lang, match: cfg.match, blast: cfg.blast }; }
+  function gameOpts(cfg){ return { lang: cfg.lang, phon: cfg.phon, match: cfg.match, blast: cfg.blast }; }
 
   function teacherSolo(){
     var seed = MG.newSeed(), words = poolFor(seed), cfg = G.cfg;
@@ -195,11 +235,11 @@
     var lessons = lessonsSel().map(function(l){ return { title: l.title, pct: l.pct, words: MG.applyTr(cloneLesson(l).words, G.trStore).map(slim) }; });
     var title = await MG.ask("連結名稱（學生會看到）", (c.game === "match" ? "配對 Match" : "Blast") + "：" + lessonsSel().map(function(l){ return l.short || l.title; }).join("、"), "產生連結");
     if(!title) return;
-    var id = MG.fb.newId(), set = { title: title.slice(0, 120), game: c.game, sample: c.sample, cap: c.cap || 0, lang: c.lang, match: c.match, blast: c.blast, lessons: lessons, cls: G.ctx.cls ? G.ctx.cls.name : "", clsId: G.ctx.cls ? G.ctx.cls.c : "", createdAt: Date.now() };
+    var id = MG.fb.newId(), set = { title: title.slice(0, 120), game: c.game, sample: c.sample, cap: c.cap || 0, lang: c.lang, phon: c.phon || "py", match: c.match, blast: c.blast, lessons: lessons, cls: G.ctx.cls ? G.ctx.cls.name : "", clsId: G.ctx.cls ? G.ctx.cls.c : "", createdAt: Date.now() };
     try{ await MG.fb.set("teacherPlatform/" + t + "/gameSets/" + id, set); }catch(e){ MG.toast("產生失敗，請檢查網路"); return; }
     showLink(id, set);
   }
-  function slim(w){ var o = { w: w.w, p: w.p }; var tr = {}; Object.keys(w.tr || {}).forEach(function(k){ if(w.tr[k]) tr[k] = w.tr[k]; }); if(Object.keys(tr).length) o.tr = tr; return o; }
+  function slim(w){ var o = { w: w.w, p: w.p }; if(w.zy) o.zy = w.zy; if(MG.picOf(w)) o.e = MG.picOf(w); var tr = {}; Object.keys(w.tr || {}).forEach(function(k){ if(w.tr[k]) tr[k] = w.tr[k]; }); if(Object.keys(tr).length) o.tr = tr; return o; }
   function linkUrl(id){ return baseUrl() + "?t=" + encodeURIComponent(G.ctx.t) + "&set=" + encodeURIComponent(id); }
   function showLink(id, set){
     var url = linkUrl(id);
@@ -233,13 +273,13 @@
     var set = await MG.fb.get("teacherPlatform/" + t + "/gameSets/" + id).catch(function(){ return null; });
     if(!set){ app.innerHTML = '<div class="solo-card"><h2>找不到這個練習</h2><p class="note">連結可能已經被老師刪除，請跟老師確認。</p></div>'; return; }
     var name = ""; try{ name = localStorage.getItem("mm_game_name") || ""; }catch(e){}
-    var lang = set.lang || "en", theme = (set.blast || {}).theme || "space";
+    var gcfg = set[set.game] || {}, lang = set.lang || "en", theme = gcfg.theme || (set.game === "match" ? "plain" : "space"), thList = set.game === "match" ? MG.MATCH_THEMES : MG.THEME_ORDER;
     var usesTr = set.game === "match" ? (set.match || {}).pair !== "p" : ["w2t", "t2w"].indexOf((set.blast || {}).q) >= 0 && (set.blast || {}).input !== "type";
     function form(){
-      app.innerHTML = '<div class="solo-card"><div class="brand-line"><img src="../icons/logo.svg" alt="">曼米中文</div><h2>' + MG.esc(set.title) + '</h2><div class="note">' + MG.esc(set.game === "match" ? "配對 Match・" + (set.match.mode === "timed" ? "限時 " + set.match.seconds + " 秒" : "比速度") + "・" + MG.MATCH_PAIRS[set.match.pair] : "Blast・" + (set.blast.input === "type" ? "打拼音" : MG.BLAST_Q[set.blast.q])) + '</div>' +
+      app.innerHTML = '<div class="solo-card"><div class="brand-line"><img src="../icons/logo.svg" alt="">曼米中文</div><h2>' + MG.esc(set.title) + '</h2><div class="note">' + MG.esc(set.game === "match" ? "配對 Match・" + (set.match.mode === "timed" ? "限時 " + set.match.seconds + " 秒" : "比速度") + "・" + MG.ph(MG.MATCH_PAIRS[set.match.pair], set.phon) : "Blast・" + (set.blast.input === "type" ? "打拼音" : MG.ph(MG.BLAST_Q[set.blast.q], set.phon))) + '</div>' +
         '<label>你的名字</label><input class="mg-in" id="nm" maxlength="20" value="' + MG.esc(name) + '" placeholder="老師才知道是誰玩的">' +
         (usesTr ? '<label>翻譯語言</label><select class="mg-sel" id="lg" style="width:100%;">' + MG.LANGS.map(function(l){ return '<option value="' + l.k + '"' + (l.k === lang ? " selected" : "") + '>' + MG.esc(l.n) + '</option>'; }).join("") + '</select>' : '') +
-        (set.game === "blast" && set.blast.themeFree !== false ? '<label>主題</label><div class="th-list">' + MG.THEME_ORDER.map(function(k){ return '<button type="button" class="th-card' + (k === theme ? " on" : "") + '" data-theme="' + k + '">' + MG.themeSwatch(k) + '<b>' + MG.esc(MG.THEMES[k].name) + '</b></button>'; }).join("") + '</div>' : '') +
+        (gcfg.themeFree !== false ? '<label>主題</label><div class="th-list">' + thList.map(function(k){ return '<button type="button" class="th-card' + (k === theme ? " on" : "") + '" data-theme="' + k + '">' + MG.themeSwatch(k) + '<b>' + MG.esc(MG.THEMES[k].name) + '</b></button>'; }).join("") + '</div>' : '') +
         '<button class="mg-btn big primary" id="start">開始</button><p class="note" id="st" style="text-align:center;margin-top:8px;"></p></div>';
       app.onclick = function(e){ var b = e.target.closest("[data-theme]"); if(b){ theme = b.dataset.theme; MG.$$(".th-card").forEach(function(x){ x.classList.toggle("on", x === b); }); } };
       MG.$("#start").onclick = start;
@@ -254,7 +294,9 @@
         if(miss){ MG.$("#st").textContent = "準備" + MG.langShort(lang) + "翻譯中…"; MG.$("#start").disabled = true; await MG.translateMissing(words, lang); MG.$("#start").disabled = false; MG.$("#st").textContent = ""; }
       }
       countdown(3, function(){
-        var g = MG.playGame(app, set.game, words, { lang: lang, match: set.match, blast: set.blast, theme: theme, seed: seed, title: set.title,
+        // 學生換了主題：音樂也換成搭配的（老師有開音樂才會播）
+        var musOv = theme !== gcfg.theme && gcfg.music && MG.THEMES[theme] ? { music: MG.THEMES[theme].music } : {};
+        var g = MG.playGame(app, set.game, words, { lang: lang, phon: set.phon, match: Object.assign({}, set.match, musOv), blast: Object.assign({}, set.blast, musOv), theme: theme, seed: seed, title: set.title,
           onQuit: function(){ g.stop(); form(); },
           onEnd: function(r){
             MG.fb.set("teacherPlatform/" + t + "/gameResults/" + id + "/" + MG.fb.newId(), { name: name.slice(0, 20), s: r.s, c: r.c, w: r.w, rt: r.rt, n: r.n, time: Math.round(r.time), done: !!r.done, lang: lang, at: Date.now() }).catch(function(){});

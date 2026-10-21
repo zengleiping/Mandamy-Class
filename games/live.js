@@ -63,7 +63,7 @@
   async function teacherStart(){
     var G = MG.G, c = G.cfg, t = G.ctx.t, uid = MG.fb.uid();
     if(!t){ MG.toast("要登入老師帳號才能開房間"); return; }
-    var seed = MG.newSeed(), words = MG.poolFor(seed).map(function(w){ var o = { w: w.w, p: w.p }; var tr = MG.trOf(w, c.lang); if(tr){ o.tr = {}; o.tr[c.lang] = tr; } return o; });
+    var seed = MG.newSeed();
     app.innerHTML = '<div class="mg-loading">開房間中…</div>';
     await sweep(t);
     var code = "", base = "";
@@ -80,7 +80,7 @@
     }
     if(!base){ MG.toast("開房間失敗，請檢查網路"); MG.viewSetup(); return; }
     var saved = MG.Groups ? await MG.Groups.load() : null;
-    var cfg = { game: c.game, lang: c.lang, match: c.match, blast: c.blast, words: words, seed: seed, title: (c.game === "match" ? "配對 Match" : "Blast"), scoring: (c.live || {}).scoring || "avg", cls: G.ctx.cls ? G.ctx.cls.name : "" };
+    var cfg = buildCfg(seed);
     try{
       await MG.fb.update(base, { cfg: cfg, state: { phase: "lobby", round: 1 } });
       MG.fb.set("teacherPlatform/" + t + "/liveGameList/" + code, { base: base, at: Date.now() }).catch(function(){});
@@ -90,6 +90,27 @@
     TL.unsub.push(MG.fb.on(base + "/players", function(v){ TL.players = v || {}; onPlayers(); }));
     TL.unsub.push(MG.fb.on(base + "/scores", function(v){ TL.scores = v || {}; onScores(); }));
     lobby();
+  }
+  // 房間設定：用老師目前在設定頁的選擇（遊戲、出題範圍、翻譯、主題、音樂…）
+  function buildCfg(seed){
+    var G = MG.G, c = G.cfg;
+    var words = MG.poolFor(seed).map(function(w){ var o = { w: w.w, p: w.p }; if(w.zy) o.zy = w.zy; if(MG.picOf(w)) o.e = MG.picOf(w); var tr = MG.trOf(w, c.lang); if(tr){ o.tr = {}; o.tr[c.lang] = tr; } return o; });
+    // 即時 Blast：命用完預設「復活挑戰」，沒有設時間就用 90 秒（不然遊戲不會結束）
+    var blast = Object.assign({}, c.blast);
+    if(blast.liveOut !== "end" && Number(blast.lives) > 0){ blast.revive = true; if(!blast.seconds) blast.seconds = 90; }
+    return { game: c.game, lang: c.lang, phon: c.phon || "py", match: c.match, blast: blast, words: words, seed: seed, title: (c.game === "match" ? "配對 Match" : "Blast"), scoring: (TL && TL.cfg && TL.cfg.scoring) || (c.live || {}).scoring || "avg", studentMusic: !!(c.live || {}).studentMusic, cls: G.ctx.cls ? G.ctx.cls.name : "" };
+  }
+  // 換遊戲／改設定：學生留在等待室，老師回設定頁改好再「套用到房間」
+  function changeMode(){ if(!TL) return; TL.editing = true; MG.viewSetup(); }
+  function current(){ return TL && TL.editing ? { code: TL.code, n: names().length, phase: TL.state.phase } : null; }
+  function backToRoom(){ if(!TL) return; TL.editing = false; if(TL.state.phase === "end" && TL.lastFinal) finalView(TL.lastFinal); else lobby(); }
+  async function applyToRoom(){
+    if(!TL) return;
+    var seed = MG.newSeed(), cfg = buildCfg(seed), r = (TL.state.round || 1) + (TL.state.phase === "lobby" ? 0 : 1);
+    var st = { phase: "lobby", round: r };
+    try{ await MG.fb.update(TL.base, { cfg: cfg, state: st, scores: null, final: null, board: null }); }catch(e){ MG.toast("套用失敗，請檢查網路"); return; }
+    TL.cfg = cfg; TL.state = st; TL.scores = {}; TL.editing = false; TL.lastFinal = null;
+    MG.toast("已套用到房間 " + TL.code); lobby();
   }
   async function sweep(t){
     var lst = await MG.fb.get("teacherPlatform/" + t + "/liveGameList").catch(function(){ return null; }) || {};
@@ -124,8 +145,8 @@
   }
   function lobby(){
     var url = joinUrl(TL.code), c = TL.cfg;
-    var sum = c.game === "match" ? "配對・" + (c.match.mode === "timed" ? "限時 " + c.match.seconds + " 秒" : "比速度（全部配完）") + "・" + MG.MATCH_PAIRS[c.match.pair] : "Blast・" + (c.blast.input === "type" ? "打拼音" : MG.BLAST_Q[c.blast.q]) + "・" + MG.THEMES[c.blast.theme].name + (c.blast.seconds ? "・" + c.blast.seconds + " 秒" : "") + (c.blast.lives ? "・" + c.blast.lives + " 條命" : "");
-    app.innerHTML = '<div class="mg-wrap"><div class="mg-head"><h2>即時遊戲・等待室</h2><span class="note">' + MG.esc(sum) + '・' + c.words.length + ' 個生詞</span><span class="grow"></span><button class="mg-btn" id="lv-close">關閉房間</button></div>' +
+    var sum = c.game === "match" ? "配對・" + (c.match.mode === "timed" ? "限時 " + c.match.seconds + " 秒" : "比速度（全部配完）") + "・" + MG.ph(MG.MATCH_PAIRS[c.match.pair], c.phon) : "Blast・" + (c.blast.input === "type" ? "打拼音" : MG.ph(MG.BLAST_Q[c.blast.q], c.phon)) + "・" + MG.THEMES[c.blast.theme].name + (c.blast.seconds ? "・" + c.blast.seconds + " 秒" : "") + (c.blast.lives ? "・" + c.blast.lives + " 條命" : "") + (c.blast.revive ? "・命用完可以復活挑戰" : "");
+    app.innerHTML = '<div class="mg-wrap"><div class="mg-head"><h2>即時遊戲・等待室</h2><span class="note">' + MG.esc(sum) + '・' + c.words.length + ' 個生詞</span><span class="grow"></span><button class="mg-btn" id="lv-mode">換遊戲／改設定</button><button class="mg-btn" id="lv-close">關閉房間</button></div>' +
       '<div class="lv-lobby"><div class="mg-panel lv-code"><div class="note">房間代碼</div><div class="code">' + TL.code + '</div><div class="qr">' + MG.qrSvg(url, 220) + '</div><div class="url">' + MG.esc(url) + '</div><div class="mg-row" style="justify-content:center;margin-top:8px;"><button class="mg-btn sm" id="lv-copy">複製連結</button></div><p class="note">學生掃 QR code，或打開連結輸入代碼，填名字就能加入。</p></div>' +
       '<div><div class="mg-panel"><h3>已加入 <span id="lv-n">0</span> 人 <span class="grow" style="flex:1"></span><label class="note" style="display:flex;gap:6px;align-items:center;font-weight:700;"><input type="checkbox" id="lv-gon"' + (TL.groupsOn ? " checked" : "") + '> 分組比賽</label></h3>' +
       '<div id="lv-gopts" style="' + (TL.groupsOn ? "" : "display:none;") + '"><div class="mg-row" style="margin-bottom:8px;"><span class="note">組別分數：</span><div class="mg-seg" id="lv-scoring"><button type="button" data-v="avg"' + (c.scoring !== "sum" ? ' class="on"' : '') + '>平均（預設）</button><button type="button" data-v="sum"' + (c.scoring === "sum" ? ' class="on"' : '') + '>總分</button></div><span class="grow" style="flex:1"></span>' + (MG.G.ctx.cls ? '<button class="mg-btn sm" id="lv-gload">載入班級分組</button><button class="mg-btn sm" id="lv-gsave">存成班級分組</button>' : '') + '</div></div>' +
@@ -143,6 +164,7 @@
     if(MG.$("#lv-gload")) MG.$("#lv-gload").onclick = async function(){ var d = await MG.Groups.load(); if(!d){ MG.toast("這個班還沒有存過分組"); return; } TL.groups = d; autoPlace(); TL.ed.set(TL.groups); pushGrp(); MG.toast("已載入班級分組"); };
     if(MG.$("#lv-gsave")) MG.$("#lv-gsave").onclick = async function(){ var d = JSON.parse(JSON.stringify(TL.groups)); d.groups.forEach(function(g){ g.members = g.members.map(MG.Groups.baseName); }); if(await MG.Groups.save(d)) MG.toast("已存成這個班的分組"); else MG.toast("存檔失敗"); };
     MG.$("#lv-close").onclick = closeRoom;
+    MG.$("#lv-mode").onclick = changeMode;
     MG.$("#lv-start").onclick = startRound;
   }
   function updateLobbyCount(){ var n = MG.$("#lv-n"); if(n) n.textContent = names().length; var h = MG.$("#lv-hint"); if(h) h.textContent = names().length ? "" : "還沒有學生加入"; }
@@ -179,13 +201,17 @@
   }
   function playView(){
     var st = TL.state;
-    app.innerHTML = '<div class="mg-wrap"><div class="mg-head"><h2>' + MG.esc(TL.cfg.title) + '</h2><span class="note">房間 ' + TL.code + '・第 ' + st.round + ' 局</span><span class="grow"></span><span class="lv-timer" id="lv-tm">0:00</span><span class="note" id="lv-done"></span><button class="mg-btn danger" id="lv-end">結束遊戲</button></div>' +
+    app.innerHTML = '<div class="mg-wrap"><div class="mg-head"><h2>' + MG.esc(TL.cfg.title) + '</h2><span class="note">房間 ' + TL.code + '・第 ' + st.round + ' 局</span><span class="grow"></span><span class="lv-timer" id="lv-tm">0:00</span><span class="note" id="lv-done"></span>' + MG.musicBtn((TL.cfg[TL.cfg.game] || {}).music) + '<button class="mg-btn danger" id="lv-end">結束遊戲</button></div>' +
       '<div class="lv-boards"' + (st.groupsOn ? '' : ' style="grid-template-columns:1fr"') + '><div class="lb"><h3>個人排行</h3><div id="lv-bi"></div></div>' + (st.groupsOn ? '<div class="lb"><h3>組別排行 <span class="note">（' + (TL.cfg.scoring === "sum" ? "總分" : "平均") + '）</span></h3><div id="lv-bg"></div></div>' : '') + '</div></div>';
+    MG.bindMusicBtn(app, (TL.cfg[TL.cfg.game] || {}).music);
     MG.$("#lv-end").onclick = async function(){ if(await MG.confirm("現在結束這一局？", "結束")) endRound(); };
     clearInterval(TL.tmr);
     TL.tmr = setInterval(function(){
       var n = MG.fb.now(), el = MG.$("#lv-tm"); if(!el){ clearInterval(TL.tmr); return; }
       if(n < st.startAt){ el.textContent = "準備 " + Math.ceil((st.startAt - n) / 1000); return; }
+      var mus = (TL.cfg[TL.cfg.game] || {}).music;
+      if(mus && !TL.musicOn){ TL.musicOn = true; MG.music.play(mus); }
+      if(st.timed) MG.music.fast(st.endAt - n < 10000);
       el.textContent = st.timed ? MG.fmtTime(st.endAt - n + 999) : MG.fmtTime(n - st.startAt);
       if(n >= st.endAt + 1500) endRound();
     }, 250);
@@ -193,7 +219,7 @@
   }
   async function endRound(){
     if(!TL || TL.state.phase !== "play") return;
-    clearInterval(TL.tmr);
+    clearInterval(TL.tmr); MG.music.stop(); TL.musicOn = false;
     TL.state = Object.assign({}, TL.state, { phase: "end" });
     // 等最後一筆分數寫進來
     await new Promise(function(r){ setTimeout(r, 1600); });
@@ -204,8 +230,9 @@
     MG.beep("end"); finalView(fin);
   }
   function finalView(fin){
+    TL.lastFinal = fin;
     var st = TL.state, gn = st.gn || {}, c = TL.cfg;
-    app.innerHTML = '<div class="mg-wrap"><div class="mg-head"><h2>最後排行</h2><span class="note">房間 ' + TL.code + '・第 ' + st.round + ' 局</span><span class="grow"></span><button class="mg-btn" id="lv-csv">匯出 CSV</button><button class="mg-btn primary" id="lv-again">再玩一局</button><button class="mg-btn" id="lv-close">關閉房間</button></div>' +
+    app.innerHTML = '<div class="mg-wrap"><div class="mg-head"><h2>最後排行</h2><span class="note">房間 ' + TL.code + '・第 ' + st.round + ' 局</span><span class="grow"></span><button class="mg-btn" id="lv-csv">匯出 CSV</button><button class="mg-btn primary" id="lv-again">再玩一局</button><button class="mg-btn" id="lv-mode">換遊戲／改設定</button><button class="mg-btn" id="lv-close">關閉房間</button></div>' +
       '<div class="lv-boards"' + (st.groupsOn ? '' : ' style="grid-template-columns:1fr"') + '><div class="lb"><h3>個人</h3>' + boardHtml(fin.ind, { bars: true, sub: function(r){ return (gn[r.g] ? gn[r.g] + "・" : "") + "對 " + r.c + "・錯 " + r.w + "・正確率 " + Math.round(MG.acc(r) * 100) + "%" + (c.game === "match" && c.match.mode !== "timed" && r.done ? "・" + MG.fmtSec(r.time) : ""); } }) + '</div>' +
       (st.groupsOn ? '<div class="lb"><h3>組別 <span class="note">（' + (c.scoring === "sum" ? "總分" : "平均") + '，同分比正確率、再比反應時間）</span></h3>' + boardHtml(fin.grp, { bars: true, sub: function(g){ return g.valid + " 人計分・正確率 " + Math.round(g.c * 100) + "%"; } }) + '</div>' : '') + '</div></div>';
     MG.$("#lv-csv").onclick = function(){
@@ -221,10 +248,11 @@
       TL.cfg.seed = seed; TL.scores = {}; lobby();
     };
     MG.$("#lv-close").onclick = closeRoom;
+    MG.$("#lv-mode").onclick = changeMode;
   }
   async function closeRoom(){
     if(!(await MG.confirm("關閉房間？學生的畫面會顯示遊戲結束。", "關閉"))) return;
-    TL.unsub.forEach(function(u){ try{ u(); }catch(e){} }); clearInterval(TL.tmr);
+    TL.unsub.forEach(function(u){ try{ u(); }catch(e){} }); clearInterval(TL.tmr); MG.music.stop();
     await MG.fb.remove(TL.base).catch(function(){});
     MG.fb.remove("teacherPlatform/" + TL.t + "/liveGameList/" + TL.code).catch(function(){});
     try{ window.parent.postMessage({ mmGame: "room", code: null }, "*"); }catch(e){}
@@ -319,7 +347,7 @@
     SL.unsub.push(MG.fb.on(base + "/cfg", function(v){ SL.cfg = v; route(); }));
     SL.unsub.push(MG.fb.on(base + "/state", function(v){ if(v) SL.seen = true; SL.state = v; route(); }));
     SL.unsub.push(MG.fb.on(base + "/players", function(v){ SL.players = v || {}; var me = SL.players[uid]; if(SL.seen && (!me || me.kicked)){ kicked(!!(me && me.kicked)); return; } if(me && me.name !== SL.name) SL.name = me.name; if(SL.state && SL.state.phase === "lobby") waitView(); }));
-    SL.unsub.push(MG.fb.on(base + "/board", function(v){ SL.board = v; sideBoard(); }));
+    SL.unsub.push(MG.fb.on(base + "/board", function(v){ SL.board = v; strip(); }));
     SL.unsub.push(MG.fb.on(base + "/grp", function(v){ SL.grp = v; if(SL.state && SL.state.phase === "lobby") waitView(); }));
     SL.unsub.push(MG.fb.on(base + "/final", function(v){ SL.final = v; if(v && SL.state && SL.state.phase === "end") endView(); }));
   }
@@ -343,7 +371,7 @@
     if(!SL || !SL.cfg) return;
     var ps = list(SL.players).filter(function(p){ return !p.kicked; }), gname = myGroupName(), c = SL.cfg;
     app.innerHTML = '<div class="lv-wait"><div class="brand-line" style="justify-content:center;"><img src="../icons/logo.svg" alt="">曼米中文・房間 ' + SL.code + '</div><div class="note">你好！</div><div class="me">' + MG.esc(SL.name) + '</div>' + (gname ? '<div class="note" style="font-size:16px;">你在：<b>' + MG.esc(gname) + '</b></div>' : '') +
-      '<div class="mg-panel" style="margin-top:14px;"><b>' + MG.esc(c.game === "match" ? "配對 Match" : "Blast") + '</b><div class="note">' + MG.esc(c.game === "match" ? (c.match.mode === "timed" ? "限時 " + c.match.seconds + " 秒，配越多越好" : "比速度，全部配完") + "・" + MG.MATCH_PAIRS[c.match.pair] : (c.blast.input === "type" ? "看詞語，打拼音（數字標調）" : MG.BLAST_Q[c.blast.q]) + (c.blast.lives ? "・" + c.blast.lives + " 條命" : "")) + '</div><p style="margin:10px 0 0;font-weight:700;color:var(--seal);">等老師開始…</p></div>' +
+      '<div class="mg-panel" style="margin-top:14px;"><b>' + MG.esc(c.game === "match" ? "配對 Match" : "Blast") + '</b><div class="note">' + MG.esc(c.game === "match" ? (c.match.mode === "timed" ? "限時 " + c.match.seconds + " 秒，配越多越好" : "比速度，全部配完") + "・" + MG.ph(MG.MATCH_PAIRS[c.match.pair], c.phon) : (c.blast.input === "type" ? "看詞語，打拼音（數字標調）" : MG.ph(MG.BLAST_Q[c.blast.q], c.phon)) + (c.blast.lives ? "・" + c.blast.lives + " 條命" : "")) + '</div><p style="margin:10px 0 0;font-weight:700;color:var(--seal);">等老師開始…</p></div>' +
       '<div class="note">已經有 ' + ps.length + ' 人加入</div><div class="lv-pl">' + ps.map(function(p){ return '<span' + (p.uid === SL.uid ? ' class="me"' : '') + '>' + MG.esc(p.name) + '</span>'; }).join("") + '</div></div>';
   }
   var writeScore = throttle(function(v){ if(SL) MG.fb.set(SL.base + "/scores/" + SL.uid, v).catch(function(){}); }, 1500);
@@ -360,11 +388,12 @@
       // 比速度：從開始（或晚到的人從加入）算時間
       var startAt = init && init.st ? init.st : Math.max(st.startAt, timed ? st.startAt : now);
       var seed = (Number(c.seed) || 1) + round * 7919;
-      SL.game = MG.playGame(app, c.game, c.words || [], { lang: c.lang, match: c.match, blast: c.blast, theme: c.blast && c.blast.theme, seed: seed, title: c.game === "match" ? "配對 Match" : "Blast",
+      var noMus = c.studentMusic ? {} : { music: "" };
+      SL.game = MG.playGame(app, c.game, c.words || [], { lang: c.lang, phon: c.phon, match: Object.assign({}, c.match, noMus), blast: Object.assign({}, c.blast, noMus), theme: (c[c.game] || {}).theme, seed: seed, title: c.game === "match" ? "配對 Match" : "Blast",
         now: MG.fb.now, startAt: startAt, endAt: st.endAt, init: init,
         onScore: function(sc){ writeScore(Object.assign({}, sc, { r: round, st: startAt, t: MG.fb.now() })); },
         onEnd: function(r){ var v = { s: r.s, c: r.c, w: r.w, rt: r.rt, n: r.n, time: Math.round(r.time), done: true, lives: r.lives === undefined ? null : r.lives, r: round, st: startAt, t: MG.fb.now() }; writeScore.flush(v); SL.game = null; waitEnd(r); } });
-      sideBoard(true);
+      strip(true);
     };
     var wait = st.startAt - MG.fb.now();
     if(wait > 300){
@@ -377,20 +406,25 @@
   function waitEnd(r){
     if(!SL) return;
     app.innerHTML = '<div class="gm-res">' + MG.resultHtml(SL.cfg.game, Object.assign({ missed: [] }, r), "做完了！") + '<p class="note">等其他同學和老師結束這一局…</p><div id="lv-mini"></div></div>';
-    sideBoard();
+    strip();
   }
-  function sideBoard(create){
+  // 排行榜：遊戲畫面上方一條橫列（前 5 名、自己的名次、組別）
+  function strip(create){
     if(!SL) return;
-    var b = SL.board, el = MG.$(".lv-side");
-    if(create && !el && MG.$(".gm")){ el = document.createElement("div"); el.className = "lv-side" + (window.innerWidth < 700 ? " min" : ""); MG.$(".gm").appendChild(el); el.onclick = function(e){ if(e.target.closest("[data-min]")){ el.classList.toggle("min"); sideBoard(); } }; }
+    var b = SL.board, el = MG.$(".lv-strip");
+    if(create && !el && MG.$(".gm-hud")){ el = document.createElement("div"); el.className = "lv-strip"; MG.$(".gm-hud").insertAdjacentElement("afterend", el); }
     var mini = MG.$("#lv-mini");
-    if(!b){ if(el) el.innerHTML = '<h4><span class="grow">排行榜</span><button class="mg-btn sm ghost" data-min>收起</button></h4><div class="lv-side-body note">遊戲開始後會出現</div>'; return; }
+    if(!b){ if(el) el.innerHTML = '<span class="ls-t">排行</span><span class="note">遊戲開始後會出現</span>'; return; }
     var my = b.rk && b.rk[SL.uid];
-    var rows = (b.ind || []).map(function(x, i){ return { name: x[0], s: x[1], rank: i + 1, uid: x[0] === SL.name ? SL.uid : "" }; });
-    var html = boardHtml(rows, { me: SL.uid, limit: 5 }) + (my ? '<div class="note" style="margin-top:4px;">你是第 <b>' + my + '</b> 名（共 ' + (b.n || 0) + ' 人）</div>' : '') +
-      ((b.grp || []).length ? '<div class="note" style="margin:6px 0 2px;font-weight:700;">組別</div>' + boardHtml(b.grp.map(function(g, i){ return { name: g[0], s: g[1], rank: i + 1 }; }), {}) : '');
-    if(el) el.innerHTML = '<h4><span class="grow">排行榜' + (my ? '・第 ' + my + ' 名' : '') + '</span><button class="mg-btn sm ghost" data-min>' + (el.classList.contains("min") ? "展開" : "收起") + '</button></h4><div class="lv-side-body">' + html + '</div>';
-    if(mini) mini.innerHTML = '<div class="lb" style="text-align:left;margin-top:10px;"><h3>目前排行</h3>' + html + '</div>';
+    var chip = function(name, s, rk, me){ return '<span class="ls-c r' + rk + (me ? " me" : "") + '"><b>' + rk + '</b><span class="nm">' + MG.esc(name) + '</span><i>' + s + '</i></span>'; };
+    if(el) el.innerHTML = '<span class="ls-t">排行</span>' + (b.ind || []).map(function(x, i){ return chip(x[0], x[1], i + 1, x[0] === SL.name); }).join("") +
+      (my ? '<span class="ls-me">你：第 <b>' + my + '</b> 名／' + (b.n || 0) + ' 人</span>' : '') +
+      ((b.grp || []).length ? '<span class="ls-g"><span class="ls-t">組別</span>' + b.grp.map(function(g, i){ return chip(g[0], g[1], i + 1, false); }).join("") + '</span>' : '');
+    if(mini){
+      var rows = (b.ind || []).map(function(x, i){ return { name: x[0], s: x[1], rank: i + 1, uid: x[0] === SL.name ? SL.uid : "" }; });
+      mini.innerHTML = '<div class="lb" style="text-align:left;margin-top:10px;"><h3>目前排行</h3>' + boardHtml(rows, { me: SL.uid, limit: 5 }) + (my ? '<div class="note" style="margin-top:4px;">你是第 <b>' + my + '</b> 名（共 ' + (b.n || 0) + ' 人）</div>' : '') +
+        ((b.grp || []).length ? '<div class="note" style="margin:6px 0 2px;font-weight:700;">組別</div>' + boardHtml(b.grp.map(function(g, i){ return { name: g[0], s: g[1], rank: i + 1 }; }), {}) : '') + '</div>';
+    }
   }
   function endView(){
     if(!SL) return;
@@ -400,5 +434,5 @@
       '<div class="lv-boards"' + ((f.grp || []).length ? '' : ' style="grid-template-columns:1fr"') + '><div class="lb"><h3>個人排行</h3>' + boardHtml(ind, { me: SL.uid, bars: true, sub: function(r){ return gn[r.g] || ""; } }) + '</div>' + ((f.grp || []).length ? '<div class="lb"><h3>組別排行</h3>' + boardHtml(f.grp, { bars: true }) + '</div>' : '') + '</div><p class="note" style="text-align:center;">老師可能會再開一局，請留在這個畫面。</p></div>';
   }
 
-  MG.Live = { teacherStart: teacherStart, studentJoin: studentJoin, computeBoards: computeBoards, banner: banner };
+  MG.Live = { teacherStart: teacherStart, studentJoin: studentJoin, computeBoards: computeBoards, banner: banner, current: current, applyToRoom: applyToRoom, backToRoom: backToRoom };
 })();

@@ -381,9 +381,9 @@ footer .footer-end-actions .return-home{justify-self:center}
  --seal:#E8825A;--seal-soft:#FBE8DE;--accent:#C4623A;--accent-hover:#A9502C;--warm:#FBE8DE;
  --bamboo:#4C8577;--bamboo-soft:#E3F0EC;--blue:#2B2320;--brand-hover:#4A3D37;
  --control-radius:10px;--panel-radius:18px;--shadow:0 8px 24px -10px rgba(28,33,30,.18);
- --serif:"LXGW WenKai TC","Noto Serif TC",serif;
- --kai:"MM Kai","LXGW WenKai TC","Noto Serif TC",serif;
- --sans:"Plus Jakarta Sans","Noto Sans TC","Microsoft JhengHei","PingFang TC",system-ui,sans-serif;
+ --serif:"Iansui","Noto Serif TC",serif;
+ --kai:"MM Kai","Iansui","Noto Serif TC",serif;
+ --sans:"Plus Jakarta Sans","Iansui","Noto Sans TC","Microsoft JhengHei","PingFang TC",system-ui,sans-serif;
 }
 html,body{background:var(--paper);color:var(--text)}
 body{font-family:var(--sans);-webkit-tap-highlight-color:transparent}

@@ -7,7 +7,7 @@
 
   MG.THEMES = {
     space: {
-      name: "太空隕石", dir: 1,
+      name: "宇宙", music: "space", dir: 1,
       bg: "radial-gradient(ellipse at 30% 20%, #3B3F7A 0%, #1C1F45 45%, #0E1030 100%)",
       deco: function(){
         var s = ""; for(var i = 0; i < 70; i++){ var x = (i * 137.5) % 100, y = (i * 61.8 * 1.7) % 100, r = (i % 5 === 0) ? 2.2 : 1.2; s += '<circle cx="' + x.toFixed(1) + '%" cy="' + y.toFixed(1) + '%" r="' + r + '" fill="#fff" opacity="' + (0.35 + (i % 4) * 0.15) + '"/>'; }
@@ -21,7 +21,7 @@
       spark: ["#F2C14E", "#E8825A", "#fff"]
     },
     balloon: {
-      name: "氣球", dir: -1,
+      name: "天空氣球", music: "relax", dir: -1,
       bg: "linear-gradient(#9FD3F5 0%, #CFEAFB 60%, #F4FBFF 100%)",
       deco: function(){
         function cloud(x, y, s){ return '<g transform="translate(' + x + ' ' + y + ') scale(' + s + ')" fill="#fff" opacity=".9"><ellipse cx="0" cy="0" rx="40" ry="22"/><ellipse cx="30" cy="-12" rx="30" ry="24"/><ellipse cx="62" cy="2" rx="34" ry="20"/></g>'; }
@@ -35,7 +35,7 @@
       spark: ["#E8825A", "#F2C14E", "#5B9BD5", "#C8607A"]
     },
     bubble: {
-      name: "泡泡", dir: -1,
+      name: "海底泡泡", music: "ocean", dir: -1,
       bg: "linear-gradient(#4FB3C9 0%, #2E8FA8 55%, #1F6F89 100%)",
       deco: function(){
         return '<svg width="100%" height="100%" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid slice" style="position:absolute;inset:0"><path d="M0 120 Q250 80 500 120 T1000 110" stroke="#fff" stroke-width="3" fill="none" opacity=".25"/><path d="M60 700 Q70 600 50 520 Q40 460 70 400" stroke="#3E9C6E" stroke-width="14" fill="none" stroke-linecap="round"/><path d="M110 700 Q130 620 100 560" stroke="#57B585" stroke-width="10" fill="none" stroke-linecap="round"/><path d="M900 700 Q880 610 910 540 Q930 490 905 430" stroke="#3E9C6E" stroke-width="14" fill="none" stroke-linecap="round"/><ellipse cx="500" cy="700" rx="600" ry="40" fill="#E8D6A8" opacity=".8"/></svg>';
@@ -48,7 +48,7 @@
       spark: ["#fff", "#BFF3FF", "#E6E1FF"]
     },
     fruit: {
-      name: "水果", dir: 1,
+      name: "水果", music: "happy", dir: 1,
       bg: "linear-gradient(#FFF6E3 0%, #FCE9C8 100%)",
       deco: function(){
         var s = ""; for(var i = 0; i < 14; i++){ var x = (i * 173) % 1000, y = (i * 97) % 700; s += '<path d="M' + x + ' ' + y + ' q12 -18 26 0 q-12 18 -26 0z" fill="#9CCB86" opacity=".35" transform="rotate(' + (i * 40) + ' ' + x + ' ' + y + ')"/>'; }
@@ -66,9 +66,13 @@
     }
   };
   MG.THEME_ORDER = ["space", "balloon", "bubble", "fruit"];
+  // 配對多一個「米色」（原本的簡單背景）；Blast 需要掉落物的圖形，所以不用米色
+  MG.THEMES.plain = { name: "米色", music: "happy", bg: "var(--paper)", plain: true };
+  MG.MATCH_THEMES = ["plain"].concat(MG.THEME_ORDER);
   // 選主題用的小圖
   MG.themeSwatch = function(id){
     var t = MG.THEMES[id]; if(!t) return "";
+    if(t.plain) return '<div class="sw" style="background:#FAF7F2;"><svg viewBox="0 0 150 110"><rect x="20" y="22" width="110" height="28" rx="9" fill="#fff" stroke="#E2D8CC" stroke-width="3"/><rect x="20" y="62" width="110" height="28" rx="9" fill="#fff" stroke="#E2D8CC" stroke-width="3"/></svg></div>';
     return '<div class="sw" style="background:' + t.bg + '">' + t.shape(1).replace('class="shape"', '') + '</div>';
   };
 })();

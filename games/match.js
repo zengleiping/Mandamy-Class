@@ -4,19 +4,20 @@
                            startAt, endAt, now, init, onScore, onEnd, onQuit, title, side }) */
 (function(){
   var MG = window.MG;
-  var PAIR_NAME = { p: "詞語 ↔ 拼音", t: "詞語 ↔ 翻譯", pt: "詞語 ↔ 拼音＋翻譯" };
+  var PAIR_NAME = { p: "詞語 ↔ 拼音", t: "詞語 ↔ 翻譯", pt: "詞語 ↔ 拼音＋翻譯", i: "詞語 ↔ 圖片" };
   MG.MATCH_PAIRS = PAIR_NAME;
 
   function create(root, o){
     var now = o.now || function(){ return Date.now(); };
+    var TH = MG.THEMES[o.theme] || MG.THEMES.plain;
     var rnd = MG.rng(o.seed || 1), batchN = MG.clamp(Number(o.batch) || 6, 3, 8);
-    var words = (o.words || []).filter(function(w){ return w && w.w && ansText(w); });
+    var words = MG.withPhon(o.words, o.phon).filter(function(w){ return w && w.w && ansText(w); });
     var sc = MG.newScore(o.init), total = words.length, missed = {};
     var startAt = o.startAt || now(), endAt = o.mode === "timed" ? (o.endAt || startAt + (Number(o.seconds) || 60) * 1000) : (o.endAt || 0);
     var queue = MG.shuffle(words, rnd), cur = [], sel = null, lastAt = startAt, ended = false, timer = null, busy = false;
     if(o.mode !== "timed" && sc.c) queue = queue.slice(Math.min(sc.c, queue.length));   // 重新連線：已經配好的不再出現
 
-    function ansText(w){ return MG.sideText(w, o.pair === "t" ? "t" : o.pair === "pt" ? "pt" : "p", o.lang); }
+    function ansText(w){ return MG.sideText(w, o.pair === "t" ? "t" : o.pair === "pt" ? "pt" : o.pair === "i" ? "i" : "p", o.lang); }
     function refill(){ if(o.mode === "timed" && queue.length < batchN * 2) queue = queue.concat(MG.shuffle(words, rnd)); }
     function nextBatch(){
       refill();
@@ -29,14 +30,14 @@
     }
 
     root.innerHTML = '<div class="gm mt">' +
-      '<div class="gm-hud"><span class="gm-title">' + MG.esc(o.title || "配對 Match") + '</span><span class="note">' + MG.esc(PAIR_NAME[o.pair] || "") + '</span>' +
+      '<div class="gm-hud"><span class="gm-title">' + MG.esc(o.title || "配對 Match") + '</span><span class="note">' + MG.esc(MG.ph(PAIR_NAME[o.pair] || "", o.phon)) + '</span>' +
       (o.mode === "timed" ? '' : '<div class="mt-prog"><i style="width:0%"></i></div><span class="note mt-pn"></span>') + '<span class="grow"></span>' +
       '<div class="gm-stat time"><small>' + (o.mode === "timed" ? "剩下" : "時間") + '</small><b class="mt-time">0:00</b></div>' +
       '<div class="gm-stat"><small>答錯</small><b class="mt-err">0</b></div>' +
       '<div class="gm-stat score"><small>分數</small><b class="mt-score">0</b></div>' +
-      '<button class="mg-btn sm ghost mt-snd">' + (MG.sound.on ? "音效 開" : "音效 關") + '</button>' +
+      MG.musicBtn(o.music) + '<button class="mg-btn sm ghost mt-snd">' + (MG.sound.on ? "音效 開" : "音效 關") + '</button>' +
       (o.onQuit ? '<button class="mg-btn sm mt-quit">結束</button>' : '') + '</div>' +
-      '<div class="mt-board"><div class="mt-col mt-l"></div><div class="mt-col mt-r"></div></div></div>';
+      '<div class="mt-stage" style="background:' + (TH.bg || "var(--paper)") + '">' + (TH.deco ? '<div class="bl-bg">' + TH.deco() + '</div>' : '') + '<div class="mt-board"><div class="mt-col mt-l"></div><div class="mt-col mt-r"></div></div></div></div>';
     var el = root.firstChild, colL = MG.$(".mt-l", el), colR = MG.$(".mt-r", el);
 
     function render(){
@@ -45,8 +46,9 @@
       var left = MG.shuffle(cur, rnd), right = MG.shuffle(cur, rnd);
       colL.innerHTML = left.map(function(w){ return '<button class="mt-card zh" data-side="l" data-w="' + MG.esc(w.w) + '"><span class="fit" data-fmax="34" data-fmin="12">' + MG.esc(w.w) + '</span></button>'; }).join("");
       colR.innerHTML = right.map(function(w){
-        if(o.pair === "pt") return '<button class="mt-card ans" data-side="r" data-a="' + MG.esc(ansText(w)) + '"><span class="fit" data-fmax="20" data-fmin="10">' + MG.esc(w.p || "") + '</span><span class="fit sub" data-fmax="16" data-fmin="9">' + MG.esc(MG.trOf(w, o.lang)) + '</span></button>';
-        return '<button class="mt-card ans" data-side="r" data-a="' + MG.esc(ansText(w)) + '"><span class="fit" data-fmax="' + (o.pair === "t" ? 20 : 24) + '" data-fmin="9">' + MG.esc(ansText(w)) + '</span></button>';
+        if(o.pair === "i") return '<button class="mt-card ans picc" data-side="r" data-a="' + MG.esc(ansText(w)) + '">' + MG.picHtml(ansText(w)) + '</button>';
+        if(o.pair === "pt") return '<button class="mt-card ans' + (o.phon === "zy" ? " zy" : "") + '" data-side="r" data-a="' + MG.esc(ansText(w)) + '"><span class="fit" data-fmax="20" data-fmin="10">' + MG.esc(w.p || "") + '</span><span class="fit sub" data-fmax="16" data-fmin="9">' + MG.esc(MG.trOf(w, o.lang)) + '</span></button>';
+        return '<button class="mt-card ans' + (o.phon === "zy" && o.pair === "p" ? " zy" : "") + '" data-side="r" data-a="' + MG.esc(ansText(w)) + '"><span class="fit" data-fmax="' + (o.pair === "t" ? 20 : o.phon === "zy" ? 30 : 24) + '" data-fmin="9">' + MG.esc(ansText(w)) + '</span></button>';
       }).join("");
       requestAnimationFrame(function(){ MG.fitAll(el); });
       lastAt = Math.max(lastAt, now());
@@ -88,7 +90,8 @@
       check(sel, c);
     });
     MG.$(".mt-snd", el).onclick = function(){ MG.sound.on = !MG.sound.on; this.textContent = MG.sound.on ? "音效 開" : "音效 關"; };
-    if(o.onQuit) MG.$(".mt-quit", el).onclick = function(){ o.onQuit(); };
+    if(o.onQuit) MG.$(".mt-quit", el).onclick = function(){ MG.music.stop(); o.onQuit(); };
+    MG.bindMusicBtn(el, o.music);
 
     function result(all){ return Object.assign({}, sc, { time: Math.max(0, (ended || now()) - startAt), done: !!all, total: total, missed: Object.keys(missed).map(function(k){ return missed[k]; }) }); }
     function emit(extra){ if(o.onScore) o.onScore(Object.assign({}, sc, { time: now() - startAt }, extra || {})); }
@@ -97,7 +100,7 @@
       var t = now();
       if(o.mode === "timed"){
         var left = endAt - t; MG.$(".mt-time", el).textContent = MG.fmtTime(left + 999);
-        MG.$(".gm-stat.time", el).classList.toggle("warn", left < 10000);
+        MG.$(".gm-stat.time", el).classList.toggle("warn", left < 10000); MG.music.fast(left < 10000);
         if(left <= 0){ finish(false); return; }
       } else {
         MG.$(".mt-time", el).textContent = MG.fmtTime(t - startAt);
@@ -105,14 +108,14 @@
       }
     }
     function finish(all){
-      if(ended) return; ended = now(); clearInterval(timer);
+      if(ended) return; ended = now(); clearInterval(timer); MG.music.stop();
       MG.beep("end"); var r = result(all && o.mode !== "timed");
       if(o.mode === "timed") r.time = endAt - startAt;
       if(o.onEnd) o.onEnd(r);
     }
-    hud(); render(); tick(); timer = setInterval(tick, 200);
+    hud(); render(); tick(); timer = setInterval(tick, 200); if(o.music) MG.music.play(o.music);
     window.addEventListener("resize", function(){ if(!ended) MG.fitAll(el); });
-    return { stop: function(){ if(!ended){ ended = now(); clearInterval(timer); } }, finish: function(){ finish(false); }, score: function(){ return sc; }, result: function(){ return result(false); } };
+    return { stop: function(){ MG.music.stop(); if(!ended){ ended = now(); clearInterval(timer); } }, finish: function(){ finish(false); }, score: function(){ return sc; }, result: function(){ return result(false); } };
   }
   MG.Match = { create: create };
 })();

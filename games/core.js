@@ -163,6 +163,37 @@
     var tr = {}; if(v["英文翻譯"]) tr.en = String(v["英文翻譯"]).trim(); if(v["泰文翻譯"]) tr.th = String(v["泰文翻譯"]).trim();
     return { id: String(i), w: String(v["生詞"] || "").trim(), p: String(v["拼音"] || "").trim(), zy: String(v["注音"] || "").trim(), tr: tr, e: String(v["Emoji／圖示"] || "").trim() };
   };
+  // ---------- 注音 ----------
+  var ZY_STAND = { yi:"ㄧ", ya:"ㄧㄚ", ye:"ㄧㄝ", yao:"ㄧㄠ", you:"ㄧㄡ", yan:"ㄧㄢ", yin:"ㄧㄣ", yang:"ㄧㄤ", ying:"ㄧㄥ", yong:"ㄩㄥ", wu:"ㄨ", wa:"ㄨㄚ", wo:"ㄨㄛ", wai:"ㄨㄞ", wei:"ㄨㄟ", wan:"ㄨㄢ", wen:"ㄨㄣ", wang:"ㄨㄤ", weng:"ㄨㄥ", yu:"ㄩ", yue:"ㄩㄝ", yuan:"ㄩㄢ", yun:"ㄩㄣ" };
+  var ZY_FIN = { a:"ㄚ", o:"ㄛ", e:"ㄜ", "ê":"ㄝ", ai:"ㄞ", ei:"ㄟ", ao:"ㄠ", ou:"ㄡ", an:"ㄢ", en:"ㄣ", ang:"ㄤ", eng:"ㄥ", er:"ㄦ", ong:"ㄨㄥ", i:"ㄧ", ia:"ㄧㄚ", ie:"ㄧㄝ", iao:"ㄧㄠ", iu:"ㄧㄡ", ian:"ㄧㄢ", "in":"ㄧㄣ", iang:"ㄧㄤ", ing:"ㄧㄥ", iong:"ㄩㄥ", u:"ㄨ", ua:"ㄨㄚ", uo:"ㄨㄛ", uai:"ㄨㄞ", ui:"ㄨㄟ", uan:"ㄨㄢ", un:"ㄨㄣ", uang:"ㄨㄤ", "ü":"ㄩ", "üe":"ㄩㄝ", "üan":"ㄩㄢ", "ün":"ㄩㄣ" };
+  var ZY_INI = { zh:"ㄓ", ch:"ㄔ", sh:"ㄕ", b:"ㄅ", p:"ㄆ", m:"ㄇ", f:"ㄈ", d:"ㄉ", t:"ㄊ", n:"ㄋ", l:"ㄌ", g:"ㄍ", k:"ㄎ", h:"ㄏ", j:"ㄐ", q:"ㄑ", x:"ㄒ", r:"ㄖ", z:"ㄗ", c:"ㄘ", s:"ㄙ" };
+  function zySyl(base, tone){
+    var body;
+    if(ZY_STAND[base]) body = ZY_STAND[base];
+    else {
+      var ini = "", rest = base, two = base.slice(0, 2);
+      if(ZY_INI[two]){ ini = two; rest = base.slice(2); } else if(ZY_INI[base[0]]){ ini = base[0]; rest = base.slice(1); }
+      if((ini === "j" || ini === "q" || ini === "x") && rest[0] === "u") rest = "ü" + rest.slice(1);
+      var f; if(ini && { zh:1, ch:1, sh:1, r:1, z:1, c:1, s:1 }[ini] && rest === "i") f = ""; else { f = ZY_FIN[rest]; if(f === undefined) f = rest; }
+      body = (ini ? ZY_INI[ini] : "") + f;
+    }
+    return tone ? body + ["", "ˊ", "ˇ", "ˋ"][tone - 1] : "˙" + body;
+  }
+  // 生詞庫有「注音」就用；沒有就從拼音轉（拼音要一個音節一個空格才轉得準）
+  MG.zyFromPy = function(py){ return MG.pySyllables(py).map(function(x){ return zySyl(x.l, x.t || 0); }).join(" "); };
+  MG.zyOf = function(w){ return String((w && w.zy) || "").trim() || (w && w.p ? MG.zyFromPy(w.p) : ""); };
+  MG.phonName = function(phon){ return phon === "zy" ? "注音" : "拼音"; };
+  MG.ph = function(text, phon){ return phon === "zy" ? String(text).replace(/拼音/g, "注音") : text; };
+  // 用注音玩：把每個詞的「讀音」換成注音（原本的拼音留在 py），遊戲裡出現拼音的地方就都變成注音
+  MG.withPhon = function(words, phon){
+    if(phon !== "zy") return words || [];
+    return (words || []).map(function(w){ return Object.assign({}, w, { py: w.p, p: MG.zyOf(w) }); });
+  };
+
+  // 圖片：老師另外設定的（Emoji 或圖片網址）優先，沒有就用生詞庫的「Emoji／圖示」
+  MG.picOf = function(w){ if(!w) return ""; if(w.img) return w.img === "-" ? "" : String(w.img).trim(); return String(w.e || "").trim(); };   // "-"＝老師刻意不要圖片
+  MG.isUrl = function(v){ return /^(https?:|blob:|data:image)/.test(String(v || "")); };
+  MG.picHtml = function(v){ return MG.isUrl(v) ? '<img class="pic" src="' + MG.esc(v) + '" alt="" draggable="false">' : '<span class="pic emo">' + MG.esc(v) + '</span>'; };
   MG.trOf = function(w, lang){ var t = (w.tr || {})[lang] || ""; return String(t).split(/[;；]/)[0].trim(); };
   // 卡片／答案上要顯示的字：w 詞語、p 拼音、t 翻譯、pt 拼音＋翻譯
   MG.sideText = function(w, kind, lang){
@@ -170,6 +201,7 @@
     if(kind === "p") return w.p || "";
     if(kind === "t") return MG.trOf(w, lang) || w.p || "";
     if(kind === "pt") return (w.p || "") + " · " + (MG.trOf(w, lang) || "");
+    if(kind === "i") return MG.picOf(w);
     return w.w;
   };
   // 出題範圍：每課取幾成的生詞，固定（照課本順序）或隨機（用種子，同一局大家一樣）
@@ -204,7 +236,7 @@
     store = store || {};
     words.forEach(function(w){
       var k = MG.wkey(w.w);
-      Object.keys(store).forEach(function(lang){ var v = store[lang] && store[lang][k]; if(!v) return; if(lang === "_py") w.p = v; else { w.tr = w.tr || {}; w.tr[lang] = v; } });
+      Object.keys(store).forEach(function(lang){ var v = store[lang] && store[lang][k]; if(!v) return; if(lang === "_py") w.p = v; else if(lang === "_img") w.img = v; else { w.tr = w.tr || {}; w.tr[lang] = v; } });
     });
     return words;
   };
@@ -224,7 +256,7 @@
   MG.beep = function(kind){
     if(!MG.sound.on) return;
     try{
-      actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+      actx = MG.audioCtx ? MG.audioCtx() : (actx || new (window.AudioContext || window.webkitAudioContext)()); if(!actx) return;
       var now = actx.currentTime, seq = { ok: [[660, 0], [880, 0.08]], bad: [[220, 0], [180, 0.09]], pop: [[520, 0], [1040, 0.05]], go: [[523, 0], [659, 0.12], [784, 0.24]], tick: [[880, 0]], end: [[784, 0], [659, 0.15], [523, 0.3]] }[kind] || [[600, 0]];
       seq.forEach(function(n){
         var o = actx.createOscillator(), g = actx.createGain(); o.type = kind === "bad" ? "square" : "triangle"; o.frequency.value = n[0];
@@ -252,6 +284,24 @@
     now: function(){ return Date.now() + (MG.fb.offset || 0); }
   };
   MG.fb.ready.then(function(ok){ if(ok) try{ MG.fb.on(".info/serverTimeOffset", function(v){ MG.fb.offset = Number(v) || 0; }, function(){}); }catch(e){} });
+
+  // ---------- 上傳圖片（Firebase Storage；太大的先縮小） ----------
+  MG.uploadImage = async function(file, path){
+    if(!window.storageApi) throw new Error("檔案儲存還沒準備好，請稍後再試");
+    if(!/^image\//.test(file.type)) throw new Error("請選圖片檔");
+    var blob = file;
+    if(file.size > 600000){
+      try{
+        var bmp = await createImageBitmap(file), sc = Math.min(1, 900 / Math.max(bmp.width, bmp.height));
+        var cv = document.createElement("canvas"); cv.width = Math.round(bmp.width * sc); cv.height = Math.round(bmp.height * sc); cv.getContext("2d").drawImage(bmp, 0, 0, cv.width, cv.height);
+        blob = await new Promise(function(r){ cv.toBlob(r, file.type === "image/png" ? "image/png" : "image/jpeg", 0.85); }) || file;
+      }catch(e){ blob = file; }
+    }
+    if(blob.size > 5 * 1024 * 1024) throw new Error("圖片太大（超過 5 MB）");
+    var A = window.storageApi, r = A.ref(A.storage, path);
+    await A.uploadBytes(r, blob, { contentType: blob.type || file.type });
+    return await A.getDownloadURL(r);
+  };
 
   // ---------- QR code ----------
   MG.qrSvg = function(text, px){
