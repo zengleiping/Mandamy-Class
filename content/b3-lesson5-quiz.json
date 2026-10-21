@@ -1,0 +1,983 @@
+{
+ "id": "proj_b3l5quiz",
+ "title": "第三冊 第五課 天氣變涼了 練習題",
+ "desc": "依第三冊第五課簡報（生詞、句型、課文、習寫漢字、練習、綜合活動、任務活動）整理；題目說明附英文",
+ "sections": {
+  "s35_1": {
+   "id": "s35_1",
+   "title": "第 1 大題：連連看（生詞和注音） Match the words with zhuyin",
+   "type": "match",
+   "order": 0,
+   "questions": {
+    "q35_01": {
+     "id": "q35_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "涼快",
+       "right": "ㄌㄧㄤˊ ˙ㄎㄨㄞ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "溫度",
+       "right": "ㄨㄣ ㄉㄨˋ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "大概",
+       "right": "ㄉㄚˋ ㄍㄞˋ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "差不多",
+       "right": "ㄔㄚˋ ㄅㄨˋ ㄉㄨㄛ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "零下",
+       "right": "ㄌㄧㄥˊ ㄒㄧㄚˋ"
+      }
+     }
+    },
+    "q35_02": {
+     "id": "q35_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "穿",
+       "right": "ㄔㄨㄢ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "衣服",
+       "right": "ㄧ ㄈㄨˊ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "感冒",
+       "right": "ㄍㄢˇ ㄇㄠˋ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "暖和",
+       "right": "ㄋㄨㄢˇ ˙ㄏㄨㄛ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "下雨",
+       "right": "ㄒㄧㄚˋ ㄩˇ"
+      }
+     }
+    }
+   }
+  },
+  "s35_2": {
+   "id": "s35_2",
+   "title": "第 2 大題：連連看（生詞和意思） Match the words with their meanings",
+   "type": "match",
+   "order": 1,
+   "questions": {
+    "q35_03": {
+     "id": "q35_03",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "溫度",
+       "right": "temperature"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "下雪",
+       "right": "to snow"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "零下",
+       "right": "below zero"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "不得了",
+       "right": "extremely; terribly"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "但是",
+       "right": "but; however"
+      }
+     }
+    },
+    "q35_04": {
+     "id": "q35_04",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "這裡",
+       "right": "here"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "那裡",
+       "right": "there"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "涼",
+       "right": "cool"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "得",
+       "right": "must; have to"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "差不多",
+       "right": "almost; about"
+      }
+     }
+    }
+   }
+  },
+  "s35_3": {
+   "id": "s35_3",
+   "title": "第 3 大題：看圖片，把動詞和東西連起來 Look at the pictures and match the verbs",
+   "type": "match",
+   "order": 2,
+   "questions": {
+    "q35_05": {
+     "id": "q35_05",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "leftLabel": "動詞",
+     "rightLabel": "東西",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "看",
+       "right": "書"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "吃",
+       "right": "飯"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "喝",
+       "right": "水"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "穿",
+       "right": "外套"
+      }
+     },
+     "media": [
+      {
+       "id": "m_verbs",
+       "type": "image",
+       "src": "../content/b3l5/verbs.jpg",
+       "name": "看圖連動詞"
+      }
+     ]
+    }
+   }
+  },
+  "s35_4": {
+   "id": "s35_4",
+   "title": "第 4 大題：我會寫（寫出正確的漢字） Write the characters",
+   "type": "fill",
+   "order": 3,
+   "questions": {
+    "q35_06": {
+     "id": "q35_06",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "心美問奶奶那裡的天氣變{涼}了嗎？"
+    },
+    "q35_07": {
+     "id": "q35_07",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "奶奶說現在的{溫}{度}大概是十八度，很涼快。"
+    },
+    "q35_08": {
+     "id": "q35_08",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "心美說天氣非常冷，已經開始下雪了，{差}不多是零下三度。"
+    },
+    "q35_09": {
+     "id": "q35_09",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "奶奶要心美多{穿}一點{衣}{服}，別感冒了！"
+    },
+    "q35_10": {
+     "id": "q35_10",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "奶奶那裡的春天很暖和，但是常常下{雨}。"
+    }
+   }
+  },
+  "s35_5": {
+   "id": "s35_5",
+   "title": "第 5 大題：心美寫給奶奶的信 Xinmei's letter",
+   "type": "fill",
+   "order": 4,
+   "questions": {
+    "q35_11": {
+     "id": "q35_11",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "下面是心美寫給奶奶的信，請根據課文寫上正確的漢字。 This is Xinmei's letter to Grandma. Fill in the correct characters.",
+     "template": "親愛的奶奶：您好嗎？您那裡的天氣變{涼}了嗎？我們這裡已經開始下雪了，天氣非常冷，{溫}度{差}不多是零下三{度}。"
+    },
+    "q35_12": {
+     "id": "q35_12",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "下面是心美寫給奶奶的信，請根據課文寫上正確的漢字。 This is Xinmei's letter to Grandma. Fill in the correct characters.",
+     "template": "奶奶那裡的天氣也很冷吧！您得多{穿}一點{衣}{服}，別{感}{冒}了。"
+    },
+    "q35_13": {
+     "id": "q35_13",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "下面是心美寫給奶奶的信，請根據課文寫上正確的漢字。 This is Xinmei's letter to Grandma. Fill in the correct characters.",
+     "template": "我不喜歡冬天，冷得不得了！奶奶說過您那裡的春天很暖和，但是常常下{雨}。我希望春天快點來，也希望可以快點看到奶奶。"
+    }
+   }
+  },
+  "s35_6": {
+   "id": "s35_6",
+   "title": "第 6 大題：句型填空 Fill in the sentence patterns",
+   "type": "fill",
+   "order": 5,
+   "questions": {
+    "q35_14": {
+     "id": "q35_14",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "用「差不多」完成句子。 Use 差不多 (almost).",
+     "template": "我的自行車{差不多}是九十九塊錢。"
+    },
+    "q35_15": {
+     "id": "q35_15",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "用「得」完成句子。 Use 得 (should; have to).",
+     "template": "睡覺以前，{得}先刷牙。"
+    },
+    "q35_16": {
+     "id": "q35_16",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "用「多 V 一點」完成句子。 Use 多 V 一點 (V a little more).",
+     "template": "下課以後，我們得{多}看{一點}書。"
+    },
+    "q35_17": {
+     "id": "q35_17",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "用「Vs 得不得了」完成句子。 Use Vs 得不得了 (extremely).",
+     "template": "長頸鹿的脖子長得{不得了}。"
+    }
+   }
+  },
+  "s35_7": {
+   "id": "s35_7",
+   "title": "第 7 大題：選擇題（句型） Choose the correct answer",
+   "type": "choice",
+   "order": 6,
+   "questions": {
+    "q35_18": {
+     "id": "q35_18",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n天氣很冷，你得多穿＿＿衣服。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "一點"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "一下"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "一些些"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    },
+    "q35_19": {
+     "id": "q35_19",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n週末的時候，我們＿＿學中文。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "得"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "的"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "地"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    },
+    "q35_20": {
+     "id": "q35_20",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n已經十二月了，天氣冷得＿＿。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "不得了"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "差不多"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "大概"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    },
+    "q35_21": {
+     "id": "q35_21",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n天氣非常冷，＿＿是零下三度。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "差不多"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "不得了"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "但是"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    },
+    "q35_22": {
+     "id": "q35_22",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n我們這裡的春天很暖和，＿＿常常下雨。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "但是"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "所以"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "因為"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    }
+   }
+  },
+  "s35_8": {
+   "id": "s35_8",
+   "title": "第 8 大題：閱讀理解（課文） Reading comprehension",
+   "type": "choice",
+   "order": 7,
+   "questions": {
+    "q35_23": {
+     "id": "q35_23",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n奶奶那裡現在的溫度大概是幾度？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "十八度"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "八度"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "零下三度"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：喂，奶奶，我是心美，您好嗎？您那裡的天氣變涼了嗎？\n奶奶：我很好。現在的溫度大概是十八度，很涼快。你那裡呢？\n心美：我們這裡已經開始下雪了，天氣非常冷，差不多是零下三度。\n奶奶：你得多穿一點衣服，別感冒了！\n心美：我不喜歡冬天，冷得不得了！希望春天快點來。\n奶奶：我們這裡的春天很暖和，但是常常下雨。\n心美：還是夏天好，比較舒服。"
+    },
+    "q35_24": {
+     "id": "q35_24",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n心美那裡的天氣怎麼樣？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "已經開始下雪了，非常冷"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "很涼快"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "很暖和，常常下雨"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：喂，奶奶，我是心美，您好嗎？您那裡的天氣變涼了嗎？\n奶奶：我很好。現在的溫度大概是十八度，很涼快。你那裡呢？\n心美：我們這裡已經開始下雪了，天氣非常冷，差不多是零下三度。\n奶奶：你得多穿一點衣服，別感冒了！\n心美：我不喜歡冬天，冷得不得了！希望春天快點來。\n奶奶：我們這裡的春天很暖和，但是常常下雨。\n心美：還是夏天好，比較舒服。"
+    },
+    "q35_25": {
+     "id": "q35_25",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n奶奶要心美做什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "多穿一點衣服"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "多喝一點水"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "早一點睡覺"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：喂，奶奶，我是心美，您好嗎？您那裡的天氣變涼了嗎？\n奶奶：我很好。現在的溫度大概是十八度，很涼快。你那裡呢？\n心美：我們這裡已經開始下雪了，天氣非常冷，差不多是零下三度。\n奶奶：你得多穿一點衣服，別感冒了！\n心美：我不喜歡冬天，冷得不得了！希望春天快點來。\n奶奶：我們這裡的春天很暖和，但是常常下雨。\n心美：還是夏天好，比較舒服。"
+    },
+    "q35_26": {
+     "id": "q35_26",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n奶奶那裡的春天怎麼樣？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "很暖和，但是常常下雨"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "冷得不得了"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "常常下雪"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：喂，奶奶，我是心美，您好嗎？您那裡的天氣變涼了嗎？\n奶奶：我很好。現在的溫度大概是十八度，很涼快。你那裡呢？\n心美：我們這裡已經開始下雪了，天氣非常冷，差不多是零下三度。\n奶奶：你得多穿一點衣服，別感冒了！\n心美：我不喜歡冬天，冷得不得了！希望春天快點來。\n奶奶：我們這裡的春天很暖和，但是常常下雨。\n心美：還是夏天好，比較舒服。"
+    },
+    "q35_27": {
+     "id": "q35_27",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n心美覺得哪個季節比較舒服？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "夏天"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "春天"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "冬天"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：喂，奶奶，我是心美，您好嗎？您那裡的天氣變涼了嗎？\n奶奶：我很好。現在的溫度大概是十八度，很涼快。你那裡呢？\n心美：我們這裡已經開始下雪了，天氣非常冷，差不多是零下三度。\n奶奶：你得多穿一點衣服，別感冒了！\n心美：我不喜歡冬天，冷得不得了！希望春天快點來。\n奶奶：我們這裡的春天很暖和，但是常常下雨。\n心美：還是夏天好，比較舒服。"
+    }
+   }
+  },
+  "s35_9": {
+   "id": "s35_9",
+   "title": "第 9 大題：是非題（課文） True or false",
+   "type": "choice",
+   "order": 8,
+   "questions": {
+    "q35_28": {
+     "id": "q35_28",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "判斷對錯。 True or false?\n\n心美很喜歡冬天。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c2"
+     ],
+     "passage": "心美：喂，奶奶，我是心美，您好嗎？您那裡的天氣變涼了嗎？\n奶奶：我很好。現在的溫度大概是十八度，很涼快。你那裡呢？\n心美：我們這裡已經開始下雪了，天氣非常冷，差不多是零下三度。\n奶奶：你得多穿一點衣服，別感冒了！\n心美：我不喜歡冬天，冷得不得了！希望春天快點來。\n奶奶：我們這裡的春天很暖和，但是常常下雨。\n心美：還是夏天好，比較舒服。"
+    },
+    "q35_29": {
+     "id": "q35_29",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "判斷對錯。 True or false?\n\n奶奶那裡的天氣很涼快。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：喂，奶奶，我是心美，您好嗎？您那裡的天氣變涼了嗎？\n奶奶：我很好。現在的溫度大概是十八度，很涼快。你那裡呢？\n心美：我們這裡已經開始下雪了，天氣非常冷，差不多是零下三度。\n奶奶：你得多穿一點衣服，別感冒了！\n心美：我不喜歡冬天，冷得不得了！希望春天快點來。\n奶奶：我們這裡的春天很暖和，但是常常下雨。\n心美：還是夏天好，比較舒服。"
+    },
+    "q35_30": {
+     "id": "q35_30",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "判斷對錯。 True or false?\n\n心美希望春天快點來。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：喂，奶奶，我是心美，您好嗎？您那裡的天氣變涼了嗎？\n奶奶：我很好。現在的溫度大概是十八度，很涼快。你那裡呢？\n心美：我們這裡已經開始下雪了，天氣非常冷，差不多是零下三度。\n奶奶：你得多穿一點衣服，別感冒了！\n心美：我不喜歡冬天，冷得不得了！希望春天快點來。\n奶奶：我們這裡的春天很暖和，但是常常下雨。\n心美：還是夏天好，比較舒服。"
+    }
+   }
+  },
+  "s35_10": {
+   "id": "s35_10",
+   "title": "第 10 大題：讀讀看，寫上漢字 Read the zhuyin and write the characters",
+   "type": "fill",
+   "order": 9,
+   "questions": {
+    "q35_31": {
+     "id": "q35_31",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "讀出注音，寫出正確的漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄕㄨˋ ㄧㄝˋ ㄅㄧㄢˋ ㄏㄨㄤˊ ˙ㄌㄜ → {樹葉變黃了}"
+    },
+    "q35_32": {
+     "id": "q35_32",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "讀出注音，寫出正確的漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄑㄧㄡ ㄊㄧㄢ ㄎㄨㄞˋ ㄉㄠˋ ˙ㄌㄜ → {秋天快到了}"
+    },
+    "q35_33": {
+     "id": "q35_33",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "讀出注音，寫出正確的漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄘㄠˇ ㄏㄞˊ ㄕˋ ㄌㄩˋ ㄙㄜˋ ˙ㄉㄜ → {草還是綠色的}"
+    }
+   }
+  },
+  "s35_11": {
+   "id": "s35_11",
+   "title": "第 11 大題：任務活動（關心朋友） Show you care",
+   "type": "open",
+   "order": 10,
+   "questions": {
+    "q35_34": {
+     "id": "q35_34",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "請你用「得……多一點」關心朋友，把句子寫完整。 Use 得…多…一點 to show you care about a friend.\n\n冬天的時候天氣很冷，你得多＿一點＿＿＿。",
+     "reference": "冬天的時候天氣很冷，你得多穿一點衣服。"
+    },
+    "q35_35": {
+     "id": "q35_35",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "請你用「得……多一點」關心朋友，把句子寫完整。 Use 得…多…一點 to show you care about a friend.\n\n夏天的時候天氣很熱，你得多＿一點＿＿＿。",
+     "reference": "夏天的時候天氣很熱，你得多喝一點水。"
+    },
+    "q35_36": {
+     "id": "q35_36",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "請你用「得……多一點」關心朋友，把句子寫完整。 Use 得…多…一點 to show you care about a friend.\n\n你太瘦了，你得多＿一點＿＿＿。",
+     "reference": "你太瘦了，你得多吃一點飯。"
+    },
+    "q35_37": {
+     "id": "q35_37",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "請你用「得……多一點」關心朋友，把句子寫完整。 Use 得…多…一點 to show you care about a friend.\n\n下課以後，你得多＿一點＿＿＿。",
+     "reference": "下課以後，你得多看一點書。"
+    }
+   }
+  },
+  "s35_12": {
+   "id": "s35_12",
+   "title": "第 12 大題：說說看（句型、綜合活動） Speaking",
+   "type": "record",
+   "order": 11,
+   "questions": {
+    "q35_38": {
+     "id": "q35_38",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "老師問：「臺灣冬天的溫度是幾度？」請用「差不多」回答。 Answer with 差不多.",
+     "reference": "臺灣冬天的溫度差不多是十五度。",
+     "maxSec": 30
+    },
+    "q35_39": {
+     "id": "q35_39",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "放假的時候，你要做什麼？請用「我得……」回答。 Answer with 我得…",
+     "reference": "放假的時候，我得幫媽媽打掃房間。",
+     "maxSec": 30
+    },
+    "q35_40": {
+     "id": "q35_40",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "生日的時候，你想準備什麼？請用「多 V 一點」回答。 Answer with 多 V 一點.",
+     "reference": "我想多準備一點蛋糕和飲料。",
+     "maxSec": 30
+    },
+    "q35_41": {
+     "id": "q35_41",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "臺灣的珍珠奶茶貴不貴？請用「Vs 得不得了」回答。 Answer with Vs 得不得了.",
+     "reference": "那裡的珍珠奶茶便宜得不得了。",
+     "maxSec": 30
+    },
+    "q35_42": {
+     "id": "q35_42",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": "圖片內容依課本行程表判讀，請依實際上課需要調整參考答案。",
+     "prompt": "看張莉這個星期的行程表，說說她星期幾得做什麼事。 Look at Zhang Li's schedule and say what she has to do each day.",
+     "reference": "張莉星期一得寫功課，星期二得去游泳，星期三得寫書法，星期四得踢足球，星期五得去看爺爺奶奶，星期六和星期天得上中文課。",
+     "maxSec": 90,
+     "media": [
+      {
+       "id": "m_schedule",
+       "type": "image",
+       "src": "../content/b3l5/schedule.jpg",
+       "name": "張莉的行程表"
+      }
+     ]
+    },
+    "q35_43": {
+     "id": "q35_43",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "看圖，用「涼快」或「暖和」說說你那裡今天的天氣。 Look at the picture and talk about today's weather with 涼快 or 暖和.",
+     "reference": "我這裡今天很涼快。／我這裡今天很暖和。",
+     "maxSec": 45,
+     "media": [
+      {
+       "id": "m_weather",
+       "type": "image",
+       "src": "../content/b3l5/weather.jpg",
+       "name": "天氣預測"
+      }
+     ]
+    }
+   }
+  },
+  "s35_13": {
+   "id": "s35_13",
+   "title": "第 13 大題：習寫漢字 Write the characters",
+   "type": "hanzi",
+   "order": 12,
+   "questions": {
+    "q35_44": {
+     "id": "q35_44",
+     "order": 0,
+     "title": "第 1 題：涼",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "涼",
+     "desc": "11畫，部首：水"
+    },
+    "q35_45": {
+     "id": "q35_45",
+     "order": 1,
+     "title": "第 2 題：溫",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "溫",
+     "desc": "13畫，部首：水"
+    },
+    "q35_46": {
+     "id": "q35_46",
+     "order": 2,
+     "title": "第 3 題：度",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "度",
+     "desc": "9畫，部首：广"
+    },
+    "q35_47": {
+     "id": "q35_47",
+     "order": 3,
+     "title": "第 4 題：差",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "差",
+     "desc": "10畫，部首：工"
+    },
+    "q35_48": {
+     "id": "q35_48",
+     "order": 4,
+     "title": "第 5 題：穿",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "穿",
+     "desc": "9畫，部首：穴"
+    },
+    "q35_49": {
+     "id": "q35_49",
+     "order": 5,
+     "title": "第 6 題：衣",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "衣",
+     "desc": "6畫，部首：衣"
+    },
+    "q35_50": {
+     "id": "q35_50",
+     "order": 6,
+     "title": "第 7 題：服",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "服",
+     "desc": "8畫，部首：月"
+    },
+    "q35_51": {
+     "id": "q35_51",
+     "order": 7,
+     "title": "第 8 題：感",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "感",
+     "desc": "13畫，部首：心"
+    },
+    "q35_52": {
+     "id": "q35_52",
+     "order": 8,
+     "title": "第 9 題：冒",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "冒",
+     "desc": "9畫，部首：冂"
+    },
+    "q35_53": {
+     "id": "q35_53",
+     "order": 9,
+     "title": "第 10 題：雨",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "雨",
+     "desc": "8畫，部首：雨"
+    }
+   }
+  },
+  "s35_14": {
+   "id": "s35_14",
+   "title": "第 14 大題：我會念（課文） Read aloud",
+   "type": "record",
+   "order": 13,
+   "questions": {
+    "q35_54": {
+     "id": "q35_54",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "請念出課文第一段。 Read the first part of the text.",
+     "passage": "心美：喂，奶奶，我是心美，您好嗎？您那裡的天氣變涼了嗎？\n奶奶：我很好。現在的溫度大概是十八度，很涼快。你那裡呢？\n心美：我們這裡已經開始下雪了，天氣非常冷，差不多是零下三度。\n奶奶：你得多穿一點衣服，別感冒了！",
+     "reference": "心美：喂，奶奶，我是心美，您好嗎？您那裡的天氣變涼了嗎？\n奶奶：我很好。現在的溫度大概是十八度，很涼快。你那裡呢？\n心美：我們這裡已經開始下雪了，天氣非常冷，差不多是零下三度。\n奶奶：你得多穿一點衣服，別感冒了！",
+     "maxSec": 60
+    },
+    "q35_55": {
+     "id": "q35_55",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "請念出課文第二段。 Read the second part of the text.",
+     "passage": "心美：我不喜歡冬天，冷得不得了！希望春天快點來。\n奶奶：我們這裡的春天很暖和，但是常常下雨。\n心美：還是夏天好，比較舒服。",
+     "reference": "心美：我不喜歡冬天，冷得不得了！希望春天快點來。\n奶奶：我們這裡的春天很暖和，但是常常下雨。\n心美：還是夏天好，比較舒服。",
+     "maxSec": 60
+    }
+   }
+  }
+ },
+ "currentQId": "q35_01"
+}

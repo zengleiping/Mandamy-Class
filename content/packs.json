@@ -33,6 +33,13 @@
    "file": "content/b3-lesson5.json"
   },
   {
+   "id": "b3-5-quiz",
+   "type": "project",
+   "bookTitle": "《學華語向前走》第三冊",
+   "lesson": 5,
+   "file": "content/b3-lesson5-quiz.json"
+  },
+  {
    "id": "b9-1",
    "bookTitle": "《學華語向前走》第九冊",
    "lesson": 1,
