@@ -9762,6 +9762,13 @@ window.mmTA = (function(){
     return wrap;
   }
 
+  // 平台嵌入、老師在上課：回報目前在第幾頁／第幾題，平台用來記下這個班教到哪裡（下次上課、課堂記錄自動填）
+  var lastPosSig = "";
+  function tellParentPos(sec, q, idx, total){
+    if(isStudent || window.parent === window || window.__attempt || window.__grade || window.__solo || window.__worker || !window.__embedKind) return;
+    var proj = getActiveProject(), sig = (q && q.id) + "|" + idx + "|" + total; if(sig === lastPosSig) return; lastPosSig = sig;
+    try{ window.parent.postMessage({ mm: "slidePos", kind: window.__embedKind, idx: idx + 1, total: total, qid: q.id, qTitle: q.title || "", secTitle: sec.title || "", projTitle: proj ? proj.title || "" : "" }, "*"); }catch(e){}
+  }
   function renderStage(){
     var currentInfo = getCurrentQInfo();
     if(!currentInfo){
@@ -9772,6 +9779,7 @@ window.mmTA = (function(){
 
     var sec = currentInfo.section; var q = currentInfo.question;
     var allList = getAllQuestionsList(); var currentIndex = allList.findIndex(function(it){ return it.question.id === q.id; });
+    tellParentPos(sec, q, currentIndex, allList.length);
     var mediaFingerprint = (sec.media || []).map(function(m){ return m.id; }).join(",") + "|" + (q.media || []).map(function(m){ return m.id; }).join(",") + "|" + (q.tts ? (q.tts.text || "").length + ":" + (q.tts.rate || 1) + ":" + (q.tts.src ? q.tts.src.length : 0) : "");
     var stageSignature = JSON.stringify([q.id, sec.type, sec.title, sec.desc || "", q.title, q.desc || "", currentIndex, allList.length, currentClassMode, !!isStudent, examViewId, mediaFingerprint, (isCanvasSec(sec) ? "" : (q.teacherNote || ""))]);
 
@@ -17326,6 +17334,8 @@ window.mmTA = (function(){
   function jumpToKind(focus){
     setEmbedKind(focus); try{ renderSidebar(); }catch(e){}
     var pj = getActiveProject(); if(!pj) return;
+    // 平台指定了從某一頁開始（這個班上次停的地方）：目前那一頁就是這個分頁的內容時，不要跳回第一頁
+    if(window.__keepQ && pj.currentQId){ var ci0 = findSectionForQuestion(pj.currentQId); if(ci0 && ci0.sec && (focus === "slides") === (ci0.sec.type === "board")) return; }
     var target = null;
     Object.keys(pj.sections || {}).sort(function(x, y){ return (pj.sections[x].order || 0) - (pj.sections[y].order || 0); }).some(function(sid){
       var sc = pj.sections[sid], isDeck = sc.type === "board", want = focus === "slides" ? isDeck : !isDeck;
@@ -17344,6 +17354,7 @@ window.mmTA = (function(){
     try{
       var pq = new URLSearchParams(location.search);
       if(pq.get("embed")) document.body.classList.add("embed");
+      if(pq.get("embed") && urlRoom && !isStudent) window.__keepQ = true;   // 老師回到今天同一個房間：接著原本的頁數，不跳回第一頁
       if(pq.get("embed") && /^(slides|quiz)$/.test(pq.get("focus") || "")){ setEmbedKind(pq.get("focus")); try{ renderSidebar(); }catch(e0){} }
       if(pq.get("worker")){ window.__worker = true; try{ parent.postMessage({ mm: "workerReady" }, "*"); }catch(e2){} }
       var newTitle = pq.get("newproject");
@@ -17358,6 +17369,8 @@ window.mmTA = (function(){
       if(wantProj && fsData.projects && fsData.projects[wantProj] && !urlRoom){
         window.__embedProject = wantProj; openProject(wantProj);
         var focus = pq.get("focus"); if(focus) jumpToKind(focus);
+        // 平台指定從某一頁開始（這個班上次教到的地方）
+        var wantQ = pq.get("q"); if(wantQ && getAllQuestionsList().some(function(it){ return it.question.id === wantQ; })){ setCurrentQ(wantQ); window.__keepQ = true; }
       }
     }catch(errEmbed){ console.warn("embed init failed", errEmbed); }
   }

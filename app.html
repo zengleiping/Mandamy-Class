@@ -2077,6 +2077,7 @@ function safeUrl(u){
   if(!/^[a-z][a-z0-9+.-]*:/i.test(u)) u = "https://" + u;
   return /^https?:\/\//i.test(u) ? u : "";
 }
+function calNextTip(x){ var ci = x.c && classInfo(x); if(!ci || !ci.obj) return ""; var nf = classNextFrom(ci.obj, x); return nf && classNextSlotId(x, nf) === x.id ? "\n下次進度：" + nf.text : ""; }
 function slotLink(sl, inner, cls, style, title){
   var u = safeUrl(sl.url), ti = title ? ' title="' + esc(title) + '"' : '';
   return u ? '<a class="' + cls + '" style="' + style + '"' + ti + ' href="' + esc(u) + '" target="_blank" rel="noopener noreferrer">' + inner + '</a>' : '<div class="' + cls + '" style="' + style + '"' + ti + '>' + inner + '</div>';
@@ -2169,14 +2170,15 @@ function calendarHtml(){
   for(var d = 1; d <= days; d++){
     var date = yy + "-" + pad2(mm + 1) + "-" + pad2(d), sl = slotsOn(date);
     html += '<div class="cal-d' + (date === today ? ' today' : '') + '" data-a="cal-day" data-d="' + date + '"><div class="cal-n">' + d + '</div>' +
-      (sl.length ? '<div class="cal-cnt">' + sl.length + ' 堂</div>' : '') + sl.slice(0, 3).map(function(x){ var tm = slotMulti(x) ? (date === x.date ? (x.start || "") : "") : (x.start || ""); return slotLink(x, esc((tm ? tm + " " : "") + slotText(x)) + (safeUrl(x.url) ? " ↗" : ""), "cal-s", "background:" + slotBg(x) + ";color:" + slotFg(x) + ";display:block;text-decoration:none;", slotTimeOn(x, date) + " " + slotLabel(x)); }).join("") + (sl.length > 3 ? '<div class="cal-s" style="background:none;color:var(--ink-soft);padding:0 2px;">還有 ' + (sl.length - 3) + ' 堂…</div>' : '') + '</div>';
+      (sl.length ? '<div class="cal-cnt">' + sl.length + ' 堂</div>' : '') + sl.slice(0, 3).map(function(x){ var tm = slotMulti(x) ? (date === x.date ? (x.start || "") : "") : (x.start || ""); return slotLink(x, esc((tm ? tm + " " : "") + slotText(x)) + (safeUrl(x.url) ? " ↗" : ""), "cal-s", "background:" + slotBg(x) + ";color:" + slotFg(x) + ";display:block;text-decoration:none;", slotTimeOn(x, date) + " " + slotLabel(x) + calNextTip(x)); }).join("") + (sl.length > 3 ? '<div class="cal-s" style="background:none;color:var(--ink-soft);padding:0 2px;">還有 ' + (sl.length - 3) + ' 堂…</div>' : '') + '</div>';
   }
   return html + '</div>';
 }
 function slotRowHtml(sl, withDate, onDate){
   var ci = classInfo(sl), les = sl.lesson && (S.plat.lessons || {})[sl.lesson] ? lessonTitle(sl.lesson) : "", u = safeUrl(sl.url);
   var chip = '<span style="display:inline-block;padding:2px 10px;border-radius:8px;font-weight:700;background:' + esc(slotBg(sl)) + ';color:' + esc(slotFg(sl)) + ';">' + esc(slotText(sl)) + '</span>';
-  var sub = (ci && ci.cls) ? ((sl.title ? esc(slotLabel(sl)) + '　・　' : esc(ci.cls) + '　・　') + (les ? esc(les) : '未指定課次')) : (les ? esc(les) : '');
+  var nf = ci && ci.obj && sl.c ? classNextFrom(ci.obj, sl) : null, isNext = nf && classNextSlotId(sl, nf) === sl.id;
+  var sub = (ci && ci.cls) ? ((sl.title ? esc(slotLabel(sl)) + '　・　' : esc(ci.cls) + '　・　') + (isNext ? '<b style="color:var(--seal);">下次進度：' + esc(nf.text) + '</b>' + (les && nf.lesson && String(nf.lesson) !== String(sl.lesson) ? '　<span class="note">（課表排的是 ' + esc(les) + '）</span>' : '') : les ? esc(les) : '未指定課次')) : (les ? esc(les) : '');
   var info = sub + (sl.note ? (sub ? '　・　' : '') + esc(sl.note) : '');
   return '<div class="slot"><div class="slot-time">' + esc(slotTimeOn(sl, onDate || sl.date)) + '</div><div class="slot-main"><div>' + chip + (withDate ? '　<span class="note">' + esc(sl.date) + '</span>' : '') + '</div>' + (info ? '<div class="note">' + info + '</div>' : '') + '</div>' +
     '<div class="slot-act">' + (u ? '<a class="btn sm" href="' + esc(u) + '" target="_blank" rel="noopener noreferrer">🔗 開啟連結</a>' : '') + (ci ? '<button class="btn" data-a="slot-go" data-id="' + sl.id + '">' + '進入上課' + '</button>' : '') + (!sl.s ? '' : !recSlotNeeds(sl.id) ? '<span class="note">✓已記錄</span>' : '<button class="btn sm" data-a="slot-rec" data-id="' + sl.id + '">填記錄</button>') + '<button class="btn sm" data-a="slot-edit" data-id="' + sl.id + '">修改</button><button class="btn sm danger" data-a="slot-del" data-id="' + sl.id + '">刪除</button></div></div>';
@@ -2415,7 +2417,11 @@ async function schedAct(a, ds){
       for(var ti = 0; ti < targets.length; ti++){ m[targets[ti]].c = cid0; await fbUpdate(base + "/" + targets[ti], { c: cid0 }); }
       sl = m[ds.id];
     }
-    S.day = null; S.sel = { s: sl.s, t: sl.t, c: sl.c || null }; S.lesson = (sl.lesson && (S.plat.lessons || {})[sl.lesson]) ? sl.lesson : null; S.tab = null; S.sub = null; render(); return;
+    S.day = null; S.sel = { s: sl.s, t: sl.t, c: sl.c || null }; S.lesson = (sl.lesson && (S.plat.lessons || {})[sl.lesson]) ? sl.lesson : null; S.tab = null; S.sub = null;
+    // 這堂是這個班的下一堂：直接進到上次停的那一課、那份簡報的那一頁（課表另外指定了別課就照課表）
+    var nf0 = sl.c ? classNextFrom(getCls(S.sel), S.sel) : null;
+    if(nf0 && nf0.lesson && (S.plat.lessons || {})[nf0.lesson] && (!S.lesson || String(S.lesson) === String(nf0.lesson)) && classNextSlotId(sl, nf0) === ds.id) goNextFrom(nf0);
+    render(); return;
   }
   if(a === "slot-new" || a === "slot-edit"){
     var r = await openSlotDialog(a === "slot-edit" ? ds.id : null, ds.d); if(!r) return;
@@ -2554,6 +2560,15 @@ function newRecordDraft(slot){
   return { classLabel: label, classKey: classKey, mode: prevNames.length > 1 ? "group" : "single", date: date, seq: null, weekNo: null, material: material, isAbsence: false,
     students: (prevNames.length ? prevNames : [""]).map(blankStudent), vocab: [], shots: [], notes: "", slotId: slotId };
 }
+// 老師改寫了「下次從這裡開始」：記到班級上，課表的下一堂就顯示老師寫的（之後上課翻到新的頁數，又會改回自動記錄）
+function recSaveNextFrom(d){
+  var t = (d.nextFrom || "").trim(); if(!t || t === (d._nextAuto || "").trim() || !d.classKey) return;
+  var p = d.classKey.split("|"); if(p.length < 3 || !p[2]) return;
+  var sel = { s: p[0], t: p[1], c: p[2] }, cls = getCls(sel); if(!cls) return;
+  var cur = classNextFrom(cls, sel); if(cur && cur.text === t) return;
+  var nx = { text: t.slice(0, 200), d: d.date || ymd(new Date()), at: Date.now() };
+  cls.progress = cls.progress || {}; cls.progress.next = nx; fbSet(clsPath(sel) + "/progress/next", nx).catch(function(){});
+}
 // 從班級的課填記錄、而且名稱跟預設不同：記住這個名稱，下次同一班自動用它
 function recRememberLabel(d){
   if(!d.classKey || !d.classLabel) return; var p = d.classKey.split("|"); if(p.length < 3 || !p[2]) return;
@@ -2609,7 +2624,7 @@ async function openRecordFor(slot){
   var exist = slot && recIdForSlot(slot.id); if(exist){ return openRecordEdit(exist, recIncomplete(recMap()[exist]) ? slot : null); }
   var d = newRecordDraft(slot), info = [];
   try{ info = await Promise.race([recAutoFill(d, slot), new Promise(function(res){ setTimeout(function(){ res(null); }, 4000); })]) || []; }catch(e){}
-  S.rec = { edit: null, draft: d, shots: [], autoInfo: info }; S.day = null; S.lib = null; S.grades = null; S.sel = null; S.lesson = null; S.hw = null; render();
+  S.rec = { edit: null, draft: d, shots: [], autoInfo: info }; S.day = null; S.lib = null; S.grades = null; S.sel = null; S.lesson = null; S.hw = null; S.classes = null; S.act = null; render();
 }
 function recBadge(r){
   var st = function(bg, fg){ return 'display:inline-block;padding:2px 10px;border-radius:99px;font-size:13.5px;font-weight:700;background:' + bg + ';color:' + fg + ';white-space:nowrap;'; };
@@ -2725,14 +2740,14 @@ async function openRecordEdit(id, slotForFill){
   if(!Array.isArray(shots)) shots = Object.keys(shots).map(function(k){ return shots[k]; });
   var info = null;
   if(slotForFill){ var bare = !(r.students || []).some(function(st){ return (st.name || "").trim(); }); if(bare){ var nd = newRecordDraft(slotForFill); r.students = nd.students; r.mode = nd.mode; } try{ info = await Promise.race([recAutoFill(r, slotForFill), new Promise(function(res){ setTimeout(function(){ res(null); }, 4000); })]); }catch(e){} }
-  S.rec = { edit: id, draft: r, shots: shots, filter: S.rec && S.rec.filter, autoInfo: info }; S.day = null; S.lib = null; S.grades = null; S.sel = null; S.lesson = null; S.hw = null; render();
+  S.rec = { edit: id, draft: r, shots: shots, filter: S.rec && S.rec.filter, autoInfo: info }; S.day = null; S.lib = null; S.grades = null; S.sel = null; S.lesson = null; S.hw = null; S.classes = null; S.act = null; render();
 }
 function recSync(){
   var d = S.rec.draft, g = function(i){ return document.getElementById(i); };
   if(!g("rf-class")) return;
   d.classLabel = g("rf-class").value.trim(); d.date = g("rf-date").value || d.date;
   d.seq = g("rf-seq").value === "" ? null : Number(g("rf-seq").value); d.weekNo = g("rf-week").value === "" ? null : Number(g("rf-week").value);
-  d.material = g("rf-material").value; d.notes = g("rf-notes").value; d.isAbsence = g("rf-abs").checked;
+  d.material = g("rf-material").value; d.notes = g("rf-notes").value; d.isAbsence = g("rf-abs").checked; if(g("rf-next")) d.nextFrom = g("rf-next").value;
   var smy = g("rf-summary"); if(smy){ if(smy.value.trim()){ d.summary = smy.value; d.summaryHtml = smy.dataset.html || ""; } else { delete d.summary; delete d.summaryHtml; } }
   if(d.isAbsence){ if(g("rf-abst")) d.absType = g("rf-abst").value; if(g("rf-madeup")) d.madeUp = g("rf-madeup").checked; } else { delete d.absType; delete d.madeUp; }
   document.querySelectorAll(".rstu").forEach(function(box){
@@ -3003,7 +3018,11 @@ async function recAutoFill(d, slot){
   var info = [], sel = slot && slot.s && slot.c ? { s: slot.s, t: slot.t, c: slot.c } : null, cls = sel ? getCls(sel) : null, day = d.date || ymd(new Date());
   if(cls){
     var tg = (cls.progress || {}).taught || {}, ks = Object.keys(tg).filter(function(k){ return tg[k] && tg[k][day] && (S.plat.lessons || {})[k]; });
-    if(!d.material && ks.length){ d.material = ks.map(lessonTitle).join("、"); info.push("進度"); }
+    var plain = slot && slot.lesson && (S.plat.lessons || {})[slot.lesson] ? lessonTitle(slot.lesson) : "", auto = recProgressText(cls, day, ks);
+    if(auto && (!d.material || d.material === plain)){ d.material = auto; info.push("進度"); }
+    // 下次從這裡開始：今天的記錄（或上次停的那天就是這堂）才自動帶，補填很久以前的記錄不帶
+    var nf = classNextFrom(cls, sel);
+    if(d.nextFrom == null && nf && (day === ymd(new Date()) || nf.d === day)){ d.nextFrom = nf.text; d._nextAuto = nf.text; info.push("下次進度"); }
   }
   var d0 = new Date(day + "T00:00:00").getTime(), d1 = d0 + 86400000, have = {};
   (d.vocab || []).forEach(function(v){ have[v.word] = 1; });
@@ -3202,6 +3221,7 @@ function renderRecEditorBase(){
     '<label style="display:flex;align-items:center;gap:6px;margin-top:12px;"><input type="checkbox" id="rf-abs"' + (d.isAbsence ? ' checked' : '') + '> 這堂課請假／調課（沒有實際上課，不用打分數）</label>' +
     (d.isAbsence ? '<div class="tools" style="margin:8px 0 0 22px;"><select id="rf-abst" style="padding:6px 10px;border-radius:8px;border:1.5px solid var(--line);background:var(--surface-2);"><option' + ((d.absType || "請假") === "請假" ? ' selected' : '') + '>請假</option><option' + (d.absType === "調課" ? ' selected' : '') + '>調課</option></select><label style="display:flex;align-items:center;gap:6px;margin:0;"><input type="checkbox" id="rf-madeup"' + (d.madeUp ? ' checked' : '') + '> 已經補課了</label></div>' : '') +
     '<label>本次教材進度</label><textarea id="rf-material" rows="2" placeholder="例如：第一冊第五課 生詞、語法">' + esc(d.material) + '</textarea>' +
+    (d.classKey && d.classKey.split("|")[2] ? '<label>下次從這裡開始　<span class="note" style="font-weight:400;">系統依這堂課最後停的頁數自動填，可以改；課表上這個班的下一堂會顯示這一行</span></label><input type="text" id="rf-next" placeholder="例如：第二課 簡報「我跑得最快」第 12 頁" value="' + esc(d.nextFrom || "") + '">' : '') +
     '<div id="rf-stu" style="' + (d.isAbsence ? 'opacity:.45;pointer-events:none;' : '') + '"><label>學生表現（聽力理解20／口語表達25／閱讀15／寫作20／課堂參與20＝總分100）</label>' +
     d.students.map(function(st, i){
       return '<div class="rstu" data-i="' + i + '"><div style="display:flex;gap:8px;align-items:center;"><input type="text" class="rname" placeholder="學生姓名" value="' + esc(st.name) + '"><label style="display:flex;align-items:center;gap:4px;white-space:nowrap;font-size:14px;margin:0;"><input type="checkbox" class="rabs"' + (st.absent ? ' checked' : '') + '> 缺席</label>' + (d.students.length > 1 ? '<button class="btn sm ghost" data-r="rmstu" data-i="' + i + '">移除</button>' : '') + '</div><div class="rgrid">' +
@@ -3289,14 +3309,14 @@ async function saveRecord(){
   var m = recMap(), id = S.rec.edit || uid("rec_");
   if(d.seq == null){ var mx = 0; Object.keys(m).forEach(function(k){ if(k !== id && m[k].classLabel === d.classLabel && (m[k].seq || 0) > mx) mx = m[k].seq; }); d.seq = mx + 1; }
   if(d.weekNo == null) d.weekNo = recWeekNo(d.date, d.classLabel);
-  var rec = JSON.parse(JSON.stringify(d)); rec.updatedAt = Date.now(); if(d.isAbsence) rec.students = [];
+  var rec = JSON.parse(JSON.stringify(d)); rec.updatedAt = Date.now(); if(d.isAbsence) rec.students = []; delete rec._nextAuto; if(!rec.nextFrom) delete rec.nextFrom;
   var base = "teacherPlatform/" + S.teacher.id;
   try{
     await fbSet(base + "/classRecords/" + id, rec);
     await fbSet(base + "/recordShots/" + id, S.rec.shots && S.rec.shots.length ? S.rec.shots : null);
   }catch(e){ alert("儲存失敗，請檢查網路或 Firebase 規則。內容還留在畫面上。"); return; }
   m[id] = rec; try{ localStorage.removeItem(recBackupKey()); }catch(e){}
-  recRememberLabel(d);
+  recRememberLabel(d); recSaveNextFrom(d);
   refreshParentLinksFor(d.classLabel, d.classKey);
   toast("已儲存"); S.rec = { filter: d.classLabel }; render();
 }
@@ -5147,7 +5167,7 @@ function renderClassList(){
       var cl = terms[t].classes || {}, cids = sortedBy(cl, false);
       return '<div class="cl-school"><div class="cl-sh"><b>' + esc(terms[t].name) + '</b><span class="note">' + cids.length + ' 班</span><span style="flex:1;"></span><button class="btn sm ghost owner-only" data-a="add-c" data-s="' + y + '" data-t="' + t + '">＋ 班級</button><button class="btn sm ghost owner-only" data-a="go" data-s="' + y + '" data-t="' + t + '">學校設定</button></div><div class="hc-grid">' +
         (cids.length ? cids.map(function(c){ var x = { sel: { s: y, t: t, c: c }, cls: cl[c] }, pr = classProgress(x.cls, x.sel), nx = classSlots(x.sel).filter(function(z){ return z.date >= today; }).sort(function(a, b){ return (a.date + (a.start || "")).localeCompare(b.date + (b.start || "")); })[0];
-          return '<button class="hc" data-a="go" data-s="' + y + '" data-t="' + t + '" data-c="' + c + '"><b>' + esc(cl[c].name) + '</b><span class="note">' + (pr.cur ? '▶ ' + esc(lessonTitle(pr.cur)) : '還沒有進度') + '</span>' + (nx ? '<span class="note">下次 ' + (nx.date === today ? '<b style="color:var(--seal);">今天</b>' : md(nx.date)) + (nx.start ? ' ' + esc(nx.start) : '') + '</span>' : '') + '</button>'; }).join("") : '<p class="note" style="margin:0;">這間學校還沒有班級。</p>') + '</div></div>';
+          return '<button class="hc" data-a="go" data-s="' + y + '" data-t="' + t + '" data-c="' + c + '"><b>' + esc(cl[c].name) + '</b><span class="note">' + cardProgress(x.cls, x.sel, pr) + '</span>' + (nx ? '<span class="note">下次 ' + (nx.date === today ? '<b style="color:var(--seal);">今天</b>' : md(nx.date)) + (nx.start ? ' ' + esc(nx.start) : '') + '</span>' : '') + '</button>'; }).join("") : '<p class="note" style="margin:0;">這間學校還沒有班級。</p>') + '</div></div>';
     }).join("");
     var head = '<b style="font-size:18px;">' + esc(sch[y].name) + '</b>　<span class="note">' + tids.length + ' 間學校・' + n + ' 班</span>';
     var tools = '<span class="owner-only" style="margin-left:auto;display:inline-flex;gap:6px;"><button class="btn sm ghost" data-a="add-t" data-s="' + y + '">＋ 學校</button><button class="btn sm ghost" data-a="go" data-s="' + y + '">年度設定</button></span>';
@@ -5255,7 +5275,7 @@ function homeClassesHtml(){
   var cur = list.filter(function(x){ return x.latest; }), old = list.filter(function(x){ return !x.latest; });
   function card(x){
     var pr = classProgress(x.cls, x.sel), nx = classSlots(x.sel).filter(function(y){ return y.date >= today; }).sort(function(a, b){ return (a.date + (a.start || "")).localeCompare(b.date + (b.start || "")); })[0];
-    return '<button class="hc" data-a="go" data-s="' + x.sel.s + '" data-t="' + x.sel.t + '" data-c="' + x.sel.c + '"><span class="note">' + esc(x.school) + '</span><b>' + esc(x.cls.name) + '</b><span class="note">' + (pr.cur ? '▶ ' + esc(lessonTitle(pr.cur)) : '還沒有進度') + '</span>' + (nx ? '<span class="note">下次 ' + (nx.date === today ? '<b style="color:var(--seal);">今天</b>' : md(nx.date)) + (nx.start ? ' ' + esc(nx.start) : '') + '</span>' : '') + '</button>';
+    return '<button class="hc" data-a="go" data-s="' + x.sel.s + '" data-t="' + x.sel.t + '" data-c="' + x.sel.c + '"><span class="note">' + esc(x.school) + '</span><b>' + esc(x.cls.name) + '</b><span class="note">' + cardProgress(x.cls, x.sel, pr) + '</span>' + (nx ? '<span class="note">下次 ' + (nx.date === today ? '<b style="color:var(--seal);">今天</b>' : md(nx.date)) + (nx.start ? ' ' + esc(nx.start) : '') + '</span>' : '') + '</button>';
   }
   return '<div class="panel"><h3>我的班級' + (cur.length && cur[0].year ? '　<span class="note">' + esc(cur[0].year) + '</span>' : '') + '</h3><div class="hc-grid">' + cur.map(card).join("") + '</div>' +
     (old.length ? '<details style="margin-top:10px;"><summary class="note" style="cursor:pointer;">以前的年度（' + old.length + ' 班）</summary><div class="hc-grid" style="margin-top:8px;">' + old.map(card).join("") + '</div></details>' : '') + '</div>';
@@ -5339,6 +5359,12 @@ async function renderGrades(){
 }
 // ---------- 班級總覽：進度／測驗與作業／學生／班級工具 ----------
 var CTABS = [["progress", "📈 進度"], ["tests", "📝 測驗與作業"], ["students", "👥 學生"], ["tools", "🧰 班級工具與設定"]];
+// 首頁班級卡：下次從哪一課、第幾頁開始
+function cardProgress(cls, sel, pr){
+  var nf = classNextFrom(cls, sel);
+  if(nf && nf.lesson && (S.plat.lessons || {})[nf.lesson]){ var t = lessonTitle(nf.lesson).replace(/^.*?(第 \d+ 課)/, "$1"); return '▶ ' + esc(t + (nf.page ? "・第 " + nf.page + " " + nf.unit : "")); }
+  return pr.cur ? '▶ ' + esc(lessonTitle(pr.cur)) : '還沒有進度';
+}
 function classSlots(sel){ var m = schedMap(); return Object.keys(m).map(function(k){ return Object.assign({ id: k }, m[k]); }).filter(function(x){ return x.s === sel.s && x.t === sel.t && x.c === sel.c; }); }
 // 這個班每一課的狀態：上過的日期（上課時自動記錄＋課表上排了這一課的日子）、目前進度、預定日期
 function classProgress(cls, sel){
@@ -5368,6 +5394,71 @@ function markTaught(key){
   if(t[key][d]) return; t[key][d] = true;
   fbSet(clsPath(S.sel) + "/progress/taught/" + key + "/" + d, true).catch(function(){});
 }
+// ---------- 各班教到哪裡：上課時自動記下用了哪份簡報／測驗、停在第幾頁，給課表「下次進度」和課堂記錄自動填 ----------
+var PART_NAME = { vocab: "生詞", grammar: "語法", text: "課文", activities: "活動", bingo: "賓果" };
+// 上課中換到哪個部分（生詞／語法／課文／活動…）都記下來，課堂記錄的「本次教材進度」會寫進去
+function markPart(){
+  if(!S.teacher || !S.sel || !S.sel.c || !S.lesson || !S.live || !S.live.on) return;
+  var part = PART_NAME[S.tab === "material" ? S.sub : S.tab]; if(!part) return;
+  var cls = getCls(S.sel); if(!cls) return; var d = todayStr(), key = String(S.lesson);
+  cls.progress = cls.progress || {}; var pa = cls.progress.parts = cls.progress.parts || {}; pa[d] = pa[d] || {}; pa[d][key] = pa[d][key] || {};
+  if(pa[d][key][part]) return; pa[d][key][part] = true;
+  fbSet(clsPath(S.sel) + "/progress/parts/" + d + "/" + key + "/" + part, true).catch(function(){});
+}
+// 簡報頁回報目前頁數：上課中（或今天這個班已經用這份簡報開過房間）才記，在家備課、編輯不會算進去
+var POS_T = null;
+window.addEventListener("message", function(e){
+  if(!S.teacher || !e.data || e.data.mm !== "slidePos") return;
+  var fr = document.getElementById("fr"); if(!fr || fr.contentWindow !== e.source) return;
+  if(!S.sel || !S.sel.c || !S.lesson || !S.sub || (S.tab !== "slides" && S.tab !== "quiz")) return;
+  if(!(S.live && S.live.on) && !todayClassRoom(S.sub)) return;
+  var cls = getCls(S.sel); if(!cls) return;
+  var d = e.data, day = todayStr(), ps = (((S.plat.lessons || {})[S.lesson] || {}).projects || {})[S.sub] || {};
+  var pos = { d: day, l: String(S.lesson), pid: String(S.sub), pt: String(ps.title || d.projTitle || "").slice(0, 80), k: d.kind === "quiz" ? "quiz" : "slides", i: Math.max(1, Number(d.idx) || 1), n: Number(d.total) || 0, q: String(d.qid || ""), qt: String(d.qTitle || "").slice(0, 60), at: Date.now() };
+  cls.progress = cls.progress || {}; cls.progress.pos = pos;
+  var lg = cls.progress.log = cls.progress.log || {}; lg[day] = lg[day] || {}; lg[day][pos.pid] = pos;
+  var path = clsPath(S.sel); clearTimeout(POS_T);
+  POS_T = setTimeout(function(){ fbSet(path + "/progress/pos", pos).catch(function(){}); fbSet(path + "/progress/log/" + day + "/" + pos.pid, pos).catch(function(){}); }, 1200);
+});
+function posWhat(p){ return (p.k === "quiz" ? "測驗" : "簡報") + "「" + (p.pt || "未命名") + "」"; }
+function posText(p){ var u = p.k === "quiz" ? "題" : "頁"; return posWhat(p) + "：教到第 " + p.i + " " + u + (p.n ? "（共 " + p.n + " " + u + "）" : ""); }
+// 下次從哪裡開始：老師在課堂記錄改寫的優先（比自動記錄新的話）；否則接上次停的那一頁；那份上完了就換這課下一份，再來是下一課
+function classNextFrom(cls, sel){
+  if(!cls) return null;
+  var pg = cls.progress || {}, p = pg.pos, mn = pg.next, L = S.plat.lessons || {};
+  if(mn && mn.text && (!p || (mn.at || 0) >= (p.at || 0))) return { text: mn.text, manual: true, d: mn.d || "" };
+  if(p && L[p.l]){
+    var u = p.k === "quiz" ? "題" : "頁", fin = (p.n && p.i >= p.n) || (pg.done || {})[p.l];
+    if(!fin) return { text: lessonTitle(p.l) + "　" + posWhat(p) + "上次停在第 " + p.i + " " + u + (p.n ? "（共 " + p.n + " " + u + "）" : ""), lesson: p.l, pid: p.pid, q: p.q, kind: p.k, page: p.i, unit: u, d: p.d };
+    var ps = L[p.l].projects || {}, pids = Object.keys(ps).filter(function(x){ return (ps[x][p.k] || 0) > 0; }), j = pids.indexOf(p.pid);
+    if(!(pg.done || {})[p.l] && j >= 0 && j + 1 < pids.length) return { text: lessonTitle(p.l) + "　" + (p.k === "quiz" ? "測驗" : "簡報") + "「" + (ps[pids[j + 1]].title || "未命名") + "」從頭開始", lesson: p.l, pid: pids[j + 1], kind: p.k, d: p.d };
+    var keys = lessonKeys(cls), nk = keys[keys.indexOf(p.l) + 1];
+    return nk ? { text: lessonTitle(nk) + "　從頭開始（上次" + posWhat(p) + "已經上完）", lesson: nk, d: p.d } : { text: lessonTitle(p.l) + "　" + posWhat(p) + "已經上完", lesson: p.l, d: p.d };
+  }
+  var pr = classProgress(cls, sel); return pr.cur ? { text: lessonTitle(pr.cur), lesson: pr.cur } : null;
+}
+// 這個班「下一堂」：今天以後、而且在上次上課那天之後的第一堂（今天已經上過的那堂不算）
+function classNextSlotId(sel, nf){
+  var today = ymd(new Date()), after = nf && nf.d ? nf.d : "";
+  var x = classSlots(sel).filter(function(y){ return y.date >= today && y.date > after; }).sort(function(a, b){ return (a.date + (a.start || "")).localeCompare(b.date + (b.start || "")); })[0];
+  return x ? x.id : null;
+}
+// 本次教材進度（課堂記錄自動填）：上了哪幾課、哪些部分，用了哪份簡報、教到第幾頁
+function recProgressText(cls, day, ks){
+  var pg = cls.progress || {}, parts = (pg.parts || {})[day] || {}, log = (pg.log || {})[day] || {}, L = S.plat.lessons || {}, keys = ks.slice();
+  var logs = Object.keys(log).map(function(k){ return log[k]; }).filter(function(p){ return p && p.l; }).sort(function(a, b){ return (a.at || 0) - (b.at || 0); });
+  logs.forEach(function(p){ if(L[p.l] && keys.indexOf(p.l) < 0) keys.push(p.l); });
+  var lines = keys.map(function(k){ var pt = Object.keys(parts[k] || {}); return lessonTitle(k) + (pt.length ? "（" + pt.join("、") + "）" : ""); });
+  logs.forEach(function(p){ lines.push(posText(p)); });
+  return lines.join("\n");
+}
+// 進入某一課，簡報直接翻到這個班上次停的那一頁
+function goNextFrom(nf){
+  if(!nf || !nf.lesson) return false;
+  S.lesson = String(nf.lesson); S.sub = null; S.tab = null;
+  if(nf.pid){ S.tab = nf.kind === "quiz" ? "quiz" : "slides"; S.sub = nf.pid; S.jumpQ = nf.q && S.sel ? { pid: nf.pid, q: nf.q, c: S.sel.c } : null; }
+  return true;
+}
 function md(d){ return d ? Number(d.slice(5, 7)) + "/" + Number(d.slice(8, 10)) : ""; }
 function openSummary(open){
   var on = OPEN_KEYS.filter(function(k){ return open[k[0]]; }).map(function(k){ return k[1]; });
@@ -5386,7 +5477,14 @@ function classHeadHtml(cls, pr){
     var nx = classSlots(S.sel).filter(function(y){ return y.date > today; }).sort(function(a, b){ return (a.date + (a.start || "")).localeCompare(b.date + (b.start || "")); })[0];
     if(nx) line += '　<span class="note">下次上課 ' + md(nx.date) + (nx.start ? ' ' + esc(nx.start) : '') + '</span>';
   } else line = '<span class="note">還沒有上課記錄。進入任何一課「開始上課」或在課表排課時指定課次，進度就會自動記下來。</span>';
-  html += '<div class="panel" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 16px;"><div style="flex:1;min-width:220px;">' + line + '</div>' + (go ? '<button class="btn primary" data-ch="go" data-k="' + esc(go) + '">進入' + esc(lessonTitle(go).replace(/^(.*?第 \d+ 課).*$/, "$1").replace(/^.*?(第 \d+ 課)$/, "$1")) + ' ›</button>' : '') + '</div>';
+  var nf = classNextFrom(cls, S.sel), resume = '';
+  if(nf && (nf.pid || nf.manual || nf.d)){
+    var nsl = classNextSlotId(S.sel, nf), nx2 = nsl ? schedMap()[nsl] : null;
+    line += '<div style="margin-top:4px;"><b style="color:var(--seal);">下次進度</b>　' + esc(nf.text) + (nx2 ? '　<span class="note">' + md(nx2.date) + (nx2.start ? ' ' + esc(nx2.start) : '') + ' 那堂</span>' : '') + '</div>';
+    if(nf.pid && nf.page) resume = '<button class="btn" data-ch="resume">從第 ' + nf.page + ' ' + nf.unit + '繼續 ›</button>';
+    else if(nf.pid) resume = '<button class="btn" data-ch="resume">打開「' + esc(((((S.plat.lessons || {})[nf.lesson] || {}).projects || {})[nf.pid] || {}).title || "下一份") + '」›</button>';
+  }
+  html += '<div class="panel" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 16px;"><div style="flex:1;min-width:220px;">' + line +  '</div>' + resume + (go ? '<button class="btn primary" data-ch="go" data-k="' + esc(go) + '">進入' + esc(lessonTitle(go).replace(/^(.*?第 \d+ 課).*$/, "$1").replace(/^.*?(第 \d+ 課)$/, "$1")) + ' ›</button>' : '') + '</div>';
   html += '<div class="ctabs">' + CTABS.map(function(t){ return '<button class="ctab' + (t[0] === (S.ctab || "progress") ? ' on' : '') + '" data-ctab="' + t[0] + '">' + t[1] + '</button>'; }).join("") + '</div>';
   return html;
 }
@@ -5408,6 +5506,7 @@ function renderClassHome(cls){
     var a = b.dataset.ch;
     if(a === "go"){ S.lesson = String(b.dataset.k); S.tab = null; S.sub = null; render(); pushLive(); }
     else if(a === "rec"){ var m = schedMap()[b.dataset.id]; if(m) openRecordFor(Object.assign({ id: b.dataset.id }, m)); }
+    else if(a === "resume"){ if(goNextFrom(classNextFrom(cls, S.sel))){ render(); pushLive(); } }
   });
   document.getElementById("cpy").onclick = function(){ if(!(S.plat.meta || {}).linkShared){ S.plat.meta = S.plat.meta || {}; S.plat.meta.linkShared = true; fbSet("teacherPlatform/" + S.teacher.id + "/meta/linkShared", true).catch(function(){}); } var l = studentLink(cls.code); (navigator.clipboard ? navigator.clipboard.writeText(l) : Promise.reject()).then(function(){ toast("學生連結已複製"); }, function(){ prompt("學生連結", l); }); };
   if(ct === "progress") bindClassProgress(cls, pr);
@@ -5917,7 +6016,9 @@ function renderLessonCommon(no, open, teacher, liveStudent){
         if(pids.length === 1) sub = '';
         html = html.replace('<!--copyto-->', '<button class="tab" data-copyto="' + kind + '">複製到其他課…</button>');
         var rjoin = (S.live && S.live.on && S.live.room && S.live.roomProject === S.sub) ? S.live.room : todayClassRoom(S.sub);   // 今天這個班已經用這份簡報上過課：回到同一個房間，課堂筆記都還在
-        frame = lessonHtmlFrame("slides/practice.html?v=" + MM_V + "&embed=1&project=" + encodeURIComponent(S.sub) + "&focus=" + kind + (rjoin ? "&room=" + encodeURIComponent(rjoin) : ""));
+        // 從上次停的那一頁開始：直到今天這個班開了房間為止（開始上課會重新載入，房間開了之後就照房間的頁數）
+        var jq = (!rjoin && S.jumpQ && S.jumpQ.pid === S.sub && S.sel && S.jumpQ.c === S.sel.c) ? "&q=" + encodeURIComponent(S.jumpQ.q) : ""; if(rjoin) S.jumpQ = null;
+        frame = lessonHtmlFrame("slides/practice.html?v=" + MM_V + "&embed=1&project=" + encodeURIComponent(S.sub) + "&focus=" + kind + (rjoin ? "&room=" + encodeURIComponent(rjoin) : "") + jq);
       }
     } else if(liveStudent){
       frame = (S.live && S.live.room) ? lessonHtmlFrame("slides/practice.html?v=" + MM_V + "&embed=1&room=" + encodeURIComponent(S.live.room) + "&role=student&name=" + encodeURIComponent(S.student ? S.student.name : "")) : '<div class="empty"><p class="note">老師還沒開始這一段，請稍候…</p></div>';
@@ -6115,7 +6216,7 @@ async function toggleLive(){
   }
   S.live = { on: true, lesson: S.lesson, tab: S.tab, sub: S.sub || null, room: null, startedAt: Date.now() };
   try{ await fbSet(liveRef(), S.live); }catch(e){ toast("開始上課失敗，請檢查網路或 Firebase 規則"); S.live = null; return; }
-  cls.live = S.live; markTaught(S.lesson);
+  cls.live = S.live; markTaught(S.lesson); markPart();
   renderLesson(cls); setFocus(true); toggleBrowserFullscreenOn(); toast("已開始上課，學生會自動跟著你的畫面");
 }
 // 老師上課中、在簡報／測驗分頁：自動幫老師開房間（學生就會自動進來），並跳到這個分頁對應的第一份簡報／第一題
@@ -6140,6 +6241,7 @@ function pushLive(clearLesson){
   var patch = clearLesson ? { lesson: null, tab: null, sub: null, room: null } : { lesson: S.lesson || null, tab: S.tab || null, sub: S.sub || null };
   if(!clearLesson && S.lesson) markTaught(S.lesson);
   Object.keys(patch).forEach(function(k){ S.live[k] = patch[k]; });
+  if(!clearLesson) markPart();
   fbUpdate(liveRef(), patch).catch(function(){});
 }
 // 把這一課目前的投影片（或測驗與練習）複製成另一課的新專案；由內嵌編輯器動手（它手上有最新的資料庫內容，避免之後被它覆蓋掉）
