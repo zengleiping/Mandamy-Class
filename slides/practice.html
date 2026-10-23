@@ -4683,6 +4683,21 @@ window.mmTA = (function(){
     patch.strokes = teacher.concat(mine);
     if(lost) patch.strokesRevBy = "merge";   // 讓自己這台也重新套用合併後的版本
   }
+  // 在畫布上按住拖曳（搬動／縮放文字方塊、圖片、圖形、表格、框選範圍，或正在畫）時：房間裡任何變動（學生游標、
+  // 在線狀態、剛打完字的回音…）都會讓畫布整層重畫，正在拖的東西被換掉就拖不動了。按住期間先不套用房間更新，放開後再補一次。
+  // （超過 15 秒沒放開，例如切到別的視窗、放開事件沒收到，就當作已經放開，不會一直卡住不更新）
+  var objDrag = { on: false, at: 0, pending: null };
+  var OBJ_DRAG_SEL = ".canvas-stage-wrap, .movable-text, .image-proxy, .shape-proxy, .table-obj, .select-union-box, .select-item-box";
+  document.addEventListener("pointerdown", function(e){ var t = e.target; if(t && t.closest && t.closest(OBJ_DRAG_SEL)){ objDrag.on = true; objDrag.at = Date.now(); } }, true);
+  function objDragActive(){ if(objDrag.on && Date.now() - objDrag.at > 15000) objDragEnd(); return objDrag.on; }
+  function objDragDefer(f){ objDrag.pending = objDrag.pending || []; if(objDrag.pending.indexOf(f) < 0) objDrag.pending.push(f); }
+  function objDragEnd(){
+    if(!objDrag.on) return; objDrag.on = false;
+    var fs = objDrag.pending || []; objDrag.pending = null;
+    if(fs.length) setTimeout(function(){ if(!objDrag.on) fs.forEach(function(f){ f(); }); }, 30);   // 等物件自己的放開處理（寫入新位置）先跑完
+  }
+  window.addEventListener("pointerup", objDragEnd, true); window.addEventListener("pointercancel", objDragEnd, true); window.addEventListener("blur", objDragEnd);
+
   function writeProgress(qId, patch){
     var pk = inRoom() ? examPrivateFor(qId) : null;
     if(pk && pk !== "__none__"){ update(ref(db, "rooms/" + activeRoomId + "/examProg/" + pk + "/" + qId), isWhiteboardQ(qId) ? wbPrivatePatch(qId, patch) : patch); return; }
@@ -16230,6 +16245,7 @@ window.mmTA = (function(){
     // renderStage() 收到 false 會改走原本的完整重繪。
     function refreshFromProgress(){
       if(!document.body.contains(cWrap)) return false;
+      if(objDragActive()){ objDragDefer(refreshFromProgress); return true; }
       // 老師切換「開放作答／鎖定作答」不會改變 stageSignature（見 renderStage），只會觸發這裡的
       // 局部刷新，所以鎖定狀態的視覺／攔截要在這裡也重新套用一次，才能即時反映，不用等換題目。
       applyStudentLockState();
