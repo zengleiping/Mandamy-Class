@@ -1456,11 +1456,41 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   body.teach-mode .sidebar, body.teach-mode .sidebar-resizer{ display:none !important; }
   body.teach-mode .layout{ grid-template-columns:1fr !important; }
   body.teach-mode .board-area.ribbon-mode:not(.canvas-fs-active) .draw-toolbar-top{ display:none !important; }
-  body.teach-mode .board-area.ribbon-mode:not(.canvas-fs-active) .draw-toolbar-vertical{ display:flex !important; }
+  body.teach-mode .board-area.ribbon-mode:not(.canvas-fs-active) .draw-toolbar-vertical{ display:grid !important; }
   #btn-prep-mode{ display:none; }
   body.teach-mode .board-area:not(.canvas-fs-active) #btn-prep-mode{ display:flex; }
   .rb-teach-btn{ display:none; }
   body.teach-avail:not(.teach-mode) .rb-teach-btn{ display:inline-flex; }
+  /* 上課模式：工具列一定要放得下，不能讓整頁捲動——按鈕縮小，螢幕太矮就排成兩欄 */
+  body.teach-mode .stage-wrap{ overflow:hidden !important; }
+  body.teach-mode .stage-wrap > .stage{ height:100% !important; max-height:100% !important; min-height:0 !important; }
+  body.teach-mode .board-area:not(.canvas-fs-active){ height:100%; max-height:100%; min-height:0; }
+  body.teach-mode .board-area:not(.canvas-fs-active) .draw-board-layout{ height:100%; min-height:0; }
+  body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical{ display:grid !important; grid-template-columns:repeat(2, auto); align-content:start; width:auto; max-height:100%; gap:3px; padding:6px 5px; align-items:stretch; }
+  body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical > .tb-head, body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical > .slide-nav-row, body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical > .slide-nav-counter{ grid-column:1 / -1; }
+  body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical > .tool-v-sep{ display:none; }
+  body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical > .tool-btn-v-wrap > .tool-btn-v{ width:100%; }
+  body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical .tool-btn-v{ flex-direction:row; width:auto; min-width:0; height:30px; min-height:0; padding:2px 7px; gap:5px; justify-content:flex-start; }
+  body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical .tool-btn-v-label{ font-size:12.5px; line-height:1.1; white-space:nowrap; }
+  body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical .tool-btn-v-label br{ display:none; }
+  body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical .tool-btn-v-icon, body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical .tool-btn-v-icon-img{ font-size:15px; width:17px; height:17px; flex:none; }
+  body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical .slide-nav-row{ justify-content:space-between; gap:3px; }
+  body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical .slide-nav-row .tool-btn-v{ min-width:0; flex:1; justify-content:center; }
+  /* 平台裡的簡報／測驗頁：上方計時／房間列縮小（會用到，但不是重點） */
+  body.embed .topbar{ padding:2px 10px; gap:4px; }
+  body.embed .topbar .room-cluster{ padding:2px 10px; gap:6px; font-size:12.5px; }
+  body.embed .topbar .room-cluster *{ font-size:12.5px !important; }
+  body.embed .topbar .room-code b{ font-size:13.5px !important; }
+  body.embed .topbar-actions .btn{ padding:3px 6px; font-size:12.5px; }
+  body.embed .topbar{ flex-wrap:nowrap; }
+  body.embed .topbar .toggle{ gap:4px; }
+  body.embed .topbar .toggle-track{ width:26px; height:14px; }
+  body.embed .topbar .toggle-track::after{ top:1px; left:1px; width:10px; height:10px; }
+  body.embed .topbar .toggle.on .toggle-track::after{ transform:translateX(12px); }
+  body.embed .topbar .room-cluster .presence-dot{ margin:0 -2px; }
+  body.embed .topbar .offline-pill{ font-size:11.5px !important; padding:1px 6px; }
+  body.embed .topbar > .timer-floating-widget{ padding:1px 4px 1px 10px; transform-origin:left center; }
+  body.embed .topbar > .timer-floating-widget .timer-ctrl-btn{ width:24px; height:24px; font-size:13px; }
   /* ===== 備課版面（平台裡編輯投影片）：左邊只放小縮圖的窄欄，投影片和功能區多出空間 ===== */
   body.embed.kind-slides:not(.teach-mode) .layout:not(.sidebar-collapsed):not(.sidebar-narrow){ grid-template-columns:166px 1fr !important; }
   body.embed.kind-slides:not(.teach-mode) .layout:not(.sidebar-collapsed):not(.sidebar-narrow) .sidebar-resizer{ display:none; }
@@ -1498,12 +1528,34 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .board-area.ribbon-mode.canvas-fs-active:not(.fs-edit) .draw-toolbar-top{ display:none !important; }
   /* 全螢幕編輯：功能區留在上方、畫布撐滿剩下的空間 */
   .board-area.ribbon-mode.canvas-fs-active.fs-edit{ flex-direction:column; padding:4px 6px 4px; }
-  .board-area.ribbon-mode.fs-edit .draw-toolbar-top{ position:relative !important; top:auto !important; left:auto !important; right:auto !important; width:100% !important; flex:none; margin:0 0 6px; background:var(--surface-2); }
+  .board-area.ribbon-mode.fs-edit .draw-toolbar-top{ position:relative !important; top:auto !important; left:auto !important; right:auto !important; width:100% !important; max-width:none !important; flex:none; margin:0 0 6px; background:var(--surface-2); }
   .board-area.ribbon-mode.fs-edit .draw-toolbar-vertical{ display:none !important; }
   .board-area.ribbon-mode.fs-edit .canvas-fs-exit-btn{ display:none; }
   .board-area.ribbon-mode.fs-edit .draw-board-layout{ flex:1; min-height:0; height:auto; }
   .draw-toolbar-top.ribbon{ display:block; padding:0; overflow:visible; }
   .rb-tabs{ display:flex; align-items:flex-end; gap:2px; padding:4px 10px 0; border-bottom:1.5px solid rgba(28,33,30,.12); flex-wrap:nowrap; overflow-x:auto; }
+  /* 視窗比較窄（例如筆電放大顯示）時：頁籤列放不下就換行，不要被截斷；快速存取的按鈕只留圖示 */
+  .rb-tabs{ flex-wrap:wrap; overflow-x:visible; row-gap:2px; }
+  @media (max-width:1300px){
+    .rb-qat .tool-btn-v-label{ display:none; }
+    .rb-qat .tool-btn-v{ padding:2px 6px; }
+    .rb-tab{ padding:6px 7px 5px; font-size:14px; }
+    .rb-nav .tool-btn-v{ min-width:0; padding:2px 5px; }
+    .rb-nav .tool-btn-v-label{ font-size:11.5px; }
+    .rb-collapse-btn{ padding:3px 7px; font-size:12.5px; }
+    .rb-tab, body.embed .rb-tab{ padding:5px 5px 4px !important; font-size:13.5px; }
+    .rb-nav{ gap:2px; }
+    .rb-nav .rb-collapse-btn{ padding:3px 5px; font-size:12px; }
+    .rb-nav .tool-btn-v{ flex-direction:row; width:auto; min-width:0; height:30px; gap:3px; padding:2px 6px; }
+    .rb-qat .tool-btn-v, .rb-qat .tool-btn-v-wrap{ width:34px !important; min-width:0 !important; padding:2px 3px; justify-content:center; }
+    .rb-qat{ gap:1px; margin-right:4px; }
+    .rb-nav .slide-nav-row{ gap:2px; }
+    .rb-nav .slide-nav-row .tool-btn-v{ width:32px !important; min-width:0 !important; padding:2px; justify-content:center; }
+    .rb-nav .tool-btn-v-label br{ display:none; }
+    .rb-nav .tool-btn-v-label{ white-space:nowrap; }
+    .rb-nav .tool-btn-v-icon{ font-size:14px; height:16px; }
+    .rb-nav .slide-nav-btn{ width:30px; }
+  }
   .rb-qat{ display:flex; gap:2px; align-items:center; margin-right:10px; padding-bottom:3px; }
   .rb-qat .tool-btn-v{ width:auto; min-width:0; height:30px; flex-direction:row; padding:2px 8px; gap:4px; }
   .rb-qat .tool-btn-v-label{ font-size:12.5px; }
@@ -11677,7 +11729,8 @@ window.mmTA = (function(){
       var rbTeachBtn = document.createElement("button"); rbTeachBtn.type = "button"; rbTeachBtn.className = "rb-collapse-btn rb-teach-btn"; rbTeachBtn.textContent = "🎬 上課模式"; rbTeachBtn.title = "回到上課版面：只留投影片和常用工具";
       rbTeachBtn.onclick = function(e){ e.stopPropagation(); setTeachMode(true); }; rbNavSlot.appendChild(rbTeachBtn);
       var rbColBtn = document.createElement("button"); rbColBtn.type = "button"; rbColBtn.className = "rb-collapse-btn"; rbNavSlot.appendChild(rbColBtn);
-      var rbCollapsed = false; try{ rbCollapsed = localStorage.getItem("mm-ribbon-collapsed") === "1"; }catch(e){}
+      // 老師自己選過就照老師的；沒選過時，小螢幕（筆電放大顯示等）預設收合，投影片才看得到
+      var rbCollapsed = false; try{ var rbPref = localStorage.getItem("mm-ribbon-collapsed"); rbCollapsed = rbPref === "1" || (rbPref === null && (window.innerWidth < 1300 || window.innerHeight < 700)); }catch(e){}
       topBar.innerHTML = ""; topBar.appendChild(rbBar); var rbPanelWrap = document.createElement("div"); rbPanelWrap.className = "rb-panels"; Object.keys(rbPanels).forEach(function(k){ rbPanelWrap.appendChild(rbPanels[k]); }); topBar.appendChild(rbPanelWrap);
       function rbApplyCollapse(){
         topBar.classList.toggle("rb-collapsed", rbCollapsed); if(!rbCollapsed) topBar.classList.remove("rb-peek");
