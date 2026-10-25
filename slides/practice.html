@@ -1453,7 +1453,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
 
   .text-layer:not(.objs-interactive) .movable-text .tb-edge, .text-layer:not(.objs-interactive) .movable-text .resize-handle, .text-layer:not(.objs-interactive) .image-proxy .rh, .text-layer:not(.objs-interactive) .shape-proxy .rh{ pointer-events:auto; }
   /* ===== 上課模式：上課中只留投影片＋常用工具（跟放映時同一組），功能區和投影片清單收起來；「完整工具」切回備課版面 ===== */
-  body.teach-mode .sidebar, body.teach-mode .sidebar-resizer, body.teach-mode .topbar{ display:none !important; }
+  body.teach-mode .sidebar, body.teach-mode .sidebar-resizer{ display:none !important; }
   body.teach-mode .layout{ grid-template-columns:1fr !important; }
   body.teach-mode .board-area.ribbon-mode:not(.canvas-fs-active) .draw-toolbar-top{ display:none !important; }
   body.teach-mode .board-area.ribbon-mode:not(.canvas-fs-active) .draw-toolbar-vertical{ display:flex !important; }
@@ -1461,6 +1461,38 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   body.teach-mode .board-area:not(.canvas-fs-active) #btn-prep-mode{ display:flex; }
   .rb-teach-btn{ display:none; }
   body.teach-avail:not(.teach-mode) .rb-teach-btn{ display:inline-flex; }
+  /* ===== 備課版面（平台裡編輯投影片）：左邊只放小縮圖的窄欄，投影片和功能區多出空間 ===== */
+  body.embed.kind-slides:not(.teach-mode) .layout:not(.sidebar-collapsed):not(.sidebar-narrow){ grid-template-columns:166px 1fr !important; }
+  body.embed.kind-slides:not(.teach-mode) .layout:not(.sidebar-collapsed):not(.sidebar-narrow) .sidebar-resizer{ display:none; }
+  body.embed.kind-slides:not(.teach-mode) .layout:not(.sidebar-collapsed):not(.sidebar-narrow) .sidebar{ padding:10px 8px; }
+  body.embed.kind-slides:not(.teach-mode) .sidebar-collapse-label{ display:none; }
+  body.embed.kind-slides:not(.teach-mode) #btn-add-slide-menu{ font-size:13.5px; padding:7px 6px; }
+  body.embed.kind-slides:not(.teach-mode) .section-head{ padding:6px 8px; }
+  body.embed.kind-slides:not(.teach-mode) .section-head-title-text{ font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  body.embed.kind-slides:not(.teach-mode) .section-head-meta, body.embed.kind-slides:not(.teach-mode) .section-head .drag-handle-icon{ display:none !important; }
+  body.embed.kind-slides:not(.teach-mode) .section-head-actions{ display:none; flex-wrap:wrap; gap:2px; }
+  body.embed.kind-slides:not(.teach-mode) .section-block:hover .section-head-actions{ display:flex; }
+  body.embed.kind-slides:not(.teach-mode) .section-head-actions button{ padding:3px 6px; font-size:12px; }
+  body.embed.kind-slides:not(.teach-mode) .section-body{ padding:4px; gap:4px; }
+  body.embed.kind-slides:not(.teach-mode) .question-item-btn[data-slide-row]{ position:relative; padding:3px; justify-content:center; }
+  body.embed.kind-slides:not(.teach-mode) .question-item-btn[data-slide-row] .q-item-left{ gap:5px; align-items:flex-start; }
+  body.embed.kind-slides:not(.teach-mode) .question-item-btn[data-slide-row] .drag-handle-icon, body.embed.kind-slides:not(.teach-mode) .question-item-btn[data-slide-row] .q-item-title{ display:none !important; }
+  body.embed.kind-slides:not(.teach-mode) .question-item-btn[data-slide-row] .q-index-badge{ flex:none; }
+  body.embed.kind-slides:not(.teach-mode) .question-item-btn[data-slide-row] .q-thumb{ width:104px; max-height:76px; min-height:48px; }
+  body.embed.kind-slides:not(.teach-mode) .question-item-btn[data-slide-row] .q-action-btns{ position:absolute; right:4px; bottom:4px; background:rgba(255,255,255,.95); border-radius:6px; box-shadow:0 1px 4px rgba(0,0,0,.18); }
+  /* 功能區：比較窄的視窗也盡量排成一排（字變小一點、群組間距縮小） */
+  body.embed.kind-slides:not(.teach-mode) .rb-group[data-g="home:繪圖"] .rb-group-body{ display:grid; grid-template-columns:repeat(2, auto); grid-auto-rows:min-content; gap:3px 4px; align-content:start; }
+  body.embed.kind-slides:not(.teach-mode) .rb-group[data-g="home:編輯"] .rb-group-body{ display:flex; flex-direction:column; gap:3px; }
+  body.embed.kind-slides:not(.teach-mode) .rb-group[data-g="home:繪圖"] .tool-btn-v, body.embed.kind-slides:not(.teach-mode) .rb-group[data-g="home:編輯"] .tool-btn-v{ flex-direction:row; width:auto; min-width:0; height:30px; padding:2px 7px; gap:4px; justify-content:flex-start; }
+  body.embed.kind-slides:not(.teach-mode) .rb-group[data-g="home:繪圖"] .tool-btn-v-label br, body.embed.kind-slides:not(.teach-mode) .rb-group[data-g="home:編輯"] .tool-btn-v-label br{ display:none; }
+  body.embed.kind-slides:not(.teach-mode) .rb-group[data-g="home:繪圖"] .tool-btn-v-label, body.embed.kind-slides:not(.teach-mode) .rb-group[data-g="home:編輯"] .tool-btn-v-label{ font-size:12.5px; white-space:nowrap; }
+  body.embed.kind-slides:not(.teach-mode) .rb-group[data-g="home:繪圖"] .tool-btn-v-icon, body.embed.kind-slides:not(.teach-mode) .rb-group[data-g="home:編輯"] .tool-btn-v-icon, body.embed.kind-slides:not(.teach-mode) .rb-group[data-g="home:繪圖"] .tool-btn-v-icon-img{ width:17px; height:17px; font-size:15px; }
+  body.embed.kind-slides:not(.teach-mode) .rb-group{ padding:0 3px; }
+  body.embed.kind-slides:not(.teach-mode) .rb-panel{ padding-left:3px; padding-right:3px; }
+  body.embed.kind-slides:not(.teach-mode) .rb-tab{ padding:7px 7px 6px; }
+  body.embed.kind-slides:not(.teach-mode) .rb-qat{ margin-right:4px; }
+  body.embed.kind-slides:not(.teach-mode) #btn-add-slide-menu{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  body.embed.kind-slides:not(.teach-mode) .rb-panel .tool-btn-v{ min-width:46px; }
   /* ===== 功能區（Ribbon）：頁籤＋群組，仿 PowerPoint ===== */
   .board-area.ribbon-mode:not(.canvas-fs-active) .draw-toolbar-vertical{ display:none !important; }
   .board-area.ribbon-mode.canvas-fs-active:not(.fs-edit) .draw-toolbar-top{ display:none !important; }
@@ -1690,6 +1722,12 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .wp-thumb-tile-stale .wp-thumb-updated{ color:#C0392B; font-weight:700; }
   .wp-zoom-img-wrap{ position:relative; width:100%; max-width:560px; aspect-ratio:4/3; margin:0 auto; background:var(--surface-2); border-radius:12px; overflow:hidden; }
   .wp-zoom-img-wrap img{ position:absolute; inset:0; width:100%; height:100%; object-fit:contain; background:#fff; }
+  /* 看全班畫面點開某位學生：放到幾乎整個螢幕 */
+  #student-zoom-dialog[open]{ display:flex; flex-direction:column; height:96vh; max-height:96vh; }
+  #student-zoom-dialog .dialog-head{ padding-top:10px; padding-bottom:6px; }
+  #student-zoom-dialog .dialog-body{ flex:1; min-height:0; display:flex; flex-direction:column; padding-top:4px; padding-bottom:4px; overflow:hidden; max-height:none; }
+  #student-zoom-dialog .wp-zoom-img-wrap{ max-width:none; aspect-ratio:auto; flex:1; min-height:0; height:auto; }
+  #student-zoom-dialog .dialog-foot{ padding-top:6px; padding-bottom:8px; }
   .wp-zoom-updated{ text-align:center; font-size:13.5px; color:var(--ink-soft); margin-top:8px; }
 
   /* 成績結算彈窗專用樣式 */
@@ -2517,7 +2555,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
 </dialog>
 
 <!-- 老師端：點縮圖放大看某一位學生目前的畫面 -->
-<dialog class="dialog-modal" id="student-zoom-dialog" style="width:min(640px,94vw);">
+<dialog class="dialog-modal" id="student-zoom-dialog" style="width:min(1600px,97vw);max-width:97vw;">
   <div class="dialog-head">
     <h2 id="student-zoom-title">👤 學生畫面</h2>
   </div>
@@ -11663,7 +11701,7 @@ window.mmTA = (function(){
         if(title) b.title = title; b.onclick = function(e){ e.stopPropagation(); fn(e); }; return b;
       }
       function rbGroup(panelId, title, nodes){
-        var g = document.createElement("div"); g.className = "rb-group";
+        var g = document.createElement("div"); g.className = "rb-group"; g.dataset.g = panelId + ":" + title;
         var body = document.createElement("div"); body.className = "rb-group-body"; g.appendChild(body);
         var tt = document.createElement("div"); tt.className = "rb-group-title"; tt.textContent = title; g.appendChild(tt);
         nodes.forEach(function(n){ if(!n) return; if(Array.isArray(n)){ var col = document.createElement("div"); col.className = "rb-col"; n.forEach(function(x){ if(x) col.appendChild(x); }); body.appendChild(col); } else body.appendChild(n); });
@@ -11688,7 +11726,7 @@ window.mmTA = (function(){
       var colGrid = qsx(".text-popover .color-dot-grid"), colPick = qsx(".text-popover .color-picker-row");
       var colBox = document.createElement("div"); colBox.className = "rb-colors"; if(colGrid) colBox.appendChild(colGrid); if(colPick) colBox.appendChild(colPick); var colMine = qsx(".text-popover .my-colors"); if(colMine) colBox.appendChild(colMine);
       var rbTxt = document.createElement("div"); rbTxt.className = "rb-stack"; var r1 = document.createElement("div"); r1.className = "rb-row"; if(fsel) r1.appendChild(inl("字型", fsel)); if(szWrap) r1.appendChild(szWrap); if(boldB) r1.appendChild(boldB);
-      var r2 = document.createElement("div"); r2.className = "rb-row"; r2.appendChild(colBox); var rst = qsx(".text-span-reset"); if(rst){ r2.appendChild(rst); }
+      var r2 = document.createElement("div"); r2.className = "rb-row"; r2.appendChild(colBox); var rst = qsx(".text-span-reset"); if(rst){ r1.appendChild(rst); }   // 放第一排：第一排比較短，整組才不會太寬（功能區排得下一排）
       rbTxt.appendChild(r1); rbTxt.appendChild(r2);
       rbGroup("home", "字型", [rbTxt]);
       var fmtRow = qsx(".text-fmt-row"), lhC = qsx(".text-lh-input"), lhWrap = lhC && lhC.closest(".size-combo");
@@ -16726,7 +16764,7 @@ window.mmTA = (function(){
      這裡是畫面本身的忠實快照，就算學生那邊同步資料正常、但畫面其實沒顯示出來（圖片沒load出來、
      整個卡住不動），老師這邊也能從縮圖本身是空的／很久沒更新看出來。不限題型，全程都能開著看。
      全螢幕畫布模式下，畫布會被搬到 <body> 底下（不在 .stage-wrap 範圍內），擷取目標要動態判斷。 */
-  var STUDENT_SNAPSHOT_INTERVAL_MS = 4000;
+  var STUDENT_SNAPSHOT_INTERVAL_MS = 4000, lastSnapAt = 0;
   var STUDENT_SNAPSHOT_STALE_SECS = 15;
   var studentSnapshotTimer = null;
   var isCapturingSnapshot = false;
@@ -16750,14 +16788,16 @@ window.mmTA = (function(){
     try{
       var target = getSnapshotCaptureTarget();
       if(target){
-        var rawCanvas = await html2canvas(target, { logging: false, backgroundColor: "#FFFFFF", scale: 1 });
+        // 老師正在放大看自己：傳清楚的大圖（1400px、畫質較高、約 2 秒一張）；平常只傳 480px 的小縮圖
+        var hi = !!(roomData && roomData.zoomPeer === myId); lastSnapAt = Date.now();
+        var rawCanvas = await html2canvas(target, { logging: false, backgroundColor: "#FFFFFF", scale: hi ? Math.min(2, window.devicePixelRatio || 1) : 1 });
         var out = document.createElement("canvas");
-        var targetWidth = 480; // 縮圖用，480px 寬已經夠看清楚內容，換來的是每 4 秒一次的上傳量很小
+        var targetWidth = hi ? 1400 : 480; // 縮圖用，480px 寬已經夠看清楚內容，換來的是每 4 秒一次的上傳量很小
         var scale = Math.min(1, targetWidth / rawCanvas.width);
         out.width = Math.max(1, Math.round(rawCanvas.width * scale));
         out.height = Math.max(1, Math.round(rawCanvas.height * scale));
         out.getContext("2d").drawImage(rawCanvas, 0, 0, out.width, out.height);
-        var dataUrl = out.toDataURL("image/jpeg", 0.5);
+        var dataUrl = out.toDataURL("image/jpeg", hi ? 0.78 : 0.5);
         if(inRoom() && roomRole === "student"){
           // 特別把「寫入失敗」的錯誤印到 console：這種失敗最常見的原因是 Firebase 規則
           // （rules.json）還沒開放 roomStudentSnapshots 這個路徑的寫入權限，寫入會被拒絕、
@@ -16774,7 +16814,10 @@ window.mmTA = (function(){
   function startStudentSnapshotLoop(){
     stopStudentSnapshotLoop();
     captureAndUploadStudentSnapshot(); // 一進房間先馬上傳一張，不用乾等第一個 4 秒
-    studentSnapshotTimer = setInterval(captureAndUploadStudentSnapshot, STUDENT_SNAPSHOT_INTERVAL_MS);
+    studentSnapshotTimer = setInterval(function(){
+      var hi = !!(roomData && roomData.zoomPeer === myId);
+      if(hi || Date.now() - lastSnapAt >= STUDENT_SNAPSHOT_INTERVAL_MS - 100) captureAndUploadStudentSnapshot();
+    }, 2000);
   }
   function stopStudentSnapshotLoop(){
     if(studentSnapshotTimer){ clearInterval(studentSnapshotTimer); studentSnapshotTimer = null; }
@@ -16835,6 +16878,7 @@ window.mmTA = (function(){
 
   function openStudentMonitorZoom(peerId, name){
     studentMonitorZoomPeerId = peerId;
+    if(inRoom() && roomRole === "teacher") update(ref(db, "rooms/" + activeRoomId), { zoomPeer: peerId }).catch(function(){});   // 請這位學生改傳清楚的大圖
     document.getElementById("student-zoom-title").textContent = "👤 " + name;
     renderStudentMonitorZoom();
     safeShowModal(document.getElementById("student-zoom-dialog"));
@@ -16858,7 +16902,10 @@ window.mmTA = (function(){
     var studentMonitorCloseBtn = document.getElementById("btn-student-monitor-close");
     if(studentMonitorCloseBtn) studentMonitorCloseBtn.onclick = closeStudentMonitorDialog;
     var studentZoomCloseBtn = document.getElementById("btn-student-zoom-close");
-    if(studentZoomCloseBtn) studentZoomCloseBtn.onclick = function(){ studentMonitorZoomPeerId = null; closeModalDialog(document.getElementById("student-zoom-dialog")); };
+    if(studentZoomCloseBtn) studentZoomCloseBtn.onclick = function(){ closeModalDialog(document.getElementById("student-zoom-dialog")); };
+    // 關掉放大（按關閉或 Esc）：學生回到平常的小縮圖
+    var zoomDlg = document.getElementById("student-zoom-dialog");
+    if(zoomDlg) zoomDlg.addEventListener("close", function(){ studentMonitorZoomPeerId = null; if(inRoom() && roomRole === "teacher" && roomData && roomData.zoomPeer) update(ref(db, "rooms/" + activeRoomId), { zoomPeer: null }).catch(function(){}); });
   })();
 
   /* ================== 教師帳號系統 Teacher Accounts ================== */
