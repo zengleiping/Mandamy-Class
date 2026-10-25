@@ -10747,13 +10747,22 @@ window.mmTA = (function(){
     function setProgDirect(qid, patch){ if(inRoom()) writeProgress(qid, patch); else Object.assign(getProgress(qid), patch); }
     function finalizeSection(){
       if(!slideSecInfo) return 0; var qs = slideSecInfo.sec.questions || {}, n = 0, now = Date.now();
-      Object.keys(qs).forEach(function(qid){ var ids = qid === q.id ? curIds() : progIds(getProgress(qid)); n += Object.keys(ids).length; setProgDirect(qid, { finalIds: ids, finalAt: now }); });
+      // 房間裡一次寫完整份（以前一頁寫一次，66 頁就觸發 66 次房間更新、整個畫面重畫 66 次）
+      var batch = inRoom() ? {} : null;
+      Object.keys(qs).forEach(function(qid){
+        var ids = qid === q.id ? curIds() : progIds(getProgress(qid)); n += Object.keys(ids).length;
+        if(batch){ batch[qid + "/finalIds"] = Object.keys(ids).length ? ids : null; batch[qid + "/finalAt"] = now; }
+        else setProgDirect(qid, { finalIds: ids, finalAt: now });
+      });
+      if(batch) update(ref(db, "rooms/" + activeRoomId + "/sharedProgress"), batch);
       if(!inRoom()) saveFS();
       return n;
     }
     function finalDirty(){ var pr = getProgress(q.id), fs = pr.finalIds || {}, cur = curIds(), k; for(k in cur) if(!fs[k]) return true; for(k in fs) if(!cur[k]) return true; return false; }
     function finalSetNow(){
-      var pr = getProgress(q.id), fs = pr.finalIds;
+      // 定稿是空的（例如整頁只有匯入的背景圖、沒有物件）時，資料庫不會存空的清單：有 finalAt 就代表存過了，不能每次都重存
+      // （以前會一直重存→房間更新→又檢查→又重存，無限循環，畫面卡死、拖不動）
+      var pr = getProgress(q.id), fs = pr.finalIds || (pr.finalAt ? {} : null);
       if(!fs && !isStudent && !window.__solo && slideSecInfo && slideSecInfo.sec.type === "board" && container.classList.contains("canvas-fs-active") && !container.classList.contains("fs-edit")){
         fs = curIds(); setProgDirect(q.id, { finalIds: fs, finalAt: Date.now() }); if(!inRoom()) saveFS();   // 這頁沒存過定稿就開始放映：以目前內容當定稿
       }
@@ -14246,7 +14255,13 @@ window.mmTA = (function(){
         return;
       }
 
-      if(presentLock() && boardState.tool === "select"){ return; }
+      if(presentLock() && boardState.tool === "select"){
+        // 放映中：上課新打的筆記（選取後工具會自動變成「選取」）要能直接再按住拖曳；定稿內容一樣不能動
+        var hitP = hitTestItem(p);
+        if(hitP && hitP.k !== "stroke" && isLiveItem(hitP)){ startSelectInteraction(e, p); return; }
+        if(!selectFromText) return;
+        selectFromText = false; selSet = []; renderSelection(); switchToTextTool();   // 點空白處：回到文字工具，接著在這裡打字（跟沒放映時一樣）
+      }
       if(boardState.tool === "text" && !isStudent && !simpleBoard){ // 文字工具下點到框框：馬上變成選取（可拖曳、調整、Ctrl／Shift 加選）
         var hitT = hitTestItem(p);
         if(hitT && hitT.k !== "stroke" && (!presentLock() || isLiveItem(hitT))){ selectFromText = true; switchToSelectTool(); startSelectInteraction(e, p); return; }
@@ -14836,9 +14851,7 @@ window.mmTA = (function(){
           bar.appendChild(tc);
         }
       }
-      var nearTop = u.t < 9;
-      bar.style.left = u.l + "%";
-      if(nearTop) bar.style.top = "calc(" + u.b + "% + 6px)"; else bar.style.top = "calc(" + u.t + "% - 38px)";
+      bar.style.left = u.l + "%"; bar.style.top = "calc(" + u.t + "% - 44px)";
       bar.addEventListener("pointerdown", function(e){ e.stopPropagation(); });
       bar.addEventListener("click", function(e){
         var bt = e.target.closest("button"); if(!bt) return; e.stopPropagation();
@@ -14851,6 +14864,9 @@ window.mmTA = (function(){
         else if(/^al-/.test(bt.dataset.act)) alignSelection(bt.dataset.act.slice(3));
       });
       selectLayer.appendChild(bar);
+      // 浮動列放在框框上方，依它實際的高度（單選文字方塊時比較高）；上面放不下才放到下面——不能蓋住框框，不然抓不到框框拖
+      var bh = bar.offsetHeight || 38, lh = selectLayer.clientHeight || 1;
+      if(u.t / 100 * lh < bh + 8) bar.style.top = "calc(" + u.b + "% + 8px)"; else bar.style.top = "calc(" + u.t + "% - " + (bh + 8) + "px)";
       renderTableTools(u);
     }
     function startSelectInteraction(e, p){
