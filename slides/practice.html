@@ -11623,7 +11623,7 @@ window.mmTA = (function(){
       var rbPanels = {};
       rbTabs.forEach(function(t){
         var tb = document.createElement("button"); tb.type = "button"; tb.className = "rb-tab"; tb.textContent = t.name; tb.dataset.tab = t.id;
-        tb.onclick = function(e){ e.stopPropagation(); rbShow(t.id); };
+        tb.onclick = function(e){ e.stopPropagation(); rbShow(t.id, true); };
         rbBar.appendChild(tb);
         var pn = document.createElement("div"); pn.className = "rb-panel"; pn.dataset.tab = t.id; rbPanels[t.id] = pn;
       });
@@ -11640,8 +11640,9 @@ window.mmTA = (function(){
       rbColBtn.onclick = function(e){ e.stopPropagation(); rbSetCollapsed(!rbCollapsed); };
       rbBar.addEventListener("dblclick", function(e){ if(e.target.closest(".rb-tab")){ e.stopPropagation(); rbSetCollapsed(!rbCollapsed); } });
       document.addEventListener("pointerdown", function(e){ if(topBar.classList.contains("rb-peek") && !topBar.contains(e.target) && !e.target.closest(".color-popover")) topBar.classList.remove("rb-peek"); }, true);
-      function rbShow(id){
-        rbCur = id; if(rbCollapsed) topBar.classList.add("rb-peek"); try{ sessionStorage.setItem("mm-ribbon-tab", id); }catch(e){}
+      // peek：功能區收合時，只有老師自己點頁籤才浮出面板；換頁、重畫時不要自己跳出來蓋住投影片
+      function rbShow(id, peek){
+        rbCur = id; if(rbCollapsed && peek) topBar.classList.add("rb-peek"); try{ sessionStorage.setItem("mm-ribbon-tab", id); }catch(e){}
         rbBar.querySelectorAll(".rb-tab").forEach(function(b){ b.classList.toggle("on", b.dataset.tab === id); });
         Object.keys(rbPanels).forEach(function(k){ rbPanels[k].classList.toggle("on", k === id); });
         requestAnimationFrame(fitCanvasToViewport); setTimeout(fitCanvasToViewport, 80);
