@@ -6018,7 +6018,7 @@ function renderLessonCommon(no, open, teacher, liveStudent){
         var rjoin = (S.live && S.live.on && S.live.room && S.live.roomProject === S.sub) ? S.live.room : todayClassRoom(S.sub);   // 今天這個班已經用這份簡報上過課：回到同一個房間，課堂筆記都還在
         // 從上次停的那一頁開始：直到今天這個班開了房間為止（開始上課會重新載入，房間開了之後就照房間的頁數）
         var jq = (!rjoin && S.jumpQ && S.jumpQ.pid === S.sub && S.sel && S.jumpQ.c === S.sel.c) ? "&q=" + encodeURIComponent(S.jumpQ.q) : ""; if(rjoin) S.jumpQ = null;
-        frame = lessonHtmlFrame("slides/practice.html?v=" + MM_V + "&embed=1&project=" + encodeURIComponent(S.sub) + "&focus=" + kind + (rjoin ? "&room=" + encodeURIComponent(rjoin) : "") + jq);
+        frame = lessonHtmlFrame("slides/practice.html?v=" + MM_V + "&embed=1&project=" + encodeURIComponent(S.sub) + "&focus=" + kind + (rjoin ? "&room=" + encodeURIComponent(rjoin) : "") + jq + (S.live && S.live.on && kind === "slides" ? "&teach=1" : ""));
       }
     } else if(liveStudent){
       frame = (S.live && S.live.room) ? lessonHtmlFrame("slides/practice.html?v=" + MM_V + "&embed=1&room=" + encodeURIComponent(S.live.room) + "&role=student&name=" + encodeURIComponent(S.student ? S.student.name : "")) : '<div class="empty"><p class="note">老師還沒開始這一段，請稍候…</p></div>';

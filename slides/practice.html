@@ -1452,6 +1452,15 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .movable-text:has(ruby){ line-height:2.15; padding-top:0.3em !important; }
 
   .text-layer:not(.objs-interactive) .movable-text .tb-edge, .text-layer:not(.objs-interactive) .movable-text .resize-handle, .text-layer:not(.objs-interactive) .image-proxy .rh, .text-layer:not(.objs-interactive) .shape-proxy .rh{ pointer-events:auto; }
+  /* ===== 上課模式：上課中只留投影片＋常用工具（跟放映時同一組），功能區和投影片清單收起來；「完整工具」切回備課版面 ===== */
+  body.teach-mode .sidebar, body.teach-mode .sidebar-resizer, body.teach-mode .topbar{ display:none !important; }
+  body.teach-mode .layout{ grid-template-columns:1fr !important; }
+  body.teach-mode .board-area.ribbon-mode:not(.canvas-fs-active) .draw-toolbar-top{ display:none !important; }
+  body.teach-mode .board-area.ribbon-mode:not(.canvas-fs-active) .draw-toolbar-vertical{ display:flex !important; }
+  #btn-prep-mode{ display:none; }
+  body.teach-mode .board-area:not(.canvas-fs-active) #btn-prep-mode{ display:flex; }
+  .rb-teach-btn{ display:none; }
+  body.teach-avail:not(.teach-mode) .rb-teach-btn{ display:inline-flex; }
   /* ===== 功能區（Ribbon）：頁籤＋群組，仿 PowerPoint ===== */
   .board-area.ribbon-mode:not(.canvas-fs-active) .draw-toolbar-vertical{ display:none !important; }
   .board-area.ribbon-mode.canvas-fs-active:not(.fs-edit) .draw-toolbar-top{ display:none !important; }
@@ -10807,6 +10816,13 @@ window.mmTA = (function(){
       all: function(sel){ var out = Array.prototype.slice.call(vToolbar.querySelectorAll(sel)); if(typeof topBar !== "undefined" && topBar){ topBar.querySelectorAll(sel).forEach(function(n){ if(out.indexOf(n) === -1) out.push(n); }); } return out; }
     };
     var vToolbar = document.createElement("div"); vToolbar.className = "draw-toolbar-vertical" + (studentLocked ? " student-locked" : "");
+    // 上課模式 ⇄ 備課版面（只換版面，不影響內容；記在這次分頁裡）
+    function setTeachMode(on){
+      document.body.classList.toggle("teach-mode", !!on);
+      try{ sessionStorage.setItem("mm-teach-off", on ? "0" : "1"); }catch(e){}
+      requestAnimationFrame(fitCanvasToViewport); setTimeout(fitCanvasToViewport, 120); setTimeout(fitCanvasToViewport, 300);
+    }
+    vToolbar.addEventListener("click", function(e){ var b = e.target.closest && e.target.closest("#btn-prep-mode"); if(!b) return; e.preventDefault(); e.stopPropagation(); setTeachMode(false); });
     // 顏色選項共用內容：畫筆／打字兩個工具各自 hover 才浮現一份，選色會同步套用到 boardState.color
     var colorDotsHtml = `
         <div class="color-dot ${boardState.color==='#B23B32'?'active':''}" data-color="#B23B32" style="background:#B23B32;" title="紅色 Red"></div>
@@ -10839,6 +10855,7 @@ window.mmTA = (function(){
     // hover 顯示 popover 的機制（.tool-btn-v-wrap + .color-popover）。
     vToolbar.innerHTML = `
       <button type="button" class="tool-btn-v" id="btn-canvas-fs" title="投影片放映（全螢幕）：整個畫面都是投影片，工具列浮在上面 Slide show — toolbar floats on top"><span class="tool-btn-v-icon">⛶</span><span class="tool-btn-v-label">放映</span></button>
+      ${!isStudent ? `<button type="button" class="tool-btn-v" id="btn-prep-mode" title="切換到備課版面：完整功能區＋投影片清單（上課中隨時可以切回「上課模式」）"><span class="tool-btn-v-icon">🧰</span><span class="tool-btn-v-label">完整<br>工具</span></button>` : ''}
       ${(isMultiSlideDeck || !isStudent) ? `
       <div class="slide-nav-row">
         <button type="button" class="tool-btn-v slide-nav-btn" id="btn-slide-prev" ${slideIndex <= 0 ? 'disabled' : ''} title="上一步／上一頁 Previous step or slide（鍵盤 ←）"><span class="tool-btn-v-icon">◀</span></button>
@@ -11619,6 +11636,8 @@ window.mmTA = (function(){
         var pn = document.createElement("div"); pn.className = "rb-panel"; pn.dataset.tab = t.id; rbPanels[t.id] = pn;
       });
       var rbNavSlot = document.createElement("div"); rbNavSlot.className = "rb-nav"; rbBar.appendChild(rbNavSlot);
+      var rbTeachBtn = document.createElement("button"); rbTeachBtn.type = "button"; rbTeachBtn.className = "rb-collapse-btn rb-teach-btn"; rbTeachBtn.textContent = "🎬 上課模式"; rbTeachBtn.title = "回到上課版面：只留投影片和常用工具";
+      rbTeachBtn.onclick = function(e){ e.stopPropagation(); setTeachMode(true); }; rbNavSlot.appendChild(rbTeachBtn);
       var rbColBtn = document.createElement("button"); rbColBtn.type = "button"; rbColBtn.className = "rb-collapse-btn"; rbNavSlot.appendChild(rbColBtn);
       var rbCollapsed = false; try{ rbCollapsed = localStorage.getItem("mm-ribbon-collapsed") === "1"; }catch(e){}
       topBar.innerHTML = ""; topBar.appendChild(rbBar); var rbPanelWrap = document.createElement("div"); rbPanelWrap.className = "rb-panels"; Object.keys(rbPanels).forEach(function(k){ rbPanelWrap.appendChild(rbPanels[k]); }); topBar.appendChild(rbPanelWrap);
@@ -11732,11 +11751,12 @@ window.mmTA = (function(){
       // 放映（全螢幕）時：功能區收起，左邊浮出簡單的放映工具列（放映／翻頁／筆／橡皮擦／清除／放映工具）；結束放映再放回功能區
       var fsSlots = [];
       function rbFsSync(){
-        var inFs = container.classList.contains("canvas-fs-active") && !container.classList.contains("fs-edit");
+        var fsOn = container.classList.contains("canvas-fs-active"), presenting = fsOn && !container.classList.contains("fs-edit");
+        var inFs = presenting || (!fsOn && document.body.classList.contains("teach-mode"));   // 上課模式（沒全螢幕）也用這條簡單工具列
         if(inFs && !fsSlots.length){
           ["fs", "nav", "undo", "redo", "pen", "eraser", "clear", "present", "select", "text"].forEach(function(k){
             var it = tbItems[k]; if(!it) return;
-            if(k === "select" && slideSecInfo && slideSecInfo.sec.type === "board") return; // 放映時不給「選取」：不能動放映前的內容
+            if(k === "select" && presenting && slideSecInfo && slideSecInfo.sec.type === "board") return; // 放映時不給「選取」：不能動放映前的內容
             it.nodes.forEach(function(n){ var ph = document.createElement("span"); ph.className = "rb-slot"; n.parentNode.insertBefore(ph, n); fsSlots.push({ ph: ph, n: n }); vToolbar.appendChild(n); });
           });
           // 放映時功能區收起，文字格式（字型／注音、大小、顏色、粗體、對齊、行距）改收進「文字」按鈕的選單
@@ -11749,6 +11769,7 @@ window.mmTA = (function(){
         }
       }
       new MutationObserver(rbFsSync).observe(container, { attributes: true, attributeFilter: ["class"] });
+      new MutationObserver(function(){ if(document.body.contains(container)) rbFsSync(); }).observe(document.body, { attributes: true, attributeFilter: ["class"] });
       rbFsSync();
     }
     };
@@ -17378,6 +17399,8 @@ window.mmTA = (function(){
     try{
       var pq = new URLSearchParams(location.search);
       if(pq.get("embed")) document.body.classList.add("embed");
+      // 平台上課中（&teach=1）：預設用上課版面；老師這次分頁切到備課版面就照老師的
+      if(pq.get("embed") && pq.get("teach") && !isStudent){ document.body.classList.add("teach-avail"); var tOff = "0"; try{ tOff = sessionStorage.getItem("mm-teach-off") || "0"; }catch(e){} if(tOff !== "1") document.body.classList.add("teach-mode"); }
       if(pq.get("embed") && urlRoom && !isStudent) window.__keepQ = true;   // 老師回到今天同一個房間：接著原本的頁數，不跳回第一頁
       if(pq.get("embed") && /^(slides|quiz)$/.test(pq.get("focus") || "")){ setEmbedKind(pq.get("focus")); try{ renderSidebar(); }catch(e0){} }
       if(pq.get("worker")){ window.__worker = true; try{ parent.postMessage({ mm: "workerReady" }, "*"); }catch(e2){} }
