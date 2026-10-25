@@ -10664,15 +10664,6 @@ window.mmTA = (function(){
       container.classList.add("canvas-fs-active");
       document.body.classList.add("canvas-fs-open");
       fsTellParent(true);
-      if(canvasFsMode === "present" && !isStudent && window.parent !== window){   // 放映時：左邊工具列多一顆「翻譯」，不用靠右緣那顆（可能被 Meet 小視窗蓋住）
-        var vt = container.querySelector(".draw-toolbar-vertical");
-        if(vt && !vt.querySelector("#btn-fs-trans")){
-          var tb = document.createElement("button"); tb.type = "button"; tb.className = "tool-btn-v"; tb.id = "btn-fs-trans"; tb.title = "翻譯機：打開／收起（Alt+T）";
-          tb.innerHTML = '<span class="tool-btn-v-icon">📝</span><span class="tool-btn-v-label">翻譯</span>';
-          tb.onclick = function(e){ e.preventDefault(); e.stopPropagation(); try{ window.parent.postMessage({ mm: "trToggle" }, "*"); }catch(er){} };
-          vt.appendChild(tb);
-        }
-      }
       updateBtn();
       requestAnimationFrame(refit);
     }
