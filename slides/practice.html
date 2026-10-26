@@ -2204,12 +2204,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
       <button type="button" class="btn btn-sm btn-phonetic-mode" data-phonetic="pinyin">拼音 Pinyin</button>
       <button type="button" class="btn btn-sm btn-phonetic-mode" data-phonetic="zhuyin">ㄅㄆㄇ 注音 Zhuyin</button>
     </div>
-    <label style="margin-top:12px;display:block;">注音位置 Zhuyin position</label>
-    <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:6px;">
-      <button type="button" class="btn btn-sm btn-phonetic-layout" data-layout="top">字的上方 Above</button>
-      <button type="button" class="btn btn-sm btn-phonetic-layout" data-layout="right">字的右側（直式，像生字本）Right, vertical</button>
-    </div>
-    <p style="font-size:13.5px;color:var(--ink-soft);margin-top:6px;">「右側」只對注音有效（拼音一律在字的上方）。想改某個字的讀音：點那個字的注音／拼音，聲調可以直接打數字——1～4＝一～四聲、0＝輕聲（例如 ni3 會自動變成 nǐ，ㄋㄧ3 會變成 ㄋㄧˇ）。</p>
+    <p style="font-size:13.5px;color:var(--ink-soft);margin-top:6px;">注音一律顯示在字的右側（直式，像生字本），拼音一律在字的上方。想改某個字的讀音：點那個字的注音／拼音，聲調可以直接打數字——1～4＝一～四聲、0＝輕聲（例如 ni3 會自動變成 nǐ，ㄋㄧ3 會變成 ㄋㄧˇ）。</p>
     <p style="font-size:13.5px;color:var(--ink-soft);margin-top:6px;">這是「新增文字方塊」的預設字型（拼音／注音／不加），改了不會動到已經打好的文字。每個文字方塊、甚至同一行裡的某幾個字，都可以在「文字方塊」浮窗的「字型」另外選——像 PowerPoint 選字型一樣，編輯時先選取一段字再選，就只改那一段。</p>
 
     <hr style="border:none;border-top:1px solid var(--grid-line);margin:20px 0;">
@@ -3772,7 +3767,7 @@ window.mmTA = (function(){
   // 實際的轉換函式（setPhoneticMode／buildPhoneticHtml…）在下面「打字加註音」那段一起定義。
   var currentPhoneticMode = localStorage.getItem("hanyu_phonetic_mode");
   // 注音位置：top＝字的正上方（預設）；right＝字的右邊、直式排列（跟生字本的寫法一樣，聲調符號在注音右側）。只對注音有效。
-  var currentPhoneticLayout = localStorage.getItem("hanyu_phonetic_layout") === "right" ? "right" : "top";
+  var currentPhoneticLayout = "right";   // 注音一律放在字的右側（直式）；拼音一律在字的上方。不再有「位置」可以選
 
   // 2026-09-29：平板＋觸控筆的「掌心誤觸」問題——一旦偵測到這台裝置有在用觸控筆（Apple Pencil／
   // 電容筆等，pointerType === "pen"），之後畫布上的「手指」輸入就只用來移動畫面（平移），不會被
@@ -8451,6 +8446,7 @@ window.mmTA = (function(){
      這裡開始才是實際的轉換／UI 邏輯。 */
 
   function setPhoneticLayout(layout){
+    return;
     currentPhoneticLayout = layout === "right" ? "right" : "top";
     localStorage.setItem("hanyu_phonetic_layout", currentPhoneticLayout);
     document.querySelectorAll(".btn-phonetic-layout").forEach(function(b){ b.classList.toggle("active", b.dataset.layout === currentPhoneticLayout); });
@@ -8458,12 +8454,29 @@ window.mmTA = (function(){
     if(typeof renderStage === "function") renderStage();
   }
   function applyRoomPhoneticLayout(layout){
+    return;   // 注音位置固定在字的右側，不跟房間舊設定
     layout = layout === "right" ? "right" : "top";
     if(layout === currentPhoneticLayout) return;
     currentPhoneticLayout = layout;
     document.querySelectorAll(".btn-phonetic-layout").forEach(function(b){ b.classList.toggle("active", b.dataset.layout === layout); });
   }
+  // 改「預設字型」只影響之後新打的字：已經存在、還沒有自己字型設定的文字方塊，先照目前的樣子記下來（不然它們會跟著預設一起變）
+  function freezeTextPh(oldMode){
+    var eff = (oldMode === "pinyin" || oldMode === "zhuyin") ? oldMode : "off";
+    var proj = null; try{ proj = getActiveProject(); }catch(e){}
+    if(!proj || !proj.sections) return;
+    var room = inRoom(), src = room ? ((roomData && roomData.sharedProgress) || {}) : (proj.progress || {});
+    Object.keys(proj.sections).forEach(function(sid){
+      var qs = proj.sections[sid].questions || {};
+      Object.keys(qs).forEach(function(qid){
+        var pr = src[qid], ts = pr && pr.texts; if(!ts || !ts.length) return;
+        var changed = false; ts.forEach(function(t){ if(t && t.ph === undefined){ t.ph = eff; changed = true; } });
+        if(changed) writeProgress(qid, { texts: ts });
+      });
+    });
+  }
   function setPhoneticMode(mode){
+    if(mode !== currentPhoneticMode){ try{ freezeTextPh(currentPhoneticMode); }catch(e){ console.warn("freezeTextPh", e); } }
     currentPhoneticMode = mode;
     localStorage.setItem("hanyu_phonetic_mode", mode);
     document.querySelectorAll(".btn-phonetic-mode").forEach(function(b){
@@ -8680,7 +8693,7 @@ window.mmTA = (function(){
       var ovv = overrides && typeof overrides[baseIdx + i] === "string" ? overrides[baseIdx + i] : "";
       var hasOverride = ovv !== "" && ovv !== "+" && ovv !== " ";
       var annotation = hasOverride ? ovv : (md === "zhuyin" ? pinyinSyllableToZhuyin(symN[i]) : symP[i]);
-      if(md === "zhuyin" && currentPhoneticLayout === "right"){
+      if(md === "zhuyin"){
         // 直式、在字右邊：把注音拆成「符號本體」和「聲調符號」，本體直排，聲調放在右邊（輕聲 ˙ 放在上方）
         var ann = String(annotation || ""), tone = "", neutral = false, main = ann.replace(/[ˊˇˋ˙]/g, function(mm){ if(mm === "˙") neutral = true; else tone = mm; return ""; });
         html += W(i, "<span class=\"zy-r\" data-ph-idx=\"" + (baseIdx + i) + "\"><span class=\"zy-c\">" + escapeHtml(ch) + "</span><span class=\"zy-s" + (hasOverride ? " ph-overridden" : "") + "\"><span class=\"zy-col\">" + (neutral ? "<span class=\"zy-n\">˙</span>" : "") + "<span class=\"zy-m\">" + Array.from(main).map(function(c){ return "<span class=\"zy-ch\">" + escapeHtml(c) + "</span>"; }).join("") + "</span></span>" + (tone ? "<span class=\"zy-t\">" + tone + "</span>" : "") + "</span></span>");
@@ -10910,7 +10923,7 @@ window.mmTA = (function(){
         qM.media = (qM.media || []).slice();
         progress.medias.forEach(function(mm){
           if(mm.kind === "youtube" && mm.ytId) qM.media.push({ id: uid("media"), type: "youtube", ytId: mm.ytId, name: mm.name || "YouTube" });
-          else if(mm.kind === "audio" && progress.mediaData && progress.mediaData[mm.id]) qM.media.push({ id: uid("media"), type: "audio", src: progress.mediaData[mm.id], name: mm.name || "音檔" });
+          else if((mm.kind === "audio" || mm.kind === "video") && progress.mediaData && progress.mediaData[mm.id]) qM.media.push({ id: uid("media"), type: mm.kind, src: progress.mediaData[mm.id], name: mm.name || (mm.kind === "video" ? "影片" : "音檔") });
         });
         progress.medias = []; progress.mediaData = {};
         writeSections(secsM);
@@ -11009,8 +11022,8 @@ window.mmTA = (function(){
             <button type="button" class="shape-type-btn ins-shape" data-shape="rect" title="矩形">▭</button><button type="button" class="shape-type-btn ins-shape" data-shape="ellipse" title="橢圓">◯</button><button type="button" class="shape-type-btn ins-shape" data-shape="triangle" title="三角形">△</button><button type="button" class="shape-type-btn ins-shape" data-shape="line" title="直線">／</button><button type="button" class="shape-type-btn ins-shape" data-shape="arrow" title="箭頭">➜</button></div>
           <button type="button" class="trans-opt ins-table">▦ 表格… Table</button>
           <div class="ins-lab" style="margin-top:4px;">🎬 多媒體 Media</div>
-          <button type="button" class="trans-opt ins-yt">▶ YouTube 影片…</button>
-          <button type="button" class="trans-opt ins-audio">🔊 音檔…</button>
+          <button type="button" class="trans-opt ins-yt">▶ YouTube…</button>
+          <button type="button" class="trans-opt ins-audio">🎬 媒體…（影片／音樂）</button>
           <button type="button" class="trans-opt ins-link">🔗 超連結… Link（選取物件後）</button>
           <input type="file" class="ins-img-file" accept="image/*" multiple style="display:none;">
         </div>
@@ -11031,11 +11044,11 @@ window.mmTA = (function(){
       </div>` : ''}
       ${!isStudent ? `
       <div class="tool-btn-v-wrap">
-        <button type="button" class="tool-btn-v" id="btn-media" title="嵌入媒體：YouTube／音檔（全班同步播放）Embed media"><span class="tool-btn-v-icon">🎬</span><span class="tool-btn-v-label">媒體</span></button>
+        <button type="button" class="tool-btn-v" id="btn-media" title="嵌入媒體：電腦裡的影片／音樂、YouTube（全班同步播放）Embed media"><span class="tool-btn-v-icon">🎬</span><span class="tool-btn-v-label">媒體</span></button>
         <div class="color-popover">
           <div class="color-popover-title">嵌入媒體 Media</div>
           <button type="button" class="eraser-mode-opt media-opt" id="btn-add-youtube">▶ 加入 YouTube</button>
-          <button type="button" class="eraser-mode-opt media-opt" id="btn-add-audio">🎵 加入音檔</button>
+          <button type="button" class="eraser-mode-opt media-opt" id="btn-add-audio">🎬 加入媒體（影片／音樂）</button>
         </div>
       </div>` : ''}
       <div class="tool-v-sep"></div>
@@ -11826,9 +11839,11 @@ window.mmTA = (function(){
       rbGroup("insert", "投影片", [rbBtn("➕", "新增<br>投影片", function(){ if(secId()) addBlankSlideToSection(secId()); }), rbBtn("▦", "表格", function(){ openTableDialog(); }, "插入表格")]);
       var shapeBtns = Array.prototype.slice.call(tbq.all(".ins-shape")); var shapeBox = document.createElement("div"); shapeBox.className = "rb-shapes"; shapeBtns.forEach(function(b){ shapeBox.appendChild(b); });
       rbGroup("insert", "圖例", [rbBtn("🖼", "圖片", function(){ var f = qsx(".ins-img-file"); if(f) f.click(); }), shapeBox]);
-      rbGroup("insert", "文字", [rbBtn("📝", "文字<br>方塊", clickOf('button[data-tool="text"]'), "文字方塊：點一下畫面就能打字"), rbBtn("🔗", "超連結", function(){ openLinkDialog(); }, "超連結（Ctrl/⌘+K）")]);
-      var mediaBox = document.createElement("div"); mediaBox.className = "rb-stack"; [".ins-yt", ".ins-audio"].forEach(function(sel){ var el = qsx(sel); if(el){ var r = document.createElement("div"); r.className = "rb-row"; r.appendChild(el); mediaBox.appendChild(r); } });
-      rbGroup("insert", "媒體", [mediaBox]);
+      var insTextBtn = rbBtn("📝", "文字<br>方塊", clickOf('button[data-tool="text"]'), "文字方塊：點一下畫面就能打字");
+      var insTextIc = insTextBtn.querySelector(".tool-btn-v-icon"); if(insTextIc) insTextIc.outerHTML = '<img class="tool-btn-v-icon tool-btn-v-icon-img" src="' + TOOL_ICON_TEXT + '" alt="">';   // 跟「常用」裡同一個文字方塊圖示
+      rbGroup("insert", "文字", [insTextBtn, rbBtn("🔗", "超連結", function(){ openLinkDialog(); }, "超連結（Ctrl/⌘+K）")]);
+      var mediaBtn = rbBtn("🎬", "媒體", function(){ var b = qsx("#btn-add-audio"); if(b) b.click(); }, "插入電腦裡的影片或音樂（全班同步播放）"), ytBtn = rbBtn("▶", "YouTube", function(){ var b = qsx("#btn-add-youtube"); if(b) b.click(); }, "插入 YouTube 影片（貼上連結）");
+      rbGroup("insert", "媒體", [mediaBtn, ytBtn]);
       rbGroup("insert", "頁首頁尾", [rbBtn("🎛", "母片<br>頁尾頁碼", function(){ openMasterDialog(); }, "母片：整份簡報共用的背景、標誌、頁尾、頁碼")]);
       // ---- 繪圖 ----
       rbGroup("draw", "工具", [rbBtn("↖", "選取", clickOf('button[data-tool="select"]'), "選取（指標）"), rbBtn("✏️", "筆", clickOf('button[data-tool="pen"]'), "筆（顏色與粗細在左上角「筆」的選單）"), (function(){ var h = qsx(".pt-hl"); return h; })(), rbBtn("🧽", "橡皮擦", clickOf("#btn-eraser"), "橡皮擦"), rbBtn("🔴", "雷射筆", clickOf(".pt-laser"), "雷射筆（快速鍵 L）")]);
@@ -12421,7 +12436,7 @@ window.mmTA = (function(){
     });
     var btnAddYt = tbq.one("#btn-add-youtube"), btnAddAudio = tbq.one("#btn-add-audio");
     if(btnAddYt) btnAddYt.onclick = function(e){ e.stopPropagation(); promptYouTube(); };
-    if(btnAddAudio) btnAddAudio.onclick = function(e){ e.stopPropagation(); pickAudioFile(); };
+    if(btnAddAudio) btnAddAudio.onclick = function(e){ e.stopPropagation(); pickMediaFile(); };
     if(btnSlidePrev) btnSlidePrev.onclick = slideStepPrev;
     if(btnSlideNext) btnSlideNext.onclick = slideStepNext;
     updateSlideNavUi();
@@ -13706,13 +13721,13 @@ window.mmTA = (function(){
     function buildMedia(m){
       var h = { m: m, lastSeq: -1, lastState: null, expPos: 0, expAt: 0, expPlaying: false, lastPubAt: 0, suppressUntil: 0 };
       var root = document.createElement("div");
-      root.className = "media-box " + (m.kind === "youtube" ? "media-yt" : "media-au");
+      root.className = "media-box " + (m.kind === "youtube" ? "media-yt" : (m.kind === "video" ? "media-au media-vid" : "media-au"));
       root.dataset.mediaId = m.id;
       h.root = root;
       var barHtml = isStudent ? "" : '<div class="media-bar" title="拖曳移動位置"><span class="media-title"></span><button type="button" class="media-del" title="移除">✕</button></div>';
-      root.innerHTML = barHtml + '<div class="media-body"></div>' + ((!isStudent && m.kind === "youtube") ? '<div class="media-resize" title="拖曳縮放"></div>' : '');
+      root.innerHTML = barHtml + '<div class="media-body"></div>' + ((!isStudent && m.kind !== "audio") ? '<div class="media-resize" title="拖曳縮放"></div>' : '');
       var body = root.querySelector(".media-body");
-      var titleEl = root.querySelector(".media-title"); if(titleEl) titleEl.textContent = (m.kind === "youtube" ? "▶ YouTube" : "🎵 音檔");
+      var titleEl = root.querySelector(".media-title"); if(titleEl) titleEl.textContent = (m.kind === "youtube" ? "▶ YouTube" : (m.kind === "video" ? "🎬 影片" : "🎵 音檔"));
       if(!isStudent){
         var bar = root.querySelector(".media-bar");
         root.querySelector(".media-del").onclick = function(e){ e.stopPropagation(); if(confirm("移除這個媒體？\nRemove this media?")) removeMedia(m.id); };
@@ -13733,15 +13748,19 @@ window.mmTA = (function(){
           rz.addEventListener("pointermove", mv); rz.addEventListener("pointerup", up); rz.addEventListener("pointercancel", up);
         };
       }
-      if(m.kind === "audio") buildAudioBody(h, body); else buildYouTubeBody(h, body);
+      if(m.kind === "audio" || m.kind === "video") buildAudioBody(h, body); else buildYouTubeBody(h, body);
       return h;
     }
     function buildAudioBody(h, body){
       var m = h.m;
       body.innerHTML = '<div class="media-audio-row"><button type="button" class="ma-play">▶</button><input type="range" class="ma-seek" min="0" max="0" step="0.1" value="0"><span class="ma-time">0:00</span></div>';
-      var audio = document.createElement("audio"); audio.preload = "auto"; audio.style.display = "none";
+      var isVid = m.kind === "video";
+      var audio = document.createElement(isVid ? "video" : "audio"); audio.preload = "auto";
+      if(isVid){ audio.playsInline = true; audio.style.cssText = "display:block;width:100%;max-height:62vh;background:#000;" + (isStudent ? "pointer-events:none;" : ""); }   // 影片：畫面在上、播放列在下（同音檔，全班同步）
+      else audio.style.display = "none";
       var srcRaw = (getProgress(q.id).mediaData || {})[m.id];
-      body.appendChild(audio); h.audio = audio;
+      if(isVid) body.insertBefore(audio, body.firstChild); else body.appendChild(audio);
+      h.audio = audio;
       var btn = body.querySelector(".ma-play"), seek = body.querySelector(".ma-seek"), tm = body.querySelector(".ma-time");
       // 2026-10-01：音檔本體可能是資料網址（舊）、雲端網址，或「mm:」參照（存在這台裝置的 IndexedDB，見 resolveMediaSrc）
       if(srcRaw){
@@ -13884,27 +13903,32 @@ window.mmTA = (function(){
         addMedia({ kind: "youtube", ytId: id, w: 46 });
       }, "", "貼上 YouTube 連結，Enter 確認", false);
     }
-    function pickAudioFile(){
-      var inp = document.createElement("input"); inp.type = "file"; inp.accept = "audio/*,.mp3,.m4a,.wav,.ogg,.aac";
+    // 「媒體」：選電腦裡的影片或音樂（mp4／mov／webm、mp3／m4a／wav…）。影片放在畫面上可以縮放，播放／暫停／進度全班同步
+    function pickMediaFile(){
+      var inp = document.createElement("input"); inp.type = "file"; inp.accept = "video/*,audio/*,.mp4,.m4v,.mov,.webm,.mp3,.m4a,.wav,.ogg,.aac";
       inp.onchange = function(){
         var f = inp.files && inp.files[0]; if(!f) return;
-        // 2026-10-01：不在房間裡、而且這台裝置有本機儲存時，音檔本體存在 IndexedDB，課程資料只放參照（沒有大小問題）；
+        var vid = (f.type || "").indexOf("video/") === 0 || /\.(mp4|m4v|mov|webm)$/i.test(f.name);
+        var kind = vid ? "video" : "audio", label = vid ? "影片" : "音檔";
+        function obj(){ return { kind: kind, name: f.name.replace(/\.[^.]+$/, ""), w: vid ? 46 : 34 }; }
+        // 2026-10-01：不在房間裡、而且這台裝置有本機儲存時，檔案本體存在 IndexedDB，課程資料只放參照（沒有大小問題）；
         // 在房間裡（即時同步給學生）仍維持原本的做法：直接放進同步資料，所以保留大小提醒。
         if(!inRoom() && MO && MO.ok){
           MO.putMedia(f, f.name).then(function(key){
             if(!document.body.contains(cWrap)) return;
-            addMedia({ kind: "audio", name: f.name.replace(/\.[^.]+$/, ""), w: 34 }, "mm:" + key);
+            addMedia(obj(), "mm:" + key);
             syncMediaToCloud();
-          }).catch(function(err){ alert("音檔存入這台裝置失敗：" + (err && err.message ? err.message : err)); });
+          }).catch(function(err){ alert(label + "存入這台裝置失敗：" + (err && err.message ? err.message : err)); });
           return;
         }
-        if(f.size > 6 * 1024 * 1024 && !confirm("這個音檔有 " + (f.size / 1048576).toFixed(1) + " MB，即時同步可能會比較慢，建議壓縮或剪短。仍要加入嗎？\nThis file is large; live sync may be slow. Add anyway?")) return;
+        if(f.size > 6 * 1024 * 1024 && !confirm("這個" + label + "有 " + (f.size / 1048576).toFixed(1) + " MB，即時同步可能會比較慢，建議壓縮或剪短。仍要加入嗎？\nThis file is large; live sync may be slow. Add anyway?")) return;
         var fr = new FileReader();
-        fr.onload = function(){ if(!document.body.contains(cWrap)) return; addMedia({ kind: "audio", name: f.name.replace(/\.[^.]+$/, ""), w: 34 }, fr.result); };
+        fr.onload = function(){ if(!document.body.contains(cWrap)) return; addMedia(obj(), fr.result); };
         fr.readAsDataURL(f);
       };
       inp.click();
     }
+    function pickAudioFile(){ pickMediaFile(); }
 
 
     /* ===== 上下層：文字／圖形／圖片共用一套 z 順序（物件的 z 欄位；沒有 z 的用預設：圖片 < 圖形 < 文字，依陣列順序）===== */
