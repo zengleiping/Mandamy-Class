@@ -7575,6 +7575,118 @@ window.mmTA = (function(){
     e.preventDefault();
     insertSlideCopy(found.secId, info.question.id, slideClipboard.q, slideClipboard.prog);
   });
+  /* ===== 生詞簡報範本：從教材庫某一課一次產生整份生詞投影片（每個生詞一頁） =====
+     每一頁都是一般的文字方塊／圖案，產生後照平常的方式編輯；一律新增成一份新的簡報，不動原有的簡報。
+     版面（16:9）：左＝圖示（課本的 Emoji，可換成自己的圖片）、右＝大生詞與標音、中＝英文／第二語言解釋、
+     下＝例句。本課之前已學過的詞，例句裡不加注音（只標新詞）。 */
+  var vtBankCache = null;
+  function vtBookNum(b){ var m = /(\d+)/.exec(String(b == null ? "" : b)); return m ? parseInt(m[1], 10) : 999; }
+  function vtLessonLabel(l){ return "第 " + l.lesson + " 課" + (l.title ? "：" + l.title : "") + "（" + (l.vocab || []).length + " 個生詞）"; }
+  function vtBuildSlides(lesson, learnedWords, opt){
+    var W = 640, H = 360, ink = "#2B2320", brown = "#8C5A2B";
+    function px(x){ return Math.round(x / W * 1000) / 10; }
+    function py(y){ return Math.round(y / H * 1000) / 10; }
+    function han(c){ return /[㐀-䶿一-鿿豈-﫿]/.test(c); }
+    var learned = Array.from(new Set(learnedWords)).filter(function(w){ return w; }).sort(function(a, b){ return b.length - a.length; });
+    var out = [];
+    (lesson.vocab || []).forEach(function(v){
+      var word = String(v["生詞"] || "").trim(); if(!word) return;
+      var texts = [], shapes = [];
+      function T(o){ var t = Object.assign({ id: uid("t"), color: ink, fontSize: 24, bold: true, step: 0, align: "center", ph: "off" }, o); t.x = px(t.x); t.y = py(t.y); texts.push(t); return t; }
+      shapes.push({ id: uid("sh"), type: "rect", x: 2, y: 3, w: 96, h: 94, color: "#F2B8A2", sw: 3, fill: false, op: 1, step: 0 });
+      shapes.push({ id: uid("sh"), type: "line", x: 6, y: 62, w: 88, h: 0, color: "#F2D5C8", sw: 2, fill: false, op: 1, step: 0 });
+      // 左：圖示
+      var emo = String(v["Emoji／圖示"] || "").trim();
+      if(emo) T({ text: emo, x: 150, y: 92, fontSize: 110, bold: false });
+      // 右：大生詞
+      var chars = Array.from(word), n = chars.length;
+      var fs = n <= 2 ? 72 : (n === 3 ? 60 : (n === 4 ? 50 : 40));
+      var mode = opt.mode === "both" ? "zhuyin" : opt.mode;
+      var wt = { text: word, x: 450, y: 82, fontSize: fs, color: "#000000", ph: mode };
+      var syl = String(mode === "pinyin" ? (v["拼音"] || "") : (v["注音"] || "")).trim().split(/\s+/).filter(Boolean);
+      if(mode !== "off" && syl.length === n){ wt.phoneticOverride = {}; syl.forEach(function(sy, i){ wt.phoneticOverride[i] = sy; }); }
+      T(wt);
+      if(opt.mode === "both" && v["拼音"]) T({ text: String(v["拼音"]), x: 450, y: 142, fontSize: 22, color: brown, bold: true });
+      // 中：解釋
+      var en = String(v["英文翻譯"] || "").trim(), sec = opt.lang ? String(v[opt.lang + "翻譯"] || "").trim() : "";
+      if(en) T({ text: en, x: 320, y: sec ? 176 : 186, fontSize: 24, w: 90 });
+      if(sec) T({ text: sec, x: 320, y: 206, fontSize: 20, color: "#6B5E55", w: 90 });
+      // 下：例句
+      var sz = String(v["例句（中文）"] || "").trim();
+      if(opt.sentence && sz){
+        var sc = Array.from(sz), mask = sc.map(function(c){ return han(c); });
+        if(opt.hideLearned){
+          var i = 0;
+          while(i < sc.length){
+            if(!han(sc[i])){ i++; continue; }
+            var ml = 0; for(var k = 0; k < learned.length; k++){ if(learned[k] !== word && sz.startsWith(learned[k], i)){ ml = Array.from(learned[k]).length; break; } }
+            if(ml){ for(var q = 0; q < ml; q++) mask[i + q] = false; i += ml; } else i++;
+          }
+          var pos = sz.indexOf(word); while(pos !== -1){ var cp = Array.from(sz.slice(0, pos)).length; for(var q2 = 0; q2 < n; q2++) mask[cp + q2] = true; pos = sz.indexOf(word, pos + 1); }
+        }
+        var st = { text: sz, x: 320, y: 254, fontSize: sc.length <= 10 ? 30 : (sc.length <= 14 ? 26 : 22), color: brown, w: 90, ph: opt.mode === "pinyin" ? "pinyin" : (opt.mode === "off" ? "off" : "zhuyin") };
+        if(st.ph !== "off"){ st.phoneticOverride = {}; sc.forEach(function(c, i2){ if(han(c) && !mask[i2]) st.phoneticOverride[i2] = " "; }); }
+        T(st);
+        var sen = String(v["例句（英文）"] || "").trim(), ss = opt.lang ? String(v["例句（" + opt.lang + "）"] || "").trim() : "";
+        if(sen) T({ text: sen, x: 320, y: 297, fontSize: 18, color: brown, w: 90 });
+        if(ss) T({ text: ss, x: 320, y: 323, fontSize: 16, color: brown, w: 90 });
+      }
+      var qs = Array.isArray(v["問題"]) ? v["問題"] : (v["問題"] ? String(v["問題"]).split("｜") : []);
+      out.push({ title: word, texts: texts, shapes: shapes, note: qs.length ? "課堂提問：\n" + qs.map(function(x, j){ return (j + 1) + ". " + x; }).join("\n") : "" });
+    });
+    return out;
+  }
+  async function openVocabTemplateDialog(){
+    if(isStudent) return;
+    var back = document.createElement("div"); back.className = "tb-modal-back";
+    var modal = document.createElement("div"); modal.className = "tb-modal"; modal.style.width = "min(520px,95vw)"; back.appendChild(modal);
+    modal.innerHTML = '<h3>📚 生詞簡報範本</h3><div class="tb-hint">選一課，一次產生整課的生詞投影片（每個生詞一頁，會新增成一份新的簡報，不會動到現有的簡報）。</div><div class="vt-body" style="margin:10px 0;font-size:14.5px;">⏳ 讀取教材庫的生詞…</div><div class="tb-foot"><button type="button" class="vt-cancel">取消</button><button type="button" class="primary vt-go" disabled>產生投影片</button></div>';
+    document.body.appendChild(back);
+    var $ = function(c){ return modal.querySelector(c); };
+    $(".vt-cancel").onclick = function(){ back.remove(); };
+    back.addEventListener("pointerdown", function(e){ if(e.target === back) back.remove(); });
+    var bank = null;
+    try{ if(currentTeacher && window.db){ var snap = await get(ref(db, "teacherVocabBanks/" + currentTeacher.id)); bank = snap.exists() ? snap.val() : null; } }catch(e){}
+    var cd = (bank && bank.courseData) ? (Array.isArray(bank.courseData) ? bank.courseData : Object.keys(bank.courseData).map(function(k){ return bank.courseData[k]; })) : [];
+    cd = cd.filter(function(l){ return l && (l.vocab || []).length; }).sort(function(a, b){ return (vtBookNum(a.book) - vtBookNum(b.book)) || (Number(a.lesson) - Number(b.lesson)); });
+    if(!cd.length){ $(".vt-body").innerHTML = '<span style="color:var(--wrong);">教材庫裡還沒有生詞。請先到平台「教材」匯入課程。</span>'; return; }
+    var langs = {}; cd.forEach(function(l){ (l.vocab || []).forEach(function(v){ Object.keys(v).forEach(function(k){ var m = /^(.+)翻譯$/.exec(k); if(m && m[1] !== "英文" && v[k]) langs[m[1]] = 1; }); }); });
+    var lessonOpts = cd.map(function(l, i){ return '<option value="' + i + '">' + escapeHtml((l.book ? String(l.book) + "　" : "") + vtLessonLabel(l)) + '</option>'; }).join("");
+    var langOpts = '<option value="">只放英文</option>' + Object.keys(langs).map(function(k){ return '<option value="' + escapeHtml(k) + '">英文＋' + escapeHtml(k) + '</option>'; }).join("");
+    var lastLesson = 0; try{ lastLesson = parseInt(localStorage.getItem("mm_vt_lesson") || "0", 10) || 0; }catch(e){}
+    $(".vt-body").innerHTML =
+      '<label style="display:block;margin:6px 0 2px;">課次</label><select class="vt-lesson" style="width:100%;">' + lessonOpts + '</select>' +
+      '<label style="display:block;margin:10px 0 2px;">標音</label><select class="vt-mode" style="width:100%;"><option value="zhuyin">注音（直排在國字右邊）</option><option value="pinyin">拼音（在國字正上方）</option><option value="both">注音＋拼音（生詞下方多一行拼音）</option><option value="off">不標音</option></select>' +
+      '<label style="display:block;margin:10px 0 2px;">解釋語言</label><select class="vt-lang" style="width:100%;">' + langOpts + '</select>' +
+      '<label style="display:flex;gap:6px;align-items:center;margin-top:10px;"><input type="checkbox" class="vt-sent" checked> 放例句（中文＋英文＋第二語言）</label>' +
+      '<label style="display:flex;gap:6px;align-items:center;margin-top:6px;"><input type="checkbox" class="vt-hide" checked> 本課之前已學過的詞，例句裡不加注音（只標新詞）</label>' +
+      '<div class="tb-hint vt-sum" style="margin-top:8px;"></div>';
+    var selL = $(".vt-lesson"); if(lastLesson < cd.length) selL.value = String(lastLesson);
+    function sum(){ var l = cd[parseInt(selL.value, 10)]; var nn = (l.vocab || []).filter(function(v){ return v["生詞"]; }).length; $(".vt-sum").textContent = "會產生 " + nn + " 頁投影片。"; }
+    selL.onchange = sum; sum();
+    $(".vt-go").disabled = false;
+    $(".vt-go").onclick = function(){
+      var idx = parseInt(selL.value, 10), lesson = cd[idx];
+      var learnedWords = [];
+      cd.forEach(function(l){ var before = (vtBookNum(l.book) < vtBookNum(lesson.book)) || (vtBookNum(l.book) === vtBookNum(lesson.book) && Number(l.lesson) < Number(lesson.lesson)); if(before) (l.vocab || []).forEach(function(v){ if(v["生詞"]) learnedWords.push(String(v["生詞"])); }); });
+      var opt = { mode: $(".vt-mode").value, lang: $(".vt-lang").value, sentence: $(".vt-sent").checked, hideLearned: $(".vt-hide").checked };
+      var slides = vtBuildSlides(lesson, learnedWords, opt);
+      if(!slides.length){ alert("這一課沒有可用的生詞。"); return; }
+      try{ localStorage.setItem("mm_vt_lesson", String(idx)); }catch(e){}
+      var secs = getSections(), secId = uid("sec"), order = Object.keys(secs).length;
+      var sec = { id: secId, title: "第 " + lesson.lesson + " 課　生詞" + (lesson.title ? "：" + lesson.title : ""), desc: "", type: "board", order: order, collapsed: false, questions: {}, media: [] };
+      secs[secId] = sec;
+      var progressMap = {}, firstQ = null;
+      slides.forEach(function(sl, i){
+        var qId = uid("q"); if(!firstQ) firstQ = qId;
+        sec.questions[qId] = { id: qId, order: i, title: sl.title, desc: "", bgImage: "", gridType: "none", media: [], teacherNote: sl.note, weight: 1, canvasRatio: Math.round(16 / 9 * 10000) / 10000 };
+        progressMap[qId] = { texts: sl.texts, shapes: sl.shapes };
+      });
+      writeSections(secs, firstQ, progressMap);
+      back.remove();
+    };
+  }
+  window.__openVocabTemplate = openVocabTemplateDialog;
   function addBlankSlideToSection(secId){
     var secs = getSections(); var sec = secs[secId]; if(!sec) return;
     var keys = getSortedQuestionKeys(sec);
@@ -11891,7 +12003,7 @@ window.mmTA = (function(){
       rbGroup("home", "繪圖", [itemNode("text"), itemNode("shape"), rbBtn("🖼", "圖片", function(){ var f = qsx(".ins-img-file"); if(f) f.click(); }, "插入圖片"), itemNode("arrange"), rbBtn("🎨", "格式", function(){ selFromActive(); if(!selSet.length){ alert("請先選取一個物件。\\nSelect an object first."); return; } openObjFormat(); }, "物件格式：框線、陰影、圓角、圖片裁剪／去背、漸層")]);
       rbGroup("home", "編輯", [itemNode("select"), rbBtn("🔎", "尋找<br>取代", function(){ openFindReplace(); }, "尋找與取代（Ctrl/⌘+H）")]);
       // ---- 插入 ----
-      rbGroup("insert", "投影片", [rbBtn("➕", "新增<br>投影片", function(){ if(secId()) addBlankSlideToSection(secId()); }), rbBtn("▦", "表格", function(){ openTableDialog(); }, "插入表格")]);
+      rbGroup("insert", "投影片", [rbBtn("➕", "新增<br>投影片", function(){ if(secId()) addBlankSlideToSection(secId()); }), rbBtn("▦", "表格", function(){ openTableDialog(); }, "插入表格"), rbBtn("📚", "生詞<br>範本", function(){ openVocabTemplateDialog(); }, "選一課，一次產生整課的生詞投影片")]);
       var shapeBtns = Array.prototype.slice.call(tbq.all(".ins-shape")); var shapeBox = document.createElement("div"); shapeBox.className = "rb-shapes"; shapeBtns.forEach(function(b){ shapeBox.appendChild(b); });
       rbGroup("insert", "圖例", [rbBtn("🖼", "圖片", function(){ var f = qsx(".ins-img-file"); if(f) f.click(); }), shapeBox]);
       var insTextBtn = rbBtn("📝", "文字<br>方塊", clickOf('button[data-tool="text"]'), "文字方塊：點一下畫面就能打字");
