@@ -627,9 +627,11 @@ function viewLogin(msg){
   i18nStart(false);
   root.innerHTML = '<div class="center-wrap"><div class="card"><img src="icons/logo.svg" alt="曼米中文" style="width:84px;height:84px;display:block;margin:0 auto 8px;"><h2 style="text-align:center;">曼米中文平台</h2><p class="sub">老師登入　Teacher login</p>' +
     '<label>帳號</label><input type="text" id="lu" autocomplete="username"><label>密碼</label><input type="password" id="lp" autocomplete="current-password" style="width:100%;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;font-size:17px;background:var(--surface-2);">' +
-    '<label style="margin-top:10px;">助教登入（不是助教請留空）<span class="note" style="font-weight:400;"> 要協助哪位老師？填那位老師的帳號</span></label><input type="text" id="lo" autocomplete="off">' +
     '<div class="err" id="le"></div><button class="btn primary" id="lgo" style="width:100%;margin-top:14px;padding:11px;">登入</button>' +
-    '<p class="sub" style="margin-top:16px;">學生請使用老師給的班級連結，或 <a href="#" id="tostu">輸入班級代碼</a></p></div></div>';
+    '<p class="sub" style="margin-top:16px;">學生請使用老師給的班級連結，或 <a href="#" id="tostu">輸入班級代碼</a></p></div></div>' +
+    '<div id="taw" style="position:fixed;left:10px;bottom:10px;font-size:12px;"><a href="#" id="tatag" style="color:var(--muted,#9a8f7c);opacity:.55;text-decoration:none;padding:4px 6px;">助教</a>' +
+    '<div id="tabox" style="display:none;margin-top:4px;background:var(--surface,#fff);border:1px solid var(--line);border-radius:10px;padding:8px 10px;box-shadow:0 2px 10px rgba(0,0,0,.12);width:220px;"><div class="note" style="margin:0 0 4px;">助教登入：填要協助的老師帳號（不是助教請留空）</div><input type="text" id="lo" autocomplete="off" style="width:100%;"></div></div>';
+  document.getElementById("tatag").onclick = function(e){ e.preventDefault(); var bx = document.getElementById("tabox"); bx.style.display = bx.style.display === "none" ? "block" : "none"; if(bx.style.display === "block") document.getElementById("lo").focus(); };
   var le = document.getElementById("le"); if(msg){ le.textContent = msg; le.style.display = "block"; }
   document.getElementById("tostu").onclick = function(e){ e.preventDefault(); viewStudentEntry(); };
   async function go(){
