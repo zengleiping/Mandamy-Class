@@ -5985,7 +5985,8 @@ window.mmTA = (function(){
   var topbarActions = document.getElementById("topbar-actions");
   function renderTopbar(){
     topbarActions.innerHTML = "";
-    if(activeProjectId){
+    var masterEdit = !!(params.get("embed") && !window.__classCopy && !inRoom());   // 平台「教材」區編輯通用教材：不開房間、不結算成績（上課都在班級存檔裡）
+    if(activeProjectId && !masterEdit){
       var scoreBtn = document.createElement("button"); scoreBtn.className = "btn btn-sm btn-primary"; scoreBtn.textContent = "📊 結算成績 Grade";
       scoreBtn.onclick = function(){ var report = calculateScoreReport(); showScoreModal(report); };
       topbarActions.appendChild(scoreBtn);
@@ -6059,7 +6060,7 @@ window.mmTA = (function(){
         topbarActions.appendChild(shareBtn);
         var leaveBtn = document.createElement("button"); leaveBtn.className = "btn btn-sm btn-ghost"; leaveBtn.textContent = "結束連線 End Session"; leaveBtn.onclick = leaveRoom; topbarActions.appendChild(leaveBtn);
       }
-    } else if(activeProjectId && !isOfflineMode){
+    } else if(activeProjectId && !isOfflineMode && !masterEdit){
       var btn = document.createElement("button"); btn.className = "btn btn-primary"; btn.textContent = "🔗 開新房間 Start Room"; btn.onclick = createRoom; topbarActions.appendChild(btn);
     }
     if(!isStudent){
