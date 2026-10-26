@@ -1,0 +1,1013 @@
+{
+ "id": "proj_l8quiz",
+ "title": "第八課 下課以後做什麼？ 練習題",
+ "desc": "依第八課簡報（句型、課文、習寫漢字、練習）整理",
+ "sections": {
+  "s8_1": {
+   "id": "s8_1",
+   "title": "第 1 大題：連連看（生詞與注音）",
+   "type": "match",
+   "order": 0,
+   "questions": {
+    "q8_01": {
+     "id": "q8_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "唱歌",
+       "right": "ㄔㄤˋ ㄍㄜ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "打球",
+       "right": "ㄉㄚˇ ㄑㄧㄡˊ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "跑步",
+       "right": "ㄆㄠˇ ㄅㄨˋ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "運動",
+       "right": "ㄩㄣˋ ㄉㄨㄥˋ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "跳舞",
+       "right": "ㄊㄧㄠˋ ㄨˇ"
+      }
+     }
+    },
+    "q8_02": {
+     "id": "q8_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "聽音樂",
+       "right": "ㄊㄧㄥ ㄧㄣ ㄩㄝˋ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "看電視",
+       "right": "ㄎㄢˋ ㄉㄧㄢˋ ㄕˋ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "下課",
+       "right": "ㄒㄧㄚˋ ㄎㄜˋ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "以後",
+       "right": "ㄧˇ ㄏㄡˋ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "常常",
+       "right": "ㄔㄤˊ ㄔㄤˊ"
+      }
+     }
+    },
+    "q8_03": {
+     "id": "q8_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "leftLabel": "生詞",
+     "rightLabel": "英文",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "唱歌",
+       "right": "sing"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "跑步",
+       "right": "run"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "跳舞",
+       "right": "dance"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "看電視",
+       "right": "watch TV"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "聽音樂",
+       "right": "listen to music"
+      }
+     }
+    }
+   }
+  },
+  "s8_2": {
+   "id": "s8_2",
+   "title": "第 2 大題：選擇題（句型）",
+   "type": "choice",
+   "order": 1,
+   "questions": {
+    "q8_04": {
+     "id": "q8_04",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n下課＿＿我常常運動。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "以後"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "以前"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "常常"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    },
+    "q8_05": {
+     "id": "q8_05",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n我們＿＿一起打球。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "常常"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "以後"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "做"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    },
+    "q8_06": {
+     "id": "q8_06",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n吃早飯以後我們一起＿＿電視吧！",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "看"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "打"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "跑"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    },
+    "q8_07": {
+     "id": "q8_07",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n下課以後你們常常＿＿什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "做"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "打"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "唱"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    },
+    "q8_08": {
+     "id": "q8_08",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n早飯我常常吃麵包、＿＿牛奶。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "喝"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "看"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "聽"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    },
+    "q8_09": {
+     "id": "q8_09",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n妹妹常常和我一起＿＿電視。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "看"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "唱"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "跳"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    }
+   }
+  },
+  "s8_3": {
+   "id": "s8_3",
+   "title": "第 3 大題：閱讀理解（課文）",
+   "type": "choice",
+   "order": 2,
+   "questions": {
+    "q8_10": {
+     "id": "q8_10",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "讀課文，選出正確的答案。\nRead the text and choose the correct answer.\nอ่านบทเรียนแล้วเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n大文常常做什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "打球和跑步"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "唱歌和跳舞"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "看電視和聽音樂"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：下課以後你們常常做什麼？\n大文：我常常打球和跑步。\n東明：我喜歡唱歌和跳舞，心美呢？\n心美：我喜歡看電視，也喜歡聽音樂。\n大文：我覺得運動很好，我常常運動。"
+    },
+    "q8_11": {
+     "id": "q8_11",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "讀課文，選出正確的答案。\nRead the text and choose the correct answer.\nอ่านบทเรียนแล้วเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n東明喜歡做什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "唱歌和跳舞"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "打球和跑步"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "看電視"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：下課以後你們常常做什麼？\n大文：我常常打球和跑步。\n東明：我喜歡唱歌和跳舞，心美呢？\n心美：我喜歡看電視，也喜歡聽音樂。\n大文：我覺得運動很好，我常常運動。"
+    },
+    "q8_12": {
+     "id": "q8_12",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "讀課文，選出正確的答案。\nRead the text and choose the correct answer.\nอ่านบทเรียนแล้วเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n心美喜歡做什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "看電視和聽音樂"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "打球"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "跳舞"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：下課以後你們常常做什麼？\n大文：我常常打球和跑步。\n東明：我喜歡唱歌和跳舞，心美呢？\n心美：我喜歡看電視，也喜歡聽音樂。\n大文：我覺得運動很好，我常常運動。"
+    },
+    "q8_13": {
+     "id": "q8_13",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "讀課文，選出正確的答案。\nRead the text and choose the correct answer.\nอ่านบทเรียนแล้วเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n大文覺得運動怎麼樣？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "很好"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "不好"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "太累"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：下課以後你們常常做什麼？\n大文：我常常打球和跑步。\n東明：我喜歡唱歌和跳舞，心美呢？\n心美：我喜歡看電視，也喜歡聽音樂。\n大文：我覺得運動很好，我常常運動。"
+    },
+    "q8_14": {
+     "id": "q8_14",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "讀課文，選出正確的答案。\nRead the text and choose the correct answer.\nอ่านบทเรียนแล้วเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n他們是什麼時候做這些事？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "下課以後"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "上課的時候"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "吃早飯以前"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：下課以後你們常常做什麼？\n大文：我常常打球和跑步。\n東明：我喜歡唱歌和跳舞，心美呢？\n心美：我喜歡看電視，也喜歡聽音樂。\n大文：我覺得運動很好，我常常運動。"
+    }
+   }
+  },
+  "s8_4": {
+   "id": "s8_4",
+   "title": "第 4 大題：漢字（部首與筆畫）",
+   "type": "choice",
+   "order": 3,
+   "questions": {
+    "q8_15": {
+     "id": "q8_15",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n「打」的部首是什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "手"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "丁"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "亻"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    },
+    "q8_16": {
+     "id": "q8_16",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n「球」的部首是什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "玉"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "求"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "王"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    },
+    "q8_17": {
+     "id": "q8_17",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n「常」的部首是什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "巾"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "小"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "口"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    },
+    "q8_18": {
+     "id": "q8_18",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n「做」的部首是什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "人"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "故"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "攵"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    },
+    "q8_19": {
+     "id": "q8_19",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n「下」有幾畫？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "3"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "4"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "2"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    },
+    "q8_20": {
+     "id": "q8_20",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n「打」有幾畫？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "5"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "6"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "4"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    },
+    "q8_21": {
+     "id": "q8_21",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n「常」有幾畫？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "11"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "10"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "12"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    },
+    "q8_22": {
+     "id": "q8_22",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "選出正確的答案。\nChoose the correct answer.\nเลือกคำตอบที่ถูกต้องค่ะ/ครับ\n\n「呢」有幾畫？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "8"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "7"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "9"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ]
+    }
+   }
+  },
+  "s8_5": {
+   "id": "s8_5",
+   "title": "第 5 大題：填空",
+   "type": "fill",
+   "order": 4,
+   "questions": {
+    "q8_23": {
+     "id": "q8_23",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "template": "{下}課以後，大文常常{打球}和跑步。",
+     "prompt": "根據課文填入適當的答案。\nFill in the blanks according to the text.\nเติมคำตอบที่เหมาะสมตามบทเรียนค่ะ/ครับ"
+    },
+    "q8_24": {
+     "id": "q8_24",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "template": "東明{喜}歡唱歌{和}跳舞。",
+     "prompt": "根據課文填入適當的答案。\nFill in the blanks according to the text.\nเติมคำตอบที่เหมาะสมตามบทเรียนค่ะ/ครับ"
+    },
+    "q8_25": {
+     "id": "q8_25",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "template": "心美喜{歡}看電視，{也}喜歡聽音樂。",
+     "prompt": "根據課文填入適當的答案。\nFill in the blanks according to the text.\nเติมคำตอบที่เหมาะสมตามบทเรียนค่ะ/ครับ"
+    },
+    "q8_26": {
+     "id": "q8_26",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": "",
+     "template": "大文覺得運動很{好}，他{常常}運動。",
+     "prompt": "根據課文填入適當的答案。\nFill in the blanks according to the text.\nเติมคำตอบที่เหมาะสมตามบทเรียนค่ะ/ครับ"
+    },
+    "q8_27": {
+     "id": "q8_27",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": "",
+     "template": "下課{以後}我們常常一起打球。",
+     "prompt": "填入適當的詞。\nFill in the blank with the correct word.\nเติมคำที่เหมาะสมค่ะ/ครับ"
+    },
+    "q8_28": {
+     "id": "q8_28",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": "",
+     "template": "妹妹{常常}和我一起看電視。",
+     "prompt": "填入適當的詞。\nFill in the blank with the correct word.\nเติมคำที่เหมาะสมค่ะ/ครับ"
+    }
+   }
+  },
+  "s8_6": {
+   "id": "s8_6",
+   "title": "第 6 大題：句子重組",
+   "type": "reorder",
+   "order": 5,
+   "questions": {
+    "q8_29": {
+     "id": "q8_29",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "請將下列詞語重組為正確句子 Rearrange the words into a correct sentence",
+     "words": [
+      "下課",
+      "以後",
+      "我們",
+      "常常",
+      "一起",
+      "打球",
+      "。"
+     ]
+    },
+    "q8_30": {
+     "id": "q8_30",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "請將下列詞語重組為正確句子 Rearrange the words into a correct sentence",
+     "words": [
+      "下課",
+      "以後",
+      "你們",
+      "常常",
+      "做",
+      "什麼",
+      "？"
+     ]
+    },
+    "q8_31": {
+     "id": "q8_31",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "請將下列詞語重組為正確句子 Rearrange the words into a correct sentence",
+     "words": [
+      "我",
+      "喜歡",
+      "看",
+      "電視",
+      "，",
+      "也",
+      "喜歡",
+      "聽",
+      "音樂",
+      "。"
+     ]
+    },
+    "q8_32": {
+     "id": "q8_32",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "請將下列詞語重組為正確句子 Rearrange the words into a correct sentence",
+     "words": [
+      "我",
+      "覺得",
+      "運動",
+      "很",
+      "好",
+      "。"
+     ]
+    }
+   }
+  },
+  "s8_7": {
+   "id": "s8_7",
+   "title": "第 7 大題：聽力",
+   "type": "choice",
+   "order": 6,
+   "questions": {
+    "q8_33": {
+     "id": "q8_33",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "聽一聽，選出你聽到的詞。\nListen and choose the word you hear.\nฟังแล้วเลือกคำที่ได้ยินค่ะ/ครับ",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "唱歌"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "跳舞"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "跑步"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "tts": {
+      "text": "唱歌",
+      "rate": 0.9,
+      "voice": "zh-TW-HsiaoChenNeural",
+      "gap": 0.6,
+      "mode": "single",
+      "spkN": 2
+     }
+    },
+    "q8_34": {
+     "id": "q8_34",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "聽一聽，選出你聽到的詞。\nListen and choose the word you hear.\nฟังแล้วเลือกคำที่ได้ยินค่ะ/ครับ",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "打球"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "看電視"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "聽音樂"
+      }
+     },
+     "answerIds": [
+      "c3"
+     ],
+     "tts": {
+      "text": "聽音樂",
+      "rate": 0.9,
+      "voice": "zh-TW-HsiaoChenNeural",
+      "gap": 0.6,
+      "mode": "single",
+      "spkN": 2
+     }
+    },
+    "q8_35": {
+     "id": "q8_35",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "聽一聽，選出你聽到的詞。\nListen and choose the word you hear.\nฟังแล้วเลือกคำที่ได้ยินค่ะ/ครับ",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "運動"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "跳舞"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "下課"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "tts": {
+      "text": "運動",
+      "rate": 0.9,
+      "voice": "zh-TW-HsiaoChenNeural",
+      "gap": 0.6,
+      "mode": "single",
+      "spkN": 2
+     }
+    },
+    "q8_36": {
+     "id": "q8_36",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "聽一聽，選出正確的答案。\nListen and choose the correct answer.\nฟังแล้วเลือกคำตอบที่ถูกต้องค่ะ/ครับ",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "打球和跑步"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "唱歌和跳舞"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "看電視"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "tts": {
+      "text": "下課以後你們常常做什麼？\n我常常打球和跑步。",
+      "rate": 0.9,
+      "voice": "zh-TW-HsiaoChenNeural",
+      "gap": 0.6,
+      "mode": "dialog",
+      "spkN": 2,
+      "spk": {
+       "說話者1": "zh-TW-YunJheNeural",
+       "說話者2": "zh-TW-HsiaoChenNeural"
+      }
+     }
+    }
+   }
+  },
+  "s8_8": {
+   "id": "s8_8",
+   "title": "第 8 大題：習寫漢字",
+   "type": "hanzi",
+   "order": 7,
+   "questions": {
+    "q8_37": {
+     "id": "q8_37",
+     "order": 0,
+     "title": "第 1 題：下",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "下",
+     "desc": "3畫，部首：一"
+    },
+    "q8_38": {
+     "id": "q8_38",
+     "order": 1,
+     "title": "第 2 題：常",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "常",
+     "desc": "11畫，部首：巾"
+    },
+    "q8_39": {
+     "id": "q8_39",
+     "order": 2,
+     "title": "第 3 題：打",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "打",
+     "desc": "5畫，部首：手"
+    },
+    "q8_40": {
+     "id": "q8_40",
+     "order": 3,
+     "title": "第 4 題：球",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "球",
+     "desc": "11畫，部首：玉"
+    },
+    "q8_41": {
+     "id": "q8_41",
+     "order": 4,
+     "title": "第 5 題：做",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "做",
+     "desc": "11畫，部首：人"
+    },
+    "q8_42": {
+     "id": "q8_42",
+     "order": 5,
+     "title": "第 6 題：呢",
+     "weight": 1,
+     "teacherNote": "",
+     "char": "呢",
+     "desc": "8畫，部首：口"
+    }
+   }
+  },
+  "s8_9": {
+   "id": "s8_9",
+   "title": "第 9 大題：口說（我會唸）",
+   "type": "record",
+   "order": 8,
+   "questions": {
+    "q8_43": {
+     "id": "q8_43",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "請唸出課文。\nRead the text aloud.\nอ่านบทเรียนออกเสียงค่ะ/ครับ",
+     "passage": "心美：下課以後你們常常做什麼？\n大文：我常常打球和跑步。\n東明：我喜歡唱歌和跳舞，心美呢？\n心美：我喜歡看電視，也喜歡聽音樂。\n大文：我覺得運動很好，我常常運動。",
+     "reference": "心美：下課以後你們常常做什麼？\n大文：我常常打球和跑步。\n東明：我喜歡唱歌和跳舞，心美呢？\n心美：我喜歡看電視，也喜歡聽音樂。\n大文：我覺得運動很好，我常常運動。",
+     "maxSec": 60
+    },
+    "q8_44": {
+     "id": "q8_44",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "下課以後你常常做什麼？用「我常常……」說一說。\nWhat do you often do after class? Use “我常常……”.\nหลังเลิกเรียนคุณมักทำอะไร ใช้ “我常常……” พูดค่ะ/ครับ",
+     "reference": "例：下課以後我常常打球。／下課以後我常常看電視。",
+     "maxSec": 30
+    },
+    "q8_45": {
+     "id": "q8_45",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": "",
+     "prompt": "你喜歡做什麼？用「我喜歡……」說一說。\nWhat do you like to do? Use “我喜歡……”.\nคุณชอบทำอะไร ใช้ “我喜歡……” พูดค่ะ/ครับ",
+     "reference": "例：我喜歡唱歌和跳舞。",
+     "maxSec": 30
+    }
+   }
+  }
+ },
+ "currentQId": "q8_01"
+}
