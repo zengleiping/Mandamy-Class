@@ -172,6 +172,13 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .tab.on{ color:var(--seal); border-bottom-color:var(--seal); }
   .subbar{ display:flex; gap:6px; padding:8px 14px; flex-wrap:wrap; align-items:center; background:var(--paper); border-bottom:1px solid var(--line); }
   .frame{ flex:1; width:100%; border:0; background:var(--paper); min-height:0; }
+  /* 📖 近義詞工具書：全螢幕視窗 */
+  .syn-ov{ position:fixed; inset:0; z-index:9960; background:var(--paper); display:flex; flex-direction:column; }
+  .syn-bar{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:10px 14px; padding-top:calc(10px + env(safe-area-inset-top, 0px)); border-bottom:1px solid var(--line); background:var(--surface); }
+  .syn-bar b{ font-size:16px; }
+  .syn-bar .note{ flex:1 1 160px; min-width:0; }
+  .syn-fr{ flex:1; width:100%; border:0; min-height:0; background:var(--paper); }
+  body.syn-open{ overflow:hidden; }
   .note{ color:var(--ink-soft); font-size:14.5px; line-height:1.7; }
   .join{ display:flex; gap:8px; align-items:center; margin-top:10px; flex-wrap:wrap; }
   dialog{ border:none; border-radius:16px; padding:0; box-shadow:0 20px 40px rgba(0,0,0,.25); width:min(380px,92vw); }
@@ -968,6 +975,44 @@ window.addEventListener("message", function(e){
   var pk = parseKey(S.lib.key), lt = ((S.plat.lessons || {})[S.lib.key] || {}).title || "", ttl = pk ? (bookShort(pk.book) + " 第" + pk.no + "課" + (lt ? " " + lt : "")).trim() : lessonTitle(S.lib.key);
   fr.contentWindow.postMessage({ mmVocab: "load", title: ttl, words: vtoolWords(S.lib.key) }, "*");
 });
+// ---------- 📖 近義詞工具書（tools/synonyms）----------
+// 全螢幕視窗打開，不影響目前所在的頁面。螢光筆和筆記存在登入者自己的帳號：
+//   老師／助教：teacherPlatform/{老師}/synNotes/{帳號}/{詞組}
+//   學生：teacherPlatform/{老師}/hwFiles/{班級}/_synNotes/{學生}/{詞組}（規則已允許學生寫入這裡，不必改 Firebase 規則）
+// 每個詞組存成一段 JSON 文字（[{id,f,s,e,q,c,n,t}]）。
+var SYN = { ov: null };
+function synBase(){
+  if(S.teacher) return "teacherPlatform/" + S.teacher.id + "/synNotes/" + hwSkey(S.teacher.me || S.teacher.id);
+  if(S.student && S.student.idx && S.student.name) return "teacherPlatform/" + S.student.idx.t + "/hwFiles/" + S.student.idx.c + "/_synNotes/" + hwSkey(S.student.name);
+  return null;
+}
+function openSynonyms(){
+  if(SYN.ov) return;
+  var ov = document.createElement("div"); ov.className = "syn-ov";
+  ov.innerHTML = '<div class="syn-bar"><b>📖 近義詞工具書</b><span class="note">選取文字可以畫螢光筆、加筆記，會存在你的帳號</span><button class="btn sm" id="synclose">關閉 ✕</button></div>' +
+    '<iframe class="syn-fr" id="synfr" src="tools/synonyms/?embed=1&v=' + MM_V + '" title="近義詞工具書" allow="clipboard-write"></iframe>';
+  document.body.appendChild(ov); SYN.ov = ov; document.body.classList.add("syn-open");
+  document.getElementById("synclose").onclick = closeSynonyms;
+}
+function closeSynonyms(){ if(!SYN.ov) return; SYN.ov.parentNode.removeChild(SYN.ov); SYN.ov = null; document.body.classList.remove("syn-open"); }
+window.addEventListener("message", async function(e){
+  var d = e.data; if(!d || !d.mmSyn || !SYN.ov) return;
+  var fr = document.getElementById("synfr"); if(!fr || e.source !== fr.contentWindow) return;
+  function reply(m){ try{ fr.contentWindow.postMessage(m, location.origin); }catch(er){} }
+  var base = synBase();
+  if(d.mmSyn === "ready"){
+    if(!base){ reply({ mmSyn: "notes", signedIn: false, notes: {} }); return; }
+    var raw = null; try{ raw = await fbGet(base); }catch(er){}
+    var notes = {};
+    Object.keys(raw || {}).forEach(function(k){ try{ var v = JSON.parse(raw[k]); if(Array.isArray(v)) notes[k] = v; }catch(er){} });
+    reply({ mmSyn: "notes", signedIn: true, who: S.teacher ? (S.teacher.name || "") : (S.student.name || ""), notes: notes });
+  } else if(d.mmSyn === "save"){
+    var id = String(d.entryId || ""), items = Array.isArray(d.items) ? d.items : [], txt = JSON.stringify(items);
+    if(!base || !/^[A-Za-z0-9_-]{1,120}$/.test(id) || txt.length > 800000){ reply({ mmSyn: "saveError", entryId: id }); return; }
+    try{ await fbSet(base + "/" + id, items.length ? txt : null); reply({ mmSyn: "saved", entryId: id }); }
+    catch(er){ reply({ mmSyn: "saveError", entryId: id }); }
+  }
+});
 window.addEventListener("message", function(e){
   if(!S.teacher || !e.data || e.data.mm !== "room" || !e.data.id) return;
   TR_PUB.rooms = TR_PUB.rooms || {}; TR_PUB.rooms[e.data.id] = 1; trPublishSoon();
@@ -1636,7 +1681,7 @@ function shell(inner, opts){
   document.body.classList.toggle("ta", isTA());
   root.innerHTML = '<div class="shell' + (S.focus ? ' focus' : '') + '"><div class="top">' +
     '<a href="#" class="brand" id="brandhome" title="回到首頁" style="text-decoration:none;color:inherit;cursor:pointer;"><img src="icons/logo.svg" alt="" style="width:30px;height:30px;vertical-align:middle;margin-right:6px;">曼米中文' + (isT ? '' : '<small>學生</small>') + '</a><div class="crumb" id="crumb"></div><div class="grow"></div>' +
-    (isT ? '<nav class="mainnav">' + [["navhome", "🏠", "首頁", topArea() === "home"], ["navcls", "🏫", "班級", topArea() === "cls"], ["libbtn", "📚", "教材", topArea() === "lib", "owner-only"], ["actbtn", "🎲", "課堂活動", topArea() === "act"], ["recbtn", "📊", "記錄與成績", topArea() === "rec"]].map(function(n){ return '<button class="mn' + (n[3] ? ' on' : '') + (n[4] ? ' ' + n[4] : '') + '" id="' + n[0] + '">' + n[2] + '</button>'; }).join("") + '</nav>' +
+    (isT ? '<nav class="mainnav">' + [["navhome", "🏠", "首頁", topArea() === "home"], ["navcls", "🏫", "班級", topArea() === "cls"], ["libbtn", "📚", "教材", topArea() === "lib", "owner-only"], ["actbtn", "🎲", "課堂活動", topArea() === "act"], ["recbtn", "📊", "記錄與成績", topArea() === "rec"], ["synbtn", "📖", "近義詞", false]].map(function(n){ return '<button class="mn' + (n[3] ? ' on' : '') + (n[4] ? ' ' + n[4] : '') + '" id="' + n[0] + '">' + n[2] + '</button>'; }).join("") + '</nav>' +
          '<button class="btn sm" id="bell" title="新的繳交">🔔</button><span class="umenu"><button class="btn sm ughost" id="ubtn" title="' + esc(S.teacher.name) + '"><img src="icons/teacher.png" alt="" style="width:26px;height:26px;border-radius:50%;vertical-align:middle;"><span class="mn-t"> ' + esc(S.teacher.name) + ' ▾</span></button><div class="udrop" id="udrop"><button class="owner-only" id="setbtn">⚙️ 設定</button><button id="logout">登出</button></div></span>'
          : '<span class="crumb">👤 ' + esc(S.student ? S.student.name : "") + '</span><button class="btn sm" id="leave">離開</button>') +
     '</div><div class="body">' + '<main class="main' + (opts.flush ? ' flush' : '') + '" id="main">' + inner + '</main></div></div>';
@@ -1655,6 +1700,7 @@ function shell(inner, opts){
     document.getElementById("navhome").onclick = goTop(function(){});
     document.getElementById("navcls").onclick = goTop(function(){ S.classes = {}; });
     document.getElementById("actbtn").onclick = goTop(function(){ S.act = {}; });
+    document.getElementById("synbtn").onclick = openSynonyms;
     document.getElementById("ubtn").onclick = function(e){ e.stopPropagation(); document.getElementById("udrop").classList.toggle("open"); };
     document.addEventListener("click", function(){ var u = document.getElementById("udrop"); if(u) u.classList.remove("open"); });
     document.getElementById("setbtn").onclick = function(){ if(S.focus) setFocus(false); S.grades = null; S.act = null; S.classes = null; S.settings = true; S.lib = null; S.rec = null; S.day = null; S.sel = null; S.lesson = null; S.hw = null; render(); };
@@ -6587,7 +6633,9 @@ function renderStudent(){
   else {
     html += '<div id="ls"></div><div class="panel"><h3>上課中？</h3><div class="join" style="margin:0;"><input type="text" id="roomno" placeholder="老師給的房間號碼" inputmode="numeric" style="width:200px;"><button class="btn primary" id="roomgo">加入房間</button></div></div>';
   }
+  html += '<div class="panel"><h3>📖 近義詞工具書</h3><p class="note" style="margin-top:0;">1700 多組常見近義詞的用法比較和練習題。選取文字可以畫螢光筆、寫筆記，會存在你的帳號。</p><button class="btn" id="synopen">打開近義詞工具書</button></div>';
   shell(html); setCrumb([st.school, st.term, cls.name]);
+  document.getElementById("synopen").onclick = openSynonyms;
   document.getElementById("hwopen").onclick = function(){ S.hwOpen = "list"; renderStudent(); };
   document.getElementById("lvopen").onclick = function(){ S.leaveOpen = true; renderStudent(); };
   document.getElementById("albopen").onclick = function(){ S.albOpen = "list"; renderStudent(); };
