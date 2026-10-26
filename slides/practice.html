@@ -10913,7 +10913,7 @@ window.mmTA = (function(){
     // 上課模式 ⇄ 備課版面（只換版面，不影響內容；記在這次分頁裡）
     function setTeachMode(on){
       document.body.classList.toggle("teach-mode", !!on);
-      try{ sessionStorage.setItem("mm-teach-off", on ? "0" : "1"); }catch(e){}
+      try{ localStorage.setItem("mm-teach-on", on ? "1" : "0"); }catch(e){}   // 老師自己按的才記住；不會自動切換
       requestAnimationFrame(fitCanvasToViewport); setTimeout(fitCanvasToViewport, 120); setTimeout(fitCanvasToViewport, 300);
     }
     vToolbar.addEventListener("click", function(e){ var b = e.target.closest && e.target.closest("#btn-prep-mode"); if(!b) return; e.preventDefault(); e.stopPropagation(); setTeachMode(false); });
@@ -11733,8 +11733,8 @@ window.mmTA = (function(){
       var rbTeachBtn = document.createElement("button"); rbTeachBtn.type = "button"; rbTeachBtn.className = "rb-collapse-btn rb-teach-btn"; rbTeachBtn.textContent = "🎬 上課模式"; rbTeachBtn.title = "回到上課版面：只留投影片和常用工具";
       rbTeachBtn.onclick = function(e){ e.stopPropagation(); setTeachMode(true); }; rbNavSlot.appendChild(rbTeachBtn);
       var rbColBtn = document.createElement("button"); rbColBtn.type = "button"; rbColBtn.className = "rb-collapse-btn"; rbNavSlot.appendChild(rbColBtn);
-      // 老師自己選過就照老師的；沒選過時，小螢幕（筆電放大顯示等）預設收合，投影片才看得到
-      var rbCollapsed = false; try{ var rbPref = localStorage.getItem("mm-ribbon-collapsed"); rbCollapsed = rbPref === "1" || (rbPref === null && (window.innerWidth < 1300 || window.innerHeight < 700)); }catch(e){}
+      // 沒選過＝收合；之後老師按「展開／收合」就照老師的，每次打開都一樣（不再依螢幕大小自己決定）
+      var rbCollapsed = false; try{ var rbPref = localStorage.getItem("mm-ribbon-collapsed"); rbCollapsed = rbPref === null ? true : rbPref === "1"; }catch(e){}
       topBar.innerHTML = ""; topBar.appendChild(rbBar); var rbPanelWrap = document.createElement("div"); rbPanelWrap.className = "rb-panels"; Object.keys(rbPanels).forEach(function(k){ rbPanelWrap.appendChild(rbPanels[k]); }); topBar.appendChild(rbPanelWrap);
       function rbApplyCollapse(){
         topBar.classList.toggle("rb-collapsed", rbCollapsed); if(!rbCollapsed) topBar.classList.remove("rb-peek");
@@ -17504,7 +17504,7 @@ window.mmTA = (function(){
       var pq = new URLSearchParams(location.search);
       if(pq.get("embed")) document.body.classList.add("embed");
       // 平台上課中（&teach=1）：預設用上課版面；老師這次分頁切到備課版面就照老師的
-      if(pq.get("embed") && pq.get("teach") && !isStudent){ document.body.classList.add("teach-avail"); var tOff = "0"; try{ tOff = sessionStorage.getItem("mm-teach-off") || "0"; }catch(e){} if(tOff !== "1") document.body.classList.add("teach-mode"); }
+      if(pq.get("embed") && pq.get("teach") && !isStudent){ document.body.classList.add("teach-avail"); var tOn = "0"; try{ tOn = localStorage.getItem("mm-teach-on") || "0"; }catch(e){} if(tOn === "1") document.body.classList.add("teach-mode"); }
       if(pq.get("embed") && urlRoom && !isStudent) window.__keepQ = true;   // 老師回到今天同一個房間：接著原本的頁數，不跳回第一頁
       if(pq.get("embed") && /^(slides|quiz)$/.test(pq.get("focus") || "")){ setEmbedKind(pq.get("focus")); try{ renderSidebar(); }catch(e0){} }
       if(pq.get("worker")){ window.__worker = true; try{ parent.postMessage({ mm: "workerReady" }, "*"); }catch(e2){} }
