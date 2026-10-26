@@ -11843,7 +11843,7 @@ window.mmTA = (function(){
       var insTextIc = insTextBtn.querySelector(".tool-btn-v-icon"); if(insTextIc) insTextIc.outerHTML = '<img class="tool-btn-v-icon tool-btn-v-icon-img" src="' + TOOL_ICON_TEXT + '" alt="">';   // 跟「常用」裡同一個文字方塊圖示
       rbGroup("insert", "文字", [insTextBtn, rbBtn("🔗", "超連結", function(){ openLinkDialog(); }, "超連結（Ctrl/⌘+K）")]);
       var mediaBtn = rbBtn("🎬", "媒體", function(){ var b = qsx("#btn-add-audio"); if(b) b.click(); }, "插入電腦裡的影片或音樂（全班同步播放）"), ytBtn = rbBtn("▶", "YouTube", function(){ var b = qsx("#btn-add-youtube"); if(b) b.click(); }, "插入 YouTube 影片（貼上連結）");
-      rbGroup("insert", "媒體", [mediaBtn, ytBtn]);
+      rbGroup("insert", "媒體", [mediaBtn, ytBtn, rbBtn("🗂", "媒體<br>管理", function(){ if(window.__openMediaManager) window.__openMediaManager(); }, "列出這份簡報所有影片／音樂，上課前一次檢查、預覽")]);
       rbGroup("insert", "頁首頁尾", [rbBtn("🎛", "母片<br>頁尾頁碼", function(){ openMasterDialog(); }, "母片：整份簡報共用的背景、標誌、頁尾、頁碼")]);
       // ---- 繪圖 ----
       rbGroup("draw", "工具", [rbBtn("↖", "選取", clickOf('button[data-tool="select"]'), "選取（指標）"), rbBtn("✏️", "筆", clickOf('button[data-tool="pen"]'), "筆（顏色與粗細在左上角「筆」的選單）"), (function(){ var h = qsx(".pt-hl"); return h; })(), rbBtn("🧽", "橡皮擦", clickOf("#btn-eraser"), "橡皮擦"), rbBtn("🔴", "雷射筆", clickOf(".pt-laser"), "雷射筆（快速鍵 L）")]);
@@ -16103,6 +16103,80 @@ window.mmTA = (function(){
         [activeSelectedTextId && texts.find(function(x){ return x.id === activeSelectedTextId; }), activeSelectedImageId && images.find(function(x){ return x.id === activeSelectedImageId; }), activeSelectedShapeId && shapes.find(function(x){ return x.id === activeSelectedShapeId; })].forEach(function(o){ if(o) objs.push(o); });
       }
       return objs;
+    }
+    // 媒體管理：列出這份簡報每一頁的影片／音樂／YouTube，上課前一次檢查（能不能播、多長）、預覽、跳到那一頁、刪除
+    window.__openMediaManager = openMediaManager;
+    function openMediaManager(){
+      var ids = (slideSiblingIds && slideSiblingIds.length) ? slideSiblingIds.slice() : [q.id];
+      var canEdit = !isStudent && !window.__classCopy;
+      var back = document.createElement("div"); back.className = "tb-modal-back";
+      var modal = document.createElement("div"); modal.className = "tb-modal"; modal.style.width = "min(680px,95vw)"; back.appendChild(modal);
+      var KIND = { audio: "🎵 音樂", video: "🎬 影片", youtube: "▶ YouTube" };
+      modal.innerHTML = '<h3>🗂 媒體管理</h3><div class="tb-hint mm-sum"></div><div class="mm-list" style="max-height:58vh;overflow:auto;margin:8px 0;"></div><div class="tb-foot"><button type="button" class="mm-recheck">重新檢查全部</button><button type="button" class="primary mm-close">關閉</button></div>';
+      var list = modal.querySelector(".mm-list"), sum = modal.querySelector(".mm-sum");
+      var rowsOk = 0, rowsBad = 0, total = 0;
+      function fmtDur(t){ t = Math.round(t || 0); return Math.floor(t / 60) + ":" + ("0" + (t % 60)).slice(-2); }
+      function probe(m, qid, cb){
+        if(m.kind === "youtube"){ cb({ ok: null, msg: "需要網路；無法預先檢查" }); return; }
+        var val = (getProgress(qid).mediaData || {})[m.id];
+        resolveMediaSrc(val, m.name).then(function(src){
+          if(!src){ cb({ ok: false, msg: "這台電腦找不到檔案（請重新加入）" }); return; }
+          var el = document.createElement(m.kind === "video" ? "video" : "audio"), done = false;
+          function fin(r){ if(done) return; done = true; try{ el.removeAttribute("src"); el.load(); }catch(e){} cb(r); }
+          el.preload = "metadata";
+          el.onloadedmetadata = function(){ fin({ ok: true, msg: "可以播放・" + fmtDur(el.duration), src: src }); };
+          el.onerror = function(){ fin({ ok: false, msg: "檔案打不開（格式或檔案損壞）" }); };
+          setTimeout(function(){ fin({ ok: false, msg: "讀取逾時" }); }, 9000);
+          el.src = src;
+        });
+      }
+      function refreshSum(){ sum.textContent = total ? ("共 " + total + " 個媒體" + (rowsBad ? "，⚠ " + rowsBad + " 個有問題" : (rowsOk >= total - 0 && rowsOk ? "，都可以正常播放" : ""))) : "這份簡報還沒有影片或音樂。到「插入 → 媒體／YouTube」加入。"; }
+      function build(){
+        list.innerHTML = ""; rowsOk = rowsBad = total = 0;
+        ids.forEach(function(qid, i){
+          var pg = getProgress(qid), ms = pg.medias || [];
+          ms.forEach(function(m){
+            total++;
+            var row = document.createElement("div"); row.style.cssText = "border:1px solid #e3d6c0;border-radius:8px;padding:7px 9px;margin-bottom:6px;";
+            var nm = m.kind === "youtube" ? ("youtu.be/" + (m.ytId || "")) : (m.name || "（未命名）");
+            row.innerHTML = '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;"><b style="min-width:52px;">第 ' + (i + 1) + ' 頁</b><span>' + (KIND[m.kind] || "媒體") + '</span><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="' + escapeHtml(nm) + '">' + escapeHtml(nm) + '</span><span class="mm-st" style="font-size:13px;color:#8a7a60;">檢查中…</span><button type="button" class="mm-prev">預覽</button><button type="button" class="mm-go">到這一頁</button>' + (canEdit ? '<button type="button" class="mm-del">刪除</button>' : '') + '</div><div class="mm-box"></div>';
+            var st = row.querySelector(".mm-st"), box = row.querySelector(".mm-box"), info = null;
+            probe(m, qid, function(r){
+              info = r;
+              if(r.ok === true){ rowsOk++; st.textContent = "✓ " + r.msg; st.style.color = "#2e7d32"; }
+              else if(r.ok === false){ rowsBad++; st.textContent = "⚠ " + r.msg; st.style.color = "#c62828"; }
+              else { st.textContent = r.msg; }
+              refreshSum();
+            });
+            row.querySelector(".mm-prev").onclick = function(){
+              if(box.firstChild){ box.innerHTML = ""; return; }
+              if(m.kind === "youtube"){ box.innerHTML = '<iframe style="width:100%;height:260px;border:0;margin-top:6px;" src="https://www.youtube.com/embed/' + encodeURIComponent(m.ytId || "") + '" allow="autoplay;encrypted-media" allowfullscreen></iframe>'; return; }
+              resolveMediaSrc((getProgress(qid).mediaData || {})[m.id], m.name).then(function(src){
+                if(!src){ alert("這台電腦找不到檔案。"); return; }
+                var el = document.createElement(m.kind === "video" ? "video" : "audio"); el.controls = true; el.src = src; el.style.cssText = "width:100%;max-height:260px;margin-top:6px;"; box.appendChild(el);
+              });
+            };
+            row.querySelector(".mm-go").onclick = function(){ back.remove(); setCurrentQ(qid); };
+            var del = row.querySelector(".mm-del");
+            if(del) del.onclick = function(){
+              if(!confirm("要從第 " + (i + 1) + " 頁刪除這個媒體嗎？\nRemove this media from the slide?")) return;
+              if(qid === q.id){ removeMedia(m.id); }
+              else {
+                var p2 = getProgress(qid), md = Object.assign({}, p2.mediaData || {}), mst = Object.assign({}, p2.mediaState || {}); delete md[m.id]; delete mst[m.id];
+                writeProgress(qid, { medias: (p2.medias || []).filter(function(x){ return x.id !== m.id; }), mediaData: md, mediaState: mst });
+              }
+              build();
+            };
+            list.appendChild(row);
+          });
+        });
+        refreshSum();
+      }
+      build();
+      modal.querySelector(".mm-recheck").onclick = build;
+      modal.querySelector(".mm-close").onclick = function(){ back.remove(); };
+      back.addEventListener("pointerdown", function(e){ if(e.target === back) back.remove(); });
+      document.body.appendChild(back);
     }
     function openLinkDialog(){
       var objs = linkTargets();
