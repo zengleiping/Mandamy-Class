@@ -6633,9 +6633,7 @@ function renderStudent(){
   else {
     html += '<div id="ls"></div><div class="panel"><h3>上課中？</h3><div class="join" style="margin:0;"><input type="text" id="roomno" placeholder="老師給的房間號碼" inputmode="numeric" style="width:200px;"><button class="btn primary" id="roomgo">加入房間</button></div></div>';
   }
-  html += '<div class="panel"><h3>📖 近義詞工具書</h3><p class="note" style="margin-top:0;">1700 多組常見近義詞的用法比較和練習題。選取文字可以畫螢光筆、寫筆記，會存在你的帳號。</p><button class="btn" id="synopen">打開近義詞工具書</button></div>';
   shell(html); setCrumb([st.school, st.term, cls.name]);
-  document.getElementById("synopen").onclick = openSynonyms;
   document.getElementById("hwopen").onclick = function(){ S.hwOpen = "list"; renderStudent(); };
   document.getElementById("lvopen").onclick = function(){ S.leaveOpen = true; renderStudent(); };
   document.getElementById("albopen").onclick = function(){ S.albOpen = "list"; renderStudent(); };
