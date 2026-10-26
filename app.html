@@ -315,20 +315,15 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .crumb a.cr{ color:var(--seal); text-decoration:none; } .crumb a.cr:hover{ text-decoration:underline; }
   .shell.focus .top, .shell.focus .side{ display:none; }
   .shell.focus .main:not(.flush){ padding:12px; }
-  /* 進到簡報／測驗分頁：上方導覽、分頁列都縮小，畫面留給投影片 */
-  body.frame-tab .top{ padding:2px 12px; gap:8px; }
-  body.frame-tab .brand{ font-size:15.5px; } body.frame-tab .brand img{ width:22px !important; height:22px !important; }
-  body.frame-tab .top{ flex-wrap:nowrap; }
-  body.frame-tab .crumb{ font-size:12.5px; flex:1 1 auto; min-width:0; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
-  body.frame-tab .top .grow{ display:none; }
-  body.frame-tab .mainnav{ flex:none; }
-  body.frame-tab .mainnav button, body.frame-tab .mainnav a{ padding:3px 9px !important; font-size:13.5px !important; }
-  body.frame-tab .top .btn.sm{ padding:2px 8px; }
-  body.frame-tab .tabs{ padding:2px 10px 0; gap:2px; }
-  body.frame-tab .tabs .tab{ padding:4px 11px; font-size:14px; }
-  body.frame-tab .tabs .tab.focus-btn{ padding:2px 9px; font-size:12.5px; margin-bottom:3px; border-radius:8px; }
-  body.frame-tab .subbar{ padding:2px 10px; gap:4px; }
-  body.frame-tab .subbar .tab{ padding:3px 10px !important; font-size:13.5px !important; }
+  /* 分頁上的下拉選單（換簡報／測驗） */
+  /* 上方導覽列每一頁都維持一行（窄螢幕時路徑用…省略），切換頁面高度才不會變來變去 */
+  @media (min-width:641px){ .top{ flex-wrap:nowrap; } .brand{ white-space:nowrap; flex:none; } .crumb{ flex:1 1 auto; min-width:0; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; } .mainnav{ flex:none; } }
+  .tab-dd{ position:relative; display:inline-flex; }
+  .tab-dd-arrow{ font-size:12px; opacity:.6; }
+  .tab-dd-menu{ display:none; position:absolute; top:100%; left:0; z-index:60; min-width:240px; max-width:420px; padding:6px; background:var(--surface); border:1.5px solid var(--line); border-radius:12px; box-shadow:0 10px 24px rgba(0,0,0,.16); }
+  .tab-dd:hover .tab-dd-menu, .tab-dd:focus-within .tab-dd-menu{ display:block; }
+  .tab-dd-item{ display:block; width:100%; text-align:left; border:0; background:none; padding:8px 12px; border-radius:8px; font-size:15px; font-weight:600; color:var(--ink); cursor:pointer; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .tab-dd-item:hover{ background:var(--paper); } .tab-dd-item.on{ color:var(--seal); font-weight:700; }
   .tab.focus-btn{ margin-left:auto; color:var(--seal); border:1.5px solid var(--seal); border-radius:10px; padding:4px 12px; margin-bottom:5px; font-size:14.5px; }
 </style>
 </head>
@@ -5977,6 +5972,15 @@ function tabsFor(open, teacher){
   var all = [["material","教材", ["vocab","grammar","text"]], ["slides","投影片",["slides"]], ["quiz","測驗與練習",["quiz"]], ["bingo","🎯 賓果",["quiz"]], ["activities","🎲 活動",["activities"]]];
   return all.filter(function(t){ if(t[0] === "bingo" && !teacher && !(S.live && S.live.on)) return false; return teacher || t[2].some(function(k){ return open[k]; }); });
 }
+// 投影片／測驗與練習分頁：滑鼠移到分頁上，下拉選單列出這一課的每一份簡報（測驗），點一下就換（取代原本分頁下面那一整列）
+function lessonDeckMenu(no, kind, btn){
+  var ps = ((S.plat.lessons || {})[no] || {}).projects || {}, pids = Object.keys(ps);
+  if(!pids.length) return btn;
+  var fit = pids.filter(function(p){ return (ps[p][kind] || 0) > 0 || p === S.sub; }); if(fit.length) pids = fit;   // 投影片只列有投影片的、測驗只列有題目的
+  var curPid = S.tab === kind ? (S.sub && pids.indexOf(S.sub) >= 0 ? S.sub : pids[0]) : null;
+  var items = pids.map(function(p){ var on = p === curPid; return '<button type="button" class="tab-dd-item' + (on ? ' on' : '') + '" data-ddtab="' + kind + '" data-ddsub="' + esc(p) + '">' + (on ? '✓ ' : '') + esc(ps[p].title || "（未命名）") + '</button>'; }).join("");
+  return '<span class="tab-dd">' + btn.replace('</button>', ' <span class="tab-dd-arrow">▾</span></button>') + '<div class="tab-dd-menu">' + items + '</div></span>';
+}
 function lessonHtmlFrame(src){ return '<iframe class="frame" id="fr" src="' + esc(src + (S.focus ? "&nochrome=1" : "")) + '" allow="microphone; camera; autoplay; clipboard-write"></iframe>'; }
 function renderLessonCommon(no, open, teacher, liveStudent){
   var tabs = tabsFor(open, teacher);
@@ -5984,7 +5988,7 @@ function renderLessonCommon(no, open, teacher, liveStudent){
   if(!S.tab || !tabs.some(function(t){ return t[0] === S.tab; })) S.tab = tabs[0][0];
   var cur = tabs.filter(function(t){ return t[0] === S.tab; })[0];
   var live = S.live && S.live.on;
-  var html = '<div class="tabs">' + (liveStudent ? '' : '<button class="tab" data-back="1">‹ 返回</button>' + tabs.filter(function(t){ return t[0] !== "bingo"; }).map(function(t){ var on = t[0] === S.tab || (t[0] === "activities" && S.tab === "bingo"); return '<button class="tab' + (on ? ' on' : '') + '" data-tab="' + t[0] + '">' + t[1] + '</button>'; }).join("") + (teacher ? '<!--copyto-->' : '') +
+  var html = '<div class="tabs">' + (liveStudent ? '' : '<button class="tab" data-back="1">‹ 返回</button>' + tabs.filter(function(t){ return t[0] !== "bingo"; }).map(function(t){ var on = t[0] === S.tab || (t[0] === "activities" && S.tab === "bingo"); var btn = '<button class="tab' + (on ? ' on' : '') + '" data-tab="' + t[0] + '">' + t[1] + '</button>'; return teacher && (t[0] === "slides" || t[0] === "quiz") ? lessonDeckMenu(no, t[0], btn) : btn; }).join("") + (teacher ? '<!--copyto-->' : '') +
     (teacher ? '<button class="tab focus-btn" data-actmenu="1" style="margin-left:auto;" title="叫出課堂活動選單（常用、最近用過）">⚡ 活動選單</button><button class="tab focus-btn" data-brk="1" style="margin-left:6px;" title="下課休息倒數：時間到會響鈴提醒回來上課（上課中，學生畫面也會一起倒數）">下課鬧鐘</button>' : '') + (teacher ? ((live ? '<button class="tab focus-btn" data-fs="1" style="margin-left:6px;" title="瀏覽器全螢幕（Esc 退出，不會結束上課）">⛶ 全螢幕</button><button class="tab focus-btn" data-focus="1" style="margin-left:6px;">' + (S.focus ? "顯示欄位" : "隱藏欄位") + '</button><button class="tab focus-btn" data-live="1" style="margin-left:6px;background:var(--seal);color:#fff;">⏹ 結束上課</button>' : '<button class="tab focus-btn" data-live="1" title="開始上課：學生會自動跟著你的畫面，並隱藏上方與左側欄位">🎬 開始上課</button>')) : '')) + '</div>';
   var sub = '', frame = '', role = teacher ? '' : '&role=student';
   if(S.tab === "material"){
@@ -6028,7 +6032,7 @@ function renderLessonCommon(no, open, teacher, liveStudent){
       } else {
         if(!S.sub || pids.indexOf(S.sub) === -1) S.sub = pids[0];
         sub = '<div class="subbar">' + (pids.length > 1 ? pids.map(function(p){ return '<button class="tab' + (p === S.sub ? ' on' : '') + '" data-sub="' + p + '" style="padding:5px 14px;font-size:15px;">' + esc(ps[p].title) + '</button>'; }).join("") : '') + '</div>';
-        if(pids.length === 1) sub = '';
+        sub = '';   // 換簡報改用分頁上的下拉選單，不另外佔一整列
         html = html.replace('<!--copyto-->', '<button class="tab" data-copyto="' + kind + '">複製到其他課…</button>');
         var rjoin = (S.live && S.live.on && S.live.room && S.live.roomProject === S.sub) ? S.live.room : todayClassRoom(S.sub);   // 今天這個班已經用這份簡報上過課：回到同一個房間，課堂筆記都還在
         // 從上次停的那一頁開始：直到今天這個班開了房間為止（開始上課會重新載入，房間開了之後就照房間的頁數）
@@ -6351,7 +6355,8 @@ function bindLessonNav(cls, backFn, renderFn){
     if(b.dataset.actgo){ lessonActGo(b.dataset.actgo); return; }
     if(b.dataset.actback){ S.sub = null; renderFn(); pushLive(); return; }
     if(b.dataset.actmore){ var sid0 = String(S.sub || "").split("|")[0], cur0 = String(S.sub || "").indexOf("|") > 0 ? String(S.sub).split("|")[1].split(",") : [String(S.lesson)]; actPickLessons(lessonKeys(getCls(S.sel)), cur0).then(function(nk){ if(!nk) return; S.sub = sid0 + (nk.length > 1 || nk[0] !== String(S.lesson) ? "|" + nk.join(",") : ""); renderFn(); pushLive(); }); return; }
-    if(b.dataset.tab){ S.tab = b.dataset.tab; S.sub = null; renderFn(); pushLive(); return; }
+    if(b.dataset.ddsub){ S.tab = b.dataset.ddtab; S.sub = b.dataset.ddsub; renderFn(); pushLive(); return; }
+    if(b.dataset.tab){ if(b.dataset.tab === S.tab && (S.tab === "slides" || S.tab === "quiz")) return; S.tab = b.dataset.tab; S.sub = null; renderFn(); pushLive(); return; }
     if(b.dataset.sub){ S.sub = b.dataset.sub; renderFn(); pushLive(); return; }
     if(b.id === "roomgo"){
       var v = (document.getElementById("roomno").value || "").replace(/\D/g, "");
