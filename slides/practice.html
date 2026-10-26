@@ -1534,6 +1534,24 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .board-area.ribbon-mode.fs-edit .draw-board-layout{ flex:1; min-height:0; height:auto; }
   .draw-toolbar-top.ribbon{ display:block; padding:0; overflow:visible; }
   .rb-tabs{ display:flex; align-items:flex-end; gap:2px; padding:4px 10px 0; border-bottom:1.5px solid rgba(28,33,30,.12); flex-wrap:nowrap; overflow-x:auto; }
+  /* 頁籤列自動緊縮（rbFit 量寬度後依序加上）：fit1 快速存取只留圖示；fit2 右側按鈕改成一行的小按鈕；fit3 頁籤字變小——盡量全部排在同一行 */
+  .rb-tabs.rb-measuring{ flex-wrap:nowrap !important; }
+  .rb-tabs.rb-measuring > *, .rb-tabs.rb-measuring .rb-nav > *, .rb-tabs.rb-measuring .rb-qat > *{ flex-shrink:0 !important; }
+  .rb-tabs.fit1 .rb-qat .tool-btn-v-label{ display:none; }
+  .rb-tabs.fit1 .rb-qat .tool-btn-v, .rb-tabs.fit1 .rb-qat .tool-btn-v-wrap{ width:34px !important; min-width:0 !important; padding:2px 3px; justify-content:center; }
+  .rb-tabs.fit1 .rb-qat{ gap:1px; margin-right:4px; }
+  .rb-tabs.fit2 .rb-nav{ gap:2px; }
+  .rb-tabs.fit2 .rb-nav .tool-btn-v{ flex-direction:row; width:auto; min-width:0; height:30px; gap:3px; padding:2px 6px; }
+  .rb-tabs.fit2 .rb-nav .tool-btn-v-label br{ display:none; }
+  .rb-tabs.fit2 .rb-nav .tool-btn-v-label{ white-space:nowrap; font-size:11.5px; }
+  .rb-tabs.fit2 .rb-nav .tool-btn-v-icon{ font-size:14px; height:16px; }
+  .rb-tabs.fit2 .rb-nav .slide-nav-row{ gap:2px; }
+  .rb-tabs.fit2 .rb-nav .slide-nav-row .tool-btn-v{ width:32px !important; min-width:0 !important; padding:2px; justify-content:center; }
+  .rb-tabs.fit2 .rb-nav .rb-collapse-btn{ padding:3px 5px; font-size:12px; }
+  .rb-tabs.fit3 .rb-tab{ padding:5px 5px 4px !important; font-size:13.5px; }
+  .rb-tabs.fit4 .rb-nav .tool-btn-v-label{ display:none; }
+  .rb-tabs.fit4 .rb-nav .rb-collapse-btn{ max-width:30px; overflow:hidden; white-space:nowrap; text-overflow:clip; padding:3px 6px; }
+  .rb-tabs.fit4 .rb-qat-sep{ display:none; }
   /* 視窗比較窄（例如筆電放大顯示）時：頁籤列放不下就換行，不要被截斷；快速存取的按鈕只留圖示 */
   .rb-tabs{ flex-wrap:wrap; overflow-x:visible; row-gap:2px; }
   @media (max-width:1300px){
@@ -11860,7 +11878,21 @@ window.mmTA = (function(){
         }
       }
       new MutationObserver(rbFsSync).observe(container, { attributes: true, attributeFilter: ["class"] });
-      new MutationObserver(function(){ if(document.body.contains(container)) rbFsSync(); }).observe(document.body, { attributes: true, attributeFilter: ["class"] });
+      new MutationObserver(function(){ if(document.body.contains(container)){ rbFsSync(); rbFitSoon(); } }).observe(document.body, { attributes: true, attributeFilter: ["class"] });
+      // 頁籤列：量一下排不排得下一行，排不下就一級一級緊縮（右側的上課模式／功能區／全螢幕／定稿／翻頁都跟頁籤同一行）
+      var rbFitT = null;
+      function rbFit(){
+        if(!rbBar.isConnected || !rbBar.offsetWidth) return;
+        rbBar.classList.remove("fit1", "fit2", "fit3", "fit4"); rbBar.classList.add("rb-measuring");   // 量的時候不准擠壓，才量得出真正需要的寬度
+        var cs = getComputedStyle(rbBar), avail = rbBar.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight), gap = parseFloat(cs.columnGap) || 0;
+        function need(){ var kids = Array.prototype.filter.call(rbBar.children, function(k){ return k.offsetWidth > 0; }); return kids.reduce(function(a, k){ return a + k.getBoundingClientRect().width; }, 0) + gap * Math.max(0, kids.length - 1); }
+        ["fit1", "fit2", "fit3", "fit4"].some(function(c){ if(need() <= avail - 2) return true; rbBar.classList.add(c); return false; });
+        rbBar.classList.remove("rb-measuring");
+      }
+      var rbFitT2 = null;
+      function rbFitSoon(){ clearTimeout(rbFitT); clearTimeout(rbFitT2); rbFitT = setTimeout(rbFit, 60); rbFitT2 = setTimeout(rbFit, 400); }   // 版面切換（上課模式⇄完整工具）時按鈕會搬來搬去，晚一點再量一次
+      try{ new ResizeObserver(rbFitSoon).observe(rbBar); }catch(e){ window.addEventListener("resize", rbFitSoon); }
+      rbFitSoon();
       rbFsSync();
     }
     };
