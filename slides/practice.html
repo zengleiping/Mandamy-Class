@@ -1466,18 +1466,30 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   body.teach-mode .stage-wrap > .stage{ height:100% !important; max-height:100% !important; min-height:0 !important; }
   body.teach-mode .board-area:not(.canvas-fs-active){ height:100%; max-height:100%; min-height:0; }
   body.teach-mode .board-area:not(.canvas-fs-active) .draw-board-layout{ height:100%; min-height:0; }
-  /* 班級存檔的簡報：左邊一整直列小工具（一顆一列，不並排）；放不下時工具列自己捲動，整頁不會捲 */
-  body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical{ display:flex !important; flex-direction:column; flex-wrap:nowrap; align-items:stretch; gap:2px; padding:5px 5px; width:auto; max-height:100%; overflow-y:auto; }
+  /* 班級存檔的簡報：左邊一整直列工具，一顆一列、上面圖示下面小字。不用捲軸（彈出的選單要能浮在外面，所以不能裁切）；畫面真的太矮才縮成只剩圖示 */
+  body.teach-mode .draw-board-layout{ container-type:size; }
+  body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical{ display:flex !important; flex-direction:column; flex-wrap:nowrap; align-items:stretch; gap:3px; padding:6px 5px; width:auto; overflow:visible !important; max-height:none; }
   body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical > .tb-head{ min-height:0; padding:0; }
   body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical > .tool-v-sep{ display:none; }
   body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical .tool-btn-v, body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical .tool-btn-v-wrap{ width:100% !important; }
-  body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical .tool-btn-v{ flex-direction:row; min-width:92px; height:27px; min-height:0; padding:1px 7px; gap:5px; justify-content:flex-start; }
-  body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical .tool-btn-v-label{ font-size:12px; line-height:1.1; white-space:nowrap; }
+  body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical .tool-btn-v{ flex-direction:column; min-width:56px; height:auto; min-height:38px; padding:3px 3px 2px; gap:1px; justify-content:center; align-items:center; }
+  body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical .tool-btn-v-label{ font-size:10.5px; line-height:1.1; white-space:nowrap; text-align:center; }
   body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical .tool-btn-v-label br{ display:none; }
-  body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical .tool-btn-v-icon, body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical .tool-btn-v-icon-img{ font-size:14px; width:16px; height:16px; flex:none; }
-  body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical .slide-nav-row{ display:flex; flex-direction:row; justify-content:space-between; gap:2px; }
-  body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical .slide-nav-row .tool-btn-v{ min-width:0; flex:1; width:auto !important; justify-content:center; }
+  body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical .tool-btn-v-icon, body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical .tool-btn-v-icon-img{ font-size:19px; width:21px; height:21px; flex:none; }
+  body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical .slide-nav-row{ display:flex; flex-direction:row; justify-content:space-between; gap:3px; }
+  body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical .slide-nav-row .tool-btn-v{ min-width:0; min-height:30px; flex:1; width:auto !important; justify-content:center; }
   body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical .slide-nav-counter{ font-size:11px; line-height:1; }
+  @container (max-height:480px){
+    body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical{ gap:2px; padding:4px; }
+    body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical .tool-btn-v{ min-height:28px; padding:2px; }
+    body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical .tool-btn-v-label{ display:none; }
+    body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical .tool-btn-v-icon, body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical .tool-btn-v-icon-img{ font-size:17px; width:19px; height:19px; }
+    body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical .slide-nav-row .tool-btn-v{ min-height:26px; }
+  }
+  @container (max-height:350px){
+    body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical > .tb-head{ display:none; }
+    body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical .tool-btn-v{ min-height:25px; }
+  }
   body.classcopy #btn-prep-mode, body.classcopy .rb-teach-btn{ display:none !important; }
   /* 班級存檔的測驗／練習：不能改題目（通用版要到教材區改），只能作答、加筆記 */
   body.classcopy.kind-quiz .section-head-actions, body.classcopy.kind-quiz .q-action-btns, body.classcopy.kind-quiz #btn-new-section, body.classcopy.kind-quiz #bank-menu-wrap, body.classcopy.kind-quiz #add-slide-menu-wrap, body.classcopy.kind-quiz .drag-handle-icon{ display:none !important; }
