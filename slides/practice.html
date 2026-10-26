@@ -11097,7 +11097,7 @@ window.mmTA = (function(){
           </div>
           <div class="popover-field-row">
             <div class="popover-field-row-label"><span title="加不加拼音／注音就像一種字型：選取一個文字方塊＝整個方塊；編輯文字時先選取一段字，就只改那一段（跟 PowerPoint 一樣）">字型 Font（加不加注音）</span></div>
-            <div class="anim-row"><select class="text-font-select" title="字型：一般＝不加注音；拼音字型＝字上面加拼音；注音字型＝加注音符號"><option value="off">一般字型（不加注音）</option><option value="pinyin">拼音字型（字上加拼音）</option><option value="zhuyin">注音字型（加注音符號）</option></select></div>
+            <div class="anim-row"><select class="text-font-select" title="字型：一般＝不加注音；拼音字型＝字上面加拼音；注音字型＝加注音符號"><option value="off">一般字型（不加注音）</option><option value="pinyin">拼音字型（字上加拼音）</option><option value="zhuyin">注音字型（加注音符號）</option><optgroup label="── 一次全改 ──"><option value="page:pinyin">這一頁全部 → 拼音</option><option value="page:zhuyin">這一頁全部 → 注音</option><option value="page:off">這一頁全部 → 不加注音</option><option value="deck:pinyin">整份簡報全部 → 拼音</option><option value="deck:zhuyin">整份簡報全部 → 注音</option><option value="deck:off">整份簡報全部 → 不加注音</option></optgroup></select></div>
           </div>
           <details class="pop-more"><summary>進階文字設定 Advanced</summary>
           <div class="popover-field-row">
@@ -12938,9 +12938,33 @@ window.mmTA = (function(){
       if(rg && rg[1] > rg[0]){ var st = mmStyleArr(t)[rg[0]]; if(st && st.f) return st.f; }
       return t.ph || ((currentPhoneticMode === "pinyin" || currentPhoneticMode === "zhuyin") ? currentPhoneticMode : "off");
     }
+    // 一次全改：這一頁，或整份簡報裡所有文字方塊的字型（拼音／注音／不加）。同時把「之後新打的字」的預設也換成同一個
+    function bulkSetPh(scope, mode){
+      if(isStudent || window.__classCopy) return;
+      var NAME = { pinyin: "拼音", zhuyin: "注音", off: "不加注音" };
+      var proj = null; try{ proj = getActiveProject(); }catch(e){}
+      var qids = [];
+      if(scope === "deck" && proj && proj.sections){
+        Object.keys(proj.sections).forEach(function(sid){ Object.keys(proj.sections[sid].questions || {}).forEach(function(qid){ qids.push(qid); }); });
+      } else qids = [q.id];
+      var src = inRoom() ? ((roomData && roomData.sharedProgress) || {}) : ((proj && proj.progress) || {});
+      var targets = qids.filter(function(qid){ var pr = src[qid]; return pr && pr.texts && pr.texts.length; });
+      var nBox = targets.reduce(function(a, qid){ return a + src[qid].texts.length; }, 0);
+      if(!nBox){ alert("沒有找到文字方塊。"); return; }
+      if(!confirm((scope === "deck" ? "整份簡報（" + targets.length + " 頁）" : "這一頁") + "共 " + nBox + " 個文字方塊，全部改成「" + NAME[mode] + "」？\n\n• 包含方塊裡個別字另外設定的字型\n• 之後新打的字也會用這個字型" + (scope === "deck" ? "\n• 整份簡報的修改不能用「復原」退回" : ""))) return;
+      if(scope !== "deck") snapshotForUndo();
+      targets.forEach(function(qid){
+        var ts = src[qid].texts; ts.forEach(function(t){ if(t){ t.ph = mode; try{ mmStripSpans(t, ["f"]); }catch(e){} } });
+        if(inRoom()) writeProgress(qid, { texts: ts });
+      });
+      if(!inRoom()) saveFS();   // 離開房間編輯：資料已經直接改好，整份一次存檔
+      setPhoneticMode(mode); boardState.phFont = mode;
+      renderTexts();
+    }
     if(fontSel){
       fontSel.onchange = function(){
         var v = fontSel.value;
+        if(/^(page|deck):(pinyin|zhuyin|off)$/.test(v)){ var bs = v.split(":"); fontSel.value = curFontVal(); bulkSetPh(bs[0], bs[1]); return; }
         if(applySpanFromUi("f", v)) return;
         var t = phTextObj();
         if(t){ snapshotForUndo(); t.ph = v; mmStripSpans(t, ["f"]); writeProgress(q.id, { texts: texts }); renderTexts(); }
