@@ -1466,16 +1466,21 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   body.teach-mode .stage-wrap > .stage{ height:100% !important; max-height:100% !important; min-height:0 !important; }
   body.teach-mode .board-area:not(.canvas-fs-active){ height:100%; max-height:100%; min-height:0; }
   body.teach-mode .board-area:not(.canvas-fs-active) .draw-board-layout{ height:100%; min-height:0; }
-  body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical{ display:grid !important; grid-template-columns:repeat(2, auto); align-content:start; width:auto; max-height:100%; gap:3px; padding:6px 5px; align-items:stretch; }
-  body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical > .tb-head, body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical > .slide-nav-row, body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical > .slide-nav-counter{ grid-column:1 / -1; }
+  /* 班級存檔的簡報：左邊一整直列小工具（一顆一列，不並排）；放不下時工具列自己捲動，整頁不會捲 */
+  body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical{ display:flex !important; flex-direction:column; flex-wrap:nowrap; align-items:stretch; gap:2px; padding:5px 5px; width:auto; max-height:100%; overflow-y:auto; }
+  body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical > .tb-head{ min-height:0; padding:0; }
   body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical > .tool-v-sep{ display:none; }
-  body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical > .tool-btn-v-wrap > .tool-btn-v{ width:100%; }
-  body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical .tool-btn-v{ flex-direction:row; width:auto; min-width:0; height:30px; min-height:0; padding:2px 7px; gap:5px; justify-content:flex-start; }
-  body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical .tool-btn-v-label{ font-size:12.5px; line-height:1.1; white-space:nowrap; }
+  body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical .tool-btn-v, body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical .tool-btn-v-wrap{ width:100% !important; }
+  body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical .tool-btn-v{ flex-direction:row; min-width:92px; height:27px; min-height:0; padding:1px 7px; gap:5px; justify-content:flex-start; }
+  body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical .tool-btn-v-label{ font-size:12px; line-height:1.1; white-space:nowrap; }
   body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical .tool-btn-v-label br{ display:none; }
-  body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical .tool-btn-v-icon, body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical .tool-btn-v-icon-img{ font-size:15px; width:17px; height:17px; flex:none; }
-  body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical .slide-nav-row{ justify-content:space-between; gap:3px; }
-  body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical .slide-nav-row .tool-btn-v{ min-width:0; flex:1; justify-content:center; }
+  body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical .tool-btn-v-icon, body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical .tool-btn-v-icon-img{ font-size:14px; width:16px; height:16px; flex:none; }
+  body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical .slide-nav-row{ display:flex; flex-direction:row; justify-content:space-between; gap:2px; }
+  body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical .slide-nav-row .tool-btn-v{ min-width:0; flex:1; width:auto !important; justify-content:center; }
+  body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical .slide-nav-counter{ font-size:11px; line-height:1; }
+  body.classcopy #btn-prep-mode, body.classcopy .rb-teach-btn{ display:none !important; }
+  /* 班級存檔的測驗／練習：不能改題目（通用版要到教材區改），只能作答、加筆記 */
+  body.classcopy.kind-quiz .section-head-actions, body.classcopy.kind-quiz .q-action-btns, body.classcopy.kind-quiz #btn-new-section, body.classcopy.kind-quiz #bank-menu-wrap, body.classcopy.kind-quiz #add-slide-menu-wrap, body.classcopy.kind-quiz .drag-handle-icon{ display:none !important; }
   /* 平台裡的簡報／測驗頁：上方計時／房間列縮小（會用到，但不是重點） */
   body.embed .topbar{ padding:2px 10px; gap:4px; }
   body.embed .topbar .room-cluster{ padding:2px 10px; gap:6px; font-size:12.5px; }
@@ -4225,6 +4230,8 @@ window.mmTA = (function(){
 
   var params = new URLSearchParams(location.search);
   var urlRoom = params.get("room"); var urlRole = params.get("role"); var urlName = params.get("name");
+  // 班級存檔（平台上課用）：每個班 × 每份簡報／測驗有自己獨立的一份（房間），筆記存在裡面；通用教材只能在「教材」區編輯，這裡只能加筆記
+  window.__classCopy = !!(params.get("classcopy") && params.get("embed") && urlRole !== "student");
   var isStudent = (urlRole === "student");
   // 線上考卷（個別作答）：每位學生一個獨立房間，只有他自己作答；交卷後把分數記到老師的考卷名單
   window.__attempt = params.get("attempt") === "1" ? { tid: params.get("tid"), cid: params.get("cid"), item: params.get("item"), name: urlName || "", limitMin: Number(params.get("limit")) || 0, startedAt: Number(params.get("started")) || 0 } : null;
@@ -6655,8 +6662,14 @@ window.mmTA = (function(){
     fr.readAsText(file);
   };
 
-  async function createRoom(silent){
-    var rId = String(Math.floor(1000 + Math.random() * 9000));
+  async function createRoom(silent, opts){
+    // 房間編號不能跟別人的撞號：班級存檔會長期留著，撞號會把別班的存檔蓋掉。班級存檔用 6 位數，先確認沒人用才用
+    var rId = null, cc = !!(opts && opts.cc);
+    for(var tr = 0; tr < 10 && !rId; tr++){
+      var cand = cc ? String(Math.floor(100000 + Math.random() * 900000)) : String(Math.floor(1000 + Math.random() * 9000));
+      try{ var ex = await get(ref(db, "rooms/" + cand + "/isOpen")); if(!ex.exists()) rId = cand; }catch(e){ rId = cand; }
+    }
+    if(!rId) rId = String(Math.floor(100000 + Math.random() * 900000));
     activeRoomId = rId; var currentProj = fsData.projects[activeProjectId];
     // 2026-10-01：媒體（音檔、圖片）還沒上傳到雲端的話，學生端拿不到：開房間前先試著補傳一次
     if(countUnsyncedMedia({ projects: { x: currentProj } }) > 0){
@@ -10857,7 +10870,7 @@ window.mmTA = (function(){
       // 定稿是空的（例如整頁只有匯入的背景圖、沒有物件）時，資料庫不會存空的清單：有 finalAt 就代表存過了，不能每次都重存
       // （以前會一直重存→房間更新→又檢查→又重存，無限循環，畫面卡死、拖不動）
       var pr = getProgress(q.id), fs = pr.finalIds || (pr.finalAt ? {} : null);
-      if(!fs && !isStudent && !window.__solo && slideSecInfo && slideSecInfo.sec.type === "board" && container.classList.contains("canvas-fs-active") && !container.classList.contains("fs-edit")){
+      if(!fs && !isStudent && !window.__solo && slideSecInfo && slideSecInfo.sec.type === "board" && ((container.classList.contains("canvas-fs-active") && !container.classList.contains("fs-edit")) || (window.__classCopy && inRoom()))){
         fs = curIds(); setProgDirect(q.id, { finalIds: fs, finalAt: Date.now() }); if(!inRoom()) saveFS();   // 這頁沒存過定稿就開始放映：以目前內容當定稿
       }
       return fs || null;
@@ -10871,7 +10884,7 @@ window.mmTA = (function(){
       else if(finalDirty() && confirm("這份簡報在上次「儲存定稿」之後又有修改。\n\n按「確定」＝先儲存最新版，再開始放映\n按「取消」＝直接放映（鎖定的是上次儲存的版本）")) finalizeSection();
       undoStack.length = 0; redoStack.length = 0; updateUndoRedoBtns();   // 復原只能復原放映中的新內容，不會退回到定稿之前
     });
-    function presentLock(){ if(window.__solo) return true; return !isStudent && !!(slideSecInfo && slideSecInfo.sec.type === "board") && container.classList.contains("canvas-fs-active") && !container.classList.contains("fs-edit"); }
+    function presentLock(){ if(window.__solo) return true; if(window.__classCopy && !isStudent && inRoom() && slideSecInfo && slideSecInfo.sec.type === "board") return true; return !isStudent && !!(slideSecInfo && slideSecInfo.sec.type === "board") && container.classList.contains("canvas-fs-active") && !container.classList.contains("fs-edit"); }
     // 小白板：只留筆、文字、橡皮擦、清空、圖案（多媒體放在題目上方，由題目設定，不是浮在畫布上）
     var simpleBoard = !!(slideSecInfo && slideSecInfo.sec.type === "whiteboard");
     // 老師預設是「文字」：點空白處新增文字方塊；點到任何框框（文字／圖片／圖案／表格）就自動變成「選取」，Ctrl／Shift 可以加選；學生和小白板預設是筆
@@ -10893,6 +10906,11 @@ window.mmTA = (function(){
     }
     setTimeout(function(){ prefetchNeighbors(q.id); }, 300);
     var slideSiblingIds = slideSecInfo ? getSortedQuestionKeys(slideSecInfo.sec) : [];
+    // 班級存檔上課時左邊的投影片清單收起來了：上一頁／下一頁要能一路翻過整份簡報（不只是同一個大題裡面）
+    if(window.__classCopy && !isStudent && slideSecInfo && slideSecInfo.sec.type === "board"){
+      var ccAll = getAllQuestionsList().filter(function(it){ return it.section.type === "board"; }).map(function(it){ return it.question.id; });
+      if(ccAll.indexOf(q.id) >= 0) slideSiblingIds = ccAll;
+    }
     var slideIndex = slideSiblingIds.indexOf(q.id);
     var isMultiSlideDeck = slideSiblingIds.length > 1;
 
@@ -14278,6 +14296,7 @@ window.mmTA = (function(){
       syncObjInteractive();
     }
     new MutationObserver(applyPresentLockState).observe(container, { attributes: true, attributeFilter: ["class"] });
+    if(window.__classCopy) setTimeout(function(){ try{ if(container.isConnected) applyPresentLockState(); }catch(er){} }, 0);   // 班級存檔：一進來就是「原本內容鎖住、只能加筆記」（等這一頁的設定跑完再套用）
     function switchToSelectTool(){
       if(boardState.tool === "select") return;
       boardState.tool = "select";
@@ -17494,8 +17513,13 @@ window.mmTA = (function(){
     });
     if(target) setCurrentQ(target);
   }
-  function enterAppAfterLogin(){
+  async function enterAppAfterLogin(){
     setTimeout(slimLibraryInBackground, 2500);
+    // 班級存檔：平台記著的房間如果已經不在了，就當作還沒有存檔，下面會重新建一份
+    if(window.__classCopy && urlRoom && !isOfflineMode){
+      var ccGone = false; try{ var ccSn = await get(ref(db, "rooms/" + urlRoom + "/isOpen")); ccGone = !ccSn.exists(); }catch(e){}
+      if(ccGone){ urlRoom = null; history.replaceState(null, "", location.pathname + location.search.replace(/([?&])room=[^&]*&?/, "$1")); }
+    }
     // 離線時沒有房間可以開（房間靠雲端即時同步）：網址帶著 ?room=… 也直接回大廳，不要去連雲端
     if(urlRoom && !isOfflineMode){ startRoom(urlRoom, "teacher"); }
     else { if(urlRoom) history.replaceState(null, "", location.pathname); showLobby(); }
@@ -17503,8 +17527,7 @@ window.mmTA = (function(){
     try{
       var pq = new URLSearchParams(location.search);
       if(pq.get("embed")) document.body.classList.add("embed");
-      // 平台上課中（&teach=1）：預設用上課版面；老師這次分頁切到備課版面就照老師的
-      if(pq.get("embed") && pq.get("teach") && !isStudent){ document.body.classList.add("teach-avail"); var tOn = "0"; try{ tOn = localStorage.getItem("mm-teach-on") || "0"; }catch(e){} if(tOn === "1") document.body.classList.add("teach-mode"); }
+      if(window.__classCopy){ document.body.classList.add("classcopy"); if(pq.get("focus") === "slides") document.body.classList.add("teach-mode"); }
       if(pq.get("embed") && urlRoom && !isStudent) window.__keepQ = true;   // 老師回到今天同一個房間：接著原本的頁數，不跳回第一頁
       if(pq.get("embed") && /^(slides|quiz)$/.test(pq.get("focus") || "")){ setEmbedKind(pq.get("focus")); try{ renderSidebar(); }catch(e0){} }
       if(pq.get("worker")){ window.__worker = true; try{ parent.postMessage({ mm: "workerReady" }, "*"); }catch(e2){} }
@@ -17519,7 +17542,11 @@ window.mmTA = (function(){
       var wantProj = pq.get("project");
       if(wantProj && fsData.projects && fsData.projects[wantProj] && !urlRoom){
         window.__embedProject = wantProj; openProject(wantProj);
-        var focus = pq.get("focus"); if(focus) jumpToKind(focus);
+        var focus = pq.get("focus");
+        if(window.__classCopy && !isOfflineMode){
+          // 第一次用：建這個班自己的存檔（之後都開同一份）。翻到第一頁是在存檔裡做，不去動通用教材
+          createRoom(true, { cc: true }).then(function(){ if(focus) jumpToKind(focus); }).catch(function(e){ console.warn("class copy", e); });
+        } else if(focus) jumpToKind(focus);
         // 平台指定從某一頁開始（這個班上次教到的地方）
         var wantQ = pq.get("q"); if(wantQ && getAllQuestionsList().some(function(it){ return it.question.id === wantQ; })){ setCurrentQ(wantQ); window.__keepQ = true; }
       }

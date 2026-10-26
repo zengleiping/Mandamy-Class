@@ -323,6 +323,8 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .tab-dd-menu{ display:none; position:absolute; top:100%; left:0; z-index:60; min-width:240px; max-width:420px; padding:6px; background:var(--surface); border:1.5px solid var(--line); border-radius:12px; box-shadow:0 10px 24px rgba(0,0,0,.16); }
   .tab-dd:hover .tab-dd-menu, .tab-dd:focus-within .tab-dd-menu{ display:block; }
   .tab-dd-item{ display:block; width:100%; text-align:left; border:0; background:none; padding:8px 12px; border-radius:8px; font-size:15px; font-weight:600; color:var(--ink); cursor:pointer; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .tab-dd-sep{ height:1px; background:var(--line); margin:5px 4px; }
+  .tab-dd-item.sm{ font-size:13.5px; font-weight:600; color:var(--ink-soft); }
   .tab-dd-item:hover{ background:var(--paper); } .tab-dd-item.on{ color:var(--seal); font-weight:700; }
   .tab.focus-btn{ margin-left:auto; color:var(--seal); border:1.5px solid var(--seal); border-radius:10px; padding:4px 12px; margin-bottom:5px; font-size:14.5px; }
 </style>
@@ -971,16 +973,19 @@ window.addEventListener("message", function(e){
   TR_PUB.rooms = TR_PUB.rooms || {}; TR_PUB.rooms[e.data.id] = 1; trPublishSoon();
   // 記住「這個班 × 這份簡報 × 今天」用的是哪個房間：重新整理、重新進入上課都回到同一個房間，上課寫的筆記不會不見
   if(S.sel && S.sel.c && S.sub){
-    var rec = { room: String(e.data.id), day: todayStr(), at: Date.now() };
-    S.classRooms = S.classRooms || {}; S.classRooms[S.sel.c] = S.classRooms[S.sel.c] || {}; S.classRooms[S.sel.c][S.sub] = rec;
-    fbSet("teacherPlatform/" + S.teacher.id + "/classRooms/" + S.sel.c + "/" + S.sub, rec).catch(function(){});
-    if(S.lesson) markTaught(S.lesson);
+    S.classRooms = S.classRooms || {}; S.classRooms[S.sel.c] = S.classRooms[S.sel.c] || {};
+    var prevRec = S.classRooms[S.sel.c][S.sub] || {};
+    var rec = { room: String(e.data.id), day: todayStr(), at: prevRec.room === String(e.data.id) && prevRec.at ? prevRec.at : Date.now() };   // 班級存檔：長期用同一個房間；at＝建立時間
+    if(prevRec.old) rec.old = prevRec.old;
+    S.classRooms[S.sel.c][S.sub] = rec;
+    if(prevRec.room !== rec.room) fbSet("teacherPlatform/" + S.teacher.id + "/classRooms/" + S.sel.c + "/" + S.sub, rec).catch(function(){});   // 存檔換了（或第一次建）才寫
+    if(S.lesson && S.live && S.live.on) markTaught(S.lesson);   // 只有真的在上課才算「上過這一課」，打開看看不算
   }
 });
 function todayStr(){ var d = new Date(); return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate()); }
 function todayClassRoom(pid){
   var r = S.sel && S.sel.c && S.classRooms && S.classRooms[S.sel.c] && S.classRooms[S.sel.c][pid];
-  return (r && r.room && r.day === todayStr()) ? r.room : null;
+  return (r && r.room) ? r.room : null;   // 班級存檔：不分哪一天，這個班用這份簡報就是這一份
 }
 function classRoomsStart(){
   if(!S.teacher) return;
@@ -5421,7 +5426,7 @@ window.addEventListener("message", function(e){
   if(!S.teacher || !e.data || e.data.mm !== "slidePos") return;
   var fr = document.getElementById("fr"); if(!fr || fr.contentWindow !== e.source) return;
   if(!S.sel || !S.sel.c || !S.lesson || !S.sub || (S.tab !== "slides" && S.tab !== "quiz")) return;
-  if(!(S.live && S.live.on) && !todayClassRoom(S.sub)) return;
+  if(!(S.live && S.live.on)) return;
   var cls = getCls(S.sel); if(!cls) return;
   var d = e.data, day = todayStr(), ps = (((S.plat.lessons || {})[S.lesson] || {}).projects || {})[S.sub] || {};
   var pos = { d: day, l: String(S.lesson), pid: String(S.sub), pt: String(ps.title || d.projTitle || "").slice(0, 80), k: d.kind === "quiz" ? "quiz" : "slides", i: Math.max(1, Number(d.idx) || 1), n: Number(d.total) || 0, q: String(d.qid || ""), qt: String(d.qTitle || "").slice(0, 60), at: Date.now() };
@@ -5979,7 +5984,29 @@ function lessonDeckMenu(no, kind, btn){
   var fit = pids.filter(function(p){ return (ps[p][kind] || 0) > 0 || p === S.sub; }); if(fit.length) pids = fit;   // 投影片只列有投影片的、測驗只列有題目的
   var curPid = S.tab === kind ? (S.sub && pids.indexOf(S.sub) >= 0 ? S.sub : pids[0]) : null;
   var items = pids.map(function(p){ var on = p === curPid; return '<button type="button" class="tab-dd-item' + (on ? ' on' : '') + '" data-ddtab="' + kind + '" data-ddsub="' + esc(p) + '">' + (on ? '✓ ' : '') + esc(ps[p].title || "（未命名）") + '</button>'; }).join("");
-  return '<span class="tab-dd">' + btn.replace('</button>', ' <span class="tab-dd-arrow">▾</span></button>') + '<div class="tab-dd-menu">' + items + '</div></span>';
+  var acts = curPid ? '<div class="tab-dd-sep"></div><button type="button" class="tab-dd-item sm" data-ddact="resync" data-ddpid="' + esc(curPid) + '" title="通用教材改過之後，想讓這個班用最新版時按這個。這個班目前的筆記會收起來（不會刪掉）">↻ 用最新的通用教材重建這個班的存檔</button><button type="button" class="tab-dd-item sm" data-ddact="editmaster" data-ddpid="' + esc(curPid) + '" title="通用教材只能在教材區編輯">✎ 到教材區編輯通用版</button>' : '';
+  return '<span class="tab-dd">' + btn.replace('</button>', ' <span class="tab-dd-arrow">▾</span></button>') + '<div class="tab-dd-menu">' + items + acts + '</div></span>';
+}
+// 班級存檔／通用教材的動作（從分頁下拉選單或「這一課還沒有簡報」按鈕）
+async function classDeckAction(act, pid, kind){
+  if(!S.teacher) return;
+  var pk = S.lesson ? parseKey(S.lesson) : null;
+  if(act === "editmaster" || act === "newmaster"){
+    if(S.live && S.live.on){ alert("上課中不能改通用教材。\n請先結束上課，到教材區編輯；上課當下想補充的內容，直接在投影片上寫筆記就好。"); return; }
+    var key = S.lesson; S.lib = pk ? (act === "editmaster" ? { book: pk.book, key: key, pid: pid } : { book: pk.book, key: key, creating: key }) : { book: DEFAULT_BOOK };
+    S.lesson = null; S.tab = null; S.sub = null; render(); return;
+  }
+  if(act === "resync"){
+    if(S.live && S.live.on){ alert("上課中不能重建存檔，請先結束上課。"); return; }
+    var cur = S.sel && S.sel.c && S.classRooms && S.classRooms[S.sel.c] && S.classRooms[S.sel.c][pid];
+    if(!cur || !cur.room){ alert("這個班還沒有這份教材的存檔，下次打開會自動用最新的通用教材建立。"); return; }
+    if(!confirm("要用最新的通用教材，重新建立這個班的存檔嗎？\n\n• 通用教材後來新增、修改的內容，這個班才會看到\n• 這個班目前這份的筆記會收起來（不會刪掉，但上課畫面不會再出現）")) return;
+    var old = Object.assign({}, cur.old || {}); old[String(Date.now())] = cur.room;
+    var rec = { room: null, old: old, at: Date.now() };
+    S.classRooms[S.sel.c][pid] = rec;
+    try{ await fbSet("teacherPlatform/" + S.teacher.id + "/classRooms/" + S.sel.c + "/" + pid, rec); }catch(e){ alert("重建失敗，請檢查網路。"); return; }
+    toast("已重建，會用最新的通用教材開新的存檔"); renderLesson(getCls(S.sel)); return;
+  }
 }
 function lessonHtmlFrame(src){ return '<iframe class="frame" id="fr" src="' + esc(src + (S.focus ? "&nochrome=1" : "")) + '" allow="microphone; camera; autoplay; clipboard-write"></iframe>'; }
 function renderLessonCommon(no, open, teacher, liveStudent){
@@ -6027,17 +6054,16 @@ function renderLessonCommon(no, open, teacher, liveStudent){
     if(!teacher) pids = pids.filter(function(p){ return (ps[p][kind] || 0) > 0; });
     if(teacher){
       if(!pids.length){
-        if(S.creating === no) frame = lessonHtmlFrame("slides/practice.html?v=" + MM_V + "&embed=1&newproject=" + encodeURIComponent(lessonTitle(no)) + "&focus=" + kind);
-        else frame = '<div class="empty"><h3 style="margin-bottom:8px;">' + lessonTitle(no) + '</h3><p class="note" style="margin-bottom:12px;">這一課還沒有' + (kind === "slides" ? "投影片" : "測驗與練習") + '。</p><button class="btn" id="mkproj">＋ 為這一課建立' + (kind === "slides" ? "投影片" : "測驗與練習") + '</button></div>';
+        frame = '<div class="empty"><h3 style="margin-bottom:8px;">' + lessonTitle(no) + '</h3><p class="note" style="margin-bottom:12px;">這一課還沒有' + (kind === "slides" ? "投影片" : "測驗與練習") + '。<br>教材要先在「教材」區建立（那裡是大家通用的版本），建好之後這裡就能選來上課。</p><button class="btn" data-ddact="newmaster" data-kind="' + kind + '">到教材區建立 ›</button></div>';
       } else {
         if(!S.sub || pids.indexOf(S.sub) === -1) S.sub = pids[0];
         sub = '<div class="subbar">' + (pids.length > 1 ? pids.map(function(p){ return '<button class="tab' + (p === S.sub ? ' on' : '') + '" data-sub="' + p + '" style="padding:5px 14px;font-size:15px;">' + esc(ps[p].title) + '</button>'; }).join("") : '') + '</div>';
         sub = '';   // 換簡報改用分頁上的下拉選單，不另外佔一整列
-        html = html.replace('<!--copyto-->', '<button class="tab" data-copyto="' + kind + '">複製到其他課…</button>');
+        html = html.replace('<!--copyto-->', '');   // 通用教材的複製／編輯都在「教材」區
         var rjoin = (S.live && S.live.on && S.live.room && S.live.roomProject === S.sub) ? S.live.room : todayClassRoom(S.sub);   // 今天這個班已經用這份簡報上過課：回到同一個房間，課堂筆記都還在
         // 從上次停的那一頁開始：直到今天這個班開了房間為止（開始上課會重新載入，房間開了之後就照房間的頁數）
         var jq = (!rjoin && S.jumpQ && S.jumpQ.pid === S.sub && S.sel && S.jumpQ.c === S.sel.c) ? "&q=" + encodeURIComponent(S.jumpQ.q) : ""; if(rjoin) S.jumpQ = null;
-        frame = lessonHtmlFrame("slides/practice.html?v=" + MM_V + "&embed=1&project=" + encodeURIComponent(S.sub) + "&focus=" + kind + (rjoin ? "&room=" + encodeURIComponent(rjoin) : "") + jq + (S.live && S.live.on && kind === "slides" ? "&teach=1" : ""));
+        frame = lessonHtmlFrame("slides/practice.html?v=" + MM_V + "&embed=1&project=" + encodeURIComponent(S.sub) + "&focus=" + kind + (rjoin ? "&room=" + encodeURIComponent(rjoin) : "") + (S.sel && S.sel.c ? "&classcopy=1" : jq));
       }
     } else if(liveStudent){
       frame = (S.live && S.live.room) ? lessonHtmlFrame("slides/practice.html?v=" + MM_V + "&embed=1&room=" + encodeURIComponent(S.live.room) + "&role=student&name=" + encodeURIComponent(S.student ? S.student.name : "")) : '<div class="empty"><p class="note">老師還沒開始這一段，請稍候…</p></div>';
@@ -6355,6 +6381,7 @@ function bindLessonNav(cls, backFn, renderFn){
     if(b.dataset.actgo){ lessonActGo(b.dataset.actgo); return; }
     if(b.dataset.actback){ S.sub = null; renderFn(); pushLive(); return; }
     if(b.dataset.actmore){ var sid0 = String(S.sub || "").split("|")[0], cur0 = String(S.sub || "").indexOf("|") > 0 ? String(S.sub).split("|")[1].split(",") : [String(S.lesson)]; actPickLessons(lessonKeys(getCls(S.sel)), cur0).then(function(nk){ if(!nk) return; S.sub = sid0 + (nk.length > 1 || nk[0] !== String(S.lesson) ? "|" + nk.join(",") : ""); renderFn(); pushLive(); }); return; }
+    if(b.dataset.ddact){ classDeckAction(b.dataset.ddact, b.dataset.ddpid, b.dataset.kind); return; }
     if(b.dataset.ddsub){ S.tab = b.dataset.ddtab; S.sub = b.dataset.ddsub; renderFn(); pushLive(); return; }
     if(b.dataset.tab){ if(b.dataset.tab === S.tab && (S.tab === "slides" || S.tab === "quiz")) return; S.tab = b.dataset.tab; S.sub = null; renderFn(); pushLive(); return; }
     if(b.dataset.sub){ S.sub = b.dataset.sub; renderFn(); pushLive(); return; }
