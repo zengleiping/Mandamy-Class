@@ -7575,72 +7575,125 @@ window.mmTA = (function(){
     e.preventDefault();
     insertSlideCopy(found.secId, info.question.id, slideClipboard.q, slideClipboard.prog);
   });
-  /* ===== 生詞簡報範本：從教材庫某一課一次產生整份生詞投影片（每個生詞一頁） =====
-     每一頁都是一般的文字方塊／圖案，產生後照平常的方式編輯；一律新增成一份新的簡報，不動原有的簡報。
-     版面（16:9）：左＝圖示（課本的 Emoji，可換成自己的圖片）、右＝大生詞與標音、中＝英文／第二語言解釋、
-     下＝例句。本課之前已學過的詞，例句裡不加注音（只標新詞）。 */
-  var vtBankCache = null;
+  /* ===== 生詞簡報範本：從教材庫某一課一次產生整課生詞投影片（每個生詞一頁） =====
+     範本（母片）＝一頁示範投影片：每個「欄位」是一個帶標籤的文字方塊（生詞、拼音、英文、第二語言、例句…），
+     其餘文字／圖案是每頁都照樣複製的裝飾。老師可以「編輯範本」：開一頁示範投影片，照平常方式搬動、縮放、改字級顏色、
+     加圖案，再「存成範本」，之後每一課都用這個樣式。範本存在老師自己的帳號底下（teacherPlatform/{老師}/vocabTemplates）。
+     一律新增成一份新的簡報，不動原有的簡報。本課之前已學過的詞，例句裡不加注音（只標新詞）。
+     AI 造句：沒有例句的生詞可以用老師自己的 Gemini 金鑰造句（金鑰只存在這台瀏覽器）。 */
+  var VT_TAGS = { emoji: "圖示", word: "生詞", pinyin: "拼音（選「注音＋拼音」時才出現）", en: "英文解釋", sec: "第二語言解釋", sent: "中文例句", sentEn: "英文例句", sentSec: "第二語言例句" };
   function vtBookNum(b){ var m = /(\d+)/.exec(String(b == null ? "" : b)); return m ? parseInt(m[1], 10) : 999; }
   function vtLessonLabel(l){ return "第 " + l.lesson + " 課" + (l.title ? "：" + l.title : "") + "（" + (l.vocab || []).length + " 個生詞）"; }
-  function vtBuildSlides(lesson, learnedWords, opt){
+  function vtDefaultTemplate(){
     var W = 640, H = 360, ink = "#2B2320", brown = "#8C5A2B";
     function px(x){ return Math.round(x / W * 1000) / 10; }
     function py(y){ return Math.round(y / H * 1000) / 10; }
+    function T(tpl, x, y, fs, o){ return Object.assign({ tpl: tpl, x: px(x), y: py(y), fontSize: fs, color: ink, bold: true, align: "center" }, o || {}); }
+    return { id: "default", name: "預設（曼米）", builtin: true, bgColor: "", shapes: [
+        { type: "rect", x: 2, y: 3, w: 96, h: 94, color: "#F2B8A2", sw: 3, fill: false, op: 1 },
+        { type: "line", x: 6, y: 62, w: 88, h: 0, color: "#F2D5C8", sw: 2, fill: false, op: 1 } ],
+      texts: [ T("emoji", 150, 92, 110, { bold: false }), T("word", 450, 82, 72, { color: "#000000" }), T("pinyin", 450, 142, 22, { color: brown }),
+        T("en", 320, 176, 24, { w: 90 }), T("sec", 320, 206, 20, { color: "#6B5E55", w: 90 }),
+        T("sent", 320, 254, 30, { color: brown, w: 90 }), T("sentEn", 320, 297, 18, { color: brown, w: 90 }), T("sentSec", 320, 323, 16, { color: brown, w: 90 }) ] };
+  }
+  function vtBuildSlides(lesson, learnedWords, opt, tpl){
+    tpl = tpl || vtDefaultTemplate();
     function han(c){ return /[㐀-䶿一-鿿豈-﫿]/.test(c); }
     var learned = Array.from(new Set(learnedWords)).filter(function(w){ return w; }).sort(function(a, b){ return b.length - a.length; });
     var out = [];
     (lesson.vocab || []).forEach(function(v){
       var word = String(v["生詞"] || "").trim(); if(!word) return;
-      var texts = [], shapes = [];
-      function T(o){ var t = Object.assign({ id: uid("t"), color: ink, fontSize: 24, bold: true, step: 0, align: "center", ph: "off" }, o); t.x = px(t.x); t.y = py(t.y); texts.push(t); return t; }
-      shapes.push({ id: uid("sh"), type: "rect", x: 2, y: 3, w: 96, h: 94, color: "#F2B8A2", sw: 3, fill: false, op: 1, step: 0 });
-      shapes.push({ id: uid("sh"), type: "line", x: 6, y: 62, w: 88, h: 0, color: "#F2D5C8", sw: 2, fill: false, op: 1, step: 0 });
-      // 左：圖示
-      var emo = String(v["Emoji／圖示"] || "").trim();
-      if(emo) T({ text: emo, x: 150, y: 92, fontSize: 110, bold: false });
-      // 右：大生詞
-      var chars = Array.from(word), n = chars.length;
-      var fs = n <= 2 ? 72 : (n === 3 ? 60 : (n === 4 ? 50 : 40));
-      var mode = opt.mode === "both" ? "zhuyin" : opt.mode;
-      var wt = { text: word, x: 450, y: 82, fontSize: fs, color: "#000000", ph: mode };
-      var syl = String(mode === "pinyin" ? (v["拼音"] || "") : (v["注音"] || "")).trim().split(/\s+/).filter(Boolean);
-      if(mode !== "off" && syl.length === n){ wt.phoneticOverride = {}; syl.forEach(function(sy, i){ wt.phoneticOverride[i] = sy; }); }
-      T(wt);
-      if(opt.mode === "both" && v["拼音"]) T({ text: String(v["拼音"]), x: 450, y: 142, fontSize: 22, color: brown, bold: true });
-      // 中：解釋
+      var texts = [], shapes = [], chars = Array.from(word), n = chars.length, aiUsed = !!v.__ai;
+      (tpl.shapes || []).forEach(function(sh){ shapes.push(Object.assign({}, sh, { id: uid("sh"), step: 0 })); });
       var en = String(v["英文翻譯"] || "").trim(), sec = opt.lang ? String(v[opt.lang + "翻譯"] || "").trim() : "";
-      if(en) T({ text: en, x: 320, y: sec ? 176 : 186, fontSize: 24, w: 90 });
-      if(sec) T({ text: sec, x: 320, y: 206, fontSize: 20, color: "#6B5E55", w: 90 });
-      // 下：例句
-      var sz = String(v["例句（中文）"] || "").trim();
-      if(opt.sentence && sz){
-        var sc = Array.from(sz), mask = sc.map(function(c){ return han(c); });
-        if(opt.hideLearned){
-          var i = 0;
-          while(i < sc.length){
-            if(!han(sc[i])){ i++; continue; }
-            var ml = 0; for(var k = 0; k < learned.length; k++){ if(learned[k] !== word && sz.startsWith(learned[k], i)){ ml = Array.from(learned[k]).length; break; } }
-            if(ml){ for(var q = 0; q < ml; q++) mask[i + q] = false; i += ml; } else i++;
-          }
-          var pos = sz.indexOf(word); while(pos !== -1){ var cp = Array.from(sz.slice(0, pos)).length; for(var q2 = 0; q2 < n; q2++) mask[cp + q2] = true; pos = sz.indexOf(word, pos + 1); }
+      var sz = String(v["例句（中文）"] || "").trim(), sen = String(v["例句（英文）"] || "").trim(), ss = opt.lang ? String(v["例句（" + opt.lang + "）"] || "").trim() : "";
+      var emo = String(v["Emoji／圖示"] || "").trim();
+      (tpl.texts || []).forEach(function(tt){
+        var t = JSON.parse(JSON.stringify(tt)); t.id = uid("t"); t.step = 0; var tag = t.tpl; if(!opt.keepTags) delete t.tpl;
+        if(!tag){ texts.push(t); return; }          // 沒有標籤＝裝飾文字，每頁照樣複製
+        delete t.phoneticOverride; delete t.spans;
+        var fs = t.fontSize || 36;
+        if(tag === "emoji"){ if(!emo) return; t.text = emo; t.ph = "off"; }
+        else if(tag === "word"){
+          t.text = word; t.fontSize = Math.round(fs * (n <= 2 ? 1 : (n === 3 ? 0.84 : (n === 4 ? 0.7 : 0.56))));
+          var mode = opt.mode === "both" ? "zhuyin" : opt.mode; t.ph = mode;
+          var syl = String(mode === "pinyin" ? (v["拼音"] || "") : (v["注音"] || "")).trim().split(/\s+/).filter(Boolean);
+          if(mode !== "off" && syl.length === n){ t.phoneticOverride = {}; syl.forEach(function(sy, i){ t.phoneticOverride[i] = sy; }); }
         }
-        var st = { text: sz, x: 320, y: 254, fontSize: sc.length <= 10 ? 30 : (sc.length <= 14 ? 26 : 22), color: brown, w: 90, ph: opt.mode === "pinyin" ? "pinyin" : (opt.mode === "off" ? "off" : "zhuyin") };
-        if(st.ph !== "off"){ st.phoneticOverride = {}; sc.forEach(function(c, i2){ if(han(c) && !mask[i2]) st.phoneticOverride[i2] = " "; }); }
-        T(st);
-        var sen = String(v["例句（英文）"] || "").trim(), ss = opt.lang ? String(v["例句（" + opt.lang + "）"] || "").trim() : "";
-        if(sen) T({ text: sen, x: 320, y: 297, fontSize: 18, color: brown, w: 90 });
-        if(ss) T({ text: ss, x: 320, y: 323, fontSize: 16, color: brown, w: 90 });
-      }
+        else if(tag === "pinyin"){ if(opt.mode !== "both" || !v["拼音"]) return; t.text = String(v["拼音"]); t.ph = "off"; }
+        else if(tag === "en"){ if(!en) return; t.text = en; t.ph = "off"; }
+        else if(tag === "sec"){ if(!sec) return; t.text = sec; t.ph = "off"; }
+        else if(tag === "sentEn"){ if(!opt.sentence || !sen) return; t.text = sen; t.ph = "off"; }
+        else if(tag === "sentSec"){ if(!opt.sentence || !ss) return; t.text = ss; t.ph = "off"; }
+        else if(tag === "sent"){
+          if(!opt.sentence || !sz) return;
+          var sc = Array.from(sz), mask = sc.map(function(c){ return han(c); });
+          if(opt.hideLearned){
+            var i = 0;
+            while(i < sc.length){
+              if(!han(sc[i])){ i++; continue; }
+              var ml = 0; for(var k = 0; k < learned.length; k++){ if(learned[k] !== word && sz.startsWith(learned[k], i)){ ml = Array.from(learned[k]).length; break; } }
+              if(ml){ for(var q = 0; q < ml; q++) mask[i + q] = false; i += ml; } else i++;
+            }
+            var pos = sz.indexOf(word); while(pos !== -1){ var cp = Array.from(sz.slice(0, pos)).length; for(var q2 = 0; q2 < n; q2++) mask[cp + q2] = true; pos = sz.indexOf(word, pos + 1); }
+          }
+          t.text = sz; t.fontSize = Math.round(fs * (sc.length <= 10 ? 1 : (sc.length <= 14 ? 0.87 : 0.73)));
+          t.ph = opt.mode === "pinyin" ? "pinyin" : (opt.mode === "off" ? "off" : "zhuyin");
+          if(t.ph !== "off"){ t.phoneticOverride = {}; sc.forEach(function(c, i2){ if(han(c) && !mask[i2]) t.phoneticOverride[i2] = " "; }); }
+          if(!t.w) t.w = 90;
+        }
+        texts.push(t);
+      });
       var qs = Array.isArray(v["問題"]) ? v["問題"] : (v["問題"] ? String(v["問題"]).split("｜") : []);
-      out.push({ title: word, texts: texts, shapes: shapes, note: qs.length ? "課堂提問：\n" + qs.map(function(x, j){ return (j + 1) + ". " + x; }).join("\n") : "" });
+      var note = (qs.length ? "課堂提問：\n" + qs.map(function(x, j){ return (j + 1) + ". " + x; }).join("\n") : "") + (aiUsed ? (qs.length ? "\n\n" : "") + "⚠ 這一頁的例句是 AI 產生的，請檢查內容與難度。" : "");
+      out.push({ title: word, texts: texts, shapes: shapes, note: note, bgColor: tpl.bgColor || "", bgOp: tpl.bgOp });
     });
     return out;
   }
+  // —— AI 造句（老師自己的 Gemini 金鑰；金鑰只存在這台瀏覽器的 localStorage）——
+  async function vtAiSentences(vocabList, learnedWords, lang, level){
+    var key = ""; try{ key = localStorage.getItem("mm_gemini_key") || ""; }catch(e){}
+    if(!key) throw new Error("還沒有填 Gemini 金鑰");
+    var items = vocabList.map(function(v){ return { word: v["生詞"], en: v["英文翻譯"] || "" }; });
+    var learned = Array.from(new Set(learnedWords)).slice(-400);
+    var prompt = "你是一位專業的台灣華語老師，正在製作《學華語向前走》的生詞教學投影片。請為下面每個生詞各造一個例句。\n" +
+      "生詞：" + JSON.stringify(items) + "\n" +
+      "學生在這一課之前已經學過的詞：" + (learned.join("、") || "（基礎日常詞彙）") + "\n" +
+      "規則：1. 例句要優先使用已學過的詞，難度不可超過「" + level + "」，句子要短、自然、符合台灣用語（8～15 個字最好）。2. 例句必須完整包含該生詞。3. 用繁體中文。\n" +
+      "4. 同時提供英文翻譯" + (lang ? "和" + lang + "翻譯" : "") + "。\n" +
+      "只回傳 JSON 陣列，格式：[{\"word\":\"生詞\",\"zh\":\"中文例句\",\"en\":\"英文例句\"" + (lang ? ",\"sec\":\"" + lang + "例句\"" : "") + "}]";
+    var models = ["gemini-flash-latest", "gemini-2.5-flash"], lastErr = "";
+    for(var mi = 0; mi < models.length; mi++){
+      try{
+        var res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/" + models[mi] + ":generateContent?key=" + encodeURIComponent(key), {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { responseMimeType: "application/json" } }) });
+        var data = await res.json();
+        if(!res.ok){ lastErr = (data && data.error && data.error.message) || ("HTTP " + res.status); if(res.status === 404) continue; throw new Error(lastErr); }
+        var txt = data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0].text;
+        var arr = JSON.parse(txt); if(!Array.isArray(arr)) throw new Error("AI 回傳的格式不對");
+        return arr;
+      }catch(e){ lastErr = e.message || String(e); if(!/404|not found|is not found/i.test(lastErr)) throw e; }
+    }
+    throw new Error(lastErr || "AI 沒有回應");
+  }
+  async function vtLoadTemplates(){
+    var list = [vtDefaultTemplate()];
+    try{ if(currentTeacher && window.db){ var sn = await get(ref(db, "teacherPlatform/" + currentTeacher.id + "/vocabTemplates")); if(sn.exists()){ var o = sn.val(); Object.keys(o).forEach(function(k){ var t = o[k]; if(t && Array.isArray(t.texts)) list.push(Object.assign({ shapes: [] }, t, { id: k })); }); } } }catch(e){}
+    return list;
+  }
+  async function vtSaveTemplate(tpl){
+    var clean = JSON.parse(JSON.stringify({ name: tpl.name, texts: tpl.texts, shapes: tpl.shapes, bgColor: tpl.bgColor || "", bgOp: tpl.bgOp == null ? null : tpl.bgOp, updatedAt: Date.now() }));
+    if(clean.bgOp === null) delete clean.bgOp;
+    await set(ref(db, "teacherPlatform/" + currentTeacher.id + "/vocabTemplates/" + tpl.id), clean);
+  }
+  var VT_SAMPLE = { "生詞": "唱歌", "注音": "ㄔㄤˋ ㄍㄜ", "拼音": "chànggē", "英文翻譯": "to sing", "泰文翻譯": "ร้องเพลง", "日文翻譯": "歌う", "Emoji／圖示": "🎤",
+    "例句（中文）": "我喜歡唱歌和跳舞。", "例句（英文）": "I like singing and dancing.", "例句（泰文）": "ฉันชอบร้องเพลงและเต้นรำ", "例句（日文）": "私は歌うことと踊ることが好きです。" };
   async function openVocabTemplateDialog(){
     if(isStudent) return;
     var back = document.createElement("div"); back.className = "tb-modal-back";
-    var modal = document.createElement("div"); modal.className = "tb-modal"; modal.style.width = "min(520px,95vw)"; back.appendChild(modal);
-    modal.innerHTML = '<h3>📚 生詞簡報範本</h3><div class="tb-hint">選一課，一次產生整課的生詞投影片（每個生詞一頁，會新增成一份新的簡報，不會動到現有的簡報）。</div><div class="vt-body" style="margin:10px 0;font-size:14.5px;">⏳ 讀取教材庫的生詞…</div><div class="tb-foot"><button type="button" class="vt-cancel">取消</button><button type="button" class="primary vt-go" disabled>產生投影片</button></div>';
+    var modal = document.createElement("div"); modal.className = "tb-modal"; modal.style.width = "min(560px,95vw)"; back.appendChild(modal);
+    modal.innerHTML = '<h3>📚 生詞簡報範本</h3><div class="tb-hint">選一課，一次產生整課的生詞投影片（每個生詞一頁，會新增成一份新的簡報，不會動到現有的簡報）。</div><div class="vt-body" style="margin:10px 0;font-size:14.5px;">⏳ 讀取教材庫的生詞…</div><div class="tb-foot"><button type="button" class="vt-cancel">關閉</button><button type="button" class="primary vt-go" disabled>產生投影片</button></div>';
     document.body.appendChild(back);
     var $ = function(c){ return modal.querySelector(c); };
     $(".vt-cancel").onclick = function(){ back.remove(); };
@@ -7649,30 +7702,93 @@ window.mmTA = (function(){
     try{ if(currentTeacher && window.db){ var snap = await get(ref(db, "teacherVocabBanks/" + currentTeacher.id)); bank = snap.exists() ? snap.val() : null; } }catch(e){}
     var cd = (bank && bank.courseData) ? (Array.isArray(bank.courseData) ? bank.courseData : Object.keys(bank.courseData).map(function(k){ return bank.courseData[k]; })) : [];
     cd = cd.filter(function(l){ return l && (l.vocab || []).length; }).sort(function(a, b){ return (vtBookNum(a.book) - vtBookNum(b.book)) || (Number(a.lesson) - Number(b.lesson)); });
-    if(!cd.length){ $(".vt-body").innerHTML = '<span style="color:var(--wrong);">教材庫裡還沒有生詞。請先到平台「教材」匯入課程。</span>'; return; }
+    var tpls = await vtLoadTemplates();
+    // 目前是不是正在看一頁「範本編輯」用的示範投影片
+    var curInfo = getCurrentQInfo(), curFound = curInfo && findSectionForQuestion(curInfo.question.id), editing = curFound && curFound.sec && curFound.sec.vtTpl ? curFound : null;
+    if(!cd.length && !editing){ $(".vt-body").innerHTML = '<span style="color:var(--wrong);">教材庫裡還沒有生詞。請先到平台「教材」匯入課程。</span>'; return; }
     var langs = {}; cd.forEach(function(l){ (l.vocab || []).forEach(function(v){ Object.keys(v).forEach(function(k){ var m = /^(.+)翻譯$/.exec(k); if(m && m[1] !== "英文" && v[k]) langs[m[1]] = 1; }); }); });
     var lessonOpts = cd.map(function(l, i){ return '<option value="' + i + '">' + escapeHtml((l.book ? String(l.book) + "　" : "") + vtLessonLabel(l)) + '</option>'; }).join("");
     var langOpts = '<option value="">只放英文</option>' + Object.keys(langs).map(function(k){ return '<option value="' + escapeHtml(k) + '">英文＋' + escapeHtml(k) + '</option>'; }).join("");
-    var lastLesson = 0; try{ lastLesson = parseInt(localStorage.getItem("mm_vt_lesson") || "0", 10) || 0; }catch(e){}
-    $(".vt-body").innerHTML =
-      '<label style="display:block;margin:6px 0 2px;">課次</label><select class="vt-lesson" style="width:100%;">' + lessonOpts + '</select>' +
+    var lastLesson = 0, lastTpl = "default", hasKey = false; try{ lastLesson = parseInt(localStorage.getItem("mm_vt_lesson") || "0", 10) || 0; lastTpl = localStorage.getItem("mm_vt_tpl") || "default"; hasKey = !!localStorage.getItem("mm_gemini_key"); }catch(e){}
+    function tplOpts(){ return tpls.map(function(t){ return '<option value="' + escapeHtml(t.id) + '">' + escapeHtml(t.name) + '</option>'; }).join(""); }
+    var saveBox = editing ? '<div style="border:1.5px solid var(--seal,#E8825A);border-radius:10px;padding:8px 10px;margin-bottom:10px;"><b>✏️ 你正在編輯範本「' + escapeHtml(editing.sec.vtTpl.name) + '」</b><div class="tb-hint" style="margin:4px 0;">在這一頁把版面調成想要的樣子（搬動、縮放、改字級顏色、加圖案都可以；每個欄位的內容會在產生時自動換成各個生詞）。調好後按下面存起來。</div><button type="button" class="primary vt-save">💾 把這一頁存成範本</button> <button type="button" class="vt-saveas">另存成新範本</button></div>' : '';
+    $(".vt-body").innerHTML = saveBox +
+      '<label style="display:block;margin:6px 0 2px;">範本（版面樣式）</label><div style="display:flex;gap:6px;"><select class="vt-tpl" style="flex:1;min-width:0;">' + tplOpts() + '</select><button type="button" class="vt-edit">✏️ 編輯範本</button><button type="button" class="vt-del">刪除</button></div>' +
+      (cd.length ? '<label style="display:block;margin:10px 0 2px;">課次</label><select class="vt-lesson" style="width:100%;">' + lessonOpts + '</select>' +
       '<label style="display:block;margin:10px 0 2px;">標音</label><select class="vt-mode" style="width:100%;"><option value="zhuyin">注音（直排在國字右邊）</option><option value="pinyin">拼音（在國字正上方）</option><option value="both">注音＋拼音（生詞下方多一行拼音）</option><option value="off">不標音</option></select>' +
       '<label style="display:block;margin:10px 0 2px;">解釋語言</label><select class="vt-lang" style="width:100%;">' + langOpts + '</select>' +
       '<label style="display:flex;gap:6px;align-items:center;margin-top:10px;"><input type="checkbox" class="vt-sent" checked> 放例句（中文＋英文＋第二語言）</label>' +
       '<label style="display:flex;gap:6px;align-items:center;margin-top:6px;"><input type="checkbox" class="vt-hide" checked> 本課之前已學過的詞，例句裡不加注音（只標新詞）</label>' +
-      '<div class="tb-hint vt-sum" style="margin-top:8px;"></div>';
-    var selL = $(".vt-lesson"); if(lastLesson < cd.length) selL.value = String(lastLesson);
-    function sum(){ var l = cd[parseInt(selL.value, 10)]; var nn = (l.vocab || []).filter(function(v){ return v["生詞"]; }).length; $(".vt-sum").textContent = "會產生 " + nn + " 頁投影片。"; }
-    selL.onchange = sum; sum();
+      '<div style="border-top:1px solid #e3d6c0;margin-top:10px;padding-top:8px;"><label style="display:flex;gap:6px;align-items:center;"><input type="checkbox" class="vt-ai"> ✨ 用 AI 為「沒有例句」的生詞造句（優先用已學詞）</label>' +
+      '<div class="vt-aibox" style="display:none;margin:6px 0 0 22px;"><select class="vt-level" style="width:100%;margin-bottom:6px;"><option value="TOCFL 入門基礎級（準備一級）">難度上限：入門基礎級</option><option value="TOCFL 進階級（Band B）">難度上限：進階級</option></select><input type="password" class="vt-key" placeholder="貼上你的 Gemini API Key" autocomplete="off" style="width:100%;" value="' + (hasKey ? "••••••••" : "") + '"><div class="tb-hint" style="margin-top:4px;">金鑰只存在這台電腦的瀏覽器，不會上傳到平台。AI 造的例句要自己檢查，那一頁的備註會標上提醒。</div></div></div>' +
+      '<div class="tb-hint vt-sum" style="margin-top:8px;"></div>' : '');
+    if(!cd.length) $(".vt-go").style.display = "none";
+    var selT = $(".vt-tpl"); if(tpls.some(function(t){ return t.id === lastTpl; })) selT.value = lastTpl;
+    var selL = $(".vt-lesson"); if(selL && lastLesson < cd.length) selL.value = String(lastLesson);
+    function sum(){ if(!selL) return; var l = cd[parseInt(selL.value, 10)]; var nn = (l.vocab || []).filter(function(v){ return v["生詞"]; }).length, noSent = (l.vocab || []).filter(function(v){ return v["生詞"] && !v["例句（中文）"]; }).length; $(".vt-sum").textContent = "會產生 " + nn + " 頁投影片" + (noSent ? "（其中 " + noSent + " 個生詞沒有例句）" : "") + "。"; }
+    if(selL){ selL.onchange = sum; sum(); }
+    if($(".vt-ai")) $(".vt-ai").onchange = function(){ $(".vt-aibox").style.display = this.checked ? "" : "none"; };
+    function curTpl(){ return tpls.filter(function(t){ return t.id === selT.value; })[0] || tpls[0]; }
+    // 編輯範本：開一份「範本編輯」簡報（一頁示範），照平常方式調整版面
+    $(".vt-edit").onclick = function(){
+      var tpl = curTpl();
+      var secs = getSections(), secId = uid("sec"), order = Object.keys(secs).length, qId = uid("q");
+      var sl = vtBuildSlides({ vocab: [VT_SAMPLE] }, [], { mode: "zhuyin", lang: "泰文", sentence: true, hideLearned: false, keepTags: true }, tpl)[0];
+      secs[secId] = { id: secId, title: "✏️ 範本編輯：" + tpl.name, desc: "", type: "board", order: order, collapsed: false, media: [], vtTpl: { id: tpl.builtin ? "" : tpl.id, name: tpl.name },
+        questions: (function(){ var o = {}; o[qId] = { id: qId, order: 0, title: "範本示範頁", desc: "", bgImage: "", gridType: "none", media: [], teacherNote: "這一頁是範本示範頁：把欄位調成想要的版面後，到「插入 → 生詞範本」按「存成範本」。", weight: 1, canvasRatio: Math.round(16 / 9 * 10000) / 10000 }; return o; })() };
+      var prog = {}; prog[qId] = { texts: sl.texts, shapes: sl.shapes }; if(sl.bgColor) prog[qId].bgColor = sl.bgColor;
+      writeSections(secs, qId, prog); back.remove();
+    };
+    $(".vt-del").onclick = async function(){
+      var tpl = curTpl(); if(tpl.builtin){ alert("預設範本不能刪除。"); return; }
+      if(!confirm("刪除範本「" + tpl.name + "」？\n（已經用它產生的簡報不受影響）")) return;
+      try{ await set(ref(db, "teacherPlatform/" + currentTeacher.id + "/vocabTemplates/" + tpl.id), null); tpls = tpls.filter(function(t){ return t.id !== tpl.id; }); selT.innerHTML = tplOpts(); }catch(e){ alert("刪除失敗：" + (e && e.message || e)); }
+    };
+    async function saveFromEditing(asNew){
+      var pr = getProgress(curInfo.question.id) || {};
+      var tx = (pr.texts || []).filter(function(t){ return t && typeof t.text === "string"; }).map(function(t){ var c = JSON.parse(JSON.stringify(t)); delete c.id; delete c.phoneticOverride; delete c.spans; delete c.live; delete c.step; if(c.tpl) delete c.text; else if(!c.text) return null; return c; }).filter(Boolean);
+      var sh = (pr.shapes || []).map(function(x){ var c = JSON.parse(JSON.stringify(x)); delete c.id; delete c.step; return c; });
+      if(!tx.some(function(t){ return t.tpl === "word"; })){ alert("範本裡至少要有「生詞」欄位。請不要刪掉大生詞那個文字方塊。"); return; }
+      var name = editing.sec.vtTpl.name, id = editing.sec.vtTpl.id;
+      if(asNew || !id){ name = prompt("這個範本要叫什麼名字？", asNew ? name + "（副本）" : (name === "預設（曼米）" ? "我的範本" : name)); if(!name) return; id = uid("vtpl"); }
+      var tpl = { id: id, name: name.trim(), texts: tx, shapes: sh, bgColor: pr.bgColor || "", bgOp: pr.bgOp };
+      try{ await vtSaveTemplate(tpl); }catch(e){ alert("存範本失敗：" + (e && e.message || e)); return; }
+      try{ localStorage.setItem("mm_vt_tpl", id); }catch(e){}
+      var secs = getSections(); if(secs[editing.secId]){ secs[editing.secId].vtTpl = { id: id, name: tpl.name }; secs[editing.secId].title = "✏️ 範本編輯：" + tpl.name; writeSections(secs); }
+      alert("✅ 已存成範本「" + tpl.name + "」。之後產生生詞簡報時，在「範本」選單選它就會套用。\n這份「範本編輯」簡報可以留著繼續調，也可以刪掉。");
+      back.remove();
+    }
+    if(editing){ $(".vt-save").onclick = function(){ saveFromEditing(false); }; $(".vt-saveas").onclick = function(){ saveFromEditing(true); }; }
     $(".vt-go").disabled = false;
-    $(".vt-go").onclick = function(){
-      var idx = parseInt(selL.value, 10), lesson = cd[idx];
+    $(".vt-go").onclick = async function(){
+      var goBtn = this, idx = parseInt(selL.value, 10), lesson = JSON.parse(JSON.stringify(cd[idx])), tpl = curTpl();
       var learnedWords = [];
       cd.forEach(function(l){ var before = (vtBookNum(l.book) < vtBookNum(lesson.book)) || (vtBookNum(l.book) === vtBookNum(lesson.book) && Number(l.lesson) < Number(lesson.lesson)); if(before) (l.vocab || []).forEach(function(v){ if(v["生詞"]) learnedWords.push(String(v["生詞"])); }); });
       var opt = { mode: $(".vt-mode").value, lang: $(".vt-lang").value, sentence: $(".vt-sent").checked, hideLearned: $(".vt-hide").checked };
-      var slides = vtBuildSlides(lesson, learnedWords, opt);
+      var aiMsg = "";
+      if($(".vt-ai") && $(".vt-ai").checked){
+        var kv = $(".vt-key").value.trim(); if(kv && kv.indexOf("•") < 0){ try{ localStorage.setItem("mm_gemini_key", kv); }catch(e){} }
+        var need = (lesson.vocab || []).filter(function(v){ return v["生詞"] && !String(v["例句（中文）"] || "").trim(); });
+        if(need.length){
+          goBtn.disabled = true; goBtn.textContent = "⏳ AI 造句中…";
+          try{
+            var res = await vtAiSentences(need, learnedWords, opt.lang, $(".vt-level").value), got = 0;
+            res.forEach(function(r){
+              var v = need.filter(function(x){ return x["生詞"] === r.word; })[0];
+              if(!v || typeof r.zh !== "string" || r.zh.indexOf(v["生詞"]) < 0 || r.zh.length > 40) return;
+              v["例句（中文）"] = r.zh.trim(); v["例句（英文）"] = String(r.en || "").trim(); if(opt.lang) v["例句（" + opt.lang + "）"] = String(r.sec || "").trim(); v.__ai = true; got++;
+            });
+            aiMsg = "\n\n✨ AI 為 " + got + " / " + need.length + " 個生詞造了例句（那幾頁的備註有標示，請檢查內容）。" + (got < need.length ? "其餘的 AI 沒有造出合格的句子，那幾頁沒有例句。" : "");
+          }catch(e){
+            goBtn.disabled = false; goBtn.textContent = "產生投影片";
+            if(!confirm("AI 造句失敗：" + (e && e.message || e) + "\n\n要先不用 AI、直接產生投影片嗎？")) return;
+          }
+          goBtn.disabled = false; goBtn.textContent = "產生投影片";
+        }
+      }
+      var slides = vtBuildSlides(lesson, learnedWords, opt, tpl);
       if(!slides.length){ alert("這一課沒有可用的生詞。"); return; }
-      try{ localStorage.setItem("mm_vt_lesson", String(idx)); }catch(e){}
+      try{ localStorage.setItem("mm_vt_lesson", String(idx)); localStorage.setItem("mm_vt_tpl", tpl.id); }catch(e){}
       var secs = getSections(), secId = uid("sec"), order = Object.keys(secs).length;
       var sec = { id: secId, title: "第 " + lesson.lesson + " 課　生詞" + (lesson.title ? "：" + lesson.title : ""), desc: "", type: "board", order: order, collapsed: false, questions: {}, media: [] };
       secs[secId] = sec;
@@ -7680,13 +7796,14 @@ window.mmTA = (function(){
       slides.forEach(function(sl, i){
         var qId = uid("q"); if(!firstQ) firstQ = qId;
         sec.questions[qId] = { id: qId, order: i, title: sl.title, desc: "", bgImage: "", gridType: "none", media: [], teacherNote: sl.note, weight: 1, canvasRatio: Math.round(16 / 9 * 10000) / 10000 };
-        progressMap[qId] = { texts: sl.texts, shapes: sl.shapes };
+        progressMap[qId] = { texts: sl.texts, shapes: sl.shapes }; if(sl.bgColor){ progressMap[qId].bgColor = sl.bgColor; if(sl.bgOp != null) progressMap[qId].bgOp = sl.bgOp; }
       });
       writeSections(secs, firstQ, progressMap);
       back.remove();
+      if(aiMsg) alert("✅ 已產生 " + slides.length + " 頁生詞投影片。" + aiMsg);
     };
   }
-  window.__openVocabTemplate = openVocabTemplateDialog;
+  window.__openVocabTemplate = openVocabTemplateDialog; window.__vtAi = vtAiSentences;
   function addBlankSlideToSection(secId){
     var secs = getSections(); var sec = secs[secId]; if(!sec) return;
     var keys = getSortedQuestionKeys(sec);
