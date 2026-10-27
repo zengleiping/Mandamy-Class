@@ -2233,13 +2233,13 @@ function calendarHtml(){
   for(var d = 1; d <= days; d++){
     var date = yy + "-" + pad2(mm + 1) + "-" + pad2(d), sl = slotsOn(date);
     html += '<div class="cal-d' + (date === today ? ' today' : '') + '" data-a="cal-day" data-d="' + date + '"><div class="cal-n">' + d + '</div>' +
-      (sl.length ? '<div class="cal-cnt">' + sl.length + ' 堂</div>' : '') + sl.slice(0, 3).map(function(x){ var tm = slotMulti(x) ? (date === x.date ? (x.start || "") : "") : (x.start || ""); return slotLink(x, (x.resched ? "調 " : x.makeupOf ? "補 " : "") + esc((tm ? tm + " " : "") + slotText(x)) + (safeUrl(x.url) ? " ↗" : ""), "cal-s", "background:" + slotBg(x) + ";color:" + slotFg(x) + ";display:block;text-decoration:" + (x.resched ? "line-through;opacity:.55" : "none") + ";", slotTimeOn(x, date) + " " + slotLabel(x) + calNextTip(x)); }).join("") + (sl.length > 3 ? '<div class="cal-s" style="background:none;color:var(--ink-soft);padding:0 2px;">還有 ' + (sl.length - 3) + ' 堂…</div>' : '') + '</div>';
+      (sl.length ? '<div class="cal-cnt">' + sl.length + ' 堂</div>' : '') + sl.slice(0, 3).map(function(x){ var tm = slotMulti(x) ? (date === x.date ? (x.start || "") : "") : (x.start || ""); return slotLink(x, (x.resched ? "調 " : x.makeupOf ? MK_ICO : "") + esc((tm ? tm + " " : "") + slotText(x)) + (safeUrl(x.url) ? " ↗" : ""), "cal-s", "background:" + slotBg(x) + ";color:" + slotFg(x) + ";display:block;text-decoration:" + (x.resched ? "line-through;opacity:.55" : "none") + ";", slotTimeOn(x, date) + " " + slotLabel(x) + calNextTip(x)); }).join("") + (sl.length > 3 ? '<div class="cal-s" style="background:none;color:var(--ink-soft);padding:0 2px;">還有 ' + (sl.length - 3) + ' 堂…</div>' : '') + '</div>';
   }
   return html + '</div>';
 }
 function slotRowHtml(sl, withDate, onDate){
   var ci = classInfo(sl), les = sl.lesson && (S.plat.lessons || {})[sl.lesson] ? lessonTitle(sl.lesson) : "", u = safeUrl(sl.url);
-  var chip = '<span style="display:inline-block;padding:2px 10px;border-radius:8px;font-weight:700;background:' + esc(slotBg(sl)) + ';color:' + esc(slotFg(sl)) + ';' + (sl.resched ? 'text-decoration:line-through;opacity:.55;' : '') + '">' + (sl.makeupOf ? '補課　' : '') + esc(slotText(sl)) + '</span>';
+  var chip = '<span style="display:inline-block;padding:2px 10px;border-radius:8px;font-weight:700;background:' + esc(slotBg(sl)) + ';color:' + esc(slotFg(sl)) + ';' + (sl.resched ? 'text-decoration:line-through;opacity:.55;' : '') + '">' + (sl.makeupOf ? MK_ICO : '') + esc(slotText(sl)) + '</span>';
   var nf = ci && ci.obj && sl.c ? classNextFrom(ci.obj, sl) : null, isNext = nf && classNextSlotId(sl, nf) === sl.id;
   var sub = (ci && ci.cls) ? ((sl.title ? esc(slotLabel(sl)) + '　・　' : esc(ci.cls) + '　・　') + (isNext ? '<b style="color:var(--seal);">下次進度：' + esc(nf.text) + '</b>' + (les && nf.lesson && String(nf.lesson) !== String(sl.lesson) ? '　<span class="note">（課表排的是 ' + esc(les) + '）</span>' : '') : les ? esc(les) : '未指定課次')) : (les ? esc(les) : '');
   var info = sub + (sl.note ? (sub ? '　・　' : '') + esc(sl.note) : '');
@@ -2471,6 +2471,7 @@ async function schedAct(a, ds){
   }
   if(a === "cal-back"){ S.day = null; render(); return; }
   if(a === "slot-rec"){ if(m[ds.id]) openRecordFor(Object.assign({ id: ds.id }, m[ds.id])); return; }
+  if(a === "slot-bulk"){ openBulkDialog(); return; }
   if(a === "slot-resched" || a === "slot-mk"){
     var sl0 = m[ds.id]; if(!sl0) return;
     var rr = await openReschedDialog(Object.assign({ id: ds.id }, sl0), a === "slot-mk"); if(!rr) return;
@@ -2546,6 +2547,7 @@ async function schedAct(a, ds){
 // ---------- 調課：原定的課沒上，補到哪天都記下來 ----------
 // 原本那堂課記成 resched（原因、補到哪天），並自動留下一筆「調課」課堂記錄（節數報表會扣掉這堂）；補課那天自動新增一堂課（makeupOf 指回原本那堂）。
 // 還沒決定補課日期的，列在首頁「待安排的補課」，之後再安排。
+var MK_ICO = '<img src="icons/makeup-star.png" alt="補課" title="補課" style="width:1.15em;height:1.15em;vertical-align:-.22em;margin-right:3px;">';   // 補課的小星星（放在項目前面，像顏文字）
 var RESCHED_REASONS = ["學校活動／考試", "放假／颱風", "老師請假", "學生請假", "其他"];
 function reschedRecId(slotId){ var m = recMap(); return Object.keys(m).filter(function(k){ return m[k].slotId === slotId && m[k].isAbsence; })[0] || null; }
 function slotConflictsOn(date, exceptId){ return slotsOn(date).filter(function(x){ return x.id !== exceptId && !x.resched; }); }
@@ -2618,9 +2620,112 @@ function pendingMakeups(){
 }
 function makeupPanelHtml(){
   var list = pendingMakeups(); if(!list.length) return "";
-  return '<div class="panel" style="background:#FBEBC8;"><h3>待安排的補課（' + list.length + '）</h3>' + list.map(function(x){
+  return '<div class="panel" style="background:#FBEBC8;"><h3>' + MK_ICO + '待安排的補課（' + list.length + '）</h3>' + list.map(function(x){
     return '<div class="slot"><div class="slot-time" style="min-width:90px;">' + esc(md(x.date)) + '</div><div class="slot-main"><b>' + esc(slotLabel(x)) + '</b><div class="note">原定 ' + esc(x.start || "") + '　' + esc((x.resched.reason || "") + (x.resched.note ? "：" + x.resched.note : "")) + '</div></div><div class="slot-act"><button class="btn sm primary" data-a="slot-mk" data-id="' + x.id + '">安排補課</button></div></div>';
   }).join("") + '</div>';
+}
+
+// ---------- 批次調整課表：連續調課（例如放一週假）／把已經排好的課改成別的星期 ----------
+function bulkScopeOptions(){
+  var m = schedMap(), seen = {}, out = [{ v: "", label: "全部學校和班級" }];
+  Object.keys(m).forEach(function(k){ var x = m[k]; if(!x.s || !classInfo(x)) return; var sk = x.s + "|" + x.t; if(!seen[sk]){ seen[sk] = 1; out.push({ v: sk, label: "整間學校：" + slotSchoolName(x) }); } });
+  Object.keys(m).forEach(function(k){ var x = m[k]; if(!x.s || !x.c || !classInfo(x)) return; var ck = x.s + "|" + x.t + "|" + x.c; if(!seen[ck]){ seen[ck] = 1; out.push({ v: ck, label: "只有這個班：" + slotLabel(x) }); } });
+  return out;
+}
+function bulkInScope(sl, scope){ if(!sl.s || !classInfo(sl)) return false; if(!scope) return true; var p = scope.split("|"); return sl.s === p[0] && sl.t === p[1] && (p.length < 3 || sl.c === p[2]); }
+var WD_NAME = ["日", "一", "二", "三", "四", "五", "六"];
+function wdOf(date){ return new Date(date + "T00:00:00").getDay(); }
+function addDays(date, n){ var d = new Date(date + "T00:00:00"); d.setDate(d.getDate() + n); return ymd(d); }
+// 這週（星期一開頭）的第 wd 天：wd 用 0＝日…6＝六，星期日算這週最後一天
+function weekDay(date, wd){ var d = new Date(date + "T00:00:00"), cur = (d.getDay() + 6) % 7, want = (wd + 6) % 7; return addDays(date, want - cur); }
+function bulkHeld(id){ var m = recMap(); return Object.keys(m).some(function(k){ return m[k].slotId === id && !m[k].isAbsence; }); }
+function openBulkDialog(){
+  var d = document.getElementById("bulk");
+  if(!d){ d = document.createElement("dialog"); d.id = "bulk"; d.style.cssText = "width:min(560px,95vw);"; document.body.appendChild(d); }
+  var today = ymd(new Date()), tab = "range", scopes = bulkScopeOptions();
+  var scopeSel = function(id){ return '<select id="' + id + '" style="width:100%;">' + scopes.map(function(o){ return '<option value="' + esc(o.v) + '">' + esc(o.label) + '</option>'; }).join("") + '</select>'; };
+  function frame(body){
+    d.innerHTML = '<form method="dialog"><h3>批次調整課表</h3><div class="tools" style="margin:0 0 10px;"><button type="button" class="btn sm' + (tab === "range" ? ' primary' : '') + '" data-bt="range">連續調課（放假、考試週）</button><button type="button" class="btn sm' + (tab === "pattern" ? ' primary' : '') + '" data-bt="pattern">改成別的星期上課</button></div>' + body + '</form>';
+    d.querySelectorAll("[data-bt]").forEach(function(b){ b.onclick = function(){ tab = b.dataset.bt; drawTab(); }; });
+  }
+  function drawTab(){ tab === "range" ? renderRange() : renderPattern(); }
+  function renderRange(){
+    frame('<label>哪些日期的課沒上？</label><div style="display:flex;gap:8px;align-items:center;"><input type="date" id="bk-from" value="' + today + '"><span>到</span><input type="date" id="bk-to" value="' + addDays(today, 6) + '"></div>' +
+      '<label>範圍</label>' + scopeSel("bk-scope") +
+      '<label>原因</label><select id="bk-reason">' + RESCHED_REASONS.map(function(x){ return '<option>' + esc(x) + '</option>'; }).join("") + '</select><input type="text" id="bk-note" placeholder="備註（選填），例如：春節連假" style="margin-top:6px;">' +
+      '<label style="margin-top:10px;">補課怎麼處理？</label>' +
+      '<label style="display:flex;gap:6px;align-items:center;margin:4px 0;"><input type="radio" name="bk-mode" value="pending" checked> 先不決定（每堂都列入「待安排的補課」）</label>' +
+      '<label style="display:flex;gap:6px;align-items:center;margin:4px 0;"><input type="radio" name="bk-mode" value="shift"> 每堂都順延 <input type="number" id="bk-weeks" min="1" max="12" value="1" style="width:64px;"> 週（同一星期、同一時間補回來）</label>' +
+      '<label style="display:flex;gap:6px;align-items:center;margin:4px 0;"><input type="radio" name="bk-mode" value="skip"> 不補課</label>' +
+      '<div id="bk-prev" class="note" style="margin:10px 0;max-height:180px;overflow:auto;"></div>' +
+      '<div class="row" style="margin-top:8px;"><button type="button" class="btn" id="bk-cancel">關閉</button><button type="button" class="btn primary" id="bk-go">確定調課</button></div>');
+    function pick(){
+      var f = d.querySelector("#bk-from").value, t = d.querySelector("#bk-to").value, sc = d.querySelector("#bk-scope").value, m = schedMap();
+      return Object.keys(m).map(function(k){ return Object.assign({ id: k }, m[k]); }).filter(function(x){ return !x.resched && bulkInScope(x, sc) && x.date >= f && x.date <= (t || f) && !bulkHeld(x.id); }).sort(function(a, b){ return (a.date + (a.start || "")).localeCompare(b.date + (b.start || "")); });
+    }
+    function prev(){ var l = pick(), n = d.querySelector('input[name="bk-mode"]:checked').value, w = Number(d.querySelector("#bk-weeks").value) || 1;
+      d.querySelector("#bk-prev").innerHTML = l.length ? '<b>會調 ' + l.length + ' 堂：</b><br>' + l.slice(0, 40).map(function(x){ return esc(md(x.date) + "（" + WD_NAME[wdOf(x.date)] + "）" + (x.start || "") + " " + slotLabel(x) + (n === "shift" ? " → " + md(addDays(x.date, 7 * w)) : "")); }).join("<br>") + (l.length > 40 ? '<br>…' : '') : '這個範圍沒有可以調的課（已經上過、已經調過的不會列入）。'; }
+    ["#bk-from", "#bk-to", "#bk-scope", "#bk-weeks"].forEach(function(i){ d.querySelector(i).onchange = prev; }); d.querySelectorAll('input[name="bk-mode"]').forEach(function(r){ r.onchange = prev; }); prev();
+    d.querySelector("#bk-cancel").onclick = function(){ d.close(); };
+    d.querySelector("#bk-go").onclick = async function(){
+      var l = pick(); if(!l.length){ alert("這個範圍沒有可以調的課。"); return; }
+      var mode = d.querySelector('input[name="bk-mode"]:checked').value, w = Number(d.querySelector("#bk-weeks").value) || 1, reason = d.querySelector("#bk-reason").value, note = d.querySelector("#bk-note").value.trim();
+      if(!confirm("要把這 " + l.length + " 堂課都調課嗎？" + (mode === "shift" ? "\n每堂順延 " + w + " 週，並在課表新增補課。" : mode === "pending" ? "\n會列入「待安排的補課」。" : "\n不補課。"))) return;
+      var btn = this; btn.disabled = true;
+      for(var i = 0; i < l.length; i++){
+        btn.textContent = "調課中… " + (i + 1) + "/" + l.length;
+        var x = l[i], r = { mode: mode === "shift" ? "moved" : mode, reason: reason, note: note };
+        if(mode === "shift"){ r.date = addDays(x.date, 7 * w); r.start = x.start || ""; r.end = x.end || ""; }
+        await applyResched(x.id, r);
+      }
+      d.close(); toast("已調課 " + l.length + " 堂"); render();
+    };
+  }
+  function renderPattern(){
+    frame('<p class="note" style="margin:0 0 6px;">學校的上課星期改了，把已經排好的課整批移到新的星期（同一週內移動，已經上過、已經調課的課不會動）。</p>' +
+      '<label>範圍</label>' + scopeSel("bp-scope") + '<label>從哪一天起改？（含這一天）</label><input type="date" id="bp-from" value="' + today + '">' +
+      '<div id="bp-map" style="margin:10px 0;"></div><div id="bp-prev" class="note" style="margin:6px 0;max-height:160px;overflow:auto;"></div>' +
+      '<div class="row" style="margin-top:8px;"><button type="button" class="btn" id="bp-cancel">關閉</button><button type="button" class="btn primary" id="bp-go">套用</button></div>');
+    var maps = {};
+    function pool(){
+      var f = d.querySelector("#bp-from").value, sc = d.querySelector("#bp-scope").value, m = schedMap();
+      return Object.keys(m).map(function(k){ return Object.assign({ id: k }, m[k]); }).filter(function(x){ return !x.resched && !x.makeupOf && !slotMulti(x) && bulkInScope(x, sc) && x.date >= f && !bulkHeld(x.id); });
+    }
+    function drawMap(){
+      var l = pool(), by = {}; l.forEach(function(x){ by[wdOf(x.date)] = (by[wdOf(x.date)] || 0) + 1; });
+      var wds = Object.keys(by).map(Number).sort(function(a, b){ return ((a + 6) % 7) - ((b + 6) % 7); });
+      d.querySelector("#bp-map").innerHTML = wds.length ? wds.map(function(wd){
+        return '<div style="display:flex;gap:8px;align-items:center;margin:5px 0;flex-wrap:wrap;"><b style="min-width:120px;">星期' + WD_NAME[wd] + '（' + by[wd] + ' 堂）</b> 改成 <select class="bp-wd" data-wd="' + wd + '"><option value="">不改</option>' + WD_NAME.map(function(n, i){ return '<option value="' + i + '"' + (String(maps[wd] && maps[wd].to) === String(i) ? ' selected' : '') + '>星期' + n + '</option>'; }).join("") + '</select> 新時間 <input type="time" class="bp-st" data-wd="' + wd + '" style="width:110px;" value="' + esc((maps[wd] && maps[wd].st) || "") + '"> – <input type="time" class="bp-en" data-wd="' + wd + '" style="width:110px;" value="' + esc((maps[wd] && maps[wd].en) || "") + '"></div>';
+      }).join("") + '<div class="note">新時間留空＝沿用原本的時間。</div>' : '<span class="note">這個範圍、這個日期以後沒有可以改的課。</span>';
+      d.querySelectorAll(".bp-wd, .bp-st, .bp-en").forEach(function(el){ el.onchange = function(){ read(); prev(); }; });
+      prev();
+    }
+    function read(){ maps = {}; d.querySelectorAll(".bp-wd").forEach(function(el){ var wd = el.dataset.wd; maps[wd] = { to: el.value, st: d.querySelector('.bp-st[data-wd="' + wd + '"]').value, en: d.querySelector('.bp-en[data-wd="' + wd + '"]').value }; }); }
+    function plan(){
+      read(); var out = [];
+      pool().forEach(function(x){ var mp = maps[wdOf(x.date)]; if(!mp) return; var nd = mp.to !== "" ? weekDay(x.date, Number(mp.to)) : x.date, ns = mp.st || x.start || "", ne = mp.en || x.end || ""; if(nd === x.date && ns === (x.start || "") && ne === (x.end || "")) return; out.push({ x: x, nd: nd, ns: ns, ne: ne }); });
+      return out;
+    }
+    function prev(){
+      var l = plan(), conf = 0; l.forEach(function(p){ if(slotConflictsOn(p.nd, p.x.id).some(function(o){ return o.s === p.x.s && o.t === p.x.t && (o.c || "") === (p.x.c || "") && !l.some(function(q){ return q.x.id === o.id; }); })) conf++; });
+      d.querySelector("#bp-prev").innerHTML = l.length ? '<b>會改 ' + l.length + ' 堂：</b>' + (conf ? ' <span style="color:#B23B32;">⚠ 其中 ' + conf + ' 堂新日期上已經有同一班的課</span>' : '') + '<br>' + l.slice(0, 30).map(function(p){ return esc(md(p.x.date) + "（" + WD_NAME[wdOf(p.x.date)] + "）" + (p.x.start || "") + " → " + md(p.nd) + "（" + WD_NAME[wdOf(p.nd)] + "）" + p.ns + "　" + slotLabel(p.x)); }).join("<br>") + (l.length > 30 ? '<br>…' : '') : '還沒有要改的內容：請在上面選「改成」星期幾。';
+    }
+    d.querySelector("#bp-scope").onchange = function(){ maps = {}; drawMap(); }; d.querySelector("#bp-from").onchange = function(){ drawMap(); };
+    d.querySelector("#bp-cancel").onclick = function(){ d.close(); };
+    d.querySelector("#bp-go").onclick = async function(){
+      var l = plan(); if(!l.length){ alert("還沒有要改的內容。"); return; }
+      if(!confirm("要把這 " + l.length + " 堂課改到新的星期／時間嗎？\n（改完後可以在課表逐堂再調整）")) return;
+      var base = "teacherPlatform/" + S.teacher.id + "/schedule", m = schedMap(), btn = this; btn.disabled = true;
+      for(var i = 0; i < l.length; i++){
+        btn.textContent = "套用中… " + (i + 1) + "/" + l.length;
+        var p = l[i], rec = m[p.x.id]; rec.date = p.nd; if(p.ns) rec.start = p.ns; if(p.ne) rec.end = p.ne;
+        await fbSet(base + "/" + p.x.id, rec);
+      }
+      d.close(); toast("已改了 " + l.length + " 堂課"); render();
+    };
+    drawMap();
+  }
+  drawTab(); d.showModal();
 }
 // 下課 5 分鐘後：跳出提醒，帶老師去填課堂記錄表（瀏覽器不允許沒有點擊就自動開新分頁，所以用醒目的視窗＋一顆按鈕）
 var remindTimer = null;
@@ -2911,7 +3016,7 @@ function recBadge(r){
   var t = r.absType || "請假／調課";
   if(r.noMakeup) return '<span style="' + st("#EFEAE2", "#6B5E55") + '">' + esc(t) + '・不補課</span>';
   var mk = r.makeupSlotId && schedMap()[r.makeupSlotId];
-  if(mk) return mk.date <= ymd(new Date()) ? '<span style="' + st("#DCE8F6", "#2E75B6") + '">' + esc(t) + '・已補課（' + esc(md(mk.date)) + '）</span>' : '<span style="' + st("#FBEBC8", "#8C5A2B") + '">' + esc(t) + '・已排 ' + esc(md(mk.date)) + ' 補課</span>';
+  if(mk) return mk.date <= ymd(new Date()) ? '<span style="' + st("#DCE8F6", "#2E75B6") + '">' + MK_ICO + esc(t) + '・已補課（' + esc(md(mk.date)) + '）</span>' : '<span style="' + st("#FBEBC8", "#8C5A2B") + '">' + MK_ICO + esc(t) + '・已排 ' + esc(md(mk.date)) + ' 補課</span>';
   return r.madeUp ? '<span style="' + st("#DCE8F6", "#2E75B6") + '">' + esc(t) + '・已補課</span>' : '<span style="' + st("#F7D9D5", "#B23B32") + '">' + esc(t) + '・待補課</span>';
 }
 function renderRecords(){
@@ -5354,7 +5459,7 @@ function renderStudentRoom(){
 function renderPlatformHome(){
   S.focus = false;
   var ys = sortedBy(schoolsOf(), true);
-  var html = '<div class="head-row"><div style="flex:1;"><h2>歡迎，' + esc(S.teacher.name) + '</h2></div><div class="tools" style="justify-content:flex-end;">' + ys.map(function(y){ return '<button class="btn primary" data-a="go" data-s="' + y + '">' + esc(schoolsOf()[y].name) + ' ›</button>'; }).join("") + '<button class="btn" data-a="slot-new" data-d="' + ymd(new Date()) + '">新增排課</button> <button class="btn owner-only" data-a="add-s">新增年度</button></div></div>' + backupBannerHtml() + onboardHtml() + todayPanelHtml() + makeupPanelHtml() + '<div class="panel"><h3>待辦</h3><div id="htodo"></div></div>' + homeClassesHtml() + '<div class="panel"><h3>月課表</h3>' + calendarHtml() + '</div>';
+  var html = '<div class="head-row"><div style="flex:1;"><h2>歡迎，' + esc(S.teacher.name) + '</h2></div><div class="tools" style="justify-content:flex-end;">' + ys.map(function(y){ return '<button class="btn primary" data-a="go" data-s="' + y + '">' + esc(schoolsOf()[y].name) + ' ›</button>'; }).join("") + '<button class="btn" data-a="slot-new" data-d="' + ymd(new Date()) + '">新增排課</button> <button class="btn" data-a="slot-bulk" title="連續調課（放假、考試週），或把已排好的課改成別的星期">批次調整課表</button> <button class="btn owner-only" data-a="add-s">新增年度</button></div></div>' + backupBannerHtml() + onboardHtml() + todayPanelHtml() + makeupPanelHtml() + '<div class="panel"><h3>待辦</h3><div id="htodo"></div></div>' + homeClassesHtml() + '<div class="panel"><h3>月課表</h3>' + calendarHtml() + '</div>';
   shell(html); setCrumb([]); bindListPage(); autoBackupArm(); bindHomeTodo(); fillHomeTodo();
   document.getElementById("main").addEventListener("click", function(e){ var b = e.target.closest("[data-ob]"); if(b) onboardAct(b.dataset.ob); });
 }
