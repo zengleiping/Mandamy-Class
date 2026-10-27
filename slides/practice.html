@@ -4413,8 +4413,8 @@ window.mmTA = (function(){
   function qHidden(sec, q){ return !!(sec && sec.hidden) || !!(q && q.hidden); }
   function isQHiddenById(qId){ var f = findSectionForQuestion(qId); return !!(f && qHidden(f.sec, f.sec.questions && f.sec.questions[qId])); }
   // 生字練習只給注音／圖片提示時，學生看到的標題和說明不能帶出答案的國字
-  function dispTitle(sec, q){ if(isStudent && sec && sec.type === "hanzi" && q.hint && q.hint.char === false) return String(q.title || "").replace(/[：:].*$/, ""); return q.title; }
-  function dispDesc(sec, q, d){ var t = d; if(isStudent && sec && sec.type === "hanzi" && q.hint && q.hint.char === false && q.char && t) t = String(t).split(q.char).join("○"); return t; }
+  function dispTitle(sec, q, stage){ if((isStudent || stage) && sec && sec.type === "hanzi" && q.hint && q.hint.char === false) return String(q.title || "").replace(/[：:].*$/, ""); return q.title; }
+  function dispDesc(sec, q, d){ var t = d; if(sec && sec.type === "hanzi" && q.hint && q.hint.char === false && q.char && t) t = String(t).split(q.char).join("○"); return t; }
   function getAllQuestionsList(visibleOnly){
     var secs = getSections(); var secKeys = getSortedSectionKeys(); var list = [];
     secKeys.forEach(function(secId){
@@ -10377,7 +10377,7 @@ window.mmTA = (function(){
     var navBar = document.createElement("div"); navBar.className = "stage-header-nav";
     navBar.innerHTML = `
       <div style="font-size:15px; font-weight:700; color:var(--seal); display:flex; align-items:center; gap:6px;">
-        <span>📝 ${sec.title}</span><span style="opacity:0.4;">/</span><span style="color:var(--ink);">${dispTitle(sec, q)}</span>
+        <span>📝 ${sec.title}</span><span style="opacity:0.4;">/</span><span style="color:var(--ink);">${dispTitle(sec, q, true)}</span>
         ${isTestMode() ? '<span style="font-size:12.5px; background:var(--seal-soft); color:var(--seal); padding:2px 6px; border-radius:4px; margin-left:6px;">'+(currentClassMode==='exam'?'📝 正式考試中':'🔴 測驗模式中')+'</span>' : ''}${examPickerHtml()}
       </div>
       <div class="nav-page-group">
@@ -10395,7 +10395,7 @@ window.mmTA = (function(){
     if(!compactEdit) stageEl.appendChild(navBar);
 
     var head = document.createElement("div"); head.className = "stage-head";
-    head.innerHTML = `<div><h2 class="stage-title zh">${dispTitle(sec, q)}</h2><p class="stage-sub">${dispDesc(sec, q, q.desc) || sec.desc || "即時互動練習"}</p></div>`;
+    head.innerHTML = `<div><h2 class="stage-title zh">${dispTitle(sec, q, true)}</h2><p class="stage-sub">${dispDesc(sec, q, q.desc) || sec.desc || "即時互動練習"}</p></div>`;
 
     var actWrap = document.createElement("div"); actWrap.className = "stage-actions";
 
@@ -17189,7 +17189,7 @@ window.mmTA = (function(){
 
     var side = document.createElement("div"); side.className = "hanzi-side-panel";
     // 老師可以決定學生看到哪些提示：國字與筆順（預設）／注音／圖片；只給注音或圖片時，學生看不到答案的國字，要自己寫出來
-    var hint = q.hint || {}, showChar = !isStudent || hint.char !== false;
+    var hint = q.hint || {}, showChar = hint.char !== false;   // 老師看到的提示跟學生完全一樣（才知道有沒有設定錯）
     var strokeBoxHtml = '<div class="hanzi-ref-box hanzi-ref-main">' +
         '<span class="hanzi-ref-label">筆順參考 Stroke Order</span>' +
         '<div class="hanzi-ref-char" id="hanzi-ref-char"></div>' +
@@ -17198,9 +17198,9 @@ window.mmTA = (function(){
       '</div>';
     var zyTxt = String(q.zy || "").trim() || hanziAutoZy(char);
     var hintHtml = "";
-    if(isStudent && hint.zy && zyTxt) hintHtml += '<div class="hanzi-ref-box hanzi-hint-box"><span class="hanzi-ref-label">注音 Zhuyin</span><div class="hanzi-ref-zy">' + escapeHtml(zyTxt) + '</div></div>';
-    if(isStudent && hint.img && q.hintImg) hintHtml += '<div class="hanzi-ref-box hanzi-hint-box"><span class="hanzi-ref-label">圖片 Picture</span><img class="hanzi-ref-img" src="' + escapeHtml(q.hintImg) + '" alt=""></div>';
-    if(isStudent && !showChar && !hintHtml) hintHtml = '<div class="hanzi-ref-box hanzi-hint-box"><span class="hanzi-ref-label">沒有提示，憑記憶寫寫看</span></div>';
+    if(hint.zy && zyTxt) hintHtml += '<div class="hanzi-ref-box hanzi-hint-box"><span class="hanzi-ref-label">注音 Zhuyin</span><div class="hanzi-ref-zy">' + escapeHtml(zyTxt) + '</div></div>';
+    if(hint.img && q.hintImg) hintHtml += '<div class="hanzi-ref-box hanzi-hint-box"><span class="hanzi-ref-label">圖片 Picture</span><img class="hanzi-ref-img" src="' + escapeHtml(q.hintImg) + '" alt=""></div>';
+    if(!showChar && !hintHtml) hintHtml = '<div class="hanzi-ref-box hanzi-hint-box"><span class="hanzi-ref-label">沒有提示，憑記憶寫寫看</span></div>';
     side.innerHTML = hintHtml + (showChar ? strokeBoxHtml : '');
     layout.appendChild(side);
 
@@ -17212,7 +17212,7 @@ window.mmTA = (function(){
     if(showChar) bindStrokeBox();
     // 學生沒有看到國字的時候，寫完可以按「看答案」核對（會跳出筆順參考）
     var answerBtn = null;
-    if(isStudent && !showChar){
+    if(!showChar){
       answerBtn = document.createElement("button"); answerBtn.type = "button"; answerBtn.className = "btn btn-sm btn-ghost"; answerBtn.textContent = "✅ 看答案";
       answerBtn.onclick = function(){
         var ex = side.querySelector(".hanzi-ref-main");
@@ -17222,7 +17222,7 @@ window.mmTA = (function(){
       side.appendChild(answerBtn);
     }
     // 學生自己決定要不要看提示（程度好的不需要）：記在這台裝置
-    if(isStudent && (showChar || hintHtml)){
+    if(showChar || hintHtml){
       var hideBtn = document.createElement("button"); hideBtn.type = "button"; hideBtn.className = "btn btn-sm btn-ghost"; hideBtn.id = "btn-hanzi-hidehint";
       var hidden0 = false; try{ hidden0 = localStorage.getItem("mm_hanzi_hidehint") === "1"; }catch(e){}
       function applyHide(h){ side.classList.toggle("hanzi-hint-off", h); hideBtn.textContent = h ? "👀 顯示提示" : "🙈 隱藏提示"; }
@@ -17242,14 +17242,18 @@ window.mmTA = (function(){
       monitorBtn.onclick = function(){ openHanziMonitorDialog(q); };
       side.appendChild(monitorBtn);
       var hnote = []; if(hint.char !== false) hnote.push("國字與筆順"); if(hint.zy) hnote.push("注音"); if(hint.img) hnote.push("圖片");
-      var hn = document.createElement("div"); hn.style.cssText = "font-size:12.5px;color:var(--ink-soft);text-align:center;"; hn.textContent = "學生看到的提示：" + (hnote.join("、") || "（沒有）"); side.appendChild(hn);
+      var hn = document.createElement("div"); hn.style.cssText = "font-size:12.5px;color:var(--ink-soft);text-align:center;"; hn.innerHTML = "學生看到的提示：" + escapeHtml(hnote.join("、") || "（沒有）") + "<br>老師答案：<b>" + escapeHtml(char) + "</b>"; side.appendChild(hn);
 
-      var placeholder = document.createElement("div"); placeholder.className = "hanzi-teacher-placeholder";
-      placeholder.innerHTML =
-        '<div class="big-icon">🖋️</div>' +
-        '<div style="font-size:16px;font-weight:700;color:var(--ink);">生字練習：<span style="font-family:MM Latin,Iansui,serif;font-size:26px;color:var(--seal);">' + escapeHtml(char) + '</span></div>' +
-        '<p class="hanzi-teacher-hint">每位學生會看到自己的練習畫布，邊寫邊即時同步過來。點左側「👀 查看全班寫字」可以看全班縮圖牆，點縮圖能放大看單一學生。</p>';
-      stageArea.appendChild(placeholder);
+      // 老師看到的畫面跟學生一樣：左邊是學生看到的提示，右邊是學生寫字的九宮格（這裡只是預覽，不會存任何筆跡）
+      var prev = document.createElement("div"); prev.className = "hanzi-teacher-placeholder";
+      prev.innerHTML = '<div style="font-size:13px;color:var(--ink-soft);margin-bottom:6px;">👀 學生看到的畫面（預覽）：學生會在下面的九宮格裡寫字</div>' +
+        '<div style="position:relative;width:min(360px,80%);aspect-ratio:1/1;background:#fff;border:2px solid var(--line,#d8cbb8);border-radius:10px;margin:0 auto;overflow:hidden;">' +
+        '<div style="position:absolute;inset:6%;border:1.5px solid #e2a99a;"></div>' +
+        '<div style="position:absolute;left:50%;top:6%;bottom:6%;border-left:1.5px dashed #e2a99a;"></div>' +
+        '<div style="position:absolute;top:50%;left:6%;right:6%;border-top:1.5px dashed #e2a99a;"></div>' +
+        '<div style="position:absolute;inset:6%;background:linear-gradient(45deg,transparent calc(50% - .75px),#efd5cc calc(50% - .75px),#efd5cc calc(50% + .75px),transparent calc(50% + .75px)),linear-gradient(-45deg,transparent calc(50% - .75px),#efd5cc calc(50% - .75px),#efd5cc calc(50% + .75px),transparent calc(50% + .75px));"></div></div>' +
+        '<p class="hanzi-teacher-hint">點左側「👀 查看全班寫字」可以看全班縮圖牆，點縮圖能放大看單一學生。</p>';
+      stageArea.appendChild(prev);
 
       function refreshFromProgressTeacher(){
         if(!document.body.contains(stageArea)) return false;
