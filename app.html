@@ -2244,7 +2244,7 @@ function slotRowHtml(sl, withDate, onDate){
   var sub = (ci && ci.cls) ? ((sl.title ? esc(slotLabel(sl)) + '　・　' : esc(ci.cls) + '　・　') + (isNext ? '<b style="color:var(--seal);">下次進度：' + esc(nf.text) + '</b>' + (les && nf.lesson && String(nf.lesson) !== String(sl.lesson) ? '　<span class="note">（課表排的是 ' + esc(les) + '）</span>' : '') : les ? esc(les) : '未指定課次')) : (les ? esc(les) : '');
   var info = sub + (sl.note ? (sub ? '　・　' : '') + esc(sl.note) : '');
   return '<div class="slot"><div class="slot-time">' + esc(slotTimeOn(sl, onDate || sl.date)) + '</div><div class="slot-main"><div>' + chip + (withDate ? '　<span class="note">' + esc(sl.date) + '</span>' : '') + '</div>' + (info ? '<div class="note">' + info + '</div>' : '') + '</div>' +
-    '<div class="slot-act">' + (u ? '<a class="btn sm" href="' + esc(u) + '" target="_blank" rel="noopener noreferrer">🔗 開啟連結</a>' : '') + (ci ? '<button class="btn" data-a="slot-go" data-id="' + sl.id + '">' + '進入上課' + '</button>' : '') + (!sl.s ? '' : !recSlotNeeds(sl.id) ? '<span class="note">✓已記錄</span>' : '<button class="btn sm" data-a="slot-rec" data-id="' + sl.id + '">填記錄</button>') + '<button class="btn sm" data-a="slot-edit" data-id="' + sl.id + '">修改</button><button class="btn sm danger" data-a="slot-del" data-id="' + sl.id + '">刪除</button></div></div>';
+    '<div class="slot-act">' + (u ? '<a class="btn sm" href="' + esc(u) + '" target="_blank" rel="noopener noreferrer">🔗 開啟連結</a>' : '') + (ci ? '<button class="btn" data-a="slot-go" data-id="' + sl.id + '">' + '進入上課' + '</button>' : '') + (!sl.s ? '' : !recSlotNeeds(sl.id) ? '<span class="note">✓已記錄</span>' : '<button class="btn sm" data-a="slot-rec" data-id="' + sl.id + '">填記錄</button>') + (ci && ci.obj ? '<button class="btn sm" data-a="slot-pre" data-id="' + sl.id + '">🎯 複習問題</button>' : '') + '<button class="btn sm" data-a="slot-edit" data-id="' + sl.id + '">修改</button><button class="btn sm danger" data-a="slot-del" data-id="' + sl.id + '">刪除</button></div></div>';
 }
 function todayPanelHtml(){
   var sl = slotsOn(ymd(new Date()));
@@ -2471,6 +2471,7 @@ async function schedAct(a, ds){
   }
   if(a === "cal-back"){ S.day = null; render(); return; }
   if(a === "slot-rec"){ if(m[ds.id]) openRecordFor(Object.assign({ id: ds.id }, m[ds.id])); return; }
+  if(a === "slot-pre"){ if(m[ds.id]) openPreClass(ds.id, true); return; }
   if(a === "slot-go"){
     var sl = m[ds.id]; if(!sl || !classInfo(sl)) return;
     if(classInfo(sl).schoolOnly){
@@ -2556,7 +2557,119 @@ function showReminder(id, sl){
   d.oncancel = function(e){ e.preventDefault(); };
   d.showModal();
 }
-function startReminders(){ if(remindTimer) clearInterval(remindTimer); remindTimer = setInterval(checkReminders, 30000); setTimeout(checkReminders, 2000); }
+
+// ---------- 🎯 上課前的複習問題 ----------
+// 上課前 5 小時內，這個班上次學的生詞／語法 → 建議 5 題生活問答，讓學生複習上次的生詞。
+// 預設用教材庫生詞裡本來就有的「問題」（免費、不用網路）；有 Gemini 金鑰時可以按「✨ AI 出題」重新出一組（金鑰只存在這台瀏覽器）。
+// 注意：只有「平台開著」的時候才會跳出來（網頁沒有開，瀏覽器沒辦法主動通知）；跳出後也可以隨時從課表那堂課按「🎯 複習問題」再打開。
+var PRE_WINDOW_H = 5;
+function preDoneKey(id){ return "mm_pre_done_" + id; }
+function preQKey(id){ return "mm_pre_q_" + id; }
+function bankEntryFor(key){ return (S.bank || []).filter(function(l){ return lkey(l.book || DEFAULT_BOOK, l.lesson) === String(key); })[0] || null; }
+function bankEntriesOfKey(key){
+  var l = (S.plat.lessons || {})[key];
+  if(l && l.unit) return (l.members || []).map(function(k){ return bankEntryFor(k); }).filter(Boolean);
+  var e = bankEntryFor(key); return e ? [e] : [];
+}
+// 這堂課之前，這個班上過哪些課（lesson key → 最近一次上課日期），取課堂進度紀錄＋課表上排了課次的日子
+function preContext(sl){
+  var ci = classInfo(sl); if(!ci || !ci.obj) return null;
+  var cls = ci.obj, last = {}, tg = (cls.progress || {}).taught || {};
+  Object.keys(tg).forEach(function(k){ Object.keys(tg[k] || {}).forEach(function(d){ if(d < sl.date && (!last[k] || d > last[k])) last[k] = d; }); });
+  classSlots(sl).forEach(function(x){ if(x.lesson && x.date && x.date < sl.date && (!last[x.lesson] || x.date > last[x.lesson])) last[x.lesson] = x.date; });
+  var keys = Object.keys(last); if(!keys.length) return null;
+  var latest = keys.map(function(k){ return last[k]; }).sort().pop();
+  var focusKeys = keys.filter(function(k){ return last[k] === latest; });
+  var focus = [], learned = [], grammar = [];
+  focusKeys.forEach(function(k){ bankEntriesOfKey(k).forEach(function(e){ (e.vocab || []).forEach(function(v){ if(v["生詞"]) focus.push(v); }); (e.grammar || []).forEach(function(g){ if(g["語法點"]) grammar.push(g); }); }); });
+  keys.forEach(function(k){ if(focusKeys.indexOf(k) >= 0) return; bankEntriesOfKey(k).forEach(function(e){ (e.vocab || []).forEach(function(v){ if(v["生詞"]) learned.push(v); }); }); });
+  return { cls: ci, date: latest, focusKeys: focusKeys, focus: focus, grammar: grammar, learned: learned };
+}
+function preSeeded(seed){ var h = 2166136261; String(seed).split("").forEach(function(c){ h = Math.imul(h ^ c.charCodeAt(0), 16777619); }); return function(){ h = Math.imul(h ^ (h >>> 15), 2246822507); h = Math.imul(h ^ (h >>> 13), 3266489909); h ^= h >>> 16; return (h >>> 0) / 4294967296; }; }
+// 教材庫生詞自帶的「問題」：從上次學的生詞裡每個詞抽一題（不夠再補第二題、再補已學詞），共 5 題
+function preBankQuestions(ctx, seed){
+  var rnd = preSeeded(seed), pool = function(vs){ return vs.map(function(v){ return { w: v["生詞"], qs: (Array.isArray(v["問題"]) ? v["問題"] : []).filter(function(q){ return /[？?]$/.test(String(q).trim()) && !/請用|什麼意思|幾畫|部首|怎麼寫|怎麼唸|怎麼讀|怎麼說|可以怎麼/.test(q); }).sort(function(){ return rnd() - 0.5; }) }; }).filter(function(it){ return it.qs.length; }).sort(function(){ return rnd() - 0.5; }); };
+  var out = [], seen = {};
+  [pool(ctx.focus), pool(ctx.learned)].forEach(function(items){
+    for(var round = 0; round < 3 && out.length < 5; round++) items.forEach(function(it){ if(out.length >= 5) return; var q = it.qs[round]; if(q && !seen[q]){ seen[q] = 1; out.push({ q: q, w: it.w }); } });
+  });
+  return out.slice(0, 5);
+}
+async function preAiQuestions(ctx){
+  var key = ""; try{ key = localStorage.getItem("mm_gemini_key") || ""; }catch(e){}
+  if(!key) throw new Error("還沒有填 Gemini 金鑰（到簡報編輯區「插入 → 生詞範本 → AI 造句」貼一次就會記住）");
+  var focus = ctx.focus.slice(0, 40).map(function(v){ return { word: v["生詞"], en: v["英文翻譯"] || "" }; });
+  var gram = ctx.grammar.slice(0, 8).map(function(g){ return g["語法點"] + "（" + (g["結構／用法"] || "") + "）"; });
+  var learned = Array.from(new Set(ctx.learned.map(function(v){ return v["生詞"]; }))).slice(-300);
+  var prompt = "你是專業的台灣華語老師。學生上次上課學了下面的生詞和語法，這次上課一開始想用 5 個「生活問答」口說問題幫學生複習。\n" +
+    "上次學的生詞：" + JSON.stringify(focus) + "\n上次學的語法：" + (gram.join("；") || "（無）") + "\n更早學過的詞（可以使用）：" + (learned.join("、") || "（無）") + "\n" +
+    "規則：1. 共 5 題，每題都要用到至少 1 個「上次學的生詞」，盡量涵蓋不同的詞和語法；2. 問題要貼近學生的日常生活，像是教到「冬天」就問「你最喜歡什麼季節？」；3. 其他用詞只能用上次學的和更早學過的詞，句子短、自然、符合台灣用語；4. 用繁體中文，並附英文翻譯。\n" +
+    "只回傳 JSON 陣列：[{\"q\":\"中文問題\",\"en\":\"英文翻譯\",\"w\":\"用到的上次生詞\"}]";
+  var models = ["gemini-flash-latest", "gemini-2.5-flash"], lastErr = "";
+  for(var mi = 0; mi < models.length; mi++){
+    try{
+      var res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/" + models[mi] + ":generateContent?key=" + encodeURIComponent(key), { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { responseMimeType: "application/json" } }) });
+      var data = await res.json();
+      if(!res.ok){ lastErr = (data && data.error && data.error.message) || ("HTTP " + res.status); if(res.status === 404) continue; throw new Error(lastErr); }
+      var arr = JSON.parse(data.candidates[0].content.parts[0].text);
+      arr = (Array.isArray(arr) ? arr : []).filter(function(x){ return x && typeof x.q === "string" && x.q.trim(); }).slice(0, 5).map(function(x){ return { q: x.q.trim(), en: String(x.en || "").trim(), w: String(x.w || "").trim(), ai: true }; });
+      if(!arr.length) throw new Error("AI 沒有回傳可用的問題");
+      return arr;
+    }catch(e){ lastErr = e.message || String(e); if(!/404|not found/i.test(lastErr)) throw e; }
+  }
+  throw new Error(lastErr || "AI 沒有回應");
+}
+function preHasContent(sl){ var c = preContext(sl); return !!(c && c.focus.length); }
+function openPreClass(id, manual){
+  var sl = schedMap()[id]; if(!sl) return;
+  var ctx = preContext(sl);
+  var dlg = document.getElementById("prequiz");
+  if(!dlg){ dlg = document.createElement("dialog"); dlg.id = "prequiz"; dlg.style.cssText = "width:min(560px,94vw);"; document.body.appendChild(dlg); }
+  var qs = null; try{ qs = JSON.parse(localStorage.getItem(preQKey(id)) || "null"); }catch(e){}
+  var shuffle = 0;
+  function save(){ try{ localStorage.setItem(preQKey(id), JSON.stringify(qs)); }catch(e){} }
+  function finish(done){ try{ if(done) localStorage.setItem(preDoneKey(id), "1"); else localStorage.setItem("mm_pre_later_" + id, String(Date.now() + 3600000)); }catch(e){} dlg.close(); }
+  function draw(msg){
+    var title = slotLabel(sl) + "　" + (sl.start || "") + " 上課";
+    var body;
+    if(!ctx || !ctx.focus.length) body = '<p class="note">這個班還沒有上課紀錄（或上次學的課在教材庫裡沒有生詞），所以沒辦法建議問題。<br>上課時用平台進入這個班，之後就會自動出現。</p>';
+    else {
+      if(!qs || !qs.length){ qs = preBankQuestions(ctx, id + ":" + shuffle); save(); }
+      var learnedTxt = ctx.focusKeys.map(function(k){ return lessonTitle(k); }).join("、");
+      var words = ctx.focus.slice(0, 14).map(function(v){ return esc(v["生詞"]); }).join("、") + (ctx.focus.length > 14 ? "…" : "");
+      body = '<p class="note" style="margin:0 0 8px;">上次（' + esc(md(ctx.date)) + '）學：' + esc(learnedTxt) + '<br>生詞：' + words + '</p>' +
+        (qs.length ? '<ol style="margin:0;padding-left:22px;line-height:1.7;font-size:17px;">' + qs.map(function(x){ return '<li style="margin-bottom:6px;"><b>' + esc(x.q) + '</b>' + (x.en ? '<div class="note" style="margin:0;">' + esc(x.en) + '</div>' : '') + (x.w ? '<span class="note" style="margin:0;">用到：' + esc(x.w) + (x.ai ? '　✨AI' : '') + '</span>' : '') + '</li>'; }).join("") + '</ol>' : '<p class="note">教材庫的生詞裡沒有現成的問題，可以按「✨ AI 出題」。</p>') +
+        (msg ? '<p class="note" style="color:#B23B32;">' + esc(msg) + '</p>' : '');
+    }
+    dlg.innerHTML = '<form method="dialog"><h3>🎯 上課前的複習問題</h3><p style="margin:4px 0;font-weight:700;">' + esc(title) + '</p>' + body +
+      '<div class="row" style="flex-wrap:wrap;margin-top:10px;"><button type="button" class="btn sm" id="pq-shuffle">🔀 換一組</button><button type="button" class="btn sm" id="pq-ai">✨ AI 出題</button><button type="button" class="btn sm" id="pq-copy">複製</button>' +
+      (manual ? '' : '<button type="button" class="btn sm" id="pq-later">1 小時後再提醒</button>') + '<button type="button" class="btn primary" id="pq-ok">' + (manual ? '關閉' : '知道了') + '</button></div></form>';
+    dlg.querySelector("#pq-ok").onclick = function(){ finish(true); };
+    var lt = dlg.querySelector("#pq-later"); if(lt) lt.onclick = function(){ finish(false); };
+    dlg.querySelector("#pq-shuffle").onclick = function(){ if(!ctx) return; shuffle++; qs = preBankQuestions(ctx, id + ":" + shuffle); save(); draw(); };
+    dlg.querySelector("#pq-copy").onclick = function(){ var t = (qs || []).map(function(x, i){ return (i + 1) + ". " + x.q; }).join("\n"); try{ navigator.clipboard.writeText(t); toast("已複製"); }catch(e){} };
+    dlg.querySelector("#pq-ai").onclick = async function(){
+      if(!ctx) return; var b = this; b.disabled = true; b.textContent = "⏳ AI 出題中…";
+      try{ qs = await preAiQuestions(ctx); save(); draw(); }catch(e){ draw("AI 出題失敗：" + (e && e.message || e)); }
+    };
+  }
+  draw(); dlg.oncancel = function(e){ e.preventDefault(); finish(true); };
+  dlg.showModal();
+}
+function checkPreClass(){
+  if(!S.teacher || !S.plat || !S.plat.schedule || !S.bank) return;
+  if(document.querySelector("dialog[open]") || (S.live && S.live.on)) return;
+  var now = Date.now(), m = S.plat.schedule, today = ymd(new Date());
+  for(var id in m){
+    var sl = m[id]; if(!sl.s || !sl.c || !sl.start || sl.date !== today) continue;
+    var startAt = new Date(sl.date + "T" + sl.start + ":00").getTime();
+    if(now < startAt - PRE_WINDOW_H * 3600000 || now > startAt + 10 * 60000) continue;
+    var done = false, later = 0; try{ done = !!localStorage.getItem(preDoneKey(id)); later = Number(localStorage.getItem("mm_pre_later_" + id)) || 0; }catch(e){}
+    if(done || now < later || !preHasContent(sl)) continue;
+    openPreClass(id, false); return;
+  }
+}
+function startReminders(){ if(remindTimer) clearInterval(remindTimer); remindTimer = setInterval(function(){ checkReminders(); checkPreClass(); }, 30000); setTimeout(function(){ checkReminders(); checkPreClass(); }, 2000); }
 // ---------- 課堂記錄表（內建，不再用外部頁面）----------
 var RUBRIC = [
   { key: "listening", label: "聽力理解", max: 20 }, { key: "speaking", label: "口語表達", max: 25 }, { key: "reading", label: "閱讀", max: 15 },
