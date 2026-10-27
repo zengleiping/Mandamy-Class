@@ -16560,9 +16560,14 @@ window.mmTA = (function(){
       var back = document.createElement("div"); back.className = "tb-modal-back";
       var modal = document.createElement("div"); modal.className = "tb-modal"; modal.style.width = "min(680px,95vw)"; back.appendChild(modal);
       var KIND = { audio: "🎵 音樂", video: "🎬 影片", youtube: "▶ YouTube" };
-      modal.innerHTML = '<h3>🗂 媒體管理</h3><div class="tb-hint mm-sum"></div><div class="mm-list" style="max-height:58vh;overflow:auto;margin:8px 0;"></div><div class="tb-foot"><button type="button" class="mm-recheck">重新檢查全部</button><button type="button" class="primary mm-close">關閉</button></div>';
+      modal.innerHTML = '<h3>🗂 媒體管理</h3><div class="tb-hint mm-sum"></div>' + (canEdit ? '<div class="mm-bar" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:6px 0;font-size:14px;"><b class="mm-cnt">已選 0 個</b><button type="button" class="btn btn-sm mm-all">全選</button><button type="button" class="btn btn-sm mm-bad">選取有問題的</button><button type="button" class="btn btn-sm mm-none">取消選取</button><button type="button" class="btn btn-sm mm-delsel" disabled style="color:#c62828;">刪除選取</button></div>' : '') + '<div class="mm-list" style="max-height:58vh;overflow:auto;margin:8px 0;"></div><div class="tb-foot"><button type="button" class="mm-recheck">重新檢查全部</button><button type="button" class="primary mm-close">關閉</button></div>';
       var list = modal.querySelector(".mm-list"), sum = modal.querySelector(".mm-sum");
-      var rowsOk = 0, rowsBad = 0, total = 0;
+      var rowsOk = 0, rowsBad = 0, total = 0, picked = {}, rowInfo = {};
+      function pickSync(){
+        var n = Object.keys(picked).filter(function(k){ return picked[k]; }).length, c = modal.querySelector(".mm-cnt"), d = modal.querySelector(".mm-delsel");
+        if(c) c.textContent = "已選 " + n + " 個"; if(d) d.disabled = !n;
+        list.querySelectorAll(".mm-chk").forEach(function(cb){ cb.checked = !!picked[cb.dataset.k]; });
+      }
       function fmtDur(t){ t = Math.round(t || 0); return Math.floor(t / 60) + ":" + ("0" + (t % 60)).slice(-2); }
       function probe(m, qid, cb){
         if(m.kind === "youtube"){ cb({ ok: null, msg: "需要網路；無法預先檢查" }); return; }
@@ -16580,17 +16585,18 @@ window.mmTA = (function(){
       }
       function refreshSum(){ sum.textContent = total ? ("共 " + total + " 個媒體" + (rowsBad ? "，⚠ " + rowsBad + " 個有問題" : (rowsOk >= total - 0 && rowsOk ? "，都可以正常播放" : ""))) : "這份簡報還沒有影片或音樂。到「插入 → 媒體／YouTube」加入。"; }
       function build(){
-        list.innerHTML = ""; rowsOk = rowsBad = total = 0;
+        list.innerHTML = ""; rowsOk = rowsBad = total = 0; rowInfo = {};
         ids.forEach(function(qid, i){
           var pg = getProgress(qid), ms = pg.medias || [];
           ms.forEach(function(m){
             total++;
             var row = document.createElement("div"); row.style.cssText = "border:1px solid #e3d6c0;border-radius:8px;padding:7px 9px;margin-bottom:6px;";
             var nm = m.kind === "youtube" ? ("youtu.be/" + (m.ytId || "")) : (m.name || "（未命名）");
-            row.innerHTML = '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;"><b style="min-width:52px;">第 ' + (i + 1) + ' 頁</b><span>' + (KIND[m.kind] || "媒體") + '</span><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="' + escapeHtml(nm) + '">' + escapeHtml(nm) + '</span><span class="mm-st" style="font-size:13px;color:#8a7a60;">檢查中…</span><button type="button" class="mm-prev">預覽</button><button type="button" class="mm-go">到這一頁</button>' + (canEdit ? '<button type="button" class="mm-del">刪除</button>' : '') + '</div><div class="mm-box"></div>';
+            var rkey = qid + "|" + m.id; rowInfo[rkey] = { ok: null };
+            row.innerHTML = '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">' + (canEdit ? '<input type="checkbox" class="mm-chk" data-k="' + escapeHtml(rkey) + '" style="width:18px;height:18px;">' : '') + '<b style="min-width:52px;">第 ' + (i + 1) + ' 頁</b><span>' + (KIND[m.kind] || "媒體") + '</span><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="' + escapeHtml(nm) + '">' + escapeHtml(nm) + '</span><span class="mm-st" style="font-size:13px;color:#8a7a60;">檢查中…</span><button type="button" class="mm-prev">預覽</button><button type="button" class="mm-go">到這一頁</button>' + (canEdit ? '<button type="button" class="mm-del">刪除</button>' : '') + '</div><div class="mm-box"></div>';
             var st = row.querySelector(".mm-st"), box = row.querySelector(".mm-box"), info = null;
             probe(m, qid, function(r){
-              info = r;
+              info = r; rowInfo[rkey].ok = r.ok;
               if(r.ok === true){ rowsOk++; st.textContent = "✓ " + r.msg; st.style.color = "#2e7d32"; }
               else if(r.ok === false){ rowsBad++; st.textContent = "⚠ " + r.msg; st.style.color = "#c62828"; }
               else { st.textContent = r.msg; }
@@ -16615,12 +16621,32 @@ window.mmTA = (function(){
               }
               build();
             };
+            var chk = row.querySelector(".mm-chk");
+            if(chk) chk.onclick = function(ev){ picked[rkey] = chk.checked; pickSync(); };
             list.appendChild(row);
           });
         });
-        refreshSum();
+        refreshSum(); pickSync();
       }
       build();
+      if(canEdit){
+        modal.querySelector(".mm-all").onclick = function(){ Object.keys(rowInfo).forEach(function(k){ picked[k] = true; }); pickSync(); };
+        modal.querySelector(".mm-none").onclick = function(){ picked = {}; pickSync(); };
+        modal.querySelector(".mm-bad").onclick = function(){ picked = {}; Object.keys(rowInfo).forEach(function(k){ if(rowInfo[k].ok === false) picked[k] = true; }); pickSync(); if(!Object.keys(picked).length) alert("目前沒有檢查出有問題的媒體（YouTube 沒辦法預先檢查）。"); };
+        modal.querySelector(".mm-delsel").onclick = function(){
+          var keys = Object.keys(picked).filter(function(k){ return picked[k]; }); if(!keys.length) return;
+          if(!confirm("要刪除選取的 " + keys.length + " 個媒體嗎？\n刪除後不能復原。\nDelete " + keys.length + " selected media?")) return;
+          var byQ = {}; keys.forEach(function(k){ var i = k.indexOf("|"); (byQ[k.slice(0, i)] = byQ[k.slice(0, i)] || []).push(k.slice(i + 1)); });
+          Object.keys(byQ).forEach(function(qid){
+            var ids = byQ[qid];
+            if(qid === q.id){ medias = medias.filter(function(m){ return ids.indexOf(m.id) < 0; }); }
+            var p2 = getProgress(qid), md = Object.assign({}, p2.mediaData || {}), mst = Object.assign({}, p2.mediaState || {});
+            ids.forEach(function(id){ delete md[id]; delete mst[id]; });
+            writeProgress(qid, { medias: (p2.medias || []).filter(function(x){ return ids.indexOf(x.id) < 0; }), mediaData: md, mediaState: mst });
+          });
+          picked = {}; renderMedias(); build();
+        };
+      }
       modal.querySelector(".mm-recheck").onclick = build;
       modal.querySelector(".mm-close").onclick = function(){ back.remove(); };
       back.addEventListener("pointerdown", function(e){ if(e.target === back) back.remove(); });
