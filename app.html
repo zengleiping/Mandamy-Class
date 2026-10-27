@@ -1244,7 +1244,7 @@ function trMin(hhmm){ var m = /^(\d{1,2}):(\d{2})/.exec(hhmm || ""); return m ? 
 function trFindSlot(at){
   var d = new Date(at), day = ymd(d), mins = d.getHours() * 60 + d.getMinutes(), sched = S.plat.schedule || {}, best = null, bestScore = 1e9;
   Object.keys(sched).forEach(function(id){
-    var sl = sched[id]; if(!sl || sl.date !== day || !sl.s || !classInfo(sl)) return;
+    var sl = sched[id]; if(!sl || sl.resched || sl.date !== day || !sl.s || !classInfo(sl)) return;
     var a = trMin(sl.start), b = trMin(sl.end); if(a == null) return; if(b == null) b = a + 50;
     var score;
     if(mins >= a - 20 && mins <= b + 20) score = 0; else if(mins > b + 20) score = 1000 + (mins - b); else return;
@@ -1257,7 +1257,7 @@ function trVocabSub(e){ return [e.py, e.zy].concat(["en", "th", "ja"].map(functi
 function trDestOptions(sel, autoSlot){
   var today = ymd(new Date()), from = ymd(new Date(Date.now() - 30 * 86400000)), to = ymd(new Date(Date.now() + 7 * 86400000)), sched = S.plat.schedule || {}, o = '';
   o += '<option value="">' + (autoSlot ? '自動：' + esc(slotClassLabel(autoSlot)) + ' ' + esc((autoSlot.date || "").slice(5).replace("-", "/")) : '⚠ 找不到對應的課，請選擇…') + '</option>';
-  var slots = Object.keys(sched).map(function(id){ return Object.assign({ id: id }, sched[id]); }).filter(function(sl){ return sl.s && sl.date >= from && sl.date <= to && classInfo(sl); }).sort(function(a, b){ return (b.date + (b.start || "")).localeCompare(a.date + (a.start || "")); });
+  var slots = Object.keys(sched).map(function(id){ return Object.assign({ id: id }, sched[id]); }).filter(function(sl){ return sl.s && !sl.resched && sl.date >= from && sl.date <= to && classInfo(sl); }).sort(function(a, b){ return (b.date + (b.start || "")).localeCompare(a.date + (a.start || "")); });
   if(slots.length) o += '<optgroup label="課表上的課">' + slots.map(function(sl){ return '<option value="slot:' + esc(sl.id) + '"' + (sel === "slot:" + sl.id ? " selected" : "") + '>' + esc(sl.date.slice(5).replace("-", "/") + " " + (sl.start || "") + " " + slotClassLabel(sl)) + '</option>'; }).join("") + '</optgroup>';
   var m = recMap(), recs = Object.keys(m).filter(function(k){ return (m[k].date || "") >= from; }).sort(function(a, b){ return (m[b].date || "").localeCompare(m[a].date || ""); }).slice(0, 25);
   if(recs.length) o += '<optgroup label="已有的課堂記錄">' + recs.map(function(k){ return '<option value="rec:' + esc(k) + '"' + (sel === "rec:" + k ? " selected" : "") + '>' + esc((m[k].date || "").slice(5).replace("-", "/") + " " + (m[k].classLabel || "") + "（記錄）") + '</option>'; }).join("") + '</optgroup>';
@@ -1296,7 +1296,7 @@ async function recMoveVocab(word, fromId, dest){
 }
 function recMoveGroups(excludeRecId){
   var today = ymd(new Date()), from = ymd(new Date(Date.now() - 45 * 86400000)), to = ymd(new Date(Date.now() + 7 * 86400000)), sched = S.plat.schedule || {}, m = recMap(), g = [];
-  var slots = Object.keys(sched).map(function(id){ return Object.assign({ id: id }, sched[id]); }).filter(function(sl){ return sl.s && sl.date >= from && sl.date <= to && classInfo(sl); }).sort(function(a, b){ return (b.date + (b.start || "")).localeCompare(a.date + (a.start || "")); });
+  var slots = Object.keys(sched).map(function(id){ return Object.assign({ id: id }, sched[id]); }).filter(function(sl){ return sl.s && !sl.resched && sl.date >= from && sl.date <= to && classInfo(sl); }).sort(function(a, b){ return (b.date + (b.start || "")).localeCompare(a.date + (a.start || "")); });
   var slotHasRec = {}; Object.keys(m).forEach(function(k){ if(m[k].slotId) slotHasRec[m[k].slotId] = k; });
   var recs = Object.keys(m).filter(function(k){ return k !== excludeRecId && (m[k].date || "") >= from; }).sort(function(a, b){ return (m[b].date || "").localeCompare(m[a].date || ""); }).slice(0, 30);
   if(recs.length) g.push({ label: "已有的課堂記錄", items: recs.map(function(k){ return { v: "rec:" + k, t: (m[k].date || "").slice(5).replace("-", "/") + " " + (m[k].classLabel || "") }; }) });
@@ -2233,18 +2233,18 @@ function calendarHtml(){
   for(var d = 1; d <= days; d++){
     var date = yy + "-" + pad2(mm + 1) + "-" + pad2(d), sl = slotsOn(date);
     html += '<div class="cal-d' + (date === today ? ' today' : '') + '" data-a="cal-day" data-d="' + date + '"><div class="cal-n">' + d + '</div>' +
-      (sl.length ? '<div class="cal-cnt">' + sl.length + ' 堂</div>' : '') + sl.slice(0, 3).map(function(x){ var tm = slotMulti(x) ? (date === x.date ? (x.start || "") : "") : (x.start || ""); return slotLink(x, esc((tm ? tm + " " : "") + slotText(x)) + (safeUrl(x.url) ? " ↗" : ""), "cal-s", "background:" + slotBg(x) + ";color:" + slotFg(x) + ";display:block;text-decoration:none;", slotTimeOn(x, date) + " " + slotLabel(x) + calNextTip(x)); }).join("") + (sl.length > 3 ? '<div class="cal-s" style="background:none;color:var(--ink-soft);padding:0 2px;">還有 ' + (sl.length - 3) + ' 堂…</div>' : '') + '</div>';
+      (sl.length ? '<div class="cal-cnt">' + sl.length + ' 堂</div>' : '') + sl.slice(0, 3).map(function(x){ var tm = slotMulti(x) ? (date === x.date ? (x.start || "") : "") : (x.start || ""); return slotLink(x, (x.resched ? "調 " : x.makeupOf ? "補 " : "") + esc((tm ? tm + " " : "") + slotText(x)) + (safeUrl(x.url) ? " ↗" : ""), "cal-s", "background:" + slotBg(x) + ";color:" + slotFg(x) + ";display:block;text-decoration:" + (x.resched ? "line-through;opacity:.55" : "none") + ";", slotTimeOn(x, date) + " " + slotLabel(x) + calNextTip(x)); }).join("") + (sl.length > 3 ? '<div class="cal-s" style="background:none;color:var(--ink-soft);padding:0 2px;">還有 ' + (sl.length - 3) + ' 堂…</div>' : '') + '</div>';
   }
   return html + '</div>';
 }
 function slotRowHtml(sl, withDate, onDate){
   var ci = classInfo(sl), les = sl.lesson && (S.plat.lessons || {})[sl.lesson] ? lessonTitle(sl.lesson) : "", u = safeUrl(sl.url);
-  var chip = '<span style="display:inline-block;padding:2px 10px;border-radius:8px;font-weight:700;background:' + esc(slotBg(sl)) + ';color:' + esc(slotFg(sl)) + ';">' + esc(slotText(sl)) + '</span>';
+  var chip = '<span style="display:inline-block;padding:2px 10px;border-radius:8px;font-weight:700;background:' + esc(slotBg(sl)) + ';color:' + esc(slotFg(sl)) + ';' + (sl.resched ? 'text-decoration:line-through;opacity:.55;' : '') + '">' + (sl.makeupOf ? '補課　' : '') + esc(slotText(sl)) + '</span>';
   var nf = ci && ci.obj && sl.c ? classNextFrom(ci.obj, sl) : null, isNext = nf && classNextSlotId(sl, nf) === sl.id;
   var sub = (ci && ci.cls) ? ((sl.title ? esc(slotLabel(sl)) + '　・　' : esc(ci.cls) + '　・　') + (isNext ? '<b style="color:var(--seal);">下次進度：' + esc(nf.text) + '</b>' + (les && nf.lesson && String(nf.lesson) !== String(sl.lesson) ? '　<span class="note">（課表排的是 ' + esc(les) + '）</span>' : '') : les ? esc(les) : '未指定課次')) : (les ? esc(les) : '');
   var info = sub + (sl.note ? (sub ? '　・　' : '') + esc(sl.note) : '');
   return '<div class="slot"><div class="slot-time">' + esc(slotTimeOn(sl, onDate || sl.date)) + '</div><div class="slot-main"><div>' + chip + (withDate ? '　<span class="note">' + esc(sl.date) + '</span>' : '') + '</div>' + (info ? '<div class="note">' + info + '</div>' : '') + '</div>' +
-    '<div class="slot-act">' + (u ? '<a class="btn sm" href="' + esc(u) + '" target="_blank" rel="noopener noreferrer">🔗 開啟連結</a>' : '') + (ci ? '<button class="btn" data-a="slot-go" data-id="' + sl.id + '">' + '進入上課' + '</button>' : '') + (!sl.s ? '' : !recSlotNeeds(sl.id) ? '<span class="note">✓已記錄</span>' : '<button class="btn sm" data-a="slot-rec" data-id="' + sl.id + '">填記錄</button>') + (ci && ci.obj ? '<button class="btn sm" data-a="slot-pre" data-id="' + sl.id + '">🎯 複習問題</button>' : '') + '<button class="btn sm" data-a="slot-edit" data-id="' + sl.id + '">修改</button><button class="btn sm danger" data-a="slot-del" data-id="' + sl.id + '">刪除</button></div></div>';
+    '<div class="slot-act">' + (u ? '<a class="btn sm" href="' + esc(u) + '" target="_blank" rel="noopener noreferrer">🔗 開啟連結</a>' : '') + (sl.resched ? '<span class="chip" style="background:#FDECEA;color:#B23B32;">' + esc(reschedInfoText(sl)) + '</span>' + (sl.resched.mode !== "moved" && sl.resched.mode !== "skip" ? '<button class="btn sm primary" data-a="slot-mk" data-id="' + sl.id + '">安排補課</button>' : sl.resched.mode === "moved" ? '<button class="btn sm" data-a="slot-mk" data-id="' + sl.id + '">改補課日期</button>' : '') + '<button class="btn sm" data-a="slot-unresched" data-id="' + sl.id + '">取消調課</button>' : (ci ? '<button class="btn" data-a="slot-go" data-id="' + sl.id + '">' + '進入上課' + '</button>' : '') + (!sl.s ? '' : !recSlotNeeds(sl.id) ? '<span class="note">✓已記錄</span>' : '<button class="btn sm" data-a="slot-rec" data-id="' + sl.id + '">填記錄</button>') + (ci && ci.obj ? '<button class="btn sm" data-a="slot-pre" data-id="' + sl.id + '">🎯 複習問題</button>' : '') + (ci && ci.obj ? '<button class="btn sm" data-a="slot-resched" data-id="' + sl.id + '" title="這堂課沒上：記下原因，並安排補課">調課</button>' : '')) + '<button class="btn sm" data-a="slot-edit" data-id="' + sl.id + '">修改</button><button class="btn sm danger" data-a="slot-del" data-id="' + sl.id + '">刪除</button></div></div>';
 }
 function todayPanelHtml(){
   var sl = slotsOn(ymd(new Date()));
@@ -2254,7 +2254,7 @@ function todayPanelHtml(){
 // ---------- 匯出行事曆檔（.ics）：匯入 Google／Apple 行事曆；每堂課有固定編號，改完課表再匯一次會更新同一堂，不會重複 ----------
 function icsEsc(t){ return String(t == null ? "" : t).replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\r?\n/g, "\\n"); }
 function exportIcs(){
-  var m = schedMap(), ids = Object.keys(m).filter(function(k){ return m[k].date && (m[k].start || slotMulti(m[k])); });
+  var m = schedMap(), ids = Object.keys(m).filter(function(k){ return m[k].date && !m[k].resched && (m[k].start || slotMulti(m[k])); });
   if(!ids.length){ alert("課表還沒有課可以匯出。"); return; }
   var L = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Mandamy//Schedule//ZH", "CALSCALE:GREGORIAN", "X-WR-CALNAME:曼米中文課表", "X-WR-TIMEZONE:Asia/Taipei",
     "BEGIN:VTIMEZONE", "TZID:Asia/Taipei", "BEGIN:STANDARD", "DTSTART:19700101T000000", "TZOFFSETFROM:+0800", "TZOFFSETTO:+0800", "TZNAME:CST", "END:STANDARD", "END:VTIMEZONE"], stamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d+/, "");
@@ -2471,6 +2471,17 @@ async function schedAct(a, ds){
   }
   if(a === "cal-back"){ S.day = null; render(); return; }
   if(a === "slot-rec"){ if(m[ds.id]) openRecordFor(Object.assign({ id: ds.id }, m[ds.id])); return; }
+  if(a === "slot-resched" || a === "slot-mk"){
+    var sl0 = m[ds.id]; if(!sl0) return;
+    var rr = await openReschedDialog(Object.assign({ id: ds.id }, sl0), a === "slot-mk"); if(!rr) return;
+    if(a === "slot-mk") rr = Object.assign({}, rr, { mode: "moved" });
+    await applyResched(ds.id, rr); toast(rr.mode === "moved" ? "已調課，並在 " + md(rr.date) + " 新增一堂補課" : rr.mode === "pending" ? "已調課，列入待安排的補課" : "已調課（不補課）"); render(); return;
+  }
+  if(a === "slot-unresched"){
+    var sl1 = m[ds.id]; if(!sl1) return;
+    if(!confirm("取消這次調課？\n（補課那堂如果還沒有課堂記錄，會一起刪掉；調課記錄也會移除）")) return;
+    await undoResched(ds.id); render(); return;
+  }
   if(a === "slot-pre"){ if(m[ds.id]) openPreClass(ds.id, true); return; }
   if(a === "slot-go"){
     var sl = m[ds.id]; if(!sl || !classInfo(sl)) return;
@@ -2531,6 +2542,86 @@ async function schedAct(a, ds){
     render(); return;
   }
 }
+
+// ---------- 調課：原定的課沒上，補到哪天都記下來 ----------
+// 原本那堂課記成 resched（原因、補到哪天），並自動留下一筆「調課」課堂記錄（節數報表會扣掉這堂）；補課那天自動新增一堂課（makeupOf 指回原本那堂）。
+// 還沒決定補課日期的，列在首頁「待安排的補課」，之後再安排。
+var RESCHED_REASONS = ["學校活動／考試", "放假／颱風", "老師請假", "學生請假", "其他"];
+function reschedRecId(slotId){ var m = recMap(); return Object.keys(m).filter(function(k){ return m[k].slotId === slotId && m[k].isAbsence; })[0] || null; }
+function slotConflictsOn(date, exceptId){ return slotsOn(date).filter(function(x){ return x.id !== exceptId && !x.resched; }); }
+function openReschedDialog(sl, arrangeOnly){
+  return new Promise(function(resolve){
+    var d = document.getElementById("rsch");
+    if(!d){ d = document.createElement("dialog"); d.id = "rsch"; d.style.cssText = "width:min(480px,94vw);"; document.body.appendChild(d); }
+    var def = new Date(sl.date + "T00:00:00"); def.setDate(def.getDate() + 7);
+    var cur = sl.resched || {};
+    d.innerHTML = '<form method="dialog"><h3>' + (arrangeOnly ? '安排補課' : '調課') + '：' + esc(slotLabel(sl)) + '</h3><p class="note" style="margin:0 0 8px;">原定 ' + esc(sl.date) + ' ' + esc(sl.start || "") + (sl.end ? '–' + esc(sl.end) : '') + '</p>' +
+      (arrangeOnly ? '' : '<label>為什麼沒上課？</label><select id="rs-reason">' + RESCHED_REASONS.map(function(x){ return '<option' + (cur.reason === x ? ' selected' : '') + '>' + esc(x) + '</option>'; }).join("") + '</select><label>備註（選填）</label><input type="text" id="rs-note" placeholder="例如：校慶運動會" value="' + esc(cur.note || "") + '">') +
+      '<label style="margin-top:10px;">補課怎麼處理？</label>' +
+      '<label style="display:flex;gap:6px;align-items:center;margin:4px 0;"><input type="radio" name="rs-mode" value="moved" checked> 補到指定日期（會自動在課表新增一堂補課）</label>' +
+      '<div id="rs-when" style="display:flex;gap:8px;flex-wrap:wrap;margin:0 0 6px 22px;"><input type="date" id="rs-date" value="' + ymd(def) + '"><input type="time" id="rs-start" value="' + esc(sl.start || "") + '"><span style="align-self:center;">–</span><input type="time" id="rs-end" value="' + esc(sl.end || "") + '"></div>' +
+      '<div id="rs-conf" class="note" style="margin:0 0 6px 22px;"></div>' +
+      (arrangeOnly ? '' : '<label style="display:flex;gap:6px;align-items:center;margin:4px 0;"><input type="radio" name="rs-mode" value="pending"> 先不決定（列入「待安排的補課」，之後再排）</label><label style="display:flex;gap:6px;align-items:center;margin:4px 0;"><input type="radio" name="rs-mode" value="skip"> 不補課</label>') +
+      '<div class="row" style="margin-top:12px;"><button type="button" class="btn" id="rs-cancel">取消</button><button type="button" class="btn primary" id="rs-ok">' + (arrangeOnly ? '安排' : '確定調課') + '</button></div></form>';
+    var $ = function(i){ return d.querySelector(i); };
+    function conf(){
+      var dt = $("#rs-date").value, c = dt ? slotConflictsOn(dt, sl.id) : [];
+      $("#rs-conf").innerHTML = c.length ? '⚠ 那天已經有：' + c.map(function(x){ return esc((x.start || "") + " " + slotLabel(x)); }).join("、") : (dt ? '那天沒有其他課。' : '');
+    }
+    $("#rs-date").onchange = conf; conf();
+    d.querySelectorAll('input[name="rs-mode"]').forEach(function(r){ r.onchange = function(){ var mv = d.querySelector('input[name="rs-mode"]:checked').value === "moved"; $("#rs-when").style.opacity = mv ? "1" : ".4"; $("#rs-when").style.pointerEvents = mv ? "" : "none"; }; });
+    $("#rs-cancel").onclick = function(){ d.close(); resolve(null); };
+    $("#rs-ok").onclick = function(){
+      var mode = d.querySelector('input[name="rs-mode"]:checked').value, r = { mode: mode, reason: arrangeOnly ? (cur.reason || "") : $("#rs-reason").value, note: arrangeOnly ? (cur.note || "") : $("#rs-note").value.trim() };
+      if(mode === "moved"){
+        r.date = $("#rs-date").value; r.start = $("#rs-start").value; r.end = $("#rs-end").value;
+        if(!r.date){ alert("請選補課的日期。"); return; }
+        var c = slotConflictsOn(r.date, sl.id); if(c.length && !confirm("那天已經有課了：" + c.map(function(x){ return (x.start || "") + " " + slotLabel(x); }).join("、") + "\n還是要排在那天嗎？")) return;
+      }
+      d.close(); resolve(r);
+    };
+    d.oncancel = function(){ resolve(null); };
+    d.showModal();
+  });
+}
+async function applyResched(id, r){
+  var base = "teacherPlatform/" + S.teacher.id + "/schedule", m = schedMap(), sl = m[id]; if(!sl) return;
+  var info = Object.assign({}, sl.resched || {}, { reason: r.reason, note: r.note || "", mode: r.mode, at: Date.now() });
+  // 之前已經排過補課：舊的那堂（還沒有記錄的話）先拿掉，換成新的
+  if(info.to && m[info.to] && !recSlotDone(info.to)){ delete m[info.to]; await fbSet(base + "/" + info.to, null); }
+  delete info.to; delete info.toDate;
+  if(r.mode === "moved"){
+    var nid = uid("sl_"), ns = { s: sl.s, t: sl.t, c: sl.c || null, date: r.date, start: r.start || null, end: r.end || null, note: "補課（原 " + md(sl.date) + (r.reason ? "・" + r.reason : "") + "）", makeupOf: id };
+    ["title", "url", "bg", "fg", "lesson", "periods"].forEach(function(k){ if(sl[k] != null && sl[k] !== "") ns[k] = sl[k]; });
+    m[nid] = ns; await fbSet(base + "/" + nid, ns); info.to = nid; info.toDate = r.date;
+  }
+  sl.resched = info; await fbSet(base + "/" + id, sl);
+  var txt = "調課" + (r.reason ? "（" + r.reason + "）" : "") + (r.mode === "moved" ? "，補到 " + r.date : r.mode === "pending" ? "，待補課" : "，不補課") + (r.note ? "：" + r.note : "");
+  var rid = reschedRecId(id), rbase = "teacherPlatform/" + S.teacher.id + "/classRecords/";
+  var patch = { absType: "調課", madeUp: false, notes: txt, makeupSlotId: info.to || null, makeupDate: info.toDate || null, noMakeup: r.mode === "skip" };
+  if(rid){ var rec = Object.assign(recMap()[rid], patch, { updatedAt: Date.now() }); await fbSet(rbase + rid, rec); }
+  else if(sl.s){ var dr = newRecordDraft(Object.assign({ id: id }, sl)); dr.isAbsence = true; Object.assign(dr, patch); dr.students = []; await saveAbsenceRecord(dr); }
+}
+async function undoResched(id){
+  var base = "teacherPlatform/" + S.teacher.id + "/schedule", m = schedMap(), sl = m[id]; if(!sl || !sl.resched) return;
+  var to = sl.resched.to; if(to && m[to] && !recSlotDone(to)){ delete m[to]; await fbSet(base + "/" + to, null); }
+  delete sl.resched; await fbSet(base + "/" + id, sl);
+  var rid = reschedRecId(id); if(rid && recMap()[rid].absType === "調課"){ await fbSet("teacherPlatform/" + S.teacher.id + "/classRecords/" + rid, null); delete recMap()[rid]; }
+}
+function reschedInfoText(sl){
+  var r = sl.resched; if(!r) return "";
+  return r.mode === "moved" ? '已調課・補到 ' + md(r.toDate) : r.mode === "skip" ? '已調課・不補課' : '已調課・待安排補課';
+}
+function pendingMakeups(){
+  var m = schedMap();
+  return Object.keys(m).filter(function(k){ return m[k].resched && m[k].resched.mode === "pending" && classInfo(m[k]); }).map(function(k){ return Object.assign({ id: k }, m[k]); }).sort(function(a, b){ return a.date.localeCompare(b.date); });
+}
+function makeupPanelHtml(){
+  var list = pendingMakeups(); if(!list.length) return "";
+  return '<div class="panel" style="background:#FBEBC8;"><h3>待安排的補課（' + list.length + '）</h3>' + list.map(function(x){
+    return '<div class="slot"><div class="slot-time" style="min-width:90px;">' + esc(md(x.date)) + '</div><div class="slot-main"><b>' + esc(slotLabel(x)) + '</b><div class="note">原定 ' + esc(x.start || "") + '　' + esc((x.resched.reason || "") + (x.resched.note ? "：" + x.resched.note : "")) + '</div></div><div class="slot-act"><button class="btn sm primary" data-a="slot-mk" data-id="' + x.id + '">安排補課</button></div></div>';
+  }).join("") + '</div>';
+}
 // 下課 5 分鐘後：跳出提醒，帶老師去填課堂記錄表（瀏覽器不允許沒有點擊就自動開新分頁，所以用醒目的視窗＋一顆按鈕）
 var remindTimer = null;
 function notifiedKey(id){ return "mm_rec_notified_" + id; }
@@ -2539,7 +2630,7 @@ function checkReminders(force){
   var d = document.getElementById("remind"); if(d && d.open) return;
   var now = Date.now(), m = S.plat.schedule;
   for(var id in m){
-    var sl = m[id]; if(!sl.s || !sl.end || sl.date !== ymd(new Date())) continue;
+    var sl = m[id]; if(!sl.s || !sl.end || sl.resched || sl.date !== ymd(new Date())) continue;
     var endAt = new Date(sl.date + "T" + sl.end + ":00").getTime();
     var later = 0; try{ later = Number(localStorage.getItem("mm_rec_later_" + id)) || 0; }catch(e){}
     var dueAt = Math.max(endAt + REMIND_AFTER_MIN * 60000, later);
@@ -2671,7 +2762,7 @@ function checkPreClass(){
   if(document.querySelector("dialog[open]") || (S.live && S.live.on)) return;
   var now = Date.now(), m = S.plat.schedule, today = ymd(new Date());
   for(var id in m){
-    var sl = m[id]; if(!sl.s || !sl.c || !sl.start || sl.date !== today) continue;
+    var sl = m[id]; if(!sl.s || !sl.c || !sl.start || sl.resched || sl.date !== today) continue;
     var startAt = new Date(sl.date + "T" + sl.start + ":00").getTime();
     if(now < startAt - PRE_WINDOW_H * 3600000 || now > startAt + 10 * 60000) continue;
     var done = false, later = 0; try{ done = !!localStorage.getItem(preDoneKey(id)); later = Number(localStorage.getItem("mm_pre_later_" + id)) || 0; }catch(e){}
@@ -2812,10 +2903,15 @@ async function openRecordFor(slot){
   try{ info = await Promise.race([recAutoFill(d, slot), new Promise(function(res){ setTimeout(function(){ res(null); }, 4000); })]) || []; }catch(e){}
   S.rec = { edit: null, draft: d, shots: [], autoInfo: info }; S.day = null; S.lib = null; S.grades = null; S.sel = null; S.lesson = null; S.hw = null; S.classes = null; S.act = null; render();
 }
+// 還需要「安排」補課的記錄：請假／調課、還沒補、也還沒排補課那堂、也不是決定不補
+function recNeedsMakeup(r){ return !!(r && r.isAbsence && !r.madeUp && !r.noMakeup && !(r.makeupSlotId && schedMap()[r.makeupSlotId])); }
 function recBadge(r){
   var st = function(bg, fg){ return 'display:inline-block;padding:2px 10px;border-radius:99px;font-size:13.5px;font-weight:700;background:' + bg + ';color:' + fg + ';white-space:nowrap;'; };
   if(!r.isAbsence) return '<span style="' + st("#DCEEE6", "#3E7D68") + '">完成</span>';
   var t = r.absType || "請假／調課";
+  if(r.noMakeup) return '<span style="' + st("#EFEAE2", "#6B5E55") + '">' + esc(t) + '・不補課</span>';
+  var mk = r.makeupSlotId && schedMap()[r.makeupSlotId];
+  if(mk) return mk.date <= ymd(new Date()) ? '<span style="' + st("#DCE8F6", "#2E75B6") + '">' + esc(t) + '・已補課（' + esc(md(mk.date)) + '）</span>' : '<span style="' + st("#FBEBC8", "#8C5A2B") + '">' + esc(t) + '・已排 ' + esc(md(mk.date)) + ' 補課</span>';
   return r.madeUp ? '<span style="' + st("#DCE8F6", "#2E75B6") + '">' + esc(t) + '・已補課</span>' : '<span style="' + st("#F7D9D5", "#B23B32") + '">' + esc(t) + '・待補課</span>';
 }
 function renderRecords(){
@@ -2826,11 +2922,11 @@ function renderRecords(){
   if(S.rec && S.rec.view === "review") return renderReview();
   if(S.rec && S.rec.view === "comments") return renderComments();
   S.focus = false;
-  var f = S.rec.filter || "all", m = recMap(), ids = Object.keys(m).filter(function(k){ return f === "all" || (f === "__makeup" ? (m[k].isAbsence && !m[k].madeUp) : m[k].classLabel === f); }).sort(function(a, b){ var d = (m[b].date || "").localeCompare(m[a].date || ""); return d || ((m[b].seq || 0) - (m[a].seq || 0)); });
+  var f = S.rec.filter || "all", m = recMap(), ids = Object.keys(m).filter(function(k){ return f === "all" || (f === "__makeup" ? recNeedsMakeup(m[k]) : m[k].classLabel === f); }).sort(function(a, b){ var d = (m[b].date || "").localeCompare(m[a].date || ""); return d || ((m[b].seq || 0) - (m[a].seq || 0)); });
   var junkN = recDupJunk().length;
   var html = recTabsHtml("list") + (junkN ? '<div class="panel" style="background:#FBEBC8;display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><div style="flex:1;min-width:220px;"><b>🧹 有 ' + junkN + ' 筆自動產生的記錄重複了</b><div class="note">翻譯機自動存生詞時另外開的、只有生詞沒有分數，跟同一天同一班的課堂記錄重複。</div></div><button class="btn sm primary" data-r="mergejunk">合併到原本的記錄</button></div>' : '') + '<div class="head-row"><div style="flex:1;"><h2>課堂記錄</h2><div class="note">' + (Object.keys(m).length ? '共 ' + Object.keys(m).length + ' 筆' : '還沒有任何記錄') + '</div></div><div><button class="btn primary" data-r="batch">⚡ 快速補填</button> <button class="btn" data-r="new">新增記錄</button> <button class="btn sm" data-r="trend">學生趨勢</button> <button class="btn sm" data-r="review">生詞複習</button> <button class="btn sm" data-r="comments">學期評語</button> <button class="btn sm" data-r="import">匯入舊記錄…</button> <button class="btn sm' + (S.recSel ? ' primary' : '') + '" data-r="selmode">' + (S.recSel ? '結束選取' : '選取刪除') + '</button><input type="file" id="rec-imp" accept=".json,application/json" style="display:none;"></div></div>';
   var labels = recLabels();
-  var needMk = Object.keys(m).filter(function(k){ return m[k].isAbsence && !m[k].madeUp; }).length;
+  var needMk = Object.keys(m).filter(function(k){ return recNeedsMakeup(m[k]); }).length;
   if(labels.length) html += '<div class="tools" style="margin-bottom:12px;"><button class="btn sm' + (f === "all" ? ' primary' : '') + '" data-r="filter" data-f="all">全部 ' + Object.keys(m).length + '</button>' + (needMk ? '<button class="btn sm' + (f === "__makeup" ? ' primary' : '') + '" data-r="filter" data-f="__makeup" style="' + (f === "__makeup" ? '' : 'background:#F7D9D5;color:#B23B32;') + '">待補課 ' + needMk + '</button>' : '') + labels.map(function(l){ return '<button class="btn sm' + (f === l.label ? ' primary' : '') + '" data-r="filter" data-f="' + esc(l.label) + '">' + esc(l.label) + ' ' + l.count + '</button>'; }).join("") + '</div>';
   if(f !== "all" && f !== "__makeup"){
     var real = ids.filter(function(k){ return !m[k].isAbsence; }), tot = [];
@@ -4224,7 +4320,7 @@ async function fillStudentHint(){
     exams.forEach(function(it){ var a = atts[it.id]; if(a && (a.status === "submitted" || a.status === "graded")) return; var due = hwDueTs(it); todo.push({ t: it.title, due: due, over: !!(due && now > due), kind: "考卷", doing: !!a && a.status === "doing" }); });
     todo.sort(function(a, b){ return (a.due || 9e15) - (b.due || 9e15); });
     function rel(ts){ if(!ts) return "沒有截止日"; var d = ts - now, day = Math.floor(Math.abs(d) / 86400000); return d < 0 ? "已過期 " + (day ? day + " 天" : "") : (d < 86400000 ? "今天 " + pad2(new Date(ts).getHours()) + ":" + pad2(new Date(ts).getMinutes()) + " 截止" : "還有 " + day + " 天（" + hwFmt(ts) + "）"); }
-    var next = null; Object.keys(sched).forEach(function(k){ var x = sched[k]; if(!x.date || !x.start) return; if(!(x.c === cid || (!x.c && x.s === st.idx.s && x.t === st.idx.tm))) return; var ts = new Date(x.date + "T" + x.end + ":00").getTime(); if(!x.end) ts = new Date(x.date + "T" + x.start + ":00").getTime() + 3600000; if(ts < now) return; if(!next || x.date + x.start < next.date + next.start) next = x; });
+    var next = null; Object.keys(sched).forEach(function(k){ var x = sched[k]; if(!x.date || !x.start || x.resched) return; if(!(x.c === cid || (!x.c && x.s === st.idx.s && x.t === st.idx.tm))) return; var ts = new Date(x.date + "T" + x.end + ":00").getTime(); if(!x.end) ts = new Date(x.date + "T" + x.start + ":00").getTime() + 3600000; if(ts < now) return; if(!next || x.date + x.start < next.date + next.start) next = x; });
     var results = exams.filter(function(it){ var a = atts[it.id]; return a && a.status === "graded" && a.released; });
     var wrong = []; results.forEach(function(it){ (atts[it.id].wrong || []).forEach(function(w){ wrong.push({ exam: it.title, t: w.t, d: w.d, s: w.s }); }); });
     var h = '<div class="panel mine-panel"><h3 style="margin:0 0 8px;">我的</h3>';
@@ -4663,7 +4759,7 @@ async function viewParent(tok){
     var extra = '';
     try{
       var allItems = objList(await fbGet(hwBase(tid, link.c) + "/items")).filter(itemVisible).filter(function(x){ return examForMe(x, link.name); }), sched = (await fbGet(base + "/schedule")) || {}, nowT = nowMs(), nxt = null;
-      Object.keys(sched).forEach(function(k){ var x = sched[k]; if(!x.date || !x.start) return; if(!(x.c === link.c || (!x.c && x.s === link.s && x.t === link.tm))) return; var ts = new Date(x.date + "T" + (x.end || x.start) + ":00").getTime(); if(ts < nowT) return; if(!nxt || x.date + x.start < nxt.date + nxt.start) nxt = x; });
+      Object.keys(sched).forEach(function(k){ var x = sched[k]; if(!x.date || !x.start || x.resched) return; if(!(x.c === link.c || (!x.c && x.s === link.s && x.t === link.tm))) return; var ts = new Date(x.date + "T" + (x.end || x.start) + ":00").getTime(); if(ts < nowT) return; if(!nxt || x.date + x.start < nxt.date + nxt.start) nxt = x; });
       if(nxt){ var nd = new Date(nxt.date + "T00:00:00"); extra += '<div class="panel"><h3>下次上課</h3><div style="font-size:19px;"><b>' + (nd.getMonth() + 1) + ' 月 ' + nd.getDate() + ' 日（' + ["日", "一", "二", "三", "四", "五", "六"][nd.getDay()] + '）' + esc(nxt.start + (nxt.end ? "–" + nxt.end : "")) + '</b></div>' + (nxt.note ? '<div class="note">' + esc(nxt.note) + '</div>' : '') + '</div>'; }
       var exs = allItems.filter(function(x){ return x.kind === "exam"; }).sort(function(a, b){ return itemDay(b).localeCompare(itemDay(a)); }), atts = {};
       await Promise.all(exs.map(function(it){ return fbGet(examAttPath(tid, link.c, it.id, link.name)).then(function(v){ atts[it.id] = v; }); }));
@@ -5258,7 +5354,7 @@ function renderStudentRoom(){
 function renderPlatformHome(){
   S.focus = false;
   var ys = sortedBy(schoolsOf(), true);
-  var html = '<div class="head-row"><div style="flex:1;"><h2>歡迎，' + esc(S.teacher.name) + '</h2></div><div class="tools" style="justify-content:flex-end;">' + ys.map(function(y){ return '<button class="btn primary" data-a="go" data-s="' + y + '">' + esc(schoolsOf()[y].name) + ' ›</button>'; }).join("") + '<button class="btn" data-a="slot-new" data-d="' + ymd(new Date()) + '">新增排課</button> <button class="btn owner-only" data-a="add-s">新增年度</button></div></div>' + backupBannerHtml() + onboardHtml() + todayPanelHtml() + '<div class="panel"><h3>待辦</h3><div id="htodo"></div></div>' + homeClassesHtml() + '<div class="panel"><h3>月課表</h3>' + calendarHtml() + '</div>';
+  var html = '<div class="head-row"><div style="flex:1;"><h2>歡迎，' + esc(S.teacher.name) + '</h2></div><div class="tools" style="justify-content:flex-end;">' + ys.map(function(y){ return '<button class="btn primary" data-a="go" data-s="' + y + '">' + esc(schoolsOf()[y].name) + ' ›</button>'; }).join("") + '<button class="btn" data-a="slot-new" data-d="' + ymd(new Date()) + '">新增排課</button> <button class="btn owner-only" data-a="add-s">新增年度</button></div></div>' + backupBannerHtml() + onboardHtml() + todayPanelHtml() + makeupPanelHtml() + '<div class="panel"><h3>待辦</h3><div id="htodo"></div></div>' + homeClassesHtml() + '<div class="panel"><h3>月課表</h3>' + calendarHtml() + '</div>';
   shell(html); setCrumb([]); bindListPage(); autoBackupArm(); bindHomeTodo(); fillHomeTodo();
   document.getElementById("main").addEventListener("click", function(e){ var b = e.target.closest("[data-ob]"); if(b) onboardAct(b.dataset.ob); });
 }
@@ -5551,7 +5647,7 @@ function cardProgress(cls, sel, pr){
   if(nf && nf.lesson && (S.plat.lessons || {})[nf.lesson]){ var t = lessonTitle(nf.lesson).replace(/^.*?(第 \d+ 課)/, "$1"); return '▶ ' + esc(t + (nf.page ? "・第 " + nf.page + " " + nf.unit : "")); }
   return pr.cur ? '▶ ' + esc(lessonTitle(pr.cur)) : '還沒有進度';
 }
-function classSlots(sel){ var m = schedMap(); return Object.keys(m).map(function(k){ return Object.assign({ id: k }, m[k]); }).filter(function(x){ return x.s === sel.s && x.t === sel.t && x.c === sel.c; }); }
+function classSlots(sel){ var m = schedMap(); return Object.keys(m).map(function(k){ return Object.assign({ id: k }, m[k]); }).filter(function(x){ return !x.resched && x.s === sel.s && x.t === sel.t && x.c === sel.c; }); }
 // 這個班每一課的狀態：上過的日期（上課時自動記錄＋課表上排了這一課的日子）、目前進度、預定日期
 function classProgress(cls, sel){
   var pg = cls.progress || {}, done = pg.done || {}, taught = {}, plan = {}, today = ymd(new Date());
