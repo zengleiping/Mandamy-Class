@@ -11983,7 +11983,7 @@ window.mmTA = (function(){
     // 自訂視窗只列出「這個畫面真的有的」工具（學生看投影片時只有放映、筆、打字、橡皮擦、翻頁、清除；其他在這個畫面被收起來了，不該出現在清單裡）
     function tbAvail(k){
       var it = tbItems[k]; if(!it) return false;
-      if(!isStudent) return true;
+      if(!isStudent && !document.body.classList.contains("teach-mode")) return true;   // 上課畫面（teach-mode）和學生一樣，只列「畫面上真的看得到」的工具
       function shown(x){ var e = x; if(!e || !e.isConnected) return false; while(e && e !== container){ if(e.style && e.style.display === "none") return false; e = e.parentNode; } return true; }
       return it.nodes.some(function(n){
         if(!shown(n)) return false;
@@ -11994,21 +11994,24 @@ window.mmTA = (function(){
     function tbLabel(k){ return (isStudent && k === "text") ? "打字" : tbItems[k].label; }
     function openToolbarCustomizer(){
       var c = loadTbConfig();
+      // 上課畫面（teach-mode）只有左邊一整列工具，沒有上方工具列：自訂視窗只列這一列真的有的工具，不提「上方」
+      var one = document.body.classList.contains("teach-mode");
+      if(one){ c.top.forEach(function(k){ if(tbAvail(k) && c.left.indexOf(k) < 0) c.left.push(k); }); c.top = c.top.filter(function(k){ return !tbAvail(k); }); }
       var back = document.createElement("div"); back.className = "tb-modal-back";
       var modal = document.createElement("div"); modal.className = "tb-modal"; back.appendChild(modal);
       function render(){
-        modal.innerHTML = '<h3>⚙ 自訂工具列 Customize toolbars</h3><div class="tb-hint">小技巧：直接「長按」工具圖示就能拖到想要的位置（左側或上方都可以）。這裡也能用按鈕調整，或把工具隱藏。設定只記在這台裝置。</div>';
+        modal.innerHTML = '<h3>⚙ 自訂工具列 Customize toolbars</h3><div class="tb-hint">' + (one ? '上課畫面的工具都放在左邊這一列。這裡可以調整順序（↑ ↓），或把用不到的工具藏起來（藏）。設定只記在這台裝置。' : '小技巧：直接「長按」工具圖示就能拖到想要的位置（左側或上方都可以）。這裡也能用按鈕調整，或把工具隱藏。設定只記在這台裝置。') + '</div>';
         var barRow = document.createElement("div"); barRow.className = "tb-row"; barRow.style.flexWrap = "wrap";
-        [["hiddenLeft", "隱藏整條左側工具列 Hide left bar"], ["hiddenTop", "隱藏整條上方工具列 Hide top bar"]].forEach(function(bh){
+        (one ? [] : [["hiddenLeft", "隱藏整條左側工具列 Hide left bar"], ["hiddenTop", "隱藏整條上方工具列 Hide top bar"]]).forEach(function(bh){
           var lb = document.createElement("label"); lb.style.cssText = "display:flex;align-items:center;gap:6px;margin-right:12px;font-size:14.5px;cursor:pointer;";
           var cb = document.createElement("input"); cb.type = "checkbox"; cb.checked = !!c[bh[0]];
           cb.onchange = function(){ c[bh[0]] = cb.checked; commit(); };
           lb.appendChild(cb); lb.appendChild(document.createTextNode(bh[1])); barRow.appendChild(lb);
         });
-        modal.appendChild(barRow);
+        if(!one) modal.appendChild(barRow);
         var barHint = document.createElement("div"); barHint.className = "tb-hint"; barHint.textContent = "隱藏整條＝完全不佔版面；兩條都隱藏時，畫面左上角會留一個小三角形可以叫回來。只想暫時收起來的話，按工具列上的 ◀ ／ ▲ 收成一個小三角形就好。";
-        modal.appendChild(barHint);
-        [["left", "左側工具列 Left"], ["top", "上方工具列 Top"], ["hidden", "隱藏 Hidden"]].forEach(function(sec){
+        if(!one) modal.appendChild(barHint);
+        (one ? [["left", "左側工具列 Left"], ["hidden", "已隱藏 Hidden"]] : [["left", "左側工具列 Left"], ["top", "上方工具列 Top"], ["hidden", "隱藏 Hidden"]]).forEach(function(sec){
           var title = document.createElement("div"); title.className = "tb-sec-title"; title.textContent = sec[1]; modal.appendChild(title);
           var keys = c[sec[0]].filter(function(k){ return tbAvail(k); });
           if(!keys.length){ var em = document.createElement("div"); em.className = "tb-empty"; em.textContent = "（空的）"; modal.appendChild(em); }
@@ -12018,7 +12021,7 @@ window.mmTA = (function(){
             function mv(dir){ var arr = c[sec[0]]; var a = arr.indexOf(k); var keysVisible = arr.filter(function(x){ return tbAvail(x); }); var target = keysVisible[i + dir]; if(!target) return; var b = arr.indexOf(target); arr[a] = target; arr[b] = k; }
             var up = document.createElement("button"); up.textContent = "↑"; up.disabled = i === 0; up.onclick = function(){ mv(-1); commit(); }; row.appendChild(up);
             var dn = document.createElement("button"); dn.textContent = "↓"; dn.disabled = i === keys.length - 1; dn.onclick = function(){ mv(1); commit(); }; row.appendChild(dn);
-            [["left", "左"], ["top", "上"], ["hidden", "藏"]].forEach(function(sd){
+            (one ? [["left", sec[0] === "hidden" ? "顯示" : "左"], ["hidden", "藏"]] : [["left", "左"], ["top", "上"], ["hidden", "藏"]]).forEach(function(sd){
               var bt = document.createElement("button"); bt.textContent = sd[1]; bt.title = sd[0]; if(sd[0] === sec[0]) bt.className = "on";
               bt.onclick = function(){ if(sd[0] === sec[0]) return; ["left", "top", "hidden"].forEach(function(kk){ c[kk] = c[kk].filter(function(x){ return x !== k; }); }); c[sd[0]].push(k); commit(); };
               row.appendChild(bt);
