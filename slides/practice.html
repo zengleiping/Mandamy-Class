@@ -1580,7 +1580,14 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   body.embed.kind-slides .question-item-btn[data-slide-row] .q-thumb{ width:104px; max-height:76px; min-height:48px; }
   body.embed.kind-slides .question-item-btn[data-slide-row] .q-action-btns{ position:absolute; right:4px; bottom:4px; background:rgba(255,255,255,.95); border-radius:6px; box-shadow:0 1px 4px rgba(0,0,0,.18); }
   body.teach-mode .sidebar-inner > :not(.section-list){ display:none !important; }
-  body.teach-mode .section-head-actions button:not(.btn-sorter){ display:none !important; }
+  /* 隱藏的投影片／題目／大題：老師端變淡、標「已隱藏」；學生端整個不顯示 */
+  .section-block.is-hidden-sec .section-head-title-text, .question-item-btn.is-hidden-q > .q-item-left{ opacity:.5; }
+  .question-item-btn.is-hidden-q .q-thumb{ filter:grayscale(1); }
+  .question-item-btn{ position:relative; }
+  .q-hide-btn{ position:absolute; top:3px; right:4px; z-index:2; display:none; font-size:11.5px; font-weight:700; padding:1px 7px; border-radius:6px; background:rgba(255,255,255,.96); color:var(--ink-soft); box-shadow:0 1px 4px rgba(0,0,0,.2); cursor:pointer; white-space:nowrap; }
+  .question-item-btn:hover .q-hide-btn, .question-item-btn.is-hidden-q .q-hide-btn{ display:inline-block; }
+  .question-item-btn.is-hidden-q .q-hide-btn{ opacity:1; color:var(--seal); }
+  body.teach-mode .section-head-actions button:not(.btn-sorter):not(.btn-hide-sec){ display:none !important; }
   body.teach-mode .question-item-btn[data-slide-row] .q-action-btns{ display:none !important; }
   body.teach-mode .section-head{ cursor:default; }
   /* 功能區：比較窄的視窗也盡量排成一排（字變小一點、群組間距縮小） */
@@ -4383,12 +4390,16 @@ window.mmTA = (function(){
     var k = window.__embedKind; if(!k || isStudent) return true;
     return k === "slides" ? sec.type === "board" : sec.type !== "board";
   }
-  function getAllQuestionsList(){
+  // 隱藏：老師可以把某一頁投影片／某一題／整個大題「隱藏」（依學生程度調整要練習的內容，每個班各自一份）。
+  // 隱藏的內容：學生看不到、翻頁（放映）會跳過、不計入配分和成績；老師端仍看得到（變淡、標「已隱藏」），隨時可以顯示回來。
+  function qHidden(sec, q){ return !!(sec && sec.hidden) || !!(q && q.hidden); }
+  function isQHiddenById(qId){ var f = findSectionForQuestion(qId); return !!(f && qHidden(f.sec, f.sec.questions && f.sec.questions[qId])); }
+  function getAllQuestionsList(visibleOnly){
     var secs = getSections(); var secKeys = getSortedSectionKeys(); var list = [];
     secKeys.forEach(function(secId){
       var sec = secs[secId];
       if(!kindAllows(sec)) return;
-      getSortedQuestionKeys(sec).forEach(function(qId){ list.push({ section: sec, question: sec.questions[qId] }); });
+      getSortedQuestionKeys(sec).forEach(function(qId){ if((isStudent || visibleOnly) && qHidden(sec, sec.questions[qId])) return; list.push({ section: sec, question: sec.questions[qId] }); });
     });
     return list;
   }
@@ -4907,7 +4918,7 @@ window.mmTA = (function(){
     secKeys.forEach(function(secId){
       var sec = secs[secId];
       if(sec.type === "board" || sec.type === "whiteboard" || sec.type === "hanzi") return; // 投影片／小白板／生字練習不計分
-      var qKeys = getSortedQuestionKeys(sec);
+      var qKeys = getSortedQuestionKeys(sec).filter(function(k){ return !qHidden(sec, sec.questions[k]); });   // 隱藏的題目不計分
       qKeys.forEach(function(qId){
         var q = sec.questions[qId];
         var w = (q.weight && q.weight > 0) ? q.weight : 1;
@@ -4983,7 +4994,7 @@ window.mmTA = (function(){
 
     secKeys.forEach(function(secId){
       var sec = secs[secId];
-      var qKeys = getSortedQuestionKeys(sec);
+      var qKeys = getSortedQuestionKeys(sec).filter(function(k){ return !qHidden(sec, sec.questions[k]); });   // 隱藏的題目不計分
       var secRes = { title: sec.title, type: sec.type, questions: [] };
 
       qKeys.forEach(function(qId, idx){
@@ -8380,12 +8391,14 @@ window.mmTA = (function(){
     secKeys.forEach(function(secId){
       var sec = secs[secId];
       if(!kindAllows(sec)) return;
-      var qKeys = getSortedQuestionKeys(sec);
+      if(isStudent && sec.hidden) return;   // 隱藏的大題：學生看不到
+      var qKeys = getSortedQuestionKeys(sec).filter(function(k){ return !(isStudent && qHidden(sec, sec.questions[k])); });
       var isCollapsed = !!sec.collapsed;
       var typeMeta = SEC_TYPE_META[sec.type] || { label: sec.type, color: "var(--seal)" };
 
       var block = document.createElement("div"); block.className = "section-block"; block.setAttribute("draggable", "true");
       block.style.setProperty("--sec-accent", typeMeta.color);
+      if(sec.hidden) block.classList.add("is-hidden-sec");
 
       block.ondragstart = function(e){
         if(draggedQ) return;
@@ -8427,7 +8440,7 @@ window.mmTA = (function(){
           <div class="section-head-title-row" title="${escapeHtml(sec.title)}">
             <span class="drag-handle-icon" title="按住拖曳大題重排 Drag to reorder">⋮⋮</span>
             <span class="section-head-collapse-icon">${isCollapsed ? '▶' : '▼'}</span>
-            <span class="section-head-title-text">${escapeHtml(sec.title)}</span>
+            <span class="section-head-title-text">${escapeHtml(sec.title)}${sec.hidden ? '（已隱藏）' : ''}</span>
           </div>
         </div>
         <div class="section-head-meta">
@@ -8439,9 +8452,12 @@ window.mmTA = (function(){
           <button type="button" class="btn btn-sm btn-ghost btn-add-subq" title="${sec.type === "board" ? "新增投影片 Add Slide" : "新增小題 Add Question"}" style="color:var(--seal);">${sec.type === "board" ? "新增投影片" : "新增小題"}</button>
           ${sec.type === "board" ? '<button type="button" class="btn btn-sm btn-ghost btn-findrep" title="尋找與取代（Ctrl/⌘+H）" style="color:var(--ink-soft);">🔎 尋找</button>' : ''}
           ${sec.type === "board" ? '<button type="button" class="btn btn-sm btn-ghost btn-sorter" title="投影片整理檢視：大縮圖、拖曳重排、章節" style="color:var(--seal);">🗂 整理檢視</button>' : ''}
+          ${isStudent ? '' : '<button type="button" class="btn btn-sm btn-ghost btn-hide-sec" title="隱藏／顯示整個大題：隱藏後學生看不到、不計分" style="color:var(--ink-soft);">' + (sec.hidden ? '顯示' : '隱藏') + '</button>'}
           <button type="button" class="btn btn-sm btn-ghost btn-del-sec" title="刪除大題 Delete Section" style="color:var(--ink-soft);">刪除</button>
         </div>
       `;
+      var hideSecBtn = head.querySelector(".btn-hide-sec");
+      if(hideSecBtn) hideSecBtn.onclick = function(e){ e.stopPropagation(); if(sec.hidden) delete sec.hidden; else sec.hidden = true; writeSections(secs); };
 
       head.onclick = function(e){ if(e.target.closest("button")) return; sec.collapsed = !sec.collapsed; writeSections(secs); };
       head.querySelector(".btn-edit-sec").onclick = function(e){ e.stopPropagation(); openSectionDialog(secId); };
@@ -8468,6 +8484,7 @@ window.mmTA = (function(){
             qBtn.className = "question-item-btn" + (qId === currentQId ? " active" : "");
             qBtn.setAttribute("draggable", "true");
             qBtn.title = q.title;
+            if(q.hidden || sec.hidden) qBtn.classList.add("is-hidden-q");
             if(sec.type === "board") qBtn.setAttribute("data-slide-row", "1");
             qBtn.innerHTML = `
               <span class="q-item-left">
@@ -8477,6 +8494,7 @@ window.mmTA = (function(){
                 <span class="q-item-title">${escapeHtml(q.title)}</span>
                 ${(!isCanvasSec(sec) && sec.type !== "hanzi" && q.weight && q.weight !== 1) ? `<span class="q-weight-tag" title="配分權重 Weight ×${q.weight}">×${q.weight}</span>` : ""}
               </span>
+              ${isStudent || sec.hidden ? '' : '<span class="q-hide-btn" title="' + (q.hidden ? '顯示這' + (sec.type === "board" ? '頁' : '題') : '隱藏這' + (sec.type === "board" ? '頁' : '題') + '：學生看不到、翻頁跳過、不計分') + '">' + (q.hidden ? '已隱藏・顯示' : '隱藏') + '</span>'}
               <span class="q-action-btns">
                 ${sec.type === "board" ? `<span class="row-del btn-dup-q" title="複製這張投影片（貼在後面）Duplicate slide" style="font-size:12.5px; font-weight:700; padding:2px 6px; color:var(--ink-soft); white-space:nowrap;">複製</span>` : ""}
                 <span class="row-del btn-edit-q" title="編輯 Edit" style="font-size:12.5px; font-weight:700; padding:2px 6px; color:var(--ink-soft); white-space:nowrap;">編輯</span>
@@ -8528,6 +8546,8 @@ window.mmTA = (function(){
               setCurrentQ(qId);
             };
 
+            var hideQBtn = qBtn.querySelector(".q-hide-btn");
+            if(hideQBtn) hideQBtn.onclick = function(e){ e.stopPropagation(); e.preventDefault(); if(q.hidden) delete q.hidden; else q.hidden = true; writeSections(secs); };
             var dupBtn = qBtn.querySelector(".btn-dup-q");
             if(dupBtn) dupBtn.onclick = function(e){ e.stopPropagation(); duplicateSlide(secId, qId); };
             qBtn.querySelector(".btn-edit-q").onclick = function(e){
@@ -11219,6 +11239,8 @@ window.mmTA = (function(){
     }
     setTimeout(function(){ prefetchNeighbors(q.id); }, 300);
     var slideSiblingIds = slideSecInfo ? getSortedQuestionKeys(slideSecInfo.sec) : [];
+    // 翻頁（上一頁／下一頁）跳過隱藏的投影片；目前這頁本身是隱藏的（老師手動點進來）也照樣可以往前後翻
+    function stepIdx(from, dir){ var i = from + dir; while(i >= 0 && i < slideSiblingIds.length && isQHiddenById(slideSiblingIds[i])) i += dir; return (i >= 0 && i < slideSiblingIds.length) ? i : -1; }
     // 班級存檔上課時左邊的投影片清單收起來了：上一頁／下一頁要能一路翻過整份簡報（不只是同一個大題裡面）
     if(window.__classCopy && !isStudent && slideSecInfo && slideSecInfo.sec.type === "board"){
       var ccAll = getAllQuestionsList().filter(function(it){ return it.section.type === "board"; }).map(function(it){ return it.question.id; });
@@ -12680,21 +12702,21 @@ window.mmTA = (function(){
       return (pr.shapes || []).reduce(function(m, t){ return Math.max(m, t.step || 0); }, mx);
     }
     function slideStepNext(){
-      if(isStudent){ if(slideIndex < slideSiblingIds.length - 1) setCurrentQ(slideSiblingIds[slideIndex + 1]); return; }
+      if(isStudent){ var si = stepIdx(slideIndex, 1); if(si >= 0) setCurrentQ(slideSiblingIds[si]); return; }
       var cur = getProgress(q.id).revealStep || 0;
       if(cur < maxStepOf(q.id)){ writeProgress(q.id, { revealStep: cur + 1 }); return; }
-      if(slideIndex < slideSiblingIds.length - 1){
-        var nid = slideSiblingIds[slideIndex + 1];
+      if(stepIdx(slideIndex, 1) >= 0){
+        var nid = slideSiblingIds[stepIdx(slideIndex, 1)];
         writeProgress(nid, { revealStep: 0 });
         setCurrentQ(nid);
       }
     }
     function slideStepPrev(){
-      if(isStudent){ if(slideIndex > 0) setCurrentQ(slideSiblingIds[slideIndex - 1]); return; }
+      if(isStudent){ var sp = stepIdx(slideIndex, -1); if(sp >= 0) setCurrentQ(slideSiblingIds[sp]); return; }
       var cur = getProgress(q.id).revealStep || 0;
       if(cur > 0){ writeProgress(q.id, { revealStep: cur - 1 }); return; }
-      if(slideIndex > 0){
-        var pid = slideSiblingIds[slideIndex - 1];
+      if(stepIdx(slideIndex, -1) >= 0){
+        var pid = slideSiblingIds[stepIdx(slideIndex, -1)];
         writeProgress(pid, { revealStep: maxStepOf(pid) });
         setCurrentQ(pid);
       }
@@ -12705,8 +12727,8 @@ window.mmTA = (function(){
       var mx = maxStepOf(q.id);
       var last = slideSiblingIds.length - 1;
       var navLk = studentNavLocked();
-      if(btnSlidePrev){ btnSlidePrev.disabled = navLk || (isStudent ? slideIndex <= 0 : !(cur > 0 || slideIndex > 0)); if(navLk) btnSlidePrev.title = "翻頁由老師控制"; }
-      if(btnSlideNext){ btnSlideNext.disabled = navLk || (isStudent ? slideIndex >= last : !(cur < mx || slideIndex < last)); if(navLk) btnSlideNext.title = "翻頁由老師控制"; }
+      if(btnSlidePrev){ btnSlidePrev.disabled = navLk || (isStudent ? stepIdx(slideIndex, -1) < 0 : !(cur > 0 || stepIdx(slideIndex, -1) >= 0)); if(navLk) btnSlidePrev.title = "翻頁由老師控制"; }
+      if(btnSlideNext){ btnSlideNext.disabled = navLk || (isStudent ? stepIdx(slideIndex, 1) < 0 : !(cur < mx || stepIdx(slideIndex, 1) >= 0)); if(navLk) btnSlideNext.title = "翻頁由老師控制"; }
       var counterEl = tbq.one(".slide-nav-counter");
       if(counterEl){
         var txt = isMultiSlideDeck ? (slideIndex + 1) + " / " + slideSiblingIds.length : "";
