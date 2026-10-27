@@ -1817,6 +1817,9 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   }
   :root:not([data-theme="light"]) .hanzi-side-panel{ border-color:rgba(255,255,255,0.16); }
   .hanzi-ref-box{ display:flex; flex-direction:column; align-items:center; gap:6px; width:100%; }
+  .hanzi-ref-zy{ font-family:MM Latin,Iansui,serif; font-size:42px; font-weight:700; line-height:1.2; text-align:center; padding:6px 0; color:var(--seal); letter-spacing:.04em; }
+  .hanzi-ref-img{ max-width:100%; max-height:150px; border-radius:8px; display:block; }
+  .hanzi-side-panel.hanzi-hint-off .hanzi-ref-box{ display:none; }
   .hanzi-ref-label{ font-size:13.5px; font-weight:700; color:var(--ink-soft); }
   .hanzi-ref-char{ width:140px; height:140px; }
   .hanzi-ref-error{ display:none; font-size:13.5px; color:var(--ink-soft); text-align:center; }
@@ -2575,6 +2578,18 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
         <input type="text" id="f-hanzi-char" maxlength="4" placeholder="例如：愛" style="font-size:20px;text-align:center;">
         <label>教學指引（選填）</label>
         <input type="text" id="f-hanzi-desc" placeholder="例如：請跟著筆順寫三次">
+        <label>學生看到的提示（可複選；程度好的學生可以不看提示，學生自己也能按「隱藏提示」）</label>
+        <div style="display:flex;flex-wrap:wrap;gap:14px;margin:4px 0 8px;font-size:15px;">
+          <label style="display:flex;gap:5px;align-items:center;"><input type="checkbox" id="f-hanzi-h-char" checked> 國字與筆順（原本的樣子）</label>
+          <label style="display:flex;gap:5px;align-items:center;"><input type="checkbox" id="f-hanzi-h-zy"> 注音</label>
+          <label style="display:flex;gap:5px;align-items:center;"><input type="checkbox" id="f-hanzi-h-img"> 圖片</label>
+        </div>
+        <label>注音（自動填入，可以修改；多個字用空格隔開）</label>
+        <input type="text" id="f-hanzi-zy" placeholder="例如：ㄕㄡˇ">
+        <label>提示圖片（選填；放在「圖片」提示裡給學生看）</label>
+        <div style="display:flex;gap:8px;align-items:center;"><button type="button" class="btn btn-sm" id="btn-hanzi-img">📷 選圖片</button><span id="hanzi-img-tip" style="font-size:13px;color:var(--ink-soft);">還沒有圖片</span><button type="button" class="btn btn-sm btn-ghost" id="btn-hanzi-img-clear" style="display:none;">移除</button></div>
+        <input type="file" id="f-hanzi-img" accept="image/*" style="display:none;">
+        <div class="hint" style="font-size:13px;color:var(--ink-soft);margin-top:4px;">只勾「注音」或「圖片」時，學生看不到答案的國字，要自己寫出來；學生寫完可以按「看答案」核對。</div>
       </div>
     </div>
     <div class="dialog-foot">
@@ -4397,6 +4412,9 @@ window.mmTA = (function(){
   // 隱藏的內容：學生看不到、翻頁（放映）會跳過、不計入配分和成績；老師端仍看得到（變淡、標「已隱藏」），隨時可以顯示回來。
   function qHidden(sec, q){ return !!(sec && sec.hidden) || !!(q && q.hidden); }
   function isQHiddenById(qId){ var f = findSectionForQuestion(qId); return !!(f && qHidden(f.sec, f.sec.questions && f.sec.questions[qId])); }
+  // 生字練習只給注音／圖片提示時，學生看到的標題和說明不能帶出答案的國字
+  function dispTitle(sec, q){ if(isStudent && sec && sec.type === "hanzi" && q.hint && q.hint.char === false) return String(q.title || "").replace(/[：:].*$/, ""); return q.title; }
+  function dispDesc(sec, q, d){ var t = d; if(isStudent && sec && sec.type === "hanzi" && q.hint && q.hint.char === false && q.char && t) t = String(t).split(q.char).join("○"); return t; }
   function getAllQuestionsList(visibleOnly){
     var secs = getSections(); var secKeys = getSortedSectionKeys(); var list = [];
     secKeys.forEach(function(secId){
@@ -8517,7 +8535,7 @@ window.mmTA = (function(){
             var qBtn = document.createElement("button"); qBtn.type = "button";
             qBtn.className = "question-item-btn" + (qId === currentQId ? " active" : "");
             qBtn.setAttribute("draggable", "true");
-            qBtn.title = q.title;
+            qBtn.title = dispTitle(sec, q);
             if(q.hidden || sec.hidden) qBtn.classList.add("is-hidden-q");
             if(sec.type === "board") qBtn.setAttribute("data-slide-row", "1");
             qBtn.innerHTML = `
@@ -8525,7 +8543,7 @@ window.mmTA = (function(){
                 <span class="drag-handle-icon" title="按住拖曳小題重排 Drag to reorder">⋮⋮</span>
                 <span class="q-index-badge">${idx + 1}</span>
                 ${sec.type === "board" ? `<img class="q-thumb" data-thumb-qid="${qId}" src="${thumbSrcFor(q)}" alt="">` : ""}
-                <span class="q-item-title">${escapeHtml(q.title)}</span>
+                <span class="q-item-title">${escapeHtml(dispTitle(sec, q))}</span>
                 ${(!isCanvasSec(sec) && sec.type !== "hanzi" && q.weight && q.weight !== 1) ? `<span class="q-weight-tag" title="配分權重 Weight ×${q.weight}">×${q.weight}</span>` : ""}
               </span>
               ${isStudent || sec.hidden ? '' : '<span class="q-hide-btn" title="' + (q.hidden ? '顯示這' + (sec.type === "board" ? '頁' : '題') : '隱藏這' + (sec.type === "board" ? '頁' : '題') + '：學生看不到、翻頁跳過、不計分') + '">' + (q.hidden ? '已隱藏・顯示' : '隱藏') + '</span>'}
@@ -9270,6 +9288,18 @@ window.mmTA = (function(){
   var pairRowsEl = document.getElementById("pair-rows");
   var choiceOptRowsEl = document.getElementById("choice-opt-rows");
   var editorBoardImgData = "";
+  // 生字練習的提示：國字（筆順參考）／注音／圖片，老師決定學生看到哪些
+  var editorHanziImg = "", hanziZyDirty = false;
+  function hanziAutoZy(ch){
+    try{
+      if(typeof pinyinPro === "undefined" || !String(ch || "").trim()) return "";
+      return pinyinPro.pinyin(String(ch).trim(), { toneType: "num", type: "array" }).map(function(sy){ return pinyinSyllableToZhuyin(sy); }).join(" ");
+    }catch(e){ return ""; }
+  }
+  function hanziImgTipSync(){
+    var tip = document.getElementById("hanzi-img-tip"), clr = document.getElementById("btn-hanzi-img-clear"); if(!tip) return;
+    tip.textContent = editorHanziImg ? "✅ 已選圖片" : "還沒有圖片"; if(clr) clr.style.display = editorHanziImg ? "" : "none";
+  }
 
   function makePairRow(left, right){
     var row = document.createElement("div"); row.className = "pair-row";
@@ -9589,6 +9619,10 @@ window.mmTA = (function(){
     } else if(type === "hanzi"){
       document.getElementById("f-hanzi-char").value = q ? (q.char || "") : "";
       document.getElementById("f-hanzi-desc").value = q ? (q.desc || "") : "";
+      var hh = (q && q.hint) || {};
+      document.getElementById("f-hanzi-h-char").checked = hh.char !== false; document.getElementById("f-hanzi-h-zy").checked = !!hh.zy; document.getElementById("f-hanzi-h-img").checked = !!hh.img;
+      document.getElementById("f-hanzi-zy").value = q && q.zy ? q.zy : (q && q.char ? hanziAutoZy(q.char) : ""); hanziZyDirty = !!(q && q.zy);
+      editorHanziImg = q && q.hintImg ? q.hintImg : ""; hanziImgTipSync();
     }
 
     // 次要欄位預設收起；已有內容的題目自動展開，避免看不到已填的資料
@@ -9599,6 +9633,19 @@ window.mmTA = (function(){
   document.getElementById("add-pair").onclick = function(){ pairRowsEl.appendChild(makePairRow("", "")); };
   document.getElementById("add-mc-opt").onclick = function(){ choiceOptRowsEl.appendChild(makeChoiceRow("", false)); };
 
+  document.getElementById("btn-hanzi-img").onclick = function(){ document.getElementById("f-hanzi-img").click(); };
+  document.getElementById("btn-hanzi-img-clear").onclick = function(){ editorHanziImg = ""; hanziImgTipSync(); };
+  document.getElementById("f-hanzi-img").onchange = function(e){
+    var file = e.target.files[0]; e.target.value = ""; if(!file) return;
+    var reader = new FileReader();
+    reader.onload = function(evt){ var img = new Image(); img.onload = function(){
+      var c = document.createElement("canvas"), sc = Math.min(1, 600 / img.width); c.width = Math.round(img.width * sc); c.height = Math.round(img.height * sc);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height); editorHanziImg = c.toDataURL("image/jpeg", 0.85); document.getElementById("f-hanzi-h-img").checked = true; hanziImgTipSync();
+    }; img.src = evt.target.result; };
+    reader.readAsDataURL(file);
+  };
+  document.getElementById("f-hanzi-zy").oninput = function(){ hanziZyDirty = true; };
+  document.getElementById("f-hanzi-char").addEventListener("input", function(){ if(!hanziZyDirty) document.getElementById("f-hanzi-zy").value = hanziAutoZy(this.value); });
   document.getElementById("upload-box").onclick = function(){ document.getElementById("f-board-img").click(); };
   document.getElementById("f-board-img").onchange = function(e){
     var file = e.target.files[0]; if(!file) return;
@@ -9696,9 +9743,16 @@ window.mmTA = (function(){
     } else if(sec.type === "hanzi"){
       var hanziChar = document.getElementById("f-hanzi-char").value.trim();
       if(!hanziChar){ alert("請輸入要練習的漢字！Please enter a character to practice."); return; }
-      qObj.title = titleInput || ("第 " + (order + 1) + " 題：" + hanziChar);
+      var hChar = document.getElementById("f-hanzi-h-char").checked, hZy = document.getElementById("f-hanzi-h-zy").checked, hImg = document.getElementById("f-hanzi-h-img").checked;
+      if(!hChar && !hZy && !hImg && !confirm("三種提示都沒有勾：學生會完全看不到要寫哪個字（只有你口頭說明）。要這樣存嗎？")) return;
+      if(hImg && !editorHanziImg){ alert("你勾了「圖片」提示，但還沒有選圖片。"); return; }
+      // 學生看不到國字時，題目標題不能帶出答案
+      qObj.title = titleInput || (hChar ? ("第 " + (order + 1) + " 題：" + hanziChar) : ("第 " + (order + 1) + " 題"));
       qObj.char = hanziChar;
       qObj.desc = document.getElementById("f-hanzi-desc").value.trim();
+      if(hChar && !hZy && !hImg) delete qObj.hint; else qObj.hint = { char: hChar, zy: hZy, img: hImg };
+      var zyVal = document.getElementById("f-hanzi-zy").value.trim(); if(zyVal && zyVal !== hanziAutoZy(hanziChar)) qObj.zy = zyVal; else delete qObj.zy;
+      if(editorHanziImg) qObj.hintImg = editorHanziImg; else delete qObj.hintImg;
     }
 
     qObj.media = qMediaManager.getItems();
@@ -10323,7 +10377,7 @@ window.mmTA = (function(){
     var navBar = document.createElement("div"); navBar.className = "stage-header-nav";
     navBar.innerHTML = `
       <div style="font-size:15px; font-weight:700; color:var(--seal); display:flex; align-items:center; gap:6px;">
-        <span>📝 ${sec.title}</span><span style="opacity:0.4;">/</span><span style="color:var(--ink);">${q.title}</span>
+        <span>📝 ${sec.title}</span><span style="opacity:0.4;">/</span><span style="color:var(--ink);">${dispTitle(sec, q)}</span>
         ${isTestMode() ? '<span style="font-size:12.5px; background:var(--seal-soft); color:var(--seal); padding:2px 6px; border-radius:4px; margin-left:6px;">'+(currentClassMode==='exam'?'📝 正式考試中':'🔴 測驗模式中')+'</span>' : ''}${examPickerHtml()}
       </div>
       <div class="nav-page-group">
@@ -10341,7 +10395,7 @@ window.mmTA = (function(){
     if(!compactEdit) stageEl.appendChild(navBar);
 
     var head = document.createElement("div"); head.className = "stage-head";
-    head.innerHTML = `<div><h2 class="stage-title zh">${q.title}</h2><p class="stage-sub">${q.desc || sec.desc || "即時互動練習"}</p></div>`;
+    head.innerHTML = `<div><h2 class="stage-title zh">${dispTitle(sec, q)}</h2><p class="stage-sub">${dispDesc(sec, q, q.desc) || sec.desc || "即時互動練習"}</p></div>`;
 
     var actWrap = document.createElement("div"); actWrap.className = "stage-actions";
 
@@ -17108,17 +17162,47 @@ window.mmTA = (function(){
     var layout = document.createElement("div"); layout.className = "hanzi-board-layout";
 
     var side = document.createElement("div"); side.className = "hanzi-side-panel";
-    side.innerHTML =
-      '<div class="hanzi-ref-box">' +
+    // 老師可以決定學生看到哪些提示：國字與筆順（預設）／注音／圖片；只給注音或圖片時，學生看不到答案的國字，要自己寫出來
+    var hint = q.hint || {}, showChar = !isStudent || hint.char !== false;
+    var strokeBoxHtml = '<div class="hanzi-ref-box hanzi-ref-main">' +
         '<span class="hanzi-ref-label">筆順參考 Stroke Order</span>' +
         '<div class="hanzi-ref-char" id="hanzi-ref-char"></div>' +
         '<p class="hanzi-ref-error" id="hanzi-ref-error"></p>' +
         '<button type="button" class="btn btn-sm btn-ghost" id="btn-hanzi-play">▶️ 播放筆順動畫</button>' +
       '</div>';
+    var zyTxt = String(q.zy || "").trim() || hanziAutoZy(char);
+    var hintHtml = "";
+    if(isStudent && hint.zy && zyTxt) hintHtml += '<div class="hanzi-ref-box hanzi-hint-box"><span class="hanzi-ref-label">注音 Zhuyin</span><div class="hanzi-ref-zy">' + escapeHtml(zyTxt) + '</div></div>';
+    if(isStudent && hint.img && q.hintImg) hintHtml += '<div class="hanzi-ref-box hanzi-hint-box"><span class="hanzi-ref-label">圖片 Picture</span><img class="hanzi-ref-img" src="' + escapeHtml(q.hintImg) + '" alt=""></div>';
+    if(isStudent && !showChar && !hintHtml) hintHtml = '<div class="hanzi-ref-box hanzi-hint-box"><span class="hanzi-ref-label">沒有提示，憑記憶寫寫看</span></div>';
+    side.innerHTML = hintHtml + (showChar ? strokeBoxHtml : '');
     layout.appendChild(side);
 
-    var refWriter = hanziInitReference(char, side.querySelector("#hanzi-ref-char"), side.querySelector("#hanzi-ref-error"));
-    side.querySelector("#btn-hanzi-play").onclick = function(){ var inst = refWriter && refWriter.get(); if(inst) inst.animateCharacter(); };
+    var refWriter = null;
+    function bindStrokeBox(){
+      refWriter = hanziInitReference(char, side.querySelector("#hanzi-ref-char"), side.querySelector("#hanzi-ref-error"));
+      side.querySelector("#btn-hanzi-play").onclick = function(){ var inst = refWriter && refWriter.get(); if(inst) inst.animateCharacter(); };
+    }
+    if(showChar) bindStrokeBox();
+    // 學生沒有看到國字的時候，寫完可以按「看答案」核對（會跳出筆順參考）
+    var answerBtn = null;
+    if(isStudent && !showChar){
+      answerBtn = document.createElement("button"); answerBtn.type = "button"; answerBtn.className = "btn btn-sm btn-ghost"; answerBtn.textContent = "✅ 看答案";
+      answerBtn.onclick = function(){
+        var ex = side.querySelector(".hanzi-ref-main");
+        if(ex){ ex.remove(); answerBtn.textContent = "✅ 看答案"; return; }
+        var tmp = document.createElement("div"); tmp.innerHTML = strokeBoxHtml; var bx = tmp.firstChild; side.insertBefore(bx, answerBtn); bindStrokeBox(); answerBtn.textContent = "🙈 收起答案";
+      };
+      side.appendChild(answerBtn);
+    }
+    // 學生自己決定要不要看提示（程度好的不需要）：記在這台裝置
+    if(isStudent && (showChar || hintHtml)){
+      var hideBtn = document.createElement("button"); hideBtn.type = "button"; hideBtn.className = "btn btn-sm btn-ghost"; hideBtn.id = "btn-hanzi-hidehint";
+      var hidden0 = false; try{ hidden0 = localStorage.getItem("mm_hanzi_hidehint") === "1"; }catch(e){}
+      function applyHide(h){ side.classList.toggle("hanzi-hint-off", h); hideBtn.textContent = h ? "👀 顯示提示" : "🙈 隱藏提示"; }
+      hideBtn.onclick = function(){ var h = !side.classList.contains("hanzi-hint-off"); try{ localStorage.setItem("mm_hanzi_hidehint", h ? "1" : "0"); }catch(e){} applyHide(h); };
+      applyHide(hidden0); side.appendChild(hideBtn);
+    }
 
     var stageArea = document.createElement("div"); stageArea.className = "canvas-stage-area";
     layout.appendChild(stageArea);
@@ -17131,6 +17215,8 @@ window.mmTA = (function(){
       monitorBtn.type = "button"; monitorBtn.className = "btn btn-sm btn-primary"; monitorBtn.textContent = "👀 查看全班寫字 View Class Writing";
       monitorBtn.onclick = function(){ openHanziMonitorDialog(q); };
       side.appendChild(monitorBtn);
+      var hnote = []; if(hint.char !== false) hnote.push("國字與筆順"); if(hint.zy) hnote.push("注音"); if(hint.img) hnote.push("圖片");
+      var hn = document.createElement("div"); hn.style.cssText = "font-size:12.5px;color:var(--ink-soft);text-align:center;"; hn.textContent = "學生看到的提示：" + (hnote.join("、") || "（沒有）"); side.appendChild(hn);
 
       var placeholder = document.createElement("div"); placeholder.className = "hanzi-teacher-placeholder";
       placeholder.innerHTML =
