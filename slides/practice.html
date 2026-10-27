@@ -8972,8 +8972,9 @@ window.mmTA = (function(){
     var html = "";
     for(var i = 0; i < chars.length; i++){
       var ch = chars[i], md = modes[i];
-      if(md === "none"){ html += W(i, escapeHtml(ch)); continue; }
-      if(md === "off" || md === "hide"){ html += W(i, "<ruby data-ph-idx=\"" + (baseIdx + i) + "\">" + escapeHtml(ch) + "<rt></rt></ruby>"); continue; }
+      // 這一行有直排注音時，沒標注音的字和標點也放進同樣的 .zy-r 盒子，跟有注音的字落在同一條水平基準線上（不然 ruby 和 inline-flex 的基準線不同，會高高低低）
+      if(md === "none"){ html += W(i, needZ ? "<span class=\"zy-r\"><span class=\"zy-c\">" + escapeHtml(ch) + "</span></span>" : escapeHtml(ch)); continue; }
+      if(md === "off" || md === "hide"){ html += W(i, needZ ? "<span class=\"zy-r\" data-ph-idx=\"" + (baseIdx + i) + "\"><span class=\"zy-c\">" + escapeHtml(ch) + "</span></span>" : "<ruby data-ph-idx=\"" + (baseIdx + i) + "\">" + escapeHtml(ch) + "<rt></rt></ruby>"); continue; }
       var ovv = overrides && typeof overrides[baseIdx + i] === "string" ? overrides[baseIdx + i] : "";
       var hasOverride = ovv !== "" && ovv !== "+" && ovv !== " ";
       var annotation = hasOverride ? ovv : (md === "zhuyin" ? pinyinSyllableToZhuyin(symN[i]) : symP[i]);
