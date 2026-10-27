@@ -2530,6 +2530,9 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
         <textarea id="f-reorder-prompt" rows="2" placeholder="例如：請將下列詞語重組為正確句子"></textarea>
         <label>正確句子語序（請用空格隔開每個詞語；如果句子裡有逗號、句號等標點，也要用空格把它獨立隔開，當作一個詞語）</label>
         <input type="text" id="f-reorder-answer" placeholder="例如：早飯 有 麵包 ， 還有 牛奶 。">
+        <label>其他也算對的答案（選填；一行一個，詞語用空格隔開，詞語要跟上面一樣）</label>
+        <textarea id="f-reorder-alts" rows="3" placeholder="例如：我 畫 鼻子 、 眼睛 和 頭 。"></textarea>
+        <button type="button" class="btn btn-sm" id="btn-reorder-autoalts" title="句子裡用「、」或「和」連起來的並列詞語（例如 頭、眼睛和鼻子），順序可以互換，自動把所有排法列出來" style="margin-top:6px;">自動產生：並列詞語可以互換的答案</button>
       </div>
 
       <div id="fill-fields" style="display:none;">
@@ -5048,7 +5051,7 @@ window.mmTA = (function(){
         } else if(sec.type === "reorder"){
           totalScoreable += weight;
           var correctWords = q.words || []; var userWords = progress.userWords || [];
-          var isMatch = (userWords.length === correctWords.length && correctWords.length > 0) && userWords.every((w, i) => w === correctWords[i]);
+          var isMatch = reorderMatches(q, userWords);
           if(isMatch){
             qRes.score = 1; qRes.status = "correct"; qRes.detail = "句子語序完全正確 Correct Order"; totalEarned += weight;
           } else {
@@ -7862,12 +7865,31 @@ window.mmTA = (function(){
   function openSlideSorter(){
     var back = document.createElement("div"); back.className = "tb-modal-back";
     var modal = document.createElement("div"); modal.className = "tb-modal"; modal.style.cssText = "width:min(1100px,96vw);max-height:92vh;overflow:auto;"; back.appendChild(modal);
-    var drag = null;
+    var drag = null, picked = {}, lastPick = null, flatOrder = [];
+    function setHiddenFor(ids, on){
+      var ss = getSections(), n = 0;
+      ids.forEach(function(id){ var f = null; Object.keys(ss).forEach(function(k){ if(ss[k].questions && ss[k].questions[id]) f = ss[k]; }); if(!f) return; if(on) f.questions[id].hidden = true; else delete f.questions[id].hidden; n++; });
+      if(n) writeSections(ss);
+      setTimeout(render, 100);
+    }
     function render(){
       var secs = getSections(), keys = getSortedSectionKeys().filter(function(k){ return secs[k].type === "board"; });
+      flatOrder = []; keys.forEach(function(k){ getSortedQuestionKeys(secs[k]).forEach(function(id){ flatOrder.push(id); }); });
+      Object.keys(picked).forEach(function(id){ if(flatOrder.indexOf(id) < 0) delete picked[id]; });
       var curInfo = getCurrentQInfo(), curId = curInfo ? curInfo.question.id : null;
       modal.innerHTML = '<div style="display:flex;align-items:center;gap:10px;"><h3 style="margin:0;flex:1;">🗂 投影片整理檢視 Slide Sorter</h3><button type="button" class="tb-row ss-close" style="cursor:pointer;margin:0;padding:5px 14px;">完成</button></div><div class="tb-hint">拖曳縮圖來換順序（也可以拖到別的章節）；觸控裝置請按卡片上的 ◀ ▶。章節＝PowerPoint 的「章節」，可以按名稱旁的 ✎ 重新命名。</div>';
       modal.querySelector(".ss-close").onclick = function(){ back.remove(); };
+      // 一次勾選多張：勾選卡片左下的方塊（按住 Shift 可以連續勾一段），再按「隱藏選取」／「顯示選取」
+      var pk = Object.keys(picked), bar = document.createElement("div");
+      bar.style.cssText = "display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0 0;padding:8px 10px;background:var(--surface-2,#f5efe6);border-radius:10px;font-size:14px;";
+      bar.innerHTML = '<b>已選 ' + pk.length + ' 張</b><button type="button" class="tb-row ss-all" style="cursor:pointer;margin:0;padding:3px 10px;">全選</button><button type="button" class="tb-row ss-none" style="cursor:pointer;margin:0;padding:3px 10px;">取消選取</button>' +
+        '<button type="button" class="tb-row ss-hidesel" style="cursor:pointer;margin:0;padding:3px 10px;"' + (pk.length ? '' : ' disabled') + ' title="選取的投影片：學生看不到、翻頁跳過">隱藏選取</button><button type="button" class="tb-row ss-showsel" style="cursor:pointer;margin:0;padding:3px 10px;"' + (pk.length ? '' : ' disabled') + '>顯示選取</button>' +
+        '<span style="color:var(--ink-soft);font-size:13px;">隱藏的投影片學生看不到、翻頁會跳過、老師仍看得到（變淡）</span>';
+      bar.querySelector(".ss-all").onclick = function(){ flatOrder.forEach(function(id){ picked[id] = true; }); render(); };
+      bar.querySelector(".ss-none").onclick = function(){ picked = {}; render(); };
+      bar.querySelector(".ss-hidesel").onclick = function(){ var ids = Object.keys(picked); picked = {}; setHiddenFor(ids, true); };
+      bar.querySelector(".ss-showsel").onclick = function(){ var ids = Object.keys(picked); picked = {}; setHiddenFor(ids, false); };
+      modal.appendChild(bar);
       keys.forEach(function(secId){
         var sec = secs[secId], qKeys = getSortedQuestionKeys(sec);
         var h = document.createElement("div"); h.style.cssText = "display:flex;align-items:center;gap:8px;margin:16px 0 6px;font-weight:800;font-size:15.5px;";
@@ -7881,7 +7903,10 @@ window.mmTA = (function(){
           var cached = slideThumbCache[qId];
           var card = document.createElement("div"); card.setAttribute("draggable", "true"); card.dataset.ssq = qId;
           card.style.cssText = "border:2px solid " + (qId === curId ? "var(--seal)" : "rgba(28,33,30,.15)") + ";border-radius:10px;padding:6px;background:var(--surface);cursor:grab;position:relative;";
+          var isHid = qHidden(sec, q);
           card.innerHTML = '<div style="position:absolute;left:8px;top:8px;background:var(--ink);color:#fff;border-radius:6px;padding:0 6px;font-size:12.5px;font-weight:700;">' + (idx + 1) + '</div>' +
+            '<label class="ss-pickwrap" style="position:absolute;right:8px;top:8px;z-index:2;background:rgba(255,255,255,.95);border-radius:6px;padding:2px 5px;cursor:pointer;display:flex;align-items:center;gap:3px;font-size:12px;" title="勾選（按住 Shift 可連續勾選）"><input type="checkbox" class="ss-chk"' + (picked[qId] ? ' checked' : '') + '>選</label>' +
+            (isHid ? '<div style="position:absolute;left:8px;bottom:42px;z-index:2;background:var(--seal);color:#fff;border-radius:6px;padding:0 6px;font-size:12px;font-weight:700;">已隱藏</div>' : '') +
             '<img class="ss-th" src="' + (cached ? cached.url : THUMB_BLANK) + '" data-thumb-qid="' + qId + '" style="width:100%;display:block;border-radius:6px;background:#fff;border:1px solid rgba(28,33,30,.1);aspect-ratio:3/2;object-fit:contain;" alt="">' +
             '<div style="font-size:13.5px;font-weight:700;margin:5px 2px 3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + escapeHtml(q.title) + '</div>' +
             '<div style="display:flex;gap:4px;"><button type="button" class="tb-row ss-l" style="cursor:pointer;margin:0;padding:2px 8px;" title="往前移">◀</button><button type="button" class="tb-row ss-r" style="cursor:pointer;margin:0;padding:2px 8px;" title="往後移">▶</button><button type="button" class="tb-row ss-dup" style="cursor:pointer;margin:0;padding:2px 8px;font-size:13.5px;">複製</button><button type="button" class="tb-row ss-del" style="cursor:pointer;margin:0 0 0 auto;padding:2px 8px;font-size:13.5px;">刪除</button></div>';
@@ -7898,6 +7923,15 @@ window.mmTA = (function(){
             }
             writeSections(ss); setTimeout(render, 80);
           }
+          if(isHid){ card.querySelector(".ss-th").style.opacity = ".4"; card.querySelector(".ss-th").style.filter = "grayscale(1)"; }
+          var chk = card.querySelector(".ss-chk");
+          card.querySelector(".ss-pickwrap").onclick = function(e){ e.stopPropagation(); };
+          chk.onclick = function(e){
+            e.stopPropagation();
+            if(e.shiftKey && lastPick && flatOrder.indexOf(lastPick) >= 0){ var a = flatOrder.indexOf(lastPick), b2 = flatOrder.indexOf(qId); for(var z = Math.min(a, b2); z <= Math.max(a, b2); z++) picked[flatOrder[z]] = chk.checked; }
+            else if(chk.checked) picked[qId] = true; else delete picked[qId];
+            lastPick = qId; render();
+          };
           card.querySelector(".ss-l").onclick = function(e){ e.stopPropagation(); if(idx > 0) reorder(secId, idx - 1); };
           card.querySelector(".ss-r").onclick = function(e){ e.stopPropagation(); if(idx < qKeys.length - 1) reorder(secId, idx + 1); };
           card.querySelector(".ss-dup").onclick = function(e){ e.stopPropagation(); duplicateSlide(secId, qId); setTimeout(render, 150); };
@@ -9547,6 +9581,7 @@ window.mmTA = (function(){
     } else if(type === "reorder"){
       document.getElementById("f-reorder-prompt").value = q ? (q.prompt || "") : "";
       document.getElementById("f-reorder-answer").value = q && q.words ? q.words.join(" ") : "";
+      document.getElementById("f-reorder-alts").value = q && Array.isArray(q.alts) ? q.alts.map(function(a){ return Array.isArray(a) ? a.join(" ") : String(a); }).join("\n") : "";
     } else if(type === "board" || type === "whiteboard"){
       editorBoardImgData = q ? (q.bgImage || "") : "";
       document.getElementById("upload-tip").textContent = editorBoardImgData ? "✅ 已上傳底圖 Uploaded（點擊可更換 tap to change）" : "📷 點擊上傳背景圖片 Upload Image";
@@ -9648,6 +9683,11 @@ window.mmTA = (function(){
       if(words.length < 2){ alert("請輸入至少兩個詞語組成句子！Please enter at least two words."); return; }
       qObj.title = titleInput || ("第 " + (order + 1) + " 題");
       qObj.prompt = rPrompt || "請將下列詞語重組為正確句子 Rearrange the words into a correct sentence"; qObj.words = words;
+      // 其他也算對的答案：每一行一個，詞語必須跟正解完全一樣（只是順序不同）
+      var altLines = document.getElementById("f-reorder-alts").value.split("\n").map(function(l){ return l.trim().split(/\s+/).filter(Boolean); }).filter(function(a){ return a.length; });
+      var sortKey = function(a){ return a.slice().sort().join("\u0001"); };
+      for(var ai = 0; ai < altLines.length; ai++){ if(sortKey(altLines[ai]) !== sortKey(words)){ alert("第 " + (ai + 1) + " 行「其他答案」用的詞語跟正解不一樣（詞語要一模一樣，只能換順序）：\n" + altLines[ai].join(" ")); return; } }
+      if(altLines.length) qObj.alts = altLines.map(function(a){ return a.join(" "); }); else delete qObj.alts;
     } else if(sec.type === "board" || sec.type === "whiteboard"){
       qObj.title = titleInput || ("第 " + (order + 1) + " 題");
       qObj.desc = document.getElementById("f-board-desc").value.trim();
@@ -10995,7 +11035,7 @@ window.mmTA = (function(){
     if(isRevealed){
       var note = document.createElement("p");
       note.style.fontSize = "13px"; note.style.color = "var(--bamboo)"; note.style.marginTop = "10px"; note.style.fontWeight = "700";
-      note.textContent = "🎉 答對了！正確解答： " + correctWords.join(" ");
+      note.textContent = "🎉 答對了！正確解答： " + ((q.alts && q.alts.length && userWords.length === correctWords.length) ? userWords.join(" ") : correctWords.join(" "));
       wrap.appendChild(note);
     }
 
@@ -11003,6 +11043,48 @@ window.mmTA = (function(){
   }
 
   var reorderTimer = null;
+  // 句子重組有好幾種正確答案：q.words 是標準答案，q.alts 是老師另外列出的其他排法（一行一個，空格隔開）
+  function reorderMatches(q, userWords){
+    var cands = [q.words || []].concat((Array.isArray(q.alts) ? q.alts : []).map(function(a){ return Array.isArray(a) ? a : String(a).trim().split(/\s+/); }));
+    return cands.some(function(c){ return c.length > 0 && userWords.length === c.length && userWords.every(function(w, i){ return w === c[i]; }); });
+  }
+  // 「、」「和」連起來的並列詞語（例如 頭 、 眼睛 和 鼻子）順序可以互換：自動列出所有排法（最多 24 種）
+  function reorderAutoAlts(words){
+    var seps = ["、", "和", "跟", "與"], chain = [], i = 0, groups = [];
+    while(i < words.length){
+      if(seps.indexOf(words[i]) >= 0 && i > 0 && i + 1 < words.length && seps.indexOf(words[i + 1]) < 0){
+        var start = i - 1, items = [start], sp = [];
+        var j = i;
+        while(j < words.length && seps.indexOf(words[j]) >= 0 && j + 1 < words.length && seps.indexOf(words[j + 1]) < 0){ sp.push(j); items.push(j + 1); j += 2; }
+        // 前一個詞如果已經是上一組的結尾，就合併
+        groups.push({ items: items });
+        i = j; continue;
+      }
+      i++;
+    }
+    var out = [];
+    function perms(a){ if(a.length <= 1) return [a.slice()]; var r = []; a.forEach(function(x, k){ perms(a.slice(0, k).concat(a.slice(k + 1))).forEach(function(p){ r.push([x].concat(p)); }); }); return r; }
+    var base = words.slice(), sets = [words.slice()];
+    groups.forEach(function(g){
+      if(g.items.length < 2 || g.items.length > 4) return;
+      var vals = g.items.map(function(ix){ return words[ix]; }), next = [];
+      sets.forEach(function(w){ perms(vals).forEach(function(pm){ var c = w.slice(); g.items.forEach(function(ix, k){ c[ix] = pm[k]; }); next.push(c); }); });
+      sets = next;
+    });
+    var seen = {}; seen[words.join(" ")] = 1;
+    sets.forEach(function(w){ var k = w.join(" "); if(!seen[k]){ seen[k] = 1; out.push(k); } });
+    return out.slice(0, 24);
+  }
+  document.addEventListener("click", function(e){
+    var b = e.target.closest && e.target.closest("#btn-reorder-autoalts"); if(!b) return;
+    e.preventDefault();
+    var words = document.getElementById("f-reorder-answer").value.trim().split(/\s+/).filter(Boolean);
+    var alts = reorderAutoAlts(words);
+    if(!alts.length){ alert("這個句子裡沒有找到用「、」或「和」連起來的並列詞語，所以沒有可以自動互換的排法。\n其他排法可以自己在下面一行一個寫進去。"); return; }
+    var ta = document.getElementById("f-reorder-alts"), have = ta.value.split("\n").map(function(l){ return l.trim(); }).filter(Boolean);
+    alts.forEach(function(a){ if(have.indexOf(a) < 0) have.push(a); });
+    ta.value = have.join("\n");
+  });
   function evaluateReorderState(q, userWords, poolWords, correctWords){
     if(reorderTimer) clearTimeout(reorderTimer);
 
@@ -11010,7 +11092,7 @@ window.mmTA = (function(){
       writeProgress(q.id, { userWords: userWords, poolWords: poolWords });
 
       reorderTimer = setTimeout(function(){
-        var isMatch = userWords.every(function(val, i){ return val === correctWords[i]; });
+        var isMatch = reorderMatches(q, userWords);
         if(isTestMode()){
           writeProgress(q.id, { userWords: userWords, poolWords: poolWords });
         } else {
