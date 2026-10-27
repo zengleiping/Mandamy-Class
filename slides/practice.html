@@ -1507,8 +1507,6 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
 
   .text-layer:not(.objs-interactive) .movable-text .tb-edge, .text-layer:not(.objs-interactive) .movable-text .resize-handle, .text-layer:not(.objs-interactive) .image-proxy .rh, .text-layer:not(.objs-interactive) .shape-proxy .rh{ pointer-events:auto; }
   /* ===== 上課模式：上課中只留投影片＋常用工具（跟放映時同一組），功能區和投影片清單收起來；「完整工具」切回備課版面 ===== */
-  body.teach-mode .sidebar, body.teach-mode .sidebar-resizer{ display:none !important; }
-  body.teach-mode .layout{ grid-template-columns:1fr !important; }
   body.teach-mode .board-area.ribbon-mode:not(.canvas-fs-active) .draw-toolbar-top{ display:none !important; }
   body.teach-mode .board-area.ribbon-mode:not(.canvas-fs-active) .draw-toolbar-vertical{ display:grid !important; }
   #btn-prep-mode{ display:none; }
@@ -1562,25 +1560,29 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   body.embed .topbar .offline-pill{ font-size:11.5px !important; padding:1px 6px; }
   body.embed .topbar > .timer-floating-widget{ padding:1px 4px 1px 10px; transform-origin:left center; }
   body.embed .topbar > .timer-floating-widget .timer-ctrl-btn{ width:24px; height:24px; font-size:13px; }
-  /* ===== 備課版面（平台裡編輯投影片）：左邊只放小縮圖的窄欄，投影片和功能區多出空間 ===== */
-  body.embed.kind-slides:not(.teach-mode) .layout:not(.sidebar-collapsed):not(.sidebar-narrow){ grid-template-columns:166px 1fr !important; }
-  body.embed.kind-slides:not(.teach-mode) .layout:not(.sidebar-collapsed):not(.sidebar-narrow) .sidebar-resizer{ display:none; }
-  body.embed.kind-slides:not(.teach-mode) .layout:not(.sidebar-collapsed):not(.sidebar-narrow) .sidebar{ padding:10px 8px; }
-  body.embed.kind-slides:not(.teach-mode) .sidebar-collapse-label{ display:none; }
-  body.embed.kind-slides:not(.teach-mode) #btn-add-slide-menu{ font-size:13.5px; padding:7px 6px; }
-  body.embed.kind-slides:not(.teach-mode) .section-head{ padding:6px 8px; }
-  body.embed.kind-slides:not(.teach-mode) .section-head-title-text{ font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  body.embed.kind-slides:not(.teach-mode) .section-head-meta, body.embed.kind-slides:not(.teach-mode) .section-head .drag-handle-icon{ display:none !important; }
-  body.embed.kind-slides:not(.teach-mode) .section-head-actions{ display:none; flex-wrap:wrap; gap:2px; }
-  body.embed.kind-slides:not(.teach-mode) .section-block:hover .section-head-actions{ display:flex; }
-  body.embed.kind-slides:not(.teach-mode) .section-head-actions button{ padding:3px 6px; font-size:12px; }
-  body.embed.kind-slides:not(.teach-mode) .section-body{ padding:4px; gap:4px; }
-  body.embed.kind-slides:not(.teach-mode) .question-item-btn[data-slide-row]{ position:relative; padding:3px; justify-content:center; }
-  body.embed.kind-slides:not(.teach-mode) .question-item-btn[data-slide-row] .q-item-left{ gap:5px; align-items:flex-start; }
-  body.embed.kind-slides:not(.teach-mode) .question-item-btn[data-slide-row] .drag-handle-icon, body.embed.kind-slides:not(.teach-mode) .question-item-btn[data-slide-row] .q-item-title{ display:none !important; }
-  body.embed.kind-slides:not(.teach-mode) .question-item-btn[data-slide-row] .q-index-badge{ flex:none; }
-  body.embed.kind-slides:not(.teach-mode) .question-item-btn[data-slide-row] .q-thumb{ width:104px; max-height:76px; min-height:48px; }
-  body.embed.kind-slides:not(.teach-mode) .question-item-btn[data-slide-row] .q-action-btns{ position:absolute; right:4px; bottom:4px; background:rgba(255,255,255,.95); border-radius:6px; box-shadow:0 1px 4px rgba(0,0,0,.18); }
+  /* ===== 備課版面＋上課模式（平台裡的簡報）：左邊只放小縮圖的窄欄，投影片和工具多出空間；上課模式另外把會改內容的按鈕收起來，只留縮圖（點一下切頁、拖曳換順序）和「整理檢視」 ===== */
+  body.embed.kind-slides .layout:not(.sidebar-collapsed):not(.sidebar-narrow){ grid-template-columns:166px 1fr !important; }
+  body.embed.kind-slides .layout:not(.sidebar-collapsed):not(.sidebar-narrow) .sidebar-resizer{ display:none; }
+  body.embed.kind-slides .layout:not(.sidebar-collapsed):not(.sidebar-narrow) .sidebar{ padding:10px 8px; }
+  body.embed.kind-slides .sidebar-collapse-label{ display:none; }
+  body.embed.kind-slides #btn-add-slide-menu{ font-size:13.5px; padding:7px 6px; }
+  body.embed.kind-slides .section-head{ padding:6px 8px; }
+  body.embed.kind-slides .section-head-title-text{ font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  body.embed.kind-slides .section-head-meta, body.embed.kind-slides .section-head .drag-handle-icon{ display:none !important; }
+  body.embed.kind-slides .section-head-actions{ display:none; flex-wrap:wrap; gap:2px; }
+  body.embed.kind-slides .section-block:hover .section-head-actions{ display:flex; }
+  body.embed.kind-slides .section-head-actions button{ padding:3px 6px; font-size:12px; }
+  body.embed.kind-slides .section-body{ padding:4px; gap:4px; }
+  body.embed.kind-slides .question-item-btn[data-slide-row]{ position:relative; padding:3px; justify-content:center; }
+  body.embed.kind-slides .question-item-btn[data-slide-row] .q-item-left{ gap:5px; align-items:flex-start; }
+  body.embed.kind-slides .question-item-btn[data-slide-row] .drag-handle-icon, body.embed.kind-slides .question-item-btn[data-slide-row] .q-item-title{ display:none !important; }
+  body.embed.kind-slides .question-item-btn[data-slide-row] .q-index-badge{ flex:none; }
+  body.embed.kind-slides .question-item-btn[data-slide-row] .q-thumb{ width:104px; max-height:76px; min-height:48px; }
+  body.embed.kind-slides .question-item-btn[data-slide-row] .q-action-btns{ position:absolute; right:4px; bottom:4px; background:rgba(255,255,255,.95); border-radius:6px; box-shadow:0 1px 4px rgba(0,0,0,.18); }
+  body.teach-mode .sidebar-inner > :not(.section-list){ display:none !important; }
+  body.teach-mode .section-head-actions button:not(.btn-sorter){ display:none !important; }
+  body.teach-mode .question-item-btn[data-slide-row] .q-action-btns{ display:none !important; }
+  body.teach-mode .section-head{ cursor:default; }
   /* 功能區：比較窄的視窗也盡量排成一排（字變小一點、群組間距縮小） */
   body.embed.kind-slides:not(.teach-mode) .rb-group[data-g="home:繪圖"] .rb-group-body{ display:grid; grid-template-columns:repeat(2, auto); grid-auto-rows:min-content; gap:3px 4px; align-content:start; }
   body.embed.kind-slides:not(.teach-mode) .rb-group[data-g="home:編輯"] .rb-group-body{ display:flex; flex-direction:column; gap:3px; }
