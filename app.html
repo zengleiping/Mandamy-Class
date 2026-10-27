@@ -2586,9 +2586,19 @@ function preContext(sl){
   return { cls: ci, date: latest, focusKeys: focusKeys, focus: focus, grammar: grammar, learned: learned };
 }
 function preSeeded(seed){ var h = 2166136261; String(seed).split("").forEach(function(c){ h = Math.imul(h ^ c.charCodeAt(0), 16777619); }); return function(){ h = Math.imul(h ^ (h >>> 15), 2246822507); h = Math.imul(h ^ (h >>> 13), 3266489909); h ^= h >>> 16; return (h >>> 0) / 4294967296; }; }
+// 只要「平常生活中真的會對別人問的問題」：排除問語法／字詞（放在哪裡、什麼意思、幾畫…）、要學生造句、帶「」的詞語題；而且要是問人的話（你／你們／我們…）
+var PRE_META = /請用|造句|說一個句子|說一句|什麼意思|意思是|幾畫|部首|怎麼寫|怎麼唸|怎麼讀|怎麼說|怎麼回答|可以怎麼|放在|句子|句型|語法|用「|「|」|反義詞|近義詞|哪一個字|哪個字|什麼字|什麼詞|是什麼詞|拼音|注音|聲調/;
+function preIsDaily(q){ q = String(q || "").trim(); return /[？?]$/.test(q) && !PRE_META.test(q) && /你|妳|您|大家|我們|老師/.test(q); }
+var PRE_BASIC = "你我他她它的嗎呢了是不有什麼在哪裡誰幾多少和也都很好最常一二三四五六七八九十個今天明昨年月日點分去來做想要會可以跟還就又再先後時候怎樣為因但如果這那裡人們";
+function preUnknownChars(q, ctx){
+  var known = {}; Array.from(PRE_BASIC).forEach(function(c){ known[c] = 1; });
+  ctx.focus.concat(ctx.learned).forEach(function(v){ Array.from(String(v["生詞"] || "")).forEach(function(c){ known[c] = 1; }); });
+  var unk = []; Array.from(q).forEach(function(c){ if(/[㐀-鿿]/.test(c) && !known[c] && unk.indexOf(c) < 0) unk.push(c); });
+  return unk;
+}
 // 教材庫生詞自帶的「問題」：從上次學的生詞裡每個詞抽一題（不夠再補第二題、再補已學詞），共 5 題
 function preBankQuestions(ctx, seed){
-  var rnd = preSeeded(seed), pool = function(vs){ return vs.map(function(v){ return { w: v["生詞"], qs: (Array.isArray(v["問題"]) ? v["問題"] : []).filter(function(q){ return /[？?]$/.test(String(q).trim()) && !/請用|什麼意思|幾畫|部首|怎麼寫|怎麼唸|怎麼讀|怎麼說|可以怎麼/.test(q); }).sort(function(){ return rnd() - 0.5; }) }; }).filter(function(it){ return it.qs.length; }).sort(function(){ return rnd() - 0.5; }); };
+  var rnd = preSeeded(seed), pool = function(vs){ return vs.map(function(v){ return { w: v["生詞"], qs: (Array.isArray(v["問題"]) ? v["問題"] : []).filter(preIsDaily).sort(function(){ return rnd() - 0.5; }) }; }).filter(function(it){ return it.qs.length; }).sort(function(){ return rnd() - 0.5; }); };
   var out = [], seen = {};
   [pool(ctx.focus), pool(ctx.learned)].forEach(function(items){
     for(var round = 0; round < 3 && out.length < 5; round++) items.forEach(function(it){ if(out.length >= 5) return; var q = it.qs[round]; if(q && !seen[q]){ seen[q] = 1; out.push({ q: q, w: it.w }); } });
@@ -2603,7 +2613,7 @@ async function preAiQuestions(ctx){
   var learned = Array.from(new Set(ctx.learned.map(function(v){ return v["生詞"]; }))).slice(-300);
   var prompt = "你是專業的台灣華語老師。學生上次上課學了下面的生詞和語法，這次上課一開始想用 5 個「生活問答」口說問題幫學生複習。\n" +
     "上次學的生詞：" + JSON.stringify(focus) + "\n上次學的語法：" + (gram.join("；") || "（無）") + "\n更早學過的詞（可以使用）：" + (learned.join("、") || "（無）") + "\n" +
-    "規則：1. 共 5 題，每題都要用到至少 1 個「上次學的生詞」，盡量涵蓋不同的詞和語法；2. 問題要貼近學生的日常生活，像是教到「冬天」就問「你最喜歡什麼季節？」；3. 其他用詞只能用上次學的和更早學過的詞，句子短、自然、符合台灣用語；4. 用繁體中文，並附英文翻譯。\n" +
+    "規則：1. 共 5 題，每題都要用到至少 1 個「上次學的生詞」，盡量涵蓋不同的詞和語法；2. 一定要是學生平常在日常生活中、跟別人聊天時真的會問的問題，像是教到「冬天」就問「你最喜歡什麼季節？」、教到「打球」就問「下課以後你常常做什麼？」；3. 絕對不可以出：問語法或詞語本身的題目（例如「某個詞放在句子哪裡」「這個詞是什麼意思」「怎麼寫」）、要學生用某個詞造句或說一個句子的題目；4. 用詞限制很重要：除了上次學的生詞，其他每一個詞都必須是「更早學過的詞」或最基本的詞（你、我、的、嗎、是、不、有、什麼、哪裡、誰、幾、常常、喜歡…），不可以出現學生沒學過的詞，句子要短（6～14 個字）、自然、符合台灣用語；5. 用繁體中文，並附英文翻譯。\n" +
     "只回傳 JSON 陣列：[{\"q\":\"中文問題\",\"en\":\"英文翻譯\",\"w\":\"用到的上次生詞\"}]";
   var models = ["gemini-flash-latest", "gemini-2.5-flash"], lastErr = "";
   for(var mi = 0; mi < models.length; mi++){
@@ -2612,7 +2622,7 @@ async function preAiQuestions(ctx){
       var data = await res.json();
       if(!res.ok){ lastErr = (data && data.error && data.error.message) || ("HTTP " + res.status); if(res.status === 404) continue; throw new Error(lastErr); }
       var arr = JSON.parse(data.candidates[0].content.parts[0].text);
-      arr = (Array.isArray(arr) ? arr : []).filter(function(x){ return x && typeof x.q === "string" && x.q.trim(); }).slice(0, 5).map(function(x){ return { q: x.q.trim(), en: String(x.en || "").trim(), w: String(x.w || "").trim(), ai: true }; });
+      arr = (Array.isArray(arr) ? arr : []).filter(function(x){ return x && typeof x.q === "string" && preIsDaily(x.q); }).slice(0, 5).map(function(x){ var q = x.q.trim(), unk = preUnknownChars(q, ctx); return { q: q, en: String(x.en || "").trim(), w: String(x.w || "").trim(), ai: true, unk: unk.length > 1 ? unk.join("") : "" }; });
       if(!arr.length) throw new Error("AI 沒有回傳可用的問題");
       return arr;
     }catch(e){ lastErr = e.message || String(e); if(!/404|not found/i.test(lastErr)) throw e; }
@@ -2638,7 +2648,7 @@ function openPreClass(id, manual){
       var learnedTxt = ctx.focusKeys.map(function(k){ return lessonTitle(k); }).join("、");
       var words = ctx.focus.slice(0, 14).map(function(v){ return esc(v["生詞"]); }).join("、") + (ctx.focus.length > 14 ? "…" : "");
       body = '<p class="note" style="margin:0 0 8px;">上次（' + esc(md(ctx.date)) + '）學：' + esc(learnedTxt) + '<br>生詞：' + words + '</p>' +
-        (qs.length ? '<ol style="margin:0;padding-left:22px;line-height:1.7;font-size:17px;">' + qs.map(function(x){ return '<li style="margin-bottom:6px;"><b>' + esc(x.q) + '</b>' + (x.en ? '<div class="note" style="margin:0;">' + esc(x.en) + '</div>' : '') + (x.w ? '<span class="note" style="margin:0;">用到：' + esc(x.w) + (x.ai ? '　✨AI' : '') + '</span>' : '') + '</li>'; }).join("") + '</ol>' : '<p class="note">教材庫的生詞裡沒有現成的問題，可以按「✨ AI 出題」。</p>') +
+        (qs.length ? '<ol style="margin:0;padding-left:22px;line-height:1.7;font-size:17px;">' + qs.map(function(x){ return '<li style="margin-bottom:6px;"><b>' + esc(x.q) + '</b>' + (x.en ? '<div class="note" style="margin:0;">' + esc(x.en) + '</div>' : '') + (x.w ? '<span class="note" style="margin:0;">用到：' + esc(x.w) + (x.ai ? '　✨AI' : '') + '</span>' : '') + (x.unk ? '<div class="note" style="margin:0;color:#B23B32;">⚠ 可能有還沒學過的字：' + esc(x.unk) + '</div>' : '') + '</li>'; }).join("") + '</ol>' : '<p class="note">教材庫的生詞裡沒有適合的日常問答，可以按「✨ AI 出題」。</p>') + (qs.length && qs.length < 5 ? '<p class="note">教材庫裡適合的日常問答只有 ' + qs.length + ' 題（語法詞、字詞題已排除），可以按「✨ AI 出題」補足。</p>' : '') +
         (msg ? '<p class="note" style="color:#B23B32;">' + esc(msg) + '</p>' : '');
     }
     dlg.innerHTML = '<form method="dialog"><h3>🎯 上課前的複習問題</h3><p style="margin:4px 0;font-weight:700;">' + esc(title) + '</p>' + body +
