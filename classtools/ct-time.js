@@ -3,53 +3,45 @@
   "use strict"; var CT = window.CT, h = CT.h, pad = CT.pad;
   function mmss(ms){ var s = Math.max(0, Math.ceil(ms / 1000)), m = Math.floor(s / 60); return pad(m) + ":" + pad(s % 60); }
 
-  // ---- 倒數計時器 ----
-  CT.add({ id: "timer", cat: "time", icon: "⏱️", name: "計時器", w: 380, h: 340, build: function(bd, win){
-    var total = 5 * 60000, left = total, end = 0, run = false, tm = null, flash = false;
-    var disp = h("div", { class: "ct-big ct-c", style: "font-size:4.4em;margin:6px 0;" }), msg = h("div", { class: "ct-c", style: "min-height:1.4em;font-weight:700;color:#C0623A;" });
+  // ---- 計時器（數字／圓餅兩種樣式；可以縮小成一行時間、全螢幕大字、也可以叫出學生也看得到的下課鬧鐘）----
+  CT.add({ id: "timer", cat: "time", icon: "⏱️", name: "計時器", w: 420, h: 580, build: function(bd, win){
+    var total = CT.load("timer_total", 5 * 60000), left = total, end = 0, run = false, tm = null, style = CT.load("timer_style", "num"), big = null;
+    var disp = h("div", { class: "ct-big ct-c", style: "font-size:4.4em;margin:2px 0;" }), pie = h("div", { class: "ct-c" }), msg = h("div", { class: "ct-c", style: "min-height:1.4em;font-weight:700;color:#C0623A;" });
     var presets = h("div", { class: "ct-row", style: "justify-content:center;" });
     [1, 3, 5, 10, 15, 30].forEach(function(m){ presets.appendChild(h("button", { class: "ct-btn", text: m + " 分", onclick: function(){ set(m * 60000); } })); });
     var adj = h("div", { class: "ct-row", style: "justify-content:center;" });
     [["−1分", -60000], ["−10秒", -10000], ["＋10秒", 10000], ["＋1分", 60000]].forEach(function(a){ adj.appendChild(h("button", { class: "ct-btn", text: a[0], onclick: function(){ set(Math.max(1000, total + a[1])); } })); });
-    var go = h("button", { class: "ct-btn pri", text: "▶ 開始", onclick: toggle }), rs = h("button", { class: "ct-btn", text: "↺ 重設", onclick: function(){ set(total); } });
-    var ctl = h("div", { class: "ct-row", style: "justify-content:center;" }, [go, rs]);
-    bd.appendChild(disp); bd.appendChild(msg); bd.appendChild(ctl); bd.appendChild(presets); bd.appendChild(adj);
-    function paint(){ disp.textContent = mmss(left); disp.style.color = left <= 0 ? "#B23B32" : left <= 10000 && run ? "#C0623A" : ""; go.textContent = run ? "⏸ 暫停" : "▶ 開始"; }
-    function set(ms){ stop(); total = ms; left = ms; msg.textContent = ""; paint(); }
+    var go = h("button", { class: "ct-btn pri", style: "font-size:1.1em;", text: "▶ 開始", onclick: toggle });
+    var sty = h("button", { class: "ct-btn", onclick: function(){ style = style === "num" ? "pie" : "num"; CT.save("timer_style", style); paint(); } });
+    var ctl = h("div", { class: "ct-row", style: "justify-content:center;" }, [go, h("button", { class: "ct-btn", text: "↺ 重設", onclick: function(){ set(total); } }), sty, h("button", { class: "ct-btn", text: "⛶ 大字", title: "全螢幕大字，點一下或按 Esc 關閉", onclick: openBig })]);
+    bd.appendChild(disp); bd.appendChild(pie); bd.appendChild(msg); bd.appendChild(ctl); bd.appendChild(presets); bd.appendChild(adj);
+    if(CT.ctx().openBreak) bd.appendChild(h("div", { class: "ct-row", style: "justify-content:center;" }, [h("button", { class: "ct-btn", text: "🔔 下課鬧鐘（學生畫面也會一起倒數）", onclick: function(){ CT.ctx().openBreak(); } })]));
+    function pieSvg(){
+      var f = Math.max(0, Math.min(1, left / total)), a = f * 2 * Math.PI, R = 100, x = 110 + R * Math.sin(a), y = 110 - R * Math.cos(a), bg = f > 0.5 ? 1 : 0;
+      var path = f >= 0.9999 ? '<circle cx="110" cy="110" r="100" fill="#E0524A"/>' : f <= 0 ? "" : '<path d="M110 110 L110 10 A100 100 0 ' + bg + ' 1 ' + x.toFixed(2) + ' ' + y.toFixed(2) + ' Z" fill="#E0524A"/>';
+      var ticks = ""; for(var i = 0; i < 12; i++){ var t = i * Math.PI / 6; ticks += '<line x1="' + (110 + 100 * Math.sin(t)) + '" y1="' + (110 - 100 * Math.cos(t)) + '" x2="' + (110 + 90 * Math.sin(t)) + '" y2="' + (110 - 90 * Math.cos(t)) + '" stroke="#6b5b4b" stroke-width="2"/>'; }
+      return '<svg viewBox="0 0 220 220" style="width:min(100%,240px);"><circle cx="110" cy="110" r="104" fill="#fff" stroke="#6b5b4b" stroke-width="4"/>' + path + ticks + '<circle cx="110" cy="110" r="5" fill="#6b5b4b"/></svg>';
+    }
+    function paint(){
+      var t = left <= 0 ? "00:00" : mmss(left); disp.textContent = t; disp.style.color = left <= 0 ? "#B23B32" : left <= 10000 && run ? "#C0623A" : "";
+      disp.style.fontSize = style === "pie" ? "2.2em" : "4.4em"; pie.innerHTML = style === "pie" ? pieSvg() : ""; sty.textContent = style === "pie" ? "🔢 數字" : "🥧 圓餅";
+      go.textContent = run ? "⏸ 暫停" : "▶ 開始"; win.setMini(left <= 0 ? "⏰ 時間到" : t);
+      if(big){ big.firstChild.textContent = t; big.firstChild.style.color = left <= 0 ? "#B23B32" : left <= 10000 && run ? "#C0623A" : "#2a2018"; }
+    }
+    function set(ms){ stop(); total = ms; left = ms; CT.save("timer_total", ms); msg.textContent = ""; paint(); }
     function stop(){ run = false; if(tm){ clearInterval(tm); tm = null; } }
     function toggle(){
       if(run){ left = end - Date.now(); stop(); paint(); return; }
       if(left <= 0) left = total; CT.audio(); run = true; end = Date.now() + left; msg.textContent = "";
       tm = setInterval(function(){ left = end - Date.now(); if(left <= 0){ left = 0; stop(); msg.textContent = "⏰ 時間到！"; CT.beep(4); } paint(); }, 200); paint();
     }
-    win.onClose(stop); paint();
-  }});
-
-  // ---- 視覺計時器（紅色扇形慢慢縮小）----
-  CT.add({ id: "vtimer", cat: "time", icon: "🥧", name: "視覺計時器", w: 360, h: 440, build: function(bd, win){
-    var total = 5 * 60000, left = total, end = 0, run = false, tm = null;
-    var svg = h("div", { class: "ct-c" }), lab = h("div", { class: "ct-big ct-c", style: "font-size:2.2em;" });
-    var mins = h("input", { type: "range", min: "1", max: "60", step: "1", value: "5", style: "width:60%;" }), ml = h("span", { text: "5 分鐘" });
-    var go = h("button", { class: "ct-btn pri", text: "▶ 開始", onclick: toggle });
-    bd.appendChild(svg); bd.appendChild(lab);
-    bd.appendChild(h("div", { class: "ct-row", style: "justify-content:center;" }, [mins, ml]));
-    bd.appendChild(h("div", { class: "ct-row", style: "justify-content:center;" }, [go, h("button", { class: "ct-btn", text: "↺ 重設", onclick: function(){ set(total); } })]));
-    mins.oninput = function(){ ml.textContent = mins.value + " 分鐘"; set(Number(mins.value) * 60000); };
-    function paint(){
-      var f = Math.max(0, Math.min(1, left / total)), a = f * 2 * Math.PI, R = 100, x = 110 + R * Math.sin(a), y = 110 - R * Math.cos(a), big = f > 0.5 ? 1 : 0;
-      var path = f >= 0.9999 ? '<circle cx="110" cy="110" r="100" fill="#E0524A"/>' : f <= 0 ? "" : '<path d="M110 110 L110 10 A100 100 0 ' + big + ' 1 ' + x.toFixed(2) + ' ' + y.toFixed(2) + ' Z" fill="#E0524A"/>';
-      var ticks = ""; for(var i = 0; i < 12; i++){ var t = i * Math.PI / 6; ticks += '<line x1="' + (110 + 100 * Math.sin(t)) + '" y1="' + (110 - 100 * Math.cos(t)) + '" x2="' + (110 + 90 * Math.sin(t)) + '" y2="' + (110 - 90 * Math.cos(t)) + '" stroke="#6b5b4b" stroke-width="2"/>'; }
-      svg.innerHTML = '<svg viewBox="0 0 220 220" style="width:min(100%,260px);"><circle cx="110" cy="110" r="104" fill="#fff" stroke="#6b5b4b" stroke-width="4"/>' + path + ticks + '<circle cx="110" cy="110" r="5" fill="#6b5b4b"/></svg>';
-      lab.textContent = left <= 0 ? "⏰ 時間到！" : mmss(left); go.textContent = run ? "⏸ 暫停" : "▶ 開始";
+    function closeBig(){ if(big){ big.remove(); big = null; document.removeEventListener("keydown", esc, true); } }
+    function esc(e){ if(e.key === "Escape") closeBig(); }
+    function openBig(){
+      closeBig(); big = h("div", { class: "ct-keep", style: "position:fixed;inset:0;z-index:9990;background:#FAF7F2;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;", onclick: closeBig }, [h("div", { style: "font-size:min(30vw,48vh);font-weight:800;font-variant-numeric:tabular-nums;line-height:1;" }), h("div", { class: "ct-muted", style: "margin-top:1em;", text: "點一下或按 Esc 回到原本畫面" })]);
+      document.body.appendChild(big); document.addEventListener("keydown", esc, true); paint();
     }
-    function stop(){ run = false; if(tm){ clearInterval(tm); tm = null; } }
-    function set(ms){ stop(); total = ms; left = ms; paint(); }
-    function toggle(){
-      if(run){ left = end - Date.now(); stop(); paint(); return; }
-      if(left <= 0) left = total; CT.audio(); run = true; end = Date.now() + left;
-      tm = setInterval(function(){ left = end - Date.now(); if(left <= 0){ left = 0; stop(); CT.beep(4); } paint(); }, 200); paint();
-    }
-    win.onClose(stop); paint();
+    win.onClose(function(){ stop(); closeBig(); }); paint();
   }});
 
   // ---- 競賽碼錶 ----
@@ -62,7 +54,7 @@
     bd.appendChild(list);
     function now(){ return acc + (run ? performance.now() - t0 : 0); }
     function fmt(ms){ var m = Math.floor(ms / 60000), s = Math.floor(ms / 1000) % 60, c = Math.floor(ms / 10) % 100; return pad(m) + ":" + pad(s) + "." + pad(c); }
-    function loop(){ disp.textContent = fmt(now()); if(run) raf = requestAnimationFrame(loop); }
+    function loop(){ var tx = fmt(now()); disp.textContent = tx; win.setMini(tx); if(run) raf = requestAnimationFrame(loop); }
     function toggle(){ if(run){ acc = now(); run = false; cancelAnimationFrame(raf); go.textContent = "▶ 繼續"; loop(); } else { t0 = performance.now(); run = true; go.textContent = "⏸ 暫停"; loop(); } }
     function lap(){ if(!run && !acc) return; laps.push(now()); list.innerHTML = ""; laps.forEach(function(l, i){ list.appendChild(h("li", { text: fmt(l) + (i ? "　（＋" + fmt(l - laps[i - 1]) + "）" : "") })); }); }
     function reset(){ run = false; cancelAnimationFrame(raf); acc = 0; laps = []; list.innerHTML = ""; go.textContent = "▶ 開始"; loop(); }

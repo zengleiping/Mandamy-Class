@@ -6415,7 +6415,7 @@ function renderLessonCommon(no, open, teacher, liveStudent){
   var cur = tabs.filter(function(t){ return t[0] === S.tab; })[0];
   var live = S.live && S.live.on;
   var html = '<div class="tabs">' + (liveStudent ? '' : '<button class="tab" data-back="1">‹ 返回</button>' + tabs.filter(function(t){ return t[0] !== "bingo"; }).map(function(t){ var on = t[0] === S.tab || (t[0] === "activities" && S.tab === "bingo"); var btn = '<button class="tab' + (on ? ' on' : '') + '" data-tab="' + t[0] + '">' + t[1] + '</button>'; return teacher && (t[0] === "slides" || t[0] === "quiz") ? lessonDeckMenu(no, t[0], btn) : btn; }).join("") + (teacher ? '<!--copyto-->' : '') +
-    (teacher ? '<button class="tab focus-btn" data-actmenu="1" style="margin-left:auto;" title="叫出課堂活動選單（常用、最近用過）">⚡ 活動選單</button><button class="tab focus-btn" data-brk="1" style="margin-left:6px;" title="下課休息倒數：時間到會響鈴提醒回來上課（上課中，學生畫面也會一起倒數）">下課鬧鐘</button><button class="tab focus-btn" data-draw="1" style="margin-left:6px;" title="籤筒：從班上同學隨機抽一位（不重複，抽完換下一輪；學生的畫面也看得到抽到誰）"><img src="icons/draw-wheel.png" alt="" style="width:1.25em;height:1.25em;vertical-align:-.25em;margin-right:3px;">籤筒</button><button class="tab focus-btn" data-ct="1" style="margin-left:6px;" title="課堂工具箱：計時器、分貝儀、分組、記分板、白板、便利貼…一共 30 多種小工具，視窗可以自由拖曳，也有一鍵純淨桌面">🧰 工具箱</button>' : '') + (teacher ? ((live ? '<button class="tab focus-btn" data-fs="1" style="margin-left:6px;" title="瀏覽器全螢幕（Esc 退出，不會結束上課）">⛶ 全螢幕</button><button class="tab focus-btn" data-focus="1" style="margin-left:6px;">' + (S.focus ? "顯示欄位" : "隱藏欄位") + '</button><button class="tab focus-btn" data-live="1" style="margin-left:6px;background:var(--seal);color:#fff;">⏹ 結束上課</button>' : '<button class="tab focus-btn" data-live="1" title="開始上課：學生會自動跟著你的畫面，並隱藏上方與左側欄位">🎬 開始上課</button>')) : '')) + '</div>';
+    (teacher ? '<button class="tab focus-btn" data-actmenu="1" style="margin-left:auto;" title="叫出課堂活動選單（常用、最近用過）">⚡ 活動選單</button><button class="tab focus-btn" data-brk="1" style="margin-left:6px;" title="下課休息倒數：時間到會響鈴提醒回來上課（上課中，學生畫面也會一起倒數）">下課鬧鐘</button><button class="tab focus-btn" data-draw="1" style="margin-left:6px;" title="籤筒：從班上同學隨機抽一位（不重複，抽完換下一輪；學生的畫面也看得到抽到誰）"><img src="icons/draw-wheel.png" alt="" style="width:1.25em;height:1.25em;vertical-align:-.25em;margin-right:3px;">籤筒</button><button class="tab focus-btn" data-ct="1" style="margin-left:6px;" title="開關畫面底部的課堂工具列：計時器、分組、記分板、白板、便利貼…30 多種小工具，視窗可以自由拖曳，也有一鍵純淨桌面">🧰 工具箱</button>' : '') + (teacher ? ((live ? '<button class="tab focus-btn" data-fs="1" style="margin-left:6px;" title="瀏覽器全螢幕（Esc 退出，不會結束上課）">⛶ 全螢幕</button><button class="tab focus-btn" data-focus="1" style="margin-left:6px;">' + (S.focus ? "顯示欄位" : "隱藏欄位") + '</button><button class="tab focus-btn" data-live="1" style="margin-left:6px;background:var(--seal);color:#fff;">⏹ 結束上課</button>' : '<button class="tab focus-btn" data-live="1" title="開始上課：學生會自動跟著你的畫面，並隱藏上方與左側欄位">🎬 開始上課</button>')) : '')) + '</div>';
   var sub = '', frame = '', role = teacher ? '' : '&role=student';
   if(S.tab === "material"){
     var subs = [["vocab","生詞"],["grammar","語法"],["text","課文"]].filter(function(s){ return teacher || open[s[0]]; });
@@ -6702,7 +6702,7 @@ function drBroadcast(){
 }
 // 課堂工具箱（classtools/）需要的班級資料與抽籤
 function liveKey(n){ return String(n || "").replace(/[.#$\[\]\/]/g, "_") || "_"; }
-window.CT_ctx = { live: {
+window.CT_ctx = { inClass: function(){ return !!(S.teacher && S.sel && S.sel.c); }, openBreak: function(){ brkOpenDialog(); }, live: {
     on: function(){ return !!(S.live && S.live.on && S.sel && S.sel.c); },
     start: function(tool){ tool.id = Date.now().toString(36); tool.open = true; S.live.tool = tool; fbUpdate(liveRef(), { tool: tool }).catch(function(){}); return tool; },
     patch: function(p){ if(!S.live || !S.live.tool) return; Object.assign(S.live.tool, p); fbUpdate(liveRef(), { tool: S.live.tool }).catch(function(){}); },
@@ -7749,8 +7749,8 @@ window.__mm = { get S(){ return S; }, render: function(){ return render(); }, ne
 })();
 })();
 </script>
-<script src="classtools/ct-core.js?v=20261029"></script>
-<script src="classtools/ct-time.js?v=20261029"></script>
+<script src="classtools/ct-core.js?v=20261030"></script>
+<script src="classtools/ct-time.js?v=20261030"></script>
 <script src="classtools/ct-order.js?v=20261029"></script>
 <script src="classtools/ct-fun.js?v=20261029"></script>
 <script src="classtools/ct-board.js?v=20261029"></script>
