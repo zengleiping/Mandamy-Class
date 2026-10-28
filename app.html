@@ -200,6 +200,12 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .subbar{ display:flex; gap:6px; padding:8px 14px; flex-wrap:wrap; align-items:center; background:var(--paper); border-bottom:1px solid var(--line); }
   .frame{ flex:1; width:100%; border:0; background:var(--paper); min-height:0; }
   /* 📖 近義詞工具書：全螢幕視窗 */
+  .lab-ov{ position:fixed; inset:0; z-index:99980; background:#2a2018; display:flex; flex-direction:column; }
+  .lab-bar{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; padding:6px 10px; background:#3b2e22; color:#fff; font-size:14px; }
+  .lab-bar b{ font-size:15px; } .lab-bar .btn{ padding:3px 10px; font-size:13px; background:#fff; color:#2a2018; } .lab-bar .btn.primary{ background:var(--seal); color:#fff; } .lab-bar select{ padding:3px 6px; border-radius:8px; border:0; font-size:14px; }
+  .lab-body{ flex:1; display:flex; gap:6px; padding:6px; min-height:0; } .lab-ov.col .lab-body{ flex-direction:column; }
+  .lab-pane{ flex:1; display:flex; flex-direction:column; min-width:0; min-height:0; background:#fff; border-radius:10px; overflow:hidden; }
+  .lab-pane h4{ margin:0; padding:4px 10px; font-size:13px; background:#f0e6d8; color:#2a2018; } .lab-pane iframe{ flex:1; width:100%; border:0; min-height:0; }
   .syn-ov{ position:fixed; inset:0; z-index:9960; background:var(--paper); display:flex; flex-direction:column; }
   .syn-bar{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:10px 14px; padding-top:calc(10px + env(safe-area-inset-top, 0px)); border-bottom:1px solid var(--line); background:var(--surface); }
   .syn-bar b{ font-size:16px; }
@@ -1015,6 +1021,44 @@ function synBase(){
   if(S.student && S.student.idx && S.student.name) return "teacherPlatform/" + S.student.idx.t + "/hwFiles/" + S.student.idx.c + "/_synNotes/" + hwSkey(S.student.name);
   return null;
 }
+// ---------- 🧪 測試教室：專門測試用的班級（資料不會碰到真的班級）＋老師／學生左右對照 ----------
+var LAB = { ov: null, cls: null };
+var LAB_NAMES = ["小明", "小華", "小美"];
+async function labEnsure(){
+  var base = "teacherPlatform/" + S.teacher.id + "/schools", sch = schoolsOf(), found = null;
+  Object.keys(sch).forEach(function(y){ var tms = sch[y].terms || {}; Object.keys(tms).forEach(function(t){ if(tms[t].test){ var cl = tms[t].classes || {}; Object.keys(cl).forEach(function(c){ if(!found && cl[c].test) found = { s: y, t: t, c: c, code: cl[c].code }; }); } }); });
+  if(found) return found;
+  var ys = sortedBy(sch, true), y = ys[0];
+  if(!y){ y = uid("y_"); sch[y] = { name: rocYearLabel(), order: Date.now(), terms: {} }; await fbSet(base + "/" + y, sch[y]); }
+  var terms = sch[y].terms = sch[y].terms || {}, t = uid("s_"), cid = uid("c_"), code = await newCode();
+  terms[t] = { name: "🧪 測試教室", order: Date.now() + 1e9, test: true, classes: {} };
+  terms[t].classes[cid] = { name: "測試班", order: Date.now(), code: code, lessonOpen: {}, test: true };
+  await fbSet(base + "/" + y + "/terms/" + t, terms[t]);
+  await fbSet("classCodes/" + code, { t: S.teacher.id, s: y, tm: t, c: cid });
+  await fbSet(hwBase(S.teacher.id, cid) + "/roster", LAB_NAMES);
+  S.classes = null; return { s: y, t: t, c: cid, code: code };
+}
+async function labReset(){
+  var c = LAB.cls; if(!c) return; var tid = S.teacher.id, cp = "teacherPlatform/" + tid + "/schools/" + c.s + "/terms/" + c.t + "/classes/" + c.c;
+  var paths = [cp + "/live", cp + "/liveResp", "teacherPlatform/" + tid + "/petGame/" + c.t, "teacherPlatform/" + tid + "/hwSubs/" + c.c, "teacherPlatform/" + tid + "/examAttempts/" + c.c, hwBase(tid, c.c) + "/items", hwBase(tid, c.c) + "/comments"];
+  for(var i = 0; i < paths.length; i++){ try{ await fbSet(paths[i], null); }catch(e){} }
+}
+function labStudentSrc(name){ return location.pathname + "?class=" + encodeURIComponent(LAB.cls.code) + "&name=" + encodeURIComponent(name); }
+async function openLab(){
+  if(LAB.ov) return;
+  try{ LAB.cls = await labEnsure(); }catch(e){ alert("建立測試教室失敗：" + (e && e.message || e)); return; }
+  var c = LAB.cls, ov = document.createElement("div"); ov.className = "lab-ov"; LAB.ov = ov;
+  var opts = LAB_NAMES.map(function(n){ return '<option>' + esc(n) + '</option>'; }).join("");
+  ov.innerHTML = '<div class="lab-bar"><b>🧪 測試教室</b><span style="opacity:.8;">左：老師　右：學生。這是專門測試用的班級，不會動到真的班級資料。班級代碼 ' + esc(c.code) + '</span><span style="flex:1"></span>學生：<select id="lab-who">' + opts + '</select><button class="btn" id="lab-rs">↻ 重新載入學生</button><button class="btn" id="lab-lay">⇄ 上下排列</button><button class="btn" id="lab-reset">🗑 清空測試資料</button><button class="btn primary" id="lab-x">離開</button></div>' +
+    '<div class="lab-body"><div class="lab-pane"><h4>👩‍🏫 老師畫面</h4><iframe id="lab-t" src="' + location.pathname + '#c=' + c.s + '.' + c.t + '.' + c.c + '"></iframe></div><div class="lab-pane"><h4 id="lab-sh">🎒 學生畫面：' + esc(LAB_NAMES[0]) + '</h4><iframe id="lab-s" src="' + labStudentSrc(LAB_NAMES[0]) + '" allow="microphone; camera; clipboard-write"></iframe></div></div>';
+  document.body.appendChild(ov);
+  var who = document.getElementById("lab-who");
+  function loadStu(){ document.getElementById("lab-s").src = labStudentSrc(who.value); document.getElementById("lab-sh").textContent = "🎒 學生畫面：" + who.value; }
+  who.onchange = loadStu; document.getElementById("lab-rs").onclick = loadStu;
+  document.getElementById("lab-lay").onclick = function(){ ov.classList.toggle("col"); this.textContent = ov.classList.contains("col") ? "⇄ 左右排列" : "⇄ 上下排列"; };
+  document.getElementById("lab-reset").onclick = async function(){ if(!confirm("清空測試班的作業、考卷、上課狀態和寵物資料？（只清測試班，名單會保留）")) return; await labReset(); document.getElementById("lab-t").src = document.getElementById("lab-t").src; loadStu(); toast("測試資料已清空"); };
+  document.getElementById("lab-x").onclick = function(){ ov.remove(); LAB.ov = null; };
+}
 function openSynonyms(){
   if(SYN.ov) return;
   var ov = document.createElement("div"); ov.className = "syn-ov";
@@ -1710,7 +1754,7 @@ function shell(inner, opts){
   document.body.classList.toggle("ta", isTA());
   root.innerHTML = '<div class="shell' + (S.focus ? ' focus' : '') + '"><div class="top">' +
     '<a href="#" class="brand" id="brandhome" title="回到首頁" style="text-decoration:none;color:inherit;cursor:pointer;"><img src="icons/logo.svg" alt="" style="width:30px;height:30px;vertical-align:middle;margin-right:6px;">曼米中文' + (isT ? '' : '<small>學生</small>') + '</a><div class="crumb" id="crumb"></div><div class="grow"></div>' +
-    (isT ? '<nav class="mainnav">' + [["navhome", "🏠", "首頁", topArea() === "home"], ["navcls", "🏫", "班級", topArea() === "cls"], ["libbtn", "📚", "教材", topArea() === "lib", "owner-only"], ["actbtn", "🎲", "課堂活動", topArea() === "act"], ["recbtn", "📊", "記錄與成績", topArea() === "rec"], ["synbtn", "📖", "近義詞", false]].map(function(n){ return '<button class="mn' + (n[3] ? ' on' : '') + (n[4] ? ' ' + n[4] : '') + '" id="' + n[0] + '">' + n[2] + '</button>'; }).join("") + '</nav>' +
+    (isT ? '<nav class="mainnav">' + [["navhome", "🏠", "首頁", topArea() === "home"], ["navcls", "🏫", "班級", topArea() === "cls"], ["libbtn", "📚", "教材", topArea() === "lib", "owner-only"], ["actbtn", "🎲", "課堂活動", topArea() === "act"], ["recbtn", "📊", "記錄與成績", topArea() === "rec"], ["synbtn", "📖", "近義詞", false]].concat(window.top === window ? [["labbtn", "🧪", "測試教室", false]] : []).map(function(n){ return '<button class="mn' + (n[3] ? ' on' : '') + (n[4] ? ' ' + n[4] : '') + '" id="' + n[0] + '">' + n[2] + '</button>'; }).join("") + '</nav>' +
          '<button class="btn sm" id="bell" title="新的繳交">🔔</button><span class="umenu"><button class="btn sm ughost" id="ubtn" title="' + esc(S.teacher.name) + '"><img src="icons/teacher.png" alt="" style="width:26px;height:26px;border-radius:50%;vertical-align:middle;"><span class="mn-t"> ' + esc(S.teacher.name) + ' ▾</span></button><div class="udrop" id="udrop"><button class="owner-only" id="setbtn">⚙️ 設定</button><button id="logout">登出</button></div></span>'
          : '<span class="crumb">👤 ' + esc(S.student ? S.student.name : "") + '</span><button class="btn sm" id="leave">離開</button>') +
     '</div><div class="body">' + '<main class="main' + (opts.flush ? ' flush' : '') + '" id="main">' + inner + '</main></div></div>';
@@ -1730,6 +1774,7 @@ function shell(inner, opts){
     document.getElementById("navcls").onclick = goTop(function(){ S.classes = {}; });
     document.getElementById("actbtn").onclick = goTop(function(){ S.act = {}; });
     document.getElementById("synbtn").onclick = openSynonyms;
+    var lb = document.getElementById("labbtn"); if(lb) lb.onclick = openLab;
     document.getElementById("ubtn").onclick = function(e){ e.stopPropagation(); document.getElementById("udrop").classList.toggle("open"); };
     document.addEventListener("click", function(){ var u = document.getElementById("udrop"); if(u) u.classList.remove("open"); });
     document.getElementById("setbtn").onclick = function(){ if(S.focus) setFocus(false); S.grades = null; S.act = null; S.classes = null; S.settings = true; S.lib = null; S.rec = null; S.day = null; S.sel = null; S.lesson = null; S.hw = null; render(); };

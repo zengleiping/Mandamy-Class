@@ -13,7 +13,7 @@
   var SCENES = [{ id: "grass", e: "🌿", n: "草地（預設）", p: 0, bg: "radial-gradient(ellipse at 50% 88%,#DFF2D0 0 36%,transparent 37%),linear-gradient(180deg,#DDF1FF,#F6FBFF)" }, { id: "beach", e: "🏖️", n: "海灘", p: 30, bg: "radial-gradient(ellipse at 50% 92%,#F7E2A8 0 40%,transparent 41%),linear-gradient(180deg,#9ADBF7,#E3F6FF 70%,#4BB7E8 70%)" }, { id: "garden", e: "🌸", n: "花園", p: 30, bg: "radial-gradient(ellipse at 50% 88%,#BFE8A6 0 38%,transparent 39%),linear-gradient(180deg,#FFE3EE,#FFF7FA)" }, { id: "space", e: "🌌", n: "太空", p: 40, bg: "radial-gradient(circle at 20% 25%,#fff 0 1px,transparent 2px),radial-gradient(circle at 75% 35%,#fff 0 1.5px,transparent 2px),radial-gradient(circle at 60% 15%,#fff 0 1px,transparent 2px),linear-gradient(180deg,#14123A,#3B2A78)" }, { id: "castle", e: "🏰", n: "城堡", p: 60, bg: "radial-gradient(ellipse at 50% 90%,#CBB7E8 0 38%,transparent 39%),linear-gradient(180deg,#FDE9C9,#F6D6F0)" }];
   var STAGES = [{ xp: 0, name: "寶寶", sc: 0.75, acc: "" }, { xp: 40, name: "少年", sc: 0.95, acc: "" }, { xp: 120, name: "成年", sc: 1.15, acc: "✨" }, { xp: 300, name: "傳說", sc: 1.35, acc: "👑" }];
   var FOODS = [{ e: "🍪", n: "小餅乾", p: 3, h: 8, x: 2 }, { e: "🍎", n: "蘋果", p: 5, h: 15, x: 5 }, { e: "🍖", n: "肉排", p: 10, h: 35, x: 12 }, { e: "🍰", n: "蛋糕", p: 20, h: 70, x: 30 }, { e: "🍱", n: "大餐", p: 40, h: 100, x: 70 }];
-  var DEF = { on: false, hw: 10, exam: 10, examBonus: 1, choice: 2, rate: 4, shop: true, rewards: [] };
+  var DEF = { on: false, hw: 10, exam: 10, examBonus: 1, choice: 2, rate: 4, shop: true, rewards: [], prices: {}, off: {} };
   var NEWPET = 40;   // 再領養一隻普通寵物的價格
   var P = window.PET = { BASIC: BASIC, PREMIUM: PREMIUM, CLOTHES: CLOTHES, FOODS: FOODS, STAGES: STAGES, DEF: DEF };
   function ctx(){ return window.PET_ctx || {}; }
@@ -32,6 +32,15 @@
   function root(){ var c = ctx(), s = c.student && c.student(); if(s) return { path: "teacherPlatform/" + s.idx.t + "/petGame/" + s.idx.tm, cls: s.idx.c }; var t = c.teacherSel && c.teacherSel(); return t ? { path: "teacherPlatform/" + t.t + "/petGame/" + t.tm, cls: t.c } : null; }
   function key(n){ return ctx().key ? ctx().key(n) : String(n).replace(/[.#$\[\]\/]/g, "_"); }
   P.cfg = Object.assign({}, DEF);
+  // 商店價格：老師可以每個品項自己訂價、也可以下架（cfg.prices / cfg.off）
+  P.price = function(k, def){ var v = P.cfg.prices && P.cfg.prices[k]; return (typeof v === "number" && v >= 0) ? v : def; };
+  P.hidden = function(k){ return !!(P.cfg.off && P.cfg.off[k]); };
+  P.catalog = function(){
+    var a = []; FOODS.forEach(function(f, i){ a.push({ k: "f" + i, g: "🍖 飼料", e: f.e, n: f.n, d: f.p }); });
+    PREMIUM.forEach(function(x, i){ a.push({ k: "pm" + i, g: "🐾 更強的寵物", e: x.e, n: x.n, d: x.p }); }); a.push({ k: "new", g: "🐾 更強的寵物", e: "🥚", n: "再領養一隻普通寵物", d: NEWPET });
+    ITEMS.forEach(function(x){ a.push({ k: "it_" + x.id, g: "🧪 道具", e: x.e, n: x.n, d: x.p }); }); CLOTHES.forEach(function(x){ a.push({ k: "cl_" + x.id, g: "👔 衣服", e: x.e, n: x.n, d: x.p }); });
+    SCENES.forEach(function(x){ if(x.p > 0) a.push({ k: "sc_" + x.id, g: "🖼️ 場景", e: x.e, n: x.n, d: x.p }); }); return a;
+  };
   function petHtml(pet, eq, sizePx, extra){
     var sg = STAGES[P.stageOf(pet.xp)], px = Math.round(sizePx * sg.sc), s = '<div class="pet-pet' + (extra || "") + '" style="font-size:' + px + 'px">' + pet.sp;
     if(sg.acc) s += '<span class="pa pa-top">' + sg.acc + '</span>';
@@ -85,11 +94,11 @@
   }
   function drawAdopt(body){
     var first = !P.actPet(me), chosen = "", own = me && me.pets ? Object.keys(me.pets).map(function(k){ return me.pets[k].sp; }) : [];
-    body.innerHTML = '<div class="pet-t">' + (first ? '選一隻寵物 Choose a pet' : '領養新寵物（⭐' + NEWPET + '）') + '</div><div class="pet-pick">' + BASIC.map(function(e){ return '<button type="button" data-sp="' + e + '">' + e + '</button>'; }).join("") + '</div><input id="pet-name" maxlength="10" placeholder="幫牠取個名字 Name it"><div class="pet-msg">答對問題、交作業可以賺點數，用點數買飼料餵牠長大！<br>Earn points, buy food, and watch your pet grow!</div>';
+    body.innerHTML = '<div class="pet-t">' + (first ? '選一隻寵物 Choose a pet' : '領養新寵物（⭐' + P.price("new", NEWPET) + '）') + '</div><div class="pet-pick">' + BASIC.map(function(e){ return '<button type="button" data-sp="' + e + '">' + e + '</button>'; }).join("") + '</div><input id="pet-name" maxlength="10" placeholder="幫牠取個名字 Name it"><div class="pet-msg">答對問題、交作業可以賺點數，用點數買飼料餵牠長大！<br>Earn points, buy food, and watch your pet grow!</div>';
     body.querySelector(".pet-pick").onclick = function(e){ var b = e.target.closest("button"); if(!b) return; chosen = b.dataset.sp; [].slice.call(body.querySelectorAll(".pet-pick button")).forEach(function(x){ x.classList.toggle("on", x === b); }); beep(700, 0.1); };
-    body.appendChild(h("button", { class: "pet-go", type: "button", text: first ? "就是牠了！ Adopt!" : "領養（⭐" + NEWPET + "）", onclick: async function(){
+    body.appendChild(h("button", { class: "pet-go", type: "button", text: first ? "就是牠了！ Adopt!" : "領養（⭐" + P.price("new", NEWPET) + "）", onclick: async function(){
       var nm = body.querySelector("#pet-name").value.trim() || "小寶"; if(!chosen){ ctx().toast("先選一隻寵物"); return; }
-      var ok = await mutate(function(cur){ if(!first && (cur.pts || 0) < NEWPET) return null; var pets = Object.assign({}, cur.pets), id = "p" + Date.now().toString(36); pets[id] = { sp: chosen, nm: nm, h: 70, at: Date.now(), xp: 0, pw: 1 }; return { pets: pets, act: id, pts: (cur.pts || 0) - (first ? 0 : NEWPET) }; });
+      var ok = await mutate(function(cur){ var np0 = P.price("new", NEWPET); if(!first && (cur.pts || 0) < np0) return null; var pets = Object.assign({}, cur.pets), id = "p" + Date.now().toString(36); pets[id] = { sp: chosen, nm: nm, h: 70, at: Date.now(), xp: 0, pw: 1 }; return { pets: pets, act: id, pts: (cur.pts || 0) - (first ? 0 : np0) }; });
       if(!ok){ ctx().toast("點數不夠"); return; } tab = "pet"; beep(880, 0.2);
     } }));
     if(!first) body.appendChild(h("button", { class: "pet-link", type: "button", text: "← 回去", onclick: function(){ tab = "pet"; drawPanel(); } }));
@@ -102,17 +111,17 @@
       (pets.length > 1 ? '<div class="pet-sw">' + pets.map(function(k){ return '<button type="button" data-pid="' + k + '" class="' + (k === me.act ? 'on' : '') + '">' + me.pets[k].sp + '</button>'; }).join("") + '</div>' : '') +
       '<div class="pet-bar"><span>🍽️ 飽足 Fullness</span><div><i style="width:' + hg + '%;background:' + (hg < 30 ? '#E0524A' : hg < 60 ? '#E0A82E' : '#4CAF6A') + '"></i></div><b>' + hg + '</b></div>' +
       (me.dbl > 0 ? '<div class="pet-note">🎟️ 經驗加倍中（還剩 ' + me.dbl + ' 次餵食）</div>' : '') +
-      '<div class="pet-pts">⭐ 我的點數 <b>' + pts + '</b></div><div class="pet-shop">' + FOODS.map(function(f, i){ return '<button type="button" data-f="' + i + '"' + (pts < f.p ? ' disabled' : '') + '><span class="fe">' + f.e + '</span><span>' + f.n + '</span><em>⭐' + f.p + '</em></button>'; }).join("") + '</div>' +
+      '<div class="pet-pts">⭐ 我的點數 <b>' + pts + '</b></div><div class="pet-shop">' + FOODS.map(function(f, i){ return '<button type="button" data-f="' + i + '"' + (pts < P.price("f" + i, f.p) ? ' disabled' : '') + '><span class="fe">' + f.e + '</span><span>' + f.n + '</span><em>⭐' + P.price("f" + i, f.p) + '</em></button>'; }).join("") + '</div>' +
       wardrobe() + '<div class="pet-log">' + ((me.ev || []).slice().reverse().slice(0, 3).map(function(v){ return '<div>＋' + v.n + ' 點　' + esc(v.w) + '</div>'; }).join("") || '<div>還沒有點數。答對問題、交作業就會有！ No points yet.</div>') + '</div>';
     body.querySelector("#pet-pet").onclick = function(){ var p = this; p.classList.remove("hop"); void p.offsetWidth; p.classList.add("hop"); beep(520 + Math.random() * 300, 0.12); };
     var sw = body.querySelector(".pet-sw"); if(sw) sw.onclick = function(e){ var b = e.target.closest("button"); if(b) mutate(function(){ return { act: b.dataset.pid }; }); };
     body.querySelector(".pet-shop").onclick = async function(e){
-      var b = e.target.closest("button[data-f]"); if(!b || b.disabled) return; var f = FOODS[Number(b.dataset.f)], evolved = "", full = false, poor = false;
+      var b = e.target.closest("button[data-f]"); if(!b || b.disabled) return; var fi = Number(b.dataset.f), f = FOODS[fi], fp = P.price("f" + fi, f.p), evolved = "", full = false, poor = false;
       var r = await mutate(function(cur){
-        var p0 = P.actPet(cur); if(!p0) return null; if((cur.pts || 0) < f.p){ poor = true; return null; } var hgN = P.hungerNow(p0, P.cfg.rate, cur.home); if(hgN >= 95){ full = true; return null; }
+        var p0 = P.actPet(cur); if(!p0) return null; if((cur.pts || 0) < fp){ poor = true; return null; } var hgN = P.hungerNow(p0, P.cfg.rate, cur.home); if(hgN >= 95){ full = true; return null; }
         var gain = Math.round(f.x * (p0.pw || 1) * (cur.dbl > 0 ? 2 : 1)), np = Object.assign({}, p0, { h: Math.min(100, hgN + f.h), at: Date.now(), xp: (p0.xp || 0) + gain });
         if(P.stageOf(np.xp) > P.stageOf(p0.xp)) evolved = STAGES[P.stageOf(np.xp)].name; var pets = Object.assign({}, cur.pets); pets[cur.act] = np;
-        return { pets: pets, pts: cur.pts - f.p, fed: (cur.fed || 0) + 1, dbl: cur.dbl > 0 ? cur.dbl - 1 : 0 };
+        return { pets: pets, pts: cur.pts - fp, fed: (cur.fed || 0) + 1, dbl: cur.dbl > 0 ? cur.dbl - 1 : 0 };
       });
       if(poor) ctx().toast("點數不夠"); else if(full) ctx().toast("牠已經很飽了，等一下再餵吧 It's full!"); else if(r) animateEat(f.e, b, evolved);
     };
@@ -137,22 +146,23 @@
   // ----- 商店 -----
   function drawShop(body){
     var pts = me.pts || 0, inv = me.inv || {}, card = function(e, n, p, d, state, attrs){ return '<div class="sh-card' + (state === "own" ? " own" : "") + '"><div class="sh-e">' + e + '</div><div class="sh-n">' + n + '</div>' + (d ? '<div class="sh-d">' + d + '</div>' : '') + '<button type="button" ' + attrs + (state === "own" || pts < p ? " disabled" : "") + '>' + (state === "own" ? "已擁有" : "⭐" + p) + '</button></div>'; };
-    var rewards = (P.cfg.rewards || []).filter(Boolean);
+    var rewards = (P.cfg.rewards || []).filter(Boolean), vis = function(k){ return !P.hidden(k); }, pr = function(k, d){ return P.price(k, d); };
+    var sec = function(title, html){ return html ? '<div class="sh-h">' + title + '</div><div class="sh-grid">' + html + '</div>' : ''; };
     body.innerHTML = '<div class="pet-pts">⭐ 我的點數 <b>' + pts + '</b></div>' +
-      (rewards.length ? '<div class="sh-h">🎁 老師的獎勵（兌換後告訴老師）</div><div class="sh-grid">' + rewards.map(function(r, i){ return card(r.e || "🎁", esc(r.n), r.p, "", "", 'data-rw="' + i + '"'); }).join("") + '</div>' : '') +
-      '<div class="sh-h">🐾 更強的寵物（經驗成長更快）</div><div class="sh-grid">' + PREMIUM.map(function(x, i){ return card(x.e, x.n, x.p, "⚡ 成長 ×" + x.pw, "", 'data-pm="' + i + '"'); }).join("") + card("🥚", "再領養一隻普通寵物", NEWPET, "", "", 'data-new="1"') + '</div>' +
-      '<div class="sh-h">🧪 道具</div><div class="sh-grid">' + ITEMS.map(function(x, i){ return card(x.e, x.n, x.p, x.d, x.once && me[x.id === "house" ? "home" : x.id] ? "own" : "", 'data-it="' + i + '"'); }).join("") + '</div>' +
-      '<div class="sh-h">👔 寵物的衣服（買了到「我的寵物」衣櫃穿）</div><div class="sh-grid">' + CLOTHES.map(function(x, i){ return card(x.e, x.n, x.p, SLOTS[x.s], inv[x.id] ? "own" : "", 'data-cl="' + i + '"'); }).join("") + '</div>' +
-      '<div class="sh-h">🖼️ 場景</div><div class="sh-grid">' + SCENES.filter(function(x){ return x.p > 0; }).map(function(x, i){ return card(x.e, x.n, x.p, "", inv["bg_" + x.id] ? "own" : "", 'data-sc="' + x.id + '"'); }).join("") + '</div>';
+      sec('🎁 老師的獎勵（兌換後告訴老師）', rewards.map(function(r, i){ return card(r.e || "🎁", esc(r.n), r.p, "", "", 'data-rw="' + i + '"'); }).join("")) +
+      sec('🐾 更強的寵物（經驗成長更快）', PREMIUM.map(function(x, i){ return vis("pm" + i) ? card(x.e, x.n, pr("pm" + i, x.p), "⚡ 成長 ×" + x.pw, "", 'data-pm="' + i + '"') : ""; }).join("") + (vis("new") ? card("🥚", "再領養一隻普通寵物", pr("new", NEWPET), "", "", 'data-new="1"') : "")) +
+      sec('🧪 道具', ITEMS.map(function(x, i){ return vis("it_" + x.id) ? card(x.e, x.n, pr("it_" + x.id, x.p), x.d, x.once && me[x.id === "house" ? "home" : x.id] ? "own" : "", 'data-it="' + i + '"') : ""; }).join("")) +
+      sec('👔 寵物的衣服（買了到「我的寵物」衣櫃穿）', CLOTHES.map(function(x, i){ return vis("cl_" + x.id) ? card(x.e, x.n, pr("cl_" + x.id, x.p), SLOTS[x.s], inv[x.id] ? "own" : "", 'data-cl="' + i + '"') : ""; }).join("")) +
+      sec('🖼️ 場景', SCENES.filter(function(x){ return x.p > 0 && vis("sc_" + x.id); }).map(function(x){ return card(x.e, x.n, pr("sc_" + x.id, x.p), "", inv["bg_" + x.id] ? "own" : "", 'data-sc="' + x.id + '"'); }).join(""));
     body.onclick = async function(e){
       var b = e.target.closest("button[data-rw],button[data-pm],button[data-new],button[data-it],button[data-cl],button[data-sc]"); if(!b || b.disabled) return; var d = b.dataset, msg = "", poor = false;
       if(d.new){ tab = "adopt"; drawPanel(); return; }
       var r = await mutate(function(cur){
         var price, apply; if(d.rw !== undefined){ var rw = (P.cfg.rewards || [])[Number(d.rw)]; if(!rw) return null; price = rw.p; apply = function(){ return {}; }; }
-        else if(d.pm !== undefined){ var pr = PREMIUM[Number(d.pm)]; price = pr.p; apply = function(c2){ var pets = Object.assign({}, c2.pets), id = "p" + Date.now().toString(36); pets[id] = { sp: pr.e, nm: pr.n, h: 80, at: Date.now(), xp: 0, pw: pr.pw }; msg = "領養了 " + pr.e + " " + pr.n + "！"; return { pets: pets, act: id }; }; }
-        else if(d.it !== undefined){ var it = ITEMS[Number(d.it)]; price = it.p; apply = function(c2){ if(it.id === "potion"){ var p0 = P.actPet(c2); if(!p0){ return null; } var pets = Object.assign({}, c2.pets); pets[c2.act] = Object.assign({}, p0, { xp: (p0.xp || 0) + 40 }); msg = "寵物喝了成長藥水，經驗 +40！"; return { pets: pets }; } if(it.id === "dbl"){ msg = "經驗加倍券 +5 次！"; return { dbl: (c2.dbl || 0) + 5 }; } if(it.id === "house"){ if(c2.home) return null; msg = "豪華小屋蓋好了！"; return { home: 1 }; } return null; }; }
-        else if(d.cl !== undefined){ var cl = CLOTHES[Number(d.cl)]; price = cl.p; apply = function(c2){ var inv2 = Object.assign({}, c2.inv); if(inv2[cl.id]) return null; inv2[cl.id] = 1; msg = "買了 " + cl.e + " " + cl.n + "！到「我的寵物」衣櫃穿上"; return { inv: inv2 }; }; }
-        else if(d.sc){ var sc = SCENES.filter(function(x){ return x.id === d.sc; })[0]; price = sc.p; apply = function(c2){ var inv2 = Object.assign({}, c2.inv); if(inv2["bg_" + sc.id]) return null; inv2["bg_" + sc.id] = 1; msg = "買了場景 " + sc.e + " " + sc.n + "！"; return { inv: inv2, bg: sc.id }; }; }
+        else if(d.pm !== undefined){ var pr = PREMIUM[Number(d.pm)]; price = P.price("pm" + d.pm, pr.p); apply = function(c2){ var pets = Object.assign({}, c2.pets), id = "p" + Date.now().toString(36); pets[id] = { sp: pr.e, nm: pr.n, h: 80, at: Date.now(), xp: 0, pw: pr.pw }; msg = "領養了 " + pr.e + " " + pr.n + "！"; return { pets: pets, act: id }; }; }
+        else if(d.it !== undefined){ var it = ITEMS[Number(d.it)]; price = P.price("it_" + it.id, it.p); apply = function(c2){ if(it.id === "potion"){ var p0 = P.actPet(c2); if(!p0){ return null; } var pets = Object.assign({}, c2.pets); pets[c2.act] = Object.assign({}, p0, { xp: (p0.xp || 0) + 40 }); msg = "寵物喝了成長藥水，經驗 +40！"; return { pets: pets }; } if(it.id === "dbl"){ msg = "經驗加倍券 +5 次！"; return { dbl: (c2.dbl || 0) + 5 }; } if(it.id === "house"){ if(c2.home) return null; msg = "豪華小屋蓋好了！"; return { home: 1 }; } return null; }; }
+        else if(d.cl !== undefined){ var cl = CLOTHES[Number(d.cl)]; price = P.price("cl_" + cl.id, cl.p); apply = function(c2){ var inv2 = Object.assign({}, c2.inv); if(inv2[cl.id]) return null; inv2[cl.id] = 1; msg = "買了 " + cl.e + " " + cl.n + "！到「我的寵物」衣櫃穿上"; return { inv: inv2 }; }; }
+        else if(d.sc){ var sc = SCENES.filter(function(x){ return x.id === d.sc; })[0]; price = P.price("sc_" + sc.id, sc.p); apply = function(c2){ var inv2 = Object.assign({}, c2.inv); if(inv2["bg_" + sc.id]) return null; inv2["bg_" + sc.id] = 1; msg = "買了場景 " + sc.e + " " + sc.n + "！"; return { inv: inv2, bg: sc.id }; }; }
         if((cur.pts || 0) < price){ poor = true; return null; } var patch = apply(cur); if(!patch) return null; patch.pts = (cur.pts || 0) - price; return patch;
       });
       if(poor){ ctx().toast("點數不夠"); return; } if(!r) return;
@@ -220,6 +230,16 @@
         var list = (cfg.rewards || []).filter(Boolean), rl = h("div"); list.forEach(function(rw, i){ rl.appendChild(h("div", { class: "ct-row" }, [h("span", { style: "font-size:1.4em;", text: rw.e || "🎁" }), h("b", { text: rw.n }), h("span", { class: "ct-muted", text: "⭐" + rw.p }), h("button", { class: "ct-btn", text: "✕", onclick: function(){ list.splice(i, 1); setCfg({ rewards: list }); } })])); }); box.appendChild(rl);
         var ne = h("input", { class: "ct-inp", value: "🎁", style: "width:3em;text-align:center;" }), nn = h("input", { class: "ct-inp", placeholder: "獎勵名稱（例如：免寫一次作業、選座位）", style: "flex:1;min-width:10em;" }), np = h("input", { class: "ct-inp", type: "number", min: "1", value: "50", style: "width:5em;" });
         box.appendChild(h("div", { class: "ct-row" }, [ne, nn, np, h("button", { class: "ct-btn pri", text: "＋ 新增獎勵", onclick: function(){ if(!nn.value.trim()) return; list.push({ e: ne.value.trim() || "🎁", n: nn.value.trim(), p: Math.max(1, Number(np.value) || 1) }); setCfg({ rewards: list }); } })]));
+        box.appendChild(h("div", { style: "font-weight:800;margin:14px 0 4px;", text: "🛒 商店價格（每一項都可以自己訂價；取消勾選＝下架，學生商店就看不到）" }));
+        var bar = h("div", { class: "ct-row" }, [h("span", { class: "ct-muted", text: "全部價格 ×" }), h("button", { class: "ct-btn", text: "0.5", onclick: function(){ scaleAll(0.5); } }), h("button", { class: "ct-btn", text: "0.8", onclick: function(){ scaleAll(0.8); } }), h("button", { class: "ct-btn", text: "1.2", onclick: function(){ scaleAll(1.2); } }), h("button", { class: "ct-btn", text: "2", onclick: function(){ scaleAll(2); } }), h("button", { class: "ct-btn", text: "↺ 還原預設價格", onclick: function(){ if(confirm("全部價格還原成預設、並重新上架？")) setCfg({ prices: null, off: null }); } })]); box.appendChild(bar);
+        var cat = P.catalog(), grp = ""; var pt = h("div", { style: "display:grid;grid-template-columns:repeat(auto-fill,minmax(14em,1fr));gap:4px 10px;" });
+        cat.forEach(function(it){
+          if(it.g !== grp){ grp = it.g; pt.appendChild(h("div", { style: "grid-column:1/-1;font-weight:700;margin-top:6px;", text: grp })); }
+          var on = !P.hidden(it.k), cur = P.price(it.k, it.d);
+          pt.appendChild(h("div", { style: "display:flex;align-items:center;gap:.4em;opacity:" + (on ? 1 : .45) + ";" }, [h("input", { type: "checkbox", checked: on ? "checked" : null, title: "上架", disabled: it.k.charAt(0) === "f" && it.k.length <= 2 ? "disabled" : null, onchange: function(){ var o = Object.assign({}, cfg.off || {}); if(this.checked) delete o[it.k]; else o[it.k] = 1; setCfg({ off: Object.keys(o).length ? o : null }); } }), h("span", { style: "font-size:1.3em;", text: it.e }), h("span", { style: "flex:1;font-size:.9em;", text: it.n }), h("input", { class: "ct-inp", type: "number", min: "0", max: "9999", value: String(cur), style: "width:4.5em;" + (cur !== it.d ? "border-color:#C0623A;" : ""), onchange: function(){ var o = Object.assign({}, cfg.prices || {}), v = Math.max(0, Math.round(Number(this.value) || 0)); if(v === it.d) delete o[it.k]; else o[it.k] = v; setCfg({ prices: Object.keys(o).length ? o : null }); } })]));
+        });
+        box.appendChild(pt);
+        function scaleAll(m){ var o = {}; cat.forEach(function(it){ o[it.k] = Math.max(1, Math.round(P.price(it.k, it.d) * m)); }); setCfg({ prices: o }); }
         box.appendChild(h("div", { class: "ct-muted", style: "margin-top:8px;", text: "學生賺點數：交作業、交線上考卷（可依分數加成）、上課選擇題答對，也可以在「全班點數」直接加點。商店有衣服、場景、道具、更強的寵物；你設定的獎勵兌換後會出現在「兌換紀錄」。" }));
       }
       function redeems(){
