@@ -12,6 +12,7 @@ const LEVELS={
   tocfl:{label:'TOCFL 等級',names:['準備一級','準備二級','入門級','基礎級','進階級','高階級','流利級']},
   hsk26:{label:'HSK 等級（2026 新版）',prefix:'t',names:['HSK 1','HSK 2','HSK 3','HSK 4','HSK 5','HSK 6','HSK 7–9']},
   hsk21:{label:'HSK 等級（2021 版）',prefix:'n',names:['HSK 1','HSK 2','HSK 3','HSK 4','HSK 5','HSK 6','HSK 7–9']},
+  tbcl:{label:'TBCL 等級',names:['TBCL 1','TBCL 2','TBCL 3','TBCL 4','TBCL 5','TBCL 6','TBCL 7']},
   hsk20:{label:'HSK 等級（舊版）',prefix:'o',names:['HSK 1','HSK 2','HSK 3','HSK 4','HSK 5','HSK 6']}
 };
 let ready=false;
@@ -144,12 +145,13 @@ function tocflRecs(w){const own=ownTocfl(w);if(own.length)return own;const f=for
 function hskRec(w){const f=forms(w);for(const x of f.list){if(hsk.get(x))return hsk.get(x)}return null}
 function levelInfo(w,std){
   init();
+  if(std==='tbcl'){const lv=[];if(window.MMStd){for(const x of forms(w).list){const o=MMStd.tbclLevel(x);if(o){lv.push(o.level-1);break}}}return {levels:lv,names:lv.map(i=>LEVELS.tbcl.names[i])}}
   if(std==='tocfl'){const lv=[...new Set(tocflRecs(w).map(r=>r.level))].sort((a,b)=>a-b);return {levels:lv,names:lv.map(i=>LEVELS.tocfl.names[i])}}
   const p=LEVELS[std].prefix,rec=hskRec(w);
   if(!rec)return {levels:[],names:[]};const lv=[...rec.levels.matchAll(new RegExp(p+'(\\d)','g'))].map(m=>+m[1]-1).sort((a,b)=>a-b);
   return {levels:lv,names:lv.map(i=>LEVELS[std].names[i])};
 }
-function levelText(w,std){const {levels,names}=levelInfo(w,std);if(!names.length)return '未收錄';const tag=std==='tocfl'?TAGS.tocfl:TAGS.hsk;const full=levels.map((l,i)=>{const types=std==='tocfl'?[...new Set(tocflRecs(w).filter(r=>r.level===l).map(r=>TPOS[r.pos]||r.pos).filter(Boolean))]:[];return names[i]+' · '+tag[l]+(levels.length>1&&types.length?'（'+types.join('／')+'）':'')});return full.length===1?full[0]:'依詞性分級：'+full.join('；')}
+function levelText(w,std){const {levels,names}=levelInfo(w,std);if(!names.length)return '未收錄';const tag=std==='tocfl'?TAGS.tocfl:std==='tbcl'?['','','','','','','']:TAGS.hsk;const full=levels.map((l,i)=>{const types=std==='tocfl'?[...new Set(tocflRecs(w).filter(r=>r.level===l).map(r=>TPOS[r.pos]||r.pos).filter(Boolean))]:[];return names[i]+(tag[l]?' · '+tag[l]:'')+(levels.length>1&&types.length?'（'+types.join('／')+'）':'')});return full.length===1?full[0]:'依詞性分級：'+full.join('；')}
 const TPOS={N:'名詞',V:'動作動詞',Vi:'不及物動作動詞',Vs:'狀態動詞',Vst:'及物狀態動詞',Vp:'變化動詞',Vpt:'及物變化動詞','V-sep':'離合詞','Vs-sep':'離合詞（狀態）','Vp-sep':'離合詞（變化）','Vs-attr':'唯定狀態動詞','Vs-pred':'唯謂狀態動詞',Vaux:'助動詞',Adv:'副詞',Conj:'連詞',Prep:'介詞',Det:'限定詞',M:'量詞',Ptc:'助詞'};
 const HPOS={v:'動詞',n:'名詞',vn:'動詞／名詞',a:'形容詞',d:'副詞',an:'形容詞／名詞',ad:'形容詞／副詞',b:'區別詞',q:'量詞',t:'時間詞',l:'慣用語',f:'方位詞',c:'連詞',cc:'連詞',r:'代詞',nr:'人名',p:'介詞',s:'處所詞',m:'數詞',z:'狀態詞',nz:'專有名詞',u:'助詞',qv:'動量詞',y:'語氣詞',ns:'地名',e:'嘆詞',mq:'數量詞',qt:'時量詞',o:'擬聲詞',nt:'機構名',k:'後綴',h:'前綴'};
 /* 詞性：回傳 {text, kinds}；kinds 用來挑英文意思 */
@@ -212,7 +214,8 @@ const pref={standard:'tocfl',script:'trad',phonetic:'pinyin',region:'tw',pos:'on
 let inputMode='list';
 try{const saved=JSON.parse(localStorage.getItem('vocab-prefs')||'{}');for(const k in pref)if(saved[k])pref[k]=saved[k]}catch{}
 if(!['sandhi','base'].includes(pref.tone))pref.tone='sandhi';
-if(!['tocfl','hsk26','hsk21','none'].includes(pref.standard))pref.standard='tocfl';if(!['zh','en'].includes(pref.posLanguage))pref.posLanguage='zh';
+if(window.MMStd)pref.standard=MMStd.get();
+if(!['tocfl','tbcl','hsk26','hsk21','none'].includes(pref.standard))pref.standard='tocfl';if(!['zh','en'].includes(pref.posLanguage))pref.posLanguage='zh';
 function savePrefs(){try{localStorage.setItem('vocab-prefs',JSON.stringify(pref))}catch{}}
 const phoneticLabel=()=>pref.phonetic==='zhuyin'?'注音':'拼音';
 const noLevel=()=>pref.standard==='none';
@@ -659,7 +662,7 @@ function applyStandard(old){
  const note=$('#source-note');
  const lv=off?'':pref.standard==='tocfl'
   ?'級別依華測會公開的《華語八千詞表》（2024 年 9 月版）比對，供教學備課參考；未收錄詞、異體字或多筆對應請再確認。工具不是華測會官方服務。 <a href="https://tocfl.edu.tw/tocfl/index.php/teach/download" target="_blank" rel="noopener noreferrer">查看華測會詞表與教學資源</a>'
-  :`級別依 ${Lang.LEVELS[pref.standard].label.replace(/\s*等級/,'')} 詞彙表比對（整理自 <a href="https://github.com/drkameleon/complete-hsk-vocabulary" target="_blank" rel="noopener noreferrer">complete-hsk-vocabulary</a>，MIT 授權），供教學備課參考；未收錄詞或多筆對應請再確認。工具不是 HSK 官方服務。`;
+  :pref.standard==='tbcl'?'級別依國家教育研究院《臺灣華語文能力基準詞語表》比對（第 N* 級併入第 N 級），供教學備課參考；詞表沒有的詞標「未收錄」。工具不是官方服務，來源與授權見 docs/資料來源與授權.md。':`級別依 ${Lang.LEVELS[pref.standard].label.replace(/\s*等級/,'')} 詞彙表比對（整理自 <a href="https://github.com/drkameleon/complete-hsk-vocabulary" target="_blank" rel="noopener noreferrer">complete-hsk-vocabulary</a>，MIT 授權），供教學備課參考；未收錄詞或多筆對應請再確認。工具不是 HSK 官方服務。`;
  note.innerHTML=`${lv?`<span>${lv}</span>`:''}<span>常用詞的英文意思採本站整理的教學常用義；其餘標「自動」的意思與拼音由程式帶入，參考 <a href="https://www.mdbg.net/chinese/dictionary?page=cc-cedict" target="_blank" rel="noopener noreferrer">CC-CEDICT</a> 詞典（MDBG，<a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>），請以教學判斷為準。</span>`;
  rows().forEach(r=>{if(val(r,'word'))fillRow(r)});buildPrompt();
 }
@@ -883,7 +886,8 @@ setSentences();$('#color-options').hidden=true;$('#vocab-table').classList.toggl
 $('#input-message').textContent='詞典載入中…';
 setTimeout(()=>{
  Lang.init();
- bindPref('#pref-standard','standard',applyStandard);bindPref('#pref-script','script',applyScript);
+ bindPref('#pref-standard','standard',function(old){applyStandard(old);if(window.MMStd&&MMStd.get()!==pref.standard)MMStd.set(pref.standard)});
+if(window.MMStd)MMStd.onChange(function(id){if(id!==pref.standard&&['tocfl','tbcl','hsk26','hsk21','none'].includes(id)){const old=pref.standard;pref.standard=id;savePrefs();$('#pref-standard').value=id;applyStandard(old);updatePrefsSummary()}else if(id===pref.standard)applyStandard(pref.standard)});bindPref('#pref-script','script',applyScript);
  bindPref('#pref-phonetic','phonetic',applyPhonetic);bindPref('#pref-tone','tone',applyTone);
  applyPos();bindPref('#pref-region','region',applyRegion);
  $('#th-phonetic').textContent=phoneticLabel();applyStandard();

@@ -1094,6 +1094,7 @@ img.vimg{ width:100%; height:100%; object-fit:contain; border-radius:10px; displ
     <div class="stat-pill">生詞 <b id="statVocab">0</b> 個</div>
     <div class="stat-pill">語法點 <b id="statGrammar">0</b> 個</div>
     <div class="stat-pill">已上 <b id="statLesson">0</b> 課</div>
+    <span id="stdMount"></span>
     <button class="bell-btn" id="bellOpenBtn">⏰ 上下課時間</button>
     <button class="bell-btn" id="cloudSyncOpenBtn">☁️ 老師專區</button>
   </div>
@@ -1623,6 +1624,7 @@ var HanziWriter=function(){"use strict";var t,e,r;const i="undefined"==typeof wi
 <!-- SheetJS：支援教材庫 Excel 匯入／匯出（跟 Mandamy-Test 用同一個版本） -->
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="data.js"></script>
+<script src="std.js"></script>
 <script>
 /* ============================================================
    教材資料來源：
@@ -3079,7 +3081,7 @@ function vocabCardInnerHtml(v){
         <div class="py">${v['拼音']||''}</div>
       </div>
     </div>
-    <div class="pos-line">${v['詞性']||''}${v['TOCFL等級'] && v['TOCFL等級']!=='未收錄' ? ' · <span class="tocfl-badge">'+v['TOCFL等級']+'</span>' : ''}</div>
+    <div class="pos-line">${v['詞性']||''}${(function(){ var lb = window.MMStd ? MMStd.vocabLabel(v) : (v['TOCFL等級']!=='未收錄' ? v['TOCFL等級'] : ''); return lb ? ' · <span class="tocfl-badge">'+lb+'</span>' : ''; })()}</div>
     <div class="trans">${showEn ? (v['英文翻譯']||'') : ''}${showTh ? '<span class="th">'+(v['泰文翻譯']||'')+'</span>' : ''}</div>
     <div class="sentence-block">
       <div class="zh">${v['例句（中文）']||''}</div>
@@ -3096,7 +3098,7 @@ function grammarCardInnerHtml(g){
   const showTh = state.lang==='both' || state.lang==='th';
   return `
     <span class="lesson-chip" style="background:${lessonColor(g['課別'])}; color:#fff;">第${g['課別']}課</span>
-    <div class="grammar-point">${g['語法點']}</div>
+    <div class="grammar-point">${g['語法點']}${(function(){ var lb = window.MMStd ? MMStd.grammarLabel(g['語法點']) : ''; return lb ? ' <span class="tocfl-badge">'+lb+'</span>' : ''; })()}</div>
     <div class="grammar-structure">${g['結構／用法']||''}</div>
     <div class="sentence-block" style="margin-top:12px;">
       <div class="zh">${g['例句（中文）']||''}</div>
@@ -4551,6 +4553,14 @@ function renderFlip(){
     renderFlip();
   });
 }
+
+/* 等級標準：選單＋切換時重畫（std.js） */
+(function(){
+  if(!window.MMStd) return;
+  var m = document.getElementById('stdMount'); if(m) MMStd.mount(m);
+  MMStd.onChange(function(){ try{ render(); }catch(e){} });
+  MMStd.ready().then(function(){ setTimeout(function(){ try{ render(); }catch(e){} }, 50); });
+})();
 
 function render(){
   document.getElementById('vocabView').style.display = 'none';

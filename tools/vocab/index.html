@@ -34,6 +34,7 @@ if(MMV.embed)document.documentElement.classList.add('mm-embed');
           <label class="pref"><span>分級標準</span>
             <select id="pref-standard">
               <option value="tocfl">華測會 TOCFL（華語八千詞）</option>
+              <option value="tbcl">TBCL 臺灣華語文能力基準（國教院）</option>
               <option value="hsk26">HSK 3.0（2026 新版）</option>
               <option value="hsk21">HSK 3.0（2021 版）</option>
               <option value="none">不顯示分級</option>
@@ -182,6 +183,7 @@ if(MMV.embed)document.documentElement.classList.add('mm-embed');
 /* 依設定調整連結 */
 document.querySelectorAll('.mm-home-link').forEach(function(a){a.href=MMV.home});
 </script>
+<script src="../../std.js"></script>
 <script src="vocab-loader.js?v=20261020"></script>
 </body>
 </html>

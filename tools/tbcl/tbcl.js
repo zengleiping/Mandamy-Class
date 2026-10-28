@@ -30,13 +30,15 @@ function segRun(s){var a=fmm(s),b=bmm(s);if(a.length!==b.length)return a.length<
 function tokens(str){var o=[],buf="";function f(){if(buf){segRun(buf).forEach(function(w){o.push({w:w,han:true})});buf=""}}
   for(var ch of str){if(isHan(ch))buf+=ch;else{f();o.push({w:ch,han:false})}}f();return o}
 function levelOf(w){var l=LV.get(w);return l==null?null:l}
-/* 檢核 */
+/* 檢核：「* 級」詞（如第 3* 級）可選擇算在該級內，或算比該級更高 */
+function effLv(w,l){return(!$("incstar").checked&&STAR.has(w))?l+0.5:l}
+
 function analyze(text,target,excl){
   var toks=tokens(text),tot=0,over=0,types=new Map(),exN=0;
   toks.forEach(function(t){
     if(!t.han)return;t.lv=levelOf(t.w);t.ex=excl.has(t.w);
     if(t.ex){exN++;t.st="ex";return}
-    tot++;t.st=(t.lv==null)?"unk":(t.lv>target?"over":"ok");
+    tot++;t.st=(t.lv==null)?"unk":(effLv(t.w,t.lv)>target?"over":"ok");
     var e=types.get(t.w)||{w:t.w,lv:t.lv,n:0,st:t.st};e.n++;types.set(t.w,e);
     if(t.st!=="ok")over++;
   });
@@ -64,6 +66,11 @@ $("run").onclick=doCheck;
 $("res").onclick=function(e){var w=e.target.getAttribute&&e.target.getAttribute("data-w");if(!w)return;EX.has(w)?EX.delete(w):EX.add(w);doCheck()};
 $("exportc").onclick=function(){if(!LAST)return;var r=LAST.r,s="TBCL 第 "+LAST.t+" 級檢核（標準 "+LAST.lim+"%）\n詞次 "+r.total+"，超綱 "+r.over+"（"+r.ratio.toFixed(1)+"%）\n不重複詞 "+r.types+"，超綱 "+r.typeOver+"（"+r.typeRatio.toFixed(1)+"%）\n詞表："+(OFFICIAL?"官方 TBCL":"暫代（TOCFL）")+"\n"+CITE+"\n超綱詞："+r.list.map(function(x){return x.w+"("+(x.lv==null?"未收錄":x.lv)+")"}).join("、");
   navigator.clipboard.writeText(s).then(function(){alert("已複製")},function(){prompt("複製：",s)})};
+$("official").onclick=function(){var t=$("txt").value.trim();if(!t){alert("請先貼上文字");return}
+  var f=document.createElement("form");f.method="POST";f.action="https://coct.naer.edu.tw/edit.jsp";f.target="_blank";
+  [["no",""],["lv","0"],["db","1"],["num","10"],["WORD",t]].forEach(function(p){var i=document.createElement(p[0]==="WORD"?"textarea":"input");i.name=p[0];i.value=p[1];f.appendChild(i)});
+  f.style.display="none";document.body.appendChild(f);f.submit();f.remove()};
+$("incstar").onchange=function(){if($("txt").value.trim())doCheck()};
 $("printc").onclick=function(){window.print()};
 
 /* 出處 */
@@ -140,9 +147,10 @@ $("k-go").onclick=doKwic;$("k-q").onkeydown=function(e){if(e.key==="Enter")doKwi
 /* COCT 通用詞頻（data/freq.tsv，前 30000 詞）與語法點表（data/grammar.json） */
 function loadFreq(){if(FREQ)return FREQ;FREQ=fetch("data/freq.tsv").then(function(r){if(!r.ok)throw 0;return r.text()}).then(function(t){var m=new Map();t.split("\n").forEach(function(ln){if(!ln||ln[0]==="#")return;var f=ln.split("\t");m.set(f[0],{rank:+f[1],pm:+f[2],wr:+f[3],sp:+f[4],nw:+f[5]})});return m}).catch(function(){return new Map()});return FREQ}
 function loadGram(){if(GRAM)return GRAM;GRAM=fetch("data/grammar.json").then(function(r){if(!r.ok)throw 0;return r.json()}).catch(function(){return[]});return GRAM}
+var GALIAS={"是":"繫動詞"};
 var stripG=function(s){return String(s).replace(/[（(][^）)]*[）)]/g,"").replace(/[0-9０-９.\s_…⋯。~～…]/g,"")};
 function matchGram(name,G){var core=stripG(name);if(!core)return[];var hit=[];
-  G.forEach(function(g){var alts=stripG(g.name).split(/[／/、，,]/).filter(Boolean),ok=alts.some(function(a){return a===core||(core.length>=2&&a.length>=2&&(a.indexOf(core)>=0||core.indexOf(a)>=0))});if(ok)hit.push(g)});
+  G.forEach(function(g){var alts=stripG(g.name).split(/[／/、，,]/).filter(Boolean),ok=alts.some(function(a){return a===core||a===(GALIAS[core]||"")});if(ok)hit.push(g)});
   return hit.slice(0,4)}
 function gramSection(L){return loadGram().then(function(G){
   if(!G.length)return"";var rows="";
