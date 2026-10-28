@@ -2591,7 +2591,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
 
       <div id="thermo-fields" style="display:none;">
         <label>溫度範圍 Range（°C）</label>
-        <div style="display:flex;gap:8px;align-items:center;"><input type="number" id="f-th-min" value="-10" style="width:90px;"> ～ <input type="number" id="f-th-max" value="40" style="width:90px;"> 　起始溫度 Start <input type="number" id="f-th-start" value="25" style="width:90px;"></div>
+        <div style="display:flex;gap:8px;align-items:center;"><input type="number" id="f-th-min" value="-10" style="width:90px;"> ～ <input type="number" id="f-th-max" value="40" style="width:90px;"> 　起始溫度 Start <input type="number" step="0.1" id="f-th-start" value="25" style="width:90px;"></div>
         <label>說明（選填）</label><input type="text" id="f-th-desc" placeholder="例如：看溫度計，說說現在幾度、天氣怎麼樣">
       </div>
 
@@ -9856,7 +9856,7 @@ window.mmTA = (function(){
       qObj.bgImage = editorBoardImgData || "";
       qObj.gridType = (existing && existing.gridType) || "none";
     } else if(sec.type === "thermo"){
-      var thMin = parseInt(document.getElementById("f-th-min").value, 10), thMax = parseInt(document.getElementById("f-th-max").value, 10), thSt = parseInt(document.getElementById("f-th-start").value, 10);
+      var thMin = parseInt(document.getElementById("f-th-min").value, 10), thMax = parseInt(document.getElementById("f-th-max").value, 10), thSt = parseFloat(document.getElementById("f-th-start").value);
       if(isNaN(thMin) || isNaN(thMax) || thMax - thMin < 10){ alert("溫度範圍至少要差 10 度。Range must span at least 10°."); return; }
       if(isNaN(thSt)) thSt = Math.round((thMin + thMax) / 2); thSt = Math.max(thMin, Math.min(thMax, thSt));
       qObj.title = titleInput || ("第 " + (order + 1) + " 題：溫度計");
@@ -17473,8 +17473,7 @@ window.mmTA = (function(){
     draw();
   }
   /* ===== 溫度計：老師拖曳／按鈕／自動改變溫度，學生看溫度計回答「現在幾度？溫度怎麼樣？差不多幾度？」 ===== */
-  var THERMO_ADJ = [ { w: "冷", en: "cold", test: function(t){ return t <= 12; } }, { w: "涼", en: "cool", test: function(t){ return t >= 13 && t <= 19; } }, { w: "涼快", en: "pleasantly cool", test: function(t){ return t >= 20 && t <= 23; } }, { w: "暖和", en: "warm", test: function(t){ return t >= 24 && t <= 28; } }, { w: "熱", en: "hot", test: function(t){ return t >= 29; } } ];
-  function thermoAdjOf(t){ for(var i = 0; i < THERMO_ADJ.length; i++) if(THERMO_ADJ[i].test(t)) return THERMO_ADJ[i].w; return ""; }
+  var THERMO_ADJ = [ { w: "冷", en: "cold" }, { w: "涼", en: "cool" }, { w: "涼快", en: "pleasantly cool" }, { w: "暖和", en: "warm" }, { w: "熱", en: "hot" } ];   // 只是選項，沒有對錯
   var thermoTimer = null;
   function renderThermoBoard(q, container){
     if(thermoTimer){ clearInterval(thermoTimer); thermoTimer = null; }
@@ -17483,8 +17482,9 @@ window.mmTA = (function(){
     var adjSel = "", numTxt = "", sideSig = "", lastWrite = 0, dragging = false;
     function pg(){ return getProgress(q.id) || {}; }
     function st(){ var o = pg().thermo || {}; return { t: o.t !== undefined ? Number(o.t) : START, showNum: !!o.showNum, reveal: !!o.reveal, auto: !!o.auto }; }
-    function setSt(patch){ var o = Object.assign(st(), patch); o.t = Math.max(MIN, Math.min(MAX, Math.round(o.t))); writeProgress(q.id, { thermo: o }); }
+    function setSt(patch){ var o = Object.assign(st(), patch); o.t = Math.max(MIN, Math.min(MAX, Math.round(o.t * 10) / 10)); writeProgress(q.id, { thermo: o }); }
     function myAns(){ var a = pg().thermoAns || {}; return a[isStudent ? myId : "teacher"] || null; }
+    function fmt(t){ return (Math.round(Number(t) * 10) / 10).toFixed(1); }
     function yOf(t){ return 350 - (t - MIN) / (MAX - MIN) * 320; }
     function colorOf(t){ return "hsl(" + Math.round(210 - (t - MIN) / (MAX - MIN) * 210) + ",78%,52%)"; }
     var ticks = ""; for(var v = Math.ceil(MIN / 5) * 5; v <= MAX; v += 5){ var big = v % 10 === 0; ticks += '<line x1="78" x2="' + (big ? 92 : 86) + '" y1="' + yOf(v) + '" y2="' + yOf(v) + '" stroke="#6b5b4b" stroke-width="' + (big ? 2 : 1.2) + '"/>' + (big ? '<text x="96" y="' + (yOf(v) + 5) + '" font-size="15" fill="#4a3d31" font-family="sans-serif">' + v + '</text>' : ''); }
@@ -17497,9 +17497,9 @@ window.mmTA = (function(){
     var hg = svgBox.querySelector("#th-hg"), bulb = svgBox.querySelector("#th-bulb"), numEl = svgBox.querySelector("#th-num"), svgEl = svgBox.querySelector("svg");
     function paint(t, showNum){
       var y = yOf(t), c = colorOf(t); hg.setAttribute("y", y); hg.setAttribute("height", 382 - y); hg.setAttribute("fill", c); bulb.setAttribute("fill", c);
-      numEl.textContent = (isStudent && !showNum) ? "？ °C" : t + " °C";
+      numEl.textContent = (isStudent && !showNum) ? "？ °C" : fmt(t) + " °C";
     }
-    function tFromY(clientY){ var r = svgEl.getBoundingClientRect(), vy = (clientY - r.top) / r.height * 430; return Math.round(MIN + (350 - vy) / 320 * (MAX - MIN)); }
+    function tFromY(clientY){ var r = svgEl.getBoundingClientRect(), vy = (clientY - r.top) / r.height * 430; return Math.round((MIN + (350 - vy) / 320 * (MAX - MIN)) * 10) / 10; }
     if(!isStudent){
       svgEl.onpointerdown = function(e){ dragging = true; try{ svgEl.setPointerCapture(e.pointerId); }catch(er){} var t = Math.max(MIN, Math.min(MAX, tFromY(e.clientY))); paint(t, true); lastWrite = Date.now(); setSt({ t: t, auto: false }); };
       svgEl.onpointermove = function(e){ if(!dragging) return; var t = Math.max(MIN, Math.min(MAX, tFromY(e.clientY))); paint(t, true); if(Date.now() - lastWrite > 120){ lastWrite = Date.now(); setSt({ t: t }); } };
@@ -17514,25 +17514,25 @@ window.mmTA = (function(){
       if(isStudent){
         h += '<p class="th-q">' + (s0.showNum ? '現在幾度？' : '現在差不多幾度？') + '<small>' + (s0.showNum ? 'What is the temperature now?' : 'About how many degrees is it now?') + '</small></p>';
         h += '<p class="th-q">溫度怎麼樣？<small>How is the temperature?</small></p><div class="th-chips">' + THERMO_ADJ.map(function(a){ return '<button type="button" class="th-chip' + (adjSel === a.w ? ' on' : '') + '" data-adj="' + a.w + '">' + a.w + '<small>' + a.en + '</small></button>'; }).join("") + '</div>';
-        h += '<p class="th-q">' + (s0.showNum ? '' : '差不多 ') + '<input type="number" id="th-num-in" style="width:90px;font-size:20px;" value="' + escapeHtml(numTxt) + '"> 度<small>' + (s0.showNum ? 'degrees' : 'about … degrees') + '</small></p>';
+        h += '<p class="th-q">' + (s0.showNum ? '' : '差不多 ') + '<input type="number" step="0.1" id="th-num-in" style="width:100px;font-size:20px;" value="' + escapeHtml(numTxt) + '"> 度<small>' + (s0.showNum ? 'degrees' : 'about … degrees') + '</small></p>';
         h += '<div class="th-ctl"><button type="button" class="btn btn-sm btn-primary" data-a="send">送出 Submit</button></div>';
         if(mine){
-          var tt = Number(mine.t), okAdj = thermoAdjOf(tt) === mine.adj, okNum = mine.num !== "" && mine.num !== undefined && Math.abs(Number(mine.num) - tt) <= 2;
+          var tt = Number(mine.t), okNum = mine.num !== "" && mine.num !== undefined && Math.abs(Number(mine.num) - tt) <= 2;
           h += '<p>你送出：<b>' + escapeHtml(mine.adj || "—") + '</b>、<b>' + escapeHtml(String(mine.num === undefined ? "" : mine.num)) + '</b> 度　<small>Sent</small></p>';
-          if(s0.reveal) h += '<p>當時 <b>' + tt + ' °C</b>，答案：<b>' + thermoAdjOf(tt) + '</b>　' + (okAdj ? '<span class="th-ok">✔ 溫度對了</span>' : '<span class="th-no">✘ 溫度說法不同</span>') + '　' + (okNum ? '<span class="th-ok">✔ 度數很接近</span>' : '<span class="th-no">✘ 度數差比較多</span>') + '</p>';
+          if(s0.reveal) h += '<p>當時是 <b>' + fmt(tt) + ' °C</b>　' + (mine.num !== "" && mine.num !== undefined ? (okNum ? '<span class="th-ok">✔ 度數很接近</span>' : '<span class="th-no">差 ' + fmt(Math.abs(Number(mine.num) - tt)) + ' 度</span>') : '') + '</p>';
         }
       } else {
         var cur = st().t;
-        h += '<div class="th-ctl"><button type="button" class="btn btn-sm" data-d="-5">−5</button><button type="button" class="btn btn-sm" data-d="-1">−1</button><button type="button" class="btn btn-sm" data-d="1">＋1</button><button type="button" class="btn btn-sm" data-d="5">＋5</button><button type="button" class="btn btn-sm" data-a="rand">🎲 隨機 Random</button></div>';
+        h += '<div class="th-ctl"><button type="button" class="btn btn-sm" data-d="-5">−5</button><button type="button" class="btn btn-sm" data-d="-1">−1</button><button type="button" class="btn btn-sm" data-d="-0.1">−0.1</button><button type="button" class="btn btn-sm" data-d="0.1">＋0.1</button><button type="button" class="btn btn-sm" data-d="1">＋1</button><button type="button" class="btn btn-sm" data-d="5">＋5</button><button type="button" class="btn btn-sm" data-a="rand">🎲 隨機 Random</button></div>';
         h += '<div class="th-ctl"><button type="button" class="btn btn-sm' + (s0.auto ? ' btn-primary' : '') + '" data-a="auto">' + (s0.auto ? '⏸ 停止自動變化 Stop auto' : '▶ 自動變化 Auto change') + '</button><button type="button" class="btn btn-sm' + (s0.showNum ? ' btn-primary' : '') + '" data-a="num">' + (s0.showNum ? '學生看得到數字 Number shown' : '隱藏數字（學生要看溫度計）Number hidden') + '</button><button type="button" class="btn btn-sm' + (s0.reveal ? ' btn-primary' : '') + '" data-a="reveal">' + (s0.reveal ? '已公布答案 Revealed' : '公布答案 Reveal') + '</button></div>';
-        h += '<p class="th-q">現在溫度：<b>' + cur + ' °C</b>　→　<b>' + thermoAdjOf(cur) + '</b><small>拖曳左邊溫度計的水銀柱也可以改溫度 Drag the thermometer to change it</small></p>';
+        h += '<p class="th-q">現在溫度：<b>' + fmt(cur) + ' °C</b><small>拖曳左邊溫度計的水銀柱也可以改溫度 Drag the thermometer to change it</small></p>';
         var ids = Object.keys(ans).filter(function(k){ return k !== "teacher"; });
         h += '<div class="bg5-cap">學生回答（' + ids.length + ' 人）Answers</div>';
         if(ids.length){
-          h += '<table class="th-tbl"><thead><tr><th>學生</th><th>說法</th><th>度數</th><th>當時</th>' + (s0.reveal ? '<th></th>' : '') + '</tr></thead><tbody>' + ids.map(function(k){ var r = ans[k], tt = Number(r.t), okA = thermoAdjOf(tt) === r.adj, okN = r.num !== "" && r.num !== undefined && Math.abs(Number(r.num) - tt) <= 2;
-            return '<tr><td>' + escapeHtml(nameOf(k, r)) + '</td><td>' + escapeHtml(r.adj || "") + '</td><td>' + escapeHtml(String(r.num === undefined ? "" : r.num)) + '</td><td>' + tt + '°</td>' + (s0.reveal ? '<td>' + (okA ? '<span class="th-ok">✔</span>' : '<span class="th-no">✘</span>') + ' ' + (okN ? '<span class="th-ok">✔</span>' : '<span class="th-no">✘</span>') + '</td>' : '') + '</tr>'; }).join("") + '</tbody></table>';
+          h += '<table class="th-tbl"><thead><tr><th>學生</th><th>說法</th><th>度數</th><th>當時</th>' + (s0.reveal ? '<th></th>' : '') + '</tr></thead><tbody>' + ids.map(function(k){ var r = ans[k], tt = Number(r.t), okN = r.num !== "" && r.num !== undefined && Math.abs(Number(r.num) - tt) <= 2;
+            return '<tr><td>' + escapeHtml(nameOf(k, r)) + '</td><td>' + escapeHtml(r.adj || "") + '</td><td>' + escapeHtml(String(r.num === undefined ? "" : r.num)) + '</td><td>' + fmt(tt) + '°</td>' + (s0.reveal ? '<td>' + (okN ? '<span class="th-ok">✔ 接近</span>' : '') + '</td>' : '') + '</tr>'; }).join("") + '</tbody></table>';
         } else h += '<div class="bg5-note">還沒有學生回答。No answers yet.</div>';
-        h += '<div class="bg5-note" style="margin-top:8px;">說法：冷 ≤12°、涼 13–19°、涼快 20–23°、暖和 24–28°、熱 ≥29°；度數差 2 度以內算接近。</div>';
+        h += '<div class="bg5-note" style="margin-top:8px;">「冷、涼、暖和…」是每個人的感覺，沒有對錯；只有度數差 2 度以內會標示「接近」。</div>';
       }
       side.innerHTML = h;
       var numIn = side.querySelector("#th-num-in"); if(numIn) numIn.oninput = function(){ numTxt = numIn.value; };
@@ -17550,7 +17550,7 @@ window.mmTA = (function(){
         else { var cur2 = pg().thermoAns || {}; cur2[isStudent ? myId : "teacher"] = rec; writeProgress(q.id, { thermoAns: cur2 }); }
         return;
       }
-      if(a === "rand"){ var nt = MIN + Math.floor(Math.random() * (MAX - MIN + 1)); setSt({ t: nt, auto: false, reveal: false }); }
+      if(a === "rand"){ var nt = Math.round((MIN + Math.random() * (MAX - MIN)) * 10) / 10; setSt({ t: nt, auto: false, reveal: false }); }
       else if(a === "auto") setSt({ auto: !s0.auto });
       else if(a === "num") setSt({ showNum: !s0.showNum });
       else if(a === "reveal") setSt({ reveal: !s0.reveal });
@@ -17558,7 +17558,7 @@ window.mmTA = (function(){
     function autoTick(){
       if(!document.body.contains(wrap)){ clearInterval(thermoTimer); thermoTimer = null; return; }
       var s0 = st(); if(!s0.auto || dragging) return;
-      var d = (Math.floor(Math.random() * 7) - 3) || 2, nt = s0.t + d; if(nt > MAX || nt < MIN) nt = s0.t - d;
+      var d = (Math.floor(Math.random() * 61) - 30) / 10; if(Math.abs(d) < 0.3) d = 0.5; var nt = s0.t + d; if(nt > MAX || nt < MIN) nt = s0.t - d;
       setSt({ t: nt, reveal: false });
     }
     function draw(){
