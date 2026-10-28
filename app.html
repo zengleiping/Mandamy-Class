@@ -35,6 +35,24 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .btn.ghost{ background:transparent; border-color:transparent; color:var(--ink-soft); }
   #brk{ position:fixed; inset:0; z-index:99990; display:flex; align-items:center; justify-content:center; background:rgba(250,247,242,.8); backdrop-filter:blur(1.5px); -webkit-backdrop-filter:blur(1.5px); }
   #brk.brk-done{ background:rgba(255,236,230,.84); }
+  /* 🎡 籤筒：跟下課鬧鐘同一種全螢幕風格；老師抽到的人，學生的畫面也會跳出來 */
+  #drawov{ position:fixed; inset:0; z-index:99991; display:flex; align-items:center; justify-content:center; background:rgba(250,247,242,.88); backdrop-filter:blur(1.5px); -webkit-backdrop-filter:blur(1.5px); }
+  .dr-box{ text-align:center; padding:20px; width:min(760px,95vw); max-height:96vh; overflow:auto; }
+  .dr-wheel{ width:min(190px,34vw); height:auto; }
+  .dr-wheel.spin{ animation:drSpin .55s linear infinite; }
+  @keyframes drSpin{ to{ transform:rotate(360deg); } }
+  .dr-title{ font-family:MM Latin,Iansui,serif; font-size:clamp(22px,3.4vw,34px); font-weight:700; color:var(--ink); margin-top:6px; }
+  .dr-name{ font-family:MM Latin,Iansui,serif; font-size:clamp(52px,12vw,130px); font-weight:800; color:var(--seal); min-height:1.15em; line-height:1.15; word-break:break-all; }
+  .dr-name.pop{ animation:drPop .55s cubic-bezier(.3,1.6,.5,1); }
+  @keyframes drPop{ from{ transform:scale(.4); opacity:.2; } to{ transform:scale(1); opacity:1; } }
+  .dr-sub{ font-size:clamp(15px,2vw,19px); color:var(--ink-soft); margin-top:4px; }
+  .dr-act{ display:flex; gap:10px; justify-content:center; margin-top:16px; flex-wrap:wrap; }
+  .dr-act .btn{ font-size:18px; padding:10px 22px; }
+  .dr-chips{ display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-top:14px; }
+  .dr-chip{ padding:4px 11px; border-radius:99px; border:1.5px solid var(--line); background:var(--surface); font-size:15px; cursor:pointer; user-select:none; }
+  .dr-chip.out{ opacity:.35; text-decoration:line-through; }
+  .dr-chip.abs{ opacity:.4; border-style:dashed; }
+  .dr-chip.cur{ border-color:var(--seal); background:var(--seal-soft,#FDECE6); font-weight:700; }
   .brk-box{ text-align:center; padding:24px; }
   .brk-glass{ width:min(220px,40vw); height:auto; animation:brkFlip 3s ease-in-out infinite; }
   .brk-clock{ width:min(300px,52vw); height:auto; animation:brkJump .7s cubic-bezier(.3,1.6,.5,1) infinite alternate; transform-origin:50% 90%; }
@@ -6388,7 +6406,7 @@ function renderLessonCommon(no, open, teacher, liveStudent){
   var cur = tabs.filter(function(t){ return t[0] === S.tab; })[0];
   var live = S.live && S.live.on;
   var html = '<div class="tabs">' + (liveStudent ? '' : '<button class="tab" data-back="1">‹ 返回</button>' + tabs.filter(function(t){ return t[0] !== "bingo"; }).map(function(t){ var on = t[0] === S.tab || (t[0] === "activities" && S.tab === "bingo"); var btn = '<button class="tab' + (on ? ' on' : '') + '" data-tab="' + t[0] + '">' + t[1] + '</button>'; return teacher && (t[0] === "slides" || t[0] === "quiz") ? lessonDeckMenu(no, t[0], btn) : btn; }).join("") + (teacher ? '<!--copyto-->' : '') +
-    (teacher ? '<button class="tab focus-btn" data-actmenu="1" style="margin-left:auto;" title="叫出課堂活動選單（常用、最近用過）">⚡ 活動選單</button><button class="tab focus-btn" data-brk="1" style="margin-left:6px;" title="下課休息倒數：時間到會響鈴提醒回來上課（上課中，學生畫面也會一起倒數）">下課鬧鐘</button>' : '') + (teacher ? ((live ? '<button class="tab focus-btn" data-fs="1" style="margin-left:6px;" title="瀏覽器全螢幕（Esc 退出，不會結束上課）">⛶ 全螢幕</button><button class="tab focus-btn" data-focus="1" style="margin-left:6px;">' + (S.focus ? "顯示欄位" : "隱藏欄位") + '</button><button class="tab focus-btn" data-live="1" style="margin-left:6px;background:var(--seal);color:#fff;">⏹ 結束上課</button>' : '<button class="tab focus-btn" data-live="1" title="開始上課：學生會自動跟著你的畫面，並隱藏上方與左側欄位">🎬 開始上課</button>')) : '')) + '</div>';
+    (teacher ? '<button class="tab focus-btn" data-actmenu="1" style="margin-left:auto;" title="叫出課堂活動選單（常用、最近用過）">⚡ 活動選單</button><button class="tab focus-btn" data-brk="1" style="margin-left:6px;" title="下課休息倒數：時間到會響鈴提醒回來上課（上課中，學生畫面也會一起倒數）">下課鬧鐘</button><button class="tab focus-btn" data-draw="1" style="margin-left:6px;" title="籤筒：從班上同學隨機抽一位（不重複，抽完換下一輪；學生的畫面也看得到抽到誰）"><img src="icons/draw-wheel.png" alt="" style="width:1.25em;height:1.25em;vertical-align:-.25em;margin-right:3px;">籤筒</button>' : '') + (teacher ? ((live ? '<button class="tab focus-btn" data-fs="1" style="margin-left:6px;" title="瀏覽器全螢幕（Esc 退出，不會結束上課）">⛶ 全螢幕</button><button class="tab focus-btn" data-focus="1" style="margin-left:6px;">' + (S.focus ? "顯示欄位" : "隱藏欄位") + '</button><button class="tab focus-btn" data-live="1" style="margin-left:6px;background:var(--seal);color:#fff;">⏹ 結束上課</button>' : '<button class="tab focus-btn" data-live="1" title="開始上課：學生會自動跟著你的畫面，並隱藏上方與左側欄位">🎬 開始上課</button>')) : '')) + '</div>';
   var sub = '', frame = '', role = teacher ? '' : '&role=student';
   if(S.tab === "material"){
     var subs = [["vocab","生詞"],["grammar","語法"],["text","課文"]].filter(function(s){ return teacher || open[s[0]]; });
@@ -6620,6 +6638,69 @@ function brkSync(data, teacher){
   }
   draw(); BRK.timer = setInterval(draw, 250);
 }
+
+// ---------- 🎡 籤筒：老師從班上名單隨機抽人（不重複，抽完才換下一輪）；上課中，抽到誰會寫進 live.draw，學生的畫面也跳出來 ----------
+var DR = { el: null, names: [], absent: {}, drawn: [], round: 1, last: null, busy: false, seen: 0, stuEl: null, stuTimer: null };
+function drKey(){ return "mm_draw_" + (S.sel ? S.sel.c : "x"); }
+function drLoad(){ try{ var o = JSON.parse(localStorage.getItem(drKey()) || "null"); if(o){ DR.absent = o.absent || {}; DR.drawn = o.drawn || []; DR.round = o.round || 1; DR.last = o.last || null; } }catch(e){} }
+function drSave(){ try{ localStorage.setItem(drKey(), JSON.stringify({ absent: DR.absent, drawn: DR.drawn, round: DR.round, last: DR.last })); }catch(e){} }
+function drPool(){ return DR.names.filter(function(n){ return !DR.absent[n] && DR.drawn.indexOf(n) < 0; }); }
+function drWheel(spin){ return '<img class="dr-wheel' + (spin ? ' spin' : '') + '" id="dr-wheel" src="icons/draw-wheel.png" alt="籤筒">'; }
+async function drOpen(){
+  if(!S.teacher || !S.sel || !S.sel.c){ alert("請先進到一個班級再用籤筒。"); return; }
+  drLoad(); var ros = []; try{ ros = await hwLoadRoster(); }catch(e){}
+  DR.names = ros.map(function(x){ return String(x); }).filter(Boolean);
+  if(!DR.names.length){ alert("這個班還沒有學生名單。\n請先到班級的「學生」分頁加入名單，籤筒才知道要從誰裡面抽。"); return; }
+  DR.drawn = DR.drawn.filter(function(n){ return DR.names.indexOf(n) >= 0; });
+  drClose(); var el = document.createElement("div"); el.id = "drawov"; DR.el = el; document.body.appendChild(el);
+  el.onclick = function(e){
+    var c = e.target.closest("[data-chip]"), b = e.target.closest("[data-dr]");
+    if(c){ var n = c.dataset.chip; if(DR.absent[n]) delete DR.absent[n]; else DR.absent[n] = true; drSave(); drRender(); return; }
+    if(!b) return; var a = b.dataset.dr;
+    if(a === "draw") drDoDraw(); else if(a === "reset"){ DR.drawn = []; DR.round++; DR.last = null; drSave(); drRender(); } else if(a === "close") drClose();
+  };
+  drRender();
+}
+function drClose(){ if(DR.el){ DR.el.remove(); DR.el = null; } DR.busy = false; }
+function drRender(name, spin, pop){
+  if(!DR.el) return; var pool = drPool(), part = DR.names.filter(function(n){ return !DR.absent[n]; }), cur = name !== undefined ? name : (DR.last && DR.last.name) || "";
+  DR.el.innerHTML = '<div class="dr-box">' + drWheel(spin) + '<div class="dr-title">' + (spin ? '抽籤中…' : cur ? '抽到了！' : '籤筒') + '</div>' +
+    '<div class="dr-name' + (pop ? ' pop' : '') + '" id="dr-name">' + esc(cur || (spin ? '' : '？')) + '</div>' +
+    '<div class="dr-sub">第 ' + DR.round + ' 輪　・　還有 ' + pool.length + ' 人沒被抽到（共 ' + part.length + ' 人參加）' + (!pool.length && part.length ? '　・　這輪抽完了，再按「抽」會開始新的一輪' : '') + '</div>' +
+    '<div class="dr-act"><button type="button" class="btn primary" data-dr="draw"' + (spin ? ' disabled' : '') + '>' + (pool.length ? '抽！' : '開始新的一輪並抽') + '</button><button type="button" class="btn" data-dr="reset"' + (spin ? ' disabled' : '') + '>重新開始這一輪</button><button type="button" class="btn" data-dr="close">關閉</button></div>' +
+    '<div class="dr-chips">' + DR.names.map(function(n){ return '<span class="dr-chip' + (DR.absent[n] ? ' abs' : DR.drawn.indexOf(n) >= 0 ? ' out' : '') + (n === cur && !spin ? ' cur' : '') + '" data-chip="' + esc(n) + '">' + esc(n) + '</span>'; }).join("") + '</div>' +
+    '<div class="dr-sub" style="margin-top:8px;">點一下名字＝今天不參加（再點一下取消）；劃掉的是這一輪已經被抽到的人。' + (S.live && S.live.on ? '學生的畫面會顯示抽到誰。' : '（還沒開始上課，學生看不到；按右上角「開始上課」後才會同步給學生）') + '</div></div>';
+}
+function drDoDraw(){
+  if(DR.busy) return; var pool = drPool();
+  if(!pool.length){ DR.drawn = []; DR.round++; pool = drPool(); if(!pool.length){ toast("沒有人可以抽（都被設成今天不參加了）"); return; } }
+  var pick = pool[Math.floor(Math.random() * pool.length)], n = 0, total = 14;
+  DR.busy = true; drRender("", true);
+  (function tick(){
+    var box = document.getElementById("dr-name"); if(!box){ DR.busy = false; return; }
+    n++;
+    if(n < total){ box.textContent = pool[Math.floor(Math.random() * pool.length)]; setTimeout(tick, 50 + n * n * 2); return; }
+    DR.busy = false; DR.drawn.push(pick);
+    DR.last = { name: pick, at: Date.now(), seq: DR.drawn.length, round: DR.round, left: drPool().length };
+    drSave(); drRender(pick, false, true); drBroadcast();
+  })();
+}
+function drBroadcast(){
+  var d = DR.last; if(!d) return;
+  if(S.live && S.live.on && S.sel){ S.live.draw = d; fbUpdate(liveRef(), { draw: d }).catch(function(){}); }
+  try{ var fr = document.getElementById("fr"); if(fr && fr.contentWindow) fr.contentWindow.postMessage({ mm: "drawPick", name: d.name, at: d.at, seq: d.seq, round: d.round }, location.origin); }catch(e){}
+}
+// 學生端：老師抽到誰，畫面跳出來幾秒
+function drSync(d){
+  if(!d || !d.at || d.at <= DR.seen) return; DR.seen = d.at;
+  if(Date.now() - d.at > 60000) return;   // 剛連線時看到的舊結果不用再跳
+  if(DR.stuTimer){ clearTimeout(DR.stuTimer); DR.stuTimer = null; } if(DR.stuEl){ DR.stuEl.remove(); DR.stuEl = null; }
+  var me = S.student && S.student.name, mine = me && String(d.name) === String(me);
+  var el = document.createElement("div"); el.id = "drawov"; DR.stuEl = el; document.body.appendChild(el);
+  el.innerHTML = '<div class="dr-box">' + drWheel(false) + '<div class="dr-title">' + (mine ? '🎉 就是你！' : '老師抽到了！') + '</div><div class="dr-name pop">' + esc(d.name) + '</div><div class="dr-sub">第 ' + (d.round || 1) + ' 輪' + (d.left != null ? '　・　還有 ' + d.left + ' 人沒被抽到' : '') + '</div><div class="dr-act"><button type="button" class="btn primary" data-x="1">關閉</button></div></div>';
+  el.onclick = function(){ el.remove(); DR.stuEl = null; };
+  DR.stuTimer = setTimeout(function(){ if(DR.stuEl === el){ el.remove(); DR.stuEl = null; } }, mine ? 12000 : 8000);
+}
 // ---------- 上課（老師開始上課，學生跟著老師的畫面）----------
 function liveRef(){ return clsPath(S.sel) + "/live"; }
 setInterval(function(){ try{ brkRestore(); }catch(e){} }, 2000);
@@ -6749,6 +6830,7 @@ function bindLessonNav(cls, backFn, renderFn){
     if(b.id === "mkproj"){ S.creating = S.lesson; renderFn(); return; }
     if(b.dataset.actmenu){ openActMenu(); return; }
     if(b.dataset.brk){ brkOpenDialog(); return; }
+    if(b.dataset.draw){ drOpen(); return; }
     if(b.dataset.actfav){ actToggleFav(b.dataset.actfav).then(renderFn); return; }
     if(b.dataset.actgo){ lessonActGo(b.dataset.actgo); return; }
     if(b.dataset.actback){ S.sub = null; renderFn(); pushLive(); return; }
@@ -6902,7 +6984,7 @@ async function startStudent(code, name, pw, opts){
     if(needAcct && !(opts && opts.google)){ var au = await studentAuth(idx, name, pw); if(au !== true){ viewStudentEntry(au, code); return; } }
     S.student = { name: name, code: code, idx: idx, school: res[0], term: res[1], cls: res[2], acct: needAcct };
     S.live = res[2].live && res[2].live.on ? res[2].live : null;
-    try{ window.onValue(window.ref(window.db, base + "/schools/" + idx.s + "/terms/" + idx.tm + "/classes/" + idx.c + "/live"), function(snap){ var v = snap.val(); var nv = v && v.on ? v : null; var key = JSON.stringify(nv); if(key === S.liveKey) return; S.liveKey = key; S.live = nv; S.liveRendered = null; if(S.student) renderStudent(); try{ brkSync(nv && nv.brk, false); }catch(e3){} try{ stuTransDraw(); }catch(e2){} }); stuTransStart(base, idx); }catch(e){}
+    try{ window.onValue(window.ref(window.db, base + "/schools/" + idx.s + "/terms/" + idx.tm + "/classes/" + idx.c + "/live"), function(snap){ var v = snap.val(); var nv = v && v.on ? v : null; var key = JSON.stringify(nv); if(key === S.liveKey) return; S.liveKey = key; S.live = nv; S.liveRendered = null; if(S.student) renderStudent(); try{ brkSync(nv && nv.brk, false); }catch(e3){} try{ drSync(nv && nv.draw); }catch(e4){} try{ stuTransDraw(); }catch(e2){} }); stuTransStart(base, idx); }catch(e){}
     S.plat = { lessons: res[3] || {}, books: res[4] || {} };
     S.lesson = null; S.tab = null; S.sub = null;
     var h = new URLSearchParams(location.hash.replace(/^#/, "")); if(h.get("l")) S.lesson = h.get("l"); if(h.get("tab")) S.tab = h.get("tab");
