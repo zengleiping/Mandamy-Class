@@ -1773,7 +1773,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .bg5-note{ font-size:13.5px; color:var(--ink-soft); font-weight:400; }
   .bg5-status{ margin:8px 0; padding:8px 12px; background:var(--seal-soft,#FDECE6); border-radius:10px; font-size:15px; }
   .bg5-en{ display:block; font-size:13.5px; color:var(--ink-soft); font-weight:400; margin-top:2px; }
-  .bg5-qbtn{ float:right; margin-left:8px; width:30px; height:30px; border-radius:50%; border:1.5px solid var(--line,#c9b8a5); background:var(--surface,#fff); font-weight:800; font-size:16px; cursor:pointer; color:var(--seal); }
+  .bg5-qbtn{ float:right; margin-left:8px; padding:5px 14px; border-radius:99px; border:1.5px solid var(--seal); background:var(--surface,#fff); font-weight:700; font-size:14px; cursor:pointer; color:var(--seal); }
   .bg5-demo{ position:relative; width:252px; height:150px; margin:10px auto 2px; background:#fff; border:1.5px solid var(--line,#c9b8a5); border-radius:12px; overflow:hidden; clear:both; }
   .bg5-demo .dc{ position:absolute; left:8px; width:56px; height:36px; border-radius:10px; background:#FFF3D6; border:1.5px solid #E2B96B; display:flex; align-items:center; justify-content:center; font-size:20px; }
   .bg5-demo .dcell{ position:absolute; width:44px; height:44px; border-radius:8px; background:#FAF4EC; border:1.5px solid var(--line,#c9b8a5); display:flex; align-items:center; justify-content:center; font-size:22px; }
@@ -1788,6 +1788,23 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   @keyframes bgdA2{ 0%,71%{background:#FAF4EC} 72%,98%{background:#9AD8A8;border-color:#4CAF6A} 100%{background:#FAF4EC;border-color:var(--line,#c9b8a5)} }
   @keyframes bgdFill{ 0%,27%{opacity:0;transform:scale(.4)} 31%{opacity:1;transform:scale(1.2)} 34%,100%{opacity:1;transform:scale(1)} }
   @keyframes bgdChip{ 0%,23%{transform:scale(1)} 27%{transform:scale(1.15);background:#FFD98A} 32%,100%{transform:scale(1)} }
+  .bg5-demo .dn{ position:absolute; left:46px; top:-8px; min-width:20px; height:20px; border-radius:99px; background:var(--seal); color:#fff; font-size:12px; font-weight:800; display:flex; align-items:center; justify-content:center; opacity:0; }
+  .bg5-demo .dc.t1{ animation:bgtC1 10s infinite; } .bg5-demo .dc.t2{ animation:bgtC2 10s infinite; } .bg5-demo .dc.t3{ animation:bgtC3 10s infinite; }
+  .bg5-demo .t1 .dn{ animation:bgtN1 10s infinite; } .bg5-demo .t2 .dn{ animation:bgtN2 10s infinite; } .bg5-demo .t3 .dn{ animation:bgtN3 10s infinite; }
+  .bg5-demo .dcell.b0{ animation:bgtA0 10s infinite; } .bg5-demo .dcell.b1{ animation:bgtA1 10s infinite; } .bg5-demo .dcell.b2{ animation:bgtA2 10s infinite; }
+  .bg5-demo .dhand.th{ animation:bgtHand 10s infinite; }
+  @keyframes bgtHand{ 0%{transform:translate(170px,125px);opacity:0} 4%{transform:translate(170px,125px);opacity:1} 10%{transform:translate(24px,16px) scale(1)} 13%{transform:translate(24px,16px) scale(.82)} 16%{transform:translate(24px,16px) scale(1)} 30%{transform:translate(24px,56px) scale(1)} 33%{transform:translate(24px,56px) scale(.82)} 36%{transform:translate(24px,56px) scale(1)} 50%{transform:translate(24px,96px) scale(1)} 53%{transform:translate(24px,96px) scale(.82)} 56%{transform:translate(24px,96px) scale(1)} 66%{transform:translate(170px,125px);opacity:1} 90%{transform:translate(170px,125px);opacity:1} 96%,100%{transform:translate(170px,125px);opacity:0} }
+  @keyframes bgtC1{ 0%,12%{background:#FFF3D6} 13%,98%{background:#FFD98A} 100%{background:#FFF3D6} }
+  @keyframes bgtC2{ 0%,32%{background:#FFF3D6} 33%,98%{background:#FFD98A} 100%{background:#FFF3D6} }
+  @keyframes bgtC3{ 0%,52%{background:#FFF3D6} 53%,98%{background:#FFD98A} 100%{background:#FFF3D6} }
+  @keyframes bgtN1{ 0%,12%{opacity:0;transform:scale(.3)} 16%,98%{opacity:1;transform:scale(1)} 100%{opacity:0} }
+  @keyframes bgtN2{ 0%,32%{opacity:0;transform:scale(.3)} 36%,98%{opacity:1;transform:scale(1)} 100%{opacity:0} }
+  @keyframes bgtN3{ 0%,52%{opacity:0;transform:scale(.3)} 56%,98%{opacity:1;transform:scale(1)} 100%{opacity:0} }
+  @keyframes bgtA0{ 0%,16%{background:#FAF4EC} 18%,98%{background:#9AD8A8;border-color:#4CAF6A} 100%{background:#FAF4EC;border-color:var(--line,#c9b8a5)} }
+  @keyframes bgtA1{ 0%,36%{background:#FAF4EC} 38%,98%{background:#9AD8A8;border-color:#4CAF6A} 100%{background:#FAF4EC;border-color:var(--line,#c9b8a5)} }
+  @keyframes bgtA2{ 0%,56%{background:#FAF4EC} 58%,98%{background:#9AD8A8;border-color:#4CAF6A} 100%{background:#FAF4EC;border-color:var(--line,#c9b8a5)} }
+  .bg5-demo .dwin.tw{ animation:bgtWin 10s infinite; }
+  @keyframes bgtWin{ 0%,60%{opacity:0;transform:scale(.4)} 65%{opacity:1;transform:scale(1.25)} 70%,94%{opacity:1;transform:scale(1)} 98%,100%{opacity:0} }
   @keyframes bgdWin{ 0%,75%{opacity:0;transform:scale(.4)} 80%{opacity:1;transform:scale(1.25)} 84%,94%{opacity:1;transform:scale(1)} 98%,100%{opacity:0} }
   .th-wrap{ max-width:860px; margin:6px auto; }
   .th-row{ display:flex; gap:26px; align-items:flex-start; flex-wrap:wrap; justify-content:center; }
@@ -17438,10 +17455,17 @@ window.mmTA = (function(){
     }
     return h + '<div class="dwin">🎉</div><div class="dhand">👆</div></div>';
   }
+  function bingoDemoHtmlT(){
+    var em = ["🍎","🍌","🍇","🍊","🍓","🍒","🍑","🍋","🥝"], h = '<div class="bg5-demo" aria-hidden="true">';
+    h += '<div class="dc t1" style="top:10px">🍎<span class="dn">1</span></div><div class="dc t2" style="top:50px">🍌<span class="dn">2</span></div><div class="dc t3" style="top:90px">🍇<span class="dn">3</span></div>';
+    for(var i = 0; i < 9; i++){ var c = i % 3, r = Math.floor(i / 3); h += '<div class="dcell' + (i < 3 ? ' b' + i : '') + '" style="left:' + (86 + c * 52) + 'px;top:' + (4 + r * 48) + 'px">' + em[i] + '</div>'; }
+    return h + '<div class="dwin tw">🎉</div><div class="dhand th">👆</div></div>';
+  }
   function renderBingoBoard(q, container){
     var words = (Array.isArray(q.words) ? q.words : []).map(String).filter(Boolean), allowDup = words.length < 25;
     var wrap = document.createElement("div"); wrap.className = "bg5-wrap"; container.appendChild(wrap);
-    var demoOpen = false, sel = -1, localRec = { cells: bgCells(null), marks: {}, ready: false }, whoSel = "", whoTxt = "", msg = "";
+    var demoOpen = false; if(isStudent){ try{ if(!localStorage.getItem('mm_bg5_demo_seen')){ demoOpen = true; localStorage.setItem('mm_bg5_demo_seen', '1'); } }catch(er){} }
+    var sel = -1, localRec = { cells: bgCells(null), marks: {}, ready: false }, whoSel = "", whoTxt = "", msg = "";
     function pg(){ return getProgress(q.id) || {}; }
     function game(){ return pg().bingoGame || {}; }
     function recOf(id){ var b = pg().bingo || {}; return b[id] || null; }
@@ -17470,7 +17494,7 @@ window.mmTA = (function(){
       var grid = cells.map(function(c, i){ return '<button type="button" class="bg5-cell' + (i === sel && !locked ? ' sel' : '') + (rec.marks[i] ? ' mark' : '') + (c ? '' : ' empty') + '" data-i="' + i + '">' + escapeHtml(c) + '</button>'; }).join("");
       var status = playing ? '<b>遊戲開始了！</b>聽到老師或同學唸的詞，就點你卡片上的那一格。連成一條線（橫、直、斜）就賓果！' + (rec.lines ? ' 你已經連成 ' + rec.lines + ' 條線。' : '') + '<span class="bg5-en"><b>The game has started!</b> When you hear a word, tap that square on your card. Get a full line (across, down or diagonal) to call bingo!' + (rec.lines ? ' You have ' + rec.lines + (rec.lines === 1 ? ' line.' : ' lines.') : '') + '</span>'
         : rec.ready ? '<b>卡片已鎖定。</b>等老師開始遊戲。<span class="bg5-en"><b>Your card is locked.</b> Wait for the teacher to start the game.</span>' : '先看左邊的生詞表，點一格，再點一個詞填進去（共 25 格）。已填 <b>' + filled + '</b>／25。<span class="bg5-en">Look at the word list on the left. Tap a square, then tap a word to put it in (25 squares). Filled: <b>' + filled + '</b>/25.</span>';
-      wrap.innerHTML = '<div class="bg5-head"><div><b>' + escapeHtml(q.title || "賓果卡") + '</b>' + (q.desc ? '<div class="bg5-note">' + escapeHtml(q.desc) + '</div>' : '') + '</div></div><div class="bg5-status"><button type="button" class="bg5-qbtn" data-a="demo" title="How to play">?</button>' + status + (demoOpen ? bingoDemoHtml() : '') + (msg ? '<div class="bg5-warn">' + escapeHtml(msg) + '</div>' : '') + '</div>' +
+      wrap.innerHTML = '<div class="bg5-head"><div><b>' + escapeHtml(q.title || "賓果卡") + '</b>' + (q.desc ? '<div class="bg5-note">' + escapeHtml(q.desc) + '</div>' : '') + '</div></div><div class="bg5-status"><button type="button" class="bg5-qbtn" data-a="demo" title="How to play">▶ 操作示範 Demo</button>' + status + (demoOpen ? bingoDemoHtml() : '') + (msg ? '<div class="bg5-warn">' + escapeHtml(msg) + '</div>' : '') + '</div>' +
         '<div class="bg5-body"><div class="bg5-bank"><div class="bg5-cap">生詞表 Word list（' + words.length + '）</div><div class="bg5-words">' + bank + '</div></div>' +
         '<div class="bg5-cardwrap"><div class="bg5-grid">' + grid + '</div>' +
         (playing ? '' : '<div class="bg5-btns">' + (rec.ready ? '<button type="button" class="btn btn-sm" data-a="unready">修改卡片 Edit card</button>' : '<button type="button" class="btn btn-sm" data-a="rand">🎲 隨機填滿剩下的格子 Fill the rest randomly</button><button type="button" class="btn btn-sm btn-ghost" data-a="clearcell">清掉這一格 Clear square</button><button type="button" class="btn btn-sm btn-ghost" data-a="clearall">全部清空 Clear all</button><button type="button" class="btn btn-sm btn-primary" data-a="ready"' + (filled < 25 ? ' disabled' : '') + '>我填好了 Done</button>') + '</div>') + '</div></div>';
@@ -17527,7 +17551,8 @@ window.mmTA = (function(){
         return '<tr><td>' + escapeHtml(r.name || "學生") + '</td><td>' + cs.filter(Boolean).length + '／25' + (r.ready ? ' ✔' : '') + '</td><td>' + (same ? (r.lines || 0) : 0) + ' 條' + (w && (w.round || 0) === (g.round || 0) ? ' 🎉 bingo' : '') + '</td></tr>';
       }).join("");
       wrap.innerHTML = '<div class="bg5-head"><div><b>' + escapeHtml(q.title || "賓果卡") + '</b>（老師）<div class="bg5-note">' + (g.status === "play" ? '遊戲進行中（第 ' + (g.round || 1) + ' 輪）：學生聽到詞，就點自己卡片上的那一格。 Students tap the matching square when they hear a word.' : '學生正在填卡片。大家填好後，按「開始遊戲」。 Students are filling in their cards. When everyone is ready, press Start.') + (inRoom() ? '' : '　（要在上課／房間裡，學生才看得到）') + '</div></div>' +
-        '<div class="bg5-ctl">' + (g.status === "play" ? '<button type="button" class="btn btn-sm" data-a="back">回到填卡 Back to filling</button><button type="button" class="btn btn-sm" data-a="round">新的一輪 New round</button>' : '<button type="button" class="btn btn-sm btn-primary" data-a="start">開始遊戲 Start</button>') + '</div></div>' +
+        '<div class="bg5-ctl"><button type="button" class="btn btn-sm" data-a="demo">▶ 操作示範 Demo</button>' + (g.status === "play" ? '<button type="button" class="btn btn-sm" data-a="back">回到填卡 Back to filling</button><button type="button" class="btn btn-sm" data-a="round">新的一輪 New round</button>' : '<button type="button" class="btn btn-sm btn-primary" data-a="start">開始遊戲 Start</button>') + '</div></div>' +
+        (demoOpen ? '<div class="bg5-status" style="text-align:center;">' + bingoDemoHtmlT() + '</div>' : '') +
         '<div class="bg5-body"><div class="bg5-bank"><div class="bg5-cap">生詞表（點一個＝唸過了）　已唸 ' + called.length + '／' + words.length + '</div>' +
         '<div class="bg5-who"><label>是誰說的？</label><select id="bg5-who">' + opts + '</select><input type="text" id="bg5-who-txt" placeholder="名字" style="display:' + (whoSel === "__other" ? '' : 'none') + ';" value="' + escapeHtml(whoTxt) + '"></div>' +
         '<div class="bg5-twords">' + chips + '</div></div>' +
@@ -17538,6 +17563,7 @@ window.mmTA = (function(){
       wt.oninput = function(){ whoTxt = wt.value; };
       wrap.onclick = function(e){
         var b = e.target.closest("button"); if(!b) return; var g2 = game();
+        if(b.dataset.a === "demo"){ demoOpen = !demoOpen; draw(); return; }
         if(b.dataset.w !== undefined){
           var cl = bgList(g2.called), idx = -1; cl.forEach(function(c, i){ if(c.w === b.dataset.w) idx = i; });
           if(idx >= 0){ cl.splice(idx, 1); }
