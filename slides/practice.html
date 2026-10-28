@@ -8500,10 +8500,13 @@ window.mmTA = (function(){
           <button type="button" class="btn btn-sm btn-ghost btn-add-subq" title="${sec.type === "board" ? "新增投影片 Add Slide" : "新增小題 Add Question"}" style="color:var(--seal);">${sec.type === "board" ? "新增投影片" : "新增小題"}</button>
           ${sec.type === "board" ? '<button type="button" class="btn btn-sm btn-ghost btn-findrep" title="尋找與取代（Ctrl/⌘+H）" style="color:var(--ink-soft);">🔎 尋找</button>' : ''}
           ${sec.type === "board" ? '<button type="button" class="btn btn-sm btn-ghost btn-sorter" title="投影片整理檢視：大縮圖、拖曳重排、章節" style="color:var(--seal);">🗂 整理檢視</button>' : ''}
+          ${isStudent ? '' : '<button type="button" class="btn btn-sm btn-ghost btn-move-sec" title="不用拖曳，直接選要移到哪個位置" style="color:var(--ink-soft);">移動</button>'}
           ${isStudent ? '' : '<button type="button" class="btn btn-sm btn-ghost btn-hide-sec" title="隱藏／顯示整個大題：隱藏後學生看不到、不計分" style="color:var(--ink-soft);">' + (sec.hidden ? '顯示' : '隱藏') + '</button>'}
           <button type="button" class="btn btn-sm btn-ghost btn-del-sec" title="刪除大題 Delete Section" style="color:var(--ink-soft);">刪除</button>
         </div>
       `;
+      var moveSecBtn = head.querySelector(".btn-move-sec");
+      if(moveSecBtn) moveSecBtn.onclick = function(e){ e.stopPropagation(); openMoveSection(secs, secId); };
       var hideSecBtn = head.querySelector(".btn-hide-sec");
       if(hideSecBtn) hideSecBtn.onclick = function(e){ e.stopPropagation(); if(sec.hidden) delete sec.hidden; else sec.hidden = true; writeSections(secs); };
 
@@ -9313,6 +9316,23 @@ window.mmTA = (function(){
     tip.textContent = editorHanziImg ? "✅ 已選圖片" : "還沒有圖片"; if(clr) clr.style.display = editorHanziImg ? "" : "none";
   }
 
+  function openMoveSection(secs, secId){
+    var keys = getSortedSectionKeys(), cur = keys.indexOf(secId);
+    var ov = document.createElement("div"); ov.style.cssText = "position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;";
+    var opts = '<option value="0">移到最前面（第 1 大題）</option>';
+    keys.forEach(function(k, i){ if(k === secId) return; opts += '<option value="' + (i + 1) + '">移到「' + escapeHtml(secs[k].title || ("第 " + (i + 1) + " 大題")) + '」的後面</option>'; });
+    ov.innerHTML = '<div style="background:var(--surface,#fff);border-radius:14px;padding:18px 20px;width:min(420px,92vw);box-shadow:0 8px 30px rgba(0,0,0,.3);"><div style="font-weight:700;margin-bottom:10px;">移動「' + escapeHtml(secs[secId].title || "") + '」（目前第 ' + (cur + 1) + ' 大題）</div><select id="mv-sel" style="width:100%;padding:8px;font-size:15px;">' + opts + '</select><div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px;"><button type="button" class="btn btn-ghost" id="mv-no">取消</button><button type="button" class="btn primary" id="mv-ok">移動</button></div></div>';
+    document.body.appendChild(ov);
+    ov.querySelector("#mv-no").onclick = function(){ ov.remove(); };
+    ov.onclick = function(e){ if(e.target === ov) ov.remove(); };
+    ov.querySelector("#mv-ok").onclick = function(){
+      var pos = parseInt(ov.querySelector("#mv-sel").value, 10), list = keys.filter(function(k){ return k !== secId; });
+      // pos＝原本排序中「要排在它後面」的位置（含自己），扣掉自己後就是插入的索引
+      var at = pos > cur ? pos - 1 : pos; list.splice(at, 0, secId);
+      list.forEach(function(k, i){ secs[k].order = i; });
+      ov.remove(); writeSections(secs);
+    };
+  }
   function pickImageInto(fi, done){
     fi.onchange = function(e){
       var file = e.target.files && e.target.files[0]; if(!file) return;
