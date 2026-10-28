@@ -9,6 +9,8 @@
 
 | `synonyms.json` | 換詞用的近義詞：近義詞工具書 1,720 組、教育部近義詞 3,719 詞 | `tools/synonyms/`、`tools/vocab/data/moe-relations.json`（教育部）；用 `build_synonyms.py` 產生 |
 
+| `lexicon.txt` | 補充斷詞字典：教育部詞條中不在 TBCL 的 3 字以上詞（約 9 千個），斷詞用、等級一律當「詞表沒有」 | `build_lexicon.py` 由 `tools/vocab/data/moe-relations.json` 產生 |
+
 用 `../build/` 裡的 `build_tbcl.py`、`build_grammar.py` 從官方 PDF／Excel 重新產生。
 - 第 1*–4* 級（詞語）依「併入該級」計算，等級 1–7 對應競賽簡章的 TBCL 1–7 級。
 - 詞語表沒有單獨收錄的虛詞「了」「著」，依語法點表（V了、V著 第 2 級）計為第 2 級。

@@ -5,11 +5,15 @@
 "use strict";
 var $=function(id){return document.getElementById(id)};
 var esc=function(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})};
-var STAR=new Set(),FREQ=null,GRAM=null,LV=new Map(),KEYS=new Set(),MAXLEN=1,OFFICIAL=false,READY=null;
+var EXT=new Set(),CUSTOM=new Map(),SKIP=new Set(),STAR=new Set(),FREQ=null,GRAM=null,LV=new Map(),KEYS=new Set(),MAXLEN=1,OFFICIAL=false,READY=null;
 var isHan=function(c){return /[㐀-鿿豈-﫿〇]/.test(c)};
 function add(w,l){if(!w)return;var o=LV.get(w);if(o==null||l<o)LV.set(w,l);KEYS.add(w);if(w.length>MAXLEN)MAXLEN=w.length}
 /* 詞語表沒有單獨收、但語法點表有的虛詞用法：依語法點表的等級（V了＝第 2 級、V著＝第 2 級）計算 */
 var GRAM_WORD={"了":2,"著":2};
+try{var _c=JSON.parse(localStorage.getItem("mm_tbcl_custom")||"{}");Object.keys(_c).forEach(function(w){CUSTOM.set(w,+_c[w]||0)})}catch(e){}
+function saveCustom(){var o={};CUSTOM.forEach(function(v,k){o[k]=v});try{localStorage.setItem("mm_tbcl_custom",JSON.stringify(o))}catch(e){}}
+function addKey(w){KEYS.add(w);if(w.length>MAXLEN)MAXLEN=w.length}
+function loadExt(){return fetch("data/lexicon.txt").then(function(r){if(!r.ok)throw 0;return r.text()}).then(function(t){t.split("\n").forEach(function(w){w=w.trim();if(w&&!LV.has(w)){EXT.add(w);addKey(w)}})}).catch(function(){}).then(function(){CUSTOM.forEach(function(v,w){addKey(w)})})}
 function load(){
   if(READY)return READY;
   READY=fetch("data/tbcl.tsv").then(function(r){if(!r.ok)throw 0;return r.text()}).then(function(t){
@@ -21,6 +25,7 @@ function load(){
       var s=$("src");s.className="src prov";s.textContent="⚠ 暫用 TOCFL 華語八千詞對應（TOCFL 0–6 級 → 1–6 級），不是官方 TBCL。把官方詞表放到 tools/tbcl/data/tbcl.tsv 就會自動改用。";
     });
   });
+  READY=READY.then(loadExt);
   return READY;
 }
 /* 斷詞：雙向最大匹配 */
@@ -29,7 +34,7 @@ function bmm(s){var o=[],j=s.length;while(j>0){var L=Math.min(MAXLEN,j),w=s[j-1]
 function segRun(s){var a=fmm(s),b=bmm(s);if(a.length!==b.length)return a.length<b.length?a:b;var sa=a.filter(function(x){return x.length===1}).length,sb=b.filter(function(x){return x.length===1}).length;return sb<sa?b:a}
 function tokens(str){var o=[],buf="";function f(){if(buf){segRun(buf).forEach(function(w){o.push({w:w,han:true})});buf=""}}
   for(var ch of str){if(isHan(ch))buf+=ch;else{f();o.push({w:ch,han:false})}}f();return o}
-function levelOf(w){var l=LV.get(w);return l==null?null:l}
+function levelOf(w){if(CUSTOM.has(w))return CUSTOM.get(w)||null;if(EXT.has(w))return null;var l=LV.get(w);return l==null?null:l}
 /* 檢核：「* 級」詞（如第 3* 級）可選擇算在該級內，或算比該級更高 */
 function effLv(w,l){return(!$("incstar").checked&&STAR.has(w))?l+0.5:l}
 
@@ -59,9 +64,9 @@ function report(r,target,limit){
   h+='<tr><td>詞表沒有</td><td>'+r.dist.filter(function(x){return x.lv==null}).length+'</td><td></td></tr></table></div>';
   if(r.list.length){h+='<div class="card"><b>超綱詞清單</b><table><tr><th>詞</th><th>等級</th><th>次數</th></tr>';r.list.forEach(function(x){h+='<tr><td>'+esc(x.w)+'</td><td>'+(x.lv==null?"未收錄":x.lv+(STAR.has(x.w)?"*":""))+'</td><td>'+x.n+'</td></tr>'});h+='</table></div>'}
   return h}
-function doCheck(){load().then(function(){return loadSyn()}).then(function(){
+function doCheck(){load().then(function(){return Promise.all([loadSyn(),loadFreq().then(function(m){FREQV=m})])}).then(function(){
   var t=+$("lv").value,lim=+$("lim").value,r=analyze($("txt").value,t,EX);LAST={r:r,t:t,lim:lim};
-  $("res").innerHTML=r.total?report(r,t,lim)+sugCard($("txt").value,t):'<p class="note">請先貼上文字。</p>'})}
+  $("res").innerHTML=r.total?suspectCard(r)+report(r,t,lim)+sugCard($("txt").value,t):'<p class="note">請先貼上文字。</p>'})}
 $("run").onclick=doCheck;
 $("res").onclick=function(e){if(e.target.closest&&e.target.closest("[data-act]"))return;var w=e.target.getAttribute&&e.target.getAttribute("data-w");if(!w||!e.target.classList.contains("w"))return;EX.has(w)?EX.delete(w):EX.add(w);doCheck()};
 $("exportc").onclick=function(){if(!LAST)return;var r=LAST.r,s="TBCL 第 "+LAST.t+" 級檢核（標準 "+LAST.lim+"%）\n詞次 "+r.total+"，超綱 "+r.over+"（"+r.ratio.toFixed(1)+"%）\n不重複詞 "+r.types+"，超綱 "+r.typeOver+"（"+r.typeRatio.toFixed(1)+"%）\n詞表："+(OFFICIAL?"官方 TBCL":"暫代（TOCFL）")+"\n"+CITE+"\n超綱詞："+r.list.map(function(x){return x.w+"("+(x.lv==null?"未收錄":x.lv)+")"}).join("、");
@@ -74,8 +79,22 @@ $("incstar").onchange=function(){if($("txt").value.trim())doCheck()};
 $("printc").onclick=function(){window.print()};
 
 
+
+/* ===== 疑似「詞表沒有的詞組」（成語、新詞）：斷詞切成單字時，單字都在詞表裡，會被低估；請老師確認 ===== */
+function suspects(r,F){var out=[],cur=[];
+  function flush(){var ok4=cur.length>=4&&cur.every(function(c){return(F.get(c)||{rank:99999}).rank>60}),ok3=cur.length>=3&&cur.every(function(c){return(F.get(c)||{rank:99999}).rank>400});
+    if((ok4||ok3)){var s=cur.join("");if(!SKIP.has(s)&&out.indexOf(s)<0)out.push(s)}cur=[]}
+  r.toks.forEach(function(t){if(t.han&&t.w.length===1&&!t.ex&&!CUSTOM.has(t.w))cur.push(t.w);else flush()});flush();return out}
+function levelSel(){var h='<select class="cl"><option value="0">詞表沒有</option>';for(var i=1;i<=7;i++)h+='<option value="'+i+'">第 '+i+' 級</option>';return h+'</select>'}
+function suspectCard(r){
+  var F=FREQV||new Map(),sp=suspects(r,F),h="";
+  if(sp.length){h+='<div class="card" id="susp"><b>⚠ 可能有詞表沒有的詞組（成語或新詞）</b><p class="note">下面這些字連在一起，每個字單獨都在詞表裡，系統只能逐字判斷，超綱比例可能被低估。如果它們其實是一個詞（例如成語），請確認範圍後按「確認為一個詞」，之後就會當成一個詞檢核。不是詞就按「略過」。</p>';
+    sp.forEach(function(s){var d=s.length>4?s.slice(-4):s;h+='<div class="row" style="margin:4px 0"><span class="note">原文：'+esc(s)+'　詞組範圍：</span><input class="cw" value="'+esc(d)+'" size="'+Math.max(6,d.length+2)+'"> '+levelSel()+' <button class="pri" data-act="defw">確認為一個詞</button> <button data-act="skipw" data-s="'+esc(s)+'">略過</button></div>'});h+='</div>'}
+  if(CUSTOM.size){h+='<div class="card"><b>我認定的詞</b>（存在這個瀏覽器）<div class="row" style="margin:4px 0">';CUSTOM.forEach(function(v,w){h+='<span class="wc"><b>'+esc(w)+'</b><small>'+(v?"第 "+v+" 級":"詞表沒有")+'</small><button data-act="delw" data-s="'+esc(w)+'">✕</button></span>'});h+='</div></div>'}
+  return h}
+
 /* ===== 超綱詞替換建議：換詞（詞典＋AI，AI 的建議都用詞表驗證）、換句話說（AI，改完再檢核，最多 3 輪） ===== */
-var SYN=null,SYNIDX=null,UNDO=[],NEWS={};
+var FREQV=null,SYN=null,SYNIDX=null,UNDO=[],NEWS={};
 function loadSyn(){return SYN||(SYN=fetch("data/synonyms.json").then(function(r){if(!r.ok)throw 0;return r.json()}).catch(function(){return{g:[],m:{}}}).then(function(d){
   SYNIDX=new Map();var add=function(a,b){if(a===b)return;var s=SYNIDX.get(a);if(!s){s=new Set();SYNIDX.set(a,s)}s.add(b)};
   d.g.forEach(function(g){g.forEach(function(a){g.forEach(function(b){add(a,b)})})});
@@ -115,6 +134,9 @@ async function aiRewrite(k,box){var t=+$("lv").value,ai=$("c-ai").value,x=splitS
     box.innerHTML='<div class="card" style="margin:6px 0"><div class="note">改寫（超綱 '+base+' → '+best.a.over+'，'+rounds+' 輪）'+(ok?"":"　⚠ 沒有改善")+'</div><div class="hl" style="font-size:16px">'+esc(best.s)+'</div>'+(ok?'<button class="pri" data-act="apply" data-k="'+k+'" data-id="'+id+'">套用這個改寫</button>':"")+'</div>'}
   catch(e){box.textContent="失敗："+e.message}}
 $("res").addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("[data-act]");if(!b)return;var act=b.getAttribute("data-act"),k=+b.getAttribute("data-k");
+  if(act==="defw"){var row=b.closest(".row"),w0=row.querySelector(".cw").value.trim(),lv0=+row.querySelector(".cl").value;if(/^[㐀-鿿]{2,}$/.test(w0)){CUSTOM.set(w0,lv0);addKey(w0);saveCustom();doCheck()}return}
+  if(act==="skipw"){SKIP.add(b.getAttribute("data-s"));doCheck();return}
+  if(act==="delw"){CUSTOM.delete(b.getAttribute("data-s"));saveCustom();doCheck();return}
   if(act==="cand"){var w=b.getAttribute("data-w"),c=b.getAttribute("data-c");applyToSent(k,function(s){return s.replace(w,c)})}
   else if(act==="undo"){if(UNDO.length){$("txt").value=UNDO.pop();doCheck()}}
   else if(act==="aiw"){aiWord(k,b.getAttribute("data-w"),b.nextElementSibling)}
