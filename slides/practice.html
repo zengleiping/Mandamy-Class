@@ -1769,6 +1769,23 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .bg5-head{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; font-size:18px; }
   .bg5-note{ font-size:13.5px; color:var(--ink-soft); font-weight:400; }
   .bg5-status{ margin:8px 0; padding:8px 12px; background:var(--seal-soft,#FDECE6); border-radius:10px; font-size:15px; }
+  .bg5-en{ display:block; font-size:13.5px; color:var(--ink-soft); font-weight:400; margin-top:2px; }
+  .bg5-qbtn{ float:right; margin-left:8px; width:30px; height:30px; border-radius:50%; border:1.5px solid var(--line,#c9b8a5); background:var(--surface,#fff); font-weight:800; font-size:16px; cursor:pointer; color:var(--seal); }
+  .bg5-demo{ position:relative; width:252px; height:150px; margin:10px auto 2px; background:#fff; border:1.5px solid var(--line,#c9b8a5); border-radius:12px; overflow:hidden; clear:both; }
+  .bg5-demo .dc{ position:absolute; left:8px; width:56px; height:36px; border-radius:10px; background:#FFF3D6; border:1.5px solid #E2B96B; display:flex; align-items:center; justify-content:center; font-size:20px; }
+  .bg5-demo .dcell{ position:absolute; width:44px; height:44px; border-radius:8px; background:#FAF4EC; border:1.5px solid var(--line,#c9b8a5); display:flex; align-items:center; justify-content:center; font-size:22px; }
+  .bg5-demo .dcell.a0{ animation:bgdA0 10s infinite; } .bg5-demo .dcell.a1{ animation:bgdA1 10s infinite; } .bg5-demo .dcell.a2{ animation:bgdA2 10s infinite; }
+  .bg5-demo .dcell.a0 i{ font-style:normal; animation:bgdFill 10s infinite; }
+  .bg5-demo .dc.c1{ animation:bgdChip 10s infinite; }
+  .bg5-demo .dhand{ position:absolute; left:0; top:0; font-size:30px; line-height:1; animation:bgdHand 10s infinite; pointer-events:none; opacity:0; }
+  .bg5-demo .dwin{ position:absolute; left:104px; top:100px; width:140px; text-align:center; font-size:30px; animation:bgdWin 10s infinite; opacity:0; }
+  @keyframes bgdHand{ 0%{transform:translate(170px,125px);opacity:0} 4%{transform:translate(170px,125px);opacity:1} 10%{transform:translate(112px,22px) scale(1)} 13%{transform:translate(112px,22px) scale(.82)} 16%{transform:translate(112px,22px) scale(1)} 24%{transform:translate(24px,16px) scale(1)} 27%{transform:translate(24px,16px) scale(.82)} 30%{transform:translate(24px,16px) scale(1)} 46%{transform:translate(170px,125px);opacity:1} 54%{transform:translate(112px,22px) scale(1)} 57%{transform:translate(112px,22px) scale(.82)} 60%{transform:translate(112px,22px) scale(1)} 63%{transform:translate(160px,22px) scale(1)} 65%{transform:translate(160px,22px) scale(.82)} 67%{transform:translate(160px,22px) scale(1)} 70%{transform:translate(208px,22px) scale(1)} 72%{transform:translate(208px,22px) scale(.82)} 74%{transform:translate(208px,22px) scale(1)} 90%{transform:translate(208px,22px);opacity:1} 96%,100%{transform:translate(208px,22px);opacity:0} }
+  @keyframes bgdA0{ 0%,8%{box-shadow:none} 9%,27%{box-shadow:0 0 0 3px var(--seal)} 28%,57%{box-shadow:none} 58%,98%{background:#9AD8A8;border-color:#4CAF6A;box-shadow:none} 100%{background:#FAF4EC;border-color:var(--line,#c9b8a5)} }
+  @keyframes bgdA1{ 0%,64%{background:#FAF4EC} 65%,98%{background:#9AD8A8;border-color:#4CAF6A} 100%{background:#FAF4EC;border-color:var(--line,#c9b8a5)} }
+  @keyframes bgdA2{ 0%,71%{background:#FAF4EC} 72%,98%{background:#9AD8A8;border-color:#4CAF6A} 100%{background:#FAF4EC;border-color:var(--line,#c9b8a5)} }
+  @keyframes bgdFill{ 0%,27%{opacity:0;transform:scale(.4)} 31%{opacity:1;transform:scale(1.2)} 34%,100%{opacity:1;transform:scale(1)} }
+  @keyframes bgdChip{ 0%,23%{transform:scale(1)} 27%{transform:scale(1.15);background:#FFD98A} 32%,100%{transform:scale(1)} }
+  @keyframes bgdWin{ 0%,75%{opacity:0;transform:scale(.4)} 80%{opacity:1;transform:scale(1.25)} 84%,94%{opacity:1;transform:scale(1)} 98%,100%{opacity:0} }
   .bg5-warn{ color:#B23B32; margin-top:4px; font-weight:700; }
   .bg5-body{ display:grid; grid-template-columns:minmax(200px,300px) 1fr; gap:16px; align-items:start; }
   @media (max-width:760px){ .bg5-body{ grid-template-columns:1fr; } }
@@ -10474,6 +10491,11 @@ window.mmTA = (function(){
         var resetPatch = { fills:{}, text:"", audio:null, audioSec:null, grade:null, matched:{}, selected:{}, choicePick:null, choiceStatus:null, multiPicks:{}, userPairs:{}, userWords:[], revealed:false, strokes:[], texts:[], selection:null, wrongFlash:null, lastEvent:null };
         if(sec.type === "choice"){ resetPatch.ink = null; if(inRoom()){ remove(ref(db, "rooms/" + activeRoomId + "/votes/" + q.id)); remove(ref(db, "rooms/" + activeRoomId + "/voteReveal/" + q.id)); } }
         resetPatch.poolWords = (sec.type === "reorder") ? seededShuffle(q.words || [], q.id + "|reorder-pool") : [];
+        if(sec.type === "bingo"){
+          if(!confirm("重新開始這個賓果？\n唸過的詞和大家的連線會清掉，回到填卡階段（卡片內容保留）。\nRestart bingo? Called words and lines are cleared; cards are kept.")) return;
+          var bg = (getProgress(q.id) || {}).bingoGame || {};
+          resetPatch.bingoGame = { status: "fill", round: (bg.round || 1) + 1, called: [] }; resetPatch.bingoWins = null;
+        }
         writeProgress(q.id, resetPatch);
       };
       actWrap.appendChild(resetBtn);
@@ -17272,10 +17294,19 @@ window.mmTA = (function(){
     try{ playCorrectSound(); }catch(e){}
     setTimeout(function(){ if(ov.parentNode) ov.remove(); }, 6000);
   }
+  function bingoDemoHtml(){
+    var em = ["🍎","🍌","🍇","🍊","🍓","🍒","🍑","🍋","🥝"], h = '<div class="bg5-demo" aria-hidden="true">';
+    h += '<div class="dc" style="top:10px">🍎</div><div class="dc c1" style="top:50px">🍌</div><div class="dc" style="top:90px">🍇</div>';
+    for(var i = 0; i < 9; i++){
+      var r = Math.floor(i / 3), c = i % 3, cls = i === 0 ? " a0" : i === 1 ? " a1" : i === 2 ? " a2" : "";
+      h += '<div class="dcell' + cls + '" style="left:' + (86 + c * 52) + 'px;top:' + (4 + r * 48) + 'px">' + (i === 0 ? '<i>🍎</i>' : em[i]) + '</div>';
+    }
+    return h + '<div class="dwin">🎉</div><div class="dhand">👆</div></div>';
+  }
   function renderBingoBoard(q, container){
     var words = (Array.isArray(q.words) ? q.words : []).map(String).filter(Boolean), allowDup = words.length < 25;
     var wrap = document.createElement("div"); wrap.className = "bg5-wrap"; container.appendChild(wrap);
-    var sel = -1, localRec = { cells: bgCells(null), marks: {}, ready: false }, whoSel = "", whoTxt = "", msg = "";
+    var demoOpen = false, sel = -1, localRec = { cells: bgCells(null), marks: {}, ready: false }, whoSel = "", whoTxt = "", msg = "";
     function pg(){ return getProgress(q.id) || {}; }
     function game(){ return pg().bingoGame || {}; }
     function recOf(id){ var b = pg().bingo || {}; return b[id] || null; }
@@ -17302,14 +17333,15 @@ window.mmTA = (function(){
       var filled = cells.filter(Boolean).length;
       var bank = words.map(function(w){ var u = !allowDup && used[w]; return '<button type="button" class="bg5-word' + (u ? ' used' : '') + '" data-w="' + escapeHtml(w) + '"' + (locked ? ' disabled' : '') + '>' + escapeHtml(w) + '</button>'; }).join("");
       var grid = cells.map(function(c, i){ return '<button type="button" class="bg5-cell' + (i === sel && !locked ? ' sel' : '') + (rec.marks[i] ? ' mark' : '') + (c ? '' : ' empty') + '" data-i="' + i + '">' + escapeHtml(c) + '</button>'; }).join("");
-      var status = playing ? '<b>遊戲開始了！</b>聽到老師或同學唸的詞，就點你卡片上的那一格。連成一條線（橫、直、斜）就賓果！' + (rec.lines ? ' 你已經連成 ' + rec.lines + ' 條線。' : '')
-        : rec.ready ? '<b>卡片已鎖定。</b>等老師開始遊戲。' : '先看左邊的生詞表，點一格，再點一個詞填進去（共 25 格）。已填 <b>' + filled + '</b>／25。';
-      wrap.innerHTML = '<div class="bg5-head"><div><b>' + escapeHtml(q.title || "賓果卡") + '</b>' + (q.desc ? '<div class="bg5-note">' + escapeHtml(q.desc) + '</div>' : '') + '</div></div><div class="bg5-status">' + status + (msg ? '<div class="bg5-warn">' + escapeHtml(msg) + '</div>' : '') + '</div>' +
-        '<div class="bg5-body"><div class="bg5-bank"><div class="bg5-cap">生詞表（' + words.length + '）</div><div class="bg5-words">' + bank + '</div></div>' +
+      var status = playing ? '<b>遊戲開始了！</b>聽到老師或同學唸的詞，就點你卡片上的那一格。連成一條線（橫、直、斜）就賓果！' + (rec.lines ? ' 你已經連成 ' + rec.lines + ' 條線。' : '') + '<span class="bg5-en"><b>The game has started!</b> When you hear a word, tap that square on your card. Get a full line (across, down or diagonal) to call bingo!' + (rec.lines ? ' You have ' + rec.lines + (rec.lines === 1 ? ' line.' : ' lines.') : '') + '</span>'
+        : rec.ready ? '<b>卡片已鎖定。</b>等老師開始遊戲。<span class="bg5-en"><b>Your card is locked.</b> Wait for the teacher to start the game.</span>' : '先看左邊的生詞表，點一格，再點一個詞填進去（共 25 格）。已填 <b>' + filled + '</b>／25。<span class="bg5-en">Look at the word list on the left. Tap a square, then tap a word to put it in (25 squares). Filled: <b>' + filled + '</b>/25.</span>';
+      wrap.innerHTML = '<div class="bg5-head"><div><b>' + escapeHtml(q.title || "賓果卡") + '</b>' + (q.desc ? '<div class="bg5-note">' + escapeHtml(q.desc) + '</div>' : '') + '</div></div><div class="bg5-status"><button type="button" class="bg5-qbtn" data-a="demo" title="How to play">?</button>' + status + (demoOpen ? bingoDemoHtml() : '') + (msg ? '<div class="bg5-warn">' + escapeHtml(msg) + '</div>' : '') + '</div>' +
+        '<div class="bg5-body"><div class="bg5-bank"><div class="bg5-cap">生詞表 Word list（' + words.length + '）</div><div class="bg5-words">' + bank + '</div></div>' +
         '<div class="bg5-cardwrap"><div class="bg5-grid">' + grid + '</div>' +
-        (playing ? '' : '<div class="bg5-btns">' + (rec.ready ? '<button type="button" class="btn btn-sm" data-a="unready">修改卡片</button>' : '<button type="button" class="btn btn-sm" data-a="rand">🎲 隨機填滿剩下的格子</button><button type="button" class="btn btn-sm btn-ghost" data-a="clearcell">清掉這一格</button><button type="button" class="btn btn-sm btn-ghost" data-a="clearall">全部清空</button><button type="button" class="btn btn-sm btn-primary" data-a="ready"' + (filled < 25 ? ' disabled' : '') + '>我填好了</button>') + '</div>') + '</div></div>';
+        (playing ? '' : '<div class="bg5-btns">' + (rec.ready ? '<button type="button" class="btn btn-sm" data-a="unready">修改卡片 Edit card</button>' : '<button type="button" class="btn btn-sm" data-a="rand">🎲 隨機填滿剩下的格子 Fill the rest randomly</button><button type="button" class="btn btn-sm btn-ghost" data-a="clearcell">清掉這一格 Clear square</button><button type="button" class="btn btn-sm btn-ghost" data-a="clearall">全部清空 Clear all</button><button type="button" class="btn btn-sm btn-primary" data-a="ready"' + (filled < 25 ? ' disabled' : '') + '>我填好了 Done</button>') + '</div>') + '</div></div>';
       wrap.onclick = function(e){
         var b = e.target.closest("button"); if(!b || b.disabled) return; msg = "";
+        if(b.dataset.a === "demo"){ demoOpen = !demoOpen; draw(); return; }
         var g2 = game(), rec2 = myRec(), cs = rec2.cells.slice(), play2 = g2.status === "play", lock2 = rec2.ready || play2;
         if(b.dataset.i !== undefined){
           var i = Number(b.dataset.i);
@@ -17318,7 +17350,7 @@ window.mmTA = (function(){
             var lines = bgLines(marks, cs), patch = { marks: marks, round: g2.round || 0, lines: lines };
             if(lines > (rec2.lines || 0)){
               var cs2 = calledSet(), bad = Object.keys(marks).filter(function(k){ return !cs2[cs[k]]; });
-              if(bad.length){ msg = "再聽聽看～還有格子的詞老師和同學還沒有唸到喔。"; patch.lines = rec2.lines || 0; }
+              if(bad.length){ msg = "再聽聽看～還有格子的詞老師和同學還沒有唸到喔。Listen again — some words on your marked squares haven't been called yet."; patch.lines = rec2.lines || 0; }
               else if(inRoom()){ update(ref(db, "rooms/" + activeRoomId + "/sharedProgress/" + q.id + "/bingoWins/" + myId), { name: myName || "學生", lines: lines, at: Date.now(), round: g2.round || 0 }); }
               else bingoBanner(myName || "你");
             }
@@ -17328,8 +17360,8 @@ window.mmTA = (function(){
         }
         if(b.dataset.w !== undefined){
           if(lock2) return; var w = b.dataset.w;
-          if(!allowDup && cs.indexOf(w) >= 0){ msg = "這個詞已經在你的卡片上了，換一個吧。"; draw(); return; }
-          var at = sel >= 0 ? sel : cs.indexOf(""); if(at < 0){ msg = "25 格都填滿了；點一格再選詞可以換掉。"; draw(); return; }
+          if(!allowDup && cs.indexOf(w) >= 0){ msg = "這個詞已經在你的卡片上了，換一個吧。This word is already on your card — pick another."; draw(); return; }
+          var at = sel >= 0 ? sel : cs.indexOf(""); if(at < 0){ msg = "25 格都填滿了；點一格再選詞可以換掉。All 25 squares are full; tap a square, then a word, to replace it."; draw(); return; }
           cs[at] = w; sel = cs.indexOf("", at + 1); if(sel < 0) sel = cs.indexOf("");
           saveMine({ cells: cs, ready: false }); if(!inRoom()) localRec.cells = cs; draw(); return;
         }
@@ -17359,8 +17391,8 @@ window.mmTA = (function(){
         var r = bingoMap[k], cs = bgCells(r.cells), same = (r.round || 0) === (g.round || 0), w = wins[k];
         return '<tr><td>' + escapeHtml(r.name || "學生") + '</td><td>' + cs.filter(Boolean).length + '／25' + (r.ready ? ' ✔' : '') + '</td><td>' + (same ? (r.lines || 0) : 0) + ' 條' + (w && (w.round || 0) === (g.round || 0) ? ' 🎉 bingo' : '') + '</td></tr>';
       }).join("");
-      wrap.innerHTML = '<div class="bg5-head"><div><b>' + escapeHtml(q.title || "賓果卡") + '</b>（老師）<div class="bg5-note">' + (g.status === "play" ? '遊戲進行中（第 ' + (g.round || 1) + ' 輪）：學生聽到詞，就點自己卡片上的那一格。' : '學生正在填卡片。大家填好後，按「開始遊戲」。') + (inRoom() ? '' : '　（要在上課／房間裡，學生才看得到）') + '</div></div>' +
-        '<div class="bg5-ctl">' + (g.status === "play" ? '<button type="button" class="btn btn-sm" data-a="back">回到填卡</button><button type="button" class="btn btn-sm" data-a="round">新的一輪（清掉唸過的詞和連線）</button>' : '<button type="button" class="btn btn-sm btn-primary" data-a="start">開始遊戲</button>') + '</div></div>' +
+      wrap.innerHTML = '<div class="bg5-head"><div><b>' + escapeHtml(q.title || "賓果卡") + '</b>（老師）<div class="bg5-note">' + (g.status === "play" ? '遊戲進行中（第 ' + (g.round || 1) + ' 輪）：學生聽到詞，就點自己卡片上的那一格。 Students tap the matching square when they hear a word.' : '學生正在填卡片。大家填好後，按「開始遊戲」。 Students are filling in their cards. When everyone is ready, press Start.') + (inRoom() ? '' : '　（要在上課／房間裡，學生才看得到）') + '</div></div>' +
+        '<div class="bg5-ctl">' + (g.status === "play" ? '<button type="button" class="btn btn-sm" data-a="back">回到填卡 Back to filling</button><button type="button" class="btn btn-sm" data-a="round">新的一輪 New round</button>' : '<button type="button" class="btn btn-sm btn-primary" data-a="start">開始遊戲 Start</button>') + '</div></div>' +
         '<div class="bg5-body"><div class="bg5-bank"><div class="bg5-cap">生詞表（點一個＝唸過了）　已唸 ' + called.length + '／' + words.length + '</div>' +
         '<div class="bg5-who"><label>是誰說的？</label><select id="bg5-who">' + opts + '</select><input type="text" id="bg5-who-txt" placeholder="名字" style="display:' + (whoSel === "__other" ? '' : 'none') + ';" value="' + escapeHtml(whoTxt) + '"></div>' +
         '<div class="bg5-twords">' + chips + '</div></div>' +
