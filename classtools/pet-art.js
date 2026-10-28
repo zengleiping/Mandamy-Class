@@ -1,254 +1,216 @@
-/* 寵物美術：用向量（SVG）畫出 20 種寵物與 16 件衣服，支援三種風格（可愛手繪 cute／扁平簡約 flat／像素復古 pixel）、
-   各種心情（開心、普通、難過、餓、吃東西、睡覺、愛心）、成長階段與動畫。不需要任何圖檔。 */
+/* 寵物美術（第二版）：參考「坐姿玩偶」風格——大圓頭、圓滾滾身體、腳底朝前、小圓點眼睛。
+   兩種外觀：outline＝線條填色（黑色粗外框、粉嫩色、右下一彎陰影）、flat＝扁平色塊（無外框、用深一階的色塊做陰影）。
+   全部是向量，20 種寵物、16 件衣服、7 種表情、4 個成長階段，不需要任何圖檔。 */
 (function(){
   "use strict";
   var A = window.PETART = {};
-  A.STYLES = [{ id: "cute", name: "可愛手繪" }, { id: "pixel", name: "像素復古" }, { id: "flat", name: "扁平簡約" }];
-  var DK = "#4a2f22";
+  A.STYLES = [{ id: "outline", name: "線條填色" }, { id: "flat", name: "扁平色塊" }];
+  A.norm = function(s){ return s === "flat" ? "flat" : "outline"; };
+  var INK = "#2b1c1c", UID = 0;
   function shade(hex, amt){ var n = parseInt(hex.slice(1), 16), r = Math.max(0, Math.min(255, (n >> 16) + amt)), g = Math.max(0, Math.min(255, ((n >> 8) & 255) + amt)), b = Math.max(0, Math.min(255, (n & 255) + amt)); return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1); }
   A.shade = shade;
-  function mkStyle(cute){
-    var st = cute ? ' stroke="' + DK + '" stroke-width="3.4" stroke-linejoin="round" stroke-linecap="round"' : ' stroke="rgba(70,45,30,.32)" stroke-width="2" stroke-linejoin="round"';
-    return { cute: cute,
-      P: function(d, f, x){ return '<path d="' + d + '" fill="' + f + '"' + st + (x ? " " + x : "") + '/>'; },
-      E: function(cx, cy, rx, ry, f, x){ return '<ellipse cx="' + cx + '" cy="' + cy + '" rx="' + rx + '" ry="' + ry + '" fill="' + f + '"' + st + (x ? " " + x : "") + '/>'; },
-      C: function(cx, cy, r, f, x){ return '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="' + f + '"' + st + (x ? " " + x : "") + '/>'; },
-      R: function(x0, y0, w, h, r, f, x){ return '<rect x="' + x0 + '" y="' + y0 + '" width="' + w + '" height="' + h + '" rx="' + r + '" fill="' + f + '"' + st + (x ? " " + x : "") + '/>'; },
-      L: function(d, col, w, x){ return '<path d="' + d + '" fill="none" stroke="' + (col || DK) + '" stroke-width="' + (w || 3) + '" stroke-linecap="round" stroke-linejoin="round"' + (x ? " " + x : "") + '/>'; },
-      N: function(d, f, x){ return '<path d="' + d + '" fill="' + f + '"' + (x ? " " + x : "") + '/>'; }   // 無外框的細節
+  function mkStyle(outline){
+    var st = outline ? ' stroke="' + INK + '" stroke-width="4.4" stroke-linejoin="round" stroke-linecap="round"' : "";
+    var S = { o: outline, st: st };
+    // 基本圖形（外框風格會加黑框）
+    S.P = function(d, f, x){ return '<path d="' + d + '" fill="' + f + '"' + st + (x ? " " + x : "") + '/>'; };
+    S.E = function(cx, cy, rx, ry, f, x){ return '<ellipse cx="' + cx + '" cy="' + cy + '" rx="' + rx + '" ry="' + ry + '" fill="' + f + '"' + st + (x ? " " + x : "") + '/>'; };
+    S.C = function(cx, cy, r, f, x){ return '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="' + f + '"' + st + (x ? " " + x : "") + '/>'; };
+    S.R = function(x0, y0, w, h, r, f, x){ return '<rect x="' + x0 + '" y="' + y0 + '" width="' + w + '" height="' + h + '" rx="' + r + '" fill="' + f + '"' + st + (x ? " " + x : "") + '/>'; };
+    S.L = function(d, col, w, x){ return '<path d="' + d + '" fill="none" stroke="' + (col || INK) + '" stroke-width="' + (w || 3.4) + '" stroke-linecap="round" stroke-linejoin="round"' + (x ? " " + x : "") + '/>'; };
+    S.N = function(d, f, x){ return '<path d="' + d + '" fill="' + f + '"' + (x ? " " + x : "") + '/>'; };
+    // 有陰影的形狀：底下先畫深色，再把亮色的同一形狀往左上（外框風）或往上（扁平風）移一點，並裁在原形狀內
+    S.shaded = function(geom, base, k, dark){
+      var id = "pc" + (++UID), dk = dark || shade(base, outline ? -30 : -40), ox = outline ? -k * 0.8 : 0, oy = outline ? -k * 0.6 : -k;
+      var g = '<clipPath id="' + id + '">' + geom("") + '</clipPath>' + geom('fill="' + dk + '"') + '<g clip-path="url(#' + id + ')"><g transform="translate(' + ox + " " + oy + ')">' + geom('fill="' + base + '"') + "</g></g>";
+      if(outline) g += geom('fill="none"' + st);
+      return g;
     };
+    S.SE = function(cx, cy, rx, ry, f, o){ o = o || {}; var tr = o.rot ? ' transform="rotate(' + o.rot + " " + cx + " " + cy + ')"' : ""; return S.shaded(function(a){ return '<ellipse cx="' + cx + '" cy="' + cy + '" rx="' + rx + '" ry="' + ry + '" ' + a + tr + "/>"; }, f, o.k || Math.min(rx, ry) * 0.24, o.dark); };
+    S.SC = function(cx, cy, r, f, o){ o = o || {}; return S.shaded(function(a){ return '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" ' + a + "/>"; }, f, o.k || r * 0.24, o.dark); };
+    S.SP = function(d, f, o){ o = o || {}; return S.shaded(function(a){ return '<path d="' + d + '" ' + a + (o.x ? " " + o.x : "") + "/>"; }, f, o.k || 7, o.dark); };
+    return S;
   }
 
   // ---------- 物種 ----------
-  var SP = {};
-  function def(id, emoji, name, body, belly, o){ o = o || {}; o.id = id; o.e = emoji; o.name = name; o.body = body; o.belly = belly; SP[id] = o; }
-  var inner = function(c){ return shade(c, 40); };
+  var SP = {}, E2I = {};
+  function def(id, emoji, name, o){ o.id = id; o.e = emoji; o.name = name; SP[id] = o; E2I[emoji] = id; }
+  // 共用零件
+  function earsRound(S, c, y, dx, r, inCol){ y = y || 40; dx = dx || 50; r = r || 20; var L = 100 - dx, R = 100 + dx; return S.SC(L, y, r, c.ear || c.body) + S.C(L, y + 1, r * 0.52, inCol || c.earIn, S.o ? "" : 'opacity="1"') + S.SC(R, y, r, c.ear || c.body) + S.C(R, y + 1, r * 0.52, inCol || c.earIn); }
+  function earsPoint(S, c, tip, inCol){ return S.SP("M50 62 Q44 28 56 14 Q80 22 92 38 Z", c.ear || c.body, { k: 6 }) + S.N("M56 52 Q54 34 59 24 Q72 29 79 40 Z", inCol || c.earIn) + S.SP("M150 62 Q156 28 144 14 Q120 22 108 38 Z", c.ear || c.body, { k: 6 }) + S.N("M144 52 Q146 34 141 24 Q128 29 121 40 Z", inCol || c.earIn); }
+  function muzzle(S, col, rx, ry, cy){ return S.E(100, cy || 106, rx || 30, ry || 20, col); }
+  function cheeks(S){ return S.N("M42 98 a9 6 0 1 0 18 0 a9 6 0 1 0 -18 0 M140 98 a9 6 0 1 0 18 0 a9 6 0 1 0 -18 0", "#FF8FA3", 'opacity=".5"'); }
+  function noseDot(S, col, w){ w = w || 9; return S.E(100, 95, w, w * 0.68, col || "#3a2a2a"); }
 
-  def("dog", "🐶", "小狗", "#E8B77D", "#FFF1DC", {
-    back: function(S, c){ return S.P("M140 150 Q172 130 168 108 Q166 124 150 140 Z", c.body); },
-    ears: function(S, c){ return S.E(50, 82, 17, 30, "#9C6B3F", 'transform="rotate(14 50 82)"') + S.E(150, 82, 17, 30, "#9C6B3F", 'transform="rotate(-14 150 82)"'); },
-    mid: function(S, c){ return S.E(100, 118, 25, 19, "#FFF1DC") + (S.cute ? S.N("M64 84 Q72 70 86 76 Q82 92 66 96 Z", "#9C6B3F", 'opacity=".9"') : S.N("M64 84 Q72 70 86 76 Q82 92 66 96 Z", "#9C6B3F")); },
-    nose: function(S){ return S.E(100, 108, 8.5, 6, "#2b1d16"); } });
-  def("cat", "🐱", "小貓", "#F2A65A", "#FFF3E0", {
-    back: function(S, c){ return S.P("M142 160 Q192 150 184 100 Q172 124 150 138 Z", c.body) + S.N("M176 118 Q184 108 182 100 Q172 124 160 132 Z", "#D9822B"); },
-    ears: function(S, c){ return S.P("M52 66 L58 26 L88 52 Z", c.body) + S.N("M60 56 L62 38 L77 51 Z", "#FFB8C0") + S.P("M148 66 L142 26 L112 52 Z", c.body) + S.N("M140 56 L138 38 L123 51 Z", "#FFB8C0"); },
-    mid: function(S){ return S.N("M95 52 L95 66 M100 50 L100 66 M105 52 L105 66", "none", 'stroke="#D9822B" stroke-width="4" stroke-linecap="round"') + S.L("M52 112 L28 108 M52 120 L28 124 M148 112 L172 108 M148 120 L172 124", "#6b4a35", 2.2); },
-    nose: function(S){ return S.P("M94 107 L106 107 L100 114 Z", "#FF8FA3"); } });
-  def("rabbit", "🐰", "小兔", "#F5F0EA", "#FFFFFF", {
-    back: function(S){ return S.C(150, 168, 14, "#FFFFFF"); },
-    ears: function(S, c){ return S.E(72, 30, 16, 42, c.body, 'transform="rotate(-8 72 30)"') + S.E(72, 32, 8, 32, "#FFB8C8", 'transform="rotate(-8 72 32)"') + S.E(128, 30, 16, 42, c.body, 'transform="rotate(8 128 30)"') + S.E(128, 32, 8, 32, "#FFB8C8", 'transform="rotate(8 128 32)"'); },
-    mid: function(S){ return ""; },
-    nose: function(S){ return S.P("M95 107 Q100 104 105 107 Q100 114 95 107 Z", "#FF8FA3") + S.L("M100 112 L100 118", DK, 2); } });
-  def("hamster", "🐹", "倉鼠", "#F2CF9B", "#FFFFFF", {
-    ears: function(S){ return S.C(56, 58, 14, "#F2CF9B") + S.C(56, 58, 7, "#FFB8C0", S.cute ? 'stroke="none"' : "") + S.C(144, 58, 14, "#F2CF9B") + S.C(144, 58, 7, "#FFB8C0", S.cute ? 'stroke="none"' : ""); },
-    mid: function(S){ return S.N("M60 78 Q70 62 86 70 Q80 84 66 90 Z", "#E09B4D") + S.N("M140 78 Q130 62 114 70 Q120 84 134 90 Z", "#E09B4D") + S.E(52, 118, 20, 17, "#FFE3C2", S.cute ? 'stroke="none"' : "") + S.E(148, 118, 20, 17, "#FFE3C2", S.cute ? 'stroke="none"' : ""); },
-    nose: function(S){ return S.E(100, 108, 5, 4, "#E8838F") + S.R(95, 119, 5, 8, 1.5, "#fff") + S.R(100, 119, 5, 8, 1.5, "#fff"); } });
-  def("chick", "🐥", "小雞", "#FFD84D", "#FFF3A8", {
-    arms: "#F2B71F", feet: "#FF9A3C",
-    ears: function(S){ return ""; },
-    back: function(S){ return ""; },
-    mid: function(S){ return S.P("M94 48 Q92 34 98 28 Q100 40 102 28 Q108 34 106 48 Z", "#F2B71F"); },
-    nose: function(S){ return S.P("M90 106 Q100 100 110 106 Q100 120 90 106 Z", "#FF9A3C"); } });
-  def("fox", "🦊", "小狐狸", "#EE7B30", "#FFFFFF", {
-    back: function(S){ return S.P("M140 164 Q200 170 196 108 Q184 144 150 146 Z", "#EE7B30") + S.N("M190 130 Q198 112 196 108 Q186 120 178 128 Z", "#FFFFFF"); },
-    ears: function(S, c){ return S.P("M48 70 L52 24 L90 52 Z", c.body) + S.N("M54 50 L52 32 L72 46 Z", "#3a2a22") + S.P("M152 70 L148 24 L110 52 Z", c.body) + S.N("M146 50 L148 32 L128 46 Z", "#3a2a22"); },
-    mid: function(S){ return S.N("M48 106 Q60 134 100 132 Q140 134 152 106 Q130 116 100 114 Q70 116 48 106 Z", "#FFFFFF") ; },
-    nose: function(S){ return S.E(100, 112, 7, 5, "#2b1d16"); } });
-  def("panda", "🐼", "熊貓", "#FFFFFF", "#FFFFFF", {
-    arms: "#33302e", feet: "#33302e",
-    ears: function(S){ return S.C(54, 56, 17, "#33302e") + S.C(146, 56, 17, "#33302e"); },
-    mid: function(S){ return S.E(76, 100, 15, 19, "#33302e", 'transform="rotate(24 76 100)"') + S.E(124, 100, 15, 19, "#33302e", 'transform="rotate(-24 124 100)"'); },
-    eyeFill: "#ffffff", nose: function(S){ return S.E(100, 112, 8, 5.5, "#33302e"); } });
-  def("frog", "🐸", "青蛙", "#7CC85A", "#E8F7C8", {
-    eyes: "frog",
-    ears: function(S){ return S.C(68, 56, 19, "#7CC85A") + S.C(132, 56, 19, "#7CC85A"); },
-    mid: function(S){ return S.E(56, 118, 14, 10, "#FF9DAA", S.cute ? 'stroke="none" opacity=".55"' : 'opacity=".55"') + S.E(144, 118, 14, 10, "#FF9DAA", S.cute ? 'stroke="none" opacity=".55"' : 'opacity=".55"'); },
-    nose: function(S){ return S.C(94, 108, 2, "#3b7a2a", 'stroke="none"') + S.C(106, 108, 2, "#3b7a2a", 'stroke="none"'); } });
-  def("penguin", "🐧", "企鵝", "#3B4A5A", "#FFFFFF", {
-    arms: "#2f3b49", feet: "#FF9A3C",
-    mid: function(S){ return S.P("M60 92 Q62 70 82 78 Q100 86 118 78 Q138 70 140 92 Q140 128 100 136 Q60 128 60 92 Z", "#FFFFFF", S.cute ? 'stroke="none"' : ""); },
-    ears: function(S){ return ""; },
-    nose: function(S){ return S.P("M90 108 Q100 102 110 108 Q100 120 90 108 Z", "#FF9A3C"); } });
-  def("bear", "🐻", "小熊", "#A8734A", "#D9B68A", {
-    ears: function(S, c){ return S.C(54, 56, 17, c.body) + S.C(54, 56, 8, "#D9B68A", S.cute ? 'stroke="none"' : "") + S.C(146, 56, 17, c.body) + S.C(146, 56, 8, "#D9B68A", S.cute ? 'stroke="none"' : ""); },
-    mid: function(S){ return S.E(100, 118, 24, 18, "#E6C9A0"); },
-    nose: function(S){ return S.E(100, 108, 8, 5.5, "#2b1d16"); } });
-  def("cow", "🐮", "小牛", "#F8F8F8", "#FFFFFF", {
-    ears: function(S, c){ return S.E(40, 78, 22, 12, "#F8F8F8", 'transform="rotate(-18 40 78)"') + S.E(160, 78, 22, 12, "#F8F8F8", 'transform="rotate(18 160 78)"') + S.P("M62 56 Q58 36 70 30 Q74 44 76 54 Z", "#F2E3B8") + S.P("M138 56 Q142 36 130 30 Q126 44 124 54 Z", "#F2E3B8"); },
-    mid: function(S){ return S.N("M60 78 Q72 56 92 62 Q90 82 76 92 Q64 92 60 78 Z", "#3d3a38") + S.E(100, 120, 28, 18, "#FFB8C4"); },
-    nose: function(S){ return S.E(90, 120, 3.5, 5, "#C96A7C", S.cute ? 'stroke="none"' : "") + S.E(110, 120, 3.5, 5, "#C96A7C", S.cute ? 'stroke="none"' : ""); }, mouthY: 8 });
-  def("pig", "🐷", "小豬", "#FFB6C1", "#FFD6DC", {
-    back: function(S){ return S.L("M142 160 Q168 150 160 136 Q150 130 156 122", "#E88FA0", 4); },
-    ears: function(S, c){ return S.P("M52 70 L50 34 L84 54 Z", "#FF9DB0") + S.P("M148 70 L150 34 L116 54 Z", "#FF9DB0"); },
-    mid: function(S){ return S.E(100, 116, 22, 16, "#FF8FA3"); },
-    nose: function(S){ return S.E(92, 116, 3.5, 5, "#B3506A", S.cute ? 'stroke="none"' : "") + S.E(108, 116, 3.5, 5, "#B3506A", S.cute ? 'stroke="none"' : ""); }, mouthY: 14 });
+  def("bear", "🐻", "小熊", { c: { body: "#B98255", belly: "#D2A37A", muzzle: "#EBCDA6", earIn: "#8A5A3C", nose: "#3a2a2a" },
+    ears: function(S, c){ return earsRound(S, c, 40, 50, 20, S.o ? "#E8C9A8" : "#8A5A3C"); }, mid: function(S, c){ return muzzle(S, c.muzzle); }, nose: function(S, c){ return noseDot(S, c.nose, 10); } });
+  def("dog", "🐶", "小狗", { c: { body: "#E3A96D", belly: "#FFE9CE", muzzle: "#FFE9CE", ear: "#A96E3E", nose: "#3a2a2a" },
+    back: function(S, c){ return S.SP("M146 168 Q184 160 178 130 Q166 150 146 150 Z", c.body, { k: 5 }); },
+    ears: function(S, c){ return S.SE(44, 70, 17, 34, c.ear, { rot: 14 }) + S.SE(156, 70, 17, 34, c.ear, { rot: -14 }); },
+    mid: function(S, c){ return S.N("M62 60 Q76 44 92 56 Q88 78 66 84 Q56 76 62 60 Z", "#A96E3E", 'opacity=".95"') + muzzle(S, c.muzzle); }, nose: function(S, c){ return noseDot(S, c.nose, 10); } });
+  def("cat", "🐱", "小貓", { c: { body: "#F0A24E", belly: "#FFF1DE", muzzle: "#FFF1DE", earIn: "#FFB4BD", nose: "#FF8FA3" },
+    back: function(S, c){ return S.SP("M146 170 Q196 168 188 118 Q178 134 164 138 Q176 152 146 154 Z", c.body, { k: 5 }); },
+    ears: function(S, c){ return earsPoint(S, c); },
+    mid: function(S, c){ return S.N("M94 34 L94 50 M100 32 L100 50 M106 34 L106 50", "none", 'stroke="#C9772A" stroke-width="4" stroke-linecap="round"') + muzzle(S, c.muzzle, 26, 18, 104) + S.L("M48 98 L26 92 M48 106 L26 108 M152 98 L174 92 M152 106 L174 108", "#6b4a35", 2.6); },
+    nose: function(S, c){ return S.P("M94 93 L106 93 L100 100 Z", c.nose); } });
+  def("rabbit", "🐰", "小兔", { c: { body: "#F4EEE8", belly: "#FFFFFF", muzzle: "#FFFFFF", earIn: "#FFB4C6", nose: "#FF8FA3" },
+    back: function(S, c){ return S.SC(148, 172, 16, "#FFFFFF"); },
+    ears: function(S, c){ return S.SE(72, 26, 17, 46, c.body, { rot: -8 }) + S.E(72, 28, 8, 34, c.earIn, 'transform="rotate(-8 72 28)"' + (S.o ? "" : "")) + S.SE(128, 26, 17, 46, c.body, { rot: 8 }) + S.E(128, 28, 8, 34, c.earIn, 'transform="rotate(8 128 28)"'); },
+    mid: function(S, c){ return muzzle(S, c.muzzle, 24, 17, 104); }, nose: function(S, c){ return S.P("M94 92 Q100 88 106 92 Q100 100 94 92 Z", c.nose); } });
+  def("hamster", "🐹", "倉鼠", { c: { body: "#F2C88E", belly: "#FFF3E0", cheek: "#FFE1BD", earIn: "#FFB4BC", nose: "#E8838F" },
+    ears: function(S, c){ return earsRound(S, c, 42, 46, 15, c.earIn); },
+    mid: function(S, c){ return S.N("M60 48 Q72 34 88 42 Q86 62 68 70 Q56 64 60 48 Z", "#E09A4D") + S.N("M140 48 Q128 34 112 42 Q114 62 132 70 Q144 64 140 48 Z", "#E09A4D") + S.E(54, 104, 20, 17, c.cheek) + S.E(146, 104, 20, 17, c.cheek) + muzzle(S, "#FFF3E0", 20, 15, 102); },
+    nose: function(S, c){ return S.E(100, 95, 6, 4.5, c.nose) + S.R(95, 104, 5, 8, 1.5, "#fff") + S.R(100, 104, 5, 8, 1.5, "#fff"); } });
+  def("chick", "🐥", "小雞", { c: { body: "#FFD54A", belly: "#FFE98E", wing: "#F4B71C", beak: "#FF9A3C", foot: "#FF9A3C", nose: "#FF9A3C" }, arm: "#F4B71C", foot: "#FF9A3C",
+    ears: function(){ return ""; },
+    mid: function(S, c){ return S.P("M92 32 Q90 14 98 8 Q100 22 104 10 Q112 18 108 32 Z", c.wing); },
+    nose: function(S, c){ return S.P("M88 94 Q100 86 112 94 Q100 108 88 94 Z", c.beak); } });
+  def("fox", "🦊", "小狐狸", { c: { body: "#F07F34", belly: "#FFFFFF", earIn: "#4a3228", nose: "#3a2a2a" },
+    back: function(S, c){ return S.SP("M146 170 Q204 176 196 112 Q186 144 150 148 Z", c.body, { k: 6 }) + S.N("M194 126 Q200 112 196 112 Q188 126 176 134 Z", "#FFFFFF"); },
+    ears: function(S, c){ return earsPoint(S, c, 0, "#4a3228"); },
+    mid: function(S, c){ return S.N("M44 92 Q54 130 100 132 Q146 130 156 92 Q132 106 100 104 Q68 106 44 92 Z", "#FFFFFF"); }, nose: function(S, c){ return noseDot(S, c.nose, 8); } });
+  def("panda", "🐼", "熊貓", { c: { body: "#F7F7F7", belly: "#FFFFFF", black: "#363636", nose: "#363636" }, arm: "#363636", foot: "#363636",
+    ears: function(S, c){ return S.SC(52, 40, 19, c.black, { dark: "#202020" }) + S.SC(148, 40, 19, c.black, { dark: "#202020" }); },
+    mid: function(S, c){ return S.E(72, 84, 15, 19, c.black, 'transform="rotate(25 72 84)"') + S.E(128, 84, 15, 19, c.black, 'transform="rotate(-25 128 84)"'); }, nose: function(S, c){ return noseDot(S, c.nose, 9); }, eyeCol: "#FFFFFF" });
+  def("frog", "🐸", "青蛙", { c: { body: "#7DCA5E", belly: "#EAF8CB", nose: "#3b7a2a" }, eyes: "frog",
+    ears: function(S, c){ return S.SC(66, 40, 19, c.body) + S.SC(134, 40, 19, c.body); },
+    mid: function(S, c){ return S.E(52, 104, 13, 9, "#FF9DAA", 'opacity=".6"') + S.E(148, 104, 13, 9, "#FF9DAA", 'opacity=".6"'); }, nose: function(S, c){ return S.C(94, 94, 2.2, c.nose, 'stroke="none"') + S.C(106, 94, 2.2, c.nose, 'stroke="none"'); } });
+  def("penguin", "🐧", "企鵝", { c: { body: "#3E4F63", belly: "#FFFFFF", beak: "#FFA83C" }, arm: "#33424f", foot: "#FFA83C",
+    ears: function(){ return ""; },
+    mid: function(S, c){ return S.P("M56 80 Q56 56 80 62 Q100 70 120 62 Q144 56 144 80 Q144 124 100 136 Q56 124 56 80 Z", "#FFFFFF", S.o ? "" : "") ; },
+    nose: function(S, c){ return S.P("M90 96 Q100 90 110 96 Q100 108 90 96 Z", c.beak); }, eyeCol: "#FFFFFF" });
+  def("cow", "🐮", "小牛", { c: { body: "#FBFBFB", belly: "#FFFFFF", muzzle: "#FFB9C6", horn: "#F2E1B0", nose: "#C96A7C" },
+    ears: function(S, c){ return S.P("M64 36 Q58 14 70 8 Q76 22 78 34 Z", c.horn) + S.P("M136 36 Q142 14 130 8 Q124 22 122 34 Z", c.horn) + S.SE(40, 60, 22, 12, c.body, { rot: -16 }) + S.SE(160, 60, 22, 12, c.body, { rot: 16 }); },
+    mid: function(S, c){ return S.N("M52 66 Q62 38 90 46 Q88 70 70 82 Q56 82 52 66 Z", "#3d3a38") + S.E(100, 106, 29, 20, c.muzzle); },
+    nose: function(S, c){ return S.E(90, 106, 3.4, 5, c.nose, 'stroke="none"') + S.E(110, 106, 3.4, 5, c.nose, 'stroke="none"'); }, mouthY: 14 });
+  def("pig", "🐷", "小豬", { c: { body: "#FFB6C3", belly: "#FFD3DB", snout: "#FF93A9", ear: "#FF9BB0" },
+    back: function(S){ return S.L("M146 168 Q170 160 164 146 Q154 140 160 130", "#E88FA0", 5); },
+    ears: function(S, c){ return S.SP("M50 62 Q44 30 56 22 Q80 30 92 42 Z", c.ear, { k: 6 }) + S.SP("M150 62 Q156 30 144 22 Q120 30 108 42 Z", c.ear, { k: 6 }); },
+    mid: function(S, c){ return S.E(100, 104, 24, 17, c.snout); }, nose: function(S){ return S.E(91, 104, 3.6, 5.2, "#B3506A", 'stroke="none"') + S.E(109, 104, 3.6, 5.2, "#B3506A", 'stroke="none"'); }, mouthY: 16 });
   // ----- 強化寵物 -----
-  def("lion", "🦁", "獅子", "#E9B14F", "#FFF1D0", {
-    back: function(S){ return S.P("M142 160 Q186 158 184 122 Q170 142 148 146 Z", "#E9B14F") + S.C(186, 118, 9, "#B36B2E"); },
-    ears: function(S){ var m = ""; for(var i = 0; i < 14; i++){ var a = i / 14 * Math.PI * 2; m += S.C(100 + Math.cos(a) * 58, 98 + Math.sin(a) * 52, 20, "#B36B2E"); } return m + S.C(100, 98, 62, "#B36B2E") + S.C(56, 60, 13, "#E9B14F") + S.C(144, 60, 13, "#E9B14F"); },
-    mid: function(S){ return S.E(100, 118, 25, 18, "#FFF1D0"); },
-    nose: function(S){ return S.P("M92 106 L108 106 L100 115 Z", "#E8838F"); } });
-  def("tiger", "🐯", "老虎", "#F29A32", "#FFF1D8", {
-    back: function(S){ return S.P("M142 162 Q190 156 186 112 Q172 140 148 148 Z", "#F29A32") + S.N("M176 130 L186 126 M172 138 L184 136", "none", 'stroke="#2b1d16" stroke-width="5" stroke-linecap="round"'); },
-    ears: function(S, c){ return S.C(54, 56, 16, c.body) + S.C(54, 56, 8, "#FFF1D8", S.cute ? 'stroke="none"' : "") + S.C(146, 56, 16, c.body) + S.C(146, 56, 8, "#FFF1D8", S.cute ? 'stroke="none"' : ""); },
-    mid: function(S){ return S.N("M100 50 L100 70 M88 54 L90 68 M112 54 L110 68 M48 90 L66 94 M48 104 L64 104 M152 90 L134 94 M152 104 L136 104", "none", 'stroke="#2b1d16" stroke-width="5" stroke-linecap="round"') + S.E(100, 118, 25, 18, "#FFF1D8"); },
-    nose: function(S){ return S.P("M92 106 L108 106 L100 115 Z", "#E8838F"); } });
-  def("wolf", "🐺", "野狼", "#8F9BAA", "#E6EBF0", {
-    back: function(S){ return S.P("M142 164 Q196 170 190 112 Q178 150 148 148 Z", "#8F9BAA") + S.N("M186 128 Q192 114 190 112 Q182 126 172 134 Z", "#E6EBF0"); },
-    ears: function(S, c){ return S.P("M50 72 L48 18 L92 54 Z", c.body) + S.N("M56 56 L54 34 L76 50 Z", "#C9D1DB") + S.P("M150 72 L152 18 L108 54 Z", c.body) + S.N("M144 56 L146 34 L124 50 Z", "#C9D1DB"); },
-    mid: function(S){ return S.N("M46 108 Q54 132 76 124 Q60 116 50 100 Z M154 108 Q146 132 124 124 Q140 116 150 100 Z", "#E6EBF0") + S.E(100, 118, 24, 17, "#E6EBF0"); },
-    nose: function(S){ return S.E(100, 108, 8, 5.5, "#2b1d16"); } });
-  def("eagle", "🦅", "老鷹", "#8B5A3C", "#F2E3C8", {
-    arms: "#6f4630", feet: "#FFC83D",
-    back: function(S){ return S.P("M58 128 Q10 112 14 168 Q40 150 60 156 Z", "#6f4630") + S.P("M142 128 Q190 112 186 168 Q160 150 140 156 Z", "#6f4630"); },
-    ears: function(S){ return ""; },
-    headFill: "#FFFFFF", mid: function(S){ return S.N("M62 62 Q100 40 138 62", "none", 'stroke="#fff" stroke-width="1"'); },
-    nose: function(S){ return S.P("M88 108 Q100 98 112 108 Q108 126 100 130 Q92 126 88 108 Z", "#FFC83D"); }, mouthY: 20 });
-  def("trex", "🦖", "暴龍", "#6DBE6A", "#D9F0B0", {
-    back: function(S){ var sp = ""; [[78, 56], [100, 46], [122, 56]].forEach(function(p){ sp += S.P("M" + (p[0] - 9) + " " + p[1] + " L" + p[0] + " " + (p[1] - 18) + " L" + (p[0] + 9) + " " + p[1] + " Z", "#4E9B4C"); }); return S.P("M140 156 Q196 170 190 124 Q180 154 148 142 Z", "#6DBE6A") + sp; },
-    ears: function(S){ return ""; },
-    mid: function(S){ return S.N("M60 74 L66 62 L74 74 M126 74 L134 62 L140 74", "none", 'stroke="#4E9B4C" stroke-width="3" stroke-linecap="round"') + S.E(100, 120, 30, 18, "#8FD88A"); },
-    nose: function(S){ return S.C(92, 106, 2.5, "#3b7a2a", 'stroke="none"') + S.C(108, 106, 2.5, "#3b7a2a", 'stroke="none"'); }, mouthY: 6, teeth: true });
-  def("unicorn", "🦄", "獨角獸", "#FFF3FA", "#FFFFFF", {
-    back: function(S){ return S.P("M142 160 Q196 174 190 124 Q180 148 150 146 Z", "#B58CFF") + S.P("M150 154 Q190 150 184 120 Q176 140 152 144 Z", "#7CD4FF"); },
-    ears: function(S, c){ return S.P("M60 62 L58 30 L84 52 Z", c.body) + S.P("M140 62 L142 30 L116 52 Z", c.body) + S.P("M66 60 Q40 40 36 90 Q50 76 70 84 Z", "#FF8FC8") + S.P("M134 60 Q160 40 164 90 Q150 76 130 84 Z", "#7CD4FF"); },
-    mid: function(S){ return S.P("M92 54 L100 6 L108 54 Z", "#FFD76A") + S.N("M94 44 L106 40 M96 32 L104 28 M98 20 L102 18", "none", 'stroke="#E0A82E" stroke-width="2.5" stroke-linecap="round"') + S.P("M60 70 Q90 36 118 60 Q94 54 80 80 Z", "#B58CFF"); },
-    nose: function(S){ return S.E(94, 110, 2.5, 2, "#E8838F") + S.E(106, 110, 2.5, 2, "#E8838F"); } });
-  def("dragon", "🐲", "小龍", "#E85D75", "#FFD9A0", {
-    back: function(S){ return S.P("M60 120 Q8 70 20 140 Q36 130 50 146 Z", "#8E5BD0") + S.P("M140 120 Q192 70 180 140 Q164 130 150 146 Z", "#8E5BD0") + S.P("M142 160 Q196 166 188 118 Q178 150 148 148 Z", "#E85D75") + S.P("M184 124 L198 114 L192 134 Z", "#FFD9A0"); },
-    ears: function(S){ return S.P("M62 62 L54 22 L84 50 Z", "#FFE9B8") + S.P("M138 62 L146 22 L116 50 Z", "#FFE9B8"); },
-    mid: function(S){ return S.N("M88 52 L100 38 L112 52", "none", 'stroke="#8E5BD0" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"') + S.E(100, 118, 24, 16, "#FF8FA3", 'opacity=".5"'); },
-    nose: function(S){ return S.C(94, 108, 2.2, "#7a2a3a", 'stroke="none"') + S.C(106, 108, 2.2, "#7a2a3a", 'stroke="none"'); } });
-  def("god", "🐉", "神龍", "#F2C14E", "#FFF3C4", {
-    back: function(S){ return S.P("M142 158 Q200 172 192 112 Q184 156 150 146 Z", "#F2C14E") + S.P("M60 140 Q10 130 22 84 Q38 112 62 118 Z", "#2BB5A7") + S.P("M140 140 Q190 130 178 84 Q162 112 138 118 Z", "#2BB5A7"); },
-    ears: function(S){ return S.P("M64 62 L48 14 L52 12 L86 50 Z", "#FFE9A8") + S.P("M136 62 L152 14 L148 12 L114 50 Z", "#FFE9A8") + S.L("M54 70 Q10 70 14 102 M146 70 Q190 70 186 102", "#2BB5A7", 4); },
-    mid: function(S){ return S.N("M70 64 Q100 40 130 64 Q100 54 70 64 Z", "#2BB5A7") + S.E(100, 118, 24, 16, "#FFF3C4") + S.N("M86 150 L90 156 M100 152 L104 158 M114 150 L118 156", "none", 'stroke="#2BB5A7" stroke-width="3" stroke-linecap="round"'); },
-    nose: function(S){ return S.C(94, 108, 2.2, "#8a5a00", 'stroke="none"') + S.C(106, 108, 2.2, "#8a5a00", 'stroke="none"'); } });
+  def("lion", "🦁", "獅子", { c: { body: "#EDB357", belly: "#FFF0D0", muzzle: "#FFF0D0", mane: "#BE7330", earIn: "#FFD9A8", nose: "#E8838F" },
+    back: function(S, c){ return S.SP("M146 170 Q190 170 188 130 Q176 148 150 152 Z", c.body, { k: 5 }) + S.C(190, 126, 10, c.mane); },
+    ears: function(S, c){ var m = ""; for(var i = 0; i < 12; i++){ var a = i / 12 * Math.PI * 2; m += S.C(100 + Math.cos(a) * 60, 86 + Math.sin(a) * 58, 19, c.mane); } return m + S.SC(100, 86, 66, c.mane, { k: 10 }) + S.SC(60, 34, 14, c.body) + S.SC(140, 34, 14, c.body); },
+    mid: function(S, c){ return muzzle(S, c.muzzle, 26, 19, 104); }, nose: function(S, c){ return S.P("M92 92 L108 92 L100 101 Z", c.nose); } });
+  def("tiger", "🐯", "老虎", { c: { body: "#F59A3C", belly: "#FFF1DC", muzzle: "#FFF1DC", earIn: "#FFF1DC", stripe: "#3a2a22", nose: "#E8838F" },
+    back: function(S, c){ return S.SP("M146 170 Q196 166 190 120 Q176 144 150 150 Z", c.body, { k: 5 }) + S.N("M178 138 L190 132 M174 148 L188 146", "none", 'stroke="#3a2a22" stroke-width="5" stroke-linecap="round"'); },
+    ears: function(S, c){ return earsRound(S, c, 40, 50, 18, c.earIn); },
+    mid: function(S, c){ return S.N("M100 30 L100 52 M86 34 L89 50 M114 34 L111 50 M44 72 L64 78 M44 90 L62 90 M156 72 L136 78 M156 90 L138 90", "none", 'stroke="#3a2a22" stroke-width="5" stroke-linecap="round"') + muzzle(S, c.muzzle, 27, 19, 104); }, nose: function(S, c){ return S.P("M92 92 L108 92 L100 101 Z", c.nose); } });
+  def("wolf", "🐺", "野狼", { c: { body: "#8F9BAB", belly: "#E8EDF2", earIn: "#C9D1DB", muzzle: "#E8EDF2", nose: "#2b2b30" },
+    back: function(S, c){ return S.SP("M146 172 Q202 178 194 112 Q184 150 150 150 Z", c.body, { k: 6 }) + S.N("M192 128 Q198 114 194 112 Q188 128 176 136 Z", "#E8EDF2"); },
+    ears: function(S, c){ return S.SP("M48 64 Q42 22 52 6 Q80 18 94 38 Z", c.body, { k: 6 }) + S.N("M54 52 Q52 28 56 16 Q72 24 80 38 Z", c.earIn) + S.SP("M152 64 Q158 22 148 6 Q120 18 106 38 Z", c.body, { k: 6 }) + S.N("M146 52 Q148 28 144 16 Q128 24 120 38 Z", c.earIn); },
+    mid: function(S, c){ return S.N("M42 92 Q52 124 82 116 Q62 108 50 82 Z M158 92 Q148 124 118 116 Q138 108 150 82 Z", c.muzzle) + muzzle(S, c.muzzle, 26, 19, 104); }, nose: function(S, c){ return noseDot(S, c.nose, 9); } });
+  def("eagle", "🦅", "老鷹", { c: { body: "#8B5E3E", belly: "#F1E2C6", head: "#FFFFFF", beak: "#FFC93D", wing: "#6E482F" }, arm: "#6E482F", foot: "#FFC93D", headFill: "#FFFFFF",
+    back: function(S, c){ return S.SP("M58 120 Q8 100 12 168 Q38 148 60 156 Z", c.wing, { k: 6 }) + S.SP("M142 120 Q192 100 188 168 Q162 148 140 156 Z", c.wing, { k: 6 }); },
+    ears: function(){ return ""; },
+    mid: function(S, c){ return S.N("M66 50 Q100 24 134 50 Q100 40 66 50 Z", "#F4F4F4"); },
+    nose: function(S, c){ return S.P("M86 94 Q100 86 114 94 Q110 112 100 116 Q90 112 86 94 Z", c.beak); }, mouthY: 18 });
+  def("trex", "🦖", "暴龍", { c: { body: "#70C06D", belly: "#D9F1B6", jaw: "#90D88B", spike: "#4F9D4E", nose: "#3b7a2a" },
+    back: function(S, c){ var sp = ""; [[74, 40], [100, 28], [126, 40]].forEach(function(p){ sp += S.SP("M" + (p[0] - 11) + " " + p[1] + " L" + p[0] + " " + (p[1] - 20) + " L" + (p[0] + 11) + " " + p[1] + " Z", c.spike, { k: 4 }); }); return S.SP("M146 166 Q204 180 196 126 Q186 156 150 148 Z", c.body, { k: 6 }) + sp; },
+    ears: function(){ return ""; },
+    mid: function(S, c){ return S.E(100, 106, 30, 20, c.jaw); }, nose: function(S, c){ return S.C(92, 94, 2.6, c.nose, 'stroke="none"') + S.C(108, 94, 2.6, c.nose, 'stroke="none"'); }, mouthY: 10, teeth: true });
+  def("unicorn", "🦄", "獨角獸", { c: { body: "#FFF3FB", belly: "#FFFFFF", mane1: "#FF9AD0", mane2: "#9AD7FF", mane3: "#C3A0FF", horn: "#FFD76A", earIn: "#FFC7E6", nose: "#E8838F" },
+    back: function(S, c){ return S.SP("M146 168 Q204 184 196 128 Q186 156 150 150 Z", c.mane3, { k: 5 }) + S.SP("M150 160 Q194 160 188 126 Q180 148 152 152 Z", c.mane2, { k: 4 }); },
+    ears: function(S, c){ return S.SP("M54 52 Q48 20 60 14 Q80 22 92 38 Z", c.body, { k: 6 }) + S.N("M60 44 Q58 28 62 22 Q74 28 80 38 Z", c.earIn) + S.SP("M146 52 Q152 20 140 14 Q120 22 108 38 Z", c.body, { k: 6 }) + S.N("M140 44 Q142 28 138 22 Q126 28 120 38 Z", c.earIn) + S.SP("M52 60 Q26 50 28 100 Q42 84 58 88 Z", c.mane1, { k: 6 }) + S.SP("M148 60 Q174 50 172 100 Q158 84 142 88 Z", c.mane2, { k: 6 }); },
+    mid: function(S, c){ return S.SP("M90 34 L100 -10 L110 34 Z", c.horn, { k: 4 }) + S.N("M93 22 L107 18 M95 10 L105 6", "none", 'stroke="#E0A82E" stroke-width="2.6" stroke-linecap="round"') + S.SP("M56 50 Q88 18 124 40 Q96 40 82 70 Z", c.mane3, { k: 6 }); },
+    nose: function(S, c){ return S.E(94, 98, 2.6, 2, c.nose, 'stroke="none"') + S.E(106, 98, 2.6, 2, c.nose, 'stroke="none"'); }, mouthY: 6 });
+  def("dragon", "🐲", "小龍", { c: { body: "#E8607A", belly: "#FFDCA8", wing: "#8F5FD3", horn: "#FFE9B8", nose: "#7a2a3a" },
+    back: function(S, c){ return S.SP("M56 112 Q4 62 16 136 Q32 128 48 146 Z", c.wing, { k: 7 }) + S.SP("M144 112 Q196 62 184 136 Q168 128 152 146 Z", c.wing, { k: 7 }) + S.SP("M146 168 Q200 172 192 122 Q182 154 150 150 Z", c.body, { k: 6 }) + S.P("M188 128 L202 116 L196 138 Z", c.belly); },
+    ears: function(S, c){ return S.SP("M60 50 Q48 18 52 6 Q76 14 88 36 Z", c.horn, { k: 5 }) + S.SP("M140 50 Q152 18 148 6 Q124 14 112 36 Z", c.horn, { k: 5 }); },
+    mid: function(S, c){ return S.N("M86 34 L100 22 L114 34", "none", 'stroke="#8F5FD3" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"') + S.E(100, 106, 24, 17, "#FF9DB0", 'opacity=".5"'); },
+    nose: function(S, c){ return S.C(94, 96, 2.4, c.nose, 'stroke="none"') + S.C(106, 96, 2.4, c.nose, 'stroke="none"'); } });
+  def("god", "🐉", "神龍", { c: { body: "#F4C650", belly: "#FFF2C6", teal: "#2DB7A9", horn: "#FFEAB0", nose: "#8a5a00" },
+    back: function(S, c){ return S.SP("M146 166 Q206 182 198 118 Q190 160 152 150 Z", c.body, { k: 6 }) + S.SP("M56 128 Q8 114 20 70 Q36 100 60 106 Z", c.teal, { k: 6 }) + S.SP("M144 128 Q192 114 180 70 Q164 100 140 106 Z", c.teal, { k: 6 }); },
+    ears: function(S, c){ return S.SP("M62 50 Q44 16 50 4 Q78 14 90 36 Z", c.horn, { k: 5 }) + S.SP("M138 50 Q156 16 150 4 Q122 14 110 36 Z", c.horn, { k: 5 }) + S.L("M50 76 Q8 74 12 108 M150 76 Q192 74 188 108", c.teal, 5); },
+    mid: function(S, c){ return S.N("M66 50 Q100 24 134 50 Q100 40 66 50 Z", c.teal) + S.E(100, 106, 24, 17, "#FFF2C6") + S.N("M86 148 L90 156 M100 150 L104 158 M114 148 L118 156", "none", 'stroke="#2DB7A9" stroke-width="3.4" stroke-linecap="round"'); },
+    nose: function(S, c){ return S.C(94, 96, 2.4, c.nose, 'stroke="none"') + S.C(106, 96, 2.4, c.nose, 'stroke="none"'); } });
   A.SPECIES = SP;
-  var E2I = {}; Object.keys(SP).forEach(function(k){ E2I[SP[k].e] = k; }); A.byEmoji = function(e){ return SP[E2I[e] || "dog"]; };
+  A.byEmoji = function(e){ return SP[E2I[e] || "bear"]; };
 
-  // ---------- 表情 ----------
+  // ---------- 表情（小圓點眼睛）----------
   function eyes(S, mood, sp){
-    var out = "", L = [76, 98], R = [124, 98], big = S.cute ? 1 : 0.85;
+    var L = [76, 82], R = [124, 82], out = "", dark = sp.eyeCol || INK;
     if(sp.eyes === "frog"){
-      var eyeFrog = function(x){ return S.C(x, 58, 15, "#FFFFFF") + (mood === "sleep" || mood === "eat" || mood === "love" ? S.L("M" + (x - 8) + " 60 Q" + x + " 52 " + (x + 8) + " 60", DK, 3.5) : S.C(x, 60, 7.5, "#2b1d16") + S.C(x - 2.5, 57, 2.4, "#fff", 'stroke="none"')); };
-      return '<g class="pa-eyes">' + eyeFrog(68) + eyeFrog(132) + "</g>";
+      var fe = function(x){ return S.C(x, 40, 17, "#FFFFFF") + (mood === "sleep" || mood === "eat" || mood === "love" ? S.L("M" + (x - 8) + " 42 Q" + x + " 34 " + (x + 8) + " 42", INK, 3.4) : S.C(x, 42, 7, INK, 'stroke="none"') + S.C(x - 2.4, 39, 2.4, "#fff", 'stroke="none"')); };
+      return '<g class="pa-eyes">' + fe(66) + fe(134) + "</g>";
     }
-    function open(cx, cy){
-      var w = sp.eyeFill ? "#FFFFFF" : null, g = "";
-      if(S.cute) g = S.E(cx, cy, 9.5 * big, 11 * big, "#2b1d16", 'stroke="none"') + '<circle cx="' + (cx - 3) + '" cy="' + (cy - 4) + '" r="3.6" fill="#fff"/><circle cx="' + (cx + 3.5) + '" cy="' + (cy + 4) + '" r="1.8" fill="#fff"/>';
-      else g = '<circle cx="' + cx + '" cy="' + cy + '" r="7.5" fill="#2b2b2b"/>' + '<circle cx="' + (cx - 2) + '" cy="' + (cy - 2.5) + '" r="2" fill="#fff"/>';
-      return g;
-    }
-    var happyArc = function(cx, cy){ return S.L("M" + (cx - 9) + " " + (cy + 3) + " Q" + cx + " " + (cy - 10) + " " + (cx + 9) + " " + (cy + 3), "#2b1d16", 4); };
-    var closeArc = function(cx, cy){ return S.L("M" + (cx - 9) + " " + (cy - 1) + " Q" + cx + " " + (cy + 8) + " " + (cx + 9) + " " + (cy - 1), "#2b1d16", 3.6); };
-    var heart = function(cx, cy){ return '<path d="M' + cx + ' ' + (cy + 9) + ' C' + (cx - 16) + ' ' + (cy - 2) + ' ' + (cx - 8) + ' ' + (cy - 14) + ' ' + cx + ' ' + (cy - 5) + ' C' + (cx + 8) + ' ' + (cy - 14) + ' ' + (cx + 16) + ' ' + (cy - 2) + ' ' + cx + ' ' + (cy + 9) + ' Z" fill="#FF4D6D"/>'; };
-    if(mood === "sleep") out = '<g class="pa-eyes-sleep">' + closeArc(L[0], L[1]) + closeArc(R[0], R[1]) + "</g>";
-    else if(mood === "eat") out = happyArc(L[0], L[1]) + happyArc(R[0], R[1]);
-    else if(mood === "love") out = heart(L[0], L[1]) + heart(R[0], R[1]);
-    else { out = '<g class="pa-eyes">' + open(L[0], L[1]) + open(R[0], R[1]) + "</g>"; if(mood === "sad" || mood === "hungry") out += S.L("M62 86 L88 80 M138 86 L112 80", DK, 3.2); if(mood === "sad") out += '<path d="M70 112 Q66 124 72 126 Q78 124 70 112 Z" fill="#7CC8FF"/>'; }
+    var dot = function(p){ return S.C(p[0], p[1], 5, dark, 'stroke="none"') + (sp.eyeCol ? "" : '<circle cx="' + (p[0] - 1.6) + '" cy="' + (p[1] - 1.8) + '" r="1.6" fill="#fff"/>'); };
+    var happy = function(p){ return S.L("M" + (p[0] - 8) + " " + (p[1] + 3) + " Q" + p[0] + " " + (p[1] - 8) + " " + (p[0] + 8) + " " + (p[1] + 3), dark, 3.8); };
+    var closed = function(p){ return S.L("M" + (p[0] - 8) + " " + (p[1] - 1) + " Q" + p[0] + " " + (p[1] + 7) + " " + (p[0] + 8) + " " + (p[1] - 1), dark, 3.4); };
+    var heart = function(p){ var x = p[0], y = p[1]; return '<path d="M' + x + " " + (y + 8) + " C" + (x - 14) + " " + (y - 2) + " " + (x - 7) + " " + (y - 12) + " " + x + " " + (y - 4) + " C" + (x + 7) + " " + (y - 12) + " " + (x + 14) + " " + (y - 2) + " " + x + " " + (y + 8) + ' Z" fill="#FF4D6D"/>'; };
+    if(mood === "sleep") out = closed(L) + closed(R);
+    else if(mood === "eat") out = happy(L) + happy(R);
+    else if(mood === "love") out = heart(L) + heart(R);
+    else { out = '<g class="pa-eyes">' + dot(L) + dot(R) + "</g>"; if(mood === "sad" || mood === "hungry") out += S.L("M64 68 L88 62 M136 68 L112 62", INK, 3); if(mood === "sad") out += '<path d="M70 92 Q66 104 72 106 Q78 104 70 92 Z" fill="#7CC8FF"/>'; }
     return out;
   }
   function mouth(S, mood, sp){
-    var y = 118 + (sp.mouthY || 0), x = 100, out = "";
-    if(sp.teeth && mood !== "sad") out += S.N("M86 " + (y + 2) + " L90 " + (y + 12) + " L94 " + (y + 2) + " M106 " + (y + 2) + " L110 " + (y + 12) + " L114 " + (y + 2), "#fff", 'stroke="' + DK + '" stroke-width="1.5"');
-    if(mood === "happy" || mood === "love") out += '<path d="M89 ' + (y - 3) + ' Q100 ' + (y + 20) + ' 111 ' + (y - 3) + ' Z" fill="#6b2a2a"' + (S.cute ? ' stroke="' + DK + '" stroke-width="3" stroke-linejoin="round"' : "") + '/><path d="M94 ' + (y + 8) + ' Q100 ' + (y + 15) + ' 106 ' + (y + 8) + ' Q100 ' + (y + 5) + ' 94 ' + (y + 8) + ' Z" fill="#FF8FA3"/>';
-    else if(mood === "eat") out += '<g class="pa-chew"><ellipse cx="100" cy="' + (y + 4) + '" rx="9" ry="8" fill="#6b2a2a"' + (S.cute ? ' stroke="' + DK + '" stroke-width="3"' : "") + '/><ellipse cx="100" cy="' + (y + 8) + '" rx="5" ry="3.5" fill="#FF8FA3"/></g>';
-    else if(mood === "sad") out += S.L("M90 " + (y + 8) + " Q100 " + (y - 2) + " 110 " + (y + 8), "#2b1d16", 3.4);
-    else if(mood === "hungry") out += '<ellipse cx="100" cy="' + (y + 4) + '" rx="7" ry="9" fill="#6b2a2a"' + (S.cute ? ' stroke="' + DK + '" stroke-width="3"' : "") + '/><path d="M108 ' + (y + 8) + ' Q112 ' + (y + 22) + ' 108 ' + (y + 24) + ' Q104 ' + (y + 20) + ' 108 ' + (y + 8) + ' Z" fill="#7CC8FF"/>';
-    else if(mood === "sleep") out += S.L("M95 " + (y + 4) + " Q100 " + (y + 9) + " 105 " + (y + 4), "#2b1d16", 3);
-    else out += S.L("M90 " + (y + 1) + " Q95 " + (y + 8) + " 100 " + (y + 2) + " Q105 " + (y + 8) + " 110 " + (y + 1), "#2b1d16", 3.2);
+    var y = 104 + (sp.mouthY || 0), out = "", dark = INK;
+    if(sp.teeth && mood !== "sad") out += S.N("M86 " + (y + 1) + " L90 " + (y + 10) + " L94 " + (y + 1) + " M106 " + (y + 1) + " L110 " + (y + 10) + " L114 " + (y + 1), "#fff", 'stroke="' + dark + '" stroke-width="1.6"');
+    if(mood === "happy" || mood === "love") out += '<path d="M90 ' + (y - 2) + " Q100 " + (y + 17) + " 110 " + (y - 2) + ' Z" fill="#6b2a2a"' + (S.o ? ' stroke="' + INK + '" stroke-width="3.4" stroke-linejoin="round"' : "") + '/><path d="M94 ' + (y + 6) + " Q100 " + (y + 12) + " 106 " + (y + 6) + " Q100 " + (y + 3) + " 94 " + (y + 6) + ' Z" fill="#FF8FA3"/>';
+    else if(mood === "eat") out += '<g class="pa-chew"><ellipse cx="100" cy="' + (y + 4) + '" rx="9" ry="8" fill="#6b2a2a"' + (S.o ? ' stroke="' + INK + '" stroke-width="3.4"' : "") + '/><ellipse cx="100" cy="' + (y + 8) + '" rx="5" ry="3.4" fill="#FF8FA3"/></g>';
+    else if(mood === "sad") out += S.L("M90 " + (y + 8) + " Q100 " + (y - 3) + " 110 " + (y + 8), dark, 3.4);
+    else if(mood === "hungry") out += '<ellipse cx="100" cy="' + (y + 4) + '" rx="6.5" ry="8.5" fill="#6b2a2a"' + (S.o ? ' stroke="' + INK + '" stroke-width="3.4"' : "") + '/><path d="M107 ' + (y + 8) + " Q111 " + (y + 22) + " 107 " + (y + 24) + " Q103 " + (y + 20) + " 107 " + (y + 8) + ' Z" fill="#7CC8FF"/>';
+    else if(mood === "sleep") out += S.L("M95 " + (y + 3) + " Q100 " + (y + 8) + " 105 " + (y + 3), dark, 3);
+    else out += S.L("M100 " + (y - 3) + " L100 " + (y + 2) + " M91 " + (y + 4) + " Q96 " + (y + 9) + " 100 " + (y + 2) + " Q104 " + (y + 9) + " 109 " + (y + 4), dark, 3.2);
     return out;
   }
 
   // ---------- 衣服 ----------
   var ACC = {
-    bow: function(S){ return S.P("M138 56 L120 44 L120 70 Z", "#FF5C8A") + S.P("M138 56 L156 44 L156 70 Z", "#FF5C8A") + S.C(138, 57, 7, "#FF8FB0"); },
-    cap: function(S){ return S.P("M52 66 Q56 24 100 24 Q144 24 148 66 Q100 52 52 66 Z", "#3B82F6") + S.P("M92 62 Q130 54 176 70 Q150 84 98 74 Z", "#2F6FD8") + S.C(100, 26, 6, "#fff"); },
-    straw: function(S){ return S.E(100, 62, 72, 14, "#F2D58A") + S.P("M62 60 Q64 20 100 20 Q136 20 138 60 Q100 52 62 60 Z", "#F7E3A6") + S.N("M64 54 Q100 46 136 54 L136 46 Q100 38 64 46 Z", "#E0524A"); },
-    grad: function(S){ return S.P("M30 46 L100 22 L170 46 L100 70 Z", "#2b2f3a") + S.P("M66 58 L66 78 Q100 92 134 78 L134 58 L100 70 Z", "#3a4050") + S.L("M170 46 L170 78", "#FFD76A", 3) + S.C(170, 82, 5, "#FFD76A"); },
-    top: function(S){ return S.E(100, 62, 58, 11, "#2b2b34") + S.R(68, 8, 64, 54, 6, "#2b2b34") + S.R(68, 42, 64, 10, 0, "#B23B32", 'stroke="none"'); },
-    helm: function(S){ return S.P("M48 78 Q46 22 100 20 Q154 22 152 78 Q100 64 48 78 Z", "#9AA7B5") + S.R(94, 18, 12, 34, 5, "#7C8896") + S.N("M60 40 Q74 28 92 28", "none", 'stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".7"'); },
-    crown: function(S){ return S.P("M58 62 L52 22 L78 42 L100 14 L122 42 L148 22 L142 62 Q100 70 58 62 Z", "#FFD23F") + S.C(100, 36, 6, "#FF4D6D") + S.C(70, 48, 4.5, "#3AA0FF") + S.C(130, 48, 4.5, "#4CCB7A"); },
-    glass: function(S){ return S.C(76, 98, 15, "rgba(180,220,255,.35)") + S.C(124, 98, 15, "rgba(180,220,255,.35)") + S.L("M91 98 L109 98", DK, 3) + S.L("M61 96 L48 92 M139 96 L152 92", DK, 3); },
-    shade: function(S){ return S.P("M58 88 Q76 84 92 90 L90 108 Q76 114 62 108 Z", "#222") + S.P("M142 88 Q124 84 108 90 L110 108 Q124 114 138 108 Z", "#222") + S.L("M92 92 L108 92", DK, 3) + S.N("M64 92 L76 92", "none", 'stroke="#fff" stroke-width="2.5" opacity=".6" stroke-linecap="round"'); },
-    mask: function(S){ return S.C(76, 98, 15, "none", 'stroke="' + DK + '" stroke-width="3"') + S.C(124, 98, 15, "none", 'stroke="' + DK + '" stroke-width="3"') + S.L("M91 98 L109 98", DK, 3) + S.E(100, 112, 11, 8, "#F2B6A0") + S.P("M82 124 Q100 116 118 124 Q112 132 100 128 Q88 132 82 124 Z", "#4a3426"); },
-    scarf: function(S){ return S.P("M56 138 Q100 160 144 138 L148 154 Q100 176 52 154 Z", "#E0524A") + S.P("M120 158 L140 192 L122 196 L108 164 Z", "#E0524A") + S.N("M64 146 L70 160 M84 152 L88 166 M104 156 L106 170 M124 152 L126 166", "none", 'stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".7"'); },
-    chain: function(S){ var b = ""; for(var i = 0; i <= 8; i++){ var t = i / 8, x = 66 + t * 68, y = 142 + Math.sin(t * Math.PI) * 24; b += S.C(x, y, 4.2, i % 2 ? "#FFD23F" : "#FF8FB0"); } return b; },
-    medal: function(S){ return S.P("M82 136 L100 168 L118 136 L110 134 L100 152 L90 134 Z", "#3B82F6") + S.C(100, 174, 13, "#FFD23F") + S.N("M100 166 L103 172 L109 172 L104 176 L106 182 L100 178 L94 182 L96 176 L91 172 L97 172 Z", "#E0A82E"); },
-    balloon: function(S){ return S.L("M168 142 Q158 170 150 186", "#555", 2) + S.E(172, 112, 20, 26, "#FF5C5C") + S.N("M164 100 Q166 90 174 90", "none", 'stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".6"') + S.P("M168 137 L176 137 L172 144 Z", "#FF5C5C"); },
-    bag: function(S){ return S.P("M30 126 Q22 126 22 138 L22 176 Q22 188 34 188 L54 188 L54 126 Z", "#4CAF6A") + S.R(26, 150, 24, 22, 4, "#3a8f55") + S.L("M54 128 Q80 124 82 144", "#2f7a47", 4); },
-    wand: function(S){ return S.L("M152 176 L184 118", "#8a5a3a", 5) + S.N("M184 100 L188 112 L200 114 L190 121 L194 133 L184 126 L174 133 L178 121 L168 114 L180 112 Z", "#FFD23F", 'stroke="#E0A82E" stroke-width="1.5"') ; }
+    bow: function(S){ return S.P("M132 46 L112 34 L112 60 Z", "#FF5C8A") + S.P("M132 46 L152 34 L152 60 Z", "#FF5C8A") + S.C(132, 47, 7, "#FF9DB8"); },
+    cap: function(S){ return S.P("M46 56 Q50 14 100 14 Q150 14 154 56 Q100 44 46 56 Z", "#3B82F6") + S.P("M94 52 Q132 44 180 60 Q154 74 100 64 Z", "#2F6FD8") + S.C(100, 16, 6, "#fff"); },
+    straw: function(S){ return S.E(100, 52, 76, 15, "#F2D58A") + S.P("M60 50 Q62 8 100 8 Q138 8 140 50 Q100 42 60 50 Z", "#F7E3A6") + S.N("M62 44 Q100 36 138 44 L138 36 Q100 28 62 36 Z", "#E0524A"); },
+    grad: function(S){ return S.P("M26 38 L100 12 L174 38 L100 62 Z", "#2b2f3a") + S.P("M64 50 L64 72 Q100 88 136 72 L136 50 L100 62 Z", "#3a4050") + S.L("M174 38 L174 72", "#FFD76A", 3.4) + S.C(174, 77, 5, "#FFD76A"); },
+    top: function(S){ return S.E(100, 52, 60, 11, "#2b2b34") + S.R(66, 0, 68, 52, 6, "#2b2b34") + S.R(66, 34, 68, 10, 0, "#B23B32", S.o ? 'stroke="none"' : ""); },
+    helm: function(S){ return S.P("M42 70 Q40 12 100 10 Q160 12 158 70 Q100 56 42 70 Z", "#9AA7B5") + S.R(94, 8, 12, 36, 5, "#7C8896") + S.N("M56 32 Q70 20 90 20", "none", 'stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".7"'); },
+    crown: function(S){ return S.P("M54 52 L48 10 L76 32 L100 4 L124 32 L152 10 L146 52 Q100 60 54 52 Z", "#FFD23F") + S.C(100, 26, 6, "#FF4D6D") + S.C(68, 38, 4.5, "#3AA0FF") + S.C(132, 38, 4.5, "#4CCB7A"); },
+    glass: function(S){ return S.C(76, 86, 15, "rgba(190,225,255,.4)") + S.C(124, 86, 15, "rgba(190,225,255,.4)") + S.L("M91 86 L109 86", INK, 3.4) + S.L("M61 84 L46 80 M139 84 L154 80", INK, 3.4); },
+    shade: function(S){ return S.P("M56 76 Q76 72 92 78 L90 96 Q76 102 60 96 Z", "#222") + S.P("M144 76 Q124 72 108 78 L110 96 Q124 102 140 96 Z", "#222") + S.L("M92 80 L108 80", INK, 3.4) + S.N("M64 80 L76 80", "none", 'stroke="#fff" stroke-width="2.6" opacity=".6" stroke-linecap="round"'); },
+    mask: function(S){ return S.C(76, 86, 15, "none", 'stroke="' + INK + '" stroke-width="3.4"') + S.C(124, 86, 15, "none", 'stroke="' + INK + '" stroke-width="3.4"') + S.L("M91 86 L109 86", INK, 3.4) + S.E(100, 100, 12, 9, "#F2B6A0") + S.P("M82 112 Q100 104 118 112 Q112 120 100 116 Q88 120 82 112 Z", "#4a3426"); },
+    scarf: function(S){ return S.P("M50 134 Q100 160 150 134 L154 152 Q100 178 46 152 Z", "#E0524A") + S.P("M122 156 L142 192 L124 197 L110 162 Z", "#E0524A") + S.N("M60 142 L66 158 M82 150 L86 166 M104 154 L106 170 M126 150 L128 166", "none", 'stroke="#fff" stroke-width="3.4" stroke-linecap="round" opacity=".7"'); },
+    chain: function(S){ var b = ""; for(var i = 0; i <= 8; i++){ var t = i / 8, x = 62 + t * 76, y = 136 + Math.sin(t * Math.PI) * 26; b += S.C(x, y, 4.4, i % 2 ? "#FFD23F" : "#FF8FB0"); } return b; },
+    medal: function(S){ return S.P("M80 130 L100 164 L120 130 L111 128 L100 148 L89 128 Z", "#3B82F6") + S.C(100, 172, 14, "#FFD23F") + S.N("M100 164 L103 170 L110 170 L104 175 L106 182 L100 178 L94 182 L96 175 L90 170 L97 170 Z", "#E0A82E"); },
+    balloon: function(S){ return S.L("M168 142 Q158 170 150 190", "#555", 2.4) + S.E(172, 108, 21, 27, "#FF5C5C") + S.N("M163 96 Q165 85 174 85", "none", 'stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".6"') + S.P("M167 133 L177 133 L172 141 Z", "#FF5C5C"); },
+    bag: function(S){ return S.P("M26 124 Q16 124 16 138 L16 180 Q16 194 30 194 L52 194 L52 124 Z", "#4CAF6A") + S.R(21, 150, 26, 24, 4, "#3a8f55") + S.L("M52 128 Q82 124 84 146", "#2f7a47", 4.4); },
+    wand: function(S){ return S.L("M152 180 L186 120", "#8a5a3a", 5.5) + S.N("M186 100 L190 113 L203 115 L192 122 L196 135 L186 128 L176 135 L180 122 L169 115 L182 113 Z", "#FFD23F", 'stroke="#E0A82E" stroke-width="1.6"'); }
   };
   var SLOT = { bow: "head", cap: "head", straw: "head", grad: "head", top: "head", helm: "head", crown: "head", glass: "face", shade: "face", mask: "face", scarf: "neck", chain: "neck", medal: "neck", balloon: "side", bag: "side", wand: "side" };
   A.ACC_SLOT = SLOT;
-  A.accSvg = function(id, style){ var S = mkStyle(style !== "flat"); return ACC[id] ? ACC[id](S) : ""; };
+  A.accSvg = function(id, style){ var S = mkStyle(A.norm(style) === "outline"); return ACC[id] ? ACC[id](S) : ""; };
+  var SLOT_DY = { head: 0, face: 0, neck: 0, side: 0 };
 
   // ---------- 主要輸出 ----------
-  var css = ".pa-art{overflow:visible;display:block;} .pa-body-g{transform-box:fill-box;transform-origin:50% 100%;animation:paBreath 3s ease-in-out infinite;} .pa-eyes{transform-box:fill-box;transform-origin:50% 50%;animation:paBlink 4.2s infinite;} .pa-chew{transform-box:fill-box;transform-origin:50% 50%;animation:paChew .35s ease-in-out infinite;} .pa-tailg{transform-box:fill-box;transform-origin:0% 100%;animation:paTail 1.6s ease-in-out infinite;} .pa-aura{animation:paAura 3s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 50%;} .pa-spark{animation:paSpark 1.8s ease-in-out infinite;} .pa-zzz{animation:paZ 2.6s ease-in-out infinite;} .pa-pix{image-rendering:pixelated;display:block;}" +
-    "@keyframes paBreath{0%,100%{transform:scale(1,1)}50%{transform:scale(1.02,1.035)}} @keyframes paBlink{0%,93%,100%{transform:scaleY(1)}96%{transform:scaleY(.08)}} @keyframes paChew{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.55)}} @keyframes paTail{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(7deg)}} @keyframes paAura{0%,100%{opacity:.65;transform:scale(1)}50%{opacity:1;transform:scale(1.06)}} @keyframes paSpark{0%,100%{opacity:0;transform:scale(.4)}50%{opacity:1;transform:scale(1)}} @keyframes paZ{0%{opacity:0;transform:translate(0,0)}30%{opacity:1}100%{opacity:0;transform:translate(10px,-18px)}}";
-  var st = document.createElement("style"); st.textContent = css; document.head.appendChild(st);
-  var STAGE_SC = [0.74, 0.86, 1, 1.06];
+  var css = ".pa-art{overflow:visible;display:block;} .pa-body-g{transform-box:fill-box;transform-origin:50% 100%;animation:paBreath 3s ease-in-out infinite;} .pa-eyes{transform-box:fill-box;transform-origin:50% 50%;animation:paBlink 4.2s infinite;} .pa-chew{transform-box:fill-box;transform-origin:50% 50%;animation:paChew .35s ease-in-out infinite;} .pa-tailg{transform-box:fill-box;transform-origin:0% 100%;animation:paTail 1.6s ease-in-out infinite;} .pa-aura{animation:paAura 3s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 50%;} .pa-spark{animation:paSpark 1.8s ease-in-out infinite;} .pa-zzz{animation:paZ 2.6s ease-in-out infinite;}" +
+    "@keyframes paBreath{0%,100%{transform:scale(1,1)}50%{transform:scale(1.015,1.03)}} @keyframes paBlink{0%,93%,100%{transform:scaleY(1)}96%{transform:scaleY(.08)}} @keyframes paChew{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.55)}} @keyframes paTail{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(7deg)}} @keyframes paAura{0%,100%{opacity:.65;transform:scale(1)}50%{opacity:1;transform:scale(1.06)}} @keyframes paSpark{0%,100%{opacity:0;transform:scale(.4)}50%{opacity:1;transform:scale(1)}} @keyframes paZ{0%{opacity:0;transform:translate(0,0)}30%{opacity:1}100%{opacity:0;transform:translate(10px,-18px)}}";
+  var st0 = document.createElement("style"); st0.textContent = css; document.head.appendChild(st0);
+  var STAGE_SC = [0.76, 0.88, 1, 1.06];
   // o: { sp(emoji), style, mood, stage, eq, anim(預設 true) }
   A.svg = function(o){
-    var style = o.style === "flat" || o.style === "pixel" ? "flat" : "cute", S = mkStyle(style === "cute"), sp = A.byEmoji(o.sp), mood = o.mood || "neutral", stage = Math.max(0, Math.min(3, o.stage || 0)), eq = o.eq || {};
-    var body = sp.body, belly = sp.belly, g = "";
-    var anim = o.anim !== false;
-    // 地面陰影、背景光環
-    var pre = '<ellipse cx="100" cy="199" rx="56" ry="9" fill="#000" opacity=".16"/>';
-    if(stage >= 3) pre = '<g class="' + (anim ? "pa-aura" : "") + '"><circle cx="100" cy="116" r="104" fill="url(#paAuraG)"/></g>' + pre;
+    var outline = A.norm(o.style) === "outline", S = mkStyle(outline), sp = A.byEmoji(o.sp), c = sp.c, mood = o.mood || "neutral", stage = Math.max(0, Math.min(3, o.stage || 0)), eq = o.eq || {}, anim = o.anim !== false;
+    var body = c.body, inn = "";
+    var pre = '<ellipse cx="100" cy="201" rx="62" ry="8" fill="#000" opacity=".14"/>';
+    if(stage >= 3) pre = '<g class="' + (anim ? "pa-aura" : "") + '"><circle cx="100" cy="112" r="108" fill="url(#paAuraG)"/></g>' + pre;
     var defs = '<defs><radialGradient id="paAuraG"><stop offset="0" stop-color="#FFE98A" stop-opacity=".85"/><stop offset=".7" stop-color="#FFD23F" stop-opacity=".25"/><stop offset="1" stop-color="#FFD23F" stop-opacity="0"/></radialGradient></defs>';
-    var arms = sp.arms || body, feet = sp.feet || body;
-    // 身體
-    var inn = "";
-    if(sp.back) inn += '<g class="' + (anim ? "pa-tailg" : "") + '">' + sp.back(S, sp) + "</g>";
-    inn += S.E(78, 186, 16, 10, feet) + S.E(122, 186, 16, 10, feet);
-    inn += S.E(58, 150, 11, 17, arms, 'transform="rotate(18 58 150)"') + S.E(142, 150, 11, 17, arms, 'transform="rotate(-18 142 150)"');
-    inn += S.E(100, 152, 45, 38, body);
-    inn += S.E(100, 158, 28, 25, belly, S.cute ? 'stroke="none"' : "");
-    if(S.cute) inn += S.N("M66 138 Q76 124 96 126", "none", 'stroke="#fff" stroke-width="5" stroke-linecap="round" opacity=".28"');
-    if(sp.ears) inn += sp.ears(S, sp);
-    inn += S.E(100, 98, 56, 50, sp.headFill || body);
-    if(S.cute) inn += S.N("M58 76 Q70 54 96 50", "none", 'stroke="#fff" stroke-width="6" stroke-linecap="round" opacity=".3"');
-    if(sp.mid) inn += sp.mid(S, sp);
-    if(S.cute && mood !== "sleep" && sp.eyes !== "frog") inn += S.E(58, 114, 11, 7.5, "#FF8FA3", 'opacity=".5"') + S.E(142, 114, 11, 7.5, "#FF8FA3", 'opacity=".5"');
-    inn += eyes(S, mood, sp); if(sp.nose) inn += sp.nose(S); inn += mouth(S, mood, sp);
-    if(mood === "sleep") inn += '<g class="' + (anim ? "pa-zzz" : "") + '"><text x="140" y="56" font-size="22" font-weight="800" fill="#6b7fd6">Z</text><text x="154" y="40" font-size="16" font-weight="800" fill="#8fa0ea">z</text></g>';
-    // 衣服：依部位排序（脖子→臉→頭→身邊）
+    var armC = sp.arm || body, footC = sp.foot || body;
+    if(sp.back) inn += '<g class="' + (anim ? "pa-tailg" : "") + '">' + sp.back(S, c) + "</g>";
+    inn += S.SE(46, 142, 15, 30, armC, { rot: 26 }) + S.SE(154, 142, 15, 30, armC, { rot: -26 });                       // 手臂（在身體後面）
+    inn += S.SE(100, 148, 52, 48, body, { k: 11 });                                                                    // 身體
+    inn += S.SE(100, 154, 33, 33, c.belly, { k: 7 });                                                                  // 肚子
+    inn += S.SE(60, 182, 25, 19, footC, { rot: -10, k: 5 }) + S.E(60, 183, 13, 10, outline ? "#FFE1D0" : shade(footC, -34), S.o ? "" : 'stroke="none"'); // 腳＋腳掌
+    inn += S.SE(140, 182, 25, 19, footC, { rot: 10, k: 5 }) + S.E(140, 183, 13, 10, outline ? "#FFE1D0" : shade(footC, -34), S.o ? "" : 'stroke="none"');
+    if(sp.ears) inn += sp.ears(S, c);
+    inn += S.SC(100, 86, 58, sp.headFill || body, { k: 13 });                                                          // 頭
+    if(sp.mid) inn += sp.mid(S, c);
+    if(sp.eyes !== "frog" && mood !== "sleep") inn += cheeks(S);
+    inn += eyes(S, mood, sp); if(sp.nose) inn += sp.nose(S, c); inn += mouth(S, mood, sp);
+    if(mood === "sleep") inn += '<g class="' + (anim ? "pa-zzz" : "") + '"><text x="146" y="40" font-size="22" font-weight="800" fill="#6b7fd6">Z</text><text x="160" y="22" font-size="16" font-weight="800" fill="#8fa0ea">z</text></g>';
     ["side", "neck", "face", "head"].forEach(function(sl){ var id = eq[sl]; if(id && ACC[id]) inn += ACC[id](S); });
-    g = '<g class="' + (anim ? "pa-body-g" : "") + '">' + inn + "</g>";
-    var sc = STAGE_SC[stage], tf = "translate(" + (100 - 100 * sc) + " " + (205 - 205 * sc) + ") scale(" + sc + ")";
-    var post = "";
-    if(stage >= 2){ [[22, 40, 14], [176, 64, 11], [190, 150, 9], [10, 140, 10]].forEach(function(p, i){ post += '<g class="' + (anim ? "pa-spark" : "") + '" style="animation-delay:' + (i * .45) + 's;transform-box:fill-box;transform-origin:center"><path d="M' + p[0] + " " + (p[1] - p[2]) + " L" + (p[0] + p[2] * .3) + " " + (p[1] - p[2] * .3) + " L" + (p[0] + p[2]) + " " + p[1] + " L" + (p[0] + p[2] * .3) + " " + (p[1] + p[2] * .3) + " L" + p[0] + " " + (p[1] + p[2]) + " L" + (p[0] - p[2] * .3) + " " + (p[1] + p[2] * .3) + " L" + (p[0] - p[2]) + " " + p[1] + " L" + (p[0] - p[2] * .3) + " " + (p[1] - p[2] * .3) + ' Z" fill="#FFD23F"/></g>'; }); }
-    if(stage >= 3) post += '<ellipse cx="100" cy="2" rx="30" ry="7" fill="none" stroke="#FFD23F" stroke-width="5"/>';
-    return '<svg class="pa-art" viewBox="-20 -22 240 250" xmlns="http://www.w3.org/2000/svg">' + defs + pre + '<g transform="' + tf + '">' + g + "</g>" + post + "</svg>";
+    var g = '<g class="' + (anim ? "pa-body-g" : "") + '">' + inn + "</g>";
+    var sc = STAGE_SC[stage], tf = "translate(" + (100 - 100 * sc) + " " + (205 - 205 * sc) + ") scale(" + sc + ")", post = "";
+    if(stage >= 2){ [[22, 40, 14], [178, 66, 11], [192, 150, 9], [8, 140, 10]].forEach(function(p, i){ post += '<g class="' + (anim ? "pa-spark" : "") + '" style="animation-delay:' + (i * .45) + 's;transform-box:fill-box;transform-origin:center"><path d="M' + p[0] + " " + (p[1] - p[2]) + " L" + (p[0] + p[2] * .3) + " " + (p[1] - p[2] * .3) + " L" + (p[0] + p[2]) + " " + p[1] + " L" + (p[0] + p[2] * .3) + " " + (p[1] + p[2] * .3) + " L" + p[0] + " " + (p[1] + p[2]) + " L" + (p[0] - p[2] * .3) + " " + (p[1] + p[2] * .3) + " L" + (p[0] - p[2]) + " " + p[1] + " L" + (p[0] - p[2] * .3) + " " + (p[1] - p[2] * .3) + ' Z" fill="#FFD23F"/></g>'; }); }
+    if(stage >= 3) post += '<ellipse cx="100" cy="-14" rx="30" ry="7" fill="none" stroke="#FFD23F" stroke-width="5"/>';
+    return '<svg class="pa-art" viewBox="-20 -34 240 262" xmlns="http://www.w3.org/2000/svg">' + defs + pre + '<g transform="' + tf + '">' + g + "</g>" + post + "</svg>";
   };
-
-  // ---------- 像素風：把向量縮小成 40×42 的點陣再放大（顏色降到少量色階），做出復古感 ----------
-  var pixCache = {};
-  A.pixel = function(svgStr, cb){
-    if(pixCache[svgStr]){ cb(pixCache[svgStr]); return; }
-    var img = new Image(), url = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgStr.replace("<svg ", '<svg width="480" height="500" '));
-    img.onload = function(){
-      try{
-        var W = 44, H = 46, c = document.createElement("canvas"); c.width = W; c.height = H; var x = c.getContext("2d"); x.imageSmoothingEnabled = true; x.drawImage(img, 0, 0, W, H);
-        var d = x.getImageData(0, 0, W, H), p = d.data, q = 40;
-        for(var i = 0; i < p.length; i += 4){ if(p[i + 3] < 110){ p[i + 3] = 0; continue; } p[i + 3] = 255; p[i] = Math.round(p[i] / q) * q; p[i + 1] = Math.round(p[i + 1] / q) * q; p[i + 2] = Math.round(p[i + 2] / q) * q; }
-        // 加一圈深色外框
-        var o = new Uint8ClampedArray(p); for(var yy = 0; yy < H; yy++) for(var xx = 0; xx < W; xx++){ var k = (yy * W + xx) * 4; if(p[k + 3] === 0){ var n = (xx > 0 && p[k - 1] === 255 && p[k - 4 + 3] === 255) || (xx < W - 1 && p[k + 7] === 255) || (yy > 0 && p[k - W * 4 + 3] === 255) || (yy < H - 1 && p[k + W * 4 + 3] === 255); if(n){ o[k] = 58; o[k + 1] = 38; o[k + 2] = 30; o[k + 3] = 255; } } }
-        for(var j = 0; j < o.length; j++) d.data[j] = o[j]; x.putImageData(d, 0, 0);
-        pixCache[svgStr] = c.toDataURL(); cb(pixCache[svgStr]);
-      }catch(e){ cb(null); }
-    };
-    img.onerror = function(){ cb(null); }; img.src = url;
-  };
-  // 放進容器：依風格輸出向量或像素圖（像素圖是非同步，先放向量當底）
-  A.render = function(el, o){
-    var svg = A.svg(Object.assign({}, o, o.style === "pixel" ? { anim: false } : {}));
-    if(o.style !== "pixel"){ el.innerHTML = svg; return; }
-    el.innerHTML = '<div class="pa-pixwrap" style="width:100%;height:100%;position:relative;"></div>';
-    var w = el.firstChild, token = A._tok = (A._tok || 0) + 1; w._t = token;
-    A.pixel(svg, function(u){ if(!u || !w.isConnected) return; w.innerHTML = '<img class="pa-pix pa-pix-img" alt="" src="' + u + '" style="width:100%;height:100%;object-fit:contain;' + (o.anim === false ? "" : "animation:paPixBob 1.6s steps(2) infinite;") + '">'; });
-  };
-  var st2 = document.createElement("style"); st2.textContent = "@keyframes paPixBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3%)}}"; document.head.appendChild(st2);
+  A.render = function(el, o){ el.innerHTML = A.svg(o); };
 })();

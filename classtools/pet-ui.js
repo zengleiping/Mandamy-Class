@@ -4,9 +4,9 @@
   var P = window.PET, A = window.PETART; if(!P || !A) return;
   var h = P.h, esc = P.esc, U = P.UI = {};
   var STYLE_KEY = "mm_pet_style", MUTE_KEY = "mm_pet_mute";
-  var root = null, sheet = null, sheetName = "", fx = null, petEl = null, walker = null, sig = "", style = "cute", override = null, lastTouch = Date.now(), walkTimer = null, idleTimer = null, flushTimer = null, pend = { love: 0, pats: 0 }, lbData = null, lbSort = "xp", shownPts = null, ptsAnim = 0, achBusy = false, busyAct = false;
-  try{ style = localStorage.getItem(STYLE_KEY) || ""; }catch(e){}
-  function curStyle(){ return style || P.cfg.style || "cute"; }
+  var root = null, sheet = null, sheetName = "", fx = null, petEl = null, walker = null, sig = "", style = "", override = null, lastTouch = Date.now(), walkTimer = null, idleTimer = null, flushTimer = null, pend = { love: 0, pats: 0 }, lbData = null, lbSort = "xp", shownPts = null, ptsAnim = 0, achBusy = false, busyAct = false;
+  try{ style = localStorage.getItem(STYLE_KEY) || ""; }catch(e){} if(style) style = A.norm(style);
+  function curStyle(){ return A.norm(style || P.cfg.style || "outline"); }
   function muted(){ try{ return localStorage.getItem(MUTE_KEY) === "1"; }catch(e){ return false; } }
 
   // ---------- 音效（Web Audio 即時合成）----------
@@ -81,7 +81,7 @@
   function onRoot(e){
     var b = e.target.closest("[data-a]"); if(!b) return; var a = b.dataset.a; lastTouch = Date.now();
     if(a === "close") U.close();
-    else if(a === "style"){ var order = ["cute", "pixel", "flat"], i = order.indexOf(curStyle()); style = order[(i + 1) % 3]; try{ localStorage.setItem(STYLE_KEY, style); }catch(er){} sig = ""; update(true); say("外觀：" + A.STYLES.filter(function(s){ return s.id === style; })[0].name); SFX.pop(); }
+    else if(a === "style"){ var order = ["outline", "flat"], i = order.indexOf(curStyle()); style = order[(i + 1) % 2]; try{ localStorage.setItem(STYLE_KEY, style); }catch(er){} sig = ""; update(true); say("外觀：" + A.STYLES.filter(function(s){ return s.id === style; })[0].name); SFX.pop(); }
     else if(a === "mute"){ try{ localStorage.setItem(MUTE_KEY, muted() ? "0" : "1"); }catch(er){} update(true); SFX.pop(); }
     else if(a === "sheet"){ openSheet(b.dataset.s); }
     else if(a === "sheetx"){ closeSheet(); }
@@ -101,7 +101,7 @@
     root.querySelector('[data-a="mute"]').textContent = muted() ? "🔇" : "🔊";
     animPts(me.pts || 0);
     var mood = moodOf(me), eqj = JSON.stringify(pet && pet.eq || {}), s2 = [pet && pet.sp, st, mood, eqj, curStyle()].join("|");
-    if(pet && (s2 !== sig || force)){ sig = s2; A.render(petEl, { sp: pet.sp, style: curStyle(), mood: mood, stage: st, eq: pet && pet.eq || {} }); petEl.classList.toggle("pix", curStyle() === "pixel"); }
+    if(pet && (s2 !== sig || force)){ sig = s2; A.render(petEl, { sp: pet.sp, style: curStyle(), mood: mood, stage: st, eq: pet && pet.eq || {} }); }
     if(!pet) petEl.innerHTML = '<div class="pg-egg">🥚</div>';
     renderDock(me);
     if(sheetName && sheetName !== "adopt") renderSheet(true);
@@ -231,7 +231,7 @@
     ({ feed: sFeed, play: sPlay, wear: sWear, shop: sShop, quest: sQuest, rank: sRank, ach: sAch, set: sSet, adopt: sAdopt }[sheetName])(body, me);
     if(keepScroll) body.scrollTop = top;
   }
-  function artThumb(sp, o){ var d = h("div", { class: "pg-th" }); A.render(d, Object.assign({ sp: sp, style: curStyle() === "pixel" ? "pixel" : curStyle(), mood: "happy", stage: 1, anim: false }, o || {})); return d; }
+  function artThumb(sp, o){ var d = h("div", { class: "pg-th" }); A.render(d, Object.assign({ sp: sp, style: curStyle(), mood: "happy", stage: 1, anim: false }, o || {})); return d; }
   function sFeed(body, me){
     var pts = me.pts || 0, hg = P.actPet(me) ? P.hungerNow(P.actPet(me), P.cfg.rate, me.home) : 0;
     body.innerHTML = '<div class="pg-hint">⭐ 我的點數 <b>' + pts + '</b>　🍽️ 飽足 ' + hg + (me.dbl > 0 ? '　🎟️ 經驗加倍 ×' + me.dbl : '') + '</div><div class="pg-foods">' + P.FOODS.map(function(f, i){ var pr = P.price("f" + i, f.p); return '<button type="button" class="pg-food" data-f="' + i + '"' + (pts < pr ? " disabled" : "") + '><span class="fe">' + f.e + '</span><span class="fn">' + f.n + '</span><em>⭐' + pr + '</em><small>飽足 +' + f.h + '　經驗 +' + f.x + '</small></button>'; }).join("") + '</div>';
@@ -241,7 +241,7 @@
     body.innerHTML = '<div class="pg-hint">陪牠玩球可以提高心情、增加一點經驗。今天還可以玩 <b>' + left + '</b> 次。</div><button type="button" class="pg-big" id="pg-doplay"' + (left <= 0 ? " disabled" : "") + '>🎾 丟球！</button>';
     body.querySelector("#pg-doplay").onclick = play;
   }
-  function slotIcon(id){ var box = { head: "20 -4 160 96", face: "36 70 128 60", neck: "36 118 128 86", side: "0 96 200 108" }[A.ACC_SLOT[id]]; return '<svg viewBox="' + box + '" xmlns="http://www.w3.org/2000/svg">' + A.accSvg(id, curStyle() === "pixel" ? "cute" : curStyle()) + "</svg>"; }
+  function slotIcon(id){ var box = { head: "20 -4 160 96", face: "36 70 128 60", neck: "36 118 128 86", side: "0 96 200 108" }[A.ACC_SLOT[id]]; return '<svg viewBox="' + box + '" xmlns="http://www.w3.org/2000/svg">' + A.accSvg(id, curStyle()) + "</svg>"; }
   function sWear(body, me){
     var pet = P.actPet(me), inv = me.inv || {}, owned = P.CLOTHES.filter(function(c){ return inv[c.id]; });
     var html = '<div class="pg-hint">點一下穿上或脫下。每個部位只能穿一件。' + (owned.length ? "" : "還沒有衣服，去商店買吧！") + '</div>';
@@ -343,7 +343,7 @@
     ".pg-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(98px,1fr));gap:8px;} .pg-card{border:3px solid #F0DFC0;border-radius:18px;background:#fff;padding:8px 4px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:2px;} .pg-card.own{background:#F1F7EC;border-color:#CFE5C3;} .pg-card.lockc{opacity:.55;} .pg-ci{font-size:38px;line-height:1.1;height:56px;display:flex;align-items:center;justify-content:center;} .pg-pi{display:block;width:64px;height:62px;} .pg-pi svg,.pg-pi .pa-pixwrap{width:100%;height:100%;} .pg-sv{display:block;width:70px;height:48px;} .pg-sv svg{width:100%;height:100%;} .pg-cn{font-weight:800;font-size:13px;} .pg-cd{font-size:11px;color:#8a7a6a;min-height:1.1em;} .pg-card button{margin-top:4px;border:0;background:linear-gradient(180deg,#FFB36B,#F2862F);color:#fff;border-radius:99px;padding:5px 14px;font-weight:800;font-size:13px;cursor:pointer;box-shadow:0 3px 0 #C5651A;font-family:inherit;} .pg-card button:disabled{background:#c9c9c9;box-shadow:0 3px 0 #999;cursor:default;}",
     ".pg-days{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;} .pg-day{background:#fff;border:2px solid #F0DFC0;border-radius:12px;text-align:center;padding:5px 0;font-size:11px;} .pg-day b{display:block;font-size:14px;color:#C0623A;} .pg-day.done{background:#E3F4DA;border-color:#B9DFA6;} .pg-day.done b{color:#4CAF6A;} .pg-day.today{border-color:#C0623A;background:#FDECE6;animation:pgPulse 1.2s infinite;} @keyframes pgPulse{50%{transform:scale(1.07)}} .pg-q{display:flex;align-items:center;gap:10px;background:#fff;border:2px solid #F0DFC0;border-radius:14px;padding:8px 12px;margin:6px 0;} .pg-qt{flex:1;} .pg-qb{height:8px;background:#eee;border-radius:99px;overflow:hidden;margin:4px 0;} .pg-qb i{display:block;height:100%;background:#7ACB6B;} .pg-q button{border:0;background:linear-gradient(180deg,#FFB36B,#F2862F);color:#fff;border-radius:99px;padding:6px 14px;font-weight:800;cursor:pointer;} .pg-got,.pg-reward{font-size:13px;color:#8a7a6a;font-weight:700;}",
     ".pg-tabs{display:flex;gap:6px;margin:6px 0;} .pg-tabs button{flex:1;border:2px solid #F0DFC0;background:#fff;border-radius:12px;padding:6px;font-weight:700;cursor:pointer;font-family:inherit;color:#2a2018;} .pg-tabs button.on{background:#C0623A;border-color:#C0623A;color:#fff;} .pg-pod{display:flex;justify-content:center;align-items:flex-end;gap:8px;margin:10px 0;} .pg-pp{background:#fff;border:3px solid #F0DFC0;border-radius:18px;padding:4px 8px;text-align:center;min-width:84px;} .pg-pp.p0{order:2;border-color:#E0A82E;box-shadow:0 0 0 3px #FFE9A8;padding-top:10px;} .pg-pp.p1{order:1;} .pg-pp.p2{order:3;} .pg-pp .pm{font-size:24px;} .pg-pp .pa{width:70px;height:72px;margin:0 auto;} .pg-pp .pa svg,.pg-pp .pa .pa-pixwrap{width:100%;height:100%;} .pg-pp .pn{font-weight:800;font-size:13px;} .pg-pp .pv{color:#C0623A;font-weight:800;} .pg-lr{display:flex;align-items:center;gap:8px;padding:4px 8px;border-radius:12px;margin:3px 0;background:#fff;} .pg-lr.me{background:#FDECE6;border:2px solid #C0623A;} .pg-lr .rk{width:1.8em;text-align:center;font-weight:800;} .pg-lr .re{width:38px;height:38px;} .pg-lr .re svg,.pg-lr .re .pa-pixwrap{width:100%;height:100%;} .pg-lr small{flex:1;color:#8a7a6a;} .pg-lr em{font-style:normal;font-weight:800;color:#C0623A;}",
-    ".pg-styles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;} .pg-st{border:3px solid #F0DFC0;border-radius:16px;background:#fff;padding:4px;display:flex;flex-direction:column;align-items:center;cursor:pointer;font-family:inherit;color:#2a2018;} .pg-st.on{border-color:#C0623A;background:#FDECE6;} .pg-sp{display:block;width:84px;height:88px;} .pg-sp svg,.pg-sp .pa-pixwrap{width:100%;height:100%;}"
+    ".pg-styles{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;} .pg-st{border:3px solid #F0DFC0;border-radius:16px;background:#fff;padding:4px;display:flex;flex-direction:column;align-items:center;cursor:pointer;font-family:inherit;color:#2a2018;} .pg-st.on{border-color:#C0623A;background:#FDECE6;} .pg-sp{display:block;width:84px;height:88px;} .pg-sp svg,.pg-sp .pa-pixwrap{width:100%;height:100%;}"
   ].join("\n");
   var stl = document.createElement("style"); stl.textContent = css; document.head.appendChild(stl);
 })();

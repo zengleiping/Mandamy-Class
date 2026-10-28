@@ -13,7 +13,7 @@
   var SCENES = [{ id: "grass", e: "🌿", n: "草地（預設）", p: 0, bg: "radial-gradient(ellipse at 50% 88%,#DFF2D0 0 36%,transparent 37%),linear-gradient(180deg,#DDF1FF,#F6FBFF)" }, { id: "beach", e: "🏖️", n: "海灘", p: 30, bg: "radial-gradient(ellipse at 50% 92%,#F7E2A8 0 40%,transparent 41%),linear-gradient(180deg,#9ADBF7,#E3F6FF 70%,#4BB7E8 70%)" }, { id: "garden", e: "🌸", n: "花園", p: 30, bg: "radial-gradient(ellipse at 50% 88%,#BFE8A6 0 38%,transparent 39%),linear-gradient(180deg,#FFE3EE,#FFF7FA)" }, { id: "space", e: "🌌", n: "太空", p: 40, bg: "radial-gradient(circle at 20% 25%,#fff 0 1px,transparent 2px),radial-gradient(circle at 75% 35%,#fff 0 1.5px,transparent 2px),radial-gradient(circle at 60% 15%,#fff 0 1px,transparent 2px),linear-gradient(180deg,#14123A,#3B2A78)" }, { id: "castle", e: "🏰", n: "城堡", p: 60, bg: "radial-gradient(ellipse at 50% 90%,#CBB7E8 0 38%,transparent 39%),linear-gradient(180deg,#FDE9C9,#F6D6F0)" }];
   var STAGES = [{ xp: 0, name: "寶寶", sc: 0.75, acc: "" }, { xp: 40, name: "少年", sc: 0.95, acc: "" }, { xp: 120, name: "成年", sc: 1.15, acc: "✨" }, { xp: 300, name: "傳說", sc: 1.35, acc: "👑" }];
   var FOODS = [{ e: "🍪", n: "小餅乾", p: 3, h: 8, x: 2 }, { e: "🍎", n: "蘋果", p: 5, h: 15, x: 5 }, { e: "🍖", n: "肉排", p: 10, h: 35, x: 12 }, { e: "🍰", n: "蛋糕", p: 20, h: 70, x: 30 }, { e: "🍱", n: "大餐", p: 40, h: 100, x: 70 }];
-  var DEF = { on: false, inClass: false, daily: 2, style: "cute", hw: 10, exam: 10, examBonus: 1, choice: 2, rate: 4, shop: true, rewards: [], prices: {}, off: {} };
+  var DEF = { on: false, inClass: false, daily: 2, style: "outline", hw: 10, exam: 10, examBonus: 1, choice: 2, rate: 4, shop: true, rewards: [], prices: {}, off: {} };
   var NEWPET = 40;   // 再領養一隻普通寵物的價格
   var P = window.PET = { BASIC: BASIC, PREMIUM: PREMIUM, CLOTHES: CLOTHES, FOODS: FOODS, STAGES: STAGES, DEF: DEF };
   function ctx(){ return window.PET_ctx || {}; }
@@ -69,7 +69,7 @@
     if(!P.cfg.on || blocked()){ if(btn){ btn.remove(); btn = null; } closePanel(); return; }
     if(!btn){ btn = h("button", { id: "pet-fab", type: "button", onclick: openPanel }); document.body.appendChild(btn); }
     var pet = P.actPet(me), hg = hungerOf();
-    var art = pet && window.PETART ? window.PETART.svg({ sp: pet.sp, style: "cute", mood: hg < 30 ? "sad" : "happy", stage: P.stageOf(pet.xp), eq: pet.eq, anim: false }) : "🥚";
+    var art = pet && window.PETART ? window.PETART.svg({ sp: pet.sp, style: P.cfg.style, mood: hg < 30 ? "sad" : "happy", stage: P.stageOf(pet.xp), eq: pet.eq, anim: false }) : "🥚";
     btn.innerHTML = '<span class="pf-e">' + art + '</span><span class="pf-p">⭐ ' + ((me && me.pts) || 0) + '</span>' + (pet && hg < 30 ? '<i class="pf-hungry">🍽️</i>' : "");
     btn.title = "我的寵物（點數 " + ((me && me.pts) || 0) + "）";
   }
@@ -124,7 +124,7 @@
         var g = h("div", { style: "display:grid;grid-template-columns:repeat(auto-fill,minmax(11em,1fr));gap:6px;margin:6px 0;" });
         [["hw", "繳交作業 +"], ["exam", "交考卷 +"], ["examBonus", "考卷每 10 分再 +"], ["choice", "答對選擇題 +"]].forEach(function(x){ g.appendChild(h("label", { class: "ct-muted", style: "display:flex;align-items:center;gap:.3em;" }, [x[1], h("input", { class: "ct-inp", type: "number", min: "0", max: "100", value: String(cfg[x[0]]), style: "width:4em;", onchange: function(){ var p = {}; p[x[0]] = Math.max(0, Number(this.value) || 0); setCfg(p); } }), "點"])); });
         g.appendChild(h("label", { class: "ct-muted", style: "display:flex;align-items:center;gap:.3em;" }, ["每日簽到基本點數", h("input", { class: "ct-inp", type: "number", min: "0", max: "20", value: String(cfg.daily == null ? DEF.daily : cfg.daily), style: "width:4em;", onchange: function(){ setCfg({ daily: Math.max(0, Number(this.value) || 0) }); } }), "（0＝關閉簽到）"]));
-        var sty = h("select", { class: "ct-inp", onchange: function(){ setCfg({ style: this.value }); } }, (window.PETART ? window.PETART.STYLES : [{ id: "cute", name: "可愛手繪" }]).map(function(x){ return h("option", { value: x.id, text: x.name }); })); sty.value = cfg.style || "cute";
+        var sty = h("select", { class: "ct-inp", onchange: function(){ setCfg({ style: this.value }); } }, (window.PETART ? window.PETART.STYLES : [{ id: "outline", name: "線條填色" }]).map(function(x){ return h("option", { value: x.id, text: x.name }); })); sty.value = window.PETART ? window.PETART.norm(cfg.style) : "outline";
         g.appendChild(h("label", { class: "ct-muted", style: "display:flex;align-items:center;gap:.3em;" }, ["學生預設外觀", sty, "（學生也可以自己換）"]));
         var rate = h("select", { class: "ct-inp", onchange: function(){ setCfg({ rate: Number(this.value) }); } }, [h("option", { value: "2", text: "慢（約 2 天餓）" }), h("option", { value: "4", text: "普通（約 1 天餓）" }), h("option", { value: "8", text: "快（約半天餓）" })]); rate.value = String(cfg.rate);
         g.appendChild(h("label", { class: "ct-muted", style: "display:flex;align-items:center;gap:.3em;" }, ["寵物變餓的速度", rate])); box.appendChild(g);
@@ -160,7 +160,7 @@
         rows.forEach(function(o, i){
           var pet = rank ? P.bestPet(o.r) : P.actPet(o.r), hg = pet ? P.hungerNow(pet, cfg.rate, o.r.home) : null, tr = h("tr");
           tr.appendChild(h("td", { style: "padding:4px;", text: rank ? (i < 3 ? ["🥇", "🥈", "🥉"][i] : String(i + 1)) : "" })); tr.appendChild(h("td", { style: "padding:4px;font-weight:700;", text: o.nm }));
-          var pc = h("td", { style: "padding:4px;white-space:nowrap;" }); if(pet){ var th = h("span", { style: "display:inline-block;width:34px;height:36px;vertical-align:middle;margin-right:4px;", html: window.PETART ? window.PETART.svg({ sp: pet.sp, style: "cute", mood: "happy", stage: P.stageOf(pet.xp), eq: pet.eq, anim: false }) : pet.sp }); pc.appendChild(th); pc.appendChild(document.createTextNode(pet.nm + "（" + STAGES[P.stageOf(pet.xp)].name + "）")); } else pc.textContent = "—"; tr.appendChild(pc);
+          var pc = h("td", { style: "padding:4px;white-space:nowrap;" }); if(pet){ var th = h("span", { style: "display:inline-block;width:34px;height:36px;vertical-align:middle;margin-right:4px;", html: window.PETART ? window.PETART.svg({ sp: pet.sp, style: "outline", mood: "happy", stage: P.stageOf(pet.xp), eq: pet.eq, anim: false }) : pet.sp }); pc.appendChild(th); pc.appendChild(document.createTextNode(pet.nm + "（" + STAGES[P.stageOf(pet.xp)].name + "）")); } else pc.textContent = "—"; tr.appendChild(pc);
           tr.appendChild(h("td", { style: "padding:4px;color:" + (hg != null && hg < 30 ? "#B23B32" : "inherit") + ";", text: hg == null ? "" : hg + (hg < 30 ? " 😭" : "") })); tr.appendChild(h("td", { style: "padding:4px;", text: pet ? String(pet.xp || 0) : "" }));
           tr.appendChild(h("td", { style: "padding:4px;", text: String(o.r.earned || 0) })); tr.appendChild(h("td", { style: "padding:4px;font-weight:800;color:#C0623A;", text: String(o.r.pts || 0) }));
           if(!rank){ var td = h("td", { style: "padding:4px;white-space:nowrap;" }); [-1, 1, 5, 10].forEach(function(n){ td.appendChild(h("button", { class: "ct-btn", style: "padding:.1em .5em;margin-right:3px;", text: (n > 0 ? "+" : "") + n, onclick: function(){ give(o.nm, n); } })); }); tr.appendChild(td); }
