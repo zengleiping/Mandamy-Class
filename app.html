@@ -6757,7 +6757,7 @@ function drBroadcast(){
 }
 // 課堂工具箱（classtools/）需要的班級資料與抽籤
 function liveKey(n){ return String(n || "").replace(/[.#$\[\]\/]/g, "_") || "_"; }
-window.PET_ctx = { student: function(){ return S.student; }, teacherSel: function(){ return (S.teacher && S.sel && S.sel.c) ? { t: S.teacher.id, c: S.sel.c, tm: S.sel.t } : null; }, get: fbGet, update: fbUpdate, toast: toast, key: liveKey, roster: function(){ return (S.teacher && S.sel && S.sel.c) ? hwLoadRoster() : Promise.resolve([]); },
+window.PET_ctx = { liveBlocked: function(){ return !!(S.student && S.live && S.live.on && !(S.student.cls && S.student.cls.test)); }, student: function(){ return S.student; }, teacherSel: function(){ return (S.teacher && S.sel && S.sel.c) ? { t: S.teacher.id, c: S.sel.c, tm: S.sel.t } : null; }, get: fbGet, update: fbUpdate, toast: toast, key: liveKey, roster: function(){ return (S.teacher && S.sel && S.sel.c) ? hwLoadRoster() : Promise.resolve([]); },
   onValue: function(path, cb){ try{ return window.onValue(window.ref(window.db, path), function(sn){ cb(sn.val()); }); }catch(e){ return function(){}; } } };
 window.CT_ctx = { inClass: function(){ return !!(S.teacher && S.sel && S.sel.c); }, openBreak: function(){ brkOpenDialog(); }, live: {
     on: function(){ return !!(S.live && S.live.on && S.sel && S.sel.c); },
@@ -7093,7 +7093,7 @@ async function startStudent(code, name, pw, opts){
     if(needAcct && !(opts && opts.google)){ var au = await studentAuth(idx, name, pw); if(au !== true){ viewStudentEntry(au, code); return; } }
     S.student = { name: name, code: code, idx: idx, school: res[0], term: res[1], cls: res[2], acct: needAcct };
     S.live = res[2].live && res[2].live.on ? res[2].live : null;
-    try{ window.onValue(window.ref(window.db, base + "/schools/" + idx.s + "/terms/" + idx.tm + "/classes/" + idx.c + "/live"), function(snap){ var v = snap.val(); var nv = v && v.on ? v : null; var key = JSON.stringify(nv); if(key === S.liveKey) return; S.liveKey = key; S.live = nv; S.liveRendered = null; if(S.student) renderStudent(); try{ brkSync(nv && nv.brk, false); }catch(e3){} try{ drSync(nv && nv.draw); }catch(e4){} try{ stuToolSync(nv && nv.tool); }catch(e5){} try{ stuTransDraw(); }catch(e2){} }); stuTransStart(base, idx); }catch(e){}
+    try{ window.onValue(window.ref(window.db, base + "/schools/" + idx.s + "/terms/" + idx.tm + "/classes/" + idx.c + "/live"), function(snap){ var v = snap.val(); var nv = v && v.on ? v : null; var key = JSON.stringify(nv); if(key === S.liveKey) return; S.liveKey = key; S.live = nv; S.liveRendered = null; if(S.student) renderStudent(); try{ brkSync(nv && nv.brk, false); }catch(e3){} try{ drSync(nv && nv.draw); }catch(e4){} try{ stuToolSync(nv && nv.tool); }catch(e5){} try{ if(window.PET) window.PET.refresh(); }catch(e6){} try{ stuTransDraw(); }catch(e2){} }); stuTransStart(base, idx); }catch(e){}
     S.plat = { lessons: res[3] || {}, books: res[4] || {} };
     S.lesson = null; S.tab = null; S.sub = null;
     var h = new URLSearchParams(location.hash.replace(/^#/, "")); if(h.get("l")) S.lesson = h.get("l"); if(h.get("tab")) S.tab = h.get("tab");
@@ -7813,6 +7813,6 @@ window.__mm = { get S(){ return S; }, render: function(){ return render(); }, ne
 <script src="classtools/ct-fun.js?v=20261029"></script>
 <script src="classtools/ct-board.js?v=20261029"></script>
 <script src="classtools/ct-live.js?v=20261029"></script>
-<script src="classtools/pets.js?v=20261031"></script>
+<script src="classtools/pets.js?v=20261032"></script>
 </body>
 </html>
