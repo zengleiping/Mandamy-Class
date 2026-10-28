@@ -13,6 +13,8 @@
 
 | `lexicon-idioms.txt` | 成語／固定詞組字典（約 3 萬詞）：教育部《重編國語辭典修訂本》詞條中 4–8 字、不在 TBCL、且不能拆成 TBCL 詞的詞 | `build_idioms.py`（來源 g0v/moedict-data 的 dict-revised.json；只取詞條名稱） |
 
+| `replacements.json` | 離線換詞表：約 2.8 萬個高等級詞／成語，各有最多 5 個意思相近、等級較低的候選（s 辭典同義、d 釋義用語、e 語義相近，附分數） | `build_replacements.py`：重編國語辭典同義詞與釋義＋詞義向量（BAAI/bge-base-zh-v1.5，MIT）；只看詞義、不看句子，僅供老師參考 |
+
 用 `../build/` 裡的 `build_tbcl.py`、`build_grammar.py` 從官方 PDF／Excel 重新產生。
 - 第 1*–4* 級（詞語）依「併入該級」計算，等級 1–7 對應競賽簡章的 TBCL 1–7 級。
 - 詞語表沒有單獨收錄的虛詞「了」「著」，依語法點表（V了、V著 第 2 級）計為第 2 級。

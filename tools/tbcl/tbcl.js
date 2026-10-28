@@ -95,14 +95,19 @@ function suspectCard(r){
 
 /* ===== 超綱詞替換建議：換詞（詞典＋AI，AI 的建議都用詞表驗證）、換句話說（AI，改完再檢核，最多 3 輪） ===== */
 var FREQV=null,SYN=null,SYNIDX=null,UNDO=[],NEWS={};
-function loadSyn(){return SYN||(SYN=fetch("data/synonyms.json").then(function(r){if(!r.ok)throw 0;return r.json()}).catch(function(){return{g:[],m:{}}}).then(function(d){
+var REP=null;
+function loadRep(){return fetch("data/replacements.json").then(function(r){if(!r.ok)throw 0;return r.json()}).catch(function(){return{}}).then(function(d){REP=d})}
+function loadSyn(){return SYN||(SYN=loadRep().then(function(){return fetch("data/synonyms.json")}).then(function(r){if(!r.ok)throw 0;return r.json()}).catch(function(){return{g:[],m:{}}}).then(function(d){
   SYNIDX=new Map();var add=function(a,b){if(a===b)return;var s=SYNIDX.get(a);if(!s){s=new Set();SYNIDX.set(a,s)}s.add(b)};
   d.g.forEach(function(g){g.forEach(function(a){g.forEach(function(b){add(a,b)})})});
   Object.keys(d.m).forEach(function(k){d.m[k].forEach(function(v){add(k,v);add(v,k)})});return d}))}
 function splitSent(t){var re=/[^。！？!?\n]*[。！？!?]+|[^。！？!?\n]+/g,m,o=[];while((m=re.exec(t))){if(m[0].trim())o.push({s:m[0],i:m.index})}return o}
 function overCount(s,t){return analyze(s,t,EX).over}
-function dictCands(w,t,sent){var out=[];(SYNIDX&&SYNIDX.get(w)||[]).forEach(function(x){var l=levelOf(x);if(l!=null&&effLv(x,l)<=t)out.push({c:x,l:l,src:"詞典"})});
-  out.sort(function(a,b){return a.l-b.l});return out.slice(0,6)}
+var SRCNAME={s:"辭典同義",d:"釋義用語",e:"語義相近"};
+function dictCands(w,t,sent){var out=[],seen={};
+  ((REP&&REP[w])||[]).forEach(function(r){var c=r[0],l=levelOf(c);if(l!=null&&effLv(c,l)<=t&&!seen[c]){seen[c]=1;out.push({c:c,l:l,src:SRCNAME[r[2]]||"詞典",o:{s:0,d:1,e:2}[r[2]]})}});
+  (SYNIDX&&SYNIDX.get(w)||[]).forEach(function(x){var l=levelOf(x);if(l!=null&&effLv(x,l)<=t&&!seen[x]){seen[x]=1;out.push({c:x,l:l,src:"近義詞典",o:0})}});
+  out.sort(function(a,b){return a.o-b.o||a.l-b.l});return out.slice(0,6)}
 function parseArr(tx){var m=tx.match(/\[[\s\S]*\]/);if(!m)return[];try{var a=JSON.parse(m[0]);return Array.isArray(a)?a.map(String):[]}catch(e){return[]}}
 function sugCard(text,t){
   var ss=splitSent(text).map(function(x,k){var a=analyze(x.s,t,EX);return{k:k,s:x.s,a:a}}).filter(function(x){return x.a.list.length});
