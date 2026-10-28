@@ -4979,7 +4979,12 @@ window.mmTA = (function(){
   function writeProgress(qId, patch){
     var pk = inRoom() ? examPrivateFor(qId) : null;
     if(pk && pk !== "__none__"){ update(ref(db, "rooms/" + activeRoomId + "/examProg/" + pk + "/" + qId), isWhiteboardQ(qId) ? wbPrivatePatch(qId, patch) : patch); return; }
-    if(isStudent && choiceVoteOn() && patch.multiPicks && isChoiceQ(qId)){ set(ref(db, "rooms/" + activeRoomId + "/votes/" + qId + "/" + myId), { name: myName || "學生", picks: patch.multiPicks, at: Date.now() }); return; }
+    if(isStudent && choiceVoteOn() && patch.multiPicks && isChoiceQ(qId)){ set(ref(db, "rooms/" + activeRoomId + "/votes/" + qId + "/" + myId), { name: myName || "學生", picks: patch.multiPicks, at: Date.now() });
+      try{   // 寵物遊戲：選對了就通知外層頁面加點數（同一題只會加一次）
+        var cinf = findSectionForQuestion(qId), cq = cinf && cinf.sec.questions[qId], cans = cq ? ((cq.answerIds && cq.answerIds.length) ? cq.answerIds : (cq.answerId ? [cq.answerId] : [])) : [], cpk = Object.keys(patch.multiPicks).filter(function(k){ return patch.multiPicks[k]; });
+        if(cans.length && cpk.length === cans.length && cpk.every(function(k){ return cans.indexOf(k) >= 0; })) window.parent.postMessage({ mm: "petEarn", kind: "choice", room: activeRoomId, id: qId }, "*");
+      }catch(e){}
+      return; }
     if(inRoom()){ protectTeacherInk(qId, patch); update(ref(db, "rooms/" + activeRoomId + "/sharedProgress/" + qId), patch); }
     else { Object.assign(getProgress(qId), patch); saveFS(); renderStage(); }
   }
@@ -7113,7 +7118,7 @@ window.mmTA = (function(){
         var am = roomData.attempt || {};
         await set(ref(db, "teacherPlatform/" + A.tid + "/notify/" + uid("n_")), { kind: "exam", name: A.name, title: am.title || (roomData.project && roomData.project.title) || "考卷", hwId: A.item, room: activeRoomId, cname: am.cname || "", s: am.s || null, tm: am.tm || null, c: A.cid, at: now });
       }catch(e2){}
-      try{ window.parent.postMessage({ mm: "examSubmitted", item: A.item }, "*"); }catch(e){}
+      try{ window.parent.postMessage({ mm: "examSubmitted", item: A.item, pct: rec.auto ? rec.auto.pct : null }, "*"); }catch(e){}
     }catch(er){ console.error(er); alert("交卷失敗，請檢查網路後再按一次。你的答案都還在。\nSubmit failed — please check your connection and try again."); }
   }
 

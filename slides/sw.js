@@ -8,7 +8,7 @@
  *
  * 更新這個檔案或 vendor/ 內容時，把 CACHE_VERSION 加一號，舊快取會在新版啟用時自動清掉。
  */
-var CACHE_VERSION = "v3";
+var CACHE_VERSION = "v4";
 var PRECACHE = "mandamy-precache-" + CACHE_VERSION;
 var RUNTIME = "mandamy-runtime-" + CACHE_VERSION;
 

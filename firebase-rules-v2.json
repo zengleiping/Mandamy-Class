@@ -139,7 +139,11 @@
                 },
                 "classes": {
                   "$c": {
-                    ".read": "auth != null"
+                    ".read": "auth != null",
+                    "liveResp": {
+                      ".read": "auth != null",
+                      ".write": "auth != null"
+                    }
                   }
                 }
               }
@@ -277,6 +281,19 @@
           "$id": {
             "$r": {
               ".write": "auth != null && !data.exists() && newData.hasChildren(['name','s'])"
+            }
+          }
+        },
+        "petGame": {
+          "$c": {
+            "cfg": {
+              ".read": "auth != null"
+            },
+            "s": {
+              ".read": "auth != null",
+              "$k": {
+                ".write": "auth != null"
+              }
             }
           }
         }
