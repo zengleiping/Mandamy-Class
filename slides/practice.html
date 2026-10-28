@@ -14174,9 +14174,11 @@ window.mmTA = (function(){
               y: ((rubyRect.top - wrapRect.top) / wrapRect.height) * 100
             };
             showInlineTextInput(cWrap, editorPos, function(newVal){
+              var trimmed = convertToneDigits((newVal || "").trim()); // ni3 → nǐ（數字聲調自動轉換）
+              // 沒有真的改內容（只是不小心點到）：什麼都不做，注音不會被標成「自訂」的顏色
+              if(trimmed === String(curVal || "").trim() || (trimmed === "" && !rubyEl.querySelector(".ph-overridden") && !rtEl.classList.contains("ph-overridden"))) return;
               snapshotForUndo();
               if(!Array.isArray(t.phoneticOverride)) t.phoneticOverride = [];
-              var trimmed = convertToneDigits((newVal || "").trim()); // ni3 → nǐ（數字聲調自動轉換）
               // 清空輸入框＝恢復自動判斷的讀音，不是「這個字不要注音」——真的不想要這個字有注音，
               // 用橡皮擦把整個文字方塊擦掉重打會更清楚，不會跟「打字漏打」混在一起。
               t.phoneticOverride[idx] = trimmed === "" ? null : trimmed;
