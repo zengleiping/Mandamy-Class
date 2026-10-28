@@ -1786,6 +1786,22 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   @keyframes bgdFill{ 0%,27%{opacity:0;transform:scale(.4)} 31%{opacity:1;transform:scale(1.2)} 34%,100%{opacity:1;transform:scale(1)} }
   @keyframes bgdChip{ 0%,23%{transform:scale(1)} 27%{transform:scale(1.15);background:#FFD98A} 32%,100%{transform:scale(1)} }
   @keyframes bgdWin{ 0%,75%{opacity:0;transform:scale(.4)} 80%{opacity:1;transform:scale(1.25)} 84%,94%{opacity:1;transform:scale(1)} 98%,100%{opacity:0} }
+  .th-wrap{ max-width:860px; margin:6px auto; }
+  .th-row{ display:flex; gap:26px; align-items:flex-start; flex-wrap:wrap; justify-content:center; }
+  .th-svgbox{ flex:none; text-align:center; }
+  .th-svgbox svg{ width:150px; height:460px; touch-action:none; }
+  .th-svgbox.drag svg{ cursor:ns-resize; }
+  .th-big{ font-family:MM Latin,Iansui,serif; font-size:48px; font-weight:800; color:var(--seal); line-height:1.1; }
+  .th-side{ flex:1; min-width:260px; }
+  .th-q{ margin:0 0 12px; font-size:18px; font-weight:700; }
+  .th-q small{ display:block; font-size:13.5px; font-weight:400; color:var(--ink-soft); }
+  .th-chips{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px; }
+  .th-chip{ padding:8px 16px; border-radius:99px; border:2px solid var(--line,#c9b8a5); background:var(--surface,#fff); font-size:20px; font-weight:700; cursor:pointer; }
+  .th-chip small{ display:block; font-size:11.5px; font-weight:400; color:var(--ink-soft); }
+  .th-chip.on{ border-color:var(--seal); background:var(--seal-soft,#FDECE6); }
+  .th-ctl{ display:flex; gap:6px; flex-wrap:wrap; margin:8px 0; }
+  .th-ok{ color:#2E8B57; font-weight:700; } .th-no{ color:#B23B32; font-weight:700; }
+  .th-tbl{ width:100%; border-collapse:collapse; font-size:15px; margin-top:8px; } .th-tbl td,.th-tbl th{ padding:5px 8px; border-bottom:1px solid var(--line,#e6d9c8); text-align:left; }
   .bg5-warn{ color:#B23B32; margin-top:4px; font-weight:700; }
   .bg5-body{ display:grid; grid-template-columns:minmax(200px,300px) 1fr; gap:16px; align-items:start; }
   @media (max-width:760px){ .bg5-body{ grid-template-columns:1fr; } }
@@ -2422,6 +2438,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
         <button type="button" data-type="whiteboard">🖊️ 小白板 Whiteboard</button>
         <button type="button" data-type="hanzi">🖋️ 生字練習 Character Practice</button>
         <button type="button" data-type="bingo">🎯 賓果卡 Bingo Card</button>
+        <button type="button" data-type="thermo">🌡️ 溫度計 Thermometer</button>
       </div>
 
       <label for="f-sec-title">大題名稱（留空將自動命名）Section Name</label>
@@ -2570,6 +2587,12 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
         </div>
         <label>教學指引</label>
         <input type="text" id="f-board-desc" placeholder="例如：請在格線中寫出『好』">
+      </div>
+
+      <div id="thermo-fields" style="display:none;">
+        <label>溫度範圍 Range（°C）</label>
+        <div style="display:flex;gap:8px;align-items:center;"><input type="number" id="f-th-min" value="-10" style="width:90px;"> ～ <input type="number" id="f-th-max" value="40" style="width:90px;"> 　起始溫度 Start <input type="number" id="f-th-start" value="25" style="width:90px;"></div>
+        <label>說明（選填）</label><input type="text" id="f-th-desc" placeholder="例如：看溫度計，說說現在幾度、天氣怎麼樣">
       </div>
 
       <div id="bingo-fields" style="display:none;">
@@ -4945,7 +4968,7 @@ window.mmTA = (function(){
     var items = []; var totalWeight = 0;
     secKeys.forEach(function(secId){
       var sec = secs[secId];
-      if(sec.type === "board" || sec.type === "whiteboard" || sec.type === "hanzi" || sec.type === "bingo") return; // 投影片／小白板／生字練習／賓果卡不計分
+      if(sec.type === "board" || sec.type === "whiteboard" || sec.type === "hanzi" || sec.type === "bingo" || sec.type === "thermo") return; // 投影片／小白板／生字練習／賓果卡不計分
       var qKeys = getSortedQuestionKeys(sec).filter(function(k){ return !qHidden(sec, sec.questions[k]); });   // 隱藏的題目不計分
       qKeys.forEach(function(qId){
         var q = sec.questions[qId];
@@ -5103,6 +5126,11 @@ window.mmTA = (function(){
           var strokes = progress.strokes || [];
           qRes.status = strokes.length > 0 ? "completed" : "empty";
           qRes.detail = strokes.length > 0 ? `已完成書寫 Done (${strokes.length} 筆畫 strokes)` : "尚未書寫 Not written yet";
+        } else if(sec.type === "thermo"){
+          qRes.isScoreable = false;
+          var myTh = (progress.thermoAns && progress.thermoAns[isStudent ? myId : "teacher"]) || null;
+          qRes.status = myTh ? "completed" : "empty";
+          qRes.detail = myTh ? "已回答溫度計 Answered" : "尚未回答溫度計 Not answered yet";
         } else if(sec.type === "bingo"){
           qRes.isScoreable = false;
           var myBg = (progress.bingo && progress.bingo[isStudent ? myId : "teacher"]) || null;
@@ -8450,7 +8478,8 @@ window.mmTA = (function(){
       board:   { label: "投影片 Slides", color: "#A83232" },
       whiteboard: { label: "小白板 Whiteboard", color: "#C0623A" },
       hanzi:   { label: "生字練習 Character", color: "#3A7CA5" },
-      bingo:   { label: "賓果卡 Bingo", color: "#C98A00" }
+      bingo:   { label: "賓果卡 Bingo", color: "#C98A00" },
+      thermo:  { label: "溫度計 Thermometer", color: "#D9534F" }
     };
 
     secKeys.forEach(function(secId){
@@ -8560,7 +8589,7 @@ window.mmTA = (function(){
                 <span class="q-index-badge">${idx + 1}</span>
                 ${sec.type === "board" ? `<img class="q-thumb" data-thumb-qid="${qId}" src="${thumbSrcFor(q)}" alt="">` : ""}
                 <span class="q-item-title">${escapeHtml(dispTitle(sec, q))}</span>
-                ${(!isCanvasSec(sec) && sec.type !== "hanzi" && sec.type !== "bingo" && q.weight && q.weight !== 1) ? `<span class="q-weight-tag" title="配分權重 Weight ×${q.weight}">×${q.weight}</span>` : ""}
+                ${(!isCanvasSec(sec) && sec.type !== "hanzi" && sec.type !== "bingo" && sec.type !== "thermo" && q.weight && q.weight !== 1) ? `<span class="q-weight-tag" title="配分權重 Weight ×${q.weight}">×${q.weight}</span>` : ""}
               </span>
               ${isStudent || sec.hidden ? '' : '<span class="q-hide-btn" title="' + (q.hidden ? '顯示這' + (sec.type === "board" ? '頁' : '題') : '隱藏這' + (sec.type === "board" ? '頁' : '題') + '：學生看不到、翻頁跳過、不計分') + '">' + (q.hidden ? '已隱藏・顯示' : '隱藏') + '</span>'}
               <span class="q-action-btns">
@@ -8783,7 +8812,7 @@ window.mmTA = (function(){
     var secs = getSections();
     var title = document.getElementById("f-sec-title").value.trim();
     var desc = document.getElementById("f-sec-desc").value.trim();
-    var typeNames = { match: "連連看", choice: "選擇題", reorder: "句子重組", fill: "填空", open: "簡答／造句", record: "錄音", board: "投影片", whiteboard: "小白板", hanzi: "生字練習", bingo: "賓果卡" };
+    var typeNames = { match: "連連看", choice: "選擇題", reorder: "句子重組", fill: "填空", open: "簡答／造句", record: "錄音", board: "投影片", whiteboard: "小白板", hanzi: "生字練習", bingo: "賓果卡", thermo: "溫度計" };
     if(editingSectionId && secs[editingSectionId]){
       secs[editingSectionId].title = title || secs[editingSectionId].title;
       secs[editingSectionId].desc = desc;
@@ -9649,6 +9678,7 @@ window.mmTA = (function(){
     document.getElementById("board-fields").style.display = (type === "board" || type === "whiteboard") ? "block" : "none";
     document.getElementById("hanzi-fields").style.display = type === "hanzi" ? "block" : "none";
     document.getElementById("bingo-fields").style.display = type === "bingo" ? "block" : "none";
+    document.getElementById("thermo-fields").style.display = type === "thermo" ? "block" : "none";
     document.getElementById("passage-wrap").style.display = (type === "choice" || type === "fill" || type === "open" || type === "record" || type === "reorder") ? "block" : "none";
 
     if(type === "match"){
@@ -9683,6 +9713,11 @@ window.mmTA = (function(){
       editorBoardImgData = q ? (q.bgImage || "") : "";
       document.getElementById("upload-tip").textContent = editorBoardImgData ? "✅ 已上傳底圖 Uploaded（點擊可更換 tap to change）" : "📷 點擊上傳背景圖片 Upload Image";
       document.getElementById("f-board-desc").value = q ? (q.desc || "") : "";
+    } else if(type === "thermo"){
+      document.getElementById("f-th-min").value = q && q.min !== undefined ? q.min : -10;
+      document.getElementById("f-th-max").value = q && q.max !== undefined ? q.max : 40;
+      document.getElementById("f-th-start").value = q && q.start !== undefined ? q.start : 25;
+      document.getElementById("f-th-desc").value = q ? (q.desc || "") : "";
     } else if(type === "bingo"){
       document.getElementById("f-bingo-words").value = q && Array.isArray(q.words) ? q.words.join("\n") : "";
       document.getElementById("f-bingo-desc").value = q ? (q.desc || "") : "";
@@ -9820,6 +9855,12 @@ window.mmTA = (function(){
       qObj.desc = document.getElementById("f-board-desc").value.trim();
       qObj.bgImage = editorBoardImgData || "";
       qObj.gridType = (existing && existing.gridType) || "none";
+    } else if(sec.type === "thermo"){
+      var thMin = parseInt(document.getElementById("f-th-min").value, 10), thMax = parseInt(document.getElementById("f-th-max").value, 10), thSt = parseInt(document.getElementById("f-th-start").value, 10);
+      if(isNaN(thMin) || isNaN(thMax) || thMax - thMin < 10){ alert("溫度範圍至少要差 10 度。Range must span at least 10°."); return; }
+      if(isNaN(thSt)) thSt = Math.round((thMin + thMax) / 2); thSt = Math.max(thMin, Math.min(thMax, thSt));
+      qObj.title = titleInput || ("第 " + (order + 1) + " 題：溫度計");
+      qObj.min = thMin; qObj.max = thMax; qObj.start = thSt; qObj.desc = document.getElementById("f-th-desc").value.trim();
     } else if(sec.type === "bingo"){
       var bwords = bingoParseWords(document.getElementById("f-bingo-words").value);
       if(bwords.length < 2){ alert("請輸入這次賓果要用的生詞（一行一個）。"); return; }
@@ -9842,7 +9883,7 @@ window.mmTA = (function(){
     }
 
     qObj.media = qMediaManager.getItems();
-    var passageVal = document.getElementById("f-passage").value.trim(); if(passageVal && sec.type !== "board" && sec.type !== "whiteboard" && sec.type !== "hanzi" && sec.type !== "bingo" && sec.type !== "match") qObj.passage = passageVal;
+    var passageVal = document.getElementById("f-passage").value.trim(); if(passageVal && sec.type !== "board" && sec.type !== "whiteboard" && sec.type !== "hanzi" && sec.type !== "bingo" && sec.type !== "thermo" && sec.type !== "match") qObj.passage = passageVal;
     qObj.teacherNote = document.getElementById("f-teacher-note").value.trim();
     var ttsText = document.getElementById("f-tts-text").value.trim();
     if(editorTtsRec && editorTtsSrc){
@@ -10429,7 +10470,7 @@ window.mmTA = (function(){
 
     // 填空／簡答：正在打字時，別因為雲端回傳自己剛寫的資料就整個重畫（會讓游標跑掉、輸入法中斷）
     if((sec.type === "fill" || sec.type === "open") && stageSignature === lastStageSignature && stageEl.contains(document.activeElement) && /^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)) return;
-    if((isCanvasSec(sec) || sec.type === "hanzi" || sec.type === "bingo" || sec.type === "choice") && liveBoardQId === q.id && stageSignature === lastStageSignature && liveBoardRefresh && liveBoardRefresh()){
+    if((isCanvasSec(sec) || sec.type === "hanzi" || sec.type === "bingo" || sec.type === "thermo" || sec.type === "choice") && liveBoardQId === q.id && stageSignature === lastStageSignature && liveBoardRefresh && liveBoardRefresh()){
       return; // 局部刷新成功：只更新畫布內容（筆畫／文字／格線／底圖），不重建整個舞台
     }
 
@@ -10491,6 +10532,9 @@ window.mmTA = (function(){
         var resetPatch = { fills:{}, text:"", audio:null, audioSec:null, grade:null, matched:{}, selected:{}, choicePick:null, choiceStatus:null, multiPicks:{}, userPairs:{}, userWords:[], revealed:false, strokes:[], texts:[], selection:null, wrongFlash:null, lastEvent:null };
         if(sec.type === "choice"){ resetPatch.ink = null; if(inRoom()){ remove(ref(db, "rooms/" + activeRoomId + "/votes/" + q.id)); remove(ref(db, "rooms/" + activeRoomId + "/voteReveal/" + q.id)); } }
         resetPatch.poolWords = (sec.type === "reorder") ? seededShuffle(q.words || [], q.id + "|reorder-pool") : [];
+        if(sec.type === "thermo"){
+          resetPatch.thermo = null; resetPatch.thermoAns = null;
+        }
         if(sec.type === "bingo"){
           if(!confirm("重新開始這個賓果？\n唸過的詞和大家的連線會清掉，回到填卡階段（卡片內容保留）。\nRestart bingo? Called words and lines are cleared; cards are kept.")) return;
           var bg = (getProgress(q.id) || {}).bingoGame || {};
@@ -10518,7 +10562,7 @@ window.mmTA = (function(){
     var stageTarget = stageEl;
     if(sec.type === "choice"){ stageTarget = document.createElement("div"); stageTarget.className = "mc-ink-wrap"; stageEl.appendChild(stageTarget); }
     // 閱讀文本：獨立的一塊，放在題幹（題目文字與選項）上方，長文章可以在區塊內捲動
-    if(q.passage && !isCanvasSec(sec) && sec.type !== "hanzi" && sec.type !== "bingo" && sec.type !== "match"){
+    if(q.passage && !isCanvasSec(sec) && sec.type !== "hanzi" && sec.type !== "bingo" && sec.type !== "thermo" && sec.type !== "match"){
       var psg = document.createElement("div"); psg.className = "passage-card";
       psg.innerHTML = '<div class="passage-label">📖 閱讀文本 Reading</div><div class="passage-text zh">' + escapeHtml(q.passage).replace(/\n/g, "<br>") + '</div>';
       stageTarget.appendChild(psg);
@@ -10538,6 +10582,7 @@ window.mmTA = (function(){
     else if(isCanvasSec(sec)) renderDrawBoard(q, boardArea);
     else if(sec.type === "hanzi") renderHanziBoard(q, boardArea);
     else if(sec.type === "bingo") renderBingoBoard(q, boardArea);
+    else if(sec.type === "thermo") renderThermoBoard(q, boardArea);
 
     applyStageZoom(currentZoomRatio);
   }
@@ -17426,6 +17471,106 @@ window.mmTA = (function(){
     liveBoardQId = q.id; liveBoardRefresh = draw; bingoRefreshFn = draw;
     if(inRoom() && !isStudent && !pg().bingoGame) { /* 第一次：還沒有遊戲狀態，等老師按開始 */ }
     draw();
+  }
+  /* ===== 溫度計：老師拖曳／按鈕／自動改變溫度，學生看溫度計回答「現在幾度？溫度怎麼樣？差不多幾度？」 ===== */
+  var THERMO_ADJ = [ { w: "冷", en: "cold", test: function(t){ return t <= 12; } }, { w: "涼", en: "cool", test: function(t){ return t >= 13 && t <= 19; } }, { w: "涼快", en: "pleasantly cool", test: function(t){ return t >= 20 && t <= 23; } }, { w: "暖和", en: "warm", test: function(t){ return t >= 24 && t <= 28; } }, { w: "熱", en: "hot", test: function(t){ return t >= 29; } } ];
+  function thermoAdjOf(t){ for(var i = 0; i < THERMO_ADJ.length; i++) if(THERMO_ADJ[i].test(t)) return THERMO_ADJ[i].w; return ""; }
+  var thermoTimer = null;
+  function renderThermoBoard(q, container){
+    if(thermoTimer){ clearInterval(thermoTimer); thermoTimer = null; }
+    var MIN = q.min !== undefined ? q.min : -10, MAX = q.max !== undefined ? q.max : 40, START = q.start !== undefined ? q.start : 25;
+    var wrap = document.createElement("div"); wrap.className = "th-wrap"; container.appendChild(wrap);
+    var adjSel = "", numTxt = "", sideSig = "", lastWrite = 0, dragging = false;
+    function pg(){ return getProgress(q.id) || {}; }
+    function st(){ var o = pg().thermo || {}; return { t: o.t !== undefined ? Number(o.t) : START, showNum: !!o.showNum, reveal: !!o.reveal, auto: !!o.auto }; }
+    function setSt(patch){ var o = Object.assign(st(), patch); o.t = Math.max(MIN, Math.min(MAX, Math.round(o.t))); writeProgress(q.id, { thermo: o }); }
+    function myAns(){ var a = pg().thermoAns || {}; return a[isStudent ? myId : "teacher"] || null; }
+    function yOf(t){ return 350 - (t - MIN) / (MAX - MIN) * 320; }
+    function colorOf(t){ return "hsl(" + Math.round(210 - (t - MIN) / (MAX - MIN) * 210) + ",78%,52%)"; }
+    var ticks = ""; for(var v = Math.ceil(MIN / 5) * 5; v <= MAX; v += 5){ var big = v % 10 === 0; ticks += '<line x1="78" x2="' + (big ? 92 : 86) + '" y1="' + yOf(v) + '" y2="' + yOf(v) + '" stroke="#6b5b4b" stroke-width="' + (big ? 2 : 1.2) + '"/>' + (big ? '<text x="96" y="' + (yOf(v) + 5) + '" font-size="15" fill="#4a3d31" font-family="sans-serif">' + v + '</text>' : ''); }
+    var svgBox = document.createElement("div"); svgBox.className = "th-svgbox" + (isStudent ? "" : " drag");
+    svgBox.innerHTML = '<svg viewBox="0 0 150 430"><rect x="45" y="14" width="30" height="352" rx="15" fill="#fff" stroke="#6b5b4b" stroke-width="3"/><circle cx="60" cy="388" r="34" fill="#fff" stroke="#6b5b4b" stroke-width="3"/>' +
+      '<rect id="th-hg" x="52" y="200" width="16" height="180" fill="#e44"/><circle id="th-bulb" cx="60" cy="388" r="27" fill="#e44"/>' + ticks + '</svg><div class="th-big" id="th-num"></div>';
+    var row = document.createElement("div"); row.className = "th-row"; row.appendChild(svgBox);
+    var side = document.createElement("div"); side.className = "th-side"; row.appendChild(side);
+    wrap.appendChild(row);
+    var hg = svgBox.querySelector("#th-hg"), bulb = svgBox.querySelector("#th-bulb"), numEl = svgBox.querySelector("#th-num"), svgEl = svgBox.querySelector("svg");
+    function paint(t, showNum){
+      var y = yOf(t), c = colorOf(t); hg.setAttribute("y", y); hg.setAttribute("height", 382 - y); hg.setAttribute("fill", c); bulb.setAttribute("fill", c);
+      numEl.textContent = (isStudent && !showNum) ? "？ °C" : t + " °C";
+    }
+    function tFromY(clientY){ var r = svgEl.getBoundingClientRect(), vy = (clientY - r.top) / r.height * 430; return Math.round(MIN + (350 - vy) / 320 * (MAX - MIN)); }
+    if(!isStudent){
+      svgEl.onpointerdown = function(e){ dragging = true; try{ svgEl.setPointerCapture(e.pointerId); }catch(er){} var t = Math.max(MIN, Math.min(MAX, tFromY(e.clientY))); paint(t, true); lastWrite = Date.now(); setSt({ t: t, auto: false }); };
+      svgEl.onpointermove = function(e){ if(!dragging) return; var t = Math.max(MIN, Math.min(MAX, tFromY(e.clientY))); paint(t, true); if(Date.now() - lastWrite > 120){ lastWrite = Date.now(); setSt({ t: t }); } };
+      svgEl.onpointerup = svgEl.onpointercancel = function(e){ if(!dragging) return; dragging = false; var t = Math.max(MIN, Math.min(MAX, tFromY(e.clientY))); setSt({ t: t }); };
+    }
+    function nameOf(k, r){ return (r && r.name) || k; }
+    function drawSide(force){
+      var s0 = st(), ans = pg().thermoAns || {}, mine = myAns();
+      var sig = JSON.stringify([isStudent, s0.showNum, s0.reveal, s0.auto, mine, isStudent ? 0 : ans]);
+      if(!force && sig === sideSig) return; sideSig = sig;
+      var h = "";
+      if(isStudent){
+        h += '<p class="th-q">' + (s0.showNum ? '現在幾度？' : '現在差不多幾度？') + '<small>' + (s0.showNum ? 'What is the temperature now?' : 'About how many degrees is it now?') + '</small></p>';
+        h += '<p class="th-q">溫度怎麼樣？<small>How is the temperature?</small></p><div class="th-chips">' + THERMO_ADJ.map(function(a){ return '<button type="button" class="th-chip' + (adjSel === a.w ? ' on' : '') + '" data-adj="' + a.w + '">' + a.w + '<small>' + a.en + '</small></button>'; }).join("") + '</div>';
+        h += '<p class="th-q">' + (s0.showNum ? '' : '差不多 ') + '<input type="number" id="th-num-in" style="width:90px;font-size:20px;" value="' + escapeHtml(numTxt) + '"> 度<small>' + (s0.showNum ? 'degrees' : 'about … degrees') + '</small></p>';
+        h += '<div class="th-ctl"><button type="button" class="btn btn-sm btn-primary" data-a="send">送出 Submit</button></div>';
+        if(mine){
+          var tt = Number(mine.t), okAdj = thermoAdjOf(tt) === mine.adj, okNum = mine.num !== "" && mine.num !== undefined && Math.abs(Number(mine.num) - tt) <= 2;
+          h += '<p>你送出：<b>' + escapeHtml(mine.adj || "—") + '</b>、<b>' + escapeHtml(String(mine.num === undefined ? "" : mine.num)) + '</b> 度　<small>Sent</small></p>';
+          if(s0.reveal) h += '<p>當時 <b>' + tt + ' °C</b>，答案：<b>' + thermoAdjOf(tt) + '</b>　' + (okAdj ? '<span class="th-ok">✔ 溫度對了</span>' : '<span class="th-no">✘ 溫度說法不同</span>') + '　' + (okNum ? '<span class="th-ok">✔ 度數很接近</span>' : '<span class="th-no">✘ 度數差比較多</span>') + '</p>';
+        }
+      } else {
+        var cur = st().t;
+        h += '<div class="th-ctl"><button type="button" class="btn btn-sm" data-d="-5">−5</button><button type="button" class="btn btn-sm" data-d="-1">−1</button><button type="button" class="btn btn-sm" data-d="1">＋1</button><button type="button" class="btn btn-sm" data-d="5">＋5</button><button type="button" class="btn btn-sm" data-a="rand">🎲 隨機 Random</button></div>';
+        h += '<div class="th-ctl"><button type="button" class="btn btn-sm' + (s0.auto ? ' btn-primary' : '') + '" data-a="auto">' + (s0.auto ? '⏸ 停止自動變化 Stop auto' : '▶ 自動變化 Auto change') + '</button><button type="button" class="btn btn-sm' + (s0.showNum ? ' btn-primary' : '') + '" data-a="num">' + (s0.showNum ? '學生看得到數字 Number shown' : '隱藏數字（學生要看溫度計）Number hidden') + '</button><button type="button" class="btn btn-sm' + (s0.reveal ? ' btn-primary' : '') + '" data-a="reveal">' + (s0.reveal ? '已公布答案 Revealed' : '公布答案 Reveal') + '</button></div>';
+        h += '<p class="th-q">現在溫度：<b>' + cur + ' °C</b>　→　<b>' + thermoAdjOf(cur) + '</b><small>拖曳左邊溫度計的水銀柱也可以改溫度 Drag the thermometer to change it</small></p>';
+        var ids = Object.keys(ans).filter(function(k){ return k !== "teacher"; });
+        h += '<div class="bg5-cap">學生回答（' + ids.length + ' 人）Answers</div>';
+        if(ids.length){
+          h += '<table class="th-tbl"><thead><tr><th>學生</th><th>說法</th><th>度數</th><th>當時</th>' + (s0.reveal ? '<th></th>' : '') + '</tr></thead><tbody>' + ids.map(function(k){ var r = ans[k], tt = Number(r.t), okA = thermoAdjOf(tt) === r.adj, okN = r.num !== "" && r.num !== undefined && Math.abs(Number(r.num) - tt) <= 2;
+            return '<tr><td>' + escapeHtml(nameOf(k, r)) + '</td><td>' + escapeHtml(r.adj || "") + '</td><td>' + escapeHtml(String(r.num === undefined ? "" : r.num)) + '</td><td>' + tt + '°</td>' + (s0.reveal ? '<td>' + (okA ? '<span class="th-ok">✔</span>' : '<span class="th-no">✘</span>') + ' ' + (okN ? '<span class="th-ok">✔</span>' : '<span class="th-no">✘</span>') + '</td>' : '') + '</tr>'; }).join("") + '</tbody></table>';
+        } else h += '<div class="bg5-note">還沒有學生回答。No answers yet.</div>';
+        h += '<div class="bg5-note" style="margin-top:8px;">說法：冷 ≤12°、涼 13–19°、涼快 20–23°、暖和 24–28°、熱 ≥29°；度數差 2 度以內算接近。</div>';
+      }
+      side.innerHTML = h;
+      var numIn = side.querySelector("#th-num-in"); if(numIn) numIn.oninput = function(){ numTxt = numIn.value; };
+    }
+    side.onclick = function(e){
+      var b = e.target.closest("button"); if(!b) return; var s0 = st();
+      if(b.dataset.adj){ adjSel = adjSel === b.dataset.adj ? "" : b.dataset.adj; var ni = side.querySelector("#th-num-in"); if(ni) numTxt = ni.value; drawSide(true); return; }
+      if(b.dataset.d){ setSt({ t: s0.t + Number(b.dataset.d), auto: false }); return; }
+      var a = b.dataset.a;
+      if(a === "send"){
+        var ni2 = side.querySelector("#th-num-in"); if(ni2) numTxt = ni2.value;
+        if(!adjSel && numTxt === ""){ alert("請先選一個說法，或寫下幾度。Please choose a word or write the degrees."); return; }
+        var rec = { name: myName || "學生", adj: adjSel, num: numTxt === "" ? "" : Number(numTxt), t: s0.t, at: Date.now() };
+        if(inRoom()){ update(ref(db, "rooms/" + activeRoomId + "/sharedProgress/" + q.id + "/thermoAns/" + myId), rec); }
+        else { var cur2 = pg().thermoAns || {}; cur2[isStudent ? myId : "teacher"] = rec; writeProgress(q.id, { thermoAns: cur2 }); }
+        return;
+      }
+      if(a === "rand"){ var nt = MIN + Math.floor(Math.random() * (MAX - MIN + 1)); setSt({ t: nt, auto: false, reveal: false }); }
+      else if(a === "auto") setSt({ auto: !s0.auto });
+      else if(a === "num") setSt({ showNum: !s0.showNum });
+      else if(a === "reveal") setSt({ reveal: !s0.reveal });
+    };
+    function autoTick(){
+      if(!document.body.contains(wrap)){ clearInterval(thermoTimer); thermoTimer = null; return; }
+      var s0 = st(); if(!s0.auto || dragging) return;
+      var d = (Math.floor(Math.random() * 7) - 3) || 2, nt = s0.t + d; if(nt > MAX || nt < MIN) nt = s0.t - d;
+      setSt({ t: nt, reveal: false });
+    }
+    function draw(){
+      if(!document.body.contains(wrap)) return false;
+      var s0 = st(); if(!dragging) paint(s0.t, s0.showNum);
+      var inputFocused = side.contains(document.activeElement) && document.activeElement.tagName === "INPUT";
+      if(!inputFocused) drawSide(false); else { var keep = JSON.stringify([isStudent, s0.showNum, s0.reveal, s0.auto]); if(!sideSig.startsWith('[' + JSON.stringify(isStudent) + ',' + JSON.stringify(s0.showNum) + ',' + JSON.stringify(s0.reveal))) drawSide(true); }
+      return true;
+    }
+    liveBoardQId = q.id; liveBoardRefresh = draw;
+    if(!isStudent) thermoTimer = setInterval(autoTick, 3000);
+    paint(st().t, st().showNum); drawSide(true);
   }
   function renderHanziBoard(q, container){
     var char = q.char || "";
