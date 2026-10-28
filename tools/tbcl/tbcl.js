@@ -62,9 +62,13 @@ function doCheck(){load().then(function(){
   $("res").innerHTML=r.total?report(r,t,lim):'<p class="note">請先貼上文字。</p>'})}
 $("run").onclick=doCheck;
 $("res").onclick=function(e){var w=e.target.getAttribute&&e.target.getAttribute("data-w");if(!w)return;EX.has(w)?EX.delete(w):EX.add(w);doCheck()};
-$("exportc").onclick=function(){if(!LAST)return;var r=LAST.r,s="TBCL 第 "+LAST.t+" 級檢核（標準 "+LAST.lim+"%）\n詞次 "+r.total+"，超綱 "+r.over+"（"+r.ratio.toFixed(1)+"%）\n不重複詞 "+r.types+"，超綱 "+r.typeOver+"（"+r.typeRatio.toFixed(1)+"%）\n詞表："+(OFFICIAL?"官方 TBCL":"暫代（TOCFL）")+"\n超綱詞："+r.list.map(function(x){return x.w+"("+(x.lv==null?"未收錄":x.lv)+")"}).join("、");
+$("exportc").onclick=function(){if(!LAST)return;var r=LAST.r,s="TBCL 第 "+LAST.t+" 級檢核（標準 "+LAST.lim+"%）\n詞次 "+r.total+"，超綱 "+r.over+"（"+r.ratio.toFixed(1)+"%）\n不重複詞 "+r.types+"，超綱 "+r.typeOver+"（"+r.typeRatio.toFixed(1)+"%）\n詞表："+(OFFICIAL?"官方 TBCL":"暫代（TOCFL）")+"\n"+CITE+"\n超綱詞："+r.list.map(function(x){return x.w+"("+(x.lv==null?"未收錄":x.lv)+")"}).join("、");
   navigator.clipboard.writeText(s).then(function(){alert("已複製")},function(){prompt("複製：",s)})};
 $("printc").onclick=function(){window.print()};
+
+/* 出處 */
+var CITE="資料來源：國家教育研究院，臺灣華語文能力基準詞語表、漢字表、語法點表與通用詞頻表，臺灣華語文語料庫與能力基準整合應用系統（https://coct.naer.edu.tw/）。檢核工具為曼米中文自行開發，非官方服務；詞語表第 1*–4* 級併入該級計算。";
+$("cite-copy").onclick=function(){navigator.clipboard.writeText(CITE).then(function(){alert("已複製")},function(){prompt("複製：",CITE)})};
 
 /* ② AI 依等級生成 */
 var LOG=[];try{LOG=JSON.parse(localStorage.getItem("mm_tbcl_log")||"[]")}catch(e){}

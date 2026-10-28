@@ -13,3 +13,6 @@ textarea{width:100%;min-height:150px}button{font:inherit;border:1px solid var(--
 table{border-collapse:collapse;width:100%;font-size:14px}th,td{border:1px solid var(--line);padding:5px 8px;text-align:left;vertical-align:top}th{background:#f2ece2}
 .bar{display:inline-block;height:12px;background:var(--red);border-radius:3px;vertical-align:middle}.kw{text-align:right;color:#8a7d70}.kw b{color:var(--red)}
 @media print{.tabs,.row,.back,textarea,button{display:none!important}}
+
+.cite{max-width:980px;margin:0 auto;padding:14px 16px 30px;font-size:12.5px;color:#6b5f55;border-top:1px solid var(--line)}.cite a{color:var(--red)}
+@media print{.cite button{display:none}}
