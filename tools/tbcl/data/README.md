@@ -11,6 +11,8 @@
 
 | `lexicon.txt` | 補充斷詞字典：教育部詞條中不在 TBCL 的 3 字以上詞（約 9 千個），斷詞用、等級一律當「詞表沒有」 | `build_lexicon.py` 由 `tools/vocab/data/moe-relations.json` 產生 |
 
+| `lexicon-idioms.txt` | 成語／固定詞組字典（約 3 萬詞）：教育部《重編國語辭典修訂本》詞條中 4–8 字、不在 TBCL、且不能拆成 TBCL 詞的詞 | `build_idioms.py`（來源 g0v/moedict-data 的 dict-revised.json；只取詞條名稱） |
+
 用 `../build/` 裡的 `build_tbcl.py`、`build_grammar.py` 從官方 PDF／Excel 重新產生。
 - 第 1*–4* 級（詞語）依「併入該級」計算，等級 1–7 對應競賽簡章的 TBCL 1–7 級。
 - 詞語表沒有單獨收錄的虛詞「了」「著」，依語法點表（V了、V著 第 2 級）計為第 2 級。

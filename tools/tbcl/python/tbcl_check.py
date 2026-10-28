@@ -39,6 +39,7 @@ except ImportError:          # 只用 CKIP 時不需要 Jieba
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 TBCL_TSV = DATA_DIR / "tbcl.tsv"
 LEXICON_TXT = DATA_DIR / "lexicon.txt"
+LEXICON_IDIOMS_TXT = DATA_DIR / "lexicon-idioms.txt"
 FREQ_TSV = DATA_DIR / "freq.tsv"
 
 # 詞語表沒有單獨收、但語法點表有的虛詞用法：V了、V著 為第 2 級
@@ -73,10 +74,12 @@ def load_tbcl(path: Path = TBCL_TSV) -> Dict[str, Tuple[int, bool]]:
 
 
 def load_lexicon(path: Path = LEXICON_TXT) -> List[str]:
-    """補充斷詞字典（成語、長詞；不在 TBCL）。檔案不存在就回傳空串列。"""
-    if not path.exists():
-        return []
-    return [w.strip() for w in path.read_text(encoding="utf8").splitlines() if w.strip()]
+    """補充斷詞字典（成語、長詞；不在 TBCL）：lexicon.txt（教育部近義詞詞條）＋ lexicon-idioms.txt（重編國語辭典成語／固定詞組）。"""
+    words: List[str] = []
+    for p in (path, LEXICON_IDIOMS_TXT):
+        if p.exists():
+            words.extend(w.strip() for w in p.read_text(encoding="utf8").splitlines() if w.strip())
+    return list(dict.fromkeys(words))
 
 
 def load_ranks(path: Path = FREQ_TSV) -> Dict[str, int]:
@@ -301,7 +304,7 @@ def check_materials(
     result = CheckResult(int(target_level))
     pos_of: Dict[int, str] = {}
     if segmenter == "ckip":
-        known = set(tbcl) | set(load_lexicon())
+        known = set(tbcl)        # 只用 TBCL 詞表合併：辭典詞條裡有很多合成詞（社會秩序），不能拿來黏 CKIP 已斷好的詞
         words: List[str] = []
         for line in segment_ckip_lines(text, ckip_driver):          # 1) 先斷詞（獨立於 TBCL）
             line = align_to_tbcl(line, known)                        # 2) 再對回詞表
