@@ -14,7 +14,7 @@
   // ---------- 兩種風格的版型（座標都是 512×512）----------
   var G = {
     outline: { head: { cx: 255.5, cy: 184, rx: 158.5, ry: 143, k: 30 }, ear: { l: [147, 60], r: [364, 60], rad: 51, inner: 21 }, eyes: { x1: 209.5, x2: 301.5, y: 146.5, r: 7 }, muzzle: { cx: 255.5, cy: 233.5, rx: 89.5, ry: 57.5 }, nose: { x: 255, y: 176, w: 49, h: 30 }, phil: { y1: 204, y2: 241, w: 14 }, mouthY: 241,
-      body: { cx: 255, cy: 384, rx: 150, ry: 118 }, belly: { cx: 255, cy: 400, rx: 108, ry: 89 }, arms: [{ x: 116, y: 372, rx: 32, ry: 72, rot: 20 }, { x: 394, y: 372, rx: 32, ry: 72, rot: -20 }], feet: [{ x: 80, y: 448, rx: 54, ry: 62, rot: -18, px: 78, py: 448, prx: 22, pry: 44 }, { x: 431, y: 448, rx: 54, ry: 62, rot: 18, px: 433, py: 448, prx: 22, pry: 44 }], cheekY: 205, cheekX: [128, 382] },
+      body: { cx: 258, cy: 392, rx: 120, ry: 100 }, belly: { cx: 260, cy: 401, rx: 108, ry: 88 }, arms: [{ x: 126, y: 364, rx: 35, ry: 76, rot: 22 }, { x: 389, y: 364, rx: 35, ry: 76, rot: -22 }], feet: [{ x: 76, y: 446, rx: 46, ry: 60, rot: -14, px: 73, py: 446, prx: 24, pry: 44 }, { x: 436, y: 446, rx: 46, ry: 60, rot: 14, px: 439, py: 446, prx: 24, pry: 44 }], cheekY: 205, cheekX: [128, 382] },
     flat: { head: { cx: 255, cy: 139, rx: 142, ry: 129, k: 36 }, ear: { l: [145, 47], r: [365, 47], rad: 45, inner: 28 }, eyes: { x1: 184, x2: 327, y: 128.5, r: 11.5 }, muzzle: null, nose: { x: 255, y: 149, w: 65, h: 46 }, phil: { y1: 166, y2: 208, w: 14 }, mouthY: 208,
       body: { cx: 256, cy: 372, rx: 160, ry: 100 }, belly: null, arms: [], feet: [{ x: 102, y: 430, rx: 52, ry: 80, rot: 4, px: 103, py: 430, prx: 21, pry: 45 }, { x: 410, y: 430, rx: 52, ry: 80, rot: -4, px: 409, py: 430, prx: 21, pry: 45 }], cheekY: 170, cheekX: [112, 398] }
   };
@@ -89,7 +89,7 @@
     mid: function(S, c){ var g = S.g.eyes; return S.E(g.x1 - 4, g.y + 6, 46, 58, c.black, 'transform="rotate(26 ' + (g.x1 - 4) + " " + (g.y + 6) + ')"') + S.E(g.x2 + 4, g.y + 6, 46, 58, c.black, 'transform="rotate(-26 ' + (g.x2 + 4) + " " + (g.y + 6) + ')"') + muzzleShape(S, c.muzzle); }, nose: function(S, c){ return noseShape(S, c.nose); }, eyeCol: "#FFFFFF" });
   def("frog", "🐸", "青蛙", { c: { body: "#7DCA5E", belly: "#EAF8CB", nose: "#3b7a2a", pad: "#BFE6A8" }, eyes: "frog",
     ears: function(S, c){ var g = S.g.ear; return S.SC(g.l[0] + 20, g.l[1] + 6, g.rad + 8, c.body) + S.SC(g.r[0] - 20, g.r[1] + 6, g.rad + 8, c.body); },
-    mid: function(S, c){ return S.E(S.g.cheekX[0] - 10, S.g.cheekY + 6, 36, 24, "#FF9DAA", 'opacity=".6"' + (S.o ? ' stroke="none"' : "")) + S.E(S.g.cheekX[1] + 10, S.g.cheekY + 6, 36, 24, "#FF9DAA", 'opacity=".6"' + (S.o ? ' stroke="none"' : "")); },
+    mid: function(S, c){ return ""; },
     nose: function(S, c){ var n = S.g.nose; return S.C(n.x - 18, n.y, 6, c.nose, 'stroke="none"') + S.C(n.x + 18, n.y, 6, c.nose, 'stroke="none"'); }, noPhil: true, wideMouth: true });
   def("penguin", "🐧", "企鵝", { c: { body: "#3E4F63", belly: "#FFFFFF", beak: "#FFA83C", nose: "#FFA83C", pad: "#FFC36B", arm: "#33424f", flatArm: "#33424f", foot: "#FFA83C", flatFoot: "#FFA83C", flatPad: "#E27A1E" },
     ears: function(){ return ""; },
@@ -165,7 +165,7 @@
     else { out = '<g class="pa-eyes">' + dot(P1) + dot(P2) + "</g>"; if(mood === "sad" || mood === "hungry") out += S.L("M" + (P1[0] - 30) + " " + (P1[1] - 22) + " L" + (P1[0] + 20) + " " + (P1[1] - 38) + " M" + (P2[0] + 30) + " " + (P2[1] - 22) + " L" + (P2[0] - 20) + " " + (P2[1] - 38), INK, 9); if(mood === "sad") out += '<path d="M' + (P1[0] - 6) + " " + (P1[1] + 22) + " Q" + (P1[0] - 22) + " " + (P1[1] + 52) + " " + (P1[0] - 4) + " " + (P1[1] + 56) + " Q" + (P1[0] + 14) + " " + (P1[1] + 50) + " " + (P1[0] - 6) + ' ' + (P1[1] + 22) + ' Z" fill="#7CC8FF"/>'; }
     return out;
   }
-  function mouthSvg(S, mood, sp){
+  function mouthSvg(S, mood, sp){ return "";
     var g = S.g, y = g.mouthY + (sp.mouthDy || 0), x = 255, out = "";
     if(sp.noPhil && mood !== "happy" && mood !== "love" && mood !== "eat" && mood !== "hungry" && mood !== "sad" && mood !== "sleep") out += S.L("M" + (x - 34) + " " + (y + 4) + " Q" + (x - 17) + " " + (y + 24) + " " + x + " " + (y + 6) + " Q" + (x + 17) + " " + (y + 24) + " " + (x + 34) + " " + (y + 4), INK, 10);
     if(sp.teeth && mood !== "sad") out += S.N("M" + (x - 40) + " " + y + " L" + (x - 30) + " " + (y + 24) + " L" + (x - 20) + " " + y + " M" + (x + 20) + " " + y + " L" + (x + 30) + " " + (y + 24) + " L" + (x + 40) + " " + y, "#fff", 'stroke="' + INK + '" stroke-width="4"');
@@ -233,13 +233,14 @@
     if(sp.back) inn += '<g class="' + (anim ? "pa-tailg" : "") + '">' + sp.back(S, sp.c) + "</g>";
     if(outline) g.arms.forEach(function(a){ inn += S.SE(a.x, a.y, a.rx, a.ry, armC, { rot: a.rot, k: 12 }); });
     if(outline){
-      inn += S.SE(g.body.cx, g.body.cy, g.body.rx, g.body.ry, body, { k: 22 });
+      inn += S.SE(256, 440, 150, 56, body, { k: 14 });
       inn += S.SE(g.belly.cx, g.belly.cy, g.belly.rx, g.belly.ry, belly, { k: 18 });
     } else {
-      var cid = "pc" + (++UID), tor = '<ellipse cx="255" cy="388" rx="136" ry="122"';
+      var cid = "pc" + (++UID), tor = '<ellipse cx="256" cy="366" rx="155" ry="118"';
       inn += S.N("M190 196 C96 246 28 330 52 424 C70 500 440 500 458 424 C482 330 414 246 320 196 Z", shade(body, -50)) + '<clipPath id="' + cid + '">' + tor + '/></clipPath>' + tor + ' fill="' + shade(body, -22) + '"/><g clip-path="url(#' + cid + ')"><ellipse cx="255" cy="250" rx="170" ry="40" fill="' + shade(body, -50) + '"/></g>';
     }
-    g.feet.forEach(function(f){ inn += S.SE(f.x, f.y, f.rx, f.ry, footC, { rot: f.rot, k: outline ? 12 : 16 }) + S.E(f.px, f.py, f.prx, f.pry, padC, 'transform="rotate(' + f.rot + " " + f.px + " " + f.py + ')"' + (outline ? "" : ' stroke="none"')); });
+    if(outline) g.feet.forEach(function(f){ inn += S.SE(f.x, f.y, f.rx, f.ry, footC, { rot: f.rot, k: 12 }) + S.E(f.px, f.py, f.prx, f.pry, padC, 'transform="rotate(' + f.rot + " " + f.px + " " + f.py + ')"'); });
+    else [0, 1].forEach(function(i){ var m = i ? ' transform="translate(512 0) scale(-1 1)"' : ""; inn += '<g' + m + '><path d="M44 408 Q42 352 104 350 Q162 350 162 392 Q156 460 128 502 Q104 520 86 498 Q46 452 44 408 Z" fill="' + footC + '"/><path d="M74 420 Q72 386 102 384 Q134 386 132 416 Q128 450 112 470 Q96 480 88 466 Q74 446 74 420 Z" fill="' + padC + '"/></g>'; });
     if(sp.ears) inn += sp.ears(S, sp.c);
     var hc = sp.headFill || body;
     inn += S.SE(g.head.cx, g.head.cy, g.head.rx, g.head.ry, hc, { k: g.head.k });
