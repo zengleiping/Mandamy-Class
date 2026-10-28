@@ -37,12 +37,13 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   #brk.brk-done{ background:rgba(255,236,230,.84); }
   /* 🎡 籤筒：跟下課鬧鐘同一種全螢幕風格；老師抽到的人，學生的畫面也會跳出來 */
   #drawov{ position:fixed; inset:0; z-index:99991; display:flex; align-items:center; justify-content:center; background:rgba(250,247,242,.88); backdrop-filter:blur(1.5px); -webkit-backdrop-filter:blur(1.5px); }
-  .dr-box{ text-align:center; padding:20px; width:min(760px,95vw); max-height:96vh; overflow:auto; }
+  .dr-box{ text-align:center; padding:20px; width:min(760px,95vw); max-height:96vh; overflow-y:auto; overflow-x:hidden; scrollbar-width:none; }
+  .dr-box::-webkit-scrollbar{ display:none; }
   .dr-wheel{ width:min(190px,34vw); height:auto; }
   .dr-wheel.spin{ animation:drSpin .55s linear infinite; }
   @keyframes drSpin{ to{ transform:rotate(360deg); } }
   .dr-title{ font-family:MM Latin,Iansui,serif; font-size:clamp(22px,3.4vw,34px); font-weight:700; color:var(--ink); margin-top:6px; }
-  .dr-name{ font-family:MM Latin,Iansui,serif; font-size:clamp(52px,12vw,130px); font-weight:800; color:var(--seal); min-height:1.15em; line-height:1.15; word-break:break-all; }
+  .dr-name{ font-family:MM Latin,Iansui,serif; font-size:clamp(52px,12vw,130px); font-weight:800; color:var(--seal); min-height:1.15em; line-height:1.15; overflow-wrap:anywhere; }
   .dr-name.pop{ animation:drPop .55s cubic-bezier(.3,1.6,.5,1); }
   @keyframes drPop{ from{ transform:scale(.4); opacity:.2; } to{ transform:scale(1); opacity:1; } }
   .dr-sub{ font-size:clamp(15px,2vw,19px); color:var(--ink-soft); margin-top:4px; }
@@ -6645,6 +6646,7 @@ function drKey(){ return "mm_draw_" + (S.sel ? S.sel.c : "x"); }
 function drLoad(){ try{ var o = JSON.parse(localStorage.getItem(drKey()) || "null"); if(o){ DR.absent = o.absent || {}; DR.drawn = o.drawn || []; DR.round = o.round || 1; DR.last = o.last || null; } }catch(e){} }
 function drSave(){ try{ localStorage.setItem(drKey(), JSON.stringify({ absent: DR.absent, drawn: DR.drawn, round: DR.round, last: DR.last })); }catch(e){} }
 function drPool(){ return DR.names.filter(function(n){ return !DR.absent[n] && DR.drawn.indexOf(n) < 0; }); }
+function drNameSize(n){ var w = 0; String(n || '').split('').forEach(function(c){ w += /[\u2e80-\u9fff\uff00-\uffef]/.test(c) ? 1 : 0.6; }); return Math.round(Math.max(30, Math.min(130, 680 / Math.max(w, 1)))); }
 function drWheel(spin){ return '<img class="dr-wheel' + (spin ? ' spin' : '') + '" id="dr-wheel" src="icons/draw-wheel.png" alt="籤筒">'; }
 async function drOpen(){
   if(!S.teacher || !S.sel || !S.sel.c){ alert("請先進到一個班級再用籤筒。"); return; }
@@ -6665,7 +6667,7 @@ function drClose(){ if(DR.el){ DR.el.remove(); DR.el = null; } DR.busy = false; 
 function drRender(name, spin, pop){
   if(!DR.el) return; var pool = drPool(), part = DR.names.filter(function(n){ return !DR.absent[n]; }), cur = name !== undefined ? name : (DR.last && DR.last.name) || "";
   DR.el.innerHTML = '<div class="dr-box">' + drWheel(spin) + '<div class="dr-title">' + (spin ? '抽籤中…' : cur ? '抽到了！' : '籤筒') + '</div>' +
-    '<div class="dr-name' + (pop ? ' pop' : '') + '" id="dr-name">' + esc(cur || (spin ? '' : '？')) + '</div>' +
+    '<div class="dr-name' + (pop ? ' pop' : '') + '" id="dr-name" style="font-size:min(' + drNameSize(cur) + 'px,12vw)">' + esc(cur || (spin ? '' : '？')) + '</div>' +
     '<div class="dr-sub">第 ' + DR.round + ' 輪　・　還有 ' + pool.length + ' 人沒被抽到（共 ' + part.length + ' 人參加）' + (!pool.length && part.length ? '　・　這輪抽完了，再按「抽」會開始新的一輪' : '') + '</div>' +
     '<div class="dr-act"><button type="button" class="btn primary" data-dr="draw"' + (spin ? ' disabled' : '') + '>' + (pool.length ? '抽！' : '開始新的一輪並抽') + '</button><button type="button" class="btn" data-dr="reset"' + (spin ? ' disabled' : '') + '>重新開始這一輪</button><button type="button" class="btn" data-dr="close">關閉</button></div>' +
     '<div class="dr-chips">' + DR.names.map(function(n){ return '<span class="dr-chip' + (DR.absent[n] ? ' abs' : DR.drawn.indexOf(n) >= 0 ? ' out' : '') + (n === cur && !spin ? ' cur' : '') + '" data-chip="' + esc(n) + '">' + esc(n) + '</span>'; }).join("") + '</div>' +
@@ -6697,7 +6699,7 @@ function drSync(d){
   if(DR.stuTimer){ clearTimeout(DR.stuTimer); DR.stuTimer = null; } if(DR.stuEl){ DR.stuEl.remove(); DR.stuEl = null; }
   var me = S.student && S.student.name, mine = me && String(d.name) === String(me);
   var el = document.createElement("div"); el.id = "drawov"; DR.stuEl = el; document.body.appendChild(el);
-  el.innerHTML = '<div class="dr-box">' + drWheel(false) + '<div class="dr-title">' + (mine ? '🎉 就是你！' : '老師抽到了！') + '</div><div class="dr-name pop">' + esc(d.name) + '</div><div class="dr-sub">第 ' + (d.round || 1) + ' 輪' + (d.left != null ? '　・　還有 ' + d.left + ' 人沒被抽到' : '') + '</div><div class="dr-act"><button type="button" class="btn primary" data-x="1">關閉</button></div></div>';
+  el.innerHTML = '<div class="dr-box">' + drWheel(false) + '<div class="dr-title">' + (mine ? '🎉 就是你！' : '老師抽到了！') + '</div><div class="dr-name pop" style="font-size:min(' + drNameSize(d.name) + 'px,12vw)">' + esc(d.name) + '</div><div class="dr-sub">第 ' + (d.round || 1) + ' 輪' + (d.left != null ? '　・　還有 ' + d.left + ' 人沒被抽到' : '') + '</div><div class="dr-act"><button type="button" class="btn primary" data-x="1">關閉</button></div></div>';
   el.onclick = function(){ el.remove(); DR.stuEl = null; };
   DR.stuTimer = setTimeout(function(){ if(DR.stuEl === el){ el.remove(); DR.stuEl = null; } }, mine ? 12000 : 8000);
 }
