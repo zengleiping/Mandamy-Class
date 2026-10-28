@@ -6702,7 +6702,7 @@ function drBroadcast(){
 }
 // 課堂工具箱（classtools/）需要的班級資料與抽籤
 function liveKey(n){ return String(n || "").replace(/[.#$\[\]\/]/g, "_") || "_"; }
-window.PET_ctx = { student: function(){ return S.student; }, teacherSel: function(){ return (S.teacher && S.sel && S.sel.c) ? { t: S.teacher.id, c: S.sel.c } : null; }, get: fbGet, update: fbUpdate, toast: toast, key: liveKey, roster: function(){ return (S.teacher && S.sel && S.sel.c) ? hwLoadRoster() : Promise.resolve([]); },
+window.PET_ctx = { student: function(){ return S.student; }, teacherSel: function(){ return (S.teacher && S.sel && S.sel.c) ? { t: S.teacher.id, c: S.sel.c, tm: S.sel.t } : null; }, get: fbGet, update: fbUpdate, toast: toast, key: liveKey, roster: function(){ return (S.teacher && S.sel && S.sel.c) ? hwLoadRoster() : Promise.resolve([]); },
   onValue: function(path, cb){ try{ return window.onValue(window.ref(window.db, path), function(sn){ cb(sn.val()); }); }catch(e){ return function(){}; } } };
 window.CT_ctx = { inClass: function(){ return !!(S.teacher && S.sel && S.sel.c); }, openBreak: function(){ brkOpenDialog(); }, live: {
     on: function(){ return !!(S.live && S.live.on && S.sel && S.sel.c); },
@@ -7758,6 +7758,6 @@ window.__mm = { get S(){ return S; }, render: function(){ return render(); }, ne
 <script src="classtools/ct-fun.js?v=20261029"></script>
 <script src="classtools/ct-board.js?v=20261029"></script>
 <script src="classtools/ct-live.js?v=20261029"></script>
-<script src="classtools/pets.js?v=20261030"></script>
+<script src="classtools/pets.js?v=20261031"></script>
 </body>
 </html>

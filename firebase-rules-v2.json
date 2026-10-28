@@ -285,13 +285,19 @@
           }
         },
         "petGame": {
-          "$c": {
+          "$tm": {
             "cfg": {
               ".read": "auth != null"
             },
             "s": {
               ".read": "auth != null",
               "$k": {
+                ".write": "auth != null"
+              }
+            },
+            "redeem": {
+              ".read": "auth != null",
+              "$r": {
                 ".write": "auth != null"
               }
             }
