@@ -16,6 +16,7 @@
   <button data-t="gen">② AI 依等級生成</button>
   <button data-t="inv">③ 教材等級盤點</button>
   <button data-t="kwic">④ 語料庫例句</button>
+  <button data-t="gram">⑤ 語法點表</button>
 </nav>
 
 <main>
@@ -57,9 +58,14 @@
 </section>
 
 <section id="p-kwic" hidden>
-  <p class="note">在曼米教材的課文與例句裡找一個詞怎麼用（數據驅動學習 DDL）。目前語料是平台自己的教材；官方 COCT 語料庫連不上時，用它先做課堂觀察活動。</p>
+  <p class="note">在曼米教材的課文與例句裡找一個詞怎麼用（數據驅動學習 DDL）。目前語料是平台自己的教材；詞頻資料來自 COCT 通用詞頻表；例句語料是平台自己的教材，可直接用來做課堂觀察活動。</p>
   <div class="row"><label class="grow">查詞 <input id="k-q" placeholder="例如：喜歡"></label><button id="k-go" class="pri">查詢</button></div>
-  <div id="k-out"></div>
+  <div id="k-freq"></div><div id="k-out"></div>
+</section>
+<section id="p-gram" hidden>
+  <p class="note">國家教育研究院「臺灣華語文能力基準語法點表」（目前官方表涵蓋第 1–5 級；* 級是該級的擴充）。</p>
+  <div class="row"><label>等級 <select id="gr-lv"><option value="0">全部</option></select></label><label class="grow">搜尋名稱或例句 <input id="gr-q"></label></div>
+  <div id="gr-out"></div>
 </section>
 </main>
 <script src="../../data.js"></script>

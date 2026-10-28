@@ -5,15 +5,17 @@
 "use strict";
 var $=function(id){return document.getElementById(id)};
 var esc=function(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})};
-var LV=new Map(),KEYS=new Set(),MAXLEN=1,OFFICIAL=false,READY=null;
+var STAR=new Set(),FREQ=null,GRAM=null,LV=new Map(),KEYS=new Set(),MAXLEN=1,OFFICIAL=false,READY=null;
 var isHan=function(c){return /[㐀-鿿豈-﫿〇]/.test(c)};
 function add(w,l){if(!w)return;var o=LV.get(w);if(o==null||l<o)LV.set(w,l);KEYS.add(w);if(w.length>MAXLEN)MAXLEN=w.length}
+/* 詞語表沒有單獨收、但語法點表有的虛詞用法：依語法點表的等級（V了＝第 2 級、V著＝第 2 級）計算 */
+var GRAM_WORD={"了":2,"著":2};
 function load(){
   if(READY)return READY;
   READY=fetch("data/tbcl.tsv").then(function(r){if(!r.ok)throw 0;return r.text()}).then(function(t){
-    var n=0;t.split("\n").forEach(function(ln){if(!ln||ln[0]==="#")return;var f=ln.split("\t"),l=parseInt(f[1],10);if(f[0]&&l>=1&&l<=7){add(f[0].trim(),l);n++}});
-    if(!n)throw 0;OFFICIAL=true;$("src").textContent="詞表：官方 TBCL（"+n+" 筆）";
-  }).catch(function(){
+    var n=0;t.split("\n").forEach(function(ln){if(!ln||ln[0]==="#")return;var f=ln.split("\t"),l=parseInt(f[1],10);if(f[0]&&l>=1&&l<=7){add(f[0].trim(),l);if(f[2]==="*")STAR.add(f[0].trim());n++}});
+    if(!n)throw 0;OFFICIAL=true;$("src").textContent="詞表：國家教育研究院 TBCL 詞語表（"+n+" 筆，第 1*–4* 級併入該級計算）";
+  }).then(function(){Object.keys(GRAM_WORD).forEach(function(w){var o=LV.get(w);if(o==null||GRAM_WORD[w]<o){add(w,GRAM_WORD[w])}})}).catch(function(){
     return fetch("../vocab/data/tocfl.tsv").then(function(r){return r.text()}).then(function(t){
       t.split("\n").forEach(function(ln){var f=ln.split("\t");if(f.length<4)return;var l=Math.max(1,Math.min(7,+f[3]||1));add(f[0],l);if(f[1])add(f[1],l)});
       var s=$("src");s.className="src prov";s.textContent="⚠ 暫用 TOCFL 華語八千詞對應（TOCFL 0–6 級 → 1–6 級），不是官方 TBCL。把官方詞表放到 tools/tbcl/data/tbcl.tsv 就會自動改用。";
@@ -27,8 +29,7 @@ function bmm(s){var o=[],j=s.length;while(j>0){var L=Math.min(MAXLEN,j),w=s[j-1]
 function segRun(s){var a=fmm(s),b=bmm(s);if(a.length!==b.length)return a.length<b.length?a:b;var sa=a.filter(function(x){return x.length===1}).length,sb=b.filter(function(x){return x.length===1}).length;return sb<sa?b:a}
 function tokens(str){var o=[],buf="";function f(){if(buf){segRun(buf).forEach(function(w){o.push({w:w,han:true})});buf=""}}
   for(var ch of str){if(isHan(ch))buf+=ch;else{f();o.push({w:ch,han:false})}}f();return o}
-function levelOf(w){var l=LV.get(w);if(l!=null)return l;
-  if(w.length>1){var mx=0;for(var ch of w){var c=LV.get(ch);if(c==null)return null;if(c>mx)mx=c}return mx} return null}
+function levelOf(w){var l=LV.get(w);return l==null?null:l}
 /* 檢核 */
 function analyze(text,target,excl){
   var toks=tokens(text),tot=0,over=0,types=new Map(),exN=0;
@@ -54,7 +55,7 @@ function report(r,target,limit){
   h+='<div class="card"><b>各級詞數（不重複）</b><table>';
   for(var l=1;l<=7;l++){var n=r.dist.filter(function(x){return x.lv===l}).length;h+='<tr><td>第 '+l+' 級'+(l===target?' ◀':'')+'</td><td>'+n+'</td><td><span class="bar" style="width:'+Math.round(n/mx*220)+'px"></span></td></tr>'}
   h+='<tr><td>詞表沒有</td><td>'+r.dist.filter(function(x){return x.lv==null}).length+'</td><td></td></tr></table></div>';
-  if(r.list.length){h+='<div class="card"><b>超綱詞清單</b><table><tr><th>詞</th><th>等級</th><th>次數</th></tr>';r.list.forEach(function(x){h+='<tr><td>'+esc(x.w)+'</td><td>'+(x.lv==null?"未收錄":x.lv)+'</td><td>'+x.n+'</td></tr>'});h+='</table></div>'}
+  if(r.list.length){h+='<div class="card"><b>超綱詞清單</b><table><tr><th>詞</th><th>等級</th><th>次數</th></tr>';r.list.forEach(function(x){h+='<tr><td>'+esc(x.w)+'</td><td>'+(x.lv==null?"未收錄":x.lv+(STAR.has(x.w)?"*":""))+'</td><td>'+x.n+'</td></tr>'});h+='</table></div>'}
   return h}
 function doCheck(){load().then(function(){
   var t=+$("lv").value,lim=+$("lim").value,r=analyze($("txt").value,t,EX);LAST={r:r,t:t,lim:lim};
@@ -108,6 +109,7 @@ function doInv(){load().then(function(){
     h+='<tr><td>'+esc(les.lesson+" "+(les.title||""))+'</td><td>'+v.length+'</td><td>'+u+'</td><td>'+o+'</td><td>'+(r.total?r.ratio.toFixed(1)+"%":"–")+'</td></tr>'});
   h+='</table>';
   var d='<div class="card"><b>全部 '+all+' 個生詞的等級分布</b>：'+[1,2,3,4,5,6,7].map(function(l){return"第"+l+"級 "+(cnt[l]||0)}).join("　")+"　詞表沒有 "+(cnt["未"]||0)+'</div>';
+  gramSection(L).then(function(gs){$("i-out").insertAdjacentHTML("beforeend",gs)});
   $("i-out").innerHTML=d+h+(unk.length?'<div class="card"><b>詞表沒有的生詞（建議老師補等級）</b><div class="note">'+esc(unk.join("、"))+'</div></div>':"");
   window.__invRows=rows})}
 $("i-lv").onchange=doInv;
@@ -120,7 +122,7 @@ function sentences(){if(SENT)return SENT;SENT=[];lessons().forEach(function(les)
   (les.texts||[]).forEach(function(T){(T.lines||[]).forEach(function(ln){if(ln.text)SENT.push({s:ln.text,src:tag})})});
   (les.vocab||[]).forEach(function(v){var e=v["例句（中文）"];if(e)SENT.push({s:e,src:tag+"（例句）"})})});return SENT}
 function doKwic(){load().then(function(){
-  var q=$("k-q").value.trim();if(!q)return;var hits=sentences().filter(function(x){return x.s.indexOf(q)>=0}),co=new Map();
+  var q=$("k-q").value.trim();if(!q)return;loadFreq().then(function(F){var f=F.get(q);$("k-freq").innerHTML=f?'<div class="card"><b>COCT 通用詞頻</b>：「'+esc(q)+'」綜合序位第 '+f.rank+'，每百萬詞 '+f.pm.toFixed(1)+'（書面 '+f.wr.toFixed(1)+'／口語 '+f.sp.toFixed(1)+'／新聞 '+f.nw.toFixed(1)+'）'+(LV.has(q)?'；TBCL 第 '+LV.get(q)+(STAR.has(q)?'*':'')+' 級':'')+'</div>':'<div class="card note">COCT 通用詞頻前 30000 詞裡沒有「'+esc(q)+'」。</div>'});var hits=sentences().filter(function(x){return x.s.indexOf(q)>=0}),co=new Map();
   hits.forEach(function(x){var tk=tokens(x.s).filter(function(t){return t.han}).map(function(t){return t.w}),i=tk.indexOf(q);
     if(i<0){var j=tk.findIndex(function(w){return w.indexOf(q)>=0});i=j}
     if(i<0)return;[-2,-1,1,2].forEach(function(d){var w=tk[i+d];if(w&&w!==q&&w.length>1||(w&&w.length===1&&levelOf(w)!=null&&"的了是不也就都很在有和".indexOf(w)<0))co.set(w,(co.get(w)||0)+1)})});
@@ -130,8 +132,25 @@ function doKwic(){load().then(function(){
   $("k-out").innerHTML=h})}
 $("k-go").onclick=doKwic;$("k-q").onkeydown=function(e){if(e.key==="Enter")doKwic()};
 
+
+/* COCT 通用詞頻（data/freq.tsv，前 30000 詞）與語法點表（data/grammar.json） */
+function loadFreq(){if(FREQ)return FREQ;FREQ=fetch("data/freq.tsv").then(function(r){if(!r.ok)throw 0;return r.text()}).then(function(t){var m=new Map();t.split("\n").forEach(function(ln){if(!ln||ln[0]==="#")return;var f=ln.split("\t");m.set(f[0],{rank:+f[1],pm:+f[2],wr:+f[3],sp:+f[4],nw:+f[5]})});return m}).catch(function(){return new Map()});return FREQ}
+function loadGram(){if(GRAM)return GRAM;GRAM=fetch("data/grammar.json").then(function(r){if(!r.ok)throw 0;return r.json()}).catch(function(){return[]});return GRAM}
+var stripG=function(s){return String(s).replace(/[（(][^）)]*[）)]/g,"").replace(/[0-9０-９.\s_…⋯。~～…]/g,"")};
+function matchGram(name,G){var core=stripG(name);if(!core)return[];var hit=[];
+  G.forEach(function(g){var alts=stripG(g.name).split(/[／/、，,]/).filter(Boolean),ok=alts.some(function(a){return a===core||(core.length>=2&&a.length>=2&&(a.indexOf(core)>=0||core.indexOf(a)>=0))});if(ok)hit.push(g)});
+  return hit.slice(0,4)}
+function gramSection(L){return loadGram().then(function(G){
+  if(!G.length)return"";var rows="";
+  L.forEach(function(les){(les.grammar||[]).forEach(function(g){var m=matchGram(g["語法點"]||"",G);
+    rows+='<tr><td>'+esc(les.lesson)+'</td><td>'+esc(g["語法點"])+'</td><td>'+(m.length?m.map(function(x){return"第 "+x.lv+(x.star?"*":"")+" 級「"+esc(x.name)+"」"}).join("<br>"):'<span class="note">沒有對到（請老師確認）</span>')+'</td></tr>'})});
+  return'<div class="card"><b>教材語法點 ↔ TBCL 語法點表（自動比對名稱，僅供參考）</b><table><tr><th>課</th><th>教材語法點</th><th>TBCL 對應</th></tr>'+rows+'</table></div>'})}
+$("gr-q").oninput=$("gr-lv").onchange=function(){loadGram().then(function(G){var lv=+$("gr-lv").value,q=$("gr-q").value.trim(),h='<table><tr><th>級</th><th>序號</th><th>語法點</th><th>例句</th></tr>';
+  G.filter(function(g){return(!lv||g.lv===lv)&&(!q||g.name.indexOf(q)>=0||g.ex.indexOf(q)>=0)}).slice(0,300).forEach(function(g){h+='<tr><td>'+g.lv+(g.star?"*":"")+'</td><td>'+g.no+'</td><td>'+esc(g.name)+'</td><td>'+esc(g.ex)+'</td></tr>'});$("gr-out").innerHTML=h+'</table>'})};
+for(var gi=1;gi<=5;gi++){var go=document.createElement("option");go.value=gi;go.textContent="第 "+gi+" 級";$("gr-lv").appendChild(go)}
+
 /* 分頁 */
-function tab(n){["check","gen","inv","kwic"].forEach(function(k){$("p-"+k).hidden=k!==n});[].forEach.call($("tabs").children,function(b){b.className=b.getAttribute("data-t")===n?"on":""});if(n==="inv")doInv()}
+function tab(n){["check","gen","inv","kwic","gram"].forEach(function(k){$("p-"+k).hidden=k!==n});[].forEach.call($("tabs").children,function(b){b.className=b.getAttribute("data-t")===n?"on":""});if(n==="inv")doInv();if(n==="gram")$("gr-lv").onchange()}
 $("tabs").onclick=function(e){var t=e.target.getAttribute("data-t");if(t)tab(t)};
 fillLv($("lv"),3);fillLv($("g-lv"),3);fillLv($("i-lv"),3);renderLog();
 var q=new URLSearchParams(location.search);if(q.get("level"))$("lv").value=$("g-lv").value=$("i-lv").value=q.get("level");
