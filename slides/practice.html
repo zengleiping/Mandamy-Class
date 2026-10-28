@@ -9313,11 +9313,42 @@ window.mmTA = (function(){
     tip.textContent = editorHanziImg ? "✅ 已選圖片" : "還沒有圖片"; if(clr) clr.style.display = editorHanziImg ? "" : "none";
   }
 
-  function makePairRow(left, right){
+  function pickImageInto(fi, done){
+    fi.onchange = function(e){
+      var file = e.target.files && e.target.files[0]; if(!file) return;
+      var reader = new FileReader();
+      reader.onload = function(evt){
+        var im = new Image();
+        im.onload = function(){
+          var c = document.createElement("canvas"), sc = Math.min(1, 520 / Math.max(im.width, im.height));
+          c.width = Math.round(im.width * sc); c.height = Math.round(im.height * sc);
+          var cx = c.getContext("2d"); cx.fillStyle = "#fff"; cx.fillRect(0, 0, c.width, c.height); cx.drawImage(im, 0, 0, c.width, c.height);
+          done(c.toDataURL("image/jpeg", 0.82));
+        };
+        im.src = evt.target.result;
+      };
+      reader.readAsDataURL(file); fi.value = "";
+    };
+  }
+  function fillMatchBtn(btn, text, img){
+    if(!img){ btn.textContent = text || ""; return; }
+    var im = document.createElement("img"); im.src = img; im.alt = ""; im.style.cssText = "display:block;max-width:100%;max-height:110px;margin:0 auto 4px;border-radius:8px;object-fit:contain;";
+    btn.appendChild(im); if(text){ var sp = document.createElement("span"); sp.textContent = text; btn.appendChild(sp); }
+  }
+  function makePairRow(left, right, leftImg, rightImg){
     var row = document.createElement("div"); row.className = "pair-row";
-    row.innerHTML = '<input type="text" class="f-pair-left" placeholder="生詞" value="' + escapeHtml(left) + '">' +
-      '<input type="text" class="f-pair-right" placeholder="拼音／意思" value="' + escapeHtml(right) + '">' +
+    function imgBtn(cls){ return '<button type="button" class="choice-img-btn ' + cls + '" title="加入圖片">🖼</button><input type="file" accept="image/*" class="' + cls + '-file" style="display:none">'; }
+    row.innerHTML = '<input type="text" class="f-pair-left" placeholder="生詞（可只放圖片）" value="' + escapeHtml(left || "") + '">' + imgBtn("pair-limg") +
+      '<input type="text" class="f-pair-right" placeholder="拼音／意思（可只放圖片）" value="' + escapeHtml(right || "") + '">' + imgBtn("pair-rimg") +
       '<button type="button" class="row-del">✕</button>';
+    row.dataset.limg = leftImg || ""; row.dataset.rimg = rightImg || "";
+    [["limg", "pair-limg"], ["rimg", "pair-rimg"]].forEach(function(d){
+      var key = d[0], ib = row.querySelector("." + d[1]), fi = row.querySelector("." + d[1] + "-file");
+      function showImg(){ ib.innerHTML = row.dataset[key] ? '<img src="' + row.dataset[key] + '" alt="">' : "🖼"; ib.title = row.dataset[key] ? "點一下更換，按住 Shift 點一下移除" : "加入圖片"; }
+      showImg();
+      ib.onclick = function(ev){ if(ev.shiftKey && row.dataset[key]){ row.dataset[key] = ""; showImg(); } else fi.click(); };
+      pickImageInto(fi, function(url){ row.dataset[key] = url; showImg(); });
+    });
     row.querySelector(".row-del").onclick = function(){ row.remove(); };
     return row;
   }
@@ -9334,21 +9365,7 @@ window.mmTA = (function(){
     function showImg(){ ib.innerHTML = row.dataset.img ? '<img src="' + row.dataset.img + '" alt="">' : "🖼 圖片"; ib.title = row.dataset.img ? "點一下更換，按住 Shift 點一下移除" : "加入圖片選項"; }
     showImg();
     ib.onclick = function(ev){ if(ev.shiftKey && row.dataset.img){ row.dataset.img = ""; showImg(); } else fi.click(); };
-    fi.onchange = function(e){
-      var file = e.target.files && e.target.files[0]; if(!file) return;
-      var reader = new FileReader();
-      reader.onload = function(evt){
-        var im = new Image();
-        im.onload = function(){
-          var c = document.createElement("canvas"), sc = Math.min(1, 520 / Math.max(im.width, im.height));
-          c.width = Math.round(im.width * sc); c.height = Math.round(im.height * sc);
-          var cx = c.getContext("2d"); cx.fillStyle = "#fff"; cx.fillRect(0, 0, c.width, c.height); cx.drawImage(im, 0, 0, c.width, c.height);
-          row.dataset.img = c.toDataURL("image/jpeg", 0.82); showImg();
-        };
-        im.src = evt.target.result;
-      };
-      reader.readAsDataURL(file); fi.value = "";
-    };
+    pickImageInto(fi, function(url){ row.dataset.img = url; showImg(); });
     row.querySelector(".row-del").onclick = function(){ row.remove(); };
     return row;
   }
@@ -9602,7 +9619,7 @@ window.mmTA = (function(){
       document.getElementById("f-right-label").value = (q && q.rightLabel) || "拼音／意思";
       pairRowsEl.innerHTML = "";
       var pairs = (q && q.pairs) ? Object.keys(q.pairs).map(function(k){ return q.pairs[k]; }) : [{left:"",right:""}];
-      pairs.forEach(function(p){ pairRowsEl.appendChild(makePairRow(p.left, p.right)); });
+      pairs.forEach(function(p){ pairRowsEl.appendChild(makePairRow(p.left, p.right, p.leftImg, p.rightImg)); });
     } else if(type === "choice"){
       document.getElementById("f-choice-prompt").value = q ? (q.prompt || "") : "";
       choiceOptRowsEl.innerHTML = "";
@@ -9713,7 +9730,8 @@ window.mmTA = (function(){
       pairRowsEl.querySelectorAll(".pair-row").forEach(function(row){
         var l = row.querySelector(".f-pair-left").value.trim();
         var r = row.querySelector(".f-pair-right").value.trim();
-        if(l && r){ pairCount++; var pid = "p" + pairCount; pairs[pid] = { id: pid, left: l, right: r }; }
+        var li = row.dataset.limg || "", ri = row.dataset.rimg || "";
+        if((l || li) && (r || ri)){ pairCount++; var pid = "p" + pairCount; pairs[pid] = { id: pid, left: l, right: r }; if(li) pairs[pid].leftImg = li; if(ri) pairs[pid].rightImg = ri; }
       });
       if(pairCount === 0){ alert("請至少輸入一組配對內容！Please enter at least one pair."); return; }
       qObj.title = titleInput || ("第 " + (order + 1) + " 題");
@@ -10560,7 +10578,7 @@ window.mmTA = (function(){
       var p = pairs[pid];
       var btn = document.createElement("button");
       btn.type = "button"; btn.className = "match-item"; btn.dataset.side = "left"; btn.dataset.pid = pid;
-      btn.textContent = p.left;
+      fillMatchBtn(btn, p.left, p.leftImg);
       var locked = !isTest && !!matched[pid];
       if(locked){ btn.classList.add("matched"); btn.disabled = true; }
       if(!interactive) btn.disabled = true;
@@ -10574,7 +10592,7 @@ window.mmTA = (function(){
       var p = pairs[pid]; if(!p) return;
       var btn = document.createElement("button");
       btn.type = "button"; btn.className = "match-item"; btn.dataset.side = "right"; btn.dataset.pid = pid;
-      btn.textContent = p.right;
+      fillMatchBtn(btn, p.right, p.rightImg);
       var rLocked = !isTest && !!matched[pid];
       if(rLocked){ btn.classList.add("matched"); btn.disabled = true; }
       if(!interactive) btn.disabled = true;
