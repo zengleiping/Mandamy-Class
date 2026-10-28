@@ -283,6 +283,19 @@
               ".write": "auth != null && !data.exists() && newData.hasChildren(['name','s'])"
             }
           }
+        },
+        "petGame": {
+          "$c": {
+            "cfg": {
+              ".read": "auth != null"
+            },
+            "s": {
+              ".read": "auth != null",
+              "$k": {
+                ".write": "auth != null"
+              }
+            }
+          }
         }
       }
     },
