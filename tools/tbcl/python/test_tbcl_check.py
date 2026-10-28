@@ -57,5 +57,19 @@ class CkipFlow(unittest.TestCase):
         self.assertTrue({"火車站", "轉運站"} <= {x.word for x in common.unlisted})
 
 
+class Compare(unittest.TestCase):
+    def test_segmentation_diff(self):
+        mk = lambda ws: t.CheckResult(3, [t.Token(w, t.OK) for w in ws])
+        a = mk(["他", "混", "得", "風生水起", "。"])
+        b = mk(["他", "混", "得", "風", "生", "水", "起", "。"])
+        self.assertEqual(t.segmentation_diff(a, b), [("風生水起", "風 / 生 / 水 / 起")])
+        self.assertEqual(t.segmentation_diff(a, a), [])
+
+    def test_official_response_parse_is_isolated(self):
+        # segment_official 需要連網；這裡只確認分段函式不會把句子切壞
+        chunks = t._official_chunks("第一句。第二句。\n第三行")
+        self.assertEqual("".join(chunks), "第一句。第二句。第三行")
+
+
 if __name__ == "__main__":
     unittest.main()

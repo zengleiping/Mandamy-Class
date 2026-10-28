@@ -24,7 +24,12 @@
 from __future__ import annotations
 
 import argparse
+import html as _html
+import re
 import sys
+import time
+import urllib.parse
+import urllib.request
 import tempfile
 import unicodedata
 from dataclasses import dataclass, field
@@ -179,6 +184,59 @@ def ner_spans(lines: List[List[str]], model: str = "bert-base", device: int = -1
     return [[tuple(e.idx) for e in ents if e.ner in PROPER_TYPES] for ents in _CKIP_NER(texts, show_progress=False)]
 
 
+# --------------------------------------------------------------------------- 2c. 國教院版：送到官方「教材編輯輔助系統」
+
+OFFICIAL_URL = "https://coct.naer.edu.tw/edit.jsp"
+_TAG = re.compile(r"[A-Z][A-Za-z_]*")
+
+
+def _official_chunks(text: str, limit: int = 300) -> List[str]:
+    """官方系統一次不宜送太長：每行再依句號切成不超過 limit 字的段落。"""
+    chunks: List[str] = []
+    for line in text.splitlines():
+        if not line.strip():
+            continue
+        buf = ""
+        for sent in re.findall(r"[^。！？!?]*[。！？!?]+|[^。！？!?]+", line):
+            if buf and len(buf) + len(sent) > limit:
+                chunks.append(buf)
+                buf = ""
+            buf += sent
+        if buf:
+            chunks.append(buf)
+    return chunks
+
+
+def segment_official(text: str, delay: float = 1.5, timeout: int = 90, ssl_context=None) -> List[List[Tuple[str, str]]]:
+    """把課文送到國教院「教材編輯輔助系統」（https://coct.naer.edu.tw/edit.jsp），取回它的斷詞與詞性。
+    回傳每一段的 [(詞, 詞性)]（標點的詞性為空字串）。每段之間暫停 delay 秒，請勿大量連續呼叫。
+    ssl_context：需要自訂憑證驗證時才傳（例如公司網路的中繼憑證）；預設用系統設定，不關閉驗證。"""
+    out: List[List[Tuple[str, str]]] = []
+    for i, chunk in enumerate(_official_chunks(text)):
+        if i:
+            time.sleep(delay)
+        data = urllib.parse.urlencode({"no": "", "db": "1", "num": "10", "lv": "0", "WORD": chunk}).encode()
+        req = urllib.request.Request(OFFICIAL_URL, data=data, headers={"User-Agent": "mandamy-tbcl-check/1.0"})
+        page = urllib.request.urlopen(req, timeout=timeout, context=ssl_context).read().decode("utf8", "ignore")
+        body = re.sub(r"<script.*?</script>", "", page, flags=re.S)
+        plain = re.sub(r"\s+", " ", _html.unescape(re.sub(r"<[^>]+>", " ", body)))
+        marks = [m.end() for m in re.finditer("分級標記", plain)]
+        if len(marks) < 2:
+            raise RuntimeError("官方系統的回應格式和預期不同（可能改版或暫時無法使用）")
+        seg = plain[marks[1]:plain.find("詞彙等級分布", marks[1])].split()
+        toks: List[Tuple[str, str]] = []
+        j = 0
+        while j < len(seg):
+            if _TAG.fullmatch(seg[j]) and j + 1 < len(seg):
+                toks.append((seg[j + 1], seg[j]))
+                j += 2
+            else:
+                toks.append((seg[j], ""))
+                j += 1
+        out.append(toks)
+    return out
+
+
 def align_to_tbcl(tokens: List[str], words: Iterable[str], max_parts: int = 4) -> List[str]:
     """「對回詞表」：CKIP 切得比 TBCL 細時（例如 TBCL 收「一點點」，CKIP 切成「一」「點點」），
     把相鄰的幾個詞合併成詞表裡的詞（取最長的）。只合併「合起來剛好是詞表詞」的情況，不會把詞表沒有的組合硬黏起來。"""
@@ -288,7 +346,8 @@ def check_materials(
     text           老師輸入的課文（繁體中文）。
     target_level   該堂課學生的華語等級，1~7。
     star_in_level  True：第 N* 級的詞算在第 N 級內；False：算比第 N 級更高（目標為 N 時視為超綱）。
-    segmenter      "ckip"：CKIP 先斷詞再對回詞表（最準，需 pip install ckip-transformers）；
+    segmenter      "ckip"：曼米版——CKIP 先斷詞再對回詞表（最準，需 pip install ckip-transformers）；
+                   "official"：國教院版——直接用官方教材編輯輔助系統的斷詞（需連網，和評審看到的一致）；
                    "jieba"：Jieba 加載 TBCL 詞表斷詞；"auto"：有裝 CKIP 就用 CKIP，否則 Jieba。
     exclude_proper_nouns
                    True（只用在 CKIP）：不在詞表、且 CKIP 標為專有名詞（Nb）或地名（Nc）的詞，狀態為 proper，
@@ -327,10 +386,18 @@ def check_materials(
                 words.extend(line)
             words.append("\n")
         flag_suspect_runs = False                                    # CKIP 自己會處理新詞，不需要啟發式
+    elif segmenter == "official":
+        words = []
+        for chunk in segment_official(text):                       # 國教院版：直接用官方系統的斷詞
+            for w, tag in chunk:
+                if tag == "Nb":                                     # 官方標為專有名稱（人名等）者不計入比例
+                    proper_idx.add(len(words))
+                words.append(w)
+            words.append("\n")
     elif segmenter == "jieba":
         words = tk.cut(text, cut_all=False, HMM=False)          # 精確模式；關掉 HMM，不讓它自己「猜」新詞
     else:
-        raise ValueError("segmenter 只能是 'auto'、'ckip' 或 'jieba'")
+        raise ValueError("segmenter 只能是 'auto'、'ckip'、'official' 或 'jieba'")
     result.segmenter = segmenter
     for idx, w in enumerate(words):
         if _is_blank_or_punct(w):
@@ -376,6 +443,54 @@ def _merge_suspect_runs(tokens: List[Token], ranks: Dict[str, int]) -> None:
     tokens[:] = out
 
 
+# --------------------------------------------------------------------------- 4. 曼米版 vs 國教院版
+
+def _spans(tokens: List[Token]) -> List[Tuple[int, int, str]]:
+    pos, out = 0, []
+    for t in tokens:
+        if t.status != PUNCT or t.word.strip():
+            out.append((pos, pos + len(t.word), t.word))
+        pos += len(t.word)
+    return out
+
+
+def segmentation_diff(a: CheckResult, b: CheckResult) -> List[Tuple[str, str]]:
+    """兩種斷詞切法不同的地方：回傳 [(a 的切法, b 的切法)]。"""
+    sa = [x for x in _spans([t for t in a.tokens if t.word != "\n"]) if not _is_blank_or_punct(x[2])]
+    sb = [x for x in _spans([t for t in b.tokens if t.word != "\n"]) if not _is_blank_or_punct(x[2])]
+    bounds_a = {s for s, _, _ in sa} | {e for _, e, _ in sa}
+    bounds_b = {s for s, _, _ in sb} | {e for _, e, _ in sb}
+    common = sorted(bounds_a & bounds_b)
+    diffs = []
+    for lo, hi in zip(common, common[1:]):
+        wa = [w for s, e, w in sa if lo <= s and e <= hi]
+        wb = [w for s, e, w in sb if lo <= s and e <= hi]
+        if wa != wb and "".join(wa) == "".join(wb):
+            diffs.append((" / ".join(wa), " / ".join(wb)))
+    return diffs
+
+
+def compare_materials(text: str, target_level: int, **kw) -> Dict[str, object]:
+    """同一份課文跑兩套：曼米版（CKIP）與國教院版（官方系統），並列結果與斷詞差異。"""
+    mine = check_materials(text, target_level, segmenter="ckip", **kw)
+    official = check_materials(text, target_level, segmenter="official", **kw)
+    return {"mandamy": mine, "official": official, "diff": segmentation_diff(mine, official)}
+
+
+def format_compare(c: Dict[str, object]) -> str:
+    m, o = c["mandamy"], c["official"]
+    lines = [
+        f"曼米版（CKIP）　：超綱比例 {m.ratio:.1f}%　超綱 {len(m.over)}　未納入 {len(m.unlisted)}　專有名詞 {len(m.proper)}",
+        f"國教院版（官方）：超綱比例 {o.ratio:.1f}%　超綱 {len(o.over)}　未納入 {len(o.unlisted)}　專有名詞 {len(o.proper)}",
+    ]
+    if c["diff"]:
+        lines.append("斷詞不同之處（曼米版 ｜ 國教院版）：")
+        lines += [f"  {a}　｜　{b}" for a, b in c["diff"]]
+    else:
+        lines.append("兩套斷詞完全一致。")
+    return "\n".join(lines)
+
+
 # --------------------------------------------------------------------------- 報告／命令列
 
 def format_report(res: CheckResult) -> str:
@@ -397,12 +512,16 @@ def main(argv: Optional[List[str]] = None) -> int:
     ap.add_argument("text", nargs="?", help="要檢核的課文；也可改用 --file")
     ap.add_argument("--file", help="從檔案讀課文（UTF-8）")
     ap.add_argument("--level", type=int, required=True, help="目標等級 1~7")
-    ap.add_argument("--segmenter", choices=["auto", "ckip", "jieba"], default="auto", help="斷詞器（預設 auto：有 CKIP 用 CKIP）")
+    ap.add_argument("--segmenter", choices=["auto", "ckip", "official", "jieba"], default="auto", help="斷詞器：ckip＝曼米版、official＝國教院版（需連網）")
+    ap.add_argument("--compare", action="store_true", help="曼米版與國教院版並列比較")
     ap.add_argument("--star-above", action="store_true", help="第 N* 級的詞算比第 N 級高")
     a = ap.parse_args(argv)
     text = Path(a.file).read_text(encoding="utf8") if a.file else a.text
     if not text:
         ap.error("請提供課文或 --file")
+    if a.compare:
+        print(format_compare(compare_materials(text, a.level, star_in_level=not a.star_above)))
+        return 0
     print(format_report(check_materials(text, a.level, star_in_level=not a.star_above, segmenter=a.segmenter)))
     return 0
 

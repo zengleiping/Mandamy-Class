@@ -24,3 +24,15 @@ res.ratio       # 超綱比例 %
 - `build_tokenizer(base="tbcl")`（Jieba 備用）：只用 TBCL 詞表＋補充字典當 Jieba 詞典（預設，建議）。`base="default"`：保留 Jieba 預設詞典，再用 `add_word` 把 TBCL 詞全部加進去。
 - 斷詞用精確模式並關掉 HMM（`HMM=False`），不讓 Jieba 自己猜新詞。
 - 資料來源與授權見 `docs/資料來源與授權.md`。
+
+## 兩套並列：曼米版 vs 國教院版
+
+評審看到的是官方「教材編輯輔助系統」的結果，我們自己的斷詞（CKIP＋成語字典）在成語和專有名詞上通常比官方準，兩者因此會有差異。所以兩套都留著，不為了貼近官方而降低我們自己的準確度：
+
+```bash
+python3 tbcl_check.py --level 3 --segmenter ckip     "課文"   # 曼米版
+python3 tbcl_check.py --level 3 --segmenter official "課文"   # 國教院版：直接用官方系統的斷詞（需連網）
+python3 tbcl_check.py --level 3 --compare            "課文"   # 兩套並列，列出斷詞不同的地方
+```
+
+`--compare` 會顯示兩邊的超綱比例，以及「風生水起｜風 / 生 / 水 / 起」這類斷詞差異，方便老師判斷：官方切碎的成語，我們整個標為「未納入」，比例可能比官方高。國教院版是把課文送到官方系統取回結果，每段之間會暫停 1.5 秒，請勿大量連續呼叫。
