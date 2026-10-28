@@ -1532,6 +1532,9 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .question-item-btn.is-hidden-q .q-thumb{ filter:grayscale(1); }
   .question-item-btn{ position:relative; }
   .q-hide-btn{ position:absolute; top:3px; right:4px; z-index:2; display:none; font-size:11.5px; font-weight:700; padding:1px 7px; border-radius:6px; background:rgba(255,255,255,.96); color:var(--ink-soft); box-shadow:0 1px 4px rgba(0,0,0,.2); cursor:pointer; white-space:nowrap; }
+  .q-move-btn{ position:absolute; top:3px; right:54px; z-index:2; display:none; font-size:11.5px; font-weight:700; padding:1px 7px; border-radius:6px; background:rgba(255,255,255,.96); color:var(--ink-soft); box-shadow:0 1px 4px rgba(0,0,0,.2); cursor:pointer; white-space:nowrap; }
+  .question-item-btn:hover .q-move-btn{ display:inline-block; }
+  .question-item-btn.is-hidden-q .q-move-btn{ right:98px; }
   .question-item-btn:hover .q-hide-btn, .question-item-btn.is-hidden-q .q-hide-btn{ display:inline-block; }
   .question-item-btn.is-hidden-q .q-hide-btn{ opacity:1; color:var(--seal); }
   body.teach-mode .section-head-actions button:not(.btn-sorter):not(.btn-hide-sec){ display:none !important; }
@@ -2097,6 +2100,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
       </div>
       <div class="sidebar-inner" id="sidebar-inner">
         <button class="btn btn-primary btn-new" id="btn-new-section" type="button">＋ 新增大題 Add Section</button>
+        <button class="btn btn-sm" id="btn-outline" type="button" style="width:100%;margin-top:6px;" title="一次看全部大題與小題，可以移動、點進去、編輯、隱藏">📋 大綱 Outline</button>
 
         <!-- 2026-09-29：投影片不算是「題目」，是上課用的主要內容，所以獨立成跟「新增大題」同一層級的
              按鈕，不再跟(需要設定題型／答案的)大題編輯流程混在一起。原本「新增投影片」跟「匯入投影片」
@@ -7919,6 +7923,86 @@ window.mmTA = (function(){
     deleteQuestionById(found.secId, info.question.id);
   });
 
+  /* ===== 大綱檢視（Outline）：一次看全部大題與小題／投影片，可以上下移、選位置移動、點進去、編輯、隱藏 ===== */
+  function mvPick(title, optsHtml, onOk){
+    var ov = document.createElement("div"); ov.style.cssText = "position:fixed;inset:0;z-index:30000;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;";
+    ov.innerHTML = '<div style="background:var(--surface,#fff);border-radius:14px;padding:18px 20px;width:min(460px,92vw);box-shadow:0 8px 30px rgba(0,0,0,.3);"><div style="font-weight:700;margin-bottom:10px;">' + title + '</div><select id="mvp-sel" style="width:100%;padding:8px;font-size:15px;">' + optsHtml + '</select><div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px;"><button type="button" class="btn btn-ghost" id="mvp-no">取消 Cancel</button><button type="button" class="btn primary" id="mvp-ok">移動 Move</button></div></div>';
+    document.body.appendChild(ov);
+    ov.querySelector("#mvp-no").onclick = function(){ ov.remove(); };
+    ov.onclick = function(e){ if(e.target === ov) ov.remove(); };
+    ov.querySelector("#mvp-ok").onclick = function(){ var v = ov.querySelector("#mvp-sel").value; ov.remove(); onOk(v); };
+  }
+  function moveQuestionTo(srcSecId, qId, dstSecId, afterQId){
+    var secs = getSections(), src = secs[srcSecId], dst = secs[dstSecId]; if(!src || !dst || !src.questions[qId]) return;
+    var q = src.questions[qId]; if(srcSecId !== dstSecId) delete src.questions[qId];
+    var list = getSortedQuestionKeys(dst).filter(function(k){ return k !== qId; });
+    var at = afterQId ? list.indexOf(afterQId) + 1 : 0; list.splice(at, 0, qId);
+    dst.questions[qId] = q; list.forEach(function(k, i){ dst.questions[k].order = i; });
+    if(srcSecId !== dstSecId) getSortedQuestionKeys(src).forEach(function(k, i){ src.questions[k].order = i; });
+    writeSections(secs);
+  }
+  function openMoveQuestion(srcSecId, qId, after){
+    var secs = getSections(), src = secs[srcSecId], opts = "";
+    getSortedSectionKeys().forEach(function(k){
+      var sc = secs[k]; if(sc.type !== src.type) return;
+      opts += '<option value="' + k + '|">' + escapeHtml(sc.title || "") + '：放到最前面</option>';
+      getSortedQuestionKeys(sc).forEach(function(id, i){ if(id === qId) return; opts += '<option value="' + k + '|' + id + '">' + escapeHtml(sc.title || "") + '：第 ' + (i + 1) + ' 個「' + escapeHtml(String(dispTitle(sc, sc.questions[id]) || "").replace(/<[^>]*>/g, "").slice(0, 24)) + '」的後面</option>'; });
+    });
+    mvPick("移動「" + escapeHtml(String(dispTitle(src, src.questions[qId]) || "").replace(/<[^>]*>/g, "").slice(0, 30)) + "」", opts, function(v){ var a = v.split("|"); moveQuestionTo(srcSecId, qId, a[0], a[1] || ""); if(after) after(); });
+  }
+  var SEC_TYPE_META = {};   // 側邊欄重畫時會填入各題型的名稱與顏色
+  function openOutline(){
+    if(isStudent) return;
+    var back = document.createElement("div"); back.className = "tb-modal-back";
+    var modal = document.createElement("div"); modal.className = "tb-modal"; modal.style.cssText = "width:min(780px,96vw);max-height:92vh;overflow:auto;"; back.appendChild(modal);
+    var curInfo0 = getCurrentQInfo(), curId = curInfo0 ? curInfo0.question.id : null;
+    var plain = function(x){ return escapeHtml(String(x || "").replace(/<[^>]*>/g, "")); };
+    function again(){ setTimeout(render, 150); }
+    function render(){
+      var secs = getSections(), keys = getSortedSectionKeys(), h = '<div style="display:flex;align-items:center;gap:10px;"><h3 style="margin:0;flex:1;">📋 大綱 Outline</h3><button type="button" class="tb-row ol-close" style="cursor:pointer;margin:0;padding:5px 12px;">關閉 Close</button></div><div style="color:var(--ink-soft);font-size:13.5px;margin:6px 0 10px;">點名稱＝跳到那一題；▲▼ 上下移一格；「移動」直接選要放到哪裡（不用拖曳）。 Tap a title to jump; use ▲▼ or Move to reorder.</div>';
+      keys.forEach(function(sk, si){
+        var sec = secs[sk], qk = getSortedQuestionKeys(sec), meta = SEC_TYPE_META[sec.type] || { label: sec.type, color: "var(--seal)" };
+        h += '<div style="margin-bottom:12px;border:1.5px solid var(--line,#e6d9c8);border-left:5px solid ' + meta.color + ';border-radius:10px;overflow:hidden;"><div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:8px 10px;background:var(--surface-2,#f5efe6);"><b style="flex:1;min-width:140px;">' + (si + 1) + '. ' + plain(sec.title) + (sec.hidden ? '（已隱藏）' : '') + ' <small style="font-weight:400;color:var(--ink-soft);">' + plain(meta.label) + '・' + qk.length + '</small></b>' +
+          '<button type="button" class="btn btn-sm btn-ghost" data-s="up" data-sk="' + sk + '"' + (si === 0 ? ' disabled' : '') + '>▲</button><button type="button" class="btn btn-sm btn-ghost" data-s="down" data-sk="' + sk + '"' + (si === keys.length - 1 ? ' disabled' : '') + '>▼</button><button type="button" class="btn btn-sm btn-ghost" data-s="mv" data-sk="' + sk + '">移動 Move</button></div>';
+        qk.forEach(function(qid, qi){
+          var q = sec.questions[qid], hid = q.hidden || sec.hidden;
+          h += '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:5px 10px 5px 18px;border-top:1px solid var(--line,#eee);' + (qid === curId ? 'background:var(--seal-soft,#FDECE6);' : '') + (hid ? 'opacity:.5;' : '') + '"><span style="flex:none;width:26px;color:var(--ink-soft);font-size:13px;">' + (qi + 1) + '</span><a href="#" data-go="' + qid + '" style="flex:1;min-width:140px;color:var(--ink);text-decoration:none;font-weight:600;">' + plain(dispTitle(sec, q)) + '</a>' +
+            '<button type="button" class="btn btn-sm btn-ghost" data-q="up" data-sk="' + sk + '" data-qid="' + qid + '"' + (qi === 0 ? ' disabled' : '') + '>▲</button><button type="button" class="btn btn-sm btn-ghost" data-q="down" data-sk="' + sk + '" data-qid="' + qid + '"' + (qi === qk.length - 1 ? ' disabled' : '') + '>▼</button><button type="button" class="btn btn-sm btn-ghost" data-q="mv" data-sk="' + sk + '" data-qid="' + qid + '">移動 Move</button><button type="button" class="btn btn-sm btn-ghost" data-q="edit" data-sk="' + sk + '" data-qid="' + qid + '">編輯 Edit</button><button type="button" class="btn btn-sm btn-ghost" data-q="hide" data-sk="' + sk + '" data-qid="' + qid + '">' + (q.hidden ? '顯示 Show' : '隱藏 Hide') + '</button></div>';
+        });
+        h += '</div>';
+      });
+      modal.innerHTML = h;
+      modal.querySelector(".ol-close").onclick = function(){ back.remove(); };
+      var cur = modal.querySelector('[data-go="' + curId + '"]'); if(cur && !modal.dataset.scrolled){ modal.dataset.scrolled = "1"; setTimeout(function(){ cur.scrollIntoView({ block: "center" }); }, 30); }
+    }
+    modal.onclick = function(e){
+      var go = e.target.closest("[data-go]"); if(go){ e.preventDefault(); back.remove(); setCurrentQ(go.dataset.go); return; }
+      var b = e.target.closest("button"); if(!b || b.disabled) return;
+      var secs = getSections(), sk = b.dataset.sk, qid = b.dataset.qid;
+      if(b.dataset.s){
+        var ks = getSortedSectionKeys(), i = ks.indexOf(sk);
+        function applySec(list){ list.forEach(function(k, n){ secs[k].order = n; }); writeSections(secs); again(); }
+        if(b.dataset.s === "up" && i > 0){ ks.splice(i, 1); ks.splice(i - 1, 0, sk); applySec(ks); }
+        else if(b.dataset.s === "down" && i < ks.length - 1){ ks.splice(i, 1); ks.splice(i + 1, 0, sk); applySec(ks); }
+        else if(b.dataset.s === "mv"){
+          var opts = '<option value="">移到最前面</option>'; ks.forEach(function(k){ if(k !== sk) opts += '<option value="' + k + '">移到「' + plain(secs[k].title) + '」的後面</option>'; });
+          mvPick("移動大題「" + plain(secs[sk].title) + "」", opts, function(v){ var l = ks.filter(function(k){ return k !== sk; }); l.splice(v ? l.indexOf(v) + 1 : 0, 0, sk); applySec(l); });
+        }
+        return;
+      }
+      if(b.dataset.q){
+        var sec = secs[sk], list = getSortedQuestionKeys(sec), j = list.indexOf(qid);
+        if(b.dataset.q === "up" && j > 0){ list.splice(j, 1); list.splice(j - 1, 0, qid); list.forEach(function(k, n){ sec.questions[k].order = n; }); writeSections(secs); again(); }
+        else if(b.dataset.q === "down" && j < list.length - 1){ list.splice(j, 1); list.splice(j + 1, 0, qid); list.forEach(function(k, n){ sec.questions[k].order = n; }); writeSections(secs); again(); }
+        else if(b.dataset.q === "mv") openMoveQuestion(sk, qid, again);
+        else if(b.dataset.q === "edit"){ back.remove(); openQuestionDialog(sk, qid); }
+        else if(b.dataset.q === "hide"){ if(sec.questions[qid].hidden) delete sec.questions[qid].hidden; else sec.questions[qid].hidden = true; writeSections(secs); again(); }
+      }
+    };
+    back.onclick = function(e){ if(e.target === back) back.remove(); };
+    document.body.appendChild(back); render();
+  }
+
   /* ===== 投影片整理檢視（Slide Sorter）：大縮圖網格，拖曳或按 ◀ ▶ 重排、複製、刪除、重新命名章節 ===== */
   function openSlideSorter(){
     var back = document.createElement("div"); back.className = "tb-modal-back";
@@ -8468,7 +8552,7 @@ window.mmTA = (function(){
       if(!cached || cached.sig !== sigNow) scheduleSlideThumb(q.id);
       return cached ? cached.url : THUMB_BLANK;
     }
-    var SEC_TYPE_META = {
+    SEC_TYPE_META = {
       match:   { label: "連連看 Match",   color: "#4C7A5E" },
       choice:  { label: "選擇題 Choice",  color: "#B8763D" },
       reorder: { label: "句子重組 Reorder", color: "#6B5B95" },
@@ -8591,6 +8675,7 @@ window.mmTA = (function(){
                 <span class="q-item-title">${escapeHtml(dispTitle(sec, q))}</span>
                 ${(!isCanvasSec(sec) && sec.type !== "hanzi" && sec.type !== "bingo" && sec.type !== "thermo" && q.weight && q.weight !== 1) ? `<span class="q-weight-tag" title="配分權重 Weight ×${q.weight}">×${q.weight}</span>` : ""}
               </span>
+              ${isStudent ? '' : '<span class="q-move-btn" title="不用拖曳，直接選要移到哪裡">移動</span>'}
               ${isStudent || sec.hidden ? '' : '<span class="q-hide-btn" title="' + (q.hidden ? '顯示這' + (sec.type === "board" ? '頁' : '題') : '隱藏這' + (sec.type === "board" ? '頁' : '題') + '：學生看不到、翻頁跳過、不計分') + '">' + (q.hidden ? '已隱藏・顯示' : '隱藏') + '</span>'}
               <span class="q-action-btns">
                 ${sec.type === "board" ? `<span class="row-del btn-dup-q" title="複製這張投影片（貼在後面）Duplicate slide" style="font-size:12.5px; font-weight:700; padding:2px 6px; color:var(--ink-soft); white-space:nowrap;">複製</span>` : ""}
@@ -8643,6 +8728,8 @@ window.mmTA = (function(){
               setCurrentQ(qId);
             };
 
+            var moveQBtn = qBtn.querySelector(".q-move-btn");
+            if(moveQBtn) moveQBtn.onclick = function(e){ e.stopPropagation(); e.preventDefault(); openMoveQuestion(secId, qId); };
             var hideQBtn = qBtn.querySelector(".q-hide-btn");
             if(hideQBtn) hideQBtn.onclick = function(e){ e.stopPropagation(); e.preventDefault(); if(q.hidden) delete q.hidden; else q.hidden = true; writeSections(secs); };
             var dupBtn = qBtn.querySelector(".btn-dup-q");
@@ -8772,6 +8859,7 @@ window.mmTA = (function(){
     safeShowModal(sectionDialog);
   }
 
+  var btnOutline = document.getElementById("btn-outline"); if(btnOutline) btnOutline.onclick = openOutline;
   var btnNewSection = document.getElementById("btn-new-section");
   if(btnNewSection) btnNewSection.onclick = function(){ openSectionDialog(null); };
 
