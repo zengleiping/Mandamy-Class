@@ -1805,6 +1805,28 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   @keyframes bgtA2{ 0%,56%{background:#FAF4EC} 58%,98%{background:#9AD8A8;border-color:#4CAF6A} 100%{background:#FAF4EC;border-color:var(--line,#c9b8a5)} }
   .bg5-demo .dwin.tw{ animation:bgtWin 10s infinite; }
   @keyframes bgtWin{ 0%,60%{opacity:0;transform:scale(.4)} 65%{opacity:1;transform:scale(1.25)} 70%,94%{opacity:1;transform:scale(1)} 98%,100%{opacity:0} }
+  .bg5-demo.s2 .dcell{ background:#FAF4EC; }
+  .bg5-demo.s2 .dhand{ animation:bgsHand 12s infinite; }
+  .bg5-demo.s2 .dcell.m0{ animation:bgsM0 12s infinite; } .bg5-demo.s2 .dcell.m1{ animation:bgsM1 12s infinite; } .bg5-demo.s2 .dcell.m2{ animation:bgsM2 12s infinite; }
+  .bg5-demo.s2 .dcell i{ font-style:normal; opacity:0; }
+  .bg5-demo.s2 .m0 i{ animation:bgsF0 12s infinite; } .bg5-demo.s2 .m1 i{ animation:bgsF1 12s infinite; } .bg5-demo.s2 .m2 i{ animation:bgsF2 12s infinite; }
+  .bg5-demo.s2 .dc.p1{ animation:bgsP1 12s infinite; } .bg5-demo.s2 .dc.p2{ animation:bgsP2 12s infinite; } .bg5-demo.s2 .dc.p3{ animation:bgsP3 12s infinite; }
+  .bg5-demo.s2 .dwin{ animation:bgsWin 12s infinite; }
+  .bg5-democlose{ display:block; margin:6px auto 2px; padding:3px 14px; border-radius:99px; border:1.5px solid var(--line,#c9b8a5); background:var(--surface,#fff); cursor:pointer; font-size:13.5px; font-weight:700; color:var(--ink-soft); }
+  .bg5-word, .bg5-cell{ touch-action:manipulation; } .bg5-word.drg{ touch-action:none; cursor:grab; }
+  .bg5-ghost{ position:fixed; z-index:99998; pointer-events:none; padding:6px 14px; border-radius:99px; background:#fff; border:2px solid var(--seal); font-size:20px; font-weight:700; box-shadow:0 6px 18px rgba(0,0,0,.3); transform:translate(-50%,-120%); }
+  .bg5-cell.dropin{ outline:3px dashed var(--seal); }
+  @keyframes bgsHand{ 0%{transform:translate(170px,125px);opacity:0} 3%{transform:translate(170px,125px);opacity:1} 8%{transform:translate(112px,22px) scale(1)} 10%{transform:translate(112px,22px) scale(.82)} 12%{transform:translate(112px,22px) scale(1)} 18%{transform:translate(24px,16px) scale(1)} 20%{transform:translate(24px,16px) scale(.82)} 22%{transform:translate(24px,16px) scale(1)} 28%{transform:translate(160px,22px) scale(1)} 30%{transform:translate(160px,22px) scale(.82)} 32%{transform:translate(160px,22px) scale(1)} 37%{transform:translate(24px,56px) scale(1)} 39%{transform:translate(24px,56px) scale(.82)} 41%{transform:translate(24px,56px) scale(1)} 47%{transform:translate(208px,22px) scale(1)} 49%{transform:translate(208px,22px) scale(.82)} 51%{transform:translate(208px,22px) scale(1)} 56%{transform:translate(24px,96px) scale(1)} 58%{transform:translate(24px,96px) scale(.82)} 60%{transform:translate(24px,96px) scale(1)} 66%{transform:translate(112px,22px) scale(1)} 68%{transform:translate(112px,22px) scale(.82)} 70%{transform:translate(112px,22px) scale(1)} 74%{transform:translate(160px,22px) scale(1)} 76%{transform:translate(160px,22px) scale(.82)} 78%{transform:translate(160px,22px) scale(1)} 82%{transform:translate(208px,22px) scale(1)} 84%{transform:translate(208px,22px) scale(.82)} 86%{transform:translate(208px,22px) scale(1)} 94%{transform:translate(208px,22px);opacity:1} 98%,100%{transform:translate(208px,22px);opacity:0} }
+  @keyframes bgsM0{ 0%,6%{box-shadow:none} 7%,19%{box-shadow:0 0 0 3px var(--seal)} 20%,67%{box-shadow:none} 68%,98%{background:#9AD8A8;border-color:#4CAF6A} 100%{background:#FAF4EC;border-color:var(--line,#c9b8a5)} }
+  @keyframes bgsM1{ 0%,26%{box-shadow:none} 27%,38%{box-shadow:0 0 0 3px var(--seal)} 39%,75%{box-shadow:none} 76%,98%{background:#9AD8A8;border-color:#4CAF6A} 100%{background:#FAF4EC;border-color:var(--line,#c9b8a5)} }
+  @keyframes bgsM2{ 0%,45%{box-shadow:none} 46%,57%{box-shadow:0 0 0 3px var(--seal)} 58%,83%{box-shadow:none} 84%,98%{background:#9AD8A8;border-color:#4CAF6A} 100%{background:#FAF4EC;border-color:var(--line,#c9b8a5)} }
+  @keyframes bgsF0{ 0%,21%{opacity:0;transform:scale(.4)} 25%{opacity:1;transform:scale(1.2)} 28%,98%{opacity:1;transform:scale(1)} 100%{opacity:0} }
+  @keyframes bgsF1{ 0%,40%{opacity:0;transform:scale(.4)} 44%{opacity:1;transform:scale(1.2)} 47%,98%{opacity:1;transform:scale(1)} 100%{opacity:0} }
+  @keyframes bgsF2{ 0%,59%{opacity:0;transform:scale(.4)} 63%{opacity:1;transform:scale(1.2)} 66%,98%{opacity:1;transform:scale(1)} 100%{opacity:0} }
+  @keyframes bgsP1{ 0%,19%{transform:scale(1)} 22%{transform:scale(1.15);background:#FFD98A} 26%,100%{transform:scale(1)} }
+  @keyframes bgsP2{ 0%,38%{transform:scale(1)} 41%{transform:scale(1.15);background:#FFD98A} 45%,100%{transform:scale(1)} }
+  @keyframes bgsP3{ 0%,57%{transform:scale(1)} 60%{transform:scale(1.15);background:#FFD98A} 64%,100%{transform:scale(1)} }
+  @keyframes bgsWin{ 0%,85%{opacity:0;transform:scale(.4)} 89%{opacity:1;transform:scale(1.25)} 92%,96%{opacity:1;transform:scale(1)} 98%,100%{opacity:0} }
   @keyframes bgdWin{ 0%,75%{opacity:0;transform:scale(.4)} 80%{opacity:1;transform:scale(1.25)} 84%,94%{opacity:1;transform:scale(1)} 98%,100%{opacity:0} }
   .th-wrap{ max-width:860px; margin:6px auto; }
   .th-row{ display:flex; gap:26px; align-items:flex-start; flex-wrap:wrap; justify-content:center; }
@@ -17447,13 +17469,13 @@ window.mmTA = (function(){
     setTimeout(function(){ if(ov.parentNode) ov.remove(); }, 6000);
   }
   function bingoDemoHtml(){
-    var em = ["🍎","🍌","🍇","🍊","🍓","🍒","🍑","🍋","🥝"], h = '<div class="bg5-demo" aria-hidden="true">';
-    h += '<div class="dc" style="top:10px">🍎</div><div class="dc c1" style="top:50px">🍌</div><div class="dc" style="top:90px">🍇</div>';
+    var em = ["🍎","🍌","🍇"], h = '<div class="bg5-demo s2" aria-hidden="true">';
+    h += '<div class="dc p1" style="top:10px">🍎</div><div class="dc p2" style="top:50px">🍌</div><div class="dc p3" style="top:90px">🍇</div>';
     for(var i = 0; i < 9; i++){
-      var r = Math.floor(i / 3), c = i % 3, cls = i === 0 ? " a0" : i === 1 ? " a1" : i === 2 ? " a2" : "";
-      h += '<div class="dcell' + cls + '" style="left:' + (86 + c * 52) + 'px;top:' + (4 + r * 48) + 'px">' + (i === 0 ? '<i>🍎</i>' : em[i]) + '</div>';
+      var r = Math.floor(i / 3), c = i % 3;
+      h += '<div class="dcell' + (i < 3 ? ' m' + i : '') + '" style="left:' + (86 + c * 52) + 'px;top:' + (4 + r * 48) + 'px">' + (i < 3 ? '<i>' + em[i] + '</i>' : '') + '</div>';
     }
-    return h + '<div class="dwin">🎉</div><div class="dhand">👆</div></div>';
+    return h + '<div class="dwin" style="top:100px">🎉</div><div class="dhand">👆</div></div><button type="button" class="bg5-democlose" data-a="demo">✕ 關閉示範 Close</button>';
   }
   function bingoDemoHtmlT(){
     var em = ["🍎","🍌","🍇","🍊","🍓","🍒","🍑","🍋","🥝"], h = '<div class="bg5-demo" aria-hidden="true">';
@@ -17485,21 +17507,49 @@ window.mmTA = (function(){
       if(bingoSeen[q.id] === undefined){ bingoSeen[q.id] = mx; return; }   // 剛進來看到的舊公告不重播
       Object.keys(wins).forEach(function(k){ var w = wins[k]; if(w.at && w.at > bingoSeen[q.id]){ bingoSeen[q.id] = w.at; if(Date.now() - w.at < 30000) bingoBanner(w.name || "有人"); } });
     }
+    function stuStatus(playing, ready, filled, lines){
+      return playing ? '<b>遊戲開始了！</b>聽到老師或同學唸的詞，就點你卡片上的那一格。連成一條線（橫、直、斜）就賓果！' + (lines ? ' 你已經連成 ' + lines + ' 條線。' : '') + '<span class="bg5-en"><b>The game has started!</b> When you hear a word, tap that square on your card. Get a full line (across, down or diagonal) to call bingo!' + (lines ? ' You have ' + lines + (lines === 1 ? ' line.' : ' lines.') : '') + '</span>'
+        : ready ? '<b>卡片已鎖定。</b>等老師開始遊戲。<span class="bg5-en"><b>Your card is locked.</b> Wait for the teacher to start the game.</span>' : '先看左邊的生詞表，點一格，再點一個詞填進去（共 25 格）。已填 <b>' + filled + '</b>／25。<span class="bg5-en">Look at the word list on the left. Tap a square, then tap a word to put it in (25 squares). Filled: <b>' + filled + '</b>/25.</span>';
+    }
+    // 拖曳：把生詞表的詞拖到卡片的格子裡（滑鼠、手指、觸控筆都可以）；沒有拖動就當成一般點擊
+    var dragJust = false;
+    if(isStudent) wrap.addEventListener("pointerdown", function(e){
+      var wb = e.target.closest(".bg5-word"); if(!wb || wb.disabled || e.button > 0) return;
+      var rec0 = myRec(); if(rec0.ready || game().status === "play") return;
+      var sx = e.clientX, sy = e.clientY, ghost = null, w = wb.dataset.w, over = null;
+      function cellAt(x, y){ if(ghost) ghost.style.display = "none"; var el = document.elementFromPoint(x, y); if(ghost) ghost.style.display = ""; return el && el.closest ? el.closest(".bg5-cell") : null; }
+      function mv(ev){
+        if(!ghost){ if(Math.abs(ev.clientX - sx) + Math.abs(ev.clientY - sy) < 8) return; ghost = document.createElement("div"); ghost.className = "bg5-ghost"; ghost.textContent = w; document.body.appendChild(ghost); }
+        ev.preventDefault(); ghost.style.left = ev.clientX + "px"; ghost.style.top = ev.clientY + "px";
+        var c = cellAt(ev.clientX, ev.clientY); if(over && over !== c) over.classList.remove("dropin"); over = c; if(c) c.classList.add("dropin");
+      }
+      function up(ev){
+        document.removeEventListener("pointermove", mv); document.removeEventListener("pointerup", up); document.removeEventListener("pointercancel", up);
+        if(!ghost) return;
+        var c = cellAt(ev.clientX, ev.clientY); ghost.remove(); if(over) over.classList.remove("dropin");
+        dragJust = true; setTimeout(function(){ dragJust = false; }, 50);
+        if(!c) return;
+        var cs = myRec().cells.slice(), i = Number(c.dataset.i);
+        if(!allowDup && cs.indexOf(w) >= 0 && cs.indexOf(w) !== i){ msg = "這個詞已經在你的卡片上了，換一個吧。This word is already on your card — pick another."; draw(); return; }
+        cs[i] = w; sel = cs.indexOf("", i + 1); if(sel < 0) sel = cs.indexOf("");
+        saveMine({ cells: cs, ready: false }); if(!inRoom()) localRec.cells = cs; msg = ""; draw();
+      }
+      document.addEventListener("pointermove", mv, { passive: false }); document.addEventListener("pointerup", up); document.addEventListener("pointercancel", up);
+    });
     // ===== 學生：填卡、玩 =====
     function drawStudent(){
       var g = game(), rec = myRec(), cells = rec.cells.slice(), playing = g.status === "play", locked = rec.ready || playing, used = {};
       cells.forEach(function(c){ if(c) used[c] = (used[c] || 0) + 1; });
       var filled = cells.filter(Boolean).length;
-      var bank = words.map(function(w){ var u = !allowDup && used[w]; return '<button type="button" class="bg5-word' + (u ? ' used' : '') + '" data-w="' + escapeHtml(w) + '"' + (locked ? ' disabled' : '') + '>' + escapeHtml(w) + '</button>'; }).join("");
+      var bank = words.map(function(w){ var u = !allowDup && used[w]; return '<button type="button" class="bg5-word' + (locked ? '' : ' drg') + (u ? ' used' : '') + '" data-w="' + escapeHtml(w) + '"' + (locked ? ' disabled' : '') + '>' + escapeHtml(w) + '</button>'; }).join("");
       var grid = cells.map(function(c, i){ return '<button type="button" class="bg5-cell' + (i === sel && !locked ? ' sel' : '') + (rec.marks[i] ? ' mark' : '') + (c ? '' : ' empty') + '" data-i="' + i + '">' + escapeHtml(c) + '</button>'; }).join("");
-      var status = playing ? '<b>遊戲開始了！</b>聽到老師或同學唸的詞，就點你卡片上的那一格。連成一條線（橫、直、斜）就賓果！' + (rec.lines ? ' 你已經連成 ' + rec.lines + ' 條線。' : '') + '<span class="bg5-en"><b>The game has started!</b> When you hear a word, tap that square on your card. Get a full line (across, down or diagonal) to call bingo!' + (rec.lines ? ' You have ' + rec.lines + (rec.lines === 1 ? ' line.' : ' lines.') : '') + '</span>'
-        : rec.ready ? '<b>卡片已鎖定。</b>等老師開始遊戲。<span class="bg5-en"><b>Your card is locked.</b> Wait for the teacher to start the game.</span>' : '先看左邊的生詞表，點一格，再點一個詞填進去（共 25 格）。已填 <b>' + filled + '</b>／25。<span class="bg5-en">Look at the word list on the left. Tap a square, then tap a word to put it in (25 squares). Filled: <b>' + filled + '</b>/25.</span>';
+      var status = stuStatus(playing, rec.ready, filled, rec.lines);
       wrap.innerHTML = '<div class="bg5-head"><div><b>' + escapeHtml(q.title || "賓果卡") + '</b>' + (q.desc ? '<div class="bg5-note">' + escapeHtml(q.desc) + '</div>' : '') + '</div></div><div class="bg5-status"><button type="button" class="bg5-qbtn" data-a="demo" title="How to play">▶ 操作示範 Demo</button>' + status + (demoOpen ? bingoDemoHtml() : '') + (msg ? '<div class="bg5-warn">' + escapeHtml(msg) + '</div>' : '') + '</div>' +
         '<div class="bg5-body"><div class="bg5-bank"><div class="bg5-cap">生詞表 Word list（' + words.length + '）</div><div class="bg5-words">' + bank + '</div></div>' +
         '<div class="bg5-cardwrap"><div class="bg5-grid">' + grid + '</div>' +
         (playing ? '' : '<div class="bg5-btns">' + (rec.ready ? '<button type="button" class="btn btn-sm" data-a="unready">修改卡片 Edit card</button>' : '<button type="button" class="btn btn-sm" data-a="rand">🎲 隨機填滿剩下的格子 Fill the rest randomly</button><button type="button" class="btn btn-sm btn-ghost" data-a="clearcell">清掉這一格 Clear square</button><button type="button" class="btn btn-sm btn-ghost" data-a="clearall">全部清空 Clear all</button><button type="button" class="btn btn-sm btn-primary" data-a="ready"' + (filled < 25 ? ' disabled' : '') + '>我填好了 Done</button>') + '</div>') + '</div></div>';
       wrap.onclick = function(e){
-        var b = e.target.closest("button"); if(!b || b.disabled) return; msg = "";
+        var b = e.target.closest("button"); if(!b || b.disabled) return; if(dragJust) return; msg = "";
         if(b.dataset.a === "demo"){ demoOpen = !demoOpen; draw(); return; }
         var g2 = game(), rec2 = myRec(), cs = rec2.cells.slice(), play2 = g2.status === "play", lock2 = rec2.ready || play2;
         if(b.dataset.i !== undefined){
@@ -17552,7 +17602,8 @@ window.mmTA = (function(){
       }).join("");
       wrap.innerHTML = '<div class="bg5-head"><div><b>' + escapeHtml(q.title || "賓果卡") + '</b>（老師）<div class="bg5-note">' + (g.status === "play" ? '遊戲進行中（第 ' + (g.round || 1) + ' 輪）：學生聽到詞，就點自己卡片上的那一格。 Students tap the matching square when they hear a word.' : '學生正在填卡片。大家填好後，按「開始遊戲」。 Students are filling in their cards. When everyone is ready, press Start.') + (inRoom() ? '' : '　（要在上課／房間裡，學生才看得到）') + '</div></div>' +
         '<div class="bg5-ctl"><button type="button" class="btn btn-sm" data-a="demo">▶ 操作示範 Demo</button>' + (g.status === "play" ? '<button type="button" class="btn btn-sm" data-a="back">回到填卡 Back to filling</button><button type="button" class="btn btn-sm" data-a="round">新的一輪 New round</button>' : '<button type="button" class="btn btn-sm btn-primary" data-a="start">開始遊戲 Start</button>') + '</div></div>' +
-        (demoOpen ? '<div class="bg5-status" style="text-align:center;">' + bingoDemoHtmlT() + '</div>' : '') +
+        '<div class="bg5-status"><div class="bg5-cap">👀 學生看到的說明 What students see</div>' + stuStatus(g.status === "play", false, 0, 0) + '</div>' +
+        (demoOpen ? '<div class="bg5-status" style="text-align:center;">' + bingoDemoHtmlT() + '<button type="button" class="bg5-democlose" data-a="demo">✕ 關閉示範 Close</button></div>' : '') +
         '<div class="bg5-body"><div class="bg5-bank"><div class="bg5-cap">生詞表（點一個＝唸過了）　已唸 ' + called.length + '／' + words.length + '</div>' +
         '<div class="bg5-who"><label>是誰說的？</label><select id="bg5-who">' + opts + '</select><input type="text" id="bg5-who-txt" placeholder="名字" style="display:' + (whoSel === "__other" ? '' : 'none') + ';" value="' + escapeHtml(whoTxt) + '"></div>' +
         '<div class="bg5-twords">' + chips + '</div></div>' +
@@ -17622,33 +17673,37 @@ window.mmTA = (function(){
       svgEl.onpointerup = svgEl.onpointercancel = function(e){ if(!dragging) return; dragging = false; var t = Math.max(MIN, Math.min(MAX, tFromY(e.clientY))); setSt({ t: t }); };
     }
     function nameOf(k, r){ return (r && r.name) || k; }
+    function stuPanel(s0, mine, dis){
+      var h = "";
+        h += '<p class="th-q">' + (s0.showNum ? '現在幾度？' : '現在差不多幾度？') + '<small>' + (s0.showNum ? 'What is the temperature now?' : 'About how many degrees is it now?') + '</small></p>';
+        h += '<p class="th-q">溫度怎麼樣？<small>How is the temperature?</small></p><div class="th-chips">' + THERMO_ADJ.map(function(a){ return '<button type="button" class="th-chip' + (adjSel === a.w ? ' on' : '') + '" data-adj="' + a.w + '"' + (dis ? ' disabled' : '') + '>' + a.w + '<small>' + a.en + '</small></button>'; }).join("") + '</div>';
+        h += '<p class="th-q">' + (s0.showNum ? '' : '差不多 ') + '<input type="number" step="0.1" ' + (dis ? 'disabled ' : '') + 'id="th-num-in" style="width:100px;font-size:20px;" value="' + escapeHtml(numTxt) + '"> 度<small>' + (s0.showNum ? 'degrees' : 'about … degrees') + '</small></p>';
+        h += '<div class="th-ctl"><button type="button" class="btn btn-sm btn-primary" data-a="send"' + (dis ? ' disabled' : '') + '>送出 Submit</button></div>';
+        if(mine){
+          var tt = Number(mine.t), okNum = mine.num !== "" && mine.num !== undefined && Math.abs(Number(mine.num) - tt) <= 2;
+          h += '<p>你送出：<b>' + escapeHtml(mine.adj || "—") + '</b>、<b>' + escapeHtml(String(mine.num === undefined ? "" : mine.num)) + '</b> 度　<small>Sent</small></p>';
+          if(s0.reveal) h += '<p>當時是 <b>' + fmt(tt) + ' °C</b>　' + (mine.num !== "" && mine.num !== undefined ? (okNum ? '<span class="th-ok">✔ 度數很接近</span>' : '<span class="th-no">差 ' + fmt(Math.abs(Number(mine.num) - tt)) + ' 度</span>') : '') + '</p>';
+        }
+      return h;
+    }
     function drawSide(force){
       var s0 = st(), ans = pg().thermoAns || {}, mine = myAns();
       var sig = JSON.stringify([isStudent, s0.showNum, s0.reveal, s0.auto, mine, isStudent ? 0 : ans]);
       if(!force && sig === sideSig) return; sideSig = sig;
       var h = "";
       if(isStudent){
-        h += '<p class="th-q">' + (s0.showNum ? '現在幾度？' : '現在差不多幾度？') + '<small>' + (s0.showNum ? 'What is the temperature now?' : 'About how many degrees is it now?') + '</small></p>';
-        h += '<p class="th-q">溫度怎麼樣？<small>How is the temperature?</small></p><div class="th-chips">' + THERMO_ADJ.map(function(a){ return '<button type="button" class="th-chip' + (adjSel === a.w ? ' on' : '') + '" data-adj="' + a.w + '">' + a.w + '<small>' + a.en + '</small></button>'; }).join("") + '</div>';
-        h += '<p class="th-q">' + (s0.showNum ? '' : '差不多 ') + '<input type="number" step="0.1" id="th-num-in" style="width:100px;font-size:20px;" value="' + escapeHtml(numTxt) + '"> 度<small>' + (s0.showNum ? 'degrees' : 'about … degrees') + '</small></p>';
-        h += '<div class="th-ctl"><button type="button" class="btn btn-sm btn-primary" data-a="send">送出 Submit</button></div>';
-        if(mine){
-          var tt = Number(mine.t), okNum = mine.num !== "" && mine.num !== undefined && Math.abs(Number(mine.num) - tt) <= 2;
-          h += '<p>你送出：<b>' + escapeHtml(mine.adj || "—") + '</b>、<b>' + escapeHtml(String(mine.num === undefined ? "" : mine.num)) + '</b> 度　<small>Sent</small></p>';
-          if(s0.reveal) h += '<p>當時是 <b>' + fmt(tt) + ' °C</b>　' + (mine.num !== "" && mine.num !== undefined ? (okNum ? '<span class="th-ok">✔ 度數很接近</span>' : '<span class="th-no">差 ' + fmt(Math.abs(Number(mine.num) - tt)) + ' 度</span>') : '') + '</p>';
-        }
+        h = stuPanel(s0, mine, false);
       } else {
         var cur = st().t;
         h += '<div class="th-ctl"><button type="button" class="btn btn-sm" data-d="-5">−5</button><button type="button" class="btn btn-sm" data-d="-1">−1</button><button type="button" class="btn btn-sm" data-d="-0.1">−0.1</button><button type="button" class="btn btn-sm" data-d="0.1">＋0.1</button><button type="button" class="btn btn-sm" data-d="1">＋1</button><button type="button" class="btn btn-sm" data-d="5">＋5</button><button type="button" class="btn btn-sm" data-a="rand">🎲 隨機 Random</button></div>';
         h += '<div class="th-ctl"><button type="button" class="btn btn-sm' + (s0.auto ? ' btn-primary' : '') + '" data-a="auto">' + (s0.auto ? '⏸ 停止自動變化 Stop auto' : '▶ 自動變化 Auto change') + '</button><button type="button" class="btn btn-sm' + (s0.showNum ? ' btn-primary' : '') + '" data-a="num">' + (s0.showNum ? '學生看得到數字 Number shown' : '隱藏數字（學生要看溫度計）Number hidden') + '</button><button type="button" class="btn btn-sm' + (s0.reveal ? ' btn-primary' : '') + '" data-a="reveal">' + (s0.reveal ? '已公布答案 Revealed' : '公布答案 Reveal') + '</button></div>';
-        h += '<p class="th-q">現在溫度：<b>' + fmt(cur) + ' °C</b><small>拖曳左邊溫度計的水銀柱也可以改溫度 Drag the thermometer to change it</small></p>';
+        h += '<div style="margin-top:10px;padding:10px 12px;border:1.5px dashed var(--line,#c9b8a5);border-radius:12px;"><div class="bg5-cap">👀 學生看到的畫面 What students see</div><div style="pointer-events:none;opacity:.92;">' + stuPanel(s0, null, true) + '</div></div>';
         var ids = Object.keys(ans).filter(function(k){ return k !== "teacher"; });
         h += '<div class="bg5-cap">學生回答（' + ids.length + ' 人）Answers</div>';
         if(ids.length){
           h += '<table class="th-tbl"><thead><tr><th>學生</th><th>說法</th><th>度數</th><th>當時</th>' + (s0.reveal ? '<th></th>' : '') + '</tr></thead><tbody>' + ids.map(function(k){ var r = ans[k], tt = Number(r.t), okN = r.num !== "" && r.num !== undefined && Math.abs(Number(r.num) - tt) <= 2;
             return '<tr><td>' + escapeHtml(nameOf(k, r)) + '</td><td>' + escapeHtml(r.adj || "") + '</td><td>' + escapeHtml(String(r.num === undefined ? "" : r.num)) + '</td><td>' + fmt(tt) + '°</td>' + (s0.reveal ? '<td>' + (okN ? '<span class="th-ok">✔ 接近</span>' : '') + '</td>' : '') + '</tr>'; }).join("") + '</tbody></table>';
         } else h += '<div class="bg5-note">還沒有學生回答。No answers yet.</div>';
-        h += '<div class="bg5-note" style="margin-top:8px;">「冷、涼、暖和…」是每個人的感覺，沒有對錯；只有度數差 2 度以內會標示「接近」。</div>';
       }
       side.innerHTML = h;
       var numIn = side.querySelector("#th-num-in"); if(numIn) numIn.oninput = function(){ numTxt = numIn.value; };
