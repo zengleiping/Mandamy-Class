@@ -159,16 +159,24 @@ def segment_ckip(text: str, driver=None) -> List[str]:
     return out[:-1] if out else out
 
 
-_CKIP_POS = None
+_CKIP_NER = None
+# 簡章：人物名、事件名、地名、國名、機構名 不列入超綱比例。對應 CKIP 的實體類型：
+PROPER_TYPES = {"PERSON", "GPE", "LOC", "FAC", "ORG", "EVENT"}
 
 
-def tag_pos(lines: List[List[str]], model: str = "bert-base", device: int = -1) -> List[List[str]]:
-    """CKIP 詞性標注（用來找專有名詞 Nb、地名 Nc）。lines 是已斷好詞的每一行。"""
-    global _CKIP_POS
-    if _CKIP_POS is None:
-        from ckip_transformers.nlp import CkipPosTagger
-        _CKIP_POS = CkipPosTagger(model=model, device=device)
-    return [list(p) for p in _CKIP_POS(lines, show_progress=False)] if lines else []
+def ner_spans(lines: List[List[str]], model: str = "bert-base", device: int = -1) -> List[List[Tuple[int, int]]]:
+    """CKIP 命名實體辨識：回傳每一行裡「專有名詞」的字元範圍 [(起, 迄)]。
+
+    只認 PERSON 人名、GPE 國名／地名、LOC 地點、FAC 設施（如「經國轉運站」「銅鑼火車站」）、ORG 機構、EVENT 事件。
+    單獨的「火車站」「轉運站」這種普通名詞不會被當成實體。"""
+    global _CKIP_NER
+    if _CKIP_NER is None:
+        from ckip_transformers.nlp import CkipNerChunker
+        _CKIP_NER = CkipNerChunker(model=model, device=device)
+    texts = ["".join(l) for l in lines]
+    if not texts:
+        return []
+    return [[tuple(e.idx) for e in ents if e.ner in PROPER_TYPES] for ents in _CKIP_NER(texts, show_progress=False)]
 
 
 def align_to_tbcl(tokens: List[str], words: Iterable[str], max_parts: int = 4) -> List[str]:
@@ -302,16 +310,19 @@ def check_materials(
     tk, tbcl, ranks = tokenizer or d_tk, tbcl or d_tbcl, ranks if ranks is not None else d_ranks
 
     result = CheckResult(int(target_level))
-    pos_of: Dict[int, str] = {}
+    proper_idx: set = set()
     if segmenter == "ckip":
         known = set(tbcl)        # 只用 TBCL 詞表合併：辭典詞條裡有很多合成詞（社會秩序），不能拿來黏 CKIP 已斷好的詞
         words: List[str] = []
         for line in segment_ckip_lines(text, ckip_driver):          # 1) 先斷詞（獨立於 TBCL）
             line = align_to_tbcl(line, known)                        # 2) 再對回詞表
-            if exclude_proper_nouns:                                 # 3) 專有名詞不列入超綱比例（簡章規定）
-                for w, p in zip(line, tag_pos([line])[0]):
-                    pos_of[len(words)] = p
+            if exclude_proper_nouns:                                 # 3) 專有名詞（人名、地名、機構名…）不列入比例（簡章規定）
+                spans, pos = ner_spans([line])[0], 0
+                for w in line:
+                    if any(a <= pos and pos + len(w) <= b for a, b in spans):
+                        proper_idx.add(len(words))
                     words.append(w)
+                    pos += len(w)
             else:
                 words.extend(line)
             words.append("\n")
@@ -330,8 +341,8 @@ def check_materials(
             level, star = tbcl[w]
             effective = level + (0.5 if (star and not star_in_level) else 0)
             result.tokens.append(Token(w, OVER if effective > target_level else OK, level, star))
-        elif pos_of.get(idx) == "Nb" or (pos_of.get(idx) == "Nc" and len(w) >= 2):
-            result.tokens.append(Token(w, PROPER))               # 專有名詞、地名：不列入比例，但列出來讓老師知道
+        elif idx in proper_idx:
+            result.tokens.append(Token(w, PROPER))               # 專有名詞（NER 辨識出的人名、地名、機構名…）：不計入比例，但列出來讓老師知道
         else:
             result.tokens.append(Token(w, UNLISTED))             # 完全不在 TBCL 詞表
 

@@ -49,6 +49,13 @@ class CkipFlow(unittest.TestCase):
         self.assertIn("台北", [x.word for x in r.proper])       # 地名不計入比例
         self.assertEqual(r.segmenter, "ckip")
 
+    def test_proper_noun_only_inside_named_entity(self):
+        name = t.check_materials("我昨天在經國轉運站遇到李大錘，他要去銅鑼火車站搭車。", 3, segmenter="ckip")
+        self.assertTrue({"經國", "轉運站", "李大錘", "銅鑼", "火車站"} <= {x.word for x in name.proper})
+        common = t.check_materials("我們在火車站和轉運站等車。", 3, segmenter="ckip")
+        self.assertEqual(common.proper, [])                      # 普通名詞不排除
+        self.assertTrue({"火車站", "轉運站"} <= {x.word for x in common.unlisted})
+
 
 if __name__ == "__main__":
     unittest.main()
