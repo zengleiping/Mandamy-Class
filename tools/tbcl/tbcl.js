@@ -59,11 +59,11 @@ function report(r,target,limit){
   h+='<tr><td>詞表沒有</td><td>'+r.dist.filter(function(x){return x.lv==null}).length+'</td><td></td></tr></table></div>';
   if(r.list.length){h+='<div class="card"><b>超綱詞清單</b><table><tr><th>詞</th><th>等級</th><th>次數</th></tr>';r.list.forEach(function(x){h+='<tr><td>'+esc(x.w)+'</td><td>'+(x.lv==null?"未收錄":x.lv+(STAR.has(x.w)?"*":""))+'</td><td>'+x.n+'</td></tr>'});h+='</table></div>'}
   return h}
-function doCheck(){load().then(function(){
+function doCheck(){load().then(function(){return loadSyn()}).then(function(){
   var t=+$("lv").value,lim=+$("lim").value,r=analyze($("txt").value,t,EX);LAST={r:r,t:t,lim:lim};
-  $("res").innerHTML=r.total?report(r,t,lim):'<p class="note">請先貼上文字。</p>'})}
+  $("res").innerHTML=r.total?report(r,t,lim)+sugCard($("txt").value,t):'<p class="note">請先貼上文字。</p>'})}
 $("run").onclick=doCheck;
-$("res").onclick=function(e){var w=e.target.getAttribute&&e.target.getAttribute("data-w");if(!w)return;EX.has(w)?EX.delete(w):EX.add(w);doCheck()};
+$("res").onclick=function(e){if(e.target.closest&&e.target.closest("[data-act]"))return;var w=e.target.getAttribute&&e.target.getAttribute("data-w");if(!w||!e.target.classList.contains("w"))return;EX.has(w)?EX.delete(w):EX.add(w);doCheck()};
 $("exportc").onclick=function(){if(!LAST)return;var r=LAST.r,s="TBCL 第 "+LAST.t+" 級檢核（標準 "+LAST.lim+"%）\n詞次 "+r.total+"，超綱 "+r.over+"（"+r.ratio.toFixed(1)+"%）\n不重複詞 "+r.types+"，超綱 "+r.typeOver+"（"+r.typeRatio.toFixed(1)+"%）\n詞表："+(OFFICIAL?"官方 TBCL":"暫代（TOCFL）")+"\n"+CITE+"\n超綱詞："+r.list.map(function(x){return x.w+"("+(x.lv==null?"未收錄":x.lv)+")"}).join("、");
   navigator.clipboard.writeText(s).then(function(){alert("已複製")},function(){prompt("複製：",s)})};
 $("official").onclick=function(){var t=$("txt").value.trim();if(!t){alert("請先貼上文字");return}
@@ -72,6 +72,54 @@ $("official").onclick=function(){var t=$("txt").value.trim();if(!t){alert("請�
   f.style.display="none";document.body.appendChild(f);f.submit();f.remove()};
 $("incstar").onchange=function(){if($("txt").value.trim())doCheck()};
 $("printc").onclick=function(){window.print()};
+
+
+/* ===== 超綱詞替換建議：換詞（詞典＋AI，AI 的建議都用詞表驗證）、換句話說（AI，改完再檢核，最多 3 輪） ===== */
+var SYN=null,SYNIDX=null,UNDO=[],NEWS={};
+function loadSyn(){return SYN||(SYN=fetch("data/synonyms.json").then(function(r){if(!r.ok)throw 0;return r.json()}).catch(function(){return{g:[],m:{}}}).then(function(d){
+  SYNIDX=new Map();var add=function(a,b){if(a===b)return;var s=SYNIDX.get(a);if(!s){s=new Set();SYNIDX.set(a,s)}s.add(b)};
+  d.g.forEach(function(g){g.forEach(function(a){g.forEach(function(b){add(a,b)})})});
+  Object.keys(d.m).forEach(function(k){d.m[k].forEach(function(v){add(k,v);add(v,k)})});return d}))}
+function splitSent(t){var re=/[^。！？!?\n]*[。！？!?]+|[^。！？!?\n]+/g,m,o=[];while((m=re.exec(t))){if(m[0].trim())o.push({s:m[0],i:m.index})}return o}
+function overCount(s,t){return analyze(s,t,EX).over}
+function dictCands(w,t,sent){var out=[];(SYNIDX&&SYNIDX.get(w)||[]).forEach(function(x){var l=levelOf(x);if(l!=null&&effLv(x,l)<=t)out.push({c:x,l:l,src:"詞典"})});
+  out.sort(function(a,b){return a.l-b.l});return out.slice(0,6)}
+function parseArr(tx){var m=tx.match(/\[[\s\S]*\]/);if(!m)return[];try{var a=JSON.parse(m[0]);return Array.isArray(a)?a.map(String):[]}catch(e){return[]}}
+function sugCard(text,t){
+  var ss=splitSent(text).map(function(x,k){var a=analyze(x.s,t,EX);return{k:k,s:x.s,a:a}}).filter(function(x){return x.a.list.length});
+  if(!ss.length)return'<div class="card"><b>逐句修改建議</b><p class="note">沒有超綱的句子。</p></div>';
+  loadSyn();var h='<div class="card" id="sug"><b>逐句修改建議</b>'+(UNDO.length?' <button data-act="undo">↶ 復原上一步</button>':"")+'<p class="note">每個超綱詞可以「換詞」（先查詞典，沒有再問 AI，AI 給的詞一律用詞表驗證）；整句改不動時用「換句話說」。需要 AI 金鑰（Gemini 或 Claude）。詞典的建議只看詞義與等級，不保證放進句子還通順（例如「許多書」換成「多」就不通），滑鼠移上去可以先看換完的句子；套用前請老師確認語意，按「復原上一步」可以退回。</p>';
+  ss.forEach(function(x){h+='<div class="sent" data-k="'+x.k+'"><div class="hl" style="font-size:16px">';
+    x.a.toks.forEach(function(tk){h+=tk.han?'<span class="w '+(tk.st==="ok"?"":tk.st)+'">'+esc(tk.w)+'</span>':esc(tk.w)});h+='</div><div class="row" style="margin:4px 0">';
+    var seen={};x.a.list.forEach(function(it){if(seen[it.w])return;seen[it.w]=1;var cs=dictCands(it.w,t);
+      h+='<span class="wc"><b>'+esc(it.w)+'</b><small>'+(it.lv==null?"未收錄":"第"+it.lv+"級")+'</small>';
+      cs.forEach(function(c){h+=' <button class="cand" data-act="cand" data-k="'+x.k+'" data-w="'+esc(it.w)+'" data-c="'+esc(c.c)+'" title="換完：'+esc(x.s.replace(it.w,c.c).trim())+'">'+esc(c.c)+'<small>'+c.src+" "+c.l+'</small></button>'});
+      h+=' <button data-act="aiw" data-k="'+x.k+'" data-w="'+esc(it.w)+'">問 AI 換詞</button><span class="aiw" data-w="'+esc(it.w)+'"></span></span>'});
+    h+='<button class="pri" data-act="rw" data-k="'+x.k+'">整句換句話說（AI）</button></div><div class="rwout"></div></div>'});
+  return h+'</div>'}
+function applyToSent(k,fn){var text=$("txt").value,ss=splitSent(text),x=ss[k];if(!x)return false;var ns=fn(x.s);if(ns===x.s)return false;UNDO.push(text);$("txt").value=text.slice(0,x.i)+ns+text.slice(x.i+x.s.length);doCheck();return true}
+function logAI(step,tool,purpose,how,prompt){LOG.push({step:step,tool:tool,purpose:purpose,how:how,prompt:prompt,note:"檢核詞表："+(OFFICIAL?"官方 TBCL":"暫代（TOCFL）")});saveLog()}
+async function aiWord(k,w,box){var t=+$("lv").value,ai=$("c-ai").value,x=splitSent($("txt").value)[k];if(!x)return;box.textContent="AI 找詞中…";
+  try{var p="句子：「"+x.s.trim()+"」\n請列出 6 個可以取代句中「"+w+"」的詞或短語：意思相近、放在原位置語句通順、臺灣常用、而且只用臺灣華語文能力基準（TBCL）第 "+t+" 級（含以下）的詞。只輸出 JSON 陣列，例如 [\"詞1\",\"詞2\"]。";
+    var r=await callAI(ai,p),base=overCount(x.s,t),good=[];
+    parseArr(r.text).forEach(function(c){c=c.trim();if(!c||c===w)return;var ns=x.s.replace(w,c),o=overCount(ns,t);if(o<base)good.push({c:c,o:o})});
+    good.sort(function(a,b){return a.o-b.o});logAI("超綱詞換詞","AI（"+r.model+"）","找較低等級的替代詞","AI 提出替代詞 → 程式用 TBCL 詞表驗證，只保留能讓該句超綱詞減少的 → 人工決定是否套用",p.slice(0,80));
+    box.innerHTML=good.length?good.map(function(g){return'<button class="cand ai" data-act="cand" data-k="'+k+'" data-w="'+esc(w)+'" data-c="'+esc(g.c)+'" title="'+esc(x.s.replace(w,g.c))+'">'+esc(g.c)+'<small>AI·已驗證 超綱 '+base+'→'+g.o+'</small></button>'}).join(" "):'<small>AI 的建議沒有一個能降低這句的超綱詞，改試「換句話說」。</small>'}
+  catch(e){box.textContent="失敗："+e.message}}
+async function aiRewrite(k,box){var t=+$("lv").value,ai=$("c-ai").value,x=splitSent($("txt").value)[k];if(!x)return;var orig=x.s.trim(),base=overCount(orig,t),best=null,prompt0="請把下面這句話換句話說：意思不變、語氣自然，臺灣用語、繁體中文，並且只用臺灣華語文能力基準（TBCL）第 "+t+" 級（含以下）的詞語與句型，必要時可拆成兩三個短句。只輸出改寫後的句子，不要說明。\n原句："+orig,prompt=prompt0,rounds=0,res=null;
+  try{for(var i=1;i<=3;i++){rounds=i;box.textContent="換句話說中…（第 "+i+" 輪）";res=await callAI(ai,prompt);var out=res.text.trim().replace(/^[「"]|[」"]$/g,""),a=analyze(out,t,EX);
+      if(!best||a.over<best.a.over)best={s:out,a:a};if(a.over===0)break;
+      prompt=prompt0+"\n上一版：「"+out+"」仍有超出的詞："+a.list.slice(0,12).map(function(z){return z.w}).join("、")+"。請改成較簡單的說法，意思不變。"}
+    logAI("超綱句換句話說","AI（"+res.model+"）","把含超綱詞的句子改寫成目標等級","AI 改寫 → 程式用 TBCL 詞表自動檢核，仍超綱就帶著超綱詞再改（共 "+rounds+" 輪）→ 人工確認語意後套用",prompt0.slice(0,80));
+    var id="n"+Date.now();NEWS[id]=best.s;var ok=best.a.over<base;
+    box.innerHTML='<div class="card" style="margin:6px 0"><div class="note">改寫（超綱 '+base+' → '+best.a.over+'，'+rounds+' 輪）'+(ok?"":"　⚠ 沒有改善")+'</div><div class="hl" style="font-size:16px">'+esc(best.s)+'</div>'+(ok?'<button class="pri" data-act="apply" data-k="'+k+'" data-id="'+id+'">套用這個改寫</button>':"")+'</div>'}
+  catch(e){box.textContent="失敗："+e.message}}
+$("res").addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("[data-act]");if(!b)return;var act=b.getAttribute("data-act"),k=+b.getAttribute("data-k");
+  if(act==="cand"){var w=b.getAttribute("data-w"),c=b.getAttribute("data-c");applyToSent(k,function(s){return s.replace(w,c)})}
+  else if(act==="undo"){if(UNDO.length){$("txt").value=UNDO.pop();doCheck()}}
+  else if(act==="aiw"){aiWord(k,b.getAttribute("data-w"),b.nextElementSibling)}
+  else if(act==="rw"){aiRewrite(k,b.closest(".sent").querySelector(".rwout"))}
+  else if(act==="apply"){var ns=NEWS[b.getAttribute("data-id")];applyToSent(k,function(s){var lead=s.match(/^\s*/)[0],trail=s.match(/\s*$/)[0];return lead+ns+trail})}});
 
 /* 出處 */
 var CITE="資料來源：國家教育研究院，臺灣華語文能力基準詞語表、漢字表、語法點表與通用詞頻表，臺灣華語文語料庫與能力基準整合應用系統（https://coct.naer.edu.tw/）。檢核工具為曼米中文自行開發，非官方服務；詞語表第 1*–4* 級併入該級計算。";
