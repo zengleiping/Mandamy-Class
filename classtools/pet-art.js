@@ -10,21 +10,21 @@
   var INK = "#1b1212", UID = 0;
   function shade(hex, amt){ var n = parseInt(hex.slice(1), 16), r = Math.max(0, Math.min(255, (n >> 16) + amt)), g = Math.max(0, Math.min(255, ((n >> 8) & 255) + amt)), b = Math.max(0, Math.min(255, (n & 255) + amt)); return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1); }
   A.shade = shade;
-  var SW = 13;
+  var SW = 14;
   // ---------- 兩種風格的版型（座標都是 512×512）----------
   var G = {
-    outline: { head: { cx: 255, cy: 170, rx: 160, ry: 138, k: 30 }, ear: { l: [150, 62], r: [362, 62], rad: 50, inner: 22 }, eyes: { x1: 210, x2: 300, y: 148, r: 8 }, muzzle: { cx: 255, cy: 237, rx: 97, ry: 62 }, nose: { x: 255, y: 184, w: 60, h: 42 }, phil: { y1: 202, y2: 246, w: 13 }, mouthY: 246,
-      body: { cx: 255, cy: 400, rx: 128, ry: 108 }, belly: { cx: 255, cy: 406, rx: 92, ry: 102 }, arms: [{ x: 124, y: 376, rx: 34, ry: 72, rot: 20 }, { x: 386, y: 376, rx: 34, ry: 72, rot: -20 }], feet: [{ x: 86, y: 448, rx: 58, ry: 62, rot: -22, px: 82, py: 448, prx: 28, pry: 46 }, { x: 424, y: 448, rx: 58, ry: 62, rot: 22, px: 428, py: 448, prx: 28, pry: 46 }], cheekY: 205, cheekX: [128, 382] },
-    flat: { head: { cx: 255, cy: 136, rx: 142, ry: 125, k: 15 }, ear: { l: [140, 44], r: [370, 44], rad: 50, inner: 30 }, eyes: { x1: 185, x2: 325, y: 128, r: 12 }, muzzle: null, nose: { x: 255, y: 146, w: 70, h: 46 }, phil: { y1: 168, y2: 208, w: 14 }, mouthY: 208,
-      body: { cx: 255, cy: 386, rx: 156, ry: 124 }, belly: null, arms: [{ x: 98, y: 330, rx: 56, ry: 118, rot: 24 }, { x: 412, y: 330, rx: 56, ry: 118, rot: -24 }], feet: [{ x: 100, y: 440, rx: 58, ry: 84, rot: 4, px: 98, py: 432, prx: 32, pry: 50 }, { x: 412, y: 440, rx: 58, ry: 84, rot: -4, px: 414, py: 432, prx: 32, pry: 50 }], cheekY: 170, cheekX: [112, 398] }
+    outline: { head: { cx: 255.5, cy: 184, rx: 158.5, ry: 143, k: 30 }, ear: { l: [147, 60], r: [364, 60], rad: 51, inner: 21 }, eyes: { x1: 209.5, x2: 301.5, y: 146.5, r: 7 }, muzzle: { cx: 255.5, cy: 233.5, rx: 89.5, ry: 57.5 }, nose: { x: 255, y: 176, w: 49, h: 30 }, phil: { y1: 204, y2: 241, w: 14 }, mouthY: 241,
+      body: { cx: 255, cy: 384, rx: 150, ry: 118 }, belly: { cx: 255, cy: 400, rx: 108, ry: 89 }, arms: [{ x: 116, y: 372, rx: 32, ry: 72, rot: 20 }, { x: 394, y: 372, rx: 32, ry: 72, rot: -20 }], feet: [{ x: 80, y: 448, rx: 54, ry: 62, rot: -18, px: 78, py: 448, prx: 22, pry: 44 }, { x: 431, y: 448, rx: 54, ry: 62, rot: 18, px: 433, py: 448, prx: 22, pry: 44 }], cheekY: 205, cheekX: [128, 382] },
+    flat: { head: { cx: 255, cy: 139, rx: 142, ry: 129, k: 36 }, ear: { l: [145, 47], r: [365, 47], rad: 45, inner: 28 }, eyes: { x1: 184, x2: 327, y: 128.5, r: 11.5 }, muzzle: null, nose: { x: 255, y: 149, w: 65, h: 46 }, phil: { y1: 166, y2: 208, w: 14 }, mouthY: 208,
+      body: { cx: 256, cy: 372, rx: 160, ry: 100 }, belly: null, arms: [], feet: [{ x: 102, y: 430, rx: 52, ry: 80, rot: 4, px: 103, py: 430, prx: 21, pry: 45 }, { x: 410, y: 430, rx: 52, ry: 80, rot: -4, px: 409, py: 430, prx: 21, pry: 45 }], cheekY: 170, cheekX: [112, 398] }
   };
   function mkStyle(outline){
     var st = outline ? ' stroke="' + INK + '" stroke-width="' + SW + '" stroke-linejoin="round" stroke-linecap="round"' : "";
     var S = { o: outline, st: st, g: outline ? G.outline : G.flat };
-    S.P = function(d, f, x){ return '<path d="' + d + '" fill="' + f + '"' + st + (x ? " " + x : "") + '/>'; };
-    S.E = function(cx, cy, rx, ry, f, x){ return '<ellipse cx="' + cx + '" cy="' + cy + '" rx="' + rx + '" ry="' + ry + '" fill="' + f + '"' + st + (x ? " " + x : "") + '/>'; };
-    S.C = function(cx, cy, r, f, x){ return '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="' + f + '"' + st + (x ? " " + x : "") + '/>'; };
-    S.R = function(x0, y0, w, h, r, f, x){ return '<rect x="' + x0 + '" y="' + y0 + '" width="' + w + '" height="' + h + '" rx="' + r + '" fill="' + f + '"' + st + (x ? " " + x : "") + '/>'; };
+    S.P = function(d, f, x){ return '<path d="' + d + '" fill="' + f + '"' + (x && x.indexOf("stroke=") >= 0 ? "" : st) + (x ? " " + x : "") + '/>'; };
+    S.E = function(cx, cy, rx, ry, f, x){ return '<ellipse cx="' + cx + '" cy="' + cy + '" rx="' + rx + '" ry="' + ry + '" fill="' + f + '"' + (x && x.indexOf("stroke=") >= 0 ? "" : st) + (x ? " " + x : "") + '/>'; };
+    S.C = function(cx, cy, r, f, x){ return '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="' + f + '"' + (x && x.indexOf("stroke=") >= 0 ? "" : st) + (x ? " " + x : "") + '/>'; };
+    S.R = function(x0, y0, w, h, r, f, x){ return '<rect x="' + x0 + '" y="' + y0 + '" width="' + w + '" height="' + h + '" rx="' + r + '" fill="' + f + '"' + (x && x.indexOf("stroke=") >= 0 ? "" : st) + (x ? " " + x : "") + '/>'; };
     S.L = function(d, col, w, x){ return '<path d="' + d + '" fill="none" stroke="' + (col || INK) + '" stroke-width="' + (w || 11) + '" stroke-linecap="round" stroke-linejoin="round"' + (x ? " " + x : "") + '/>'; };
     S.N = function(d, f, x){ return '<path d="' + d + '" fill="' + f + '"' + (x ? " " + x : "") + '/>'; };
     S.shaded = function(geom, base, k, dark){
@@ -236,7 +236,8 @@
       inn += S.SE(g.body.cx, g.body.cy, g.body.rx, g.body.ry, body, { k: 22 });
       inn += S.SE(g.belly.cx, g.belly.cy, g.belly.rx, g.belly.ry, belly, { k: 18 });
     } else {
-      inn += S.E(257, 368, 213, 150, shade(body, -50), "") + S.E(255, 384, 158, 128, shade(body, -26), "") + S.E(255, 394, 155, 120, body, "") + S.E(255, 262, 150, 36, shade(body, -50), "");
+      var cid = "pc" + (++UID), tor = '<ellipse cx="255" cy="388" rx="136" ry="122"';
+      inn += S.N("M190 196 C96 246 28 330 52 424 C70 500 440 500 458 424 C482 330 414 246 320 196 Z", shade(body, -50)) + '<clipPath id="' + cid + '">' + tor + '/></clipPath>' + tor + ' fill="' + shade(body, -22) + '"/><g clip-path="url(#' + cid + ')"><ellipse cx="255" cy="250" rx="170" ry="40" fill="' + shade(body, -50) + '"/></g>';
     }
     g.feet.forEach(function(f){ inn += S.SE(f.x, f.y, f.rx, f.ry, footC, { rot: f.rot, k: outline ? 12 : 16 }) + S.E(f.px, f.py, f.prx, f.pry, padC, 'transform="rotate(' + f.rot + " " + f.px + " " + f.py + ')"' + (outline ? "" : ' stroke="none"')); });
     if(sp.ears) inn += sp.ears(S, sp.c);
