@@ -9,7 +9,7 @@
   // ---------- 預設設定 ----------
   function defaults(game){
     return {
-      game: game || "match", lessons: {}, sample: "fixed", cap: 30, lang: "en", phon: "zy",
+      game: game || "match", lessons: {}, custom: [], sample: "fixed", cap: 30, lang: "en", phon: "zy",
       match: { mode: "speed", seconds: 60, pair: "p", batch: 6, theme: "plain", themeFree: true, music: "happy" },
       blast: { q: "w2p", input: "tap", lives: 3, speed: 3, seconds: 0, theme: "space", themeFree: true, music: "space", liveOut: "revive" },
       live: { scoring: "avg", seconds: 90, stuMusic: true }
@@ -31,6 +31,72 @@
     var steps = [100, 80, 60, 40, 20], L = {};
     for(var j = 0; j < steps.length && i - j >= 0; j++) L[keys[i - j]] = steps[j];
     G.cfg.lessons = L;
+  }
+
+  // ---------- 自己輸入的生詞：當作一課「✏️ 自己輸入的生詞」放進出題範圍，跟其他課次一樣勾選、設定抽幾成 ----------
+  function syncCustom(){
+    G.ctx.lessons = G.ctx.lessons.filter(function(l){ return l.key !== "_custom"; });
+    var cu = (G.cfg.custom || []).filter(function(x){ return x && x.w; });
+    if(cu.length) G.ctx.lessons.push({ key: "_custom", title: "✏️ 自己輸入的生詞", short: "自訂", words: cu.map(function(x, i){ return { id: "c" + i, w: x.w, p: x.p || "", zy: "", tr: Object.assign({}, x.tr || {}), e: x.e || "", pic: "" }; }) });
+  }
+  function autoPy(w){ try{ return window.pinyinPro ? window.pinyinPro.pinyin(w) : ""; }catch(e){ return ""; } }
+  // 貼上的文字拆成詞語：一行一個，詞語後面可以接空格／逗號再寫翻譯（例如「冬天 winter」）
+  function parseCustomLines(txt){
+    return String(txt || "").split(/\n/).map(function(ln){ return ln.trim(); }).filter(Boolean).map(function(ln){
+      var parts = ln.split(/[\s,，、;；\t]+/).filter(Boolean), hi = -1;
+      for(var i = 0; i < parts.length; i++){ if(/[㐀-鿿]/.test(parts[i])){ hi = i; break; } }
+      if(hi < 0) return null;
+      var w = parts[hi], rest = parts.filter(function(x, i){ return i !== hi; }).join(" ");
+      return { w: w, p: "", tr: {}, e: "", _t: rest };
+    }).filter(Boolean);
+  }
+  function customEditor(){
+    var lang = G.cfg.lang, rows = (G.cfg.custom || []).map(function(x){ return { w: x.w, p: x.p || "", tr: Object.assign({}, x.tr || {}), e: x.e || "" }; });
+    var d = MG.dialog('<h3>自己輸入生詞</h3><p class="note">不一定要用教材的生詞：想考哪些詞，就自己打。存好以後，它會變成出題範圍裡的一課「✏️ 自己輸入的生詞」，跟其他課一樣勾選、設定抽幾成；配對和 Blast 都可以用。</p>' +
+      '<label class="note">快速貼上（一行一個詞語，詞語後面可以接空格或逗號再寫翻譯）</label><textarea id="cu-paste" class="mg-in" rows="4" placeholder="例如：&#10;冬天 winter&#10;圍巾，scarf&#10;火鍋"></textarea>' +
+      '<div class="mg-row" style="margin:6px 0;"><button type="button" class="mg-btn sm" id="cu-add">加入下面的表格</button><button type="button" class="mg-btn sm" id="cu-row">＋ 加一列</button><span class="note">拼音會自動補（可以修改，數字標調也可以，例如 ni3 hao3）</span></div>' +
+      '<div class="tr-wrap"><table class="tr-table"><thead><tr><th>詞語</th><th>拼音</th><th>' + MG.esc(MG.langShort(lang)) + '</th><th>圖片（Emoji）</th><th></th></tr></thead><tbody id="cu-body"></tbody></table></div>' +
+      '<div class="mg-row end"><span class="note" id="cu-st" style="margin-right:auto;"></span><button class="mg-btn" id="cu-tr">自動翻譯缺的</button><button class="mg-btn" data-close>取消</button><button class="mg-btn primary" id="cu-save">儲存</button></div>', { wide: true });
+    var body = d.querySelector("#cu-body");
+    function draw(){
+      body.innerHTML = rows.map(function(r, i){
+        return '<tr><td><input data-i="' + i + '" data-f="w" value="' + MG.esc(r.w) + '"></td><td><input data-i="' + i + '" data-f="p" value="' + MG.esc(r.p) + '"></td><td><input data-i="' + i + '" data-f="t" value="' + MG.esc(MG.trOf(r, lang)) + '"></td><td><input data-i="' + i + '" data-f="e" value="' + MG.esc(r.e) + '" placeholder="例如 ❄️"></td><td><button type="button" class="mg-btn sm ghost" data-del="' + i + '">刪除</button></td></tr>';
+      }).join("") || '<tr><td colspan="5" class="note">還沒有生詞：在上面貼上，或按「＋ 加一列」。</td></tr>';
+      d.querySelector("#cu-st").textContent = rows.length ? "共 " + rows.length + " 個（至少要 4 個才能玩 Blast、3 個才能玩配對）" : "";
+    }
+    function pull(){ body.querySelectorAll("input").forEach(function(inp){ var i = Number(inp.dataset.i), r = rows[i]; if(!r) return; var f = inp.dataset.f, v = inp.value.trim(); if(f === "w") r.w = v; else if(f === "p") r.p = v; else if(f === "e") r.e = v; else if(f === "t"){ r.tr = r.tr || {}; if(v) r.tr[lang] = v; else delete r.tr[lang]; } }); }
+    draw();
+    d.addEventListener("change", function(e){
+      var t = e.target; if(!t.dataset || !t.dataset.f) return; pull();
+      var i = Number(t.dataset.i), r = rows[i];
+      if(t.dataset.f === "w" && r.w && !r.p){ r.p = autoPy(r.w); draw(); }
+      if(t.dataset.f === "p"){ r.p = MG.pyNum(r.p); draw(); }
+    });
+    d.addEventListener("click", function(e){
+      var t = e.target;
+      if(t.dataset && t.dataset.del !== undefined){ pull(); rows.splice(Number(t.dataset.del), 1); draw(); return; }
+      if(t.id === "cu-row"){ pull(); rows.push({ w: "", p: "", tr: {}, e: "" }); draw(); var ins = body.querySelectorAll('input[data-f="w"]'); if(ins.length) ins[ins.length - 1].focus(); return; }
+      if(t.id === "cu-add"){
+        pull(); var have = {}, add = parseCustomLines(d.querySelector("#cu-paste").value), n = 0; rows.forEach(function(r){ have[r.w] = 1; });
+        add.forEach(function(a){ if(have[a.w]) return; have[a.w] = 1; a.p = autoPy(a.w); if(a._t) a.tr[lang] = a._t; delete a._t; rows.push(a); n++; });
+        d.querySelector("#cu-paste").value = ""; draw(); MG.toast(n ? "已加入 " + n + " 個詞語" : "沒有可以加入的詞語（要有中文字，或是已經在表格裡了）"); return;
+      }
+      if(t.id === "cu-tr"){
+        pull(); var st = d.querySelector("#cu-st"), todo = rows.filter(function(r){ return r.w && !MG.trOf(r, lang); }), left = todo.length;
+        if(!left){ MG.toast("每個詞語都有翻譯了"); return; }
+        st.textContent = "自動翻譯中…（" + left + " 個）";
+        MG.translateMissing(todo, lang, function(w, tx){ left--; st.textContent = left > 0 ? "自動翻譯中…（還有 " + left + " 個）" : "自動翻譯完成，看一下有沒有要改的，再按儲存"; var i = rows.indexOf(w), inp = body.querySelector('input[data-i="' + i + '"][data-f="t"]'); if(inp && tx) inp.value = tx; }).catch(function(){ st.textContent = "翻譯失敗，請手動輸入"; });
+        return;
+      }
+      if(t.id === "cu-save"){
+        pull(); var clean = rows.filter(function(r){ return r.w; }).map(function(r){ if(!r.p) r.p = autoPy(r.w); return { w: r.w, p: MG.pyNum(r.p), tr: r.tr || {}, e: r.e || "" }; });
+        var had = (G.cfg.custom || []).length > 0;
+        G.cfg.custom = clean;
+        if(clean.length && !had) G.cfg.lessons["_custom"] = 100;
+        if(!clean.length) delete G.cfg.lessons["_custom"];
+        syncCustom(); saveCfg(); d.close(); MG.toast(clean.length ? "已儲存 " + clean.length + " 個生詞" : "已清空自己輸入的生詞"); viewSetup();
+      }
+    });
   }
 
   // ---------- 老師：設定頁 ----------
@@ -72,7 +138,7 @@
       '<button class="mg-game' + (c.game === "match" ? " on" : "") + '" data-game="match"><img class="mg-game-img" src="../icons/act-match.png" alt=""><b>配對 Match</b><span class="note">詞語和拼音／翻譯配成一對，比速度或限時。</span></button>' +
       '<button class="mg-game' + (c.game === "blast" ? " on" : "") + '" data-game="blast"><img class="mg-game-img" src="../icons/act-blast.png" alt=""><b>Blast</b><span class="note">答案從畫面掉下來，點對的那個。可以選主題。</span></button></div></div>' +
       '<div class="mg-panel"><h3>出題範圍 <span class="note">勾選課次，設定每一課抽幾成的生詞</span></h3>' +
-      '<div class="mg-row" style="margin-bottom:10px;"><span class="note">從最近一課往前：100%、80%、60%、40%、20%</span><select class="mg-sel" id="sc-rec" style="max-width:280px;">' + recOpts + '</select><button class="mg-btn sm" id="sc-preset">套用</button><button class="mg-btn sm ghost" id="sc-clear">全部不用</button></div>' +
+      '<div class="mg-row" style="margin-bottom:10px;"><span class="note">從最近一課往前：100%、80%、60%、40%、20%</span><select class="mg-sel" id="sc-rec" style="max-width:280px;">' + recOpts + '</select><button class="mg-btn sm" id="sc-preset">套用</button><button class="mg-btn sm ghost" id="sc-clear">全部不用</button><button class="mg-btn sm" id="sc-custom" title="不用教材的生詞，自己輸入想考的詞語">✏️ 自己輸入生詞</button></div>' +
       (rows ? '<div class="sc-list"><div class="sc-row head"><span></span><span>課次</span><span class="n">生詞</span><span>抽幾成</span><span></span></div>' + rows + '</div>' : '<p class="note">這個班的教材還沒有生詞。</p>') +
       '<div class="mg-row" style="margin-top:10px;"><span>抽題方式</span>' + seg("sample", c.sample, [["fixed", "固定（照課本順序取前面的）"], ["random", "隨機（每次不一樣）"]]) + '</div><div class="mg-row" style="margin-top:8px;"><span>一局最多</span>' + seg("cap", c.cap, [[10, "10 個"], [20, "20 個"], [30, "30 個"], [50, "50 個"], [0, "不限"]]) + '<span class="note">超過時每一課照比例一起減少</span><span class="grow" style="flex:1"></span><span class="sc-sum">共 ' + sum + ' 個生詞</span></div></div>' +
       '<div class="mg-panel"><h3>讀音 <span class="note">遊戲裡顯示注音還是拼音</span></h3>' + seg("phon", c.phon || "zy", [["zy", "注音"], ["py", "拼音"]]) + '</div>' +
@@ -104,6 +170,7 @@
       if((t = e.target.closest("[data-seg] button"))){ var seg = t.closest("[data-seg]").dataset.seg, v = t.dataset.v; setPath(seg, /^\d+$/.test(v) ? Number(v) : v); if(seg === "phon" && v === "zy") G.cfg.blast.input = "tap"; saveCfg(); viewSetup(); return; }
       if((t = e.target.closest("[data-theme]"))){ var gc = G.cfg[G.cfg.game], th = MG.THEMES[t.dataset.theme]; gc.theme = t.dataset.theme; if(gc.music && th && th.music) gc.music = th.music; saveCfg(); viewSetup(); return; }
       if(e.target.id === "sc-preset"){ presetFrom(MG.$("#sc-rec").value); saveCfg(); viewSetup(); return; }
+      if(e.target.id === "sc-custom"){ customEditor(); return; }
       if(e.target.id === "sc-clear"){ G.cfg.lessons = {}; saveCfg(); viewSetup(); return; }
       if(e.target.id === "tr-edit"){ trEditor(); return; }
       if((t = e.target.closest("[data-preview]"))){ MG.music.preview(t.dataset.preview); return; }
@@ -319,6 +386,7 @@
     if(!saved && ctx.t){ saved = await MG.fb.get("teacherPlatform/" + ctx.t + "/gamePrefs/" + (ctx.cls ? ctx.cls.c : "_")).catch(function(){ return null; }); }
     if(saved) merge(G.cfg, saved);
     if(ctx.game) G.cfg.game = ctx.game;
+    syncCustom();   // 自己輸入的生詞（存在設定裡）變成一課
     // 課次：清掉這個班已經沒有的；什麼都沒選就用「最近一課往前」的預設
     var keys = ctx.lessons.map(function(l){ return l.key; });
     Object.keys(G.cfg.lessons || {}).forEach(function(k){ if(keys.indexOf(k) < 0) delete G.cfg.lessons[k]; });
