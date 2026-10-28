@@ -139,7 +139,11 @@
                 },
                 "classes": {
                   "$c": {
-                    ".read": "auth != null"
+                    ".read": "auth != null",
+                    "liveResp": {
+                      ".read": "auth != null",
+                      ".write": "auth != null"
+                    }
                   }
                 }
               }
