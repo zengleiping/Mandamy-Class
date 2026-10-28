@@ -63,22 +63,35 @@
       var W = stage.clientWidth, H = stage.clientHeight;
       var probe = document.createElement("div"); probe.className = "bl-item"; probe.style.visibility = "hidden"; stage.appendChild(probe);
       var bw = probe.offsetWidth || 150, bh = probe.offsetHeight || 110; probe.remove();
-      var lanes = opts.length, gap = (W - bw * lanes) / (lanes + 1);
-      var dur = DUR[speedIdx] / speedFactor(), v = (H + bh * 2) / dur;
-      if(gap < 4){ gap = 4; }
+      var lanes = opts.length, dur = DUR[speedIdx] / speedFactor(), v = (H + bh * 2) / dur, built = [];
       opts.forEach(function(x, i){
         var it = document.createElement("div"); it.className = "bl-item";
-        var lx = lanes * bw + (lanes + 1) * gap > W ? (W - bw) * (lanes === 1 ? 0.5 : i / (lanes - 1)) : gap + i * (bw + gap);
-        lx = MG.clamp(lx + (rnd() - 0.5) * Math.min(gap, 40), 2, Math.max(2, W - bw - 2));
-        var delay = typeMode ? 0 : rnd() * 0.9 + (i % 2) * 0.35;
-        var y0 = T.dir > 0 ? -bh - delay * v : H + delay * v;
         var txt = typeMode ? x.w : MG.sideText(x, ansKind, o.lang), zh = typeMode || ansKind === "w" || (zyM && ansKind === "p");
         it.style.setProperty("--lc", lab.lc || "#2B2320"); if(lab.ls) it.style.setProperty("--ls", lab.ls); if(lab.ly) it.style.setProperty("--ly", lab.ly); if(lab.lh) it.style.setProperty("--lh", lab.lh);
         it.innerHTML = T.shape(roundNo * 7 + i) + (ansKind === "i" && !typeMode ? '<div class="lbl picl">' + MG.picHtml(txt) + '</div>' : '<div class="lbl"><span class="fit' + (zh ? " zh" : "") + '" data-fmax="' + (zh ? 30 : ansKind === "p" ? 24 : 20) + '" data-fmin="10">' + MG.esc(txt) + '</span></div>');
-        var obj = { el: it, w: x, ok: x.w === w.w, x: lx, y0: y0, v: v, t0: now(), dead: false };
-        it.addEventListener("pointerdown", function(e){ e.preventDefault(); tap(obj); });
-        stage.appendChild(it); items.push(obj); place(obj, y0);
-        if(MG.$(".fit", it)) MG.fit(MG.$(".fit", it));
+        stage.appendChild(it);
+        // 字比較長（例如一串注音）：果實放大，字不會超出果實，也不會縮到看不清楚
+        var fitEl = MG.$(".fit", it), sc = 1, maxSc = Math.max(1, Math.min(2.6, (W - 16) / lanes / bw));
+        if(fitEl){
+          var fmax = parseFloat(fitEl.dataset.fmax) || 24, over = function(){ return fitEl.scrollWidth > fitEl.clientWidth + 1 || fitEl.scrollHeight > fitEl.clientHeight + 2; };
+          for(var g = 0; g < 14; g++){
+            it.style.setProperty("--bw", (bw * sc).toFixed(1) + "px"); it.style.setProperty("--bh", (bh * sc).toFixed(1) + "px");
+            MG.fit(fitEl, fmax, 17);
+            if(!over() || sc >= maxSc) break;
+            sc = Math.min(maxSc, sc + 0.12);
+          }
+          if(over()) MG.fit(fitEl, fmax, 9);   // 螢幕實在太窄放不下，才再把字縮小
+        }
+        built.push({ it: it, word: x, w: bw * sc, h: bh * sc });
+      });
+      var totalW = built.reduce(function(a, b2){ return a + b2.w; }, 0), gap = Math.max(4, (W - totalW) / (lanes + 1)), cursor = gap;
+      built.forEach(function(bi, k){
+        var lx = totalW + (lanes + 1) * gap > W ? (W - bi.w) * (lanes === 1 ? 0.5 : k / (lanes - 1)) : cursor; cursor += bi.w + gap;
+        lx = MG.clamp(lx + (rnd() - 0.5) * Math.min(gap, 40), 2, Math.max(2, W - bi.w - 2));
+        var delay = typeMode ? 0 : rnd() * 0.9 + (k % 2) * 0.35, y0 = T.dir > 0 ? -bi.h - delay * v : H + delay * v;
+        var obj = { el: bi.it, w: bi.word, ok: bi.word.w === w.w, x: lx, y0: y0, v: v, t0: now(), dead: false };
+        bi.it.addEventListener("pointerdown", function(e){ e.preventDefault(); tap(obj); });
+        items.push(obj); place(obj, y0);
       });
       if(typeMode){ var inp = MG.$(".bl-type input", el); inp.value = ""; if(document.activeElement !== inp) try{ inp.focus({ preventScroll: true }); }catch(e){} }
     }

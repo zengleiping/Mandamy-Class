@@ -1764,6 +1764,40 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   }
   :root:not([data-theme="light"]) .hanzi-side-panel{ border-color:rgba(255,255,255,0.16); }
   .hanzi-ref-box{ display:flex; flex-direction:column; align-items:center; gap:6px; width:100%; }
+  /* 🎯 賓果卡（學生自己填 5×5） */
+  .bg5-wrap{ padding:10px 14px 24px; max-width:1100px; margin:0 auto; }
+  .bg5-head{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; font-size:18px; }
+  .bg5-note{ font-size:13.5px; color:var(--ink-soft); font-weight:400; }
+  .bg5-status{ margin:8px 0; padding:8px 12px; background:var(--seal-soft,#FDECE6); border-radius:10px; font-size:15px; }
+  .bg5-warn{ color:#B23B32; margin-top:4px; font-weight:700; }
+  .bg5-body{ display:grid; grid-template-columns:minmax(200px,300px) 1fr; gap:16px; align-items:start; }
+  @media (max-width:760px){ .bg5-body{ grid-template-columns:1fr; } }
+  .bg5-cap{ font-weight:700; font-size:14.5px; margin-bottom:6px; color:var(--ink-soft); }
+  .bg5-words, .bg5-twords{ display:flex; flex-wrap:wrap; gap:6px; }
+  .bg5-word, .bg5-tw{ font-family:MM Latin,Iansui,serif; font-size:17px; padding:5px 10px; border-radius:10px; border:1.5px solid var(--line,#d8cbb8); background:var(--surface,#fff); cursor:pointer; }
+  .bg5-word.used{ opacity:.35; text-decoration:line-through; }
+  .bg5-tw{ position:relative; text-align:center; }
+  .bg5-tw small{ display:block; font-size:11px; color:var(--ink-soft); font-family:inherit; }
+  .bg5-tw.called{ background:var(--seal-soft,#FDECE6); border-color:var(--seal,#E8825A); }
+  .bg5-n{ display:inline-block; min-width:1.3em; margin-right:4px; padding:0 4px; border-radius:99px; background:var(--seal,#E8825A); color:#fff; font-size:12.5px; font-family:system-ui; }
+  .bg5-who{ display:flex; gap:6px; align-items:center; flex-wrap:wrap; margin:0 0 8px; font-size:14px; }
+  .bg5-who select, .bg5-who input{ padding:4px 8px; border-radius:8px; border:1.5px solid var(--line,#d8cbb8); background:var(--surface,#fff); font-size:14px; }
+  .bg5-grid{ display:grid; grid-template-columns:repeat(5,1fr); gap:6px; width:min(100%,520px); }
+  .bg5-cell{ aspect-ratio:1/1; display:flex; align-items:center; justify-content:center; text-align:center; padding:4px; font-family:MM Latin,Iansui,serif; font-size:clamp(15px,2.4vw,24px); font-weight:700; border-radius:12px; border:2px solid var(--line,#d8cbb8); background:var(--surface,#fff); cursor:pointer; line-height:1.15; word-break:break-all; }
+  .bg5-cell.empty{ background:rgba(0,0,0,.03); border-style:dashed; }
+  .bg5-cell.sel{ border-color:var(--seal,#E8825A); box-shadow:0 0 0 3px var(--seal-soft,#FDECE6); }
+  .bg5-cell.mark{ background:var(--seal,#E8825A); color:#fff; border-color:var(--seal,#E8825A); }
+  .bg5-btns{ display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+  .bg5-tbl{ border-collapse:collapse; width:100%; font-size:14.5px; }
+  .bg5-tbl th, .bg5-tbl td{ padding:4px 8px; border-bottom:1px solid var(--line,#e3d6c0); text-align:left; }
+  .bg5-ol{ margin:4px 0 0 20px; padding:0; font-size:15px; }
+  .bg5-ol small{ color:var(--ink-soft); }
+  #bingo5-ov{ position:fixed; inset:0; z-index:99999; background:rgba(0,0,0,.62); display:flex; align-items:center; justify-content:center; cursor:pointer; }
+  .bg5-ov-box{ background:#fff; border-radius:24px; padding:30px 50px; text-align:center; animation:bg5Pop .6s cubic-bezier(.3,1.6,.5,1); box-shadow:0 12px 60px rgba(0,0,0,.4); max-width:90vw; }
+  .bg5-ov-star{ font-size:clamp(50px,9vw,90px); }
+  .bg5-ov-name{ font-family:MM Latin,Iansui,serif; font-size:clamp(42px,9vw,96px); font-weight:800; color:var(--seal,#E8825A); line-height:1.15; word-break:break-all; }
+  .bg5-ov-txt{ font-size:clamp(28px,5vw,56px); font-weight:800; }
+  @keyframes bg5Pop{ from{ transform:scale(.3); opacity:0; } to{ transform:scale(1); opacity:1; } }
   .hanzi-ref-zy{ font-family:MM Latin,Iansui,serif; font-size:42px; font-weight:700; line-height:1.2; text-align:center; padding:6px 0; color:var(--seal); letter-spacing:.04em; }
   .hanzi-ref-img{ max-width:100%; max-height:150px; border-radius:8px; display:block; }
   .hanzi-side-panel.hanzi-hint-off .hanzi-ref-box{ display:none; }
@@ -2370,6 +2404,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
         <button type="button" data-type="board">🖼 投影片 Slides</button>
         <button type="button" data-type="whiteboard">🖊️ 小白板 Whiteboard</button>
         <button type="button" data-type="hanzi">🖋️ 生字練習 Character Practice</button>
+        <button type="button" data-type="bingo">🎯 賓果卡 Bingo Card</button>
       </div>
 
       <label for="f-sec-title">大題名稱（留空將自動命名）Section Name</label>
@@ -2518,6 +2553,14 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
         </div>
         <label>教學指引</label>
         <input type="text" id="f-board-desc" placeholder="例如：請在格線中寫出『好』">
+      </div>
+
+      <div id="bingo-fields" style="display:none;">
+        <label>這次賓果要用的生詞（一行一個；學生會看著這張生詞表，把詞填進自己的 5×5 賓果卡，至少 25 個才填得滿）</label>
+        <textarea id="f-bingo-words" rows="9" placeholder="例如：&#10;冬天&#10;圍巾&#10;火鍋"></textarea>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:6px;"><select id="f-bingo-lesson" style="flex:1;min-width:0;"><option value="">（從教材庫匯入某一課的生詞…）</option></select><button type="button" class="btn btn-sm" id="btn-bingo-import">匯入這一課的生詞</button></div>
+        <div id="bingo-count" class="hint" style="font-size:13px;color:var(--ink-soft);margin-top:4px;"></div>
+        <label>說明（選填）</label><input type="text" id="f-bingo-desc" placeholder="例如：把這一課的生詞填進你的賓果卡">
       </div>
 
       <div id="hanzi-fields" style="display:none;">
@@ -4885,7 +4928,7 @@ window.mmTA = (function(){
     var items = []; var totalWeight = 0;
     secKeys.forEach(function(secId){
       var sec = secs[secId];
-      if(sec.type === "board" || sec.type === "whiteboard" || sec.type === "hanzi") return; // 投影片／小白板／生字練習不計分
+      if(sec.type === "board" || sec.type === "whiteboard" || sec.type === "hanzi" || sec.type === "bingo") return; // 投影片／小白板／生字練習／賓果卡不計分
       var qKeys = getSortedQuestionKeys(sec).filter(function(k){ return !qHidden(sec, sec.questions[k]); });   // 隱藏的題目不計分
       qKeys.forEach(function(qId){
         var q = sec.questions[qId];
@@ -5043,6 +5086,11 @@ window.mmTA = (function(){
           var strokes = progress.strokes || [];
           qRes.status = strokes.length > 0 ? "completed" : "empty";
           qRes.detail = strokes.length > 0 ? `已完成書寫 Done (${strokes.length} 筆畫 strokes)` : "尚未書寫 Not written yet";
+        } else if(sec.type === "bingo"){
+          qRes.isScoreable = false;
+          var myBg = (progress.bingo && progress.bingo[isStudent ? myId : "teacher"]) || null;
+          qRes.status = myBg && myBg.ready ? "completed" : "empty";
+          qRes.detail = myBg && myBg.ready ? "已填好賓果卡 Card done" : "尚未填好賓果卡 Card not finished";
         } else if(sec.type === "hanzi"){
           qRes.isScoreable = false;
           var myHanziId = isStudent ? myId : "teacher";
@@ -8384,7 +8432,8 @@ window.mmTA = (function(){
       record:  { label: "錄音 Recording", color: "#B03A6B" },
       board:   { label: "投影片 Slides", color: "#A83232" },
       whiteboard: { label: "小白板 Whiteboard", color: "#C0623A" },
-      hanzi:   { label: "生字練習 Character", color: "#3A7CA5" }
+      hanzi:   { label: "生字練習 Character", color: "#3A7CA5" },
+      bingo:   { label: "賓果卡 Bingo", color: "#C98A00" }
     };
 
     secKeys.forEach(function(secId){
@@ -8491,7 +8540,7 @@ window.mmTA = (function(){
                 <span class="q-index-badge">${idx + 1}</span>
                 ${sec.type === "board" ? `<img class="q-thumb" data-thumb-qid="${qId}" src="${thumbSrcFor(q)}" alt="">` : ""}
                 <span class="q-item-title">${escapeHtml(dispTitle(sec, q))}</span>
-                ${(!isCanvasSec(sec) && sec.type !== "hanzi" && q.weight && q.weight !== 1) ? `<span class="q-weight-tag" title="配分權重 Weight ×${q.weight}">×${q.weight}</span>` : ""}
+                ${(!isCanvasSec(sec) && sec.type !== "hanzi" && sec.type !== "bingo" && q.weight && q.weight !== 1) ? `<span class="q-weight-tag" title="配分權重 Weight ×${q.weight}">×${q.weight}</span>` : ""}
               </span>
               ${isStudent || sec.hidden ? '' : '<span class="q-hide-btn" title="' + (q.hidden ? '顯示這' + (sec.type === "board" ? '頁' : '題') : '隱藏這' + (sec.type === "board" ? '頁' : '題') + '：學生看不到、翻頁跳過、不計分') + '">' + (q.hidden ? '已隱藏・顯示' : '隱藏') + '</span>'}
               <span class="q-action-btns">
@@ -8714,7 +8763,7 @@ window.mmTA = (function(){
     var secs = getSections();
     var title = document.getElementById("f-sec-title").value.trim();
     var desc = document.getElementById("f-sec-desc").value.trim();
-    var typeNames = { match: "連連看", choice: "選擇題", reorder: "句子重組", fill: "填空", open: "簡答／造句", record: "錄音", board: "投影片", whiteboard: "小白板", hanzi: "生字練習" };
+    var typeNames = { match: "連連看", choice: "選擇題", reorder: "句子重組", fill: "填空", open: "簡答／造句", record: "錄音", board: "投影片", whiteboard: "小白板", hanzi: "生字練習", bingo: "賓果卡" };
     if(editingSectionId && secs[editingSectionId]){
       secs[editingSectionId].title = title || secs[editingSectionId].title;
       secs[editingSectionId].desc = desc;
@@ -9236,6 +9285,22 @@ window.mmTA = (function(){
   var choiceOptRowsEl = document.getElementById("choice-opt-rows");
   var editorBoardImgData = "";
   // 生字練習的提示：國字（筆順參考）／注音／圖片，老師決定學生看到哪些
+  // 賓果卡（學生自己填 5×5）編輯：生詞表（一行一個）、可從教材庫匯入一課的生詞
+  function bingoParseWords(txt){ var seen = {}, out = []; String(txt || "").split(/[\n,，、;；\t]+/).forEach(function(x){ x = x.trim(); if(x && !seen[x]){ seen[x] = 1; out.push(x); } }); return out; }
+  function bingoCountSync(){
+    var el = document.getElementById("bingo-count"), ta = document.getElementById("f-bingo-words"); if(!el || !ta) return;
+    var n = bingoParseWords(ta.value).length; el.textContent = "目前 " + n + " 個詞" + (n >= 25 ? "（夠了，學生會從裡面挑 25 個填進卡片）" : n ? "（至少 25 個，學生才填得滿；不夠的話卡片上會有重複的詞）" : "");
+    el.style.color = n && n < 25 ? "#B23B32" : "var(--ink-soft)";
+  }
+  var bingoBank = null;
+  async function bingoFillLessons(){
+    var sel = document.getElementById("f-bingo-lesson"); if(!sel) return;
+    try{
+      if(!bingoBank && currentTeacher && window.db){ var sn = await get(ref(db, "teacherVocabBanks/" + currentTeacher.id)); var b = sn.exists() ? sn.val() : null; var cd = b && b.courseData ? (Array.isArray(b.courseData) ? b.courseData : Object.keys(b.courseData).map(function(k){ return b.courseData[k]; })) : []; bingoBank = cd.filter(function(l){ return l && (l.vocab || []).length; }); }
+    }catch(e){}
+    if(!bingoBank) return;
+    sel.innerHTML = '<option value="">（從教材庫匯入某一課的生詞…）</option>' + bingoBank.map(function(l, i){ return '<option value="' + i + '">' + escapeHtml((l.book ? l.book + "　" : "") + "第 " + l.lesson + " 課" + (l.title ? "：" + l.title : "") + "（" + (l.vocab || []).length + " 個）") + '</option>'; }).join("");
+  }
   var editorHanziImg = "", hanziZyDirty = false;
   function hanziAutoZy(ch){
     try{
@@ -9529,6 +9594,7 @@ window.mmTA = (function(){
     document.getElementById("record-fields").style.display = type === "record" ? "block" : "none";
     document.getElementById("board-fields").style.display = (type === "board" || type === "whiteboard") ? "block" : "none";
     document.getElementById("hanzi-fields").style.display = type === "hanzi" ? "block" : "none";
+    document.getElementById("bingo-fields").style.display = type === "bingo" ? "block" : "none";
     document.getElementById("passage-wrap").style.display = (type === "choice" || type === "fill" || type === "open" || type === "record" || type === "reorder") ? "block" : "none";
 
     if(type === "match"){
@@ -9563,6 +9629,10 @@ window.mmTA = (function(){
       editorBoardImgData = q ? (q.bgImage || "") : "";
       document.getElementById("upload-tip").textContent = editorBoardImgData ? "✅ 已上傳底圖 Uploaded（點擊可更換 tap to change）" : "📷 點擊上傳背景圖片 Upload Image";
       document.getElementById("f-board-desc").value = q ? (q.desc || "") : "";
+    } else if(type === "bingo"){
+      document.getElementById("f-bingo-words").value = q && Array.isArray(q.words) ? q.words.join("\n") : "";
+      document.getElementById("f-bingo-desc").value = q ? (q.desc || "") : "";
+      bingoCountSync(); bingoFillLessons();
     } else if(type === "hanzi"){
       document.getElementById("f-hanzi-char").value = q ? (q.char || "") : "";
       document.getElementById("f-hanzi-desc").value = q ? (q.desc || "") : "";
@@ -9580,6 +9650,14 @@ window.mmTA = (function(){
   document.getElementById("add-pair").onclick = function(){ pairRowsEl.appendChild(makePairRow("", "")); };
   document.getElementById("add-mc-opt").onclick = function(){ choiceOptRowsEl.appendChild(makeChoiceRow("", false)); };
 
+  document.getElementById("f-bingo-words").oninput = bingoCountSync;
+  document.getElementById("btn-bingo-import").onclick = function(){
+    var sel = document.getElementById("f-bingo-lesson"), l = bingoBank && sel.value !== "" ? bingoBank[Number(sel.value)] : null;
+    if(!l){ alert("請先選一課。"); return; }
+    var ta = document.getElementById("f-bingo-words"), have = bingoParseWords(ta.value), add = (l.vocab || []).map(function(v){ return String(v["生詞"] || "").trim(); }).filter(Boolean);
+    add.forEach(function(w){ if(have.indexOf(w) < 0) have.push(w); });
+    ta.value = have.join("\n"); bingoCountSync();
+  };
   document.getElementById("btn-hanzi-img").onclick = function(){ document.getElementById("f-hanzi-img").click(); };
   document.getElementById("btn-hanzi-img-clear").onclick = function(){ editorHanziImg = ""; hanziImgTipSync(); };
   document.getElementById("f-hanzi-img").onchange = function(e){
@@ -9687,6 +9765,12 @@ window.mmTA = (function(){
       qObj.desc = document.getElementById("f-board-desc").value.trim();
       qObj.bgImage = editorBoardImgData || "";
       qObj.gridType = (existing && existing.gridType) || "none";
+    } else if(sec.type === "bingo"){
+      var bwords = bingoParseWords(document.getElementById("f-bingo-words").value);
+      if(bwords.length < 2){ alert("請輸入這次賓果要用的生詞（一行一個）。"); return; }
+      if(bwords.length < 25 && !confirm("目前只有 " + bwords.length + " 個詞，不到 25 個：學生的賓果卡會有重複的詞。\n要這樣存嗎？")) return;
+      qObj.title = titleInput || ("第 " + (order + 1) + " 題：賓果卡");
+      qObj.words = bwords; qObj.desc = document.getElementById("f-bingo-desc").value.trim();
     } else if(sec.type === "hanzi"){
       var hanziChar = document.getElementById("f-hanzi-char").value.trim();
       if(!hanziChar){ alert("請輸入要練習的漢字！Please enter a character to practice."); return; }
@@ -9703,7 +9787,7 @@ window.mmTA = (function(){
     }
 
     qObj.media = qMediaManager.getItems();
-    var passageVal = document.getElementById("f-passage").value.trim(); if(passageVal && sec.type !== "board" && sec.type !== "whiteboard" && sec.type !== "hanzi" && sec.type !== "match") qObj.passage = passageVal;
+    var passageVal = document.getElementById("f-passage").value.trim(); if(passageVal && sec.type !== "board" && sec.type !== "whiteboard" && sec.type !== "hanzi" && sec.type !== "bingo" && sec.type !== "match") qObj.passage = passageVal;
     qObj.teacherNote = document.getElementById("f-teacher-note").value.trim();
     var ttsText = document.getElementById("f-tts-text").value.trim();
     if(editorTtsRec && editorTtsSrc){
@@ -10290,7 +10374,7 @@ window.mmTA = (function(){
 
     // 填空／簡答：正在打字時，別因為雲端回傳自己剛寫的資料就整個重畫（會讓游標跑掉、輸入法中斷）
     if((sec.type === "fill" || sec.type === "open") && stageSignature === lastStageSignature && stageEl.contains(document.activeElement) && /^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)) return;
-    if((isCanvasSec(sec) || sec.type === "hanzi" || sec.type === "choice") && liveBoardQId === q.id && stageSignature === lastStageSignature && liveBoardRefresh && liveBoardRefresh()){
+    if((isCanvasSec(sec) || sec.type === "hanzi" || sec.type === "bingo" || sec.type === "choice") && liveBoardQId === q.id && stageSignature === lastStageSignature && liveBoardRefresh && liveBoardRefresh()){
       return; // 局部刷新成功：只更新畫布內容（筆畫／文字／格線／底圖），不重建整個舞台
     }
 
@@ -10374,7 +10458,7 @@ window.mmTA = (function(){
     var stageTarget = stageEl;
     if(sec.type === "choice"){ stageTarget = document.createElement("div"); stageTarget.className = "mc-ink-wrap"; stageEl.appendChild(stageTarget); }
     // 閱讀文本：獨立的一塊，放在題幹（題目文字與選項）上方，長文章可以在區塊內捲動
-    if(q.passage && !isCanvasSec(sec) && sec.type !== "hanzi" && sec.type !== "match"){
+    if(q.passage && !isCanvasSec(sec) && sec.type !== "hanzi" && sec.type !== "bingo" && sec.type !== "match"){
       var psg = document.createElement("div"); psg.className = "passage-card";
       psg.innerHTML = '<div class="passage-label">📖 閱讀文本 Reading</div><div class="passage-text zh">' + escapeHtml(q.passage).replace(/\n/g, "<br>") + '</div>';
       stageTarget.appendChild(psg);
@@ -10393,6 +10477,7 @@ window.mmTA = (function(){
     else if(sec.type === "record") renderRecordBoard(q, boardArea);
     else if(isCanvasSec(sec)) renderDrawBoard(q, boardArea);
     else if(sec.type === "hanzi") renderHanziBoard(q, boardArea);
+    else if(sec.type === "bingo") renderBingoBoard(q, boardArea);
 
     applyStageZoom(currentZoomRatio);
   }
@@ -17130,6 +17215,148 @@ window.mmTA = (function(){
     return { get: function(){ return box.instance; } };
   }
 
+  /* ================== 賓果卡（學生自己填 5×5，老師唸詞／抽人，學生聽到後點格子；連線時全班都看到「OOO bingo了！」）==================
+     資料（都在這一題的 sharedProgress 底下）：
+       bingoGame { status: "fill"|"play", round, called:[{ w, by, at }] }   老師控制：開始遊戲、唸過的詞（順序＋是誰說的）
+       bingo/{學生} { name, cells:[25 個詞], ready, round, marks:{格子:true}, lines }   每位學生自己的卡片
+       bingoWins/{學生} { name, lines, at, round }   連成線（賓果）了：所有人的畫面跳出公告 */
+  var BG5_LINES = (function(){ var out = [], i, j; for(i = 0; i < 5; i++){ var r = [], c = []; for(j = 0; j < 5; j++){ r.push(i * 5 + j); c.push(j * 5 + i); } out.push(r, c); } out.push([0, 6, 12, 18, 24], [4, 8, 12, 16, 20]); return out; })();
+  var bingoSeen = {}, bingoRefreshFn = null, lastDrawPick = null;
+  window.addEventListener("message", function(e){ var d = e.data; if(d && d.mm === "drawPick"){ lastDrawPick = { name: String(d.name || ""), at: d.at || Date.now() }; if(bingoRefreshFn) try{ bingoRefreshFn(); }catch(er){} } });
+  function bgList(x){ if(!x) return []; if(Array.isArray(x)) return x.filter(Boolean); return Object.keys(x).sort(function(a, b){ return a - b; }).map(function(k){ return x[k]; }).filter(Boolean); }
+  function bgCells(x){ var out = []; for(var i = 0; i < 25; i++) out.push(x && x[i] != null ? String(x[i]) : ""); return out; }
+  function bgLines(marks, cells){ var has = function(i){ return !!marks[i] && !!cells[i]; }, n = 0; BG5_LINES.forEach(function(L){ if(L.every(has)) n++; }); return n; }
+  function bingoBanner(name){
+    var old = document.getElementById("bingo5-ov"); if(old) old.remove();
+    var ov = document.createElement("div"); ov.id = "bingo5-ov";
+    ov.innerHTML = '<div class="bg5-ov-box"><div class="bg5-ov-star">🎉</div><div class="bg5-ov-name">' + escapeHtml(name) + '</div><div class="bg5-ov-txt">bingo 了！</div></div>';
+    ov.onclick = function(){ ov.remove(); }; document.body.appendChild(ov);
+    try{ playCorrectSound(); }catch(e){}
+    setTimeout(function(){ if(ov.parentNode) ov.remove(); }, 6000);
+  }
+  function renderBingoBoard(q, container){
+    var words = (Array.isArray(q.words) ? q.words : []).map(String).filter(Boolean), allowDup = words.length < 25;
+    var wrap = document.createElement("div"); wrap.className = "bg5-wrap"; container.appendChild(wrap);
+    var sel = -1, localRec = { cells: bgCells(null), marks: {}, ready: false }, whoSel = "", whoTxt = "", msg = "";
+    function pg(){ return getProgress(q.id) || {}; }
+    function game(){ return pg().bingoGame || {}; }
+    function recOf(id){ var b = pg().bingo || {}; return b[id] || null; }
+    function myRec(){
+      if(!inRoom()) return localRec;
+      var r = recOf(myId) || {}, g = game(), same = (r.round || 0) === (g.round || 0);
+      return { cells: bgCells(r.cells), marks: same ? (r.marks || {}) : {}, ready: !!r.ready, round: r.round || 0, lines: same ? (r.lines || 0) : 0 };
+    }
+    function saveMine(patch){
+      var base = { name: myName || "學生" };
+      if(!inRoom()){ Object.assign(localRec, patch); return; }
+      update(ref(db, "rooms/" + activeRoomId + "/sharedProgress/" + q.id + "/bingo/" + myId), Object.assign(base, patch));
+    }
+    function calledSet(){ var o = {}; bgList(game().called).forEach(function(c){ o[c.w] = 1; }); return o; }
+    function checkWins(){
+      var wins = pg().bingoWins || {}, mx = 0; Object.keys(wins).forEach(function(k){ mx = Math.max(mx, wins[k].at || 0); });
+      if(bingoSeen[q.id] === undefined){ bingoSeen[q.id] = mx; return; }   // 剛進來看到的舊公告不重播
+      Object.keys(wins).forEach(function(k){ var w = wins[k]; if(w.at && w.at > bingoSeen[q.id]){ bingoSeen[q.id] = w.at; if(Date.now() - w.at < 30000) bingoBanner(w.name || "有人"); } });
+    }
+    // ===== 學生：填卡、玩 =====
+    function drawStudent(){
+      var g = game(), rec = myRec(), cells = rec.cells.slice(), playing = g.status === "play", locked = rec.ready || playing, used = {};
+      cells.forEach(function(c){ if(c) used[c] = (used[c] || 0) + 1; });
+      var filled = cells.filter(Boolean).length;
+      var bank = words.map(function(w){ var u = !allowDup && used[w]; return '<button type="button" class="bg5-word' + (u ? ' used' : '') + '" data-w="' + escapeHtml(w) + '"' + (locked ? ' disabled' : '') + '>' + escapeHtml(w) + '</button>'; }).join("");
+      var grid = cells.map(function(c, i){ return '<button type="button" class="bg5-cell' + (i === sel && !locked ? ' sel' : '') + (rec.marks[i] ? ' mark' : '') + (c ? '' : ' empty') + '" data-i="' + i + '">' + escapeHtml(c) + '</button>'; }).join("");
+      var status = playing ? '<b>遊戲開始了！</b>聽到老師或同學唸的詞，就點你卡片上的那一格。連成一條線（橫、直、斜）就賓果！' + (rec.lines ? ' 你已經連成 ' + rec.lines + ' 條線。' : '')
+        : rec.ready ? '<b>卡片已鎖定。</b>等老師開始遊戲。' : '先看左邊的生詞表，點一格，再點一個詞填進去（共 25 格）。已填 <b>' + filled + '</b>／25。';
+      wrap.innerHTML = '<div class="bg5-head"><div><b>' + escapeHtml(q.title || "賓果卡") + '</b>' + (q.desc ? '<div class="bg5-note">' + escapeHtml(q.desc) + '</div>' : '') + '</div></div><div class="bg5-status">' + status + (msg ? '<div class="bg5-warn">' + escapeHtml(msg) + '</div>' : '') + '</div>' +
+        '<div class="bg5-body"><div class="bg5-bank"><div class="bg5-cap">生詞表（' + words.length + '）</div><div class="bg5-words">' + bank + '</div></div>' +
+        '<div class="bg5-cardwrap"><div class="bg5-grid">' + grid + '</div>' +
+        (playing ? '' : '<div class="bg5-btns">' + (rec.ready ? '<button type="button" class="btn btn-sm" data-a="unready">修改卡片</button>' : '<button type="button" class="btn btn-sm" data-a="rand">🎲 隨機填滿剩下的格子</button><button type="button" class="btn btn-sm btn-ghost" data-a="clearcell">清掉這一格</button><button type="button" class="btn btn-sm btn-ghost" data-a="clearall">全部清空</button><button type="button" class="btn btn-sm btn-primary" data-a="ready"' + (filled < 25 ? ' disabled' : '') + '>我填好了</button>') + '</div>') + '</div></div>';
+      wrap.onclick = function(e){
+        var b = e.target.closest("button"); if(!b || b.disabled) return; msg = "";
+        var g2 = game(), rec2 = myRec(), cs = rec2.cells.slice(), play2 = g2.status === "play", lock2 = rec2.ready || play2;
+        if(b.dataset.i !== undefined){
+          var i = Number(b.dataset.i);
+          if(play2){
+            if(!cs[i]) return; var marks = Object.assign({}, rec2.marks); if(marks[i]) delete marks[i]; else marks[i] = true;
+            var lines = bgLines(marks, cs), patch = { marks: marks, round: g2.round || 0, lines: lines };
+            if(lines > (rec2.lines || 0)){
+              var cs2 = calledSet(), bad = Object.keys(marks).filter(function(k){ return !cs2[cs[k]]; });
+              if(bad.length){ msg = "再聽聽看～還有格子的詞老師和同學還沒有唸到喔。"; patch.lines = rec2.lines || 0; }
+              else if(inRoom()){ update(ref(db, "rooms/" + activeRoomId + "/sharedProgress/" + q.id + "/bingoWins/" + myId), { name: myName || "學生", lines: lines, at: Date.now(), round: g2.round || 0 }); }
+              else bingoBanner(myName || "你");
+            }
+            saveMine(patch); draw(); return;
+          }
+          if(lock2) return; sel = i; draw(); return;
+        }
+        if(b.dataset.w !== undefined){
+          if(lock2) return; var w = b.dataset.w;
+          if(!allowDup && cs.indexOf(w) >= 0){ msg = "這個詞已經在你的卡片上了，換一個吧。"; draw(); return; }
+          var at = sel >= 0 ? sel : cs.indexOf(""); if(at < 0){ msg = "25 格都填滿了；點一格再選詞可以換掉。"; draw(); return; }
+          cs[at] = w; sel = cs.indexOf("", at + 1); if(sel < 0) sel = cs.indexOf("");
+          saveMine({ cells: cs, ready: false }); if(!inRoom()) localRec.cells = cs; draw(); return;
+        }
+        var a = b.dataset.a;
+        if(a === "rand"){
+          var pool = words.filter(function(x){ return allowDup || cs.indexOf(x) < 0; }).sort(function(){ return Math.random() - 0.5; }), k = 0;
+          for(var j = 0; j < 25; j++){ if(!cs[j]){ if(!pool.length) pool = words.slice().sort(function(){ return Math.random() - 0.5; }); cs[j] = pool.pop(); k++; } }
+          saveMine({ cells: cs, ready: false }); draw(); return;
+        }
+        if(a === "clearcell"){ if(sel >= 0){ cs[sel] = ""; saveMine({ cells: cs, ready: false }); } draw(); return; }
+        if(a === "clearall"){ saveMine({ cells: bgCells(null), ready: false }); sel = 0; draw(); return; }
+        if(a === "ready"){ if(cs.filter(Boolean).length < 25) return; saveMine({ ready: true, round: g2.round || 0 }); sel = -1; draw(); return; }
+        if(a === "unready"){ saveMine({ ready: false }); draw(); return; }
+      };
+    }
+    // ===== 老師：控制遊戲、記錄唸過的詞（順序＋是誰說的）、看大家的卡片 =====
+    function drawTeacher(){
+      var g = game(), called = bgList(g.called), calledW = {}; called.forEach(function(c, i){ calledW[c.w] = Object.assign({ n: i + 1 }, c); });
+      var bingoMap = pg().bingo || {}, wins = pg().bingoWins || {}, sids = Object.keys(bingoMap);
+      var drawName = lastDrawPick ? lastDrawPick.name : "", names = [], seenN = {};
+      sids.forEach(function(k){ var n = bingoMap[k].name; if(n && !seenN[n]){ seenN[n] = 1; names.push(n); } });
+      var opts = '<option value="">（先不記是誰說的）</option>' + (drawName ? '<option value="__draw"' + (whoSel === "__draw" || (!whoSel && drawName) ? ' selected' : '') + '>🎡 籤筒剛抽到：' + escapeHtml(drawName) + '</option>' : '') + names.map(function(n){ return '<option value="' + escapeHtml(n) + '"' + (whoSel === n ? ' selected' : '') + '>' + escapeHtml(n) + '</option>'; }).join("") + '<option value="__other"' + (whoSel === "__other" ? ' selected' : '') + '>其他（自己打）…</option>';
+      var chips = words.map(function(w){
+        var c = calledW[w]; return '<button type="button" class="bg5-tw' + (c ? ' called' : '') + '" data-w="' + escapeHtml(w) + '" title="' + (c ? '再點一下取消這一個' : '點一下＝這個詞唸過了（記下順序和是誰說的）') + '">' + (c ? '<span class="bg5-n">' + c.n + '</span>' : '') + escapeHtml(w) + (c && c.by ? '<small>' + escapeHtml(c.by) + '</small>' : '') + '</button>';
+      }).join("");
+      var rows = sids.map(function(k){
+        var r = bingoMap[k], cs = bgCells(r.cells), same = (r.round || 0) === (g.round || 0), w = wins[k];
+        return '<tr><td>' + escapeHtml(r.name || "學生") + '</td><td>' + cs.filter(Boolean).length + '／25' + (r.ready ? ' ✔' : '') + '</td><td>' + (same ? (r.lines || 0) : 0) + ' 條' + (w && (w.round || 0) === (g.round || 0) ? ' 🎉 bingo' : '') + '</td></tr>';
+      }).join("");
+      wrap.innerHTML = '<div class="bg5-head"><div><b>' + escapeHtml(q.title || "賓果卡") + '</b>（老師）<div class="bg5-note">' + (g.status === "play" ? '遊戲進行中（第 ' + (g.round || 1) + ' 輪）：學生聽到詞，就點自己卡片上的那一格。' : '學生正在填卡片。大家填好後，按「開始遊戲」。') + (inRoom() ? '' : '　（要在上課／房間裡，學生才看得到）') + '</div></div>' +
+        '<div class="bg5-ctl">' + (g.status === "play" ? '<button type="button" class="btn btn-sm" data-a="back">回到填卡</button><button type="button" class="btn btn-sm" data-a="round">新的一輪（清掉唸過的詞和連線）</button>' : '<button type="button" class="btn btn-sm btn-primary" data-a="start">開始遊戲</button>') + '</div></div>' +
+        '<div class="bg5-body"><div class="bg5-bank"><div class="bg5-cap">生詞表（點一個＝唸過了）　已唸 ' + called.length + '／' + words.length + '</div>' +
+        '<div class="bg5-who"><label>是誰說的？</label><select id="bg5-who">' + opts + '</select><input type="text" id="bg5-who-txt" placeholder="名字" style="display:' + (whoSel === "__other" ? '' : 'none') + ';" value="' + escapeHtml(whoTxt) + '"></div>' +
+        '<div class="bg5-twords">' + chips + '</div></div>' +
+        '<div class="bg5-cardwrap"><div class="bg5-cap">學生的卡片（' + sids.length + ' 人）</div>' + (rows ? '<table class="bg5-tbl"><thead><tr><th>學生</th><th>填卡</th><th>連線</th></tr></thead><tbody>' + rows + '</tbody></table>' : '<div class="bg5-note">還沒有學生開始填卡片。</div>') +
+        (called.length ? '<div class="bg5-cap" style="margin-top:12px;">唸過的順序</div><ol class="bg5-ol">' + called.map(function(c){ return '<li>' + escapeHtml(c.w) + (c.by ? '　<small>' + escapeHtml(c.by) + '</small>' : '') + '</li>'; }).join("") + '</ol>' : '') + '</div></div>';
+      var ws = wrap.querySelector("#bg5-who"), wt = wrap.querySelector("#bg5-who-txt");
+      ws.onchange = function(){ whoSel = ws.value; wt.style.display = whoSel === "__other" ? "" : "none"; if(whoSel === "__other") wt.focus(); };
+      wt.oninput = function(){ whoTxt = wt.value; };
+      wrap.onclick = function(e){
+        var b = e.target.closest("button"); if(!b) return; var g2 = game();
+        if(b.dataset.w !== undefined){
+          var cl = bgList(g2.called), idx = -1; cl.forEach(function(c, i){ if(c.w === b.dataset.w) idx = i; });
+          if(idx >= 0){ cl.splice(idx, 1); }
+          else {
+            var sv = wrap.querySelector("#bg5-who"), v = sv ? sv.value : whoSel, by = v === "__draw" || (!v && drawName && !whoSel) ? drawName : v === "__other" ? (whoTxt || "").trim() : v;
+            cl.push({ w: b.dataset.w, by: by || "", at: Date.now() });
+          }
+          writeProgress(q.id, { bingoGame: Object.assign({}, g2, { called: cl, status: g2.status || "fill", round: g2.round || 1 }) }); return;
+        }
+        var a = b.dataset.a;
+        if(a === "start"){ writeProgress(q.id, { bingoGame: Object.assign({}, g2, { status: "play", round: g2.round || 1, called: bgList(g2.called) }) }); }
+        else if(a === "back"){ writeProgress(q.id, { bingoGame: Object.assign({}, g2, { status: "fill" }) }); }
+        else if(a === "round"){ if(!confirm("開始新的一輪？\n唸過的詞和大家的連線會清掉（卡片內容保留）。")) return; writeProgress(q.id, { bingoGame: { status: "play", round: (g2.round || 1) + 1, called: [] }, bingoWins: null }); }
+      };
+    }
+    function draw(){
+      if(!document.body.contains(wrap)) return false;
+      if(!isStudent && document.activeElement && document.activeElement.id === "bg5-who-txt") return true;   // 老師正在打名字：不重畫
+      isStudent ? drawStudent() : drawTeacher(); checkWins(); return true;
+    }
+    liveBoardQId = q.id; liveBoardRefresh = draw; bingoRefreshFn = draw;
+    if(inRoom() && !isStudent && !pg().bingoGame) { /* 第一次：還沒有遊戲狀態，等老師按開始 */ }
+    draw();
+  }
   function renderHanziBoard(q, container){
     var char = q.char || "";
     var layout = document.createElement("div"); layout.className = "hanzi-board-layout";
