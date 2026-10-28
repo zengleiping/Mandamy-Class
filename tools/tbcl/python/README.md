@@ -2,8 +2,11 @@
 
 和網頁版 `tools/tbcl/` 用同一份資料（`../data/tbcl.tsv`、`../data/lexicon.txt`），適合批次檢核或放進後端。
 
+**流程：先斷詞，再對回詞表。** 預設用 CKIP Transformers（中研院，專為繁體中文／臺灣用語訓練）獨立斷詞，不看 TBCL；斷完再把「剛好能合成詞表詞」的相鄰詞合併，最後逐詞比對 TBCL 等級。CKIP 也標詞性，用來把專有名詞、地名排除在超綱比例外（簡章規定不計入）。沒裝 CKIP 時退回 Jieba。
+
 ```bash
-pip install jieba
+pip install ckip-transformers   # 建議；第一次執行會從 Hugging Face 下載模型（bert-base 約 400MB），之後用快取
+pip install jieba               # 備用
 python3 tbcl_check.py --level 3 "原本以為他會交不到朋友，沒想到混得風生水起。"
 python3 -m unittest test_tbcl_check
 ```
@@ -16,6 +19,8 @@ res.unlisted    # 未納入基準詞表的詞（含疑似成語詞組）
 res.ratio       # 超綱比例 %
 ```
 
-- `build_tokenizer(base="tbcl")`：只用 TBCL 詞表＋補充字典當 Jieba 詞典（預設，建議）。`base="default"`：保留 Jieba 預設詞典，再用 `add_word` 把 TBCL 詞全部加進去。
+- CKIP 實測：「風生水起」「騎虎難下」「小籠包」「台北」「捷運站」都能正確斷成一個詞；Jieba 會把「台北」切成「台」「北」。模型不放在儲存庫裡（檔案太大），由 `ckip-transformers` 自動下載。
+- `check_materials(..., segmenter="auto"|"ckip"|"jieba")`。
+- `build_tokenizer(base="tbcl")`（Jieba 備用）：只用 TBCL 詞表＋補充字典當 Jieba 詞典（預設，建議）。`base="default"`：保留 Jieba 預設詞典，再用 `add_word` 把 TBCL 詞全部加進去。
 - 斷詞用精確模式並關掉 HMM（`HMM=False`），不讓 Jieba 自己猜新詞。
 - 資料來源與授權見 `docs/資料來源與授權.md`。

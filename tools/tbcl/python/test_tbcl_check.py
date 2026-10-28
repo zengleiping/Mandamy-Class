@@ -2,6 +2,12 @@
 import unittest
 import tbcl_check as t
 
+try:
+    import ckip_transformers  # noqa: F401
+    HAS_CKIP = True
+except ImportError:
+    HAS_CKIP = False
+
 
 class CheckMaterials(unittest.TestCase):
     def test_idiom_stays_whole_and_is_unlisted(self):
@@ -31,6 +37,17 @@ class CheckMaterials(unittest.TestCase):
     def test_bad_level(self):
         with self.assertRaises(ValueError):
             t.check_materials("我", 8)
+
+
+@unittest.skipUnless(HAS_CKIP, "需要 pip install ckip-transformers")
+class CkipFlow(unittest.TestCase):
+    def test_segment_first_then_match(self):
+        r = t.check_materials("我們在台北捷運站見面，他混得風生水起。", 3, segmenter="ckip")
+        words = [x.word for x in r.tokens]
+        self.assertIn("風生水起", words)                       # CKIP 先把成語斷成一個詞
+        self.assertIn("風生水起", [x.word for x in r.unlisted])  # 再對回詞表：不在詞表
+        self.assertIn("台北", [x.word for x in r.proper])       # 地名不計入比例
+        self.assertEqual(r.segmenter, "ckip")
 
 
 if __name__ == "__main__":
