@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TBCL 等級檢核｜曼米中文</title>
+<link rel="icon" href="../../icons/logo.svg">
+<link rel="stylesheet" href="tbcl.css?v=1">
+</head>
+<body>
+<header class="hd"><a class="back" href="../../app.html">‹ 回曼米平台</a>
+  <h1>TBCL 等級檢核與語料庫工具 <small>曼米中文 · 備課工具</small></h1>
+  <div class="src" id="src">載入詞表中…</div></header>
+<nav class="tabs" id="tabs">
+  <button data-t="check" class="on">① 等級檢核</button>
+  <button data-t="gen">② AI 依等級生成</button>
+  <button data-t="inv">③ 教材等級盤點</button>
+  <button data-t="kwic">④ 語料庫例句</button>
+  <button data-t="gram">⑤ 語法點表</button>
+</nav>
+
+<main>
+<section id="p-check">
+  <div class="row">
+    <label>目標等級 TBCL <select id="lv"></select></label>
+    <label>檢核標準 <select id="lim">
+      <option value="15">教材（超綱不超過 15%）</option>
+      <option value="10">試題（超綱不超過 10%）</option></select></label>
+    <button id="run" class="pri">檢核</button>
+    <button id="exportc">複製檢核結果</button>
+    <button id="printc">列印／存成 PDF</button>
+    <button id="official" title="把文字送到國教院「教材編輯輔助系統」，在新視窗看官方檢核結果">送官方系統檢核 ↗</button>
+    <label class="chk"><input type="checkbox" id="incstar" checked> * 級詞算在該級內</label>
+  </div>
+  <textarea id="txt" placeholder="貼上課文、教材或試題文字。專有名詞（人名、地名、機構名）請在結果中點一下，就會排除在超綱比例之外。"></textarea>
+  <div id="res"></div>
+</section>
+
+<section id="p-gen" hidden>
+  <p class="note">輸入主題與等級，AI 產生文字後會<b>自動用上面的檢核</b>，超綱太多就帶著超綱詞清單請 AI 改寫（最多 3 輪）。每次呼叫都會記在下方「人機協作紀錄」，可直接貼進競賽附件 3。金鑰沿用平台已經存好的（Gemini：簡報「AI 造句」；Claude：翻譯設定）。</p>
+  <div class="row">
+    <label>AI <select id="g-ai"><option value="gemini">Gemini</option><option value="claude">Claude</option></select></label>
+    <label>等級 <select id="g-lv"></select></label>
+    <label>類型 <select id="g-kind"><option>對話課文</option><option>短文</option><option>例句（8 句）</option><option>閱讀測驗題（3 題選擇題）</option></select></label>
+    <label>字數 <input id="g-len" type="number" value="150" min="20" max="900"></label>
+  </div>
+  <div class="row"><label class="grow">主題 <input id="g-topic" placeholder="例如：在夜市點餐"></label>
+    <label class="grow">一定要用的詞（選填） <input id="g-must" placeholder="例如：便宜、好吃、老闆"></label></div>
+  <div class="row"><button id="g-go" class="pri">產生並自動檢核</button><span id="g-st" class="note"></span></div>
+  <textarea id="g-out" placeholder="結果會出現在這裡，可以直接修改。人工修改後按「送去檢核」。"></textarea>
+  <div class="row"><button id="g-chk">送去檢核</button></div>
+  <h3>人機協作紀錄（附件 3）</h3>
+  <div id="g-log"></div>
+  <div class="row"><button id="g-copy">複製成表格</button><button id="g-clear">清空紀錄</button></div>
+</section>
+
+<section id="p-inv" hidden>
+  <div class="row"><label>目標等級 <select id="i-lv"></select></label><button id="i-csv">下載生詞等級 CSV</button></div>
+  <div id="i-out"></div>
+</section>
+
+<section id="p-kwic" hidden>
+  <p class="note">在曼米教材的課文與例句裡找一個詞怎麼用（數據驅動學習 DDL）。目前語料是平台自己的教材；詞頻資料來自 COCT 通用詞頻表；例句語料是平台自己的教材，可直接用來做課堂觀察活動。</p>
+  <div class="row"><label class="grow">查詞 <input id="k-q" placeholder="例如：喜歡"></label><button id="k-go" class="pri">查詢</button></div>
+  <div id="k-freq"></div><div id="k-out"></div>
+</section>
+<section id="p-gram" hidden>
+  <p class="note">國家教育研究院「臺灣華語文能力基準語法點表」（目前官方表涵蓋第 1–5 級；* 級是該級的擴充）。</p>
+  <div class="row"><label>等級 <select id="gr-lv"><option value="0">全部</option></select></label><label class="grow">搜尋名稱或例句 <input id="gr-q"></label></div>
+  <div id="gr-out"></div>
+</section>
+</main>
+<footer class="cite"><b>資料來源</b>：臺灣華語文能力基準詞語表、漢字表、語法點表與通用詞頻表，國家教育研究院「臺灣華語文語料庫與能力基準整合應用系統」（<a href="https://coct.naer.edu.tw/" target="_blank" rel="noopener">coct.naer.edu.tw</a>）。本工具為曼米中文自行開發，不是國家教育研究院的官方服務；正式送件請以官方「教材編輯輔助系統」的檢核結果為準。
+  <button id="cite-copy">複製引用文字</button> <a href="../../docs/%E8%B3%87%E6%96%99%E4%BE%86%E6%BA%90%E8%88%87%E6%8E%88%E6%AC%8A.md" target="_blank">完整出處與授權說明</a></footer>
+<script src="../../data.js"></script>
+<script src="tbcl.js?v=1"></script>
+</body>
+</html>

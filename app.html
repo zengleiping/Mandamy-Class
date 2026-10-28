@@ -482,6 +482,7 @@ window.mmTA = (function(){
   return { login: login, logout: logout, resume: resume, who: who, claimed: claimed, firebaseUser: pwUser, WHY: WHY, DOM: DOM };
 })();
 </script>
+<script src="std.js"></script>
 <script>
 (function(){
 "use strict";
@@ -492,6 +493,13 @@ var params = new URLSearchParams(location.search);
 
 // ---------- 小工具 ----------
 function esc(s){ return String(s == null ? "" : s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+// 等級標準選單：老師選想用哪一套標準看教材（TOCFL／TBCL／HSK…），存在這個瀏覽器，教材頁、生詞表製作、TBCL 工具都會跟著用
+function stdSelectHtml(){
+  if(!window.MMStd) return "";
+  return '<label class="note" style="display:inline-flex;align-items:center;gap:6px;" title="想用哪一套標準看教材的等級">等級標準 <select id="stdSel" onchange="MMStd.set(this.value)" style="padding:4px 6px;border-radius:8px;border:1px solid var(--line,#d8cfc2);max-width:210px;">' +
+    MMStd.LIST.map(function(x){ return '<option value="' + x.id + '"' + (x.id === MMStd.get() ? ' selected' : '') + '>' + esc(x.label) + '</option>'; }).join("") + '</select></label> ';
+}
+if(window.MMStd) MMStd.onChange(function(id){ var el = document.getElementById("stdSel"); if(el) el.value = id; });
 function uid(p){ return p + Math.random().toString(36).slice(2, 9); }
 function toast(msg){ var t = document.createElement("div"); t.className = "toast"; t.textContent = msg; document.body.appendChild(t); setTimeout(function(){ t.remove(); }, 2200); }
 // Mac 等系統在「密碼欄」有游標時會暫時關掉輸入法；按 Enter 或按鈕送出後，先讓密碼欄失去焦點再換畫面，
@@ -2094,7 +2102,7 @@ async function libImportLesson(file, cur){
 function libLessonHtml(key){
   var L = S.plat.lessons || {}, l = L[key] || {}, c = lessonCounts(key), ps = l.projects || {}, pids = Object.keys(ps), dup = libDupSet();
   var h = '<div class="head-row" style="margin-bottom:10px;"><div style="flex:1;"><h2>' + esc(lessonTitle(key)) + '</h2></div>' + (l.unit ? '' : '<button class="btn sm" data-lesren="' + esc(key) + '">改課名</button> <button class="btn sm" data-lesexp="' + esc(key) + '" title="把這一課的生詞・語法・課文和簡報、練習打包成一個檔案，可以傳給別的老師">⬇ 匯出這一課</button> <button class="btn sm danger" data-lesdel="' + esc(key) + '" title="沒有內容的課才能刪">刪除這一課</button>') + '</div>';
-  h += '<div class="panel"><div class="lh" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><h3 style="margin:0;flex:1;">📖 生詞・語法・課文</h3>' + (l.unit ? '' : '<button class="btn sm" data-vtool="1" title="把這一課的生詞整理成生詞表：自動補拼音／注音、英文、TOCFL／HSK 級別，加例句、挖空練習，匯出 Word、PPT、字卡">生詞表製作</button> <button class="btn sm primary" data-bank="1">編輯生詞・語法・課文</button>') + '</div>' +
+  h += '<div class="panel"><div class="lh" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><h3 style="margin:0;flex:1;">📖 生詞・語法・課文</h3>' + (l.unit ? '' : '' + stdSelectHtml() + '<button class="btn sm" data-vtool="1" title="把這一課的生詞整理成生詞表：自動補拼音／注音、英文、TOCFL／HSK 級別，加例句、挖空練習，匯出 Word、PPT、字卡">生詞表製作</button> <a class="btn sm" href="tools/tbcl/" target="_blank" rel="noopener" title="TBCL 等級檢核（超綱比例）、AI 依等級生成、教材等級盤點、課文例句查詢">TBCL 等級檢核</a> <button class="btn sm primary" data-bank="1">編輯生詞・語法・課文</button>') + '</div>' +
     '<div class="tools" style="margin-top:8px;"><span class="chip">生詞 ' + c.vocab + '</span><span class="chip">語法 ' + c.grammar + '</span><span class="chip">課文 ' + c.text + '</span></div>' + (l.unit ? '<p class="note" style="margin:6px 0 0;">複習單元的生詞・語法・課文是 ' + esc(memberRange(l.members)) + ' 的合計，請到各課編輯。</p>' : (c.vocab + c.grammar + c.text ? '' : '<p class="note" style="margin:6px 0 0;">這一課還沒有生詞・語法・課文。按右上角開始編輯，或用 Excel 匯入。</p>')) + '</div>';
   h += '<div class="panel"><div class="lh" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><h3 style="margin:0;flex:1;">🖥️ 簡報與練習（' + pids.length + '）</h3><button class="btn sm" data-pnew="' + esc(key) + '">＋ 新增簡報／測驗</button></div>' +
     (pids.length ? pids.map(function(pid){ return libProjRow(pid, ps[pid], key, dup[pid]); }).join("") : '<p class="note" style="margin:6px 0 0;">這一課還沒有簡報或測驗。</p>') + '</div>';

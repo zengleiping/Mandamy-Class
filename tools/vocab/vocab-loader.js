@@ -12,6 +12,7 @@
       var s = document.createElement("script"); s.type = "text/plain"; s.id = f[0]; s.textContent = t; document.body.appendChild(s);
     });
   }))
+  .then(function(){ return window.MMStd ? MMStd.ready() : null; })
   .then(function(){ return window.JSZip ? null : addScript(MMV.vendor + "jszip.min.js"); })
   .then(function(){ return addScript("vocab-tool.js?v=" + MMV.v); })
   .catch(function(e){ console.error(e); msg("資料載入失敗，請確認網路後重新整理頁面。"); });
