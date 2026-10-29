@@ -95,19 +95,29 @@ function suspectCard(r){
 
 /* ===== 超綱詞替換建議：換詞（詞典＋AI，AI 的建議都用詞表驗證）、換句話說（AI，改完再檢核，最多 3 輪） ===== */
 var FREQV=null,SYN=null,SYNIDX=null,UNDO=[],NEWS={};
-var REP=null;
-function loadRep(){return fetch("data/replacements.json").then(function(r){if(!r.ok)throw 0;return r.json()}).catch(function(){return{}}).then(function(d){REP=d})}
+var REP=null,EXPL=null;
+function loadRep(){var f=function(u){return fetch(u).then(function(r){if(!r.ok)throw 0;return r.json()}).catch(function(){return{}})};return Promise.all([f("data/replacements.json"),f("data/explanations.json")]).then(function(a){REP=a[0];EXPL=a[1]})}
 function loadSyn(){return SYN||(SYN=loadRep().then(function(){return fetch("data/synonyms.json")}).then(function(r){if(!r.ok)throw 0;return r.json()}).catch(function(){return{g:[],m:{}}}).then(function(d){
   SYNIDX=new Map();var add=function(a,b){if(a===b)return;var s=SYNIDX.get(a);if(!s){s=new Set();SYNIDX.set(a,s)}s.add(b)};
   d.g.forEach(function(g){g.forEach(function(a){g.forEach(function(b){add(a,b)})})});
   Object.keys(d.m).forEach(function(k){d.m[k].forEach(function(v){add(k,v);add(v,k)})});return d}))}
 function splitSent(t){var re=/[^。！？!?\n]*[。！？!?]+|[^。！？!?\n]+/g,m,o=[];while((m=re.exec(t))){if(m[0].trim())o.push({s:m[0],i:m.index})}return o}
 function overCount(s,t){return analyze(s,t,EX).over}
-var SRCNAME={s:"辭典同義",p:"疊字簡化",d:"釋義用語",e:"語義相近"};
+var SRCNAME={s:"辭典同義",d:"釋義用語",e:"語義相近"};
 function farCands(w,t){var o=[];((REP&&REP[w])||[]).forEach(function(r){var l=levelOf(r[0]);if(l!=null&&effLv(r[0],l)>t)o.push({c:r[0],l:l})});return o.sort(function(a,b){return a.l-b.l}).slice(0,3)}
-function dictCands(w,t,sent){var out=[],seen={};
-  ((REP&&REP[w])||[]).forEach(function(r){var c=r[0],l=levelOf(c);if(l!=null&&effLv(c,l)<=t&&!seen[c]){seen[c]=1;out.push({c:c,l:l,src:SRCNAME[r[2]]||"詞典",o:{s:0,p:1,d:2,e:3}[r[2]]})}});
-  (SYNIDX&&SYNIDX.get(w)||[]).forEach(function(x){var l=levelOf(x);if(l!=null&&effLv(x,l)<=t&&!seen[x]){seen[x]=1;out.push({c:x,l:l,src:"近義詞典",o:0})}});
+function wordCands(w,t){var out=[],seen={};
+  ((REP&&REP[w])||[]).forEach(function(r){var c=r[0],l=levelOf(c);if(l!=null&&effLv(c,l)<=t&&!seen[c]){seen[c]=1;out.push({c:c,l:l,src:SRCNAME[r[2]]||"詞典",o:{s:0,d:2,e:3}[r[2]],sc:r[3]})}});
+  (SYNIDX&&SYNIDX.get(w)||[]).forEach(function(x){var l=levelOf(x);if(l!=null&&effLv(x,l)<=t&&!seen[x]){seen[x]=1;out.push({c:x,l:l,src:"近義詞典",o:0,sc:100})}});
+  return out}
+/* 辭典說法：用辭典釋義改寫成白話；說法裡還有超綱詞時，用同一份換詞表再換一次（只用可靠的候選），最後用詞表確認沒有超綱 */
+function explCands(w,t){var out=[],seen={};
+  ((EXPL&&EXPL[w])||[]).forEach(function(e){var a=analyze(e,t,new Set());
+    if(a.total&&a.over===0){if(!seen[e]){seen[e]=1;out.push({c:e,l:0,src:"辭典說法",o:1,x:1})}return}
+    var s=e,ok=true;a.list.forEach(function(it){var cs=wordCands(it.w,t).filter(function(c){return c.o===0||c.sc>=85}).sort(function(p,q){return p.o-q.o||q.sc-p.sc});
+      if(cs.length)s=s.split(it.w).join(cs[0].c);else ok=false});
+    if(ok&&s!==e&&!seen[s]){var b=analyze(s,t,new Set());if(b.total&&b.over===0){seen[s]=1;out.push({c:s,l:0,src:"辭典說法（再簡化）",o:1.5,x:1})}}});
+  return out}
+function dictCands(w,t,sent){var out=wordCands(w,t).concat(explCands(w,t));
   out.sort(function(a,b){return a.o-b.o||a.l-b.l});return out.slice(0,6)}
 function parseArr(tx){var m=tx.match(/\[[\s\S]*\]/);if(!m)return[];try{var a=JSON.parse(m[0]);return Array.isArray(a)?a.map(String):[]}catch(e){return[]}}
 function sugCard(text,t){
@@ -118,7 +128,7 @@ function sugCard(text,t){
     x.a.toks.forEach(function(tk){h+=tk.han?'<span class="w '+(tk.st==="ok"?"":tk.st)+'">'+esc(tk.w)+'</span>':esc(tk.w)});h+='</div><div class="row" style="margin:4px 0">';
     var seen={};x.a.list.forEach(function(it){if(seen[it.w])return;seen[it.w]=1;var cs=dictCands(it.w,t);
       h+='<span class="wc"><b>'+esc(it.w)+'</b><small>'+(it.lv==null?"未收錄":"第"+it.lv+"級")+'</small>';
-      cs.forEach(function(c){h+=' <button class="cand" data-act="cand" data-k="'+x.k+'" data-w="'+esc(it.w)+'" data-c="'+esc(c.c)+'" title="換完：'+esc(x.s.replace(it.w,c.c).trim())+'">'+esc(c.c)+'<small>'+c.src+" "+c.l+'</small></button>'});
+      cs.forEach(function(c){h+=' <button class="cand" data-act="cand" data-k="'+x.k+'" data-w="'+esc(it.w)+'" data-c="'+esc(c.c)+'" title="換完：'+esc(x.s.replace(it.w,c.c).trim())+'">'+esc(c.c)+'<small>'+c.src+(c.x?'':' '+c.l)+'</small></button>'});
       if(!cs.length){var far=farCands(it.w,t);h+=' <small class="nocand">'+(far.length?'辭典有相近詞，但等級都高於第 '+t+' 級：'+far.map(function(f){return esc(f.c)+'（第'+f.l+'級）'}).join('、'):'辭典裡找不到等級較低的相近詞')+'</small>'}
       h+=' <button data-act="aiw" data-k="'+x.k+'" data-w="'+esc(it.w)+'">問 AI 換詞</button><span class="aiw" data-w="'+esc(it.w)+'"></span></span>'});
     h+='<button class="pri" data-act="rw" data-k="'+x.k+'">整句換句話說（AI）</button></div><div class="rwout"></div></div>'});
