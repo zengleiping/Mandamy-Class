@@ -23,3 +23,5 @@ label.chk{flex-direction:row;align-items:center;gap:5px;font-size:13px;padding-b
 button.cand{padding:3px 8px;border-radius:999px;font-size:13px}button.cand.ai{border-color:var(--red)}
 
 small.nocand{color:#8a7d70;font-size:12px;max-width:260px}
+
+mark{background:#fff0b3;padding:0 2px;border-radius:3px}@media (prefers-color-scheme:dark){mark{color:#2b2320}}

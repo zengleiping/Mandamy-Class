@@ -310,6 +310,24 @@ class CheckResult:
         return (len(self.over) + len(self.unlisted)) / self.counted * 100 if self.counted else 0.0
 
 
+def compound_level(w: str, tbcl: Dict[str, Tuple[int, bool]], max_part: int = 4) -> Optional[int]:
+    """w 不在詞表時，看它能不能完全拆成 TBCL 詞（例如「很多」＝很＋多）；能的話回傳「各種拆法裡最高等級最低」的那個等級。
+    官方斷詞會把這類詞切開、各自比對，所以不能算成「詞表沒有」。"""
+    n = len(w)
+    if n >= 5 or (n == 4 and not (w[:2] in tbcl and w[2:] in tbcl)):
+        return None          # 4 字以上多半是成語／專有名詞（騎虎難下＝騎＋虎＋難＋下 不是合成詞），只接受「兩個 2 字詞表詞」
+    best: List[Optional[int]] = [None] * (n + 1)
+    best[0] = 0
+    for i in range(1, n + 1):
+        for j in range(max(0, i - max_part), i):
+            part = w[j:i]
+            if best[j] is not None and part in tbcl:
+                cand = max(best[j], tbcl[part][0])
+                if best[i] is None or cand < best[i]:
+                    best[i] = cand
+    return best[n]
+
+
 def _is_blank_or_punct(s: str) -> bool:
     return all(c.isspace() or unicodedata.category(c)[0] in "PSZC" for c in s)
 
@@ -341,6 +359,7 @@ def check_materials(
     flag_suspect_runs: bool = True,
     segmenter: str = "auto",
     exclude_proper_nouns: bool = True,
+    compound_words: Optional[bool] = None,
     ckip_driver=None,
     tokenizer: Optional[jieba.Tokenizer] = None,
     tbcl: Optional[Dict[str, Tuple[int, bool]]] = None,
@@ -354,6 +373,8 @@ def check_materials(
     segmenter      "ckip"：曼米版——CKIP 先斷詞再對回詞表（最準，需 pip install ckip-transformers）；
                    "official"：國教院版——直接用官方教材編輯輔助系統的斷詞（需連網，和評審看到的一致）；
                    "jieba"：Jieba 加載 TBCL 詞表斷詞；"auto"：有裝 CKIP 就用 CKIP，否則 Jieba。
+    compound_words 詞表沒有、但能完全拆成 TBCL 詞的詞（很多＝很＋多、火車站＝火車＋站）：True 按各部分最高等級判斷
+                   （曼米版預設）；False 一律算「未納入」（國教院版預設，與官方系統的 X 一致）。
     exclude_proper_nouns
                    True（只用在 CKIP）：不在詞表、且 CKIP 標為專有名詞（Nb）或地名（Nc）的詞，狀態為 proper，
                    不列入比例（簡章：人名、地名、國名、機構名不計入超綱）。
@@ -370,6 +391,7 @@ def check_materials(
             segmenter = "ckip"
         except ImportError:
             segmenter = "jieba"
+    use_compound = (segmenter != "official") if compound_words is None else compound_words
     d_tk, d_tbcl, d_ranks = _defaults(need_jieba=(segmenter == "jieba" and tokenizer is None))
     tk, tbcl, ranks = tokenizer or d_tk, tbcl or d_tbcl, ranks if ranks is not None else d_ranks
 
@@ -417,6 +439,9 @@ def check_materials(
             result.tokens.append(Token(w, OVER if effective > target_level else OK, level, star))
         elif idx in proper_idx:
             result.tokens.append(Token(w, PROPER))               # 專有名詞（NER 辨識出的人名、地名、機構名…）：不計入比例，但列出來讓老師知道
+        elif use_compound and len(w) > 1 and (cl := compound_level(w, tbcl)) is not None:
+            # 詞表沒有，但能完全拆成 TBCL 詞（很多＝很＋多）：按各部分最高等級判斷，不算「未納入」
+            result.tokens.append(Token(w, OVER if cl > target_level else OK, cl, False))
         else:
             result.tokens.append(Token(w, UNLISTED))             # 完全不在 TBCL 詞表
 

@@ -19,6 +19,9 @@
 
 | `lexicon-freq.txt` | 國教院語料庫常見、但 TBCL 詞表沒有的詞（約 6.7 千，如「影音」「法制」）：COCT 通用詞頻表前 3 萬詞中，不在 TBCL、也不能拆成 TBCL 詞的 | `build_freqlex.py`；網頁版斷詞用，標「詞表沒有」 |
 
+| `curated.json` | 精選成語簡單說法：約 330 個常見成語（高中文言、日常成語），各有 1–2 個白話說法，並記錄「至少要目標等級幾級才不超綱」 | 由 Claude 撰寫（`build/curated-idioms-*.tsv`），`build_curated.py` 用 TBCL 詞表驗證；需老師抽查 |
+| `lexicon-curated.txt` | 精選成語中，成語字典還沒收的詞（讓斷詞認得） | `build_curated.py` |
+
 用 `../build/` 裡的 `build_tbcl.py`、`build_grammar.py` 從官方 PDF／Excel 重新產生。
 - 第 1*–4* 級（詞語）依「併入該級」計算，等級 1–7 對應競賽簡章的 TBCL 1–7 級。
 - 詞語表沒有單獨收錄的虛詞「了」「著」，依語法點表（V了、V著 第 2 級）計為第 2 級。

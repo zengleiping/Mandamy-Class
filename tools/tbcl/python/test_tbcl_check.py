@@ -54,7 +54,20 @@ class CkipFlow(unittest.TestCase):
         self.assertTrue({"經國", "轉運站", "李大錘", "銅鑼", "火車站"} <= {x.word for x in name.proper})
         common = t.check_materials("我們在火車站和轉運站等車。", 3, segmenter="ckip")
         self.assertEqual(common.proper, [])                      # 普通名詞不排除
-        self.assertTrue({"火車站", "轉運站"} <= {x.word for x in common.unlisted})
+        self.assertEqual([x.word for x in common.unlisted], ["轉運站"])   # 火車站＝火車＋站 按合成詞判斷；轉運站（轉運不在詞表）才算未納入
+        strict = t.check_materials("我們在火車站和轉運站等車。", 3, segmenter="ckip", compound_words=False)
+        self.assertTrue({"火車站", "轉運站"} <= {x.word for x in strict.unlisted})   # 與官方一致的算法（一律算未納入）
+
+
+class Compound(unittest.TestCase):
+    def test_compound_of_listed_words(self):
+        tb = t.load_tbcl()
+        self.assertEqual(t.compound_level("很多", tb), 1)         # 很＋多
+        self.assertIsNone(t.compound_level("影音", tb))           # 影、音 不在詞表
+
+    def test_not_unlisted_when_decomposable(self):
+        r = t.check_materials("我有很多朋友。", 2, segmenter="jieba")
+        self.assertEqual([x.word for x in r.unlisted], [])
 
 
 class Compare(unittest.TestCase):

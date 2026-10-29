@@ -17,6 +17,7 @@
   <button data-t="inv">③ 教材等級盤點</button>
   <button data-t="kwic">④ 語料庫例句</button>
   <button data-t="gram">⑤ 語法點表</button>
+  <button data-t="art">⑥ 整篇文章</button>
 </nav>
 
 <main>
@@ -65,6 +66,17 @@
   <div class="row"><label class="grow">查詞 <input id="k-q" placeholder="例如：喜歡"></label><button id="k-go" class="pri">查詢</button></div>
   <div id="k-freq"></div><div id="k-out"></div>
 </section>
+<section id="p-art" hidden>
+  <p class="note">貼上整篇文章（例如從網路複製的），選好學生的等級，工具會找出所有超綱詞和詞表沒有的詞，逐個列出建議的簡單說法。你可以全部採用，也可以一個一個選，最後產生改寫後的文章。建議僅供參考，換進句子後請老師再順一下。</p>
+  <div class="row">
+    <label>學生等級 TBCL <select id="a-lv"></select></label>
+    <label>檢核標準 <select id="a-lim"><option value="15">教材（15%）</option><option value="10">試題（10%）</option></select></label>
+    <button id="a-run" class="pri">分析整篇文章</button>
+  </div>
+  <textarea id="a-txt" style="min-height:200px" placeholder="在這裡貼上文章。專有名詞（人名、地名）請先到「① 等級檢核」點一下標成專有名詞，這裡會一起排除。"></textarea>
+  <div id="a-out"></div>
+</section>
+
 <section id="p-gram" hidden>
   <p class="note">國家教育研究院「臺灣華語文能力基準語法點表」（目前官方表涵蓋第 1–5 級；* 級是該級的擴充）。</p>
   <div class="row"><label>等級 <select id="gr-lv"><option value="0">全部</option></select></label><label class="grow">搜尋名稱或例句 <input id="gr-q"></label></div>

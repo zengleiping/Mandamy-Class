@@ -13,7 +13,7 @@ var GRAM_WORD={"了":2,"著":2};
 try{var _c=JSON.parse(localStorage.getItem("mm_tbcl_custom")||"{}");Object.keys(_c).forEach(function(w){CUSTOM.set(w,+_c[w]||0)})}catch(e){}
 function saveCustom(){var o={};CUSTOM.forEach(function(v,k){o[k]=v});try{localStorage.setItem("mm_tbcl_custom",JSON.stringify(o))}catch(e){}}
 function addKey(w){KEYS.add(w);if(w.length>MAXLEN)MAXLEN=w.length}
-function loadExt(){return Promise.all(["data/lexicon.txt","data/lexicon-idioms.txt","data/lexicon-freq.txt"].map(function(f){return fetch(f).then(function(r){if(!r.ok)throw 0;return r.text()}).catch(function(){return""})})).then(function(ts){ts.forEach(function(t){t.split("\n").forEach(function(w){w=w.trim();if(w&&!LV.has(w)){EXT.add(w);addKey(w)}})});CUSTOM.forEach(function(v,w){addKey(w)})})}
+function loadExt(){return Promise.all(["data/lexicon.txt","data/lexicon-idioms.txt","data/lexicon-freq.txt","data/lexicon-curated.txt"].map(function(f){return fetch(f).then(function(r){if(!r.ok)throw 0;return r.text()}).catch(function(){return""})})).then(function(ts){ts.forEach(function(t){t.split("\n").forEach(function(w){w=w.trim();if(w&&!LV.has(w)){EXT.add(w);addKey(w)}})});CUSTOM.forEach(function(v,w){addKey(w)})})}
 function load(){
   if(READY)return READY;
   READY=fetch("data/tbcl.tsv").then(function(r){if(!r.ok)throw 0;return r.text()}).then(function(t){
@@ -95,8 +95,8 @@ function suspectCard(r){
 
 /* ===== 超綱詞替換建議：換詞（詞典＋AI，AI 的建議都用詞表驗證）、換句話說（AI，改完再檢核，最多 3 輪） ===== */
 var FREQV=null,SYN=null,SYNIDX=null,UNDO=[],NEWS={};
-var REP=null,EXPL=null;
-function loadRep(){var f=function(u){return fetch(u).then(function(r){if(!r.ok)throw 0;return r.json()}).catch(function(){return{}})};return Promise.all([f("data/replacements.json"),f("data/explanations.json")]).then(function(a){REP=a[0];EXPL=a[1]})}
+var REP=null,EXPL=null,CUR=null;
+function loadRep(){var f=function(u){return fetch(u).then(function(r){if(!r.ok)throw 0;return r.json()}).catch(function(){return{}})};return Promise.all([f("data/replacements.json"),f("data/explanations.json"),f("data/curated.json")]).then(function(a){REP=a[0];EXPL=a[1];CUR=a[2]})}
 function loadSyn(){return SYN||(SYN=loadRep().then(function(){return fetch("data/synonyms.json")}).then(function(r){if(!r.ok)throw 0;return r.json()}).catch(function(){return{g:[],m:{}}}).then(function(d){
   SYNIDX=new Map();var add=function(a,b){if(a===b)return;var s=SYNIDX.get(a);if(!s){s=new Set();SYNIDX.set(a,s)}s.add(b)};
   d.g.forEach(function(g){g.forEach(function(a){g.forEach(function(b){add(a,b)})})});
@@ -111,6 +111,7 @@ function wordCands(w,t){var out=[],seen={};
   return out}
 /* 辭典說法：用辭典釋義改寫成白話；說法裡還有超綱詞時，用同一份換詞表再換一次（只用可靠的候選），最後用詞表確認沒有超綱 */
 function explCands(w,t){var out=[],seen={};
+  ((CUR&&CUR[w])||[]).forEach(function(v){var e=v[0];if(seen[e])return;var a=analyze(e,t,new Set());if(a.total&&a.over===0){seen[e]=1;out.push({c:e,l:0,src:"精選說法",o:0.5,x:1})}});
   ((EXPL&&EXPL[w])||[]).forEach(function(e){var a=analyze(e,t,new Set());
     if(a.total&&a.over===0){if(!seen[e]){seen[e]=1;out.push({c:e,l:0,src:"辭典說法",o:1,x:1})}return}
     var s=e,ok=true;a.list.forEach(function(it){var cs=wordCands(it.w,t).filter(function(c){return c.o===0||c.sc>=95}).sort(function(p,q){return p.o-q.o||q.sc-p.sc});
@@ -248,10 +249,48 @@ $("gr-q").oninput=$("gr-lv").onchange=function(){loadGram().then(function(G){var
   G.filter(function(g){return(!lv||g.lv===lv)&&(!q||g.name.indexOf(q)>=0||g.ex.indexOf(q)>=0)}).slice(0,300).forEach(function(g){h+='<tr><td>'+g.lv+(g.star?"*":"")+'</td><td>'+g.no+'</td><td>'+esc(g.name)+'</td><td>'+esc(g.ex)+'</td></tr>'});$("gr-out").innerHTML=h+'</table>'})};
 for(var gi=1;gi<=5;gi++){var go=document.createElement("option");go.value=gi;go.textContent="第 "+gi+" 級";$("gr-lv").appendChild(go)}
 
+
+/* ===== ⑥ 整篇文章：找出全部超綱詞，逐個給建議，一鍵（或逐一）套用 ===== */
+var ART=null;
+function artItems(r,t){var m=new Map();
+  r.toks.forEach(function(tk){if(!tk.han||tk.st==="ok"||tk.st==="ex")return;var o=m.get(tk.w);if(!o){o={w:tk.w,lv:tk.lv,n:0,cs:dictCands(tk.w,t)};m.set(tk.w,o)}o.n++});
+  return[...m.values()].sort(function(a,b){return(b.lv||99)-(a.lv||99)||b.n-a.n})}
+function artRows(items){var h='<table><tr><th>詞</th><th>等級</th><th>次數</th><th>處理方式</th></tr>';
+  items.forEach(function(it,i){var best=it.cs.length?"c0":"keep";
+    h+='<tr><td><b>'+esc(it.w)+'</b></td><td>'+(it.lv==null?"未收錄":"第 "+it.lv+" 級")+'</td><td>'+it.n+'</td><td><select class="ar" data-i="'+i+'"><option value="keep">保持原樣</option>';
+    it.cs.forEach(function(c,k){h+='<option value="c'+k+'"'+(k===0?' selected':'')+'>換成：'+esc(c.c)+'（'+c.src+(c.x?'':' 第'+c.l+'級')+'）</option>'});
+    if(it.cs.length)h+='<option value="note">加註：'+esc(it.w)+'（'+esc(it.cs[0].c)+'）</option>';
+    h+='</select> <input class="ac" data-i="'+i+'" placeholder="自訂換成…" size="10">'+(it.cs.length?'':' <small class="nocand">沒有符合等級的建議</small>')+'</td></tr>'});
+  return h+'</table>'}
+function doArt(){load().then(function(){return Promise.all([loadSyn(),loadFreq().then(function(m){FREQV=m})])}).then(function(){
+  var text=$("a-txt").value,t=+$("a-lv").value,lim=+$("a-lim").value;if(!text.trim()){$("a-out").innerHTML='<p class="note">請先貼上文章。</p>';return}
+  var r=analyze(text,t,EX),items=artItems(r,t);ART={text:text,t:t,lim:lim,r:r,items:items};
+  var okp=r.ratio<=lim,h='<div class="card"><div class="big '+(okp?"ok":"bad")+'">超綱 '+r.ratio.toFixed(1)+'%　<small>'+(okp?"✔ 符合":"✘ 超過")+" "+lim+'% 標準</small></div><div class="note">計入 '+r.total+' 個詞次；需要處理的詞 '+items.length+' 個。專有名詞請先到「① 等級檢核」標示。</div></div>';
+  if(!items.length){$("a-out").innerHTML=h+'<p class="note">沒有需要處理的詞。</p>';return}
+  h+='<div class="card"><div class="row"><button id="a-best">全部採用第一個建議</button><button id="a-keep">全部保持原樣</button><button id="a-apply" class="pri">套用，產生新文章</button></div>'+artRows(items)+'</div><div id="a-res"></div>';
+  $("a-out").innerHTML=h})}
+function artApply(){if(!ART)return;var repl={},sel=document.querySelectorAll("#a-out select.ar"),inp=document.querySelectorAll("#a-out input.ac");
+  ART.items.forEach(function(it,i){var v=sel[i].value,cu=inp[i].value.trim(),to=null;
+    if(cu)to=cu;else if(v==="note")to=it.w+"（"+it.cs[0].c+"）";else if(v[0]==="c")to=it.cs[+v.slice(1)].c;
+    if(to!=null&&to!==it.w)repl[it.w]=to});
+  var out="",html="",n=0;ART.r.toks.forEach(function(tk){var to=tk.han&&Object.prototype.hasOwnProperty.call(repl,tk.w)?repl[tk.w]:null;
+    if(to!=null){out+=to;html+='<mark>'+esc(to)+'</mark>';n++}else{out+=tk.w;html+=esc(tk.w)}});
+  var a=analyze(out,ART.t,EX),okp=a.ratio<=ART.lim;
+  $("a-res").innerHTML='<div class="card"><b>改寫後</b>（換了 '+n+' 處，<mark>標色</mark>是換過的地方）<div class="big '+(okp?"ok":"bad")+'">超綱 '+ART.r.ratio.toFixed(1)+'% → '+a.ratio.toFixed(1)+'%</div>'+
+    '<div class="hl" style="font-size:16px">'+html+'</div><p class="note">換進去的說法不一定通順，請直接修改下面的文字。還超綱的詞：'+(a.list.length?a.list.slice(0,20).map(function(x){return esc(x.w)}).join("、"):"沒有")+'</p>'+
+    '<textarea id="a-new" style="min-height:140px">'+esc(out)+'</textarea><div class="row"><button id="a-copy">複製改寫後的文章</button><button id="a-to-check">拿去「① 等級檢核」</button></div></div>'}
+$("a-run").onclick=doArt;
+$("a-out").addEventListener("click",function(e){var id=e.target.id;
+  if(id==="a-best"){document.querySelectorAll("#a-out select.ar").forEach(function(s){if(s.querySelector('option[value="c0"]'))s.value="c0"})}
+  else if(id==="a-keep"){document.querySelectorAll("#a-out select.ar").forEach(function(s){s.value="keep"})}
+  else if(id==="a-apply")artApply();
+  else if(id==="a-copy"){var v=$("a-new").value;navigator.clipboard.writeText(v).then(function(){alert("已複製")},function(){prompt("複製：",v)})}
+  else if(id==="a-to-check"){$("txt").value=$("a-new").value;$("lv").value=ART.t;tab("check");doCheck()}});
+
 /* 分頁 */
-function tab(n){["check","gen","inv","kwic","gram"].forEach(function(k){$("p-"+k).hidden=k!==n});[].forEach.call($("tabs").children,function(b){b.className=b.getAttribute("data-t")===n?"on":""});if(n==="inv")doInv();if(n==="gram")$("gr-lv").onchange()}
+function tab(n){["check","gen","inv","kwic","gram","art"].forEach(function(k){$("p-"+k).hidden=k!==n});[].forEach.call($("tabs").children,function(b){b.className=b.getAttribute("data-t")===n?"on":""});if(n==="inv")doInv();if(n==="gram")$("gr-lv").onchange()}
 $("tabs").onclick=function(e){var t=e.target.getAttribute("data-t");if(t)tab(t)};
-fillLv($("lv"),3);fillLv($("g-lv"),3);fillLv($("i-lv"),3);renderLog();
+fillLv($("lv"),3);fillLv($("a-lv"),3);fillLv($("g-lv"),3);fillLv($("i-lv"),3);renderLog();
 var q=new URLSearchParams(location.search);if(q.get("level"))$("lv").value=$("g-lv").value=$("i-lv").value=q.get("level");
 load();
 window.MMTBCL={load:load,levelOf:levelOf,analyze:analyze};
