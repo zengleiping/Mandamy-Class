@@ -151,7 +151,7 @@
   function eyesSvg(S, mood, sp){
     var g = S.g.eyes, out = "", dark = sp.eyeCol || (S.o ? INK : "#4a4a4a");
     if(sp.eyes === "frog"){
-      var er = S.g.ear, fe = function(x, y){ return S.C(x, y, 40, "#FFFFFF") + (mood === "sleep" || mood === "eat" || mood === "love" ? S.L("M" + (x - 20) + " " + (y + 4) + " Q" + x + " " + (y - 14) + " " + (x + 20) + " " + (y + 4), INK, 9) : S.C(x, y + 3, 17, INK, 'stroke="none"') + S.C(x - 6, y - 4, 6, "#fff", 'stroke="none"')); };
+      var er = S.g.ear, fe = function(x, y){ return S.C(x, y, 40, "#FFFFFF") + (S.C(x, y + 3, 17, INK, 'stroke="none"') + S.C(x - 6, y - 4, 6, "#fff", 'stroke="none"')); };
       return '<g class="pa-eyes">' + fe(er.l[0] + 20, er.l[1] + 8) + fe(er.r[0] - 20, er.r[1] + 8) + "</g>";
     }
     var P1 = [g.x1, g.y], P2 = [g.x2, g.y], r = g.r;
@@ -159,10 +159,7 @@
     var happy = function(p){ return S.L("M" + (p[0] - r * 1.8) + " " + (p[1] + r * 0.7) + " Q" + p[0] + " " + (p[1] - r * 2.2) + " " + (p[0] + r * 1.8) + " " + (p[1] + r * 0.7), INK, r * 0.95); };
     var closed = function(p){ return S.L("M" + (p[0] - r * 1.8) + " " + (p[1] - r * 0.2) + " Q" + p[0] + " " + (p[1] + r * 1.8) + " " + (p[0] + r * 1.8) + " " + (p[1] - r * 0.2), INK, r * 0.85); };
     var heart = function(p){ var x = p[0], y = p[1], s = r * 2.1; return '<path d="M' + x + " " + (y + s * 0.6) + " C" + (x - s * 1.1) + " " + (y - s * 0.1) + " " + (x - s * 0.55) + " " + (y - s * 0.95) + " " + x + " " + (y - s * 0.3) + " C" + (x + s * 0.55) + " " + (y - s * 0.95) + " " + (x + s * 1.1) + " " + (y - s * 0.1) + " " + x + " " + (y + s * 0.6) + ' Z" fill="#FF4D6D"/>'; };
-    if(mood === "sleep") out = closed(P1) + closed(P2);
-    else if(mood === "eat") out = happy(P1) + happy(P2);
-    else if(mood === "love") out = heart(P1) + heart(P2);
-    else { out = '<g class="pa-eyes">' + dot(P1) + dot(P2) + "</g>"; if(mood === "sad" || mood === "hungry") out += S.L("M" + (P1[0] - 30) + " " + (P1[1] - 22) + " L" + (P1[0] + 20) + " " + (P1[1] - 38) + " M" + (P2[0] + 30) + " " + (P2[1] - 22) + " L" + (P2[0] - 20) + " " + (P2[1] - 38), INK, 9); if(mood === "sad") out += '<path d="M' + (P1[0] - 6) + " " + (P1[1] + 22) + " Q" + (P1[0] - 22) + " " + (P1[1] + 52) + " " + (P1[0] - 4) + " " + (P1[1] + 56) + " Q" + (P1[0] + 14) + " " + (P1[1] + 50) + " " + (P1[0] - 6) + ' ' + (P1[1] + 22) + ' Z" fill="#7CC8FF"/>'; }
+    out = '<g class="pa-eyes">' + dot(P1) + dot(P2) + "</g>";
     return out;
   }
   function mouthSvg(S, mood, sp){ return "";
@@ -248,7 +245,6 @@
     
     inn += eyesSvg(S, mood, sp); if(sp.nose) inn += sp.nose(S, sp.c); if(!sp.noPhil && (mood === "neutral" || mood === "sleep")) inn += philtrum(S);
     inn += mouthSvg(S, mood, sp);
-    if(mood === "sleep") inn += '<g class="' + (anim ? "pa-zzz" : "") + '"><text x="380" y="60" font-size="60" font-weight="800" fill="#6b7fd6">Z</text><text x="426" y="14" font-size="44" font-weight="800" fill="#8fa0ea">z</text></g>';
     ["side", "neck", "face", "head"].forEach(function(sl){ if(eq[sl] && ACC[eq[sl]]) inn += accOnPet(eq[sl], S, outline); });
     var gg = '<g class="' + (anim ? "pa-body-g" : "") + '">' + inn + "</g>";
     var sc = STAGE_SC[stage], tf = "translate(" + (255 - 255 * sc) + " " + (505 - 505 * sc) + ") scale(" + sc + ")", post = "";
