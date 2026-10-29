@@ -87,6 +87,11 @@ def load_lexicon(path: Path = LEXICON_TXT) -> List[str]:
     return list(dict.fromkeys(words))
 
 
+def load_idioms(path: Path = LEXICON_IDIOMS_TXT) -> List[str]:
+    """成語／固定詞組字典（教育部辭典與新華成語，已排除能拆成兩個 TBCL 詞的合成詞）。"""
+    return [w.strip() for w in path.read_text(encoding="utf8").splitlines() if w.strip()] if path.exists() else []
+
+
 def load_ranks(path: Path = FREQ_TSV) -> Dict[str, int]:
     """COCT 通用詞頻序位（只用來判斷「疑似詞組」，檔案不存在就略過）。"""
     ranks: Dict[str, int] = {}
@@ -371,10 +376,12 @@ def check_materials(
     result = CheckResult(int(target_level))
     proper_idx: set = set()
     if segmenter == "ckip":
+        idioms = set(load_idioms())
         known = set(tbcl)        # 只用 TBCL 詞表合併：辭典詞條裡有很多合成詞（社會秩序），不能拿來黏 CKIP 已斷好的詞
         words: List[str] = []
         for line in segment_ckip_lines(text, ckip_driver):          # 1) 先斷詞（獨立於 TBCL）
             line = align_to_tbcl(line, known)                        # 2) 再對回詞表
+            line = align_to_tbcl(line, idioms)                       # 2b) 成語字典：CKIP 把「落英繽紛」切成「落英」「繽紛」時合併回來
             if exclude_proper_nouns:                                 # 3) 專有名詞（人名、地名、機構名…）不列入比例（簡章規定）
                 spans, pos = ner_spans([line])[0], 0
                 for w in line:

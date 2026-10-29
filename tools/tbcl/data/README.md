@@ -11,7 +11,7 @@
 
 | `lexicon.txt` | 補充斷詞字典：教育部詞條中不在 TBCL 的 3 字以上詞（約 9 千個），斷詞用、等級一律當「詞表沒有」 | `build_lexicon.py` 由 `tools/vocab/data/moe-relations.json` 產生 |
 
-| `lexicon-idioms.txt` | 成語／固定詞組字典（約 3 萬詞）：教育部《重編國語辭典修訂本》詞條中 4–8 字、不在 TBCL、且不能拆成 TBCL 詞的詞 | `build_idioms.py`（來源 g0v/moedict-data 的 dict-revised.json；只取詞條名稱） |
+| `lexicon-idioms.txt` | 成語／固定詞組字典（約 5 萬詞）：教育部《重編國語辭典修訂本》加新華成語（簡轉繁）中 4–8 字、不在 TBCL、且不是「兩個 2 字 TBCL 詞」合成的詞（例如收「落英繽紛」，不收「社會秩序」） | `build_idioms.py --xinhua`（來源 g0v/moedict-data 的 dict-revised.json 與 pwxcoo/chinese-xinhua 的 idiom.json） |
 
 | `replacements.json` | 離線換詞表：約 2.8 萬個高等級詞／成語，各有最多 5 個意思相近、等級較低的候選（s 辭典同義、d 釋義用語、e 語義相近，附分數） | `build_replacements.py`：重編國語辭典同義詞與釋義＋詞義向量（BAAI/bge-base-zh-v1.5，MIT）；只看詞義、不看句子，僅供老師參考 |
 

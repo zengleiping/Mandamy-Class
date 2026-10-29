@@ -113,7 +113,7 @@ function wordCands(w,t){var out=[],seen={};
 function explCands(w,t){var out=[],seen={};
   ((EXPL&&EXPL[w])||[]).forEach(function(e){var a=analyze(e,t,new Set());
     if(a.total&&a.over===0){if(!seen[e]){seen[e]=1;out.push({c:e,l:0,src:"辭典說法",o:1,x:1})}return}
-    var s=e,ok=true;a.list.forEach(function(it){var cs=wordCands(it.w,t).filter(function(c){return c.o===0||c.sc>=85}).sort(function(p,q){return p.o-q.o||q.sc-p.sc});
+    var s=e,ok=true;a.list.forEach(function(it){var cs=wordCands(it.w,t).filter(function(c){return c.o===0||c.sc>=95}).sort(function(p,q){return p.o-q.o||q.sc-p.sc});
       if(cs.length)s=s.split(it.w).join(cs[0].c);else ok=false});
     if(ok&&s!==e&&!seen[s]){var b=analyze(s,t,new Set());if(b.total&&b.over===0){seen[s]=1;out.push({c:s,l:0,src:"辭典說法（再簡化）",o:1.5,x:1})}}});
   return out}
