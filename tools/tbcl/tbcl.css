@@ -21,3 +21,5 @@ label.chk{flex-direction:row;align-items:center;gap:5px;font-size:13px;padding-b
 
 .sent{border-top:1px solid var(--line);padding:8px 0}.wc{display:inline-flex;flex-wrap:wrap;gap:4px;align-items:center;margin-right:10px}.wc small,.cand small{color:#8a7d70;margin-left:3px}
 button.cand{padding:3px 8px;border-radius:999px;font-size:13px}button.cand.ai{border-color:var(--red)}
+
+small.nocand{color:#8a7d70;font-size:12px;max-width:260px}

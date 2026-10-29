@@ -103,9 +103,10 @@ function loadSyn(){return SYN||(SYN=loadRep().then(function(){return fetch("data
   Object.keys(d.m).forEach(function(k){d.m[k].forEach(function(v){add(k,v);add(v,k)})});return d}))}
 function splitSent(t){var re=/[^。！？!?\n]*[。！？!?]+|[^。！？!?\n]+/g,m,o=[];while((m=re.exec(t))){if(m[0].trim())o.push({s:m[0],i:m.index})}return o}
 function overCount(s,t){return analyze(s,t,EX).over}
-var SRCNAME={s:"辭典同義",d:"釋義用語",e:"語義相近"};
+var SRCNAME={s:"辭典同義",p:"疊字簡化",d:"釋義用語",e:"語義相近"};
+function farCands(w,t){var o=[];((REP&&REP[w])||[]).forEach(function(r){var l=levelOf(r[0]);if(l!=null&&effLv(r[0],l)>t)o.push({c:r[0],l:l})});return o.sort(function(a,b){return a.l-b.l}).slice(0,3)}
 function dictCands(w,t,sent){var out=[],seen={};
-  ((REP&&REP[w])||[]).forEach(function(r){var c=r[0],l=levelOf(c);if(l!=null&&effLv(c,l)<=t&&!seen[c]){seen[c]=1;out.push({c:c,l:l,src:SRCNAME[r[2]]||"詞典",o:{s:0,d:1,e:2}[r[2]]})}});
+  ((REP&&REP[w])||[]).forEach(function(r){var c=r[0],l=levelOf(c);if(l!=null&&effLv(c,l)<=t&&!seen[c]){seen[c]=1;out.push({c:c,l:l,src:SRCNAME[r[2]]||"詞典",o:{s:0,p:1,d:2,e:3}[r[2]]})}});
   (SYNIDX&&SYNIDX.get(w)||[]).forEach(function(x){var l=levelOf(x);if(l!=null&&effLv(x,l)<=t&&!seen[x]){seen[x]=1;out.push({c:x,l:l,src:"近義詞典",o:0})}});
   out.sort(function(a,b){return a.o-b.o||a.l-b.l});return out.slice(0,6)}
 function parseArr(tx){var m=tx.match(/\[[\s\S]*\]/);if(!m)return[];try{var a=JSON.parse(m[0]);return Array.isArray(a)?a.map(String):[]}catch(e){return[]}}
@@ -118,6 +119,7 @@ function sugCard(text,t){
     var seen={};x.a.list.forEach(function(it){if(seen[it.w])return;seen[it.w]=1;var cs=dictCands(it.w,t);
       h+='<span class="wc"><b>'+esc(it.w)+'</b><small>'+(it.lv==null?"未收錄":"第"+it.lv+"級")+'</small>';
       cs.forEach(function(c){h+=' <button class="cand" data-act="cand" data-k="'+x.k+'" data-w="'+esc(it.w)+'" data-c="'+esc(c.c)+'" title="換完：'+esc(x.s.replace(it.w,c.c).trim())+'">'+esc(c.c)+'<small>'+c.src+" "+c.l+'</small></button>'});
+      if(!cs.length){var far=farCands(it.w,t);h+=' <small class="nocand">'+(far.length?'辭典有相近詞，但等級都高於第 '+t+' 級：'+far.map(function(f){return esc(f.c)+'（第'+f.l+'級）'}).join('、'):'辭典裡找不到等級較低的相近詞')+'</small>'}
       h+=' <button data-act="aiw" data-k="'+x.k+'" data-w="'+esc(it.w)+'">問 AI 換詞</button><span class="aiw" data-w="'+esc(it.w)+'"></span></span>'});
     h+='<button class="pri" data-act="rw" data-k="'+x.k+'">整句換句話說（AI）</button></div><div class="rwout"></div></div>'});
   return h+'</div>'}

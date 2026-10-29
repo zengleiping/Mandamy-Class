@@ -5,7 +5,7 @@
   2. 釋義用語（標 d）：來源詞的辭典釋義裡，直接用到的較低等級 TBCL 詞（例如「重視：認為重要而加以注意」→ 注意），再用詞義向量排序
   3. 詞義相似（標 e）：把每個詞的辭典釋義轉成向量（BAAI/bge-base-zh-v1.5），找最接近的 TBCL 詞；只收相似度很高的（≥0.82）
   4. 只留等級比來源詞低的候選；詞性（辭典標的名／動／形／副…）不同的不收
-輸出格式：{"詞": [[候選詞, 候選等級, 來源 s/d/e, 分數0-100], ...]}（最多 5 個；s 優先，其次 d，最後 e）
+輸出格式：{"詞": [[候選詞, 候選等級, 來源 s/d/e/p, 分數0-100], ...]}（最多 5 個；s 優先，其次 p、d，最後 e；p＝疊字成語取前兩字）
 自動比對只看詞義、不看句子，換進句子不一定通順，結果僅供老師參考。
 用法：python3 build_replacements.py dict-revised.json [--limit N] [--only 詞1,詞2]（抽查用）
 需要：pip install sentence-transformers（第一次會下載約 100MB 的向量模型）"""
@@ -71,8 +71,24 @@ def postfilter(info, tb, data, df_max=400, d_min=65):
         i = t.find(c)
         return i > 0 and t[i - 1] in NEG            # 「困難：不容易」→ 容易 是反義，不能當換詞
 
+    # p：疊字成語取前兩字（小心翼翼→小心、人才濟濟→人才）、AABB 疊字取 AB（高高興興→高興）
+    words4 = [w for w in list(tb) + list(data) if len(w) == 4]
+    for w in set(words4):
+        sl = tb.get(w, 99)
+        cand = None
+        if w[2] == w[3] and w[0] != w[1] and w[:2] in tb:
+            cand = w[:2]
+        elif w[0] == w[1] and w[2] == w[3] and w[0] != w[2] and w[1] + w[2] in tb:
+            cand = w[1] + w[2]
+        if cand and tb[cand] < sl and cand != w:
+            lst = data.setdefault(w, [])
+            if all(r[0] != cand for r in lst):
+                lst.insert(0, [cand, tb[cand], "p", 70])
     out = {}
     for w, rs in data.items():
+        if w not in info:
+            out[w] = rs
+            continue
         keep = [r for r in rs if r[0] not in info[w]["ant"] and not (r[2] == "d" and (df[r[0]] > df_max or r[3] < d_min or negated(w, r[0])))]
         if keep:
             out[w] = keep
