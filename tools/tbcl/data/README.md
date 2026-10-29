@@ -17,6 +17,8 @@
 
 | `explanations.json` | 辭典說法：約 4 萬個成語與較難的詞，各有 1–2 個用白話寫的短說法（取自辭典釋義的「形容／比喻／指…」） | `build_explanations.py`（來源同重編國語辭典）；網頁執行時再用 TBCL 詞表確認沒有超綱詞 |
 
+| `lexicon-freq.txt` | 國教院語料庫常見、但 TBCL 詞表沒有的詞（約 6.7 千，如「影音」「法制」）：COCT 通用詞頻表前 3 萬詞中，不在 TBCL、也不能拆成 TBCL 詞的 | `build_freqlex.py`；網頁版斷詞用，標「詞表沒有」 |
+
 用 `../build/` 裡的 `build_tbcl.py`、`build_grammar.py` 從官方 PDF／Excel 重新產生。
 - 第 1*–4* 級（詞語）依「併入該級」計算，等級 1–7 對應競賽簡章的 TBCL 1–7 級。
 - 詞語表沒有單獨收錄的虛詞「了」「著」，依語法點表（V了、V著 第 2 級）計為第 2 級。

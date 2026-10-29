@@ -13,7 +13,7 @@ var GRAM_WORD={"了":2,"著":2};
 try{var _c=JSON.parse(localStorage.getItem("mm_tbcl_custom")||"{}");Object.keys(_c).forEach(function(w){CUSTOM.set(w,+_c[w]||0)})}catch(e){}
 function saveCustom(){var o={};CUSTOM.forEach(function(v,k){o[k]=v});try{localStorage.setItem("mm_tbcl_custom",JSON.stringify(o))}catch(e){}}
 function addKey(w){KEYS.add(w);if(w.length>MAXLEN)MAXLEN=w.length}
-function loadExt(){return Promise.all(["data/lexicon.txt","data/lexicon-idioms.txt"].map(function(f){return fetch(f).then(function(r){if(!r.ok)throw 0;return r.text()}).catch(function(){return""})})).then(function(ts){ts.forEach(function(t){t.split("\n").forEach(function(w){w=w.trim();if(w&&!LV.has(w)){EXT.add(w);addKey(w)}})});CUSTOM.forEach(function(v,w){addKey(w)})})}
+function loadExt(){return Promise.all(["data/lexicon.txt","data/lexicon-idioms.txt","data/lexicon-freq.txt"].map(function(f){return fetch(f).then(function(r){if(!r.ok)throw 0;return r.text()}).catch(function(){return""})})).then(function(ts){ts.forEach(function(t){t.split("\n").forEach(function(w){w=w.trim();if(w&&!LV.has(w)){EXT.add(w);addKey(w)}})});CUSTOM.forEach(function(v,w){addKey(w)})})}
 function load(){
   if(READY)return READY;
   READY=fetch("data/tbcl.tsv").then(function(r){if(!r.ok)throw 0;return r.text()}).then(function(t){
