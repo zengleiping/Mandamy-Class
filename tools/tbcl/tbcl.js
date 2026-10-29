@@ -110,16 +110,42 @@ function wordCands(w,t){var out=[],seen={};
   (SYNIDX&&SYNIDX.get(w)||[]).forEach(function(x){var l=levelOf(x);if(l!=null&&effLv(x,l)<=t&&!seen[x]){seen[x]=1;out.push({c:x,l:l,src:"近義詞典",o:0,sc:100})}});
   return out}
 /* 辭典說法：用辭典釋義改寫成白話；說法裡還有超綱詞時，用同一份換詞表再換一次（只用可靠的候選），最後用詞表確認沒有超綱 */
+/* ---- 我的換法（老師自己的說法，存在這個瀏覽器）---- */
+var MINE={};try{MINE=JSON.parse(localStorage.getItem("mm_tbcl_mine")||"{}")}catch(e){}
+function saveMine(){try{localStorage.setItem("mm_tbcl_mine",JSON.stringify(MINE))}catch(e){}}
+/* ---- 候選登錄：按鈕只帶編號，套用時才依「這個詞在句子裡的位置」挑合適的形式 ---- */
+var CANDREG={},CANDN=0;
+function reg(c){c.id="k"+(++CANDN);CANDREG[c.id]=c;return c}
+/* 精選說法有四種形式：P 一般、A 後面接「的」、D 後面接「地」、C 前面有「得」；其他來源只有一般形式 */
+function curForms(w,t){var f={};((CUR&&CUR[w])||[]).forEach(function(v){var role=v[2]||"P",a=analyze(v[0],t,new Set());
+  if(a.total&&a.over===0){(f[role]=f[role]||[]);if(f[role].indexOf(v[0])<0)f[role].push(v[0])}});return f}
 function explCands(w,t){var out=[],seen={};
-  ((CUR&&CUR[w])||[]).forEach(function(v){var e=v[0];if(seen[e])return;var a=analyze(e,t,new Set());if(a.total&&a.over===0){seen[e]=1;out.push({c:e,l:0,src:"精選說法",o:0.5,x:1})}});
+  if(MINE[w]){out.push(reg({c:MINE[w],l:0,src:"我的換法",o:-1,x:1,forms:{P:[MINE[w]]},mine:1}));seen[MINE[w]]=1}
+  var f=curForms(w,t),any=f.P&&f.P[0]||f.A&&f.A[0]||f.D&&f.D[0]||f.C&&f.C[0];
+  if(any&&!seen[any]){seen[any]=1;out.push(reg({c:any,l:0,src:"精選說法",o:0.5,x:1,forms:f}))}
   ((EXPL&&EXPL[w])||[]).forEach(function(e){var a=analyze(e,t,new Set());
-    if(a.total&&a.over===0){if(!seen[e]){seen[e]=1;out.push({c:e,l:0,src:"辭典說法",o:1,x:1})}return}
+    if(a.total&&a.over===0){if(!seen[e]){seen[e]=1;out.push(reg({c:e,l:0,src:"辭典說法",o:1,x:1,forms:{P:[e]}}))}return}
     var s=e,ok=true;a.list.forEach(function(it){var cs=wordCands(it.w,t).filter(function(c){return c.o===0||c.sc>=95}).sort(function(p,q){return p.o-q.o||q.sc-p.sc});
       if(cs.length)s=s.split(it.w).join(cs[0].c);else ok=false});
-    if(ok&&s!==e&&!seen[s]){var b=analyze(s,t,new Set());if(b.total&&b.over===0){seen[s]=1;out.push({c:s,l:0,src:"辭典說法（再簡化）",o:1.5,x:1})}}});
+    if(ok&&s!==e&&!seen[s]){var b=analyze(s,t,new Set());if(b.total&&b.over===0){seen[s]=1;out.push(reg({c:s,l:0,src:"辭典說法（再簡化）",o:1.5,x:1,forms:{P:[s]}}))}}});
   return out}
-function dictCands(w,t,sent){var out=wordCands(w,t).concat(explCands(w,t));
+function dictCands(w,t,sent){var out=wordCands(w,t).map(function(c){c.forms={P:[c.c]};return reg(c)}).concat(explCands(w,t));
   out.sort(function(a,b){return a.o-b.o||a.l-b.l});return out.slice(0,6)}
+/* ---- 位置判斷與接合（A 角色形式、B 自動修順）---- */
+function roleAt(prev,next){return prev==="得"?"C":next==="地"?"D":next==="的"?"A":"P"}
+var DEG=/^(很|非常|太|真|好|十分|特別)/;
+/* 回傳 {text, warn}：依角色選形式；沒有該角色的形式時，截成第一個短句（接在「的／地」前面才通順），並提醒老師檢查 */
+function formFor(c,role,prevWord,nextWord){var f=c.forms||{P:[c.c]},txt,warn=false;
+  if(role!=="P"&&f[role]&&f[role][0]){var lst=f[role];txt=lst[0];
+    if(role==="C"&&prevWord){var pv=prevWord.slice(-2),hit=function(x){return x.indexOf(pv)>=0||x.indexOf(pv.slice(-1))>=0};for(var q=0;q<lst.length;q++){if(!hit(lst[q])){txt=lst[q];break}}if(hit(txt))warn=true}}   // 「累得很累」這種重複：改選不含前一個詞的形式，沒得選就提醒
+  else{txt=(f.P&&f.P[0])||c.c;
+    if(role==="A"||role==="D"){var first=txt.split(/[，、；]/)[0];if(first&&first!==txt){txt=first}
+      if(!c.mine)warn=true}
+    else if(role==="C"){if(!/^(很|非常|太|一|不|沒|說|全)/.test(txt))warn=true}}
+  if(DEG.test(txt)&&/^(很|非常|太|真|好|十分|特別)$/.test(prevWord||""))txt=txt.replace(DEG,"");          // 避免「很很」「非常很」
+  txt=txt.replace(/[，。、；]+$/,"");
+  if(!/[，。！？、；]$/.test(txt)&&/^[，。！？、；]/.test(nextWord||"")){}                                // 後面已有標點，不再補
+  return{text:txt,warn:warn}}
 function parseArr(tx){var m=tx.match(/\[[\s\S]*\]/);if(!m)return[];try{var a=JSON.parse(m[0]);return Array.isArray(a)?a.map(String):[]}catch(e){return[]}}
 function sugCard(text,t){
   var ss=splitSent(text).map(function(x,k){var a=analyze(x.s,t,EX);return{k:k,s:x.s,a:a}}).filter(function(x){return x.a.list.length});
@@ -129,11 +155,12 @@ function sugCard(text,t){
     x.a.toks.forEach(function(tk){h+=tk.han?'<span class="w '+(tk.st==="ok"?"":tk.st)+'">'+esc(tk.w)+'</span>':esc(tk.w)});h+='</div><div class="row" style="margin:4px 0">';
     var seen={};x.a.list.forEach(function(it){if(seen[it.w])return;seen[it.w]=1;var cs=dictCands(it.w,t);
       h+='<span class="wc"><b>'+esc(it.w)+'</b><small>'+(it.lv==null?"未收錄":"第"+it.lv+"級")+'</small>';
-      cs.forEach(function(c){h+=' <button class="cand" data-act="cand" data-k="'+x.k+'" data-w="'+esc(it.w)+'" data-c="'+esc(c.c)+'" title="換完：'+esc(x.s.replace(it.w,c.c).trim())+'">'+esc(c.c)+'<small>'+c.src+(c.x?'':' '+c.l)+'</small></button>'});
+      cs.forEach(function(c){h+=' <button class="cand" data-act="cand" data-k="'+x.k+'" data-w="'+esc(it.w)+'" data-cid="'+c.id+'" title="換完：'+esc(replaceInSent(x.s,it.w,c,t).trim())+'">'+esc(c.c)+'<small>'+c.src+(c.x?'':' '+c.l)+'</small></button>'});
       if(!cs.length){var far=farCands(it.w,t);h+=' <small class="nocand">'+(far.length?'辭典有相近詞，但等級都高於第 '+t+' 級：'+far.map(function(f){return esc(f.c)+'（第'+f.l+'級）'}).join('、'):'辭典裡找不到等級較低的相近詞')+'</small>'}
       h+=' <button data-act="aiw" data-k="'+x.k+'" data-w="'+esc(it.w)+'">問 AI 換詞</button><span class="aiw" data-w="'+esc(it.w)+'"></span></span>'});
     h+='<button class="pri" data-act="rw" data-k="'+x.k+'">整句換句話說（AI）</button></div><div class="rwout"></div></div>'});
   return h+'</div>'}
+function replaceInSent(s,w,c,t){var i=s.indexOf(w);if(i<0)return s;var role=roleAt(s[i-1],s[i+w.length]),prev=role==="C"?s.slice(Math.max(0,i-3),i-1):s.slice(Math.max(0,i-2),i).replace(/^.*?(很|非常|太|真|好|十分|特別)$/,"$1"),f=formFor(c,role,prev,s[i+w.length]);return s.slice(0,i)+f.text+s.slice(i+w.length)}
 function applyToSent(k,fn){var text=$("txt").value,ss=splitSent(text),x=ss[k];if(!x)return false;var ns=fn(x.s);if(ns===x.s)return false;UNDO.push(text);$("txt").value=text.slice(0,x.i)+ns+text.slice(x.i+x.s.length);doCheck();return true}
 function logAI(step,tool,purpose,how,prompt){LOG.push({step:step,tool:tool,purpose:purpose,how:how,prompt:prompt,note:"檢核詞表："+(OFFICIAL?"官方 TBCL":"暫代（TOCFL）")});saveLog()}
 async function aiWord(k,w,box){var t=+$("lv").value,ai=$("c-ai").value,x=splitSent($("txt").value)[k];if(!x)return;box.textContent="AI 找詞中…";
@@ -141,7 +168,7 @@ async function aiWord(k,w,box){var t=+$("lv").value,ai=$("c-ai").value,x=splitSe
     var r=await callAI(ai,p),base=overCount(x.s,t),good=[];
     parseArr(r.text).forEach(function(c){c=c.trim();if(!c||c===w)return;var ns=x.s.replace(w,c),o=overCount(ns,t);if(o<base)good.push({c:c,o:o})});
     good.sort(function(a,b){return a.o-b.o});logAI("超綱詞換詞","AI（"+r.model+"）","找較低等級的替代詞","AI 提出替代詞 → 程式用 TBCL 詞表驗證，只保留能讓該句超綱詞減少的 → 人工決定是否套用",p.slice(0,80));
-    box.innerHTML=good.length?good.map(function(g){return'<button class="cand ai" data-act="cand" data-k="'+k+'" data-w="'+esc(w)+'" data-c="'+esc(g.c)+'" title="'+esc(x.s.replace(w,g.c))+'">'+esc(g.c)+'<small>AI·已驗證 超綱 '+base+'→'+g.o+'</small></button>'}).join(" "):'<small>AI 的建議沒有一個能降低這句的超綱詞，改試「換句話說」。</small>'}
+    box.innerHTML=good.length?good.map(function(g){var cd=reg({c:g.c,l:0,src:"AI",x:1,forms:{P:[g.c]}});return'<button class="cand ai" data-act="cand" data-k="'+k+'" data-w="'+esc(w)+'" data-cid="'+cd.id+'" title="換完：'+esc(x.s.replace(w,g.c))+'">'+esc(g.c)+'<small>AI·已驗證 超綱 '+base+'→'+g.o+'</small></button>'}).join(" "):'<small>AI 的建議沒有一個能降低這句的超綱詞，改試「換句話說」。</small>'}
   catch(e){box.textContent="失敗："+e.message}}
 async function aiRewrite(k,box){var t=+$("lv").value,ai=$("c-ai").value,x=splitSent($("txt").value)[k];if(!x)return;var orig=x.s.trim(),base=overCount(orig,t),best=null,prompt0="請把下面這句話換句話說：意思不變、語氣自然，臺灣用語、繁體中文，並且只用臺灣華語文能力基準（TBCL）第 "+t+" 級（含以下）的詞語與句型，必要時可拆成兩三個短句。只輸出改寫後的句子，不要說明。\n原句："+orig,prompt=prompt0,rounds=0,res=null;
   try{for(var i=1;i<=3;i++){rounds=i;box.textContent="換句話說中…（第 "+i+" 輪）";res=await callAI(ai,prompt);var out=res.text.trim().replace(/^[「"]|[」"]$/g,""),a=analyze(out,t,EX);
@@ -155,7 +182,7 @@ $("res").addEventListener("click",function(e){var b=e.target.closest&&e.target.c
   if(act==="defw"){var row=b.closest(".row"),w0=row.querySelector(".cw").value.trim(),lv0=+row.querySelector(".cl").value;if(/^[㐀-鿿]{2,}$/.test(w0)){CUSTOM.set(w0,lv0);addKey(w0);saveCustom();doCheck()}return}
   if(act==="skipw"){SKIP.add(b.getAttribute("data-s"));doCheck();return}
   if(act==="delw"){CUSTOM.delete(b.getAttribute("data-s"));saveCustom();doCheck();return}
-  if(act==="cand"){var w=b.getAttribute("data-w"),c=b.getAttribute("data-c");applyToSent(k,function(s){return s.replace(w,c)})}
+  if(act==="cand"){var w=b.getAttribute("data-w"),cd=CANDREG[b.getAttribute("data-cid")],tt=+$("lv").value;if(cd)applyToSent(k,function(s){return replaceInSent(s,w,cd,tt)})}
   else if(act==="undo"){if(UNDO.length){$("txt").value=UNDO.pop();doCheck()}}
   else if(act==="aiw"){aiWord(k,b.getAttribute("data-w"),b.nextElementSibling)}
   else if(act==="rw"){aiRewrite(k,b.closest(".sent").querySelector(".rwout"))}
@@ -256,36 +283,67 @@ function artItems(r,t){var m=new Map();
   r.toks.forEach(function(tk){if(!tk.han||tk.st==="ok"||tk.st==="ex")return;var o=m.get(tk.w);if(!o){o={w:tk.w,lv:tk.lv,n:0,cs:dictCands(tk.w,t)};m.set(tk.w,o)}o.n++});
   return[...m.values()].sort(function(a,b){return(b.lv||99)-(a.lv||99)||b.n-a.n})}
 function artRows(items){var h='<table><tr><th>詞</th><th>等級</th><th>次數</th><th>處理方式</th></tr>';
-  items.forEach(function(it,i){var best=it.cs.length?"c0":"keep";
+  items.forEach(function(it,i){
     h+='<tr><td><b>'+esc(it.w)+'</b></td><td>'+(it.lv==null?"未收錄":"第 "+it.lv+" 級")+'</td><td>'+it.n+'</td><td><select class="ar" data-i="'+i+'"><option value="keep">保持原樣</option>';
     it.cs.forEach(function(c,k){h+='<option value="c'+k+'"'+(k===0?' selected':'')+'>換成：'+esc(c.c)+'（'+c.src+(c.x?'':' 第'+c.l+'級')+'）</option>'});
     if(it.cs.length)h+='<option value="note">加註：'+esc(it.w)+'（'+esc(it.cs[0].c)+'）</option>';
-    h+='</select> <input class="ac" data-i="'+i+'" placeholder="自訂換成…" size="10">'+(it.cs.length?'':' <small class="nocand">沒有符合等級的建議</small>')+'</td></tr>'});
+    h+='</select> <input class="ac" data-i="'+i+'" placeholder="自訂換成…" size="10"> <label class="chk"><input type="checkbox" class="am" data-i="'+i+'" checked>記住</label>'+(it.cs.length?'':' <small class="nocand">沒有符合等級的建議</small>')+'</td></tr>'});
   return h+'</table>'}
+function mineCard(){var ks=Object.keys(MINE);var h='<div class="card" id="mine"><b>我的換法</b>（存在這個瀏覽器；自訂換法勾「記住」就會存起來，下次同一個詞會排在最前面）';
+  if(ks.length){h+='<div class="row" style="margin:4px 0">';ks.forEach(function(w){h+='<span class="wc"><b>'+esc(w)+'</b>→'+esc(MINE[w])+'<button data-act="delmine" data-s="'+esc(w)+'">✕</button></span>'});h+='</div>'}
+  else h+='<p class="note">還沒有。</p>';
+  return h+'<div class="row"><button data-act="mine-export">複製成文字（備份／帶到別台電腦）</button></div><div class="row"><textarea id="mine-in" style="min-height:50px" placeholder="貼上備份的文字，按匯入"></textarea><button data-act="mine-import">匯入</button></div></div>'}
 function doArt(){load().then(function(){return Promise.all([loadSyn(),loadFreq().then(function(m){FREQV=m})])}).then(function(){
   var text=$("a-txt").value,t=+$("a-lv").value,lim=+$("a-lim").value;if(!text.trim()){$("a-out").innerHTML='<p class="note">請先貼上文章。</p>';return}
   var r=analyze(text,t,EX),items=artItems(r,t);ART={text:text,t:t,lim:lim,r:r,items:items};
   var okp=r.ratio<=lim,h='<div class="card"><div class="big '+(okp?"ok":"bad")+'">超綱 '+r.ratio.toFixed(1)+'%　<small>'+(okp?"✔ 符合":"✘ 超過")+" "+lim+'% 標準</small></div><div class="note">計入 '+r.total+' 個詞次；需要處理的詞 '+items.length+' 個。專有名詞請先到「① 等級檢核」標示。</div></div>';
-  if(!items.length){$("a-out").innerHTML=h+'<p class="note">沒有需要處理的詞。</p>';return}
-  h+='<div class="card"><div class="row"><button id="a-best">全部採用第一個建議</button><button id="a-keep">全部保持原樣</button><button id="a-apply" class="pri">套用，產生新文章</button></div>'+artRows(items)+'</div><div id="a-res"></div>';
+  if(!items.length){$("a-out").innerHTML=h+'<p class="note">沒有需要處理的詞。</p>'+mineCard();return}
+  h+='<div class="card"><div class="row"><button id="a-best">全部採用第一個建議</button><button id="a-keep">全部保持原樣</button><button id="a-apply" class="pri">套用，產生新文章</button></div>'+artRows(items)+'</div><div id="a-res"></div>'+mineCard();
   $("a-out").innerHTML=h})}
-function artApply(){if(!ART)return;var repl={},sel=document.querySelectorAll("#a-out select.ar"),inp=document.querySelectorAll("#a-out input.ac");
-  ART.items.forEach(function(it,i){var v=sel[i].value,cu=inp[i].value.trim(),to=null;
-    if(cu)to=cu;else if(v==="note")to=it.w+"（"+it.cs[0].c+"）";else if(v[0]==="c")to=it.cs[+v.slice(1)].c;
-    if(to!=null&&to!==it.w)repl[it.w]=to});
-  var out="",html="",n=0;ART.r.toks.forEach(function(tk){var to=tk.han&&Object.prototype.hasOwnProperty.call(repl,tk.w)?repl[tk.w]:null;
-    if(to!=null){out+=to;html+='<mark>'+esc(to)+'</mark>';n++}else{out+=tk.w;html+=esc(tk.w)}});
-  var a=analyze(out,ART.t,EX),okp=a.ratio<=ART.lim;
+function artApply(){if(!ART)return;var sel=document.querySelectorAll("#a-out select.ar"),inp=document.querySelectorAll("#a-out input.ac"),mem=document.querySelectorAll("#a-out input.am"),ch={};
+  ART.items.forEach(function(it,i){var v=sel[i].value,cu=inp[i].value.trim();
+    if(cu){ch[it.w]={custom:cu};if(mem[i].checked&&cu!==it.w){MINE[it.w]=cu;saveMine()}}
+    else if(v==="note")ch[it.w]={note:it.cs[0]};else if(v[0]==="c")ch[it.w]={c:it.cs[+v.slice(1)]}});
+  var T=ART.r.toks,out="",html="",n=0,warns=[],ins=[];
+  T.forEach(function(tk,i){var c=tk.han&&Object.prototype.hasOwnProperty.call(ch,tk.w)?ch[tk.w]:null;if(!c){out+=tk.w;html+=esc(tk.w);return}
+    var prev=i>0?T[i-1].w:"",next=i+1<T.length?T[i+1].w:"",role=roleAt(prev,next),to,w=tk.w;
+    if(role==="C"&&i>1)prev=T[i-2].w;                                              // 「得」前面的動詞／形容詞（累得…、高興得…）
+    if(c.custom)to=c.custom;
+    else if(c.note)to=w+"（"+formFor(c.note,"P",prev,next).text+"）";
+    else{var f=formFor(c.c,role,prev,next);to=f.text;if(f.warn)warns.push({w:w,role:role,ctx:T.slice(Math.max(0,i-4),i).map(function(x){return x.w}).join("")+"【"+to+"】"+T.slice(i+1,i+5).map(function(x){return x.w}).join("")})}
+    out+=to;html+='<mark>'+esc(to)+'</mark>';ins.push(to);n++});
+  ART.ins=ins;var a=analyze(out,ART.t,EX),okp=a.ratio<=ART.lim;
   $("a-res").innerHTML='<div class="card"><b>改寫後</b>（換了 '+n+' 處，<mark>標色</mark>是換過的地方）<div class="big '+(okp?"ok":"bad")+'">超綱 '+ART.r.ratio.toFixed(1)+'% → '+a.ratio.toFixed(1)+'%</div>'+
-    '<div class="hl" style="font-size:16px">'+html+'</div><p class="note">換進去的說法不一定通順，請直接修改下面的文字。還超綱的詞：'+(a.list.length?a.list.slice(0,20).map(function(x){return esc(x.w)}).join("、"):"沒有")+'</p>'+
-    '<textarea id="a-new" style="min-height:140px">'+esc(out)+'</textarea><div class="row"><button id="a-copy">複製改寫後的文章</button><button id="a-to-check">拿去「① 等級檢核」</button></div></div>'}
+    '<div class="hl" style="font-size:16px">'+html+'</div>'+
+    (warns.length?'<div class="note"><b>請檢查這幾處</b>（這個成語沒有適合這個位置的形式，已自動截短，可能不通順）：<br>'+warns.map(function(x){return esc(x.ctx)}).join('<br>')+'</div>':'')+
+    '<p class="note">還超綱的詞：'+(a.list.length?a.list.slice(0,20).map(function(x){return esc(x.w)}).join("、"):"沒有")+'。換進去的說法不一定通順，可以直接修改下面的文字，或按「請 AI 順稿」（需要金鑰）。</p>'+
+    '<textarea id="a-new" style="min-height:140px">'+esc(out)+'</textarea>'+
+    '<div class="row"><button id="a-copy">複製改寫後的文章</button><button id="a-to-check">拿去「① 等級檢核」</button><label>AI <select id="a-ai"><option value="gemini">Gemini</option><option value="claude">Claude</option></select></label><button id="a-polish">請 AI 順稿（只改換過的句子）</button></div><div id="a-pol"></div></div>';
+  $("a-out").querySelector("#mine").outerHTML=mineCard()}
+/* 請 AI 順稿：只處理含有換過說法的句子；改完用詞表確認沒有變得更超綱，通過的才列出，老師勾選後套用 */
+async function artPolish(){var box=$("a-pol"),text=$("a-new").value,t=ART.t,ai=$("a-ai").value,ins=ART.ins||[];
+  var ss=splitSent(text).filter(function(x){return ins.some(function(s){return x.s.indexOf(s)>=0})});
+  if(!ss.length){box.textContent="沒有換過的句子。";return}
+  var props=[];ART.props=props;
+  try{for(var k=0;k<ss.length;k++){box.textContent="AI 順稿中…（"+(k+1)+"／"+ss.length+"）";var s=ss[k].s.trim(),base=analyze(s,t,EX).over,best=null,res=null;
+      var p0="請把下面這個句子改寫成通順自然的臺灣華語，意思不變，不要增加新的內容；詞語和句型只用臺灣華語文能力基準（TBCL）第 "+t+" 級（含以下）。只輸出改寫後的句子。\\n句子："+s,pr=p0;
+      for(var i=1;i<=2;i++){res=await callAI(ai,pr);var o=res.text.trim().replace(/^[「"]|[」"]$/g,""),a=analyze(o,t,EX);if(!best||a.over<best.a.over)best={s:o,a:a};if(a.over<=base)break;pr=p0+"\\n上一版仍有超出的詞："+a.list.slice(0,10).map(function(z){return z.w}).join("、")+"。請改用較簡單的說法。"}
+      if(best&&best.s!==s&&best.a.over<=base)props.push({from:s,to:best.s,over:best.a.over,base:base});
+      logAI("整篇改寫後順稿","AI（"+res.model+"）","把換過說法的句子改成通順","AI 改寫 → 程式用 TBCL 詞表確認沒有更超綱 → 老師勾選後套用",p0.slice(0,60))}
+    box.innerHTML=props.length?'<p class="note">勾選要採用的順稿：</p>'+props.map(function(p,i){return'<label class="chk" style="display:flex"><input type="checkbox" class="ap" data-i="'+i+'" checked><span>'+esc(p.from)+'<br>→ <b>'+esc(p.to)+'</b>（超綱詞 '+p.base+' → '+p.over+'）</span></label>'}).join("")+'<button id="a-polish-apply" class="pri">套用勾選的順稿</button>':'沒有找到比現在更好的順稿。'}
+  catch(e){box.textContent="失敗："+e.message}}
 $("a-run").onclick=doArt;
-$("a-out").addEventListener("click",function(e){var id=e.target.id;
+$("a-out").addEventListener("click",function(e){var id=e.target.id,act=e.target.getAttribute&&e.target.getAttribute("data-act");
   if(id==="a-best"){document.querySelectorAll("#a-out select.ar").forEach(function(s){if(s.querySelector('option[value="c0"]'))s.value="c0"})}
   else if(id==="a-keep"){document.querySelectorAll("#a-out select.ar").forEach(function(s){s.value="keep"})}
   else if(id==="a-apply")artApply();
-  else if(id==="a-copy"){var v=$("a-new").value;navigator.clipboard.writeText(v).then(function(){alert("已複製")},function(){prompt("複製：",v)})}
-  else if(id==="a-to-check"){$("txt").value=$("a-new").value;$("lv").value=ART.t;tab("check");doCheck()}});
+  else if(id==="a-polish")artPolish();
+  else if(id==="a-polish-apply"){var v=$("a-new").value;document.querySelectorAll("#a-pol input.ap").forEach(function(c){if(c.checked){var p=ART.props[+c.getAttribute("data-i")];var i=v.indexOf(p.from);if(i>=0)v=v.slice(0,i)+p.to+v.slice(i+p.from.length)}});$("a-new").value=v;$("a-pol").textContent="已套用。"}
+  else if(id==="a-copy"){var tx=$("a-new").value;navigator.clipboard.writeText(tx).then(function(){alert("已複製")},function(){prompt("複製：",tx)})}
+  else if(id==="a-to-check"){$("txt").value=$("a-new").value;$("lv").value=ART.t;tab("check");doCheck()}
+  else if(act==="delmine"){delete MINE[e.target.getAttribute("data-s")];saveMine();$("mine").outerHTML=mineCard()}
+  else if(act==="mine-export"){var js=JSON.stringify(MINE);navigator.clipboard.writeText(js).then(function(){alert("已複製")},function(){prompt("複製：",js)})}
+  else if(act==="mine-import"){try{var o=JSON.parse($("mine-in").value);Object.keys(o).forEach(function(k){if(typeof o[k]==="string")MINE[k]=o[k]});saveMine();$("mine").outerHTML=mineCard()}catch(er){alert("格式不對")}}});
 
 /* 分頁 */
 function tab(n){["check","gen","inv","kwic","gram","art"].forEach(function(k){$("p-"+k).hidden=k!==n});[].forEach.call($("tabs").children,function(b){b.className=b.getAttribute("data-t")===n?"on":""});if(n==="inv")doInv();if(n==="gram")$("gr-lv").onchange()}
