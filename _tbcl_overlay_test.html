@@ -1,0 +1,20 @@
+<!doctype html><meta charset=utf8><style>:root{--paper:#fff;--line:#ddd}  .syn-ov{ position:fixed; inset:0; z-index:9960; background:var(--paper); display:flex; flex-direction:column; }
+  .syn-bar{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:10px 14px; padding-top:calc(10px + env(safe-area-inset-top, 0px)); border-bottom:1px solid var(--line); background:var(--surface); }
+  .syn-bar b{ font-size:16px; }
+  .syn-bar .note{ flex:1 1 160px; min-width:0; }
+  .syn-fr{ flex:1; width:100%; border:0; min-height:0; background:var(--paper); }
+  body.syn-open{ overflow:hidden; }
+.btn{}</style><script src="std.js"></script><script>function esc(s){return String(s)}
+var MM_V="1";
+function stdSelectHtml(){return '<select id="stdSel"></select>'}
+var TBCLV = { ov: null };
+function openTbcl(){
+  if(TBCLV.ov) return;
+  var ov = document.createElement("div"); ov.className = "syn-ov";
+  ov.innerHTML = '<div class="syn-bar"><b>🔎 等級檢核與語料庫</b>' + stdSelectHtml() + '<span class="note">檢查課文超綱比例、換成較簡單的說法、改寫整篇文章；選的等級標準會一併套用到教材</span><button class="btn sm" id="tbclclose">關閉 ✕</button></div>' +
+    '<iframe class="syn-fr" id="tbclfr" src="tools/tbcl/?embed=1&v=' + MM_V + '" title="等級檢核與語料庫" allow="clipboard-write"></iframe>';
+  document.body.appendChild(ov); TBCLV.ov = ov; document.body.classList.add("syn-open");
+  document.getElementById("tbclclose").onclick = closeTbcl;
+}
+function closeTbcl(){ if(!TBCLV.ov) return; TBCLV.ov.parentNode.removeChild(TBCLV.ov); TBCLV.ov = null; document.body.classList.remove("syn-open"); }
+</script><body><button id=go onclick="openTbcl()">go</button>
