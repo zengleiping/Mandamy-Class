@@ -126,6 +126,11 @@
     walkTimer = setInterval(wander, 6500); idleTimer = setInterval(function(){ if(root) update(); }, 5000); setTimeout(wander, 1200);
     if(!P.me() || !P.actPet(P.me())) openSheet("adopt"); else setTimeout(checkDaily, 700);
   };
+  U.ic = ic; U.ti = ti;
+  U.catIc = function(it){ var k = it.k || "", i;
+    if(k === "new") return ic("egg"); if(k.indexOf("pm") === 0) return A.svg({ sp: it.e, style: "outline", mood: "happy", stage: 1, anim: false });
+    if(k.indexOf("cl_") === 0) return A.accSvg(k.slice(3), "outline"); if(k.indexOf("sc_") === 0) return ic(k.slice(3)); if(k.indexOf("it_") === 0) return ic(ITEMIC[k.slice(3)] || "potion");
+    return ic(FOODIC[it.e] || "cookie"); };
   U.close = function(){ if(!root) return; flushPets(); clearInterval(walkTimer); clearInterval(idleTimer); root.remove(); root = null; sheet = null; fx = null; petEl = null; sheetName = ""; };
   U.refresh = function(){ if(root) update(); };
 
@@ -311,7 +316,7 @@
     var sec = function(t, c){ return c ? '<div class="pg-sec">' + t + '</div><div class="pg-cards">' + c + '</div>' : ""; };
     var tmp = document.createElement("div");
     var premium = P.PREMIUM.map(function(x, i){ return vis("pm" + i) ? card('<span class="pg-pi" data-sp="' + x.e + '"></span>', x.n, pr("pm" + i, x.p), ti("bolt") + " 成長 ×" + x.pw, false, 'data-pm="' + i + '"') : ""; }).join("") + (vis("new") ? card('<span class="pg-pi" data-sp="🐶"></span>', "再領養一隻", pr("new", P.NEWPET), "", false, 'data-new="1"') : "");
-    var rewards = (P.cfg.rewards || []).filter(Boolean).map(function(r, i){ return card(r.e || ic("gift"), esc(r.n), r.p, "", false, 'data-rw="' + i + '"'); }).join("");
+    var rewards = (P.cfg.rewards || []).filter(Boolean).map(function(r, i){ return card(ic("gift"), esc(r.n), r.p, "", false, 'data-rw="' + i + '"'); }).join("");
     body.innerHTML = '<div class="pg-hint">' + ti("star") + ' 我的點數 <b>' + pts + '</b></div>' + sec(ti("gift") + " 老師的獎勵（兌換後告訴老師）", rewards) + sec(ti("heart") + " 更強的寵物", premium) +
       sec(ti("potion") + " 道具", P.ITEMS.map(function(x, i){ return vis("it_" + x.id) ? card(ic(ITEMIC[x.id] || "potion"), x.n, pr("it_" + x.id, x.p), x.d, x.once && me[x.id === "house" ? "home" : x.id], 'data-it="' + i + '"') : ""; }).join("")) +
       sec(ti("wear") + " 衣服", P.CLOTHES.map(function(x, i){ return vis("cl_" + x.id) ? card('<span class="pg-sv">' + slotIcon(x.id) + '</span>', x.n, pr("cl_" + x.id, x.p), P.SLOTS[x.s], inv[x.id], 'data-cl="' + i + '"') : ""; }).join("")) +
@@ -330,7 +335,7 @@
         if((cur.pts || 0) < price){ poor = true; return null; } var patch = apply(cur); if(!patch) return null; patch.pts = (cur.pts || 0) - price; return patch;
       });
       if(poor){ say("點數不夠喔～"); SFX.sad(); return; } if(!r) return;
-      if(d.rw !== undefined){ var rw2 = (P.cfg.rewards || [])[Number(d.rw)], rt = P.root(), s = P.ctx().student(); await P.ctx().update(rt.path + "/redeem/r" + Date.now().toString(36) + Math.floor(Math.random() * 99), { name: s.name, c: rt.cls, item: (rw2.e || "🎁") + " " + rw2.n, p: rw2.p, at: Date.now(), done: false }); msg = "已兌換「" + rw2.n + "」！請告訴老師領取。"; }
+      if(d.rw !== undefined){ var rw2 = (P.cfg.rewards || [])[Number(d.rw)], rt = P.root(), s = P.ctx().student(); await P.ctx().update(rt.path + "/redeem/r" + Date.now().toString(36) + Math.floor(Math.random() * 99), { name: s.name, c: rt.cls, item: rw2.n, p: rw2.p, at: Date.now(), done: false }); msg = "已兌換「" + rw2.n + "」！請告訴老師領取。"; }
       SFX.buy(); burst("🪙", 8, innerWidth / 2, innerHeight * 0.55); if(msg){ closeSheet(); say(msg, 3500); }
     };
   }
