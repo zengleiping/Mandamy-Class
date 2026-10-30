@@ -1,0 +1,4 @@
+# 建議：CKIP（先斷詞）。會一併安裝 PyTorch，檔案很大
+ckip-transformers
+# 備用斷詞器
+jieba
