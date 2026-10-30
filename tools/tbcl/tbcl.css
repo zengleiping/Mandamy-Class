@@ -18,3 +18,13 @@ table{border-collapse:collapse;width:100%;font-size:14px}th,td{border:1px solid 
 @media print{.cite button{display:none}}
 
 label.chk{flex-direction:row;align-items:center;gap:5px;font-size:13px;padding-bottom:8px}
+
+.sent{border-top:1px solid var(--line);padding:8px 0}.wc{display:inline-flex;flex-wrap:wrap;gap:4px;align-items:center;margin-right:10px}.wc small,.cand small{color:#8a7d70;margin-left:3px}
+button.cand{padding:3px 8px;border-radius:999px;font-size:13px}button.cand.ai{border-color:var(--red)}
+
+small.nocand{color:#8a7d70;font-size:12px;max-width:260px}
+
+mark{background:#fff0b3;padding:0 2px;border-radius:3px}@media (prefers-color-scheme:dark){mark{color:#2b2320}}
+
+/* 內嵌在平台視窗裡：平台上方已有標題與關閉鍵，這裡收起重複的標題列 */
+.mm-embed .hd .back,.mm-embed .hd h1{display:none}.mm-embed .hd{padding:6px 16px}

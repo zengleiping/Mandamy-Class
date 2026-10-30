@@ -1023,6 +1023,17 @@ window.addEventListener("message", function(e){
 //   老師／助教：teacherPlatform/{老師}/synNotes/{帳號}/{詞組}
 //   學生：teacherPlatform/{老師}/hwFiles/{班級}/_synNotes/{學生}/{詞組}（規則已允許學生寫入這裡，不必改 Firebase 規則）
 // 每個詞組存成一段 JSON 文字（[{id,f,s,e,q,c,n,t}]）。
+// 🔎 等級檢核與語料庫工具（tools/tbcl）：和「近義詞」一樣是全螢幕視窗，隨時從上方選單打開，不放在教材／生詞裡面
+var TBCLV = { ov: null };
+function openTbcl(){
+  if(TBCLV.ov) return;
+  var ov = document.createElement("div"); ov.className = "syn-ov";
+  ov.innerHTML = '<div class="syn-bar"><b>🔎 等級檢核與語料庫</b>' + stdSelectHtml() + '<span class="note">檢查課文超綱比例、換成較簡單的說法、改寫整篇文章；選的等級標準會一併套用到教材</span><button class="btn sm" id="tbclclose">關閉 ✕</button></div>' +
+    '<iframe class="syn-fr" id="tbclfr" src="tools/tbcl/?embed=1&v=' + MM_V + '" title="等級檢核與語料庫" allow="clipboard-write"></iframe>';
+  document.body.appendChild(ov); TBCLV.ov = ov; document.body.classList.add("syn-open");
+  document.getElementById("tbclclose").onclick = closeTbcl;
+}
+function closeTbcl(){ if(!TBCLV.ov) return; TBCLV.ov.parentNode.removeChild(TBCLV.ov); TBCLV.ov = null; document.body.classList.remove("syn-open"); }
 var SYN = { ov: null };
 function synBase(){
   if(S.teacher) return "teacherPlatform/" + S.teacher.id + "/synNotes/" + hwSkey(S.teacher.me || S.teacher.id);
@@ -1762,7 +1773,7 @@ function shell(inner, opts){
   document.body.classList.toggle("ta", isTA());
   root.innerHTML = '<div class="shell' + (S.focus ? ' focus' : '') + '"><div class="top">' +
     '<a href="#" class="brand" id="brandhome" title="回到首頁" style="text-decoration:none;color:inherit;cursor:pointer;"><img src="icons/logo.svg" alt="" style="width:30px;height:30px;vertical-align:middle;margin-right:6px;">曼米中文' + (isT ? '' : '<small>學生</small>') + '</a><div class="crumb" id="crumb"></div><div class="grow"></div>' +
-    (isT ? '<nav class="mainnav">' + [["navhome", "🏠", "首頁", topArea() === "home"], ["navcls", "🏫", "班級", topArea() === "cls"], ["libbtn", "📚", "教材", topArea() === "lib", "owner-only"], ["actbtn", "🎲", "課堂活動", topArea() === "act"], ["recbtn", "📊", "記錄與成績", topArea() === "rec"], ["synbtn", "📖", "近義詞", false]].concat(window.top === window ? [["labbtn", "🧪", "測試教室", false]] : []).map(function(n){ return '<button class="mn' + (n[3] ? ' on' : '') + (n[4] ? ' ' + n[4] : '') + '" id="' + n[0] + '">' + n[2] + '</button>'; }).join("") + '</nav>' +
+    (isT ? '<nav class="mainnav">' + [["navhome", "🏠", "首頁", topArea() === "home"], ["navcls", "🏫", "班級", topArea() === "cls"], ["libbtn", "📚", "教材", topArea() === "lib", "owner-only"], ["actbtn", "🎲", "課堂活動", topArea() === "act"], ["recbtn", "📊", "記錄與成績", topArea() === "rec"], ["tbclbtn", "🔎", "等級檢核", false], ["synbtn", "📖", "近義詞", false]].concat(window.top === window ? [["labbtn", "🧪", "測試教室", false]] : []).map(function(n){ return '<button class="mn' + (n[3] ? ' on' : '') + (n[4] ? ' ' + n[4] : '') + '" id="' + n[0] + '">' + n[2] + '</button>'; }).join("") + '</nav>' +
          '<button class="btn sm" id="bell" title="新的繳交">🔔</button><span class="umenu"><button class="btn sm ughost" id="ubtn" title="' + esc(S.teacher.name) + '"><img src="icons/teacher.png" alt="" style="width:26px;height:26px;border-radius:50%;vertical-align:middle;"><span class="mn-t"> ' + esc(S.teacher.name) + ' ▾</span></button><div class="udrop" id="udrop"><button class="owner-only" id="setbtn">⚙️ 設定</button><button id="logout">登出</button></div></span>'
          : '<span class="crumb">👤 ' + esc(S.student ? S.student.name : "") + '</span><button class="btn sm" id="leave">離開</button>') +
     '</div><div class="body">' + '<main class="main' + (opts.flush ? ' flush' : '') + '" id="main">' + inner + '</main></div></div>';
@@ -1782,6 +1793,7 @@ function shell(inner, opts){
     document.getElementById("navcls").onclick = goTop(function(){ S.classes = {}; });
     document.getElementById("actbtn").onclick = goTop(function(){ S.act = {}; });
     document.getElementById("synbtn").onclick = openSynonyms;
+    document.getElementById("tbclbtn").onclick = openTbcl;
     var lb = document.getElementById("labbtn"); if(lb) lb.onclick = openLab;
     document.getElementById("ubtn").onclick = function(e){ e.stopPropagation(); document.getElementById("udrop").classList.toggle("open"); };
     document.addEventListener("click", function(){ var u = document.getElementById("udrop"); if(u) u.classList.remove("open"); });
@@ -2147,7 +2159,7 @@ async function libImportLesson(file, cur){
 function libLessonHtml(key){
   var L = S.plat.lessons || {}, l = L[key] || {}, c = lessonCounts(key), ps = l.projects || {}, pids = Object.keys(ps), dup = libDupSet();
   var h = '<div class="head-row" style="margin-bottom:10px;"><div style="flex:1;"><h2>' + esc(lessonTitle(key)) + '</h2></div>' + (l.unit ? '' : '<button class="btn sm" data-lesren="' + esc(key) + '">改課名</button> <button class="btn sm" data-lesexp="' + esc(key) + '" title="把這一課的生詞・語法・課文和簡報、練習打包成一個檔案，可以傳給別的老師">⬇ 匯出這一課</button> <button class="btn sm danger" data-lesdel="' + esc(key) + '" title="沒有內容的課才能刪">刪除這一課</button>') + '</div>';
-  h += '<div class="panel"><div class="lh" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><h3 style="margin:0;flex:1;">📖 生詞・語法・課文</h3>' + (l.unit ? '' : '' + stdSelectHtml() + '<button class="btn sm" data-vtool="1" title="把這一課的生詞整理成生詞表：自動補拼音／注音、英文、TOCFL／HSK 級別，加例句、挖空練習，匯出 Word、PPT、字卡">生詞表製作</button> <a class="btn sm" href="tools/tbcl/" target="_blank" rel="noopener" title="TBCL 等級檢核（超綱比例）、AI 依等級生成、教材等級盤點、課文例句查詢">TBCL 等級檢核</a> <button class="btn sm primary" data-bank="1">編輯生詞・語法・課文</button>') + '</div>' +
+  h += '<div class="panel"><div class="lh" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><h3 style="margin:0;flex:1;">📖 生詞・語法・課文</h3>' + (l.unit ? '' : '' + stdSelectHtml() + '<button class="btn sm" data-vtool="1" title="把這一課的生詞整理成生詞表：自動補拼音／注音、英文、TOCFL／HSK 級別，加例句、挖空練習，匯出 Word、PPT、字卡">生詞表製作</button> <button class="btn sm primary" data-bank="1">編輯生詞・語法・課文</button>') + '</div>' +
     '<div class="tools" style="margin-top:8px;"><span class="chip">生詞 ' + c.vocab + '</span><span class="chip">語法 ' + c.grammar + '</span><span class="chip">課文 ' + c.text + '</span></div>' + (l.unit ? '<p class="note" style="margin:6px 0 0;">複習單元的生詞・語法・課文是 ' + esc(memberRange(l.members)) + ' 的合計，請到各課編輯。</p>' : (c.vocab + c.grammar + c.text ? '' : '<p class="note" style="margin:6px 0 0;">這一課還沒有生詞・語法・課文。按右上角開始編輯，或用 Excel 匯入。</p>')) + '</div>';
   h += '<div class="panel"><div class="lh" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><h3 style="margin:0;flex:1;">🖥️ 簡報與練習（' + pids.length + '）</h3><button class="btn sm" data-pnew="' + esc(key) + '">＋ 新增簡報／測驗</button></div>' +
     (pids.length ? pids.map(function(pid){ return libProjRow(pid, ps[pid], key, dup[pid]); }).join("") : '<p class="note" style="margin:6px 0 0;">這一課還沒有簡報或測驗。</p>') + '</div>';

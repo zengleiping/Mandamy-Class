@@ -7,6 +7,21 @@
 | `grammar.json` | 語法點表（第 1–5 級共 496 筆；官方表目前沒有第 6、7 級） | 同上《語法點表》 |
 | `freq.tsv` | COCT 通用詞頻表前 30,000 詞（綜合序位、每百萬詞頻、書面／口語／新聞） | 國家教育研究院《通用詞頻表》 |
 
+| `synonyms.json` | 換詞用的近義詞：近義詞工具書 1,720 組、教育部近義詞 3,719 詞 | `tools/synonyms/`、`tools/vocab/data/moe-relations.json`（教育部）；用 `build_synonyms.py` 產生 |
+
+| `lexicon.txt` | 補充斷詞字典：教育部詞條中不在 TBCL 的 3 字以上詞（約 9 千個），斷詞用、等級一律當「詞表沒有」 | `build_lexicon.py` 由 `tools/vocab/data/moe-relations.json` 產生 |
+
+| `lexicon-idioms.txt` | 成語／固定詞組字典（約 5 萬詞）：教育部《重編國語辭典修訂本》加新華成語（簡轉繁）中 4–8 字、不在 TBCL、且不是「兩個 2 字 TBCL 詞」合成的詞（例如收「落英繽紛」，不收「社會秩序」） | `build_idioms.py --xinhua`（來源 g0v/moedict-data 的 dict-revised.json 與 pwxcoo/chinese-xinhua 的 idiom.json） |
+
+| `replacements.json` | 離線換詞表：約 2.8 萬個高等級詞／成語，各有最多 5 個意思相近、等級較低的候選（s 辭典同義、d 釋義用語、e 語義相近，附分數） | `build_replacements.py`：重編國語辭典同義詞與釋義＋詞義向量（BAAI/bge-base-zh-v1.5，MIT）；只看詞義、不看句子，僅供老師參考 |
+
+| `explanations.json` | 辭典說法：約 4 萬個成語與較難的詞，各有 1–2 個用白話寫的短說法（取自辭典釋義的「形容／比喻／指…」） | `build_explanations.py`（來源同重編國語辭典）；網頁執行時再用 TBCL 詞表確認沒有超綱詞 |
+
+| `lexicon-freq.txt` | 國教院語料庫常見、但 TBCL 詞表沒有的詞（約 6.7 千，如「影音」「法制」）：COCT 通用詞頻表前 3 萬詞中，不在 TBCL、也不能拆成 TBCL 詞的 | `build_freqlex.py`；網頁版斷詞用，標「詞表沒有」 |
+
+| `curated.json` | 精選成語簡單說法：約 360 個常見成語（高中文言、日常成語），各有 1–2 個白話說法，另有接「的」「地」「得」的形式（約 240 個），並記錄「至少要目標等級幾級才不超綱」 | 由 Claude 撰寫（`build/curated-idioms-*.tsv`、`build/curated-roles.tsv`），`build_curated.py` 用 TBCL 詞表驗證；需老師抽查 |
+| `lexicon-curated.txt` | 精選成語中，成語字典還沒收的詞（讓斷詞認得） | `build_curated.py` |
+
 用 `../build/` 裡的 `build_tbcl.py`、`build_grammar.py` 從官方 PDF／Excel 重新產生。
 - 第 1*–4* 級（詞語）依「併入該級」計算，等級 1–7 對應競賽簡章的 TBCL 1–7 級。
 - 詞語表沒有單獨收錄的虛詞「了」「著」，依語法點表（V了、V著 第 2 級）計為第 2 級。
