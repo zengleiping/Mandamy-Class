@@ -40,7 +40,8 @@
       return '<defs><linearGradient id="sgS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0f0c33"/><stop offset="1" stop-color="#4a2f85"/></linearGradient></defs><rect width="400" height="700" fill="url(#sgS)"/>' + s + '<g transform="translate(300 130)"><circle r="42" fill="#FFB35C"/><ellipse rx="70" ry="14" fill="none" stroke="#FFE0A8" stroke-width="6" transform="rotate(-20)"/><circle cx="-12" cy="-10" r="8" fill="#E0883A" opacity=".6"/></g><circle cx="70" cy="190" r="20" fill="#E6E6F2"/><circle cx="62" cy="184" r="4" fill="#C9C9DA"/><path d="M0 520 Q100 480 200 515 T400 505 L400 700 L0 700Z" fill="#7B5CC9"/><rect y="560" width="400" height="140" fill="#5E43A8"/><g fill="#9B80E0"><circle cx="60" cy="600" r="14"/><circle cx="330" cy="640" r="18"/><circle cx="200" cy="670" r="10"/></g>'; },
     castle: function(){ return '<defs><linearGradient id="sgC" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE3B8"/><stop offset=".6" stop-color="#F6D2F0"/><stop offset="1" stop-color="#D9C2FF"/></linearGradient></defs><rect width="400" height="700" fill="url(#sgC)"/>' + cloud(90, 120, 1, "c1") + cloud(300, 170, .8, "c2") + '<g transform="translate(200 330)"><rect x="-90" y="20" width="180" height="150" fill="#E8D9F7" stroke="#B9A3DD" stroke-width="3"/><rect x="-120" y="-20" width="50" height="190" fill="#D9C4F0" stroke="#B9A3DD" stroke-width="3"/><rect x="70" y="-20" width="50" height="190" fill="#D9C4F0" stroke="#B9A3DD" stroke-width="3"/><path d="M-130 -20 L-95 -80 L-60 -20Z M60 -20 L95 -80 L130 -20Z" fill="#E0524A"/><rect x="-30" y="-50" width="60" height="100" fill="#D9C4F0" stroke="#B9A3DD" stroke-width="3"/><path d="M-40 -50 L0 -120 L40 -50Z" fill="#E0524A"/><path d="M0 -120 L0 -150 L22 -142 L0 -134" fill="#FFD23F" stroke="#E0A82E" stroke-width="2"/><path d="M-28 170 L-28 110 Q0 80 28 110 L28 170Z" fill="#8A5A3A"/><rect x="-100" y="60" width="14" height="24" rx="7" fill="#FFE98A"/><rect x="86" y="60" width="14" height="24" rx="7" fill="#FFE98A"/></g><path d="M0 520 Q120 490 240 515 T400 510 L400 700 L0 700Z" fill="#B7E6A0"/><rect y="560" width="400" height="140" fill="#9BD883"/><path d="M200 520 Q170 600 120 700 L280 700 Q230 600 200 520Z" fill="#F0E2C4" opacity=".85"/>'; }
   };
-  function sceneHtml(id){ return '<svg class="pg-bg" viewBox="0 0 400 700" preserveAspectRatio="xMidYMax slice">' + (SCENES[id] || SCENES.grass)() + "</svg>"; }
+  function sceneHtml(id, inv){ var ps = window.PETSCENE; if(!ps) return '<svg class="pg-bg" viewBox="0 0 400 700" preserveAspectRatio="xMidYMax slice">' + (SCENES[id] || SCENES.grass)() + "</svg>"; var sc = ps.scene(id), sd = ps.scene(id, true);
+    return '<svg class="pg-bg" viewBox="-400 0 1200 700" preserveAspectRatio="xMidYMax slice"><defs><clipPath id="pscc"><rect x="0" y="0" width="400" height="700"/></clipPath></defs><g transform="scale(-1 1)"><g clip-path="url(#pscc)">' + sd + '</g></g><g transform="translate(800 0) scale(-1 1)"><g clip-path="url(#pscc)">' + sd + '</g></g><g clip-path="url(#pscc)">' + sc + "</g>" + ps.furn(inv) + "</svg>"; }
 
 
   // ---------- 介面圖示（跟寵物同一套畫法：黑色圓角外框＋色塊＋一彎陰影）----------
@@ -80,6 +81,12 @@
     garden: function(){ return icScene("#FFE3EE", '<path d="M0 32Q24 25 48 32V48H0Z" fill="#BFE8A6"/><circle cx="13" cy="30" r="3.4" fill="#FF7A9A"/><circle cx="24" cy="34" r="3.4" fill="#FFD23F"/><circle cx="35" cy="29" r="3.4" fill="#C3A0FF"/>'); },
     space: function(){ return icScene("#2E2570", '<g fill="#fff"><circle cx="11" cy="12" r="1.4"/><circle cx="20" cy="30" r="1.2"/><circle cx="37" cy="36" r="1.4"/><circle cx="14" cy="38" r="1"/></g><circle cx="31" cy="19" r="8" fill="#FFB35C"/><path d="M21 21Q31 27 42 17" fill="none" stroke="#FFE0A8" stroke-width="2.4"/>'); },
     castle: function(){ return icScene("#F6D2F0", '<path d="M0 38Q24 33 48 38V48H0Z" fill="#CDEBB0"/><path d="M13 40V22H17V19H21V22H27V19H31V22H35V40Z" fill="#E8D9F7" stroke="#1b1212" stroke-width="1.6"/><path d="M21 40V32Q24 28 27 32V40Z" fill="#B98482"/>'); },
+    room: function(){ return icScene("#FFE4C4", '<rect y="34" width="48" height="14" fill="#E3AA6E"/><rect x="26" y="9" width="14" height="16" fill="#BFE6FF" stroke="#1b1212" stroke-width="1.8"/><path d="M33 9V25M26 17H40" stroke="#1b1212" stroke-width="1.4"/><rect x="8" y="14" width="10" height="9" fill="#CDEBB0" stroke="#1b1212" stroke-width="1.6"/>'); },
+    bed: function(){ return icShade("M5 30H43V40H5Z", "#B98482") + icShade("M5 14H12V40H5Z", "#B98482") + icShade("M12 24Q26 14 43 24V34H12Z", "#7EC8F0") + icCircle(20, 22, 5, "#FFF6E4"); },
+    plant: function(){ return icShade("M24 30Q8 24 10 10Q22 12 24 30Z", "#4FB36E") + icShade("M24 30Q40 22 38 6Q26 10 24 30Z", "#6CC36B") + icShade("M13 30H35L31 44H17Z", "#FF9A80"); },
+    lamp: function(){ return icLine("M24 20V40", INK, 3.4) + icShade("M14 40H34V43H14Z", "#B98482") + icShade("M12 20L16 6H32L36 20Z", "#FFE98A"); },
+    toybox: function(){ return icCircle(17, 12, 6, "#FF6B6B") + icShade("M31 7H41V17H31Z", "#7EC8F0") + icShade("M5 22H43V43H5Z", "#FFB36B") + icShade("M3 16H45V24H3Z", "#FFD23F"); },
+    rug: function(){ return icShade("M3 24Q3 14 24 14Q45 14 45 24Q45 34 24 34Q3 34 3 24Z", "#FF9A80") + '<ellipse cx="24" cy="24" rx="14" ry="5.5" fill="#FFD3C4" stroke="#1b1212" stroke-width="2"/>'; },
     close: function(){ return icLine("M13 13L35 35M35 13L13 35", INK, 5); },
     star: function(){ return icShade("M24 4L29.5 17L43 18L33 27.5L36 41L24 34L12 41L15 27.5L5 18L18.5 17Z", "#FFD23F"); },
     heart: function(){ return icShade("M24 41C10 31 5 23 5 16Q5 8 13 8Q20 8 24 15Q28 8 35 8Q43 8 43 16C43 23 38 31 24 41Z", "#FF7A9A"); },
@@ -127,7 +134,7 @@
     if(!P.me() || !P.actPet(P.me())) openSheet("adopt"); else setTimeout(checkDaily, 700);
   };
   U.ic = ic; U.ti = ti; U.scene = sceneHtml;
-  U.catIc = function(it){ var k = it.k || "", i;
+  U.catIc = function(it){ var k = it.k || "", i; if(k.indexOf("fu_") === 0) return ic(k.slice(3));
     if(k === "new") return ic("egg"); if(k.indexOf("pm") === 0) return A.svg({ sp: it.e, style: "outline", mood: "happy", stage: 1, anim: false });
     if(k.indexOf("cl_") === 0) return A.accSvg(k.slice(3), "outline"); if(k.indexOf("sc_") === 0) return ic(k.slice(3)); if(k.indexOf("it_") === 0) return ic(ITEMIC[k.slice(3)] || "potion");
     return ic(FOODIC[it.e] || "cookie"); };
@@ -149,7 +156,7 @@
   function update(force){
     if(!root) return; var me = P.me() || { pts: 0 }, pet = P.actPet(me), st = P.stageOf(pet && pet.xp), sg = P.STAGES[st], nx = P.STAGES[st + 1];
     var sc = (me.bg && me.inv && me.inv["bg_" + me.bg]) || me.bg === "grass" || !me.bg ? (me.bg || "grass") : "grass";
-    var sceneEl = root.querySelector(".pg-scene"); if(sceneEl.dataset.id !== sc || force){ sceneEl.dataset.id = sc; sceneEl.innerHTML = sceneHtml(sc); }
+    var sceneEl = root.querySelector(".pg-scene"); var fsig = sc + "|" + Object.keys(me.inv || {}).filter(function(k){ return k.indexOf("fu_") === 0; }).sort().join(","); if(sceneEl.dataset.id !== fsig || force){ sceneEl.dataset.id = fsig; sceneEl.innerHTML = sceneHtml(sc, me.inv); }
     root.querySelector(".pg-name").innerHTML = pet ? '<b>' + esc(pet.nm) + '</b><small>' + sg.name + (pet.pw > 1 ? "　" + ti("bolt") + "×" + pet.pw : "") + '</small>' : '<b>歡迎！</b>';
     root.querySelector(".pg-xp i").style.width = pet ? (nx ? Math.min(100, Math.round(((pet.xp || 0) - sg.xp) / (nx.xp - sg.xp) * 100)) : 100) + "%" : "0%";
     var hg = pet ? P.hungerNow(pet, P.cfg.rate, me.home) : 0, lv = pet ? P.loveNow(pet) : 0;
@@ -158,6 +165,7 @@
     animPts(me.pts || 0);
     var mood = moodOf(me), eqj = JSON.stringify(pet && pet.eq || {}), s2 = [pet && pet.sp, st, mood, eqj, curStyle()].join("|");
     setStick(pet ? mood : "");
+    if(walker){ if(mood === "sleep" && me.inv && me.inv.fu_bed){ if(walker.dataset.bed !== "1"){ walker.dataset.bed = "1"; walker.dataset.x = String(Math.round(-root.querySelector(".pg-stage").clientWidth * 0.27)); petEl.style.setProperty("--flip", "1"); walker.style.transform = "translateX(" + walker.dataset.x + "px)"; } } else delete walker.dataset.bed; }
     if(pet && (s2 !== sig || force)){ sig = s2; A.render(petEl, { sp: pet.sp, style: curStyle(), mood: mood, stage: st, eq: pet && pet.eq || {} }); }
     if(!pet) petEl.innerHTML = '<div class="pg-egg">' + ic("egg") + '</div>';
     renderDock(me);
@@ -305,7 +313,7 @@
     ["head", "face", "neck", "side"].forEach(function(sl){
       var list = P.CLOTHES.filter(function(c){ return c.s === sl; }); html += '<div class="pg-sec">' + P.SLOTS[sl] + '</div><div class="pg-grid">' + list.map(function(c){ var own = inv[c.id], on = pet.eq && pet.eq[sl] === c.id; return '<button type="button" class="pg-it' + (on ? " on" : "") + (own ? "" : " lock") + '" data-w="' + c.id + '"' + (own ? "" : " disabled") + '><span class="pg-ic">' + slotIcon(c.id) + '</span><span class="pg-in">' + c.n + '</span>' + (own ? (on ? "<em>穿著中</em>" : "") : "<em>未擁有</em>") + '</button>'; }).join("") + '</div>';
     });
-    var scs = P.SCENES.filter(function(x){ return x.p === 0 || inv["bg_" + x.id]; }); html += '<div class="pg-sec">場景</div><div class="pg-grid">' + scs.map(function(x){ return '<button type="button" class="pg-it' + ((me.bg || "grass") === x.id ? " on" : "") + '" data-bg="' + x.id + '"><span class="pg-ic" style="font-size:30px">' + x.e + '</span><span class="pg-in">' + x.n + '</span></button>'; }).join("") + '</div>';
+    var scs = P.SCENES.filter(function(x){ return x.p === 0 || inv["bg_" + x.id]; }); html += '<div class="pg-sec">場景</div><div class="pg-grid">' + scs.map(function(x){ return '<button type="button" class="pg-it' + ((me.bg || "grass") === x.id ? " on" : "") + '" data-bg="' + x.id + '"><span class="pg-ic">' + ic(x.id) + '</span><span class="pg-in">' + x.n + '</span></button>'; }).join("") + '</div>';
     body.innerHTML = html;
     body.onclick = function(e){ var b = e.target.closest("button"); if(!b || b.disabled) return; if(b.dataset.bg){ mut(function(){ return { bg: b.dataset.bg }; }); SFX.pop(); return; }
       if(b.dataset.w){ var c = P.cm(b.dataset.w), eq0 = pet.eq && pet.eq[c.s] === c.id; mut(function(cur){ var p0 = P.actPet(cur), eq = Object.assign({}, p0.eq); if(eq[c.s] === c.id) delete eq[c.s]; else eq[c.s] = c.id; return { pets: setPetPatch(cur, { eq: eq }), q: eq0 ? undefined : P.bumpQ(cur, "dress", 1) }; }); SFX.coin(); burst("✨", 4); } };
@@ -320,6 +328,7 @@
     body.innerHTML = '<div class="pg-hint">' + ti("star") + ' 我的點數 <b>' + pts + '</b></div>' + sec(ti("gift") + " 老師的獎勵（兌換後告訴老師）", rewards) + sec(ti("heart") + " 更強的寵物", premium) +
       sec(ti("potion") + " 道具", P.ITEMS.map(function(x, i){ return vis("it_" + x.id) ? card(ic(ITEMIC[x.id] || "potion"), x.n, pr("it_" + x.id, x.p), x.d, x.once && me[x.id === "house" ? "home" : x.id], 'data-it="' + i + '"') : ""; }).join("")) +
       sec(ti("wear") + " 衣服", P.CLOTHES.map(function(x, i){ return vis("cl_" + x.id) ? card('<span class="pg-sv">' + slotIcon(x.id) + '</span>', x.n, pr("cl_" + x.id, x.p), P.SLOTS[x.s], inv[x.id], 'data-cl="' + i + '"') : ""; }).join("")) +
+      sec(ti("bed") + " 家具（會擺在你的家裡）", (window.PETSCENE ? window.PETSCENE.FURN : []).map(function(x, i){ return vis("fu_" + x.id) ? card(ic(x.id), x.n, pr("fu_" + x.id, x.p), "", inv["fu_" + x.id], 'data-fu="' + x.id + '"') : ""; }).join("")) +
       sec(ti("grass") + " 場景", P.SCENES.filter(function(x){ return x.p > 0 && vis("sc_" + x.id); }).map(function(x){ return card(ic(x.id), x.n, pr("sc_" + x.id, x.p), "", inv["bg_" + x.id], 'data-sc="' + x.id + '"'); }).join(""));
     [].forEach.call(body.querySelectorAll(".pg-pi"), function(el){ A.render(el, { sp: el.dataset.sp, style: curStyle(), mood: "happy", stage: 1, anim: false }); });
     body.onclick = async function(e){
@@ -331,6 +340,7 @@
         else if(d.pm !== undefined){ var x = P.PREMIUM[Number(d.pm)]; price = P.price("pm" + d.pm, x.p); apply = function(c2){ var pets = Object.assign({}, c2.pets), id = "p" + Date.now().toString(36); pets[id] = { sp: x.e, nm: x.n, h: 80, at: Date.now(), xp: 0, pw: x.pw, l: 60, lt: Date.now() }; msg = "領養了 " + x.n + "！"; return { pets: pets, act: id }; }; }
         else if(d.it !== undefined){ var it = P.ITEMS[Number(d.it)]; price = P.price("it_" + it.id, it.p); apply = function(c2){ if(it.id === "potion"){ var p0 = P.actPet(c2); if(!p0) return null; msg = "寵物喝了成長藥水，經驗 +40！"; return { pets: setPetPatch(c2, { xp: (p0.xp || 0) + 40 }) }; } if(it.id === "dbl"){ msg = "經驗加倍券 +5 次！"; return { dbl: (c2.dbl || 0) + 5 }; } if(it.id === "house"){ if(c2.home) return null; msg = "豪華小屋蓋好了！"; return { home: 1 }; } return null; }; }
         else if(d.cl !== undefined){ var cl = P.CLOTHES[Number(d.cl)]; price = P.price("cl_" + cl.id, cl.p); apply = function(c2){ var inv2 = Object.assign({}, c2.inv); if(inv2[cl.id]) return null; inv2[cl.id] = 1; msg = "買了「" + cl.n + "」！到衣櫃穿上"; return { inv: inv2 }; }; }
+        else if(d.fu){ var fu = window.PETSCENE.FURN.filter(function(f){ return f.id === d.fu; })[0]; price = P.price("fu_" + fu.id, fu.p); apply = function(c2){ var inv2 = Object.assign({}, c2.inv); if(inv2["fu_" + fu.id]) return null; inv2["fu_" + fu.id] = 1; msg = "「" + fu.n + "」擺進家裡了！"; return { inv: inv2 }; }; }
         else if(d.sc){ var scn = P.SCENES.filter(function(s){ return s.id === d.sc; })[0]; price = P.price("sc_" + scn.id, scn.p); apply = function(c2){ var inv2 = Object.assign({}, c2.inv); if(inv2["bg_" + scn.id]) return null; inv2["bg_" + scn.id] = 1; msg = "買了場景「" + scn.n + "」！"; return { inv: inv2, bg: scn.id }; }; }
         if((cur.pts || 0) < price){ poor = true; return null; } var patch = apply(cur); if(!patch) return null; patch.pts = (cur.pts || 0) - price; return patch;
       });

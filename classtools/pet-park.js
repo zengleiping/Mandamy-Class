@@ -12,7 +12,7 @@
     var c = P.ctx(), r = P.root(); if(!r){ bd.textContent = "請先進到一個班級。"; return; }
     var cfg = {}, data = {}, names = [], unsubs = [], pets = {}, lastStage = {}, firstLoad = true, timer = null, selName = "";
     var wrap = h("div", { class: "pk" }); bd.style.padding = "0"; bd.appendChild(wrap);
-    wrap.innerHTML = (P.UI && P.UI.scene ? '<svg class="pk-bg" viewBox="0 0 400 700" preserveAspectRatio="xMidYMax slice">' + (P.UI.scene("grass").replace(/^<svg[^>]*>|<\/svg>$/g, "")) + "</svg>" : "");
+    wrap.innerHTML = (P.UI && P.UI.scene ? '<svg class="pk-bg" viewBox="-400 0 1200 700" preserveAspectRatio="xMidYMax slice">' + (P.UI.scene("grass").replace(/^<svg[^>]*>|<\/svg>$/g, "")) + "</svg>" : "");
     var top = h("div", { class: "pk-top" }), goalBox = h("div", { class: "pk-goal" }), layer = h("div", { style: "position:absolute;inset:0;" });
     wrap.appendChild(layer); wrap.appendChild(top); top.appendChild(goalBox);
     var bGoal = h("button", { class: "pk-btn", html: I("star") + " 設定共同目標", onclick: setGoal }); top.appendChild(bGoal);
