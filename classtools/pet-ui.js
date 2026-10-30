@@ -126,7 +126,7 @@
     walkTimer = setInterval(wander, 6500); idleTimer = setInterval(function(){ if(root) update(); }, 5000); setTimeout(wander, 1200);
     if(!P.me() || !P.actPet(P.me())) openSheet("adopt"); else setTimeout(checkDaily, 700);
   };
-  U.ic = ic; U.ti = ti;
+  U.ic = ic; U.ti = ti; U.scene = sceneHtml;
   U.catIc = function(it){ var k = it.k || "", i;
     if(k === "new") return ic("egg"); if(k.indexOf("pm") === 0) return A.svg({ sp: it.e, style: "outline", mood: "happy", stage: 1, anim: false });
     if(k.indexOf("cl_") === 0) return A.accSvg(k.slice(3), "outline"); if(k.indexOf("sc_") === 0) return ic(k.slice(3)); if(k.indexOf("it_") === 0) return ic(ITEMIC[k.slice(3)] || "potion");

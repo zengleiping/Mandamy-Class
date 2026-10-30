@@ -6143,7 +6143,7 @@ async function fillClassStudents(cls){
 }
 // ----- 班級工具與設定 -----
 function classToolsHtml(cls){
-  var html = '<div class="panel"><h3>班級工具</h3><div class="tools"><button class="btn" id="hwbtn">聯絡簿</button><button class="btn" id="albbtn">📷 班級相簿</button><button class="btn" id="wheelbtn">🎡 點名輪盤</button><button class="btn" id="capbtn">⏳ 時空膠囊</button><button class="btn" id="leavebtn">請假申請</button><button class="btn" id="petbtn" title="學生用點數買飼料養寵物、買衣服；在這裡開啟、調整點數與商店價格">🐾 寵物遊戲</button><button class="btn" id="ctbtn" title="計時器、分組、記分板、白板…30 多種課堂小工具">🧰 課堂工具箱</button></div>' +
+  var html = '<div class="panel"><h3>班級工具</h3><div class="tools"><button class="btn" id="hwbtn">聯絡簿</button><button class="btn" id="albbtn">📷 班級相簿</button><button class="btn" id="wheelbtn">🎡 點名輪盤</button><button class="btn" id="capbtn">⏳ 時空膠囊</button><button class="btn" id="leavebtn">請假申請</button><button class="btn" id="petbtn" title="學生用點數買飼料養寵物、買衣服；在這裡開啟、調整點數與商店價格">🐾 寵物遊戲</button><button class="btn" id="parkbtn" title="大螢幕投影：全班寵物一起在草地上走動，還能設全班共同目標">🌳 班級寵物園</button><button class="btn" id="ctbtn" title="計時器、分組、記分板、白板…30 多種課堂小工具">🧰 課堂工具箱</button></div>' +
     '<div class="note" style="font-weight:700;margin-bottom:6px;">🔗 這個班的常用連結（Padlet、Google Meet 等）</div><div class="tools" id="linkbox">' +
     (cls.links ? Object.keys(cls.links).map(function(k){ var L = cls.links[k]; return '<span style="display:inline-flex;gap:4px;align-items:center;"><a class="btn" href="' + esc(L.url) + '" target="_blank" rel="noopener">' + esc(L.name) + '</a>' + (S.linkEdit ? '<button class="btn sm" data-ren-link="' + k + '">修改</button><button class="btn sm danger" data-del-link="' + k + '">刪除</button>' : '') + '</span>'; }).join("") : '') +
     (S.linkEdit ? '<button class="btn sm" id="addlink">新增</button>' : '') + '<button class="btn sm ghost" id="editlinks">' + (S.linkEdit ? '完成' : '編輯') + '</button></div></div>';
@@ -6166,6 +6166,7 @@ function bindClassTools(cls, tm){
   document.getElementById("hwbtn").onclick = function(){ S.hw = { view: "list" }; render(); };
   document.getElementById("albbtn").onclick = function(){ S.alb = { id: null }; S.albCid = S.sel.c; render(); };
   document.getElementById("wheelbtn").onclick = function(){ S.hw = { view: "wheel" }; render(); };
+  document.getElementById("parkbtn").onclick = function(){ if(!window.CT){ toast("工具箱還沒載入完成，請稍後再試"); return; } window.CT.showDock(true); window.CT.open("petpark"); };
   document.getElementById("petbtn").onclick = function(){ if(!window.CT){ toast("工具箱還沒載入完成，請稍後再試"); return; } window.CT.showDock(true); window.CT.open("pets"); };
   document.getElementById("ctbtn").onclick = function(){ if(window.CT) window.CT.showDock(true); };
   document.getElementById("capbtn").onclick = function(){ S.hw = { view: "capsule" }; render(); };
@@ -7827,6 +7828,7 @@ window.__mm = { get S(){ return S; }, render: function(){ return render(); }, ne
 <script src="classtools/ct-live.js?v=20261029"></script>
 <script src="classtools/pet-art.js?v=20261038"></script>
 <script src="classtools/pets.js?v=20261042"></script>
-<script src="classtools/pet-ui.js?v=20261042"></script>
+<script src="classtools/pet-ui.js?v=20261043"></script>
+<script src="classtools/pet-park.js?v=20261043"></script>
 </body>
 </html>
