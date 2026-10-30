@@ -40,7 +40,7 @@
   P.catalog = function(){
     var a = []; FOODS.forEach(function(f, i){ a.push({ k: "f" + i, g: "飼料", e: f.e, n: f.n, d: f.p }); });
     PREMIUM.forEach(function(x, i){ a.push({ k: "pm" + i, g: "更強的寵物", e: x.e, n: x.n, d: x.p }); }); a.push({ k: "new", g: "更強的寵物", e: "🥚", n: "再領養一隻普通寵物", d: NEWPET });
-    ITEMS.forEach(function(x){ a.push({ k: "it_" + x.id, g: "道具", e: x.e, n: x.n, d: x.p }); }); CLOTHES.forEach(function(x){ a.push({ k: "cl_" + x.id, g: "衣服", e: x.e, n: x.n, d: x.p }); });
+    a.push({ k: "egg", g: "道具", e: "", n: "神秘蛋", d: 60 }); ITEMS.forEach(function(x){ a.push({ k: "it_" + x.id, g: "道具", e: x.e, n: x.n, d: x.p }); }); CLOTHES.forEach(function(x){ a.push({ k: "cl_" + x.id, g: "衣服", e: x.e, n: x.n, d: x.p }); });
     (window.PETSCENE ? window.PETSCENE.FURN : []).forEach(function(x){ a.push({ k: "fu_" + x.id, g: "家具", e: "", n: x.n, d: x.p }); }); SCENES.forEach(function(x){ if(x.p > 0) a.push({ k: "sc_" + x.id, g: "場景", e: x.e, n: x.n, d: x.p }); }); return a;
   };
   function petHtml(pet, eq, sizePx, extra){
