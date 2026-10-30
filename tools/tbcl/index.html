@@ -13,7 +13,8 @@
   <h1>TBCL 等級檢核與語料庫工具 <small>曼米中文 · 備課工具</small></h1>
   <div class="src" id="src">載入詞表中…</div></header>
 <nav class="tabs" id="tabs">
-  <button data-t="check" class="on">① 等級檢核</button>
+  <button data-t="quick" class="on">✨ 一鍵改寫</button>
+  <button data-t="check">① 等級檢核</button>
   <button data-t="gen">② AI 依等級生成</button>
   <button data-t="inv">③ 教材等級盤點</button>
   <button data-t="kwic">④ 語料庫例句</button>
@@ -22,7 +23,18 @@
 </nav>
 
 <main>
-<section id="p-check">
+<section id="p-quick">
+  <p class="note">貼上文章、選學生的等級，按一個鈕就產生那個等級的版本。換不掉的詞會列出來；需要的話再請 AI 繼續改（用自己的金鑰，或複製指令到 ChatGPT／Gemini 網頁貼回來，不需要金鑰）。想一個詞一個詞自己選，請用「⑥ 整篇文章」。</p>
+  <div class="row">
+    <label>學生等級 TBCL <select id="q-lv"></select></label>
+    <label>標準 <select id="q-lim"><option value="15">教材（15%）</option><option value="10">試題（10%）</option></select></label>
+    <button id="q-run" class="pri">產生這個等級的版本</button>
+  </div>
+  <textarea id="q-txt" style="min-height:200px" placeholder="在這裡貼上文章（例如從網路複製的）。專有名詞（人名、地名）會自動不計入，不用先標。"></textarea>
+  <div id="q-out"></div>
+</section>
+
+<section id="p-check" hidden>
   <div class="row">
     <label>目標等級 TBCL <select id="lv"></select></label>
     <label>檢核標準 <select id="lim">
