@@ -1,19 +1,69 @@
-/* 寵物遊戲的場景與家具（SVG，跟寵物同一套畫法：黑色圓角外框＋平塗色塊＋一彎陰影），座標是 400×700。
-   window.PETSCENE.scene(id) 回傳背景 SVG 內容；window.PETSCENE.furn(inv) 回傳買過的家具（畫在寵物後面）。 */
+/* 寵物遊戲的場景與家具（SVG，參考「旅行青蛙」那種溫暖手繪感：細細的咖啡色線條、偏灰的柔和色、淡淡的紙張顆粒）。座標是 400×700。
+   window.PETSCENE.scene(id, side) 回傳背景 SVG 內容；window.PETSCENE.furn(inv) 回傳買過的家具（畫在寵物後面）。 */
 (function(){
   "use strict";
-  var INK = "#1b1212", sw = 3.2;
-  function ln(d, f, w){ return '<path d="' + d + '" fill="' + f + '" stroke="' + INK + '" stroke-width="' + (w || sw) + '" stroke-linejoin="round" stroke-linecap="round"/>'; }
+  var INK = "#4a3326", sw = 1.8;
+  function ln(d, f, w){ return '<path d="' + d + '" fill="' + f + '" stroke="' + INK + '" stroke-width="' + (w || sw) + '" stroke-linejoin="round" stroke-linecap="round" stroke-opacity=".92"/>'; }
   function sh(d, f, dark){ return ln(d, f); }
-  function rect(x, y, w, h, f, r, sw2){ return '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="' + (r || 0) + '" fill="' + f + '" stroke="' + INK + '" stroke-width="' + (sw2 == null ? sw : sw2) + '" stroke-linejoin="round"/>'; }
-  function circ(x, y, r, f, sw2){ return '<circle cx="' + x + '" cy="' + y + '" r="' + r + '" fill="' + f + '" stroke="' + INK + '" stroke-width="' + (sw2 == null ? sw : sw2) + '"/>'; }
-  function ell(x, y, rx, ry, f, sw2){ return '<ellipse cx="' + x + '" cy="' + y + '" rx="' + rx + '" ry="' + ry + '" fill="' + f + '" stroke="' + INK + '" stroke-width="' + (sw2 == null ? sw : sw2) + '"/>'; }
+  function rect(x, y, w, h, f, r, sw2){ return '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="' + (r || 0) + '" fill="' + f + '" stroke="' + INK + '" stroke-width="' + (sw2 == null ? sw : sw2) + '" stroke-linejoin="round" stroke-opacity=".92"/>'; }
+  function circ(x, y, r, f, sw2){ return '<circle cx="' + x + '" cy="' + y + '" r="' + r + '" fill="' + f + '" stroke="' + INK + '" stroke-width="' + (sw2 == null ? sw : sw2) + '" stroke-opacity=".92"/>'; }
+  function ell(x, y, rx, ry, f, sw2){ return '<ellipse cx="' + x + '" cy="' + y + '" rx="' + rx + '" ry="' + ry + '" fill="' + f + '" stroke="' + INK + '" stroke-width="' + (sw2 == null ? sw : sw2) + '" stroke-opacity=".92"/>'; }
   function line(d, c, w){ return '<path d="' + d + '" fill="none" stroke="' + (c || INK) + '" stroke-width="' + (w || sw) + '" stroke-linecap="round" stroke-linejoin="round"/>'; }
   function cloud(x, y, s, cls){ return '<g class="pg-cloud ' + (cls || "") + '" transform="translate(' + x + " " + y + ") scale(" + s + ')">' + ln("M-40 12Q-54 12 -54 -2Q-54 -15 -38 -15Q-36 -32 -18 -32Q-6 -44 10 -34Q22 -46 36 -32Q54 -33 54 -13Q64 -10 60 3Q57 12 46 12Z", "#fff") + "</g>"; }
-  function tree(x, y, s, c1){ return '<g transform="translate(' + x + " " + y + ") scale(" + s + ')">' + ln("M-9 0L-6 -62L6 -62L9 0Z", "#B98482") + ln("M-52 -58Q-64 -92 -34 -104Q-30 -134 0 -132Q30 -134 36 -104Q66 -92 52 -58Q22 -42 -52 -58Z", c1 || "#6CC36B") + line("M-26 -86Q-14 -96 -2 -92", "#9BE08F", 5) + "</g>"; }
-  function flower(x, y, c){ return '<g transform="translate(' + x + " " + y + ')">' + line("M0 0L0 20", "#3FA25F", 3.4) + circ(0, -2, 9, c, 2.6) + circ(0, -2, 3.4, "#FFD23F", 0) + "</g>"; }
+  function tree(x, y, s, c1){ return '<g transform="translate(' + x + " " + y + ") scale(" + s + ')">' + ln("M-9 0L-6 -62L6 -62L9 0Z", "#B98482") + ln("M-52 -58Q-64 -92 -34 -104Q-30 -134 0 -132Q30 -134 36 -104Q66 -92 52 -58Q22 -42 -52 -58Z", c1 || "#6CC36B") + line("M-26 -86Q-14 -96 -2 -92", "#9BE08F", 4) + "</g>"; }
+  function flower(x, y, c){ return '<g transform="translate(' + x + " " + y + ')">' + line("M0 0L0 20", "#3FA25F", 2.4) + circ(0, -2, 8, c, 1.6) + circ(0, -2, 3, "#FFD23F", 0) + "</g>"; }
   function bush(x, y, s){ return '<g transform="translate(' + x + " " + y + ") scale(" + s + ')">' + ln("M-34 0Q-44 -22 -22 -28Q-14 -46 8 -38Q30 -44 34 -20Q46 -6 30 0Z", "#4FB36E") + "</g>"; }
+  function tufts(list, c){ return list.map(function(p){ return line("M" + p[0] + " " + p[1] + "q-3 -8 -6 -10M" + p[0] + " " + p[1] + "q0 -9 1 -12M" + p[0] + " " + p[1] + "q3 -8 7 -9", c || "#6F9238", 1.5); }).join(""); }
+  function plank(x, y, w, h){ var o = rect(x, y, w, h, "url(#psWood)"); for(var i = 1; i < Math.round(w / 34); i++) o += line("M" + (x + i * 34) + " " + y + "L" + (x + i * 34) + " " + (y + h), INK, 1.1); return o; }
   var SC = {
+    home: function(){
+      var o = rect(-60, 0, 520, 440, "url(#psWall)", 0, 0);
+      [[40, 60, 50, 22], [200, 30, 60, 18], [330, 230, 54, 20], [120, 300, 48, 18], [260, 150, 40, 16], [380, 360, 44, 20]].forEach(function(b){ o += '<ellipse cx="' + b[0] + '" cy="' + b[1] + '" rx="' + b[2] + '" ry="' + b[3] + '" fill="#B3C2CB" opacity=".32"/>'; });
+      // 大樹幹（兩側也看得到）
+      o += '<g transform="translate(0 40)">';
+      o += ln("M-70 0L72 0Q88 140 74 300Q66 400 84 440L-70 440Z", "url(#psWood)") + line("M10 0Q22 120 14 260M44 10Q54 110 48 300M-20 30Q-10 140 -16 330", "#6E4B2E", 1.3) + ell(14, 190, 22, 28, "#C9A06E", 1.6) + ell(14, 190, 14, 18, "none", 1.1) + ell(14, 190, 6, 8, "none", 1.1);
+      [[86, 330, 26, 9], [64, 372, 28, 9], [92, 404, 24, 8]].forEach(function(m){ o += ell(m[0], m[1], m[2], m[3], "#B8B0C4"); o += line("M" + (m[0] - m[2] + 6) + " " + (m[1] + 2) + "Q" + m[0] + " " + (m[1] + m[3] - 1) + " " + (m[0] + m[2] - 6) + " " + (m[1] + 2), "#8C849C", 1.1); });
+      o += '</g>';
+      o += '<!--C--><g transform="translate(0 40)">';
+      // 窗戶
+      o += rect(98, 62, 66, 78, "#D9E6C4", 12, 2.4) + line("M131 62L131 140M98 101L164 101", "#F4E9CC", 3.2) + rect(98, 62, 66, 78, "none", 12, 2.4) + '<path d="M104 70Q116 68 124 74L104 98Z" fill="#fff" opacity=".35"/>';
+      // 佈告欄與紙條
+      o += rect(232, 54, 74, 58, "#C8A672", 4) + '<g><rect x="238" y="60" width="26" height="22" fill="#F4E9CC" stroke="' + INK + '" stroke-width="1.2" transform="rotate(-6 251 71)"/><rect x="268" y="62" width="30" height="18" fill="#EBA9B3" stroke="' + INK + '" stroke-width="1.2" transform="rotate(5 283 71)"/><rect x="244" y="86" width="34" height="20" fill="#B9D0EA" stroke="' + INK + '" stroke-width="1.2" transform="rotate(3 261 96)"/><circle cx="251" cy="62" r="2.6" fill="#D9604C"/><circle cx="283" cy="64" r="2.6" fill="#E9C25A"/><circle cx="262" cy="88" r="2.6" fill="#7C9FCB"/></g>';
+      // 地圖卷軸
+      o += ln("M326 28Q352 22 384 30L388 110Q366 120 330 112Q338 70 326 28Z", "#E8D6A4") + line("M338 50L372 52M338 66L368 68M340 82L374 80", "#B79A5E", 1.5) + ln("M322 26Q328 22 334 28L332 40Q324 36 322 26Z", "#CDB07A", 1.4);
+      // 樓板（閣樓）
+      o += plank(92, 168, 320, 22) + rect(92, 190, 320, 12, "#7B5233", 1) + line("M92 196L412 196", "#5C3D25", 1);
+      for(var k = 0; k < 9; k++) o += circ(104 + k * 36, 179, 1.5, "#4a3326", 0);
+      // 支柱
+      o += rect(186, 202, 12, 220, "url(#psWood)", 2) + rect(372, 202, 12, 220, "url(#psWood)", 2) + line("M186 212L198 218M186 226L198 232", "#E8D6A4", 2.2);
+      // 閣樓上的床
+      o += ln("M236 168L236 134Q238 118 262 116Q316 112 340 130L344 168Z", "#7C9FCB") + ln("M236 150Q274 134 344 148L344 168L236 168Z", "#6A8DBA") + ell(258, 124, 18, 9, "#B9D0EA", 1.6) + line("M246 160Q290 150 332 160", "#5A7BA6", 1.2);
+      o += rect(110, 160, 72, 8, "#E6909E", 2) + line("M116 160L116 168M128 160L128 168M140 160L140 168M152 160L152 168M164 160L164 168M176 160L176 168", "#F6D3D8", 1.4);
+      // 梯子
+      o += line("M140 190L118 420", INK, 3.4) + line("M168 190L150 420", INK, 3.4) + line("M140 190L118 420", "#B98A5B", 1.8) + line("M168 190L150 420", "#B98A5B", 1.8);
+      for(var r = 0; r < 7; r++){ var yy = 214 + r * 30, xa = 140 - (yy - 190) / 230 * 22, xb = 168 - (yy - 190) / 230 * 18; o += line("M" + xa + " " + yy + "L" + xb + " " + yy, "#8E5F3A", 3); }
+      // 吊燈籠
+      o += line("M276 202L276 232", INK, 1.4) + ln("M266 232L286 232L282 252L270 252Z", "#E9C25A") + '<circle cx="276" cy="244" r="3" fill="#FFF1B8"/><circle cx="276" cy="244" r="22" fill="#FFE9A0" opacity=".25"/>';
+      // 架子與罐子
+      o += rect(306, 296, 80, 8, "url(#psWood)", 2) + rect(312, 304, 6, 18, "#7B5233", 1) + rect(374, 304, 6, 18, "#7B5233", 1);
+      o += ln("M316 296L316 272Q316 266 322 266L334 266Q340 266 340 272L340 296Z", "#D9A56A") + rect(318, 258, 20, 8, "#B98A5B", 2) + ln("M346 296L346 278Q346 270 356 270Q366 270 366 278L366 296Z", "#EBDDB8") + rect(350, 262, 12, 8, "#B98A5B", 2) + circ(376, 286, 10, "#9AB85A") + line("M376 276L376 270", INK, 1.4);
+      o += rect(306, 342, 80, 8, "url(#psWood)", 2) + ell(326, 336, 14, 8, "#C98A6B") + ell(352, 334, 11, 9, "#9AB85A") + ell(372, 337, 9, 6, "#D9A56A") + line("M318 342L318 366M330 342L330 358M342 342L342 370", "#6F9238", 2.2);
+      o += '</g><!--/C-->';
+      // 地板
+      o += ln("M-60 424Q80 408 220 422Q330 410 460 424L460 700L-60 700Z", "url(#psFloor)", 1.8);
+      [[250, 432, 7, 4], [264, 435, 5, 3], [278, 431, 6, 4], [296, 434, 5, 3]].forEach(function(p){ o += ell(p[0], p[1], p[2], p[3], "#A9A29A", 1.2); });
+      o += '<ellipse cx="200" cy="506" rx="182" ry="66" fill="#8FAE50" stroke="' + INK + '" stroke-width="1.8" stroke-opacity=".9"/><ellipse cx="194" cy="498" rx="150" ry="50" fill="#A8C766" opacity=".85"/><ellipse cx="170" cy="488" rx="80" ry="22" fill="#BBD57A" opacity=".55"/>';
+      o += tufts([[70, 520], [120, 545], [300, 530], [330, 505], [240, 556], [150, 510], [60, 490]]);
+      o += '<!--C-->';
+      // 樹墩桌＋蠟燭
+      o += '<g transform="translate(332 470)">' + ln("M-34 4L-34 30Q0 42 34 30L34 4Z", "#9A6B44") + ell(0, 4, 36, 14, "#C9A06E", 1.8) + ell(0, 4, 24, 8, "none", 1.1) + ell(0, 4, 12, 4, "none", 1.1) + rect(-4, -14, 8, 14, "#F4E9CC", 1.5) + ln("M0 -26Q6 -20 0 -14Q-6 -20 0 -26Z", "#F0A93C", 1.2) + '<circle cx="0" cy="-18" r="14" fill="#FFE9A0" opacity=".25"/></g>';
+      // 黃色圓地墊
+      o += ell(66, 600, 54, 16, "#E9C25A", 1.6) + ell(66, 600, 40, 11, "none", 1.1) + ell(66, 600, 26, 7, "none", 1.1) + ell(66, 600, 12, 3, "none", 1.1);
+      // 火把
+      o += '<g transform="translate(372 560)">' + line("M0 0L0 70", INK, 5) + line("M0 0L0 70", "#B98A5B", 2.6) + ln("M-8 0L8 0L4 -12L-4 -12Z", "#7B5233", 1.4) + ln("M0 -34Q12 -24 6 -12L-6 -12Q-12 -24 0 -34Z", "#F0A93C", 1.3) + '<circle cx="0" cy="-20" r="20" fill="#FFE9A0" opacity=".22"/></g>';
+      o += '<!--/C-->';
+      return o;
+    },
     grass: function(){
       var f = ""; [[40, 560, "#FF8FB0"], [118, 620, "#FFD23F"], [310, 585, "#C3A0FF"], [360, 650, "#FF8FB0"], [70, 680, "#fff"], [250, 668, "#FFD23F"]].forEach(function(p){ f += flower(p[0], p[1], p[2]); });
       var fence = ""; for(var i = 0; i < 6; i++) fence += ln("M" + (292 + i * 22) + " 478L" + (292 + i * 22) + " 436L" + (298 + i * 22) + " 428L" + (304 + i * 22) + " 436L" + (304 + i * 22) + " 478Z", "#FFF1D0", 2.6);
@@ -68,16 +118,17 @@
     }
   };
   var FU = {
-    bed: function(){ return '<g transform="translate(24 540)">' + rect(0, 0, 130, 54, "#B98482", 8) + rect(0, -34, 20, 88, "#B98482", 6) + ln("M20 -4Q70 -30 126 -4L126 36L20 36Z", "#7EC8F0") + ell(48, -10, 24, 12, "#FFF6E4") + ln("M20 20Q70 8 126 20L126 36L20 36Z", "#5BA6D6", 2.6) + "</g>"; },
-    plant: function(){ return '<g transform="translate(338 520)">' + ln("M0 0Q-28 -34 -14 -62Q4 -44 0 0Z", "#4FB36E") + ln("M0 0Q24 -40 12 -78Q-6 -50 0 0Z", "#6CC36B") + ln("M0 0Q40 -18 46 -44Q18 -40 0 0Z", "#4FB36E") + ln("M-20 0L20 0L14 44L-14 44Z", "#FF9A80") + "</g>"; },
-    lamp: function(){ return '<g transform="translate(364 470)">' + line("M0 0L0 -84", INK, 5) + ell(0, 60, 24, 7, "#B98482", 2.8).replace('cy="60"', 'cy="62"') + ln("M-26 -84L26 -84L16 -122L-16 -122Z", "#FFE98A") + '<ellipse cx="0" cy="-60" rx="38" ry="12" fill="#FFE98A" opacity=".35"/></g>'; },
-    toybox: function(){ return '<g transform="translate(260 580)">' + rect(0, 0, 80, 46, "#FFB36B", 6) + rect(-4, -10, 88, 16, "#FFD23F", 5) + circ(24, -22, 12, "#FF6B6B", 2.8) + rect(42, -30, 18, 18, "#7EC8F0", 3, 2.8) + "</g>"; },
-    rug: function(){ return ell(200, 590, 150, 38, "#FF9A80") + ell(200, 590, 112, 26, "#FFD3C4", 2.6) + ell(200, 590, 70, 14, "#FF9A80", 2.6); }
+    bed: function(){ return '<g transform="translate(22 478)">' + ell(48, 40, 56, 24, "#C98A6B") + ell(48, 34, 46, 18, "#E6C9A0", 1.4) + ell(48, 30, 30, 11, "#F4E9CC", 1.2) + line("M10 40Q48 58 86 40", "#9A6B44", 1.4) + "</g>"; },
+    plant: function(){ return '<g transform="translate(60 468)">' + ln("M0 0Q-26 -30 -14 -58Q4 -40 0 0Z", "#7FA94B") + ln("M0 0Q22 -36 12 -72Q-6 -46 0 0Z", "#9AB85A") + ln("M0 0Q36 -16 42 -42Q16 -38 0 0Z", "#7FA94B") + ln("M-18 0L18 0L13 40L-13 40Z", "#D9806A") + line("M-15 10L15 10", "#A8574A", 1.2) + "</g>"; },
+    lamp: function(){ return '<g transform="translate(120 202)">' + line("M0 0L0 40", INK, 1.4) + ln("M-11 40L11 40L8 62L-8 62Z", "#E9C25A") + '<circle cx="0" cy="54" r="26" fill="#FFE9A0" opacity=".28"/></g>'; },
+    toybox: function(){ return '<g transform="translate(268 486)">' + ln("M0 10L0 46L66 46L66 10Z", "#A87B52") + ln("M-4 4Q33 -8 70 4L66 14L0 14Z", "#B98A5B") + line("M33 14L33 46", "#6E4B2E", 1.4) + circ(33, 26, 3.4, "#E9C25A", 1) + circ(18, -2, 9, "#D9806A", 1.4) + rect(40, -10, 14, 14, "#7C9FCB", 2, 1.4) + "</g>"; },
+    rug: function(){ return ell(200, 524, 140, 30, "#E6909E", 1.8) + ell(200, 524, 108, 22, "#F6D3D8", 1.2) + ell(200, 524, 74, 14, "#E6909E", 1.2) + ell(200, 524, 36, 6, "#F6D3D8", 1.1); }
   };
+  var DEFS = '<defs><linearGradient id="psWall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9AABB6"/><stop offset="1" stop-color="#6F8392"/></linearGradient><linearGradient id="psWood" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#9C6E46"/><stop offset=".5" stop-color="#A9794F"/><stop offset="1" stop-color="#8A5E3B"/></linearGradient><linearGradient id="psFloor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#D7C292"/><stop offset="1" stop-color="#BCA474"/></linearGradient><filter id="psSat"><feColorMatrix type="saturate" values=".78"/></filter><filter id="psGrain" x="-60" y="0" width="520" height="700" filterUnits="userSpaceOnUse"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="4" result="n"/><feColorMatrix type="matrix" values="0 0 0 0 .3  0 0 0 0 .2  0 0 0 0 .1  0 0 0 .55 -.12"/></filter></defs>';
   window.PETSCENE = {
-    scene: function(id, side){ var x = (SC[id] || SC.grass)(); return side ? x.replace(/<!--C-->[\s\S]*?<!--\/C-->/g, "") : x.replace(/<!--\/?C-->/g, ""); },
+    scene: function(id, side){ var x = (SC[id] || SC.home)(); x = side ? x.replace(/<!--C-->[\s\S]*?<!--\/C-->/g, "") : x.replace(/<!--\/?C-->/g, ""); return DEFS + '<g filter="url(#psSat)">' + x + '</g><rect x="-60" y="0" width="520" height="700" filter="url(#psGrain)" opacity=".5" style="pointer-events:none"/>'; },
     furn: function(inv){ inv = inv || {}; var out = ""; ["rug", "bed", "plant", "lamp", "toybox"].forEach(function(k){ if(inv["fu_" + k]) out += FU[k](); }); return out; },
-    FURN: [{ id: "rug", n: "地毯", p: 20 }, { id: "plant", n: "盆栽", p: 20 }, { id: "lamp", n: "立燈", p: 25 }, { id: "toybox", n: "玩具箱", p: 30 }, { id: "bed", n: "小床", p: 40 }],
+    FURN: [{ id: "rug", n: "地毯", p: 20 }, { id: "plant", n: "盆栽", p: 20 }, { id: "lamp", n: "吊燈", p: 25 }, { id: "toybox", n: "玩具箱", p: 30 }, { id: "bed", n: "寵物窩", p: 40 }],
     furnSvg: function(k){ return '<svg viewBox="0 0 400 700" preserveAspectRatio="xMidYMid meet">' + FU[k]() + "</svg>"; }
   };
 })();
