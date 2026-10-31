@@ -314,6 +314,10 @@ def compound_level(w: str, tbcl: Dict[str, Tuple[int, bool]], max_part: int = 4)
     """w 不在詞表時，看它能不能完全拆成 TBCL 詞（例如「很多」＝很＋多）；能的話回傳「各種拆法裡最高等級最低」的那個等級。
     官方斷詞會把這類詞切開、各自比對，所以不能算成「詞表沒有」。"""
     n = len(w)
+    if n == 4:                                     # 疊字：急急忙忙（AABB）、討論討論（ABAB）按原詞等級
+        base = w[1] + w[2] if (w[0] == w[1] and w[2] == w[3] and w[0] != w[2]) else (w[:2] if (w[:2] == w[2:] and w[0] != w[1]) else None)
+        if base and base in tbcl:
+            return tbcl[base][0]
     if n >= 5 or (n == 4 and not (w[:2] in tbcl and w[2:] in tbcl)):
         return None          # 4 字以上多半是成語／專有名詞（騎虎難下＝騎＋虎＋難＋下 不是合成詞），只接受「兩個 2 字詞表詞」
     best: List[Optional[int]] = [None] * (n + 1)
