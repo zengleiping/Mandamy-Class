@@ -530,20 +530,35 @@ function gramHit(sent,segs){var pos=0;for(var i=0;i<segs.length;i++){var best=-1
 var PV=null;
 function platVocab(){if(PV)return PV;PV=new Map();lessons().forEach(function(les){(les.vocab||[]).forEach(function(v){var w=v["生詞"];if(w&&!PV.has(w))PV.set(w,v)})});return PV}
 function prepBuild(text,t,low,G,VI){
-  var r=analyze(text,t,EX),sents=splitSent(text).map(function(x){return x.s.trim().replace(/^[」』”’）)\s]+/,"")}).filter(Boolean),seen=new Set(),rows=[];
-  function sentOf(w){for(var i=0;i<sents.length;i++)if(sents[i].indexOf(w)>=0)return sents[i];return""}
-  r.toks.forEach(function(tk){if(!tk.han||tk.st==="ex"||seen.has(tk.w))return;seen.add(tk.w);
+  var SURF={},mt0=text.replace(/([\u4e00-\u9fff])\1([\u4e00-\u9fff])\2|([\u4e00-\u9fff])([\u4e00-\u9fff])\3\4/g,function(s){var b=redup(s);if(!b||LV.get(b)==null)return s;(SURF[b]=SURF[b]||[]);if(SURF[b].indexOf(s)<0)SURF[b].push(s);return b});   // 乾乾淨淨→乾淨、客客氣氣→客氣：按原詞算
+  var r=analyze(mt0,t,EX),sents=splitSent(text).map(function(x){return x.s.trim().replace(/^[」』”’）)\s]+/,"")}).filter(Boolean),seen=new Set(),rows=[];
+  function sentOf(w){var fs=[w].concat(SURF[w]||[]);for(var i=0;i<sents.length;i++)for(var k=0;k<fs.length;k++)if(sents[i].indexOf(fs[k])>=0)return sents[i];return""}
+  r.toks.forEach(function(tk){if(!tk.han||tk.st==="ex")return;
+    var bs=redup(tk.w);if(bs){(SURF[bs]=SURF[bs]||[]);if(SURF[bs].indexOf(tk.w)<0)SURF[bs].push(tk.w);tk=Object.assign({},tk,{w:bs})}   // 乾乾淨淨 → 乾淨、客客氣氣 → 客氣
+    if(seen.has(tk.w))return;seen.add(tk.w);
     var l=tk.lv,eff=l==null?99:effLv(tk.w,l),kind=l==null?"unk":eff>t?"over":(Math.floor(l)===t?"new":"low");
     if(kind==="low"&&!low)return;if(tk.w.length===1&&kind==="low")return;
     var vi=VI[tk.w]||["","",""],pv=platVocab().get(tk.w),src="";
     if(pv){src="曼米教材";vi=[pv["拼音"]||vi[0],pv["詞性"]||vi[1],pv["英文翻譯"]||vi[2]]}
-    rows.push({w:tk.w,lv:lvTag(tk.w,l),kind:kind,py:vi[0],pos:vi[1],en:vi[2],ex:sentOf(tk.w),ex2:pv&&pv["例句（中文）"]?pv["例句（中文）"]:"",src:src,tr:pv&&pv["泰文翻譯"]?{"泰文":pv["泰文翻譯"]}:{},on:kind==="new"||kind==="over"||kind==="unk"})});
+    rows.push({w:tk.w,surf:SURF[tk.w]||[],lv:lvTag(tk.w,l),kind:kind,py:vi[0],pos:vi[1],en:vi[2],ex:sentOf(tk.w),ex2:pv&&pv["例句（中文）"]?pv["例句（中文）"]:"",src:src,tr:pv&&pv["泰文翻譯"]?{"泰文":pv["泰文翻譯"]}:{},on:kind==="new"||kind==="over"||kind==="unk"})});
   var order={over:0,unk:0,"new":1,low:2};rows.sort(function(a,b){return order[a.kind]-order[b.kind]});
   var n=0;rows.forEach(function(x){if(x.kind==="new"){n++;if(n>15)x.on=false}});
   var gr=[];G.forEach(function(g){var segs=gramPat(g.name);if(!segs)return;
     for(var i=0;i<sents.length;i++)if(gramHit(sents[i],segs)){gr.push({lv:g.lv,star:g.star,name:g.name,ex:g.ex,sent:sents[i],on:g.lv>=t});break}});
   gr.sort(function(a,b){return b.lv-a.lv});
   return{t:t,text:text,r:r,sents:sents,rows:rows,gr:gr,acts:null,langs:[]}}
+function prepIdeas(P){var on=P.rows.filter(function(x){return x.on}).map(function(x){return x.w}),W=function(n,off){return shuf(on).slice(off||0,(off||0)+n).join("、")||"今天的生詞"},
+    gram=P.gr.filter(function(g){return g.on}).map(function(g){return g.name}),dlg=/^[^\n：]{1,6}：/m.test(P.text),all=[
+  {k:"say",title:dlg?"角色扮演：把課文演出來":"角色扮演：換你當主角",how:(dlg?"兩三人一組，分配課文裡的角色，先照課文演一次，再自己改一個結局或換一個地點重演。":"分組想像自己是課文裡的人，到課文的情境中（地點、時間自己決定）演一段 2 分鐘的小短劇。")+"至少用到這些詞："+W(5)+"。"},
+  {k:"say",title:"課文小記者",how:"兩人一組，一人當記者，一人當課文的主角。記者根據課文問 3 個問題（誰、哪裡、為什麼），受訪者用課文的內容和自己的想法回答，再交換角色。"},
+  {k:"vocab",title:"詞卡猜猜看",how:"一人抽一張詞卡（"+W(6)+"），用中文說明這個詞但不能說出它，同組的人猜；一分鐘內猜對最多的組得分。"},
+  {k:"vocab",title:"詞語接龍",how:"全班圍成一圈，每個人接一句，句子裡一定要用到一個今天的生詞（"+W(6)+"），而且要和前一句有關係，接不下去的人表演一個小節目。"},
+  {k:"gram",title:gram.length?"句型造句擂台":"句子大改造",how:gram.length?"每組抽一個句型（"+gram.slice(0,3).join("、")+"），用它寫三個和自己生活有關的句子，貼到黑板上，全班投票選出最有創意的。":"每組選課文裡的一個句子，把它改成問句、否定句，再加上「為什麼」寫一個後續，唸給大家聽。"},
+  {k:"read",title:"排故事",how:"把課文的句子剪成紙條，打亂後給各組，在最短的時間內排回正確的順序，再用自己的話把故事說一遍。"},
+  {k:"read",title:"找錯誤",how:"老師念一段改過的課文，故意放 3 個錯（詞語、數字或意思），學生聽完舉手找出來，並說出正確的說法。"},
+  {k:"write",title:"我的版本",how:"讀完課文，每個人仿寫一段「我的……」，用到 3 個以上生詞（"+W(5)+"），寫完貼在牆上，同學用貼紙投票。"}];
+  var pick=[],used={};shuf(all).forEach(function(x){if(pick.length<3&&!used[x.k]){used[x.k]=1;pick.push({title:x.title,how:x.how})}});return pick}
+function prepIdeaHtml(list){return'<div class="pr-ideas">'+list.map(function(x,i){return'<div class="pr-idea"><small>活動 '+(i+1)+'</small><b>'+esc(x.title)+'</b><p>'+esc(x.how)+(x.words&&x.words.length?'<br><span class="note">用到：'+esc(x.words.join("、"))+'</span>':"")+'</p></div>'}).join("")+'</div>'}
 function prepActs(P){var on=P.rows.filter(function(x){return x.on&&x.w.length>=1}),used=new Set(),cl=[];
   shuf(on).forEach(function(x){if(cl.length>=6)return;var s=P.sents.filter(function(z){return z.indexOf(x.w)>=0&&z.length<=40&&!used.has(z)})[0];
     if(!s)return;used.add(s);cl.push({w:x.w,s:s.replace(x.w,"＿＿＿＿")})});
@@ -551,7 +566,7 @@ function prepActs(P){var on=P.rows.filter(function(x){return x.on&&x.w.length>=1
   var od=shuf(P.sents.filter(function(s){var n=tokens(s).filter(function(k){return k.han}).length;return n>=5&&n<=11&&s.length<=30})).slice(0,3).map(function(s){
     var parts=tokens(s.replace(/[。！？!?，,、；：]/g," ")).filter(function(k){return k.han}).map(function(k){return k.w}),sh=shuf(parts);if(sh.join("")===parts.join(""))sh=parts.slice().reverse();
     return{s:s,sh:sh}});
-  P.acts={cloze:cl,match:{words:mt,ens:ens},order:od,q:(P.acts&&P.acts.q)||null}}
+  P.acts={cloze:cl,match:{words:mt,ens:ens},order:od,q:(P.acts&&P.acts.q)||null,ai:(P.acts&&P.acts.ai)||null,idea:prepIdeas(P)}}
 function prepRender(){var P=PREP;if(!P)return;var h="",r=P.r,t=P.t;
   var okp=r.ratio<=15;
   h+='<div class="card"><b>這篇文章</b>　第 '+t+' 級　<span class="note">超綱 '+r.ratio.toFixed(1)+'%（教材 15% 以內：'+(okp?"符合":"超過")+'；試題 10% 以內：'+(r.ratio<=10?"符合":"超過")+'）</span></div>';
@@ -580,7 +595,7 @@ function prepRender(){var P=PREP;if(!P)return;var h="",r=P.r,t=P.t;
      +'<p class="pr-key">答案：'+A.match.words.map(function(w,i){var k=A.match.ens.findIndex(function(e){return e.i===i});return(i+1)+"-"+L[k]}).join("　")+'</p>'}
   if(A.order.length)h+='<p><b>活動三　排句子</b>　把詞排成通順的句子。</p><ol>'+A.order.map(function(o){return'<li>'+o.sh.map(esc).join(" / ")+'</li>'}).join("")+'</ol><p class="pr-key">答案：'+A.order.map(function(o,i){return(i+1)+". "+esc(o.s)}).join("　")+'</p>';
   if(A.q)h+='<p><b>討論問題</b>（AI 產生，請老師看過）</p><ol>'+A.q.map(function(x){return'<li>'+esc(x)+'</li>'}).join("")+'</ol>';
-  if(A.ai&&A.ai.length)h+='<p><b>活動建議</b>（AI 產生，請老師看過）</p><ol>'+A.ai.map(function(x){return'<li><b>'+esc(x.title)+'</b>：'+esc(x.how)+'</li>'}).join("")+'</ol>';
+  h+='<p><b>活動建議</b>'+(A.ai&&A.ai.length?'（AI 依這篇課文想的，請老師看過）':'（用你勾選的生詞配出來的點子；想要更貼近課文內容，按上面「用 AI 加…」）')+'</p>'+prepIdeaHtml(A.ai&&A.ai.length?A.ai:A.idea);
   if(!A.cloze.length&&A.match.words.length<3&&!A.order.length)h+='<p class="note">文章太短或勾選的生詞太少，做不出活動。</p>';
   h+='</div>';
   h+='<div class="card"><b>④ 互動課文</b><span class="note">　把滑鼠移到有底線的詞上，就能看拼音、意思和造句（手機點一下）。可以下載成一個網頁檔，傳給學生用瀏覽器開，不用登入。</span><div id="pr-read" style="position:relative;margin-top:10px;font-size:18px;line-height:2.1">'+prepReaderHtml()+'<div id="pr-pop" hidden></div></div><div class="row"><button id="pr-rd-dl">下載互動課文（網頁檔）</button></div></div>';
@@ -596,7 +611,7 @@ function prepDoc(){var P=PREP,A=P.acts,h='<h1>備課包（TBCL 第 '+P.t+' 級�
   if(A.match.words.length>=3){var L="ABCDEFGH";h+='<h3>活動二　配對</h3><table border="1" cellspacing="0" cellpadding="5">'+A.match.words.map(function(w,i){return'<tr><td>'+(i+1)+'. '+esc(w.w)+'</td><td>'+L[i]+'. '+esc(A.match.ens[i].en)+'</td></tr>'}).join("")+'</table>'}
   if(A.order.length)h+='<h3>活動三　排句子</h3><ol>'+A.order.map(function(o){return'<li>'+o.sh.map(esc).join(" / ")+'</li>'}).join("")+'</ol>';
   if(A.q)h+='<h3>討論問題</h3><ol>'+A.q.map(function(x){return'<li>'+esc(x)+'</li>'}).join("")+'</ol>';
-  if(A.ai&&A.ai.length)h+='<h3>活動建議</h3><ol>'+A.ai.map(function(x){return'<li><b>'+esc(x.title)+'</b>：'+esc(x.how)+'</li>'}).join("")+'</ol>';
+  h+='<h3>活動建議</h3><ol>'+(A.ai&&A.ai.length?A.ai:A.idea).map(function(x){return'<li><b>'+esc(x.title)+'</b>：'+esc(x.how)+(x.words&&x.words.length?'（用到：'+esc(x.words.join("、"))+'）':"")+'</li>'}).join("")+'</ol>';
   h+='<h2>答案</h2>';
   if(A.cloze.length)h+='<p>活動一：'+A.cloze.map(function(c,i){return(i+1)+". "+esc(c.w)}).join("　")+'</p>';
   if(A.match.words.length>=3)h+='<p>活動二：'+A.match.words.map(function(w,i){var k=A.match.ens.findIndex(function(e){return e.i===i});return(i+1)+"-"+L2(k)}).join("　")+'</p>';
@@ -637,12 +652,14 @@ async function prepAiFill(){var st=$("pr-ai-st"),todo=PREP.rows.filter(function(
     prepRender();$("pr-ai-st").textContent="整理了 "+n+" 個，造句 "+ne+" 個（超出等級的造句已丟掉），請老師看過"}catch(e){st.textContent="失敗："+e.message}}
 async function prepAiQ(){var st=$("pr-q-st");st.textContent="AI 處理中…";
   try{if(!(await ensureAi())){st.textContent="還沒有可用的 AI，請到「AI 設定」";return}
-    var out=await aiText("根據下面這篇文章，給 TBCL 第 "+PREP.t+" 級的外國學生，寫 3 個課堂討論問題和 2 個課堂活動建議。問題要短，用這個等級的詞。活動要說明怎麼進行（分組、做什麼、多久），而且要用到文章裡的內容，不要太空泛。\n只回傳 JSON：{\"questions\":[\"…\"],\"activities\":[{\"title\":\"活動名稱\",\"how\":\"怎麼進行\"}]}，不要其他文字。\n\n"+PREP.text.slice(0,1500));
+    var out=await aiText("根據下面這篇文章，給 TBCL 第 "+PREP.t+" 級的外國學生，寫 3 個課堂討論問題和 3 個課堂活動建議。問題要短，用這個等級的詞。活動要有趣、有一個吸引人的名字，緊扣這篇文章的情境和內容（例如文章裡的地點、人物、事件），說明怎麼進行（幾個人一組、做什麼、大約幾分鐘），並列出會用到的生詞（從這些詞裡挑："+PREP.rows.filter(function(x){return x.on}).map(function(x){return x.w}).join("、")+"）。不要太空泛，不要只寫「分組討論」。\n只回傳 JSON：{\"questions\":[\"…\"],\"activities\":[{\"title\":\"活動名稱\",\"how\":\"怎麼進行\",\"words\":[\"用到的生詞\"]}]}，不要其他文字。\n\n"+PREP.text.slice(0,1500));
     var m=String(out.text).match(/\{[\s\S]*\}/);if(!m)throw new Error("AI 回傳的格式不對");var o=JSON.parse(m[0]);
-    PREP.acts.q=(o.questions||[]).map(String).slice(0,4);PREP.acts.ai=(o.activities||[]).slice(0,3);prepRender()}catch(e){st.textContent="失敗："+e.message}}
+    PREP.acts.q=(o.questions||[]).map(String).slice(0,4);PREP.acts.ai=(o.activities||[]).slice(0,3).map(function(x){return{title:String(x.title||""),how:String(x.how||""),words:Array.isArray(x.words)?x.words.map(String):[]}});prepRender()}catch(e){st.textContent="失敗："+e.message}}
 /* 互動課文：生詞畫底線，點一下看意思（學生用）；也可下載成單一網頁 */
-function prepReaderHtml(){var P=PREP,rows=P.rows.filter(function(x){return x.on}),words=rows.map(function(x){return x.w}).sort(function(a,b){return b.length-a.length});
-  var t=esc(P.text);if(words.length){var re=new RegExp(words.map(function(w){return w.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")}).join("|"),"g");t=t.replace(re,function(w){return'<span class="rw" data-w="'+w+'">'+w+'</span>'})}
+function prepReaderHtml(){var P=PREP,rows=P.rows.filter(function(x){return x.on}),map={};
+  rows.forEach(function(x){map[x.w]=x.w;(x.surf||[]).forEach(function(s){map[s]=x.w})});
+  var words=Object.keys(map).sort(function(a,b){return b.length-a.length});
+  var t=esc(P.text);if(words.length){var re=new RegExp(words.map(function(w){return w.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")}).join("|"),"g");t=t.replace(re,function(w){return'<span class="rw" data-w="'+map[w]+'">'+w+'</span>'})}
   return t.split(/\n+/).map(function(x){return"<p>"+x+"</p>"}).join("")}
 function prepPopHtml(x,langs){var h='<div class="pp-h"><b>'+esc(x.w)+'</b> <button class="pp-say" data-w="'+esc(x.w)+'" title="聽發音">🔊</button><span class="pp-t">'+esc(x.pos||"")+' <span class="tag">'+esc(x.lv)+'</span></span></div>';
   if(x.py)h+='<div class="pp-py">'+esc(x.py)+'</div>';
