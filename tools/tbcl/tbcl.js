@@ -214,15 +214,22 @@ function renderLog(){var h='<table><tr><th>使用環節</th><th>使用工具（�
   LOG.forEach(function(x){h+='<tr><td>'+esc(x.step)+'</td><td>'+esc(x.tool)+'</td><td>'+esc(x.purpose)+'</td><td>'+esc(x.how)+'</td><td>'+esc(x.prompt)+'</td><td>'+esc(x.note)+'</td></tr>'});
   $("g-log").innerHTML=LOG.length?h+'</table>':'<p class="note">還沒有紀錄。</p>'}
 function keyOf(k){try{return localStorage.getItem(k)||""}catch(e){return""}}
+/* Gemini 常常換模型名稱、停用舊的；先問 Google 這把金鑰現在能用哪些，挑最新的 flash（不含 lite），最多試三個 */
+var GM=null;
+async function geminiModels(key){if(GM&&GM.key===key)return GM.list;var list=[];
+  try{var r=await fetch("https://generativelanguage.googleapis.com/v1beta/models?pageSize=200&key="+encodeURIComponent(key)),d=await r.json();
+    if(r.ok&&d.models){list=d.models.filter(function(m){return(m.supportedGenerationMethods||[]).indexOf("generateContent")>=0&&/^models\/gemini-[\d.]+-flash(-latest)?$/.test(m.name)}).map(function(m){return m.name});
+      list.sort(function(a,b){return parseFloat(b.replace(/[^\d.]/g,"")||0)-parseFloat(a.replace(/[^\d.]/g,"")||0)})}}catch(e){}
+  list=list.slice(0,3);if(!list.length)list=["models/gemini-flash-latest","models/gemini-2.5-flash"];GM={key:key,list:list};return list}
 async function callAI(kind,prompt){
   if(kind==="puter")return callPuter(prompt);
   if(kind==="claude"){var k=keyOf("mm_tr_aikey");if(!k)throw new Error("還沒有 Claude 金鑰（到「AI 設定」貼上）");
     var r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"content-type":"application/json","x-api-key":k,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-haiku-5-5",max_tokens:1800,messages:[{role:"user",content:prompt}]})});
     var d=await r.json();if(!r.ok)throw new Error((d.error&&d.error.message)||r.status);return{text:d.content.map(function(c){return c.text||""}).join(""),model:"claude-haiku-5-5"}}
   var g=keyOf("mm_gemini_key");if(!g)throw new Error("還沒有 Gemini 金鑰（到「AI 設定」貼上）");
-  var ms=["gemini-flash-latest","gemini-2.5-flash"],err="";
-  for(var i=0;i<ms.length;i++){try{var r2=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+ms[i]+":generateContent?key="+encodeURIComponent(g),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})});
-    var d2=await r2.json();if(!r2.ok)throw new Error((d2.error&&d2.error.message)||r2.status);return{text:d2.candidates[0].content.parts.map(function(p){return p.text||""}).join(""),model:ms[i]}}catch(e){err=e.message}}
+  var ms=await geminiModels(g),err="";
+  for(var i=0;i<ms.length;i++){try{var r2=await fetch("https://generativelanguage.googleapis.com/v1beta/"+ms[i]+":generateContent?key="+encodeURIComponent(g),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})});
+    var d2=await r2.json();if(!r2.ok)throw new Error((d2.error&&d2.error.message)||r2.status);return{text:d2.candidates[0].content.parts.map(function(p){return p.text||""}).join(""),model:ms[i].replace("models/","")}}catch(e){err=err||e.message}}
   throw new Error(err)}
 $("g-go").onclick=async function(){
   await load();var lv=+$("g-lv").value,kind=$("g-kind").value,topic=$("g-topic").value.trim(),must=$("g-must").value.trim(),len=$("g-len").value,ai=$("g-ai").value,st=$("g-st");
