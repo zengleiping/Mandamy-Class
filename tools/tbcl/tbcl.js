@@ -434,7 +434,7 @@ function segRender(){var text=$("q-txt").value,t=qLevel();if(!text.trim()){$("q-
         (prev&&prev.han?'<button data-s="mprev">和前面「'+esc(prev.w)+'」合成一個詞</button>':'')+(next&&next.han?'<button data-s="mnext">和後面「'+esc(next.w)+'」合成一個詞</button>':'')+
         (tk.w.length>1?'<button data-s="split">拆成單字</button>':'')+
         '<input id="seg-in" placeholder="自己切，用空格隔開" value="'+esc([...tk.w].join(" "))+'"><button data-s="own">照這樣切</button></div>'}
-    h+='<div class="actions">'+(aiReady()?'<button class="btn" data-s="ai">請 AI 幫我找專有名詞</button>':'')+'<span class="hint" id="seg-st"></span></div>';
+    h+='<div class="actions">'+(aiReady()?'<button class="btn" data-s="ai">請 AI 幫我找專有名詞</button>':'')+'<span class="hint" id="seg-st"></span></div><div class="segfoot"><button class="cta" data-s="go" style="padding:9px 22px;font-size:16px">斷詞沒問題，改寫成第 '+t+' 級</button><span class="hint">不想檢查可以直接按上面的改寫，這一步不是必要的。</span></div>';
     $("q-seg").innerHTML=h;QK_SEG=r})}
 var QK_SEG=null;
 function segMerge(w){CUSTOM.set(w,LV.get(w)||0);addKey(w);saveCustom()}
@@ -453,9 +453,10 @@ async function segAi(){var st=$("seg-st"),text=$("q-txt").value;if(!await ensure
     SEGSEL=-1;segRender();var s2=$("seg-st");if(s2)s2.textContent="找到 "+arr.length+" 個，請看一下有沒有標錯。"}
   catch(e){st.textContent="失敗："+e.message}}
 $("q-segbtn").onclick=segOpen;
+$("q-chk").onclick=function(){var p=$("q-seg");if(p.hidden)segOpen();else segRender();p.scrollIntoView({behavior:"smooth",block:"center"})};
 $("q-seg").addEventListener("click",function(e){var sp=e.target.closest(".tk"),bt=e.target.closest("button[data-s]");
   if(sp){SEGSEL=+sp.getAttribute("data-i")===SEGSEL?-1:+sp.getAttribute("data-i");segRender();return}
-  if(bt){var a=bt.getAttribute("data-s");if(a==="ai")segAi();else segAct(a)}});
+  if(bt){var a=bt.getAttribute("data-s");if(a==="ai")segAi();else if(a==="go")quickGo();else segAct(a)}});
 
 /* ---- 畫面 ---- */
 var QSAMPLES=["台灣的夜市文化聞名國際，每到傍晚，各式各樣的小吃攤位就擠滿了人潮。許多外國遊客慕名而來，品嚐珍珠奶茶、臭豆腐和蚵仔煎，體驗當地獨特的飲食文化。",

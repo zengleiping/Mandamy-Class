@@ -172,3 +172,7 @@ mark{background:var(--yellow-soft);padding:0 2px;color:inherit}
 
 .lbl2{font-size:14px;color:var(--ink-2)}
 .field.inline select{padding:4px 8px;font-size:14px}
+
+.ctarow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:4px}.ctarow .cta{margin-top:0}
+.segfoot{margin-top:12px;padding-top:12px;border-top:1px solid var(--line);display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+@media (max-width:700px){.ctarow .cta{width:100%}.ctarow .btn{flex:1}}
