@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="曼米中文">
 
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Iansui&display=swap"><style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Iansui&display=swap"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&display=swap"><style>
 /* 芫荽只有一種粗細、筆畫偏細：整站文字稍微加粗一點，比較好讀 */
 body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; text-rendering:optimizeLegibility; -webkit-font-smoothing:antialiased; }
 /* 英文、數字、拼音用 Times New Roman（只限拉丁字母範圍，注音的聲調符號才會跟注音一樣用芫荽）；中文、注音用芫荽 */
@@ -6143,7 +6143,7 @@ async function fillClassStudents(cls){
 }
 // ----- 班級工具與設定 -----
 function classToolsHtml(cls){
-  var html = '<div class="panel"><h3>班級工具</h3><div class="tools"><button class="btn" id="hwbtn">聯絡簿</button><button class="btn" id="albbtn">📷 班級相簿</button><button class="btn" id="wheelbtn">🎡 點名輪盤</button><button class="btn" id="capbtn">⏳ 時空膠囊</button><button class="btn" id="leavebtn">請假申請</button><button class="btn" id="petbtn" title="學生用點數買飼料養寵物、買衣服；在這裡開啟、調整點數與商店價格">🐾 寵物遊戲</button><button class="btn" id="parkbtn" title="大螢幕投影：全班寵物一起在草地上走動，還能設全班共同目標">🌳 班級寵物園</button><button class="btn" id="ctbtn" title="計時器、分組、記分板、白板…30 多種課堂小工具">🧰 課堂工具箱</button></div>' +
+  var html = '<div class="panel"><h3>班級工具</h3><div class="tools"><button class="btn" id="hwbtn">聯絡簿</button><button class="btn" id="albbtn">📷 班級相簿</button><button class="btn" id="wheelbtn">🎡 點名輪盤</button><button class="btn" id="capbtn">⏳ 時空膠囊</button><button class="btn" id="leavebtn">請假申請</button><button class="btn" id="ctbtn" title="計時器、分組、記分板、白板…30 多種課堂小工具">🧰 課堂工具箱</button></div>' +
     '<div class="note" style="font-weight:700;margin-bottom:6px;">🔗 這個班的常用連結（Padlet、Google Meet 等）</div><div class="tools" id="linkbox">' +
     (cls.links ? Object.keys(cls.links).map(function(k){ var L = cls.links[k]; return '<span style="display:inline-flex;gap:4px;align-items:center;"><a class="btn" href="' + esc(L.url) + '" target="_blank" rel="noopener">' + esc(L.name) + '</a>' + (S.linkEdit ? '<button class="btn sm" data-ren-link="' + k + '">修改</button><button class="btn sm danger" data-del-link="' + k + '">刪除</button>' : '') + '</span>'; }).join("") : '') +
     (S.linkEdit ? '<button class="btn sm" id="addlink">新增</button>' : '') + '<button class="btn sm ghost" id="editlinks">' + (S.linkEdit ? '完成' : '編輯') + '</button></div></div>';
@@ -6166,8 +6166,6 @@ function bindClassTools(cls, tm){
   document.getElementById("hwbtn").onclick = function(){ S.hw = { view: "list" }; render(); };
   document.getElementById("albbtn").onclick = function(){ S.alb = { id: null }; S.albCid = S.sel.c; render(); };
   document.getElementById("wheelbtn").onclick = function(){ S.hw = { view: "wheel" }; render(); };
-  document.getElementById("parkbtn").onclick = function(){ if(!window.CT){ toast("工具箱還沒載入完成，請稍後再試"); return; } window.CT.showDock(true); window.CT.open("petpark"); };
-  document.getElementById("petbtn").onclick = function(){ if(!window.CT){ toast("工具箱還沒載入完成，請稍後再試"); return; } window.CT.showDock(true); window.CT.open("pets"); };
   document.getElementById("ctbtn").onclick = function(){ if(window.CT) window.CT.showDock(true); };
   document.getElementById("capbtn").onclick = function(){ S.hw = { view: "capsule" }; render(); };
   document.getElementById("leavebtn").onclick = function(){ S.hw = { view: "leave" }; render(); };
@@ -6285,6 +6283,8 @@ var ACTS = [
   { id: "order", e: "", t: "點餐練習", d: "情境對話：點餐", et: "Ordering Food", en: "Role-play ordering breakfast", need: "lesson" },
   { id: "dtq", e: "", t: "年月日問答", d: "日期、星期的問答練習", et: "Dates & Days", en: "Ask and answer about dates and days", need: "lesson" },
   { id: "wheel", e: "", t: "點名輪盤", d: "用班級名單隨機抽人", et: "Name Wheel", en: "Spin to pick a student", need: "classOnly" },
+  { id: "petgame", e: "", t: "寵物遊戲", d: "學生用點數養寵物、答生詞題餵牠；在這裡開啟、調整點數與商店價格（預設不開放）", et: "Pet Game", en: "Students earn points and raise a pet", need: "classOnly", pet: "pets" },
+  { id: "petpark", e: "", t: "班級寵物園", d: "投影用：全班寵物在草地上走動，還能設全班共同目標", et: "Pet Park", en: "All class pets together, with a class goal", need: "classOnly", pet: "petpark" },
   { id: "capsule", e: "", t: "時空膠囊", d: "學生寫給未來的自己", et: "Time Capsule", en: "Write a letter to your future self", need: "classOnly" }
 ];
 function actById(id){ return ACTS.filter(function(a){ return a.id === id; })[0]; }
@@ -6344,6 +6344,7 @@ function renderActHub(){
     var id = b.dataset.actrun, a = actById(id), lsel = ls[0] || "";
     if((a.need === "class" || a.need === "classOnly") && !sel){ toast("「" + a.t + "」需要先選班級"); document.getElementById("act-cls").focus(); return; }
     actNoteRecent(id);
+    if(a.pet){ if(!window.CT){ toast("工具箱還沒載入完成，請稍後再試"); return; } S.act = null; S.sel = sel; S.lib = null; S.rec = null; S.grades = null; S.day = null; S.settings = false; S.hw = null; S.lesson = null; render(); window.CT.showDock(true); window.CT.open(a.pet); return; }
     if(a.need === "lesson" && !actVocabCount(ls)){ toast("選的課次還沒有生詞，請按「選課次」多勾幾課"); return; }
     if(!sel){ S.act = { cls: "", lesson: lsel, ls: ls, run: id }; render(); return; }
     S.act = null; S.sel = sel; S.lib = null; S.rec = null; S.grades = null; S.day = null; S.settings = false;
@@ -7820,16 +7821,17 @@ window.__mm = { get S(){ return S; }, render: function(){ return render(); }, ne
 })();
 })();
 </script>
-<script src="classtools/ct-core.js?v=20261030"></script>
+<script src="classtools/ct-core.js?v=20261053"></script>
 <script src="classtools/ct-time.js?v=20261030"></script>
 <script src="classtools/ct-order.js?v=20261029"></script>
 <script src="classtools/ct-fun.js?v=20261029"></script>
 <script src="classtools/ct-board.js?v=20261029"></script>
 <script src="classtools/ct-live.js?v=20261029"></script>
-<script src="classtools/pet-art.js?v=20261038"></script>
-<script src="classtools/pet-scenes.js?v=20261047"></script>
-<script src="classtools/pets.js?v=20261050"></script>
-<script src="classtools/pet-ui.js?v=20261050"></script>
-<script src="classtools/pet-park.js?v=20261047"></script>
+<script src="classtools/pet-art.js?v=20261052"></script>
+<script src="classtools/pet-soft.js?v=20261052"></script>
+<script src="classtools/pet-scenes.js?v=20261052"></script>
+<script src="classtools/pets.js?v=20261053"></script>
+<script src="classtools/pet-ui.js?v=20261052"></script>
+<script src="classtools/pet-park.js?v=20261053"></script>
 </body>
 </html>

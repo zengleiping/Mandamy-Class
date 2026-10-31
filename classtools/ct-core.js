@@ -175,7 +175,7 @@
     var m = h("div", { id: "ct-more" }); document.body.appendChild(m);
     m.appendChild(h("div", { class: "ct-muted", style: "margin-bottom:4px;", text: "點工具開啟；點右上角的 ☆ 可以釘到底部工具列。" }));
     CT.cats.forEach(function(c){
-      var list = CT.tools.filter(function(t){ return t.cat === c.id; }); if(!list.length) return;
+      var list = CT.tools.filter(function(t){ return t.cat === c.id && !t.hide; }); if(!list.length) return;
       m.appendChild(h("div", { class: "ct-cat", text: c.name })); var g = h("div", { class: "ct-grid" });
       list.forEach(function(t){
         var pinned = CT.pins.indexOf(t.id) >= 0;
