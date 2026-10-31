@@ -338,7 +338,7 @@ function gdRender(){gdSteps();var h="",lvOpt="";for(var i=1;i<=7;i++)lvOpt+='<op
      +gdNav(true,true)}
   else if(GD.step===2){
     h='<div class="card"><b>讓 AI 先寫一版</b><span class="note">　用你挑的詞和語法點，寫成'+GD.kind+'，寫完會自動檢查超綱，太多會請 AI 改。AI 寫的一定要自己看過、改過。</span>'
-     +'<div class="row"><label>字數<select id="gd-len">'+[100,150,200,300,400].map(function(n){return'<option'+(GD.len===n?" selected":"")+'>'+n+'</option>'}).join("")+'</select></label><button class="pri" data-g="gen">幫我寫一篇</button><span class="note" id="gd-gst"></span></div></div>'
+     +'<div class="row"><label>字數<select id="gd-len">'+[100,150,200,300,400].map(function(n){return'<option'+(GD.len===n?" selected":"")+'>'+n+'</option>'}).join("")+'</select></label><button class="pri" data-g="gen">幫我寫一篇</button><span class="note" id="gd-gst"></span></div><div class="gd-pbar" id="gd-pbar" hidden><i></i></div></div>'
      +'<div class="card"><b>③ 寫文章</b><span class="note">　寫的時候右邊的數字會即時更新。專有名詞請先到首頁「先檢查斷詞」標起來，這裡會一起排除。</span>'
      +'<textarea id="gd-txt" style="min-height:230px" placeholder="在這裡寫'+GD.kind+'⋯⋯">'+esc(GD.text)+'</textarea><div id="gd-live"></div></div>'+gdNav(true,true,"寫好了，去檢核")}
   else if(GD.step===3){
@@ -399,6 +399,14 @@ function gdPickGram(how){var all=GRAM_CACHE.filter(function(g){return g.lv===GD.
   GD.gram=pick;gdSave();var y=window.scrollY;gdRender();window.scrollTo(0,y);
   var n=pick.length,h=$("gd-ghint");if(h)h.textContent=n?("選了 "+n+" 個。"+(n>6?"一篇文章放太多語法點會很硬、很長（約需 "+n*40+" 字以上），建議 3–5 個，其餘留給別篇。":"一篇約 "+Math.max(100,n*40)+" 字以上比較自然。")):""}
 /* AI 依挑的詞和語法點寫文章，程式檢查超綱、有沒有用到，不合就帶著問題再請 AI 改，最多 3 輪 */
+var GDP=null;
+function gdProg(on,round,txt){var bar=$("gd-pbar"),st=$("gd-gst");if(!bar)return;
+  if(GDP){clearInterval(GDP.t);GDP=null}
+  if(!on){bar.hidden=true;return}
+  bar.hidden=false;var t0=Date.now(),i=bar.firstChild;
+  GDP={t:setInterval(function(){var s=(Date.now()-t0)/1000,frac=1-Math.exp(-s/12),pct=Math.min(95,((round-1)+frac*0.9)/3*100);i.style.width=pct.toFixed(0)+"%";
+    st.textContent=txt+"　已等 "+Math.floor(s)+" 秒"+(s>60?"（AI 比較慢，再等一下；超過兩分鐘沒反應可以重按）":"")},250)};
+  i.style.width=(((round-1)/3)*100).toFixed(0)+"%"}
 async function gdGenerate(){var st=$("gd-gst");st.textContent="準備中…";
   try{await load();if(!(await ensureAi())){st.textContent="還沒有可用的 AI，請到「AI 設定」";return}
     var gl=GRAM_CACHE.filter(function(g){return GD.gram.indexOf(g.name)>=0}),len=GD.len||200;
@@ -407,8 +415,8 @@ async function gdGenerate(){var st=$("gd-gst");st.textContent="準備中…";
       +(gl.length?"- 一定要用到這些語法點（括號是官方例句，請照這種用法）：\n"+gl.map(function(g){return"  · "+g.name+"（例：「"+g.ex+"」）"}).join("\n")+"\n":"")
       +"- 內容要自然連貫，像真實的教材，不要為了用詞硬塞。\n"+(GD.kind==="會話"?"- 會話每行寫成「名字：話」。\n":"")+"- 不要人名以外的專有名詞，不要網址。\n- 只輸出文章本身，不要標題、說明或翻譯。";
     var prompt=base,out="",res=null,round,issues="";
-    for(round=1;round<=3;round++){st.textContent="第 "+round+" 輪寫作中…";
-      res=await aiText(prompt);out=res.text.trim().replace(/^```[a-z]*\n?|```$/g,"").trim();
+    for(round=1;round<=3;round++){gdProg(true,round,"第 "+round+" 輪寫作中（最多 3 輪，通常 20–60 秒）");
+      res=await aiText(prompt);gdProg(false);st.textContent="檢查超綱和用詞…";out=res.text.trim().replace(/^```[a-z]*\n?|```$/g,"").trim();
       var r=analyze(out,GD.lv,EX),miss=GD.words.filter(function(w){return out.indexOf(w)<0}),sents=splitSent(out).map(function(x){return x.s}),
           gmiss=gl.filter(function(g){var s=gramPat(g.name);return s&&!sents.some(function(x){return gramHit(x,s)})}).map(function(g){return g.name});
       issues="";if(r.ratio>GD.lim)issues+="超出第 "+GD.lv+" 級的詞："+r.list.slice(0,25).map(function(x){return x.w}).join("、")+"，請換成簡單的詞。";
@@ -418,7 +426,7 @@ async function gdGenerate(){var st=$("gd-gst");st.textContent="準備中…";
     round=Math.min(round,3);    GD.text=out;gdSave();var ta=$("gd-txt");if(ta)ta.value=out;gdLive();
     var r2=analyze(out,GD.lv,EX);st.textContent="寫好了（"+round+" 輪）：超綱 "+r2.ratio.toFixed(1)+"%"+(issues?"；還有問題：「"+issues.replace(/\n/g," ")+"」，可以再按一次，或自己改":"")+"。請看過、改過再去檢核。";
     logAI("寫教材：文章初稿","AI（"+res.model+"）","依 TBCL 第 "+GD.lv+" 級、挑選的詞和語法點產出"+GD.kind+"初稿","設計者挑詞和語法點 → AI 生成 → 程式用 TBCL 詞表檢查超綱、用到的詞和語法點，不合就請 AI 修改（共 "+round+" 輪）→ 人工審閱修訂","詞："+GD.words.join("、")+"；語法："+GD.gram.join("、")+"；約 "+len+" 字")
-  }catch(e){st.textContent="失敗："+e.message}}
+  }catch(e){gdProg(false);st.textContent="失敗："+e.message}}
 
 /* 讀剪貼簿，自動前進 */
 function gdTakeWords(t){var junk=GD_JUNK,occ=new Set(GD_OCC.join("、").split("、")),out=[],seen=new Set(GD.words);
