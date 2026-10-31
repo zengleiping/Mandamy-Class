@@ -294,6 +294,123 @@ for(var gi=1;gi<=5;gi++){var go=document.createElement("option");go.value=gi;go.
 
 
 
+/* ===== ⑧ 寫教材引導：設定 → 挑詞和語法點 → 寫 → 到國教院檢核 → 看結果；去國教院複製後回到這裡會自動接著走 ===== */
+var GD_KEY="mm_tbcl_guide",GD_OCC=["交通、旅遊","休閒、娛樂","個人資料","公共服務","安全","情緒、態度","教育、學習","文化","日常起居","社交、人際","社會","科技","職業","自然環境","購物、商店","身體、醫療","餐飲、烹飪"];
+var GD_JUNK=new Set(["書面","口語","語料庫","國語辭典","音讀","詞語","等級","情境","筆數","核心詞","基礎","進階","精熟"]);
+var GD=(function(){var d={lv:3,occ:"",kind:"短文",lim:15,words:[],gram:[],text:"",step:0,off:null,seen:""};try{var o=JSON.parse(localStorage.getItem(GD_KEY)||"null");if(o)for(var k in o)d[k]=o[k]}catch(e){}return d})();
+function gdSave(){try{localStorage.setItem(GD_KEY,JSON.stringify(GD))}catch(e){}}
+var GD_NAMES=["設定","挑詞和語法點","寫文章","到國教院檢核","看結果"];
+function gdCode(n,star){var m={1:[2,3],2:[4,5],3:[6,7],4:[9,10],5:[11,11],6:[13,13],7:[14,14]}[n]||[2,3];return star?m[1]:m[0]}
+function gdWordUrl(star){return"https://coct.naer.edu.tw/word.jsp?lv="+gdCode(GD.lv,star)+(GD.occ?"&occ="+encodeURIComponent(GD.occ):"")+"&pgSize=100"}
+function gdCopy(t){return(navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(t):Promise.reject()).then(function(){return true},function(){var a=document.createElement("textarea");a.value=t;document.body.appendChild(a);a.select();var ok=false;try{ok=document.execCommand("copy")}catch(e){}a.remove();return ok})}
+function gdSteps(){var h="";GD_NAMES.forEach(function(n,i){h+='<li data-s="'+i+'" class="'+(i===GD.step?"on":i<GD.step?"done":"")+'">'+n+'</li>'});$("gd-steps").innerHTML=h}
+function gdGo(n){GD.step=Math.max(0,Math.min(4,n));gdSave();gdRender();window.scrollTo(0,0);if(GD.step===1||GD.step===3)setTimeout(gdClip,300)}
+function gdNav(back,next,nl){return'<div class="gd-go">'+(back?'<button data-g="back">‹ 上一步</button>':"")+(next?'<button class="pri" data-g="next">'+(nl||"下一步")+' ›</button>':"")+'</div>'}
+function gdWords(){return GD.words.map(function(w,i){return'<span class="gd-chip" data-w="'+esc(w)+'">'+esc(w)+'<button data-g="delw" data-i="'+i+'" title="拿掉">✕</button></span>'}).join("")}
+function gdRender(){gdSteps();var h="",lvOpt="";for(var i=1;i<=7;i++)lvOpt+='<option value="'+i+'"'+(GD.lv===i?" selected":"")+'>第 '+i+' 級</option>';
+  if(GD.step===0){
+    h='<div class="card"><b>寫之前先決定這幾件事</b>'
+     +'<div class="row"><label>教材給誰（TBCL 等級）<select id="gd-lv">'+lvOpt+'</select></label>'
+     +'<label>情境<select id="gd-occ"><option value="">不指定</option>'+GD_OCC.map(function(o){return'<option'+(GD.occ===o?" selected":"")+'>'+o+'</option>'}).join("")+'</select></label>'
+     +'<label>寫成<select id="gd-kind"><option'+(GD.kind==="短文"?" selected":"")+'>短文</option><option'+(GD.kind==="會話"?" selected":"")+'>會話</option></select></label>'
+     +'<label>用途<select id="gd-lim"><option value="15"'+(GD.lim===15?" selected":"")+'>教材（超綱 15% 以內）</option><option value="10"'+(GD.lim===10?" selected":"")+'>試題（超綱 10% 以內）</option></select></label></div></div>'
+     +'<div class="card"><b>接下來會這樣走</b><ol class="gd-how"><li>到國教院查這個等級、這個情境有哪些詞，挑想放進文章的。</li><li>選要練習的語法點。</li><li>寫文章，邊寫邊看超綱比例。</li><li>送到國教院的「教材編輯輔助系統」檢核（比賽要附這個結果）。</li><li>看官方結果和我們的結果有沒有差，不合就回去改。</li></ol></div>'
+     +gdNav(false,true,"開始")}
+  else if(GD.step===1){
+    var gl=GRAM_CACHE.filter(function(g){return g.lv===GD.lv});
+    h='<div class="card"><b>① 挑想放進文章的詞</b>'
+     +'<p class="note">到國教院看「第 '+GD.lv+' 級'+(GD.occ?"・"+esc(GD.occ):"")+'」有哪些詞，用滑鼠選起來（可以拖曳整個表格），按 Ctrl+C 複製，回到這個頁面，會自動抓進來。</p>'
+     +'<div class="gd-go"><a class="btn gd-big pri" id="gd-open1" href="'+gdWordUrl(false)+'" target="_blank" rel="noopener">到國教院查第 '+GD.lv+' 級的詞 ↗</a>'+(GD.lv!==5&&GD.lv<6?'<a class="btn" href="'+gdWordUrl(true)+'" target="_blank" rel="noopener">查第 '+GD.lv+'* 級 ↗</a>':"")+'</div>'
+     +'<div class="gd-wait" id="gd-wait1">等你複製⋯⋯（複製後回到這個頁面就會自動加進來）</div>'
+     +'<div class="row"><label class="grow">或直接貼在這裡<textarea id="gd-paste1" style="min-height:60px" placeholder="貼上從國教院複製的內容"></textarea></label><button id="gd-add1">加進來</button></div>'
+     +'<div class="row"><label>自己加一個詞<input id="gd-one" size="8"></label><button id="gd-one-b">加</button></div>'
+     +'<div id="gd-chips">'+(GD.words.length?gdWords():'<span class="note">還沒有挑詞。可以先跳過，寫完再檢查。</span>')+'</div></div>'
+     +'<div class="card gd-gram"><b>② 選要練習的語法點</b><span class="note">　第 '+GD.lv+' 級共 '+gl.length+' 個（官方語法點表）。<a href="https://coct.naer.edu.tw/grammar.jsp" target="_blank" rel="noopener">到國教院看完整說明 ↗</a></span>'
+     +'<div style="max-height:260px;overflow:auto;margin-top:6px">'+gl.map(function(g){var on=GD.gram.indexOf(g.name)>=0;return'<label><input type="checkbox" class="gd-g" data-n="'+esc(g.name)+'"'+(on?" checked":"")+'><span><b>'+esc(g.name)+'</b>　<span class="note">'+esc(g.ex)+'</span></span></label>'}).join("")+'</div></div>'
+     +gdNav(true,true)}
+  else if(GD.step===2){
+    h='<div class="card"><b>③ 寫文章</b><span class="note">　寫的時候右邊的數字會即時更新。專有名詞請先到首頁「先檢查斷詞」標起來，這裡會一起排除。</span>'
+     +'<textarea id="gd-txt" style="min-height:230px" placeholder="在這裡寫'+GD.kind+'⋯⋯">'+esc(GD.text)+'</textarea><div id="gd-live"></div></div>'+gdNav(true,true,"寫好了，去檢核")}
+  else if(GD.step===3){
+    h='<div class="card"><b>④ 到國教院檢核</b><p class="note">比賽規定要用國教院「教材編輯輔助系統」檢核，並附上結果。</p>'
+     +'<div class="gd-go"><button class="pri gd-big" id="gd-open3">複製文章，並開啟國教院的檢核頁 ↗</button></div>'
+     +'<ol class="gd-how"><li>在國教院頁面的「輸入內文」框，按 Ctrl+V 貼上（文章已經幫你複製好了）。</li><li>按「送出」，等結果出來。</li><li>在結果頁按 <b>Ctrl+A</b> 全選、<b>Ctrl+C</b> 複製。</li><li>回到這個頁面，會自動接著走。</li></ol>'
+     +'<div class="gd-wait" id="gd-wait3">等你複製結果⋯⋯</div>'
+     +'<div class="row"><label class="grow">或把結果貼在這裡<textarea id="gd-paste3" style="min-height:60px" placeholder="貼上國教院結果頁的內容"></textarea></label><button id="gd-add3">讀取</button></div>'
+     +'<p class="note">要附的檢核結果：在國教院結果頁按 Ctrl+P，存成 PDF。</p></div>'+gdNav(true,false)}
+  else{h=gdResult()}
+  $("gd-body").innerHTML=h;if(GD.step===2)gdLive()}
+var GRAM_CACHE=[];
+/* 即時檢查 */
+function gdLive(){var t=GD.text,box=$("gd-live");if(!box)return;
+  if(!t.trim()){box.innerHTML="";return}
+  var r=analyze(t,GD.lv,EX),ok=r.ratio<=GD.lim,used=GD.words.filter(function(w){return t.indexOf(w)>=0}),left=GD.words.filter(function(w){return t.indexOf(w)<0});
+  var sents=splitSent(t).map(function(x){return x.s});
+  var h='<div class="row" style="align-items:center"><span class="gd-meter '+(ok?"ok":"bad")+'">超綱 '+r.ratio.toFixed(1)+'%</span><span class="note">'+(ok?"✔ 在 "+GD.lim+"% 以內":"✘ 超過 "+GD.lim+"%")+'　共 '+t.replace(/\s/g,"").length+' 字、'+r.total+' 個詞次</span></div>';
+  if(r.list.length)h+='<div class="note">超綱的詞（點一下可以看在哪一句）：</div><div class="chips">'+r.list.slice(0,40).map(function(x){return'<span class="chip" data-g="find" data-w="'+esc(x.w)+'">'+esc(x.w)+'<small>'+(x.lv==null?"未收錄":"第 "+x.lv+" 級")+(x.n>1?"×"+x.n:"")+'</small></span>'}).join("")+'</div><div id="gd-find" class="note"></div>';
+  if(GD.words.length)h+='<div class="note" style="margin-top:8px">挑的詞：已用 '+used.length+'／'+GD.words.length+(left.length?"，還沒用到：":"")+'</div><div>'+left.map(function(w){return'<span class="gd-chip">'+esc(w)+'</span>'}).join("")+used.map(function(w){return'<span class="gd-chip used">'+esc(w)+'</span>'}).join("")+'</div>';
+  if(GD.gram.length){h+='<div class="note" style="margin-top:8px">語法點：</div><ul style="margin:4px 0;padding-left:20px">'+GD.gram.map(function(n){var segs=gramPat(n),hit=segs?sents.some(function(s){return gramHit(s,segs)}):null;return'<li>'+esc(n)+'　'+(hit===null?'<span class="note">（這個語法點要自己確認）</span>':hit?"✔ 用到了":'<span class="note">還沒用到</span>')+'</li>'}).join("")+'</ul>'}
+  box.innerHTML=h}
+/* 官方結果解析 */
+function gdParse(t){var re=/\[\s*(\d\*?|X|符號)\s*\]\s*[:：]\s*(\d+)\s*\/\s*(\d+)/g,m,d={},n=0;while((m=re.exec(t))){d[m[1]]=+m[2];n++}
+  if(n<5)return null;var i=t.indexOf("輸入內文"),j=t.indexOf("分級標記",i+1),body=i>=0&&j>i?t.slice(i+4,j).replace(/\s+/g,""):"";
+  /* 官方斷詞結果：一行詞性標記、下一行是詞（例如 Na／牛肉麵）；Nb 是專有名詞 */
+  var m1=/\[\s*1\*?\s*\]\s*[:：]/.exec(t),k=m1?t.lastIndexOf("詞彙等級分布",m1.index):-1,j2=k>0?t.lastIndexOf("分級標記",k):-1,toks=[];
+  if(j2>=0&&k>j2){var seg=t.slice(j2+4,k),rt=/([A-Z][A-Za-z_0-9]*)\s*([\u4e00-\u9fff]+)/g,mm;while((mm=rt.exec(seg)))toks.push({tag:mm[1],w:mm[2]})}
+  return{d:d,body:body,toks:toks}}
+function gdXwords(o){var seen=new Set(),out=[];(o.toks||[]).forEach(function(x){if(LV.get(x.w)!=null||seen.has(x.w))return;seen.add(x.w);out.push(x)});return out}
+function gdOver(off,t,xPn){var tot=0,over=0,rows=[],ord=function(k){return k==="X"?99:parseFloat(k)+(k.indexOf("*")>=0?0.5:0)};Object.keys(off.d).sort(function(a,b){return ord(a)-ord(b)}).forEach(function(k){var c=off.d[k];if(k==="符號")return;tot+=c;var b=parseFloat(k),star=k.indexOf("*")>=0,isOver=k==="X"?true:(b>t||(star&&b===t&&!$("incstar").checked));if(k==="X"){over+=Math.max(0,c-xPn);rows.push([k,c,"未收錄（含專有名詞）"])}else{if(isOver)over+=c;rows.push([k,c,isOver?"超綱":""])}});
+  var den=tot-Math.min(xPn,off.d.X||0);return{tot:den,over:over,ratio:den?over/den*100:0,rows:rows}}
+function gdResult(){var o=GD.off;if(!o)return'<div class="card"><p>還沒有官方的檢核結果。</p></div>'+gdNav(true,false);
+  var xw=gdXwords(o),nb=xw.filter(function(x){return x.tag==="Nb"}).length,pn=GD.pn==null?nb:GD.pn,r=analyze(GD.text,GD.lv,EX),res=gdOver(o,GD.lv,pn),okp=res.ratio<=GD.lim,same=!o.body||o.body===GD.text.replace(/\s+/g,"");
+  var h='<div class="card"><b>⑤ 官方結果</b>'+(same?"":'<div class="gd-wait" style="border-color:var(--red)">⚠ 官方結果裡的文章和你現在寫的不一樣，改過文章請再檢核一次。</div>')
+   +'<div class="row" style="align-items:center"><span class="gd-meter '+(okp?"ok":"bad")+'">超綱 '+res.ratio.toFixed(1)+'%</span><span class="note">'+(okp?"✔ 在 ":"✘ 超過 ")+GD.lim+'% 標準（官方分布計算；不含標點符號）</span></div>'
+   +'<table><tr><th>等級</th><th>詞數</th><th>判定</th></tr>'+res.rows.map(function(x){return'<tr><td>'+esc(x[0])+'</td><td>'+x[1]+'</td><td>'+esc(x[2])+'</td></tr>'}).join("")+'</table>'
+   +(o.d.X?'<div class="row"><label>未收錄（X）裡有幾個是專有名詞？<input type="number" id="gd-pn" min="0" max="'+o.d.X+'" value="'+pn+'" style="width:5em"></label><span class="note">專有名詞（人名、地名等）不算超綱。'+(xw.length?"官方標成專有名詞（Nb）的 "+nb+" 個已先幫你扣掉，不對可以改。":"請數一數填進來。")+'</span></div>':"")
+   +(xw.length?'<div class="note" style="margin-top:8px">對照詞表，官方可能算成「未收錄」的詞（不是專有名詞的，建議換掉）：</div><div class="chips">'+xw.map(function(x){return'<span class="chip">'+esc(x.w)+'<small>'+(x.tag==="Nb"?"專有名詞":"未收錄")+'</small></span>'}).join("")+'</div>':"")+'</div>'
+   +(xw.length?'<div class="note" style="margin-top:8px">對照詞表，官方可能算成「未收錄」的詞（不是專有名詞的，建議換掉）：</div><div class="chips">'+xw.map(function(x){return'<span class="chip">'+esc(x.w)+'<small>'+(x.tag==="Nb"?"專有名詞":"未收錄")+'</small></span>'}).join("")+'</div>':"")+'</div>'
+   +'<div class="card"><b>和我們的結果比一比</b><div class="note">我們算出來超綱 '+r.ratio.toFixed(1)+'%（'+r.total+' 個詞次）。斷詞方式不同，數字可能有一點差，<b>比賽以官方結果為準</b>。</div>'
+   +(r.list.length?'<div class="chips">'+r.list.slice(0,40).map(function(x){return'<span class="chip">'+esc(x.w)+'<small>'+(x.lv==null?"未收錄":"第 "+x.lv+" 級")+'</small></span>'}).join("")+'</div>':'<div class="note">我們這邊沒有找到超綱詞。</div>')+'</div>'
+   +'<div class="gd-go"><button data-g="back">‹ 回去改文章</button><button data-g="recheck">改完再檢核一次</button><button class="pri" id="gd-doc">下載檢核報告（Word）</button><button id="gd-to-prep">做成備課包</button></div>';
+  return h}
+function gdReport(){var o=GD.off,res=gdOver(o,GD.lv,GD.pn||0),r=analyze(GD.text,GD.lv,EX);
+  return'<h1>教材檢核報告（TBCL 第 '+GD.lv+' 級'+(GD.occ?"・"+esc(GD.occ):"")+'・'+esc(GD.kind)+'）</h1><h2>文章</h2>'+GD.text.split(/\n+/).map(function(x){return'<p>'+esc(x)+'</p>'}).join("")
+   +'<h2>國教院教材編輯輔助系統 詞彙等級分布</h2><table border="1" cellspacing="0" cellpadding="5"><tr><th>等級</th><th>詞數</th><th>判定</th></tr>'+res.rows.map(function(x){return'<tr><td>'+esc(x[0])+'</td><td>'+x[1]+'</td><td>'+esc(x[2])+'</td></tr>'}).join("")+'</table>'
+   +'<p>超綱比例 '+res.ratio.toFixed(1)+'%（標準 '+GD.lim+'% 以內：'+(res.ratio<=GD.lim?"符合":"超過")+'；專有名詞 '+(GD.pn||0)+' 個不計）</p>'
+   +(GD.words.length?'<h2>選用的詞</h2><p>'+GD.words.map(esc).join("、")+'</p>':"")+(GD.gram.length?'<h2>練習的語法點</h2><p>'+GD.gram.map(esc).join("、")+'</p>':"")
+   +'<p>（本頁為整理用；比賽要附的檢核結果請另存國教院結果頁的 PDF。）</p>'}
+/* 讀剪貼簿，自動前進 */
+function gdTakeWords(t){var junk=GD_JUNK,occ=new Set(GD_OCC.join("、").split("、")),out=[],seen=new Set(GD.words);
+  (t.match(/[一-鿿]+/g)||[]).forEach(function(w){if(junk.has(w)||occ.has(w)||seen.has(w))return;var l=LV.get(w);if(l==null||Math.floor(l)!==GD.lv)return;seen.add(w);out.push(w)});return out}
+function gdAcceptClip(t,fromBtn){if(!t||!t.trim())return false;
+  if(GD.step===3){var o=gdParse(t);if(!o){if(fromBtn&&$("gd-wait3"))$("gd-wait3").textContent="這段內容看不出是國教院的檢核結果，請在結果頁按 Ctrl+A 全選再複製。";return false}
+    GD.off=o;GD.pn=null;GD.seen=t.slice(0,80);gdGo(4);return true}
+  if(GD.step===1){var ws=gdTakeWords(t);if(ws.length<2){if(fromBtn&&$("gd-wait1"))$("gd-wait1").textContent="這段內容裡沒有找到第 "+GD.lv+" 級的詞，請在國教院的表格上選取後再複製。";return false}
+    GD.words=GD.words.concat(ws);GD.seen=t.slice(0,80);gdSave();var w=$("gd-wait1");if(w){w.className="gd-wait ok";w.textContent="加進來 "+ws.length+" 個詞了。可以再去複製別頁，或按下一步。"}var c=$("gd-chips");if(c)c.innerHTML=gdWords();return true}
+  return false}
+function gdClip(){if(!$("p-guide")||$("p-guide").hidden||(GD.step!==1&&GD.step!==3))return;if(!navigator.clipboard||!navigator.clipboard.readText){return}
+  navigator.clipboard.readText().then(function(t){if(!t||t.slice(0,80)===GD.seen)return;if(GD.step===3&&t===GD.text)return;gdAcceptClip(t,false)}).catch(function(){var w=$(GD.step===1?"gd-wait1":"gd-wait3");if(w&&!w.className.match("ok"))w.innerHTML=w.textContent.replace(/（.*）$/,"")+'<br><small>瀏覽器不讓我自動讀剪貼簿；請把內容貼在下面的框，按按鈕。</small>'})}
+window.addEventListener("focus",function(){setTimeout(gdClip,200)});document.addEventListener("visibilitychange",function(){if(!document.hidden)setTimeout(gdClip,200)});
+$("gd-steps").onclick=function(e){var li=e.target.closest("li");if(li)gdGo(+li.getAttribute("data-s"))};
+$("gd-body").addEventListener("change",function(e){var el=e.target;
+  if(el.id==="gd-lv"){GD.lv=+el.value;GD.words=[];GD.gram=[];gdSave()}
+  else if(el.id==="gd-occ"){GD.occ=el.value;gdSave()}else if(el.id==="gd-kind"){GD.kind=el.value;gdSave()}else if(el.id==="gd-lim"){GD.lim=+el.value;gdSave()}
+  else if(el.classList.contains("gd-g")){var n=el.dataset.n,i=GD.gram.indexOf(n);if(el.checked&&i<0)GD.gram.push(n);if(!el.checked&&i>=0)GD.gram.splice(i,1);gdSave()}
+  else if(el.id==="gd-pn"){GD.pn=Math.max(0,+el.value||0);gdSave();gdRender()}});
+$("gd-body").addEventListener("input",function(e){if(e.target.id==="gd-txt"){GD.text=e.target.value;gdSave();gdLive()}});
+$("gd-body").addEventListener("click",function(e){var b=e.target.closest("[data-g],button,a");if(!b)return;var g=b.getAttribute("data-g"),id=b.id;
+  if(g==="next")gdGo(GD.step+1);else if(g==="back")gdGo(GD.step-1);else if(g==="recheck")gdGo(3);
+  else if(g==="delw"){GD.words.splice(+b.dataset.i,1);gdSave();$("gd-chips").innerHTML=GD.words.length?gdWords():""}
+  else if(g==="find"){var w=b.getAttribute("data-w"),s=splitSent(GD.text).map(function(x){return x.s.trim()}).filter(function(x){return x.indexOf(w)>=0});$("gd-find").textContent="「"+w+"」在："+s.slice(0,3).join(" ／ ")}
+  else if(id==="gd-add1"){gdAcceptClip($("gd-paste1").value,true)}
+  else if(id==="gd-add3"){gdAcceptClip($("gd-paste3").value,true)}
+  else if(id==="gd-one-b"){var v=$("gd-one").value.trim();if(v&&GD.words.indexOf(v)<0){GD.words.push(v);gdSave();$("gd-chips").innerHTML=gdWords();$("gd-one").value=""}}
+  else if(id==="gd-open3"){if(!GD.text.trim()){alert("還沒有文章，請先回上一步寫。");return}load().then(function(){return gdCopy(GD.text)}).then(function(ok){window.open("https://coct.naer.edu.tw/edit.jsp","_blank");var w=$("gd-wait3");if(w)w.textContent=ok?"文章已複製。到國教院貼上、送出，再把結果複製回來⋯⋯":"沒辦法自動複製，請自己選取文章複製。"})}
+  else if(id==="gd-doc"){var html='<html><head><meta charset="utf-8"><title>檢核報告</title><style>body{font-family:"Microsoft JhengHei","PingFang TC",sans-serif;font-size:12pt}table{border-collapse:collapse}</style></head><body>'+gdReport()+'</body></html>',a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["﻿"+html],{type:"application/msword"}));a.download="檢核報告-第"+GD.lv+"級.doc";document.body.appendChild(a);a.click();a.remove()}
+  else if(id==="gd-to-prep"){$("pr-txt").value=GD.text;$("pr-lv").value=GD.lv;tab("prep");prepGo()}});
+function gdStart(){load().then(loadGram).then(function(G){GRAM_CACHE=G;gdRender()})}
+$("q-guide").onclick=function(){tab("guide")};
+
 /* ===== ⑦ 備課包：生詞表（等級／拼音／詞性／英文）＋語法點＋課堂活動，可下載 Word ===== */
 var VINFO=null,PREP=null,PSEED=1;
 function loadVinfo(){if(VINFO)return VINFO;VINFO=fetch("data/vocabinfo.json").then(function(r){if(!r.ok)throw 0;return r.json()}).catch(function(){return{}});return VINFO}
@@ -680,9 +797,9 @@ function engineUi(){["gemini","claude"].forEach(keyStatus);var e=engine();docume
 function engineHint(){var e=engine(),m={puter:"AI：Puter（第一次要登入免費帳號）",gemini:"AI：Gemini（自己的金鑰）",claude:"AI：Claude（自己的金鑰）",none:"不用 AI（只用詞庫換詞）"};$("q-ai-hint").textContent=m[e]||""}
 
 /* 分頁 */
-function tab(n){["quick","engine","check","gen","inv","kwic","gram","art","prep"].forEach(function(k){$("p-"+k).hidden=k!==n});[].forEach.call($("tabs").children,function(b){b.className=b.getAttribute("data-t")===n?"on":""});
+function tab(n){["quick","engine","check","gen","inv","kwic","gram","art","prep","guide"].forEach(function(k){$("p-"+k).hidden=k!==n});[].forEach.call($("tabs").children,function(b){b.className=b.getAttribute("data-t")===n?"on":""});
   $("crumb").classList.toggle("show",n!=="quick");$("tabs").classList.remove("open");$("menu-btn").setAttribute("aria-expanded","false");
-  if(n==="inv")doInv();if(n==="gram")$("gr-lv").onchange();if(n==="engine")engineUi();window.scrollTo(0,0)}
+  if(n==="inv")doInv();if(n==="gram")$("gr-lv").onchange();if(n==="engine")engineUi();if(n==="guide")gdStart();window.scrollTo(0,0)}
 $("tabs").onclick=function(e){var b=e.target.closest("button"),t=b&&b.getAttribute("data-t");if(t)tab(t)};
 $("crumb").onclick=function(){tab("quick");engineHint()};
 $("menu-btn").onclick=function(e){e.stopPropagation();var o=$("tabs").classList.toggle("open");$("menu-btn").setAttribute("aria-expanded",o?"true":"false")};

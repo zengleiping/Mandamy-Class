@@ -7,7 +7,7 @@
 <link rel="icon" href="../../icons/logo.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap">
-<link rel="stylesheet" href="tbcl.css?v=10">
+<link rel="stylesheet" href="tbcl.css?v=11">
 <script>if(/[?&]embed=1(&|$)/.test(location.search))document.documentElement.classList.add("mm-embed")</script>
 </head>
 <body>
@@ -20,6 +20,7 @@
   <div class="menu-wrap">
     <button class="btn-ghost" id="menu-btn" aria-haspopup="true" aria-expanded="false">其他工具 ▾</button>
     <nav class="tabs" id="tabs" aria-label="其他工具">
+      <button data-t="guide"><b>寫教材</b><span>一步一步帶你寫出合乎等級的文章，並到國教院檢核</span></button>
       <button data-t="prep"><b>備課包</b><span>生詞表、語法點、課堂活動，可下載 Word</span></button>
       <button data-t="art"><b>逐詞挑選</b><span>列出每個難詞，自己選要換成什麼</span></button>
       <button data-t="check"><b>等級檢核</b><span>標出超綱詞，算超綱比例</span></button>
@@ -55,7 +56,7 @@
   </div>
   <select id="q-lv" hidden></select><select id="q-lim" hidden><option value="15">15</option><option value="10">10</option></select>
 
-  <div class="ctarow"><button class="cta" id="q-run"><span id="q-run-t">改寫成第 3 級</span></button><button class="btn" id="q-chk">先檢查斷詞</button><button class="btn" id="q-prep">做成備課包</button></div>
+  <div class="ctarow"><button class="cta" id="q-run"><span id="q-run-t">改寫成第 3 級</span></button><button class="btn" id="q-chk">先檢查斷詞</button><button class="btn" id="q-prep">做成備課包</button><button class="btn" id="q-guide">從頭寫教材</button></div>
   <ol class="steps" id="q-steps" hidden></ol>
   <div id="q-out" class="result"></div>
 </section>
@@ -124,6 +125,13 @@
   <div class="row"><label class="grow">查詞 <input id="k-q" placeholder="例如：喜歡"></label><button id="k-go" class="pri">查詢</button></div>
   <div id="k-freq"></div><div id="k-out"></div>
 </section>
+<section id="p-guide" hidden>
+  <h1 class="ttl">寫教材</h1>
+  <p class="lead">從選等級到通過國教院檢核，一步一步來。需要去國教院網站的時候，按鈕會幫你開好，複製完回到這裡就會接著走。</p>
+  <ol class="gd-steps" id="gd-steps"></ol>
+  <div id="gd-body"></div>
+</section>
+
 <section id="p-prep" hidden>
   <h1 class="ttl">備課包</h1>
   <p class="lead">貼一篇文章，選等級，整理出生詞表、語法點和課堂活動。內容會在你的瀏覽器裡產生，改完可以下載成 Word。</p>
@@ -157,6 +165,6 @@
   <button id="cite-copy">複製引用文字</button> <a href="../../docs/%E8%B3%87%E6%96%99%E4%BE%86%E6%BA%90%E8%88%87%E6%8E%88%E6%AC%8A.md" target="_blank">出處與授權</a></footer>
 <script src="https://js.puter.com/v2/" async></script>
 <script src="../../data.js"></script>
-<script src="tbcl.js?v=10"></script>
+<script src="tbcl.js?v=11"></script>
 </body>
 </html>
