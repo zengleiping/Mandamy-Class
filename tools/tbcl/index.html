@@ -7,7 +7,7 @@
 <link rel="icon" href="../../icons/logo.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap">
-<link rel="stylesheet" href="tbcl.css?v=7">
+<link rel="stylesheet" href="tbcl.css?v=8">
 <script>if(/[?&]embed=1(&|$)/.test(location.search))document.documentElement.classList.add("mm-embed")</script>
 </head>
 <body>
@@ -49,6 +49,7 @@
     <div class="lbl">標準</div>
     <span class="pills" role="group" aria-label="檢核標準"><button id="q-lim15" aria-pressed="true">教材 15%</button><button id="q-lim10" aria-pressed="false">試題 10%</button></span>
     <span class="lbl2">太難又換不掉的名稱</span><select id="q-hard" aria-label="太難又換不掉的名稱怎麼處理"><option value="omit">省略舉例，不亂解釋</option><option value="keep">保留原詞，括號加解釋</option><option value="describe">用簡單的話描述</option></select>
+    <span id="q-glossbox" hidden><span class="lbl2">解釋用</span> <select id="q-gloss" aria-label="括號解釋的語言"><option value="English">English</option><option value="日本語">日本語</option><option value="한국어">한국어</option><option value="Tiếng Việt">Tiếng Việt</option><option value="ภาษาไทย">ภาษาไทย</option><option value="Bahasa Indonesia">Bahasa Indonesia</option><option value="Español">Español</option><option value="Français">Français</option><option value="Deutsch">Deutsch</option><option value="Русский">Русский</option><option value="*">其他…</option></select> <input id="q-gloss2" placeholder="語言名稱" size="9" hidden></span>
     <span class="hint" id="q-ai-hint"></span>
   </div>
   <select id="q-lv" hidden></select><select id="q-lim" hidden><option value="15">15</option><option value="10">10</option></select>
@@ -134,6 +135,6 @@
   <button id="cite-copy">複製引用文字</button> <a href="../../docs/%E8%B3%87%E6%96%99%E4%BE%86%E6%BA%90%E8%88%87%E6%8E%88%E6%AC%8A.md" target="_blank">出處與授權</a></footer>
 <script src="https://js.puter.com/v2/" async></script>
 <script src="../../data.js"></script>
-<script src="tbcl.js?v=7"></script>
+<script src="tbcl.js?v=8"></script>
 </body>
 </html>

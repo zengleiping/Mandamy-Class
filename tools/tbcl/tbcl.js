@@ -32,8 +32,14 @@ function load(){
 function fmm(s){var o=[],i=0;while(i<s.length){var L=Math.min(MAXLEN,s.length-i),w=s[i];for(;L>1;L--){var c=s.substr(i,L);if(KEYS.has(c)){w=c;break}}o.push(w);i+=w.length}return o}
 function bmm(s){var o=[],j=s.length;while(j>0){var L=Math.min(MAXLEN,j),w=s[j-1];for(;L>1;L--){var c=s.substr(j-L,L);if(KEYS.has(c)){w=c;break}}o.unshift(w);j-=w.length}return o}
 function segRun(s){var a=fmm(s),b=bmm(s);if(a.length!==b.length)return a.length<b.length?a:b;var sa=a.filter(function(x){return x.length===1}).length,sb=b.filter(function(x){return x.length===1}).length;return sb<sa?b:a}
-function tokens(str){var o=[],buf="";function f(){if(buf){segRun(buf).forEach(function(w){if(w.length>1&&SPLIT.has(w)){for(var ch2 of w)o.push({w:ch2,han:true})}else o.push({w:w,han:true})});buf=""}}
-  for(var ch of str){if(isHan(ch))buf+=ch;else{f();o.push({w:ch,han:false})}}f();return o}
+var GLOSS=/[A-Za-z\u0E00-\u0E7F\uAC00-\uD7AF\u3040-\u30FF\u00C0-\u024F\u0400-\u04FF]/;
+/* 斷詞。括號裡的外文解釋（例如「布袋戲（Taiwanese glove puppetry）」）不算中文詞，整段略過 */
+function tokens(str){var o=[],buf="",chars=[...str],i=0;function f(){if(buf){segRun(buf).forEach(function(w){if(w.length>1&&SPLIT.has(w)){for(var ch2 of w)o.push({w:ch2,han:true})}else o.push({w:w,han:true})});buf=""}}
+  while(i<chars.length){var ch=chars[i];
+    if(ch==="（"||ch==="("){var j=i+1;while(j<chars.length&&chars[j]!=="）"&&chars[j]!==")"&&j-i<90)j++;
+      if(j<chars.length&&GLOSS.test(chars.slice(i,j+1).join(""))){f();for(var q=i;q<=j;q++)o.push({w:chars[q],han:false,gl:q===i});i=j+1;continue}}
+    if(isHan(ch))buf+=ch;else{f();o.push({w:ch,han:false})}i++}
+  f();return o}
 function levelOf(w){if(CUSTOM.has(w))return CUSTOM.get(w)||null;var l=LV.get(w);if(l!=null)return l;if(EXT.has(w)&&!redup(w))return null;
   var r=redup(w);if(r){var rl=LV.get(r);if(rl!=null)return rl}return null}
 /* 疊字：急急忙忙（AABB）、討論討論（ABAB）按原詞（急忙、討論）的等級算 */
@@ -42,9 +48,11 @@ function redup(w){if(w.length!==4)return null;if(w[0]===w[1]&&w[2]===w[3]&&w[0]!
 function effLv(w,l){return(!$("incstar").checked&&STAR.has(w))?l+0.5:l}
 
 function analyze(text,target,excl){
-  var toks=tokens(text),tot=0,over=0,types=new Map(),exN=0;
-  toks.forEach(function(t){
-    if(!t.han)return;t.lv=levelOf(t.w);t.ex=excl.has(t.w);
+  var toks=tokens(text),tot=0,over=0,types=new Map(),exN=0,glossed=new Set();
+  /* 後面緊接著外文括號解釋的詞（例如「布袋戲（Taiwanese glove puppetry）」）已經加註，不算難詞 */
+  toks.forEach(function(t,i){if(t.gl){var len=0,k=i-1;while(k>=0&&toks[k].han&&len<2){glossed.add(k);len+=toks[k].w.length;k--}}});
+  toks.forEach(function(t,i){
+    if(!t.han)return;t.lv=levelOf(t.w);t.ex=excl.has(t.w)||glossed.has(i);
     if(t.ex){exN++;t.st="ex";return}
     tot++;t.st=(t.lv==null)?"unk":(effLv(t.w,t.lv)>target?"over":"ok");
     var e=types.get(t.w)||{w:t.w,lv:t.lv,n:0,st:t.st};e.n++;types.set(t.w,e);
@@ -370,10 +378,11 @@ function buildRewrite(r,items,choiceFn,t){var ch={};items.forEach(function(it){v
 function levelWords(t,n){var arr=[];LV.forEach(function(l,w){if(l<=t&&w.length>=1&&!EXT.has(w))arr.push(w)});
   var F=FREQV||new Map();arr.sort(function(a,b){return((F.get(a)||{rank:1e9}).rank)-((F.get(b)||{rank:1e9}).rank)});return arr.slice(0,n)}
 /* 太難又換不掉的名稱（例如布袋戲、毽子、扯鈴）怎麼處理：老師選，預設「省略舉例」，避免用拐彎抹角的描述亂翻 */
+function glossLang(){var s=$("q-gloss"),v=s?s.value:"English";if(v==="*"){var x=$("q-gloss2");v=(x&&x.value.trim())||"English"}return v}
 function hardMode(){var s=$("q-hard");return s?s.value:"omit"}
 function hardRule(){var m=hardMode();
   var base="4. 太難的詞，如果有意思相同的簡單說法就換掉。";
-  if(m==="keep")return base+"找不到簡單說法、又不能省略的詞，保留原詞，第一次出現時在後面用括號寫一個簡單的解釋。\n";
+  if(m==="keep"){var L=glossLang();return base+"找不到簡單說法、又不能省略的名稱，保留原詞，第一次出現時在後面用括號寫簡短的"+L+"解釋（只寫這個名稱是什麼，一行以內；不要用中文解釋），例如："+(L==="English"?"布袋戲（Taiwanese glove puppetry）":"布袋戲（用"+L+"寫的簡短解釋）")+"。\n"}
   if(m==="describe")return base+"找不到簡單說法的名稱，用簡單的話描述，但描述要自然，不要拐彎抹角、不要用「一種…的東西」這類說法。\n";
   return base+"找不到簡單說法的名稱（特別是舉例時列出的文化、物品、食物名稱，例如「比如說毽子、布袋戲、扯鈴」），不要用奇怪的描述去解釋，也不要硬翻；請直接省略這些舉例，只保留上面的類別或主要句子（例如「有很多文化活動用的東西，都可以租借」）。\n"}
 function qPrompt(text,t,bad,prev,ctx){var names=[...EX].filter(function(w){return text.indexOf(w)>=0});var vw=levelWords(t,t<=3?700:450).join("、");
@@ -414,7 +423,7 @@ async function aiRewriteText(text,t,lim,onStep){var chunks=chunkText(text,260),r
   logAI("一鍵改寫","AI（"+Object.keys(models).join("、")+"）","把文章改寫成指定 TBCL 等級","AI 依等級與難詞清單，一次改幾句，每段用 TBCL 詞表檢查，還有難詞就對照原文再修（每段最多 3 次）→ 老師確認","一鍵改寫 第 "+t+" 級");
   return res.join("\n")}
 /* 改完再請 AI 對照原文，找出「多加了意思、漏掉、改錯」的句子 */
-async function aiVerify(orig,out){var p="下面是原文和改寫後的文章。"+(hardMode()==="omit"?"改寫時刻意省略了太難的舉例，這不算問題。":"")+"請找出改寫後意思有問題的句子：(1) 加了原文沒有的意思或評論；(2) 漏掉原文重要的資訊；(3) 意思改錯、不通順。只列真的有問題的，最多 6 個。\n只輸出 JSON 陣列：[{\"orig\":\"原文裡對應的句子\",\"new\":\"改寫後文章裡對應的句子（必須和改寫後文章的字完全一樣）\",\"problem\":\"一句話說明問題\"}]；沒有問題就輸出 []。\n\n原文：\n"+orig+"\n\n改寫後：\n"+out;
+async function aiVerify(orig,out){var p="下面是原文和改寫後的文章。"+(hardMode()==="omit"?"改寫時刻意省略了太難的舉例，這不算問題。":hardMode()==="keep"?"括號裡的外文解釋是刻意加的，不算問題。":"")+"請找出改寫後意思有問題的句子：(1) 加了原文沒有的意思或評論；(2) 漏掉原文重要的資訊；(3) 意思改錯、不通順。只列真的有問題的，最多 6 個。\n只輸出 JSON 陣列：[{\"orig\":\"原文裡對應的句子\",\"new\":\"改寫後文章裡對應的句子（必須和改寫後文章的字完全一樣）\",\"problem\":\"一句話說明問題\"}]；沒有問題就輸出 []。\n\n原文：\n"+orig+"\n\n改寫後：\n"+out;
   var r=await aiText(p),m=r.text.match(/\[[\s\S]*\]/);if(!m)return[];var arr;try{arr=JSON.parse(m[0])}catch(e){return[]}
   logAI("一鍵改寫後檢查意思","AI（"+r.model+"）","對照原文，找出改寫時多加、漏掉或改錯的句子","AI 對照原文和改寫稿 → 老師決定要不要重改","檢查改寫");
   return(Array.isArray(arr)?arr:[]).filter(function(x){return x&&typeof x["new"]==="string"&&out.indexOf(x["new"])>=0&&x["new"]!==x.orig}).slice(0,6)}
@@ -511,7 +520,12 @@ async function quickGo(){var text=$("q-txt").value,t=qLevel(),lim=+$("q-lim").va
 async function quickAgain(){var out=$("q-new").value;if(!await ensureAi())return;var st=["AI 再改一次"];qSteps(st,0);
   try{var ai=await aiRewriteText(out,QK.t,QK.lim,function(m){var li=document.querySelector("#q-steps li");if(li)li.lastChild.textContent=m});try{QK.checks=await aiVerify(QK.text,ai)}catch(e){QK.checks=[]}qSteps(null);qShow(ai,"",[],"又請 AI 改了一次。")}catch(e){qSteps(null);qShow(out,"",[],"AI 沒有成功（"+e.message+"）。")}}
 try{var hs=localStorage.getItem("mm_tbcl_hard");if(hs)$("q-hard").value=hs}catch(e){}
-$("q-hard").onchange=function(){try{localStorage.setItem("mm_tbcl_hard",this.value)}catch(e){}};
+function glossUi(){$("q-glossbox").hidden=$("q-hard").value!=="keep";$("q-gloss2").hidden=$("q-gloss").value!=="*"}
+try{var gs=localStorage.getItem("mm_tbcl_gloss"),gx=localStorage.getItem("mm_tbcl_gloss2");if(gs)$("q-gloss").value=gs;if(gx)$("q-gloss2").value=gx}catch(e){}
+$("q-hard").onchange=function(){try{localStorage.setItem("mm_tbcl_hard",this.value)}catch(e){}glossUi()};
+$("q-gloss").onchange=function(){try{localStorage.setItem("mm_tbcl_gloss",this.value)}catch(e){}glossUi()};
+$("q-gloss2").oninput=function(){try{localStorage.setItem("mm_tbcl_gloss2",this.value)}catch(e){}};
+glossUi();
 $("q-run").onclick=quickGo;
 document.querySelectorAll("[data-sample]").forEach(function(b){b.onclick=function(){var t=$("q-txt");t.value=QSAMPLES[+b.getAttribute("data-sample")];t.dispatchEvent(new Event("input"));t.focus()}});
 $("q-txt").oninput=function(){$("q-count").textContent=this.value.replace(/\s/g,"").length+" 字";if(!$("q-seg").hidden){SEGSEL=-1;segRender()}};
