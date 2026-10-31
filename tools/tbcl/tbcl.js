@@ -293,6 +293,124 @@ $("gr-q").oninput=$("gr-lv").onchange=function(){loadGram().then(function(G){var
 for(var gi=1;gi<=5;gi++){var go=document.createElement("option");go.value=gi;go.textContent="第 "+gi+" 級";$("gr-lv").appendChild(go)}
 
 
+
+/* ===== ⑦ 備課包：生詞表（等級／拼音／詞性／英文）＋語法點＋課堂活動，可下載 Word ===== */
+var VINFO=null,PREP=null,PSEED=1;
+function loadVinfo(){if(VINFO)return VINFO;VINFO=fetch("data/vocabinfo.json").then(function(r){if(!r.ok)throw 0;return r.json()}).catch(function(){return{}});return VINFO}
+function lvTag(w,l){return l==null?"未收錄":"第 "+l+(STAR.has(w)?"*":"")+" 級"}
+function rnd(){PSEED=(PSEED*1103515245+12345)&0x7fffffff;return PSEED/0x7fffffff}
+function shuf(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(rnd()*(i+1)),t=a[i];a[i]=a[j];a[j]=t}return a}
+/* 語法點名稱 → 可在文章裡找的片段（只用有固定詞語的；「的」「了」「在」這類太泛的單字不比對） */
+var GGEN={"的":1,"了":1,"在":1,"上":1,"是":1,"有":1,"和":1,"也":1,"都":1,"就":1,"不":1,"沒":1,"得":1,"地":1,"要":1,"會":1,"能":1,"又":1,"到":1,"給":1,"從":1,"用":1,"跟":1,"想":1,"請":1,"幫":1};
+function gramPat(name){var n=String(name).replace(/[（(][^）)]*[）)]/g,"").replace(/[0-9０-９]/g,"");
+  var segs=n.split(/[^一-鿿／\/]+/).map(function(x){return x.split(/[／\/]/).filter(Boolean)}).filter(function(a){return a.length});
+  if(!segs.length)return null;
+  if(segs.length===1){if(!segs[0].some(function(a){return a.length>=2}))return null;return segs}
+  if(segs.some(function(a){return a.every(function(x){return x.length<2&&GGEN[x]})}))return null;
+  if(segs.reduce(function(n,a){return n+Math.min.apply(null,a.map(function(x){return x.length}))},0)<3)return null;
+  return segs}
+function gramHit(sent,segs){var pos=0;for(var i=0;i<segs.length;i++){var best=-1,bl=0;
+    segs[i].forEach(function(a){var k=sent.indexOf(a,pos);if(k>=0&&(best<0||k<best)){best=k;bl=a.length}});
+    if(best<0)return false;pos=best+bl}return true}
+function prepBuild(text,t,low,G,VI){
+  var r=analyze(text,t,EX),sents=splitSent(text).map(function(x){return x.s.trim().replace(/^[」』”’）)\s]+/,"")}).filter(Boolean),seen=new Set(),rows=[];
+  function sentOf(w){for(var i=0;i<sents.length;i++)if(sents[i].indexOf(w)>=0)return sents[i];return""}
+  r.toks.forEach(function(tk){if(!tk.han||tk.st==="ex"||seen.has(tk.w))return;seen.add(tk.w);
+    var l=tk.lv,eff=l==null?99:effLv(tk.w,l),kind=l==null?"unk":eff>t?"over":(Math.floor(l)===t?"new":"low");
+    if(kind==="low"&&!low)return;if(tk.w.length===1&&kind==="low")return;
+    var vi=VI[tk.w]||["","",""];rows.push({w:tk.w,lv:lvTag(tk.w,l),kind:kind,py:vi[0],pos:vi[1],en:vi[2],ex:sentOf(tk.w),on:kind==="new"||kind==="over"||kind==="unk"})});
+  var order={over:0,unk:0,"new":1,low:2};rows.sort(function(a,b){return order[a.kind]-order[b.kind]});
+  var n=0;rows.forEach(function(x){if(x.kind==="new"){n++;if(n>15)x.on=false}});
+  var gr=[];G.forEach(function(g){var segs=gramPat(g.name);if(!segs)return;
+    for(var i=0;i<sents.length;i++)if(gramHit(sents[i],segs)){gr.push({lv:g.lv,star:g.star,name:g.name,ex:g.ex,sent:sents[i],on:g.lv>=t});break}});
+  gr.sort(function(a,b){return b.lv-a.lv});
+  return{t:t,text:text,r:r,sents:sents,rows:rows,gr:gr,acts:null}}
+function prepActs(P){var on=P.rows.filter(function(x){return x.on&&x.w.length>=1}),used=new Set(),cl=[];
+  shuf(on).forEach(function(x){if(cl.length>=6)return;var s=P.sents.filter(function(z){return z.indexOf(x.w)>=0&&z.length<=40&&!used.has(z)})[0];
+    if(!s)return;used.add(s);cl.push({w:x.w,s:s.replace(x.w,"＿＿＿＿")})});
+  var mt=shuf(on.filter(function(x){return x.en})).slice(0,8),ens=shuf(mt.map(function(x,i){return{i:i,en:x.en.split(";")[0]}}));
+  var od=shuf(P.sents.filter(function(s){var n=tokens(s).filter(function(k){return k.han}).length;return n>=5&&n<=11&&s.length<=30})).slice(0,3).map(function(s){
+    var parts=tokens(s.replace(/[。！？!?，,、；：]/g," ")).filter(function(k){return k.han}).map(function(k){return k.w}),sh=shuf(parts);if(sh.join("")===parts.join(""))sh=parts.slice().reverse();
+    return{s:s,sh:sh}});
+  P.acts={cloze:cl,match:{words:mt,ens:ens},order:od,q:(P.acts&&P.acts.q)||null}}
+function prepRender(){var P=PREP;if(!P)return;var h="",r=P.r,t=P.t;
+  var okp=r.ratio<=15;
+  h+='<div class="card"><b>這篇文章</b>　第 '+t+' 級　<span class="note">超綱 '+r.ratio.toFixed(1)+'%（教材 15% 以內：'+(okp?"符合":"超過")+'；試題 10% 以內：'+(r.ratio<=10?"符合":"超過")+'）</span></div>';
+  h+='<div class="card"><b>① 生詞表</b><span class="note">　拼音、詞性、英文是查詞典帶入的，多義詞可能不符合這篇文章的意思（例如「一邊」），請老師看過；格子可以直接改。取消勾選的詞不會出現在下載的檔案裡。</span>'
+   +'<div class="row" style="margin:8px 0"><button id="pr-ai">用 AI 依文章意思重新整理英文和詞性</button><span class="note" id="pr-ai-st"></span></div>'
+   +'<table><tr><th></th><th>詞</th><th>拼音</th><th>詞性</th><th>英文</th><th>等級</th><th>文章裡的句子</th></tr>';
+  P.rows.forEach(function(x,i){var tag=x.kind==="over"||x.kind==="unk"?'<span class="tag bad">'+(x.kind==="unk"?"未收錄":"超綱")+'</span>':"";
+    h+='<tr><td><input type="checkbox" class="pr-on" data-i="'+i+'"'+(x.on?" checked":"")+'></td><td class="w"><b>'+esc(x.w)+'</b>'+tag+'</td>'
+     +'<td><input data-i="'+i+'" data-f="py" value="'+esc(x.py)+'"></td><td><input data-i="'+i+'" data-f="pos" value="'+esc(x.pos)+'" size="5"></td>'
+     +'<td><input data-i="'+i+'" data-f="en" value="'+esc(x.en)+'"></td><td>'+esc(x.lv)+'</td><td>'+esc(x.ex)+'</td></tr>'});
+  h+='</table></div>';
+  h+='<div class="card"><b>② 語法點</b><span class="note">　文章裡可能出現的 TBCL 語法點（用名稱自動比對，請老師確認）。</span>';
+  if(!P.gr.length)h+='<p class="note">沒有比對到。</p>';
+  else{h+='<table><tr><th></th><th>等級</th><th>語法點</th><th>TBCL 例句</th><th>文章裡的句子</th></tr>';
+    P.gr.forEach(function(g,i){var tg=g.lv>t?'<span class="tag bad">高於本級</span>':"";
+      h+='<tr><td><input type="checkbox" class="pr-gon" data-i="'+i+'"'+(g.on?" checked":"")+'></td><td>第 '+g.lv+(g.star?"*":"")+' 級'+tg+'</td><td>'+esc(g.name)+'</td><td>'+esc(g.ex)+'</td><td>'+esc(g.sent)+'</td></tr>'});
+    h+='</table>'}
+  h+='</div>';
+  prepActs(P);var A=P.acts;
+  h+='<div class="card pr-act"><b>③ 課堂活動</b><span class="note">　不用 AI，直接從這篇文章和上面勾選的生詞做出來。</span><div class="row" style="margin:8px 0"><button id="pr-re">換一組</button><button id="pr-q">用 AI 加幾個討論問題</button><span class="note" id="pr-q-st"></span></div>';
+  if(A.cloze.length){var bank=shuf(A.cloze.map(function(c){return c.w}));
+    h+='<p><b>活動一　選詞填空</b>　把詞放進句子裡。</p><div class="pr-bank">'+bank.map(function(w){return'<span>'+esc(w)+'</span>'}).join("")+'</div><ol>'+A.cloze.map(function(c){return'<li>'+esc(c.s)+'</li>'}).join("")+'</ol><p class="pr-key">答案：'+A.cloze.map(function(c,i){return(i+1)+". "+esc(c.w)}).join("　")+'</p>'}
+  if(A.match.words.length>=3){var L="ABCDEFGH";
+    h+='<p><b>活動二　配對</b>　把中文和英文連起來。</p><table><tr><th>中文</th><th>英文</th></tr>'+A.match.words.map(function(w,i){return'<tr><td>'+(i+1)+'. '+esc(w.w)+'</td><td>'+L[i]+'. '+esc(A.match.ens[i].en)+'</td></tr>'}).join("")+'</table>'
+     +'<p class="pr-key">答案：'+A.match.words.map(function(w,i){var k=A.match.ens.findIndex(function(e){return e.i===i});return(i+1)+"-"+L[k]}).join("　")+'</p>'}
+  if(A.order.length)h+='<p><b>活動三　排句子</b>　把詞排成通順的句子。</p><ol>'+A.order.map(function(o){return'<li>'+o.sh.map(esc).join(" / ")+'</li>'}).join("")+'</ol><p class="pr-key">答案：'+A.order.map(function(o,i){return(i+1)+". "+esc(o.s)}).join("　")+'</p>';
+  if(A.q)h+='<p><b>討論問題</b>（AI 產生，請老師看過）</p><ol>'+A.q.map(function(x){return'<li>'+esc(x)+'</li>'}).join("")+'</ol>';
+  if(!A.cloze.length&&A.match.words.length<3&&!A.order.length)h+='<p class="note">文章太短或勾選的生詞太少，做不出活動。</p>';
+  h+='</div>';
+  h+='<div class="row"><button class="pri" id="pr-doc">下載 Word</button><button id="pr-print">列印</button><span class="note">下載的檔案不含姓名或單位。</span></div>';
+  $("pr-out").innerHTML=h}
+function prepDoc(){var P=PREP,A=P.acts,h='<h1>備課包（TBCL 第 '+P.t+' 級）</h1><h2>課文</h2>'+P.text.split(/\n+/).map(function(x){return'<p>'+esc(x)+'</p>'}).join("");
+  var rows=P.rows.filter(function(x){return x.on});
+  h+='<h2>生詞表</h2><table border="1" cellspacing="0" cellpadding="5"><tr><th>詞</th><th>拼音</th><th>詞性</th><th>英文</th><th>等級</th><th>例句</th></tr>'+rows.map(function(x){return'<tr><td>'+esc(x.w)+'</td><td>'+esc(x.py)+'</td><td>'+esc(x.pos)+'</td><td>'+esc(x.en)+'</td><td>'+esc(x.lv)+'</td><td>'+esc(x.ex)+'</td></tr>'}).join("")+'</table>';
+  var g=P.gr.filter(function(x){return x.on});
+  if(g.length)h+='<h2>語法點</h2><table border="1" cellspacing="0" cellpadding="5"><tr><th>等級</th><th>語法點</th><th>例句</th><th>課文裡的句子</th></tr>'+g.map(function(x){return'<tr><td>第 '+x.lv+(x.star?"*":"")+' 級</td><td>'+esc(x.name)+'</td><td>'+esc(x.ex)+'</td><td>'+esc(x.sent)+'</td></tr>'}).join("")+'</table>';
+  h+='<h2>課堂活動</h2>';
+  if(A.cloze.length)h+='<h3>活動一　選詞填空</h3><p>'+shuf(A.cloze.map(function(c){return c.w})).map(esc).join("　")+'</p><ol>'+A.cloze.map(function(c){return'<li>'+esc(c.s)+'</li>'}).join("")+'</ol>';
+  if(A.match.words.length>=3){var L="ABCDEFGH";h+='<h3>活動二　配對</h3><table border="1" cellspacing="0" cellpadding="5">'+A.match.words.map(function(w,i){return'<tr><td>'+(i+1)+'. '+esc(w.w)+'</td><td>'+L[i]+'. '+esc(A.match.ens[i].en)+'</td></tr>'}).join("")+'</table>'}
+  if(A.order.length)h+='<h3>活動三　排句子</h3><ol>'+A.order.map(function(o){return'<li>'+o.sh.map(esc).join(" / ")+'</li>'}).join("")+'</ol>';
+  if(A.q)h+='<h3>討論問題</h3><ol>'+A.q.map(function(x){return'<li>'+esc(x)+'</li>'}).join("")+'</ol>';
+  h+='<h2>答案</h2>';
+  if(A.cloze.length)h+='<p>活動一：'+A.cloze.map(function(c,i){return(i+1)+". "+esc(c.w)}).join("　")+'</p>';
+  if(A.match.words.length>=3)h+='<p>活動二：'+A.match.words.map(function(w,i){var k=A.match.ens.findIndex(function(e){return e.i===i});return(i+1)+"-"+L2(k)}).join("　")+'</p>';
+  if(A.order.length)h+='<p>活動三：'+A.order.map(function(o,i){return(i+1)+". "+esc(o.s)}).join("　")+'</p>';
+  return h}
+function L2(k){return"ABCDEFGH"[k]}
+function prepGo(){var text=$("pr-txt").value;if(!text.trim()){$("pr-out").innerHTML='<p class="note">請先貼上文章。</p>';return}
+  $("pr-out").innerHTML='<p class="note">整理中…</p>';
+  Promise.all([load(),loadVinfo(),loadGram()]).then(function(a){PREP=prepBuild(text,+$("pr-lv").value,$("pr-low").checked,a[2],a[1]);prepRender()})}
+$("pr-run").onclick=prepGo;
+$("q-prep").onclick=function(){$("pr-txt").value=$("q-txt").value;$("pr-lv").value=qLevel();tab("prep");if($("pr-txt").value.trim())prepGo()};
+$("pr-out").addEventListener("input",function(e){var el=e.target;if(el.dataset.f&&PREP){PREP.rows[+el.dataset.i][el.dataset.f]=el.value}});
+$("pr-out").addEventListener("change",function(e){var el=e.target;if(!PREP)return;
+  if(el.classList.contains("pr-on")){PREP.rows[+el.dataset.i].on=el.checked}
+  else if(el.classList.contains("pr-gon")){PREP.gr[+el.dataset.i].on=el.checked}});
+$("pr-out").addEventListener("click",function(e){var b=e.target.closest("button");if(!b||!PREP)return;
+  if(b.id==="pr-re"){prepRender();return}
+  if(b.id==="pr-doc"){var html='<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><title>備課包</title><style>body{font-family:"Microsoft JhengHei","PingFang TC",sans-serif;font-size:12pt}table{border-collapse:collapse}</style></head><body>'+prepDoc()+'</body></html>';
+    var a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["﻿"+html],{type:"application/msword"}));a.download="備課包-第"+PREP.t+"級.doc";document.body.appendChild(a);a.click();a.remove();return}
+  if(b.id==="pr-print"){var w=window.open("","_blank");if(w){w.document.write('<html><head><meta charset="utf-8"><title>備課包</title><style>body{font-family:sans-serif}table{border-collapse:collapse}td,th{border:1px solid #999;padding:4px 8px}</style></head><body>'+prepDoc()+'</body></html>');w.document.close();w.print()}return}
+  if(b.id==="pr-ai"){prepAiFill();return}
+  if(b.id==="pr-q"){prepAiQ();return}});
+async function prepAiFill(){var st=$("pr-ai-st"),todo=PREP.rows.filter(function(x){return x.on});
+  if(!todo.length){st.textContent="沒有勾選的詞";return}
+  st.textContent="AI 處理中…";
+  try{if(!(await ensureAi())){st.textContent="還沒有可用的 AI，請到「AI 設定」";return}
+    var ws=todo.map(function(x){return x.w}),sent={};todo.forEach(function(x){sent[x.w]=x.ex});
+    var out=await aiText('請替下面的華語生詞寫「詞性」和「英文」。每個詞都附了它出現的句子，請依句子裡的意思，不要寫字典裡其他的意思。詞性只用：名詞、動詞、形容詞、副詞、介詞、連詞、助詞、量詞、代名詞、數詞。英文要短（1–3 個意思）。\n只回傳 JSON 陣列，每項 {"w":"詞","pos":"詞性","en":"英文"}，不要其他文字。\n'+JSON.stringify(ws.map(function(w){return{w:w,s:sent[w]}})));
+    var m=String(out).match(/\[[\s\S]*\]/);if(!m)throw new Error("AI 回傳的格式不對");var arr=JSON.parse(m[0]),n=0;
+    arr.forEach(function(a){PREP.rows.forEach(function(x){if(x.w===a.w&&x.on){if(a.en){x.en=a.en;n++}if(a.pos)x.pos=a.pos}})});
+    prepRender();$("pr-ai-st").textContent="補了 "+n+" 個，請老師看過"}catch(e){st.textContent="失敗："+e.message}}
+async function prepAiQ(){var st=$("pr-q-st");st.textContent="AI 處理中…";
+  try{if(!(await ensureAi())){st.textContent="還沒有可用的 AI，請到「AI 設定」";return}
+    var out=await aiText("根據下面這篇文章，寫 3 個課堂討論問題，給 TBCL 第 "+PREP.t+" 級的外國學生。問題要短，用這個等級的詞，一行一題，不要編號，不要其他文字。\n\n"+PREP.text.slice(0,1500));
+    PREP.acts.q=String(out).split(/\n+/).map(function(x){return x.replace(/^[\s\d.、\-*]+/,"").trim()}).filter(Boolean).slice(0,4);
+    prepRender()}catch(e){st.textContent="失敗："+e.message}}
+
 /* ===== ⑥ 整篇文章：找出全部超綱詞，逐個給建議，一鍵（或逐一）套用 ===== */
 var ART=null;
 function artItems(r,t){var m=new Map();
@@ -562,14 +680,14 @@ function engineUi(){["gemini","claude"].forEach(keyStatus);var e=engine();docume
 function engineHint(){var e=engine(),m={puter:"AI：Puter（第一次要登入免費帳號）",gemini:"AI：Gemini（自己的金鑰）",claude:"AI：Claude（自己的金鑰）",none:"不用 AI（只用詞庫換詞）"};$("q-ai-hint").textContent=m[e]||""}
 
 /* 分頁 */
-function tab(n){["quick","engine","check","gen","inv","kwic","gram","art"].forEach(function(k){$("p-"+k).hidden=k!==n});[].forEach.call($("tabs").children,function(b){b.className=b.getAttribute("data-t")===n?"on":""});
+function tab(n){["quick","engine","check","gen","inv","kwic","gram","art","prep"].forEach(function(k){$("p-"+k).hidden=k!==n});[].forEach.call($("tabs").children,function(b){b.className=b.getAttribute("data-t")===n?"on":""});
   $("crumb").classList.toggle("show",n!=="quick");$("tabs").classList.remove("open");$("menu-btn").setAttribute("aria-expanded","false");
   if(n==="inv")doInv();if(n==="gram")$("gr-lv").onchange();if(n==="engine")engineUi();window.scrollTo(0,0)}
 $("tabs").onclick=function(e){var b=e.target.closest("button"),t=b&&b.getAttribute("data-t");if(t)tab(t)};
 $("crumb").onclick=function(){tab("quick");engineHint()};
 $("menu-btn").onclick=function(e){e.stopPropagation();var o=$("tabs").classList.toggle("open");$("menu-btn").setAttribute("aria-expanded",o?"true":"false")};
 document.addEventListener("click",function(e){if(!e.target.closest(".menu-wrap")){$("tabs").classList.remove("open");$("menu-btn").setAttribute("aria-expanded","false")}});
-fillLv($("lv"),3);fillLv($("q-lv"),3);qBuildLevels();qSyncLevel();engineHint();fillLv($("a-lv"),3);fillLv($("g-lv"),3);fillLv($("i-lv"),3);renderLog();
+fillLv($("lv"),3);fillLv($("q-lv"),3);qBuildLevels();qSyncLevel();engineHint();fillLv($("a-lv"),3);fillLv($("pr-lv"),3);fillLv($("g-lv"),3);fillLv($("i-lv"),3);renderLog();
 var q=new URLSearchParams(location.search);if(q.get("level"))$("lv").value=$("g-lv").value=$("i-lv").value=q.get("level");
 load().then(qSyncLevel);
 window.MMTBCL={load:load,levelOf:levelOf,analyze:analyze};

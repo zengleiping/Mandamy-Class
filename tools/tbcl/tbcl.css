@@ -179,3 +179,11 @@ mark{background:var(--yellow-soft);padding:0 2px;color:inherit}
 
 .keyrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:2px 0 4px 30px}.keyrow input{flex:1;min-width:200px;max-width:380px;font-family:ui-monospace,Menlo,monospace;font-size:14px}
 @media (max-width:700px){.keyrow{margin-left:0}}
+
+/* 備課包 */
+#pr-out table input{width:100%;border:0;background:transparent;padding:2px 0;font-size:14px}
+#pr-out table input:focus{outline:1px solid var(--red);background:var(--panel)}
+#pr-out .w{min-width:4.5em}.pr-act ol{margin:6px 0 0;padding-left:22px}.pr-act li{margin:6px 0;line-height:1.9}
+.pr-bank{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.pr-bank span{border:1px solid var(--line-2);border-radius:4px;padding:2px 10px}
+.pr-key{color:var(--ink-3);font-size:13.5px}.tag{display:inline-block;font-size:12px;border:1px solid var(--line-2);border-radius:4px;padding:0 6px;margin-left:6px;color:var(--ink-3)}
+.tag.bad{border-color:var(--red);color:var(--red)}
