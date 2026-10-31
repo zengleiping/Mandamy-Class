@@ -5,24 +5,62 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>TBCL 等級檢核｜曼米中文</title>
 <link rel="icon" href="../../icons/logo.svg">
-<link rel="stylesheet" href="tbcl.css?v=1">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@700&display=swap">
+<link rel="stylesheet" href="tbcl.css?v=2">
 <script>if(/[?&]embed=1(&|$)/.test(location.search))document.documentElement.classList.add("mm-embed")</script>
 </head>
 <body>
-<header class="hd"><a class="back" href="../../app.html">‹ 回曼米平台</a>
-  <h1>TBCL 等級檢核與語料庫工具 <small>曼米中文 · 備課工具</small></h1>
-  <div class="src" id="src">載入詞表中…</div></header>
-<nav class="tabs" id="tabs">
-  <button data-t="check" class="on">① 等級檢核</button>
-  <button data-t="gen">② AI 依等級生成</button>
-  <button data-t="inv">③ 教材等級盤點</button>
-  <button data-t="kwic">④ 語料庫例句</button>
-  <button data-t="gram">⑤ 語法點表</button>
-  <button data-t="art">⑥ 整篇文章</button>
-</nav>
+<header class="hd"><div class="hd-in">
+  <a class="back" href="../../app.html">‹ 平台</a>
+  <div class="brand">等級檢核與改寫 <small>曼米中文</small></div>
+  <button class="crumb" id="crumb">‹ 回一鍵改寫</button>
+  <span class="sp"></span>
+  <span class="src" id="src">載入詞表中…</span>
+  <div class="menu-wrap">
+    <button class="btn-ghost" id="menu-btn" aria-haspopup="true" aria-expanded="false">進階工具 ▾</button>
+    <nav class="tabs" id="tabs" aria-label="進階工具">
+      <button data-t="art"><b>逐詞挑選改寫</b><span>整篇文章列出每個難詞，自己選要換成什麼</span></button>
+      <button data-t="check"><b>等級檢核</b><span>標出超綱詞、算超綱比例，送官方系統覆核</span></button>
+      <button data-t="gen"><b>依等級生成</b><span>輸入主題，AI 直接寫一篇指定等級的短文</span></button>
+      <button data-t="inv"><b>教材等級盤點</b><span>全部生詞的等級分布與各課超綱比例</span></button>
+      <button data-t="kwic"><b>語料庫例句</b><span>在教材裡查一個詞怎麼用、詞頻</span></button>
+      <button data-t="gram"><b>語法點表</b><span>官方語法點分級查詢</span></button>
+      <button data-t="engine"><b>AI 設定</b><span>選擇用哪個 AI 改寫</span></button>
+    </nav>
+  </div>
+</div></header>
 
 <main>
-<section id="p-check">
+<section id="p-quick">
+  <div class="hero">
+    <h1>把文章改成學生看得懂的等級</h1>
+    <p>貼上任何文章，選學生的 TBCL 等級，一鍵改寫。難詞和成語換成簡單的說法，並用官方詞表檢查結果。</p>
+  </div>
+  <div class="panel">
+    <textarea id="q-txt" aria-label="文章" placeholder="在這裡貼上文章，例如從新聞、課本或網路複製的內容……"></textarea>
+    <div class="foot"><span id="q-count">0 字</span><span class="sp"></span>
+      <span class="pills" role="group" aria-label="檢核標準"><button id="q-lim15" aria-pressed="true">教材 15%</button><button id="q-lim10" aria-pressed="false">試題 10%</button></span></div>
+  </div>
+  <div class="lvl" id="q-levels" role="group" aria-label="學生等級"></div>
+  <div class="lvl-note" id="q-lvnote"></div>
+  <select id="q-lv" hidden></select><select id="q-lim" hidden><option value="15">15</option><option value="10">10</option></select>
+  <div class="go"><button class="btn pri big-go" id="q-run">改寫成第 3 級</button><span class="hint" id="q-ai-hint"></span></div>
+  <ol class="steps" id="q-steps" hidden></ol>
+  <div id="q-out" class="result"></div>
+</section>
+
+<section id="p-engine" hidden>
+  <div class="hero"><h1>AI 設定</h1><p>一鍵改寫要請 AI 把整篇文章改通順。選一種方式即可。</p></div>
+  <div class="card">
+    <label class="chk"><input type="radio" name="eng" value="puter" checked> <span><b>Puter（建議，不需要金鑰）</b><br><small>第一次使用會請你登入免費的 Puter 帳號，AI 的用量由你的 Puter 帳號負擔，不會用到我們的費用。</small></span></label>
+    <label class="chk"><input type="radio" name="eng" value="gemini"> <span><b>Gemini（自己的金鑰）</b><br><small>沿用平台已經存好的 Gemini 金鑰（簡報「AI 造句」）。</small></span></label>
+    <label class="chk"><input type="radio" name="eng" value="claude"> <span><b>Claude（自己的金鑰）</b><br><small>沿用平台翻譯設定裡的 Claude 金鑰。</small></span></label>
+    <label class="chk"><input type="radio" name="eng" value="none"> <span><b>不用 AI</b><br><small>只用內建的詞庫換詞，換不掉的詞列出來讓你自己決定。</small></span></label>
+  </div>
+</section>
+
+<section id="p-check" hidden>
   <div class="row">
     <label>目標等級 TBCL <select id="lv"></select></label>
     <label>檢核標準 <select id="lim">
@@ -33,7 +71,7 @@
     <button id="printc">列印／存成 PDF</button>
     <button id="official" title="把文字送到國教院「教材編輯輔助系統」，在新視窗看官方檢核結果">送官方系統檢核 ↗</button>
     <label class="chk"><input type="checkbox" id="incstar" checked> * 級詞算在該級內</label>
-    <label>AI 助手（換詞／換句話說用） <select id="c-ai"><option value="gemini">Gemini</option><option value="claude">Claude</option></select></label>
+    <label>AI 助手（換詞／換句話說用） <select id="c-ai"><option value="puter">Puter（免金鑰）</option><option value="gemini">Gemini</option><option value="claude">Claude</option></select></label>
   </div>
   <textarea id="txt" placeholder="貼上課文、教材或試題文字。專有名詞（人名、地名、機構名）請在結果中點一下，就會排除在超綱比例之外。"></textarea>
   <div id="res"></div>
@@ -42,7 +80,7 @@
 <section id="p-gen" hidden>
   <p class="note">輸入主題與等級，AI 產生文字後會<b>自動用上面的檢核</b>，超綱太多就帶著超綱詞清單請 AI 改寫（最多 3 輪）。每次呼叫都會記在下方「人機協作紀錄」，可直接貼進競賽附件 3。金鑰沿用平台已經存好的（Gemini：簡報「AI 造句」；Claude：翻譯設定）。</p>
   <div class="row">
-    <label>AI <select id="g-ai"><option value="gemini">Gemini</option><option value="claude">Claude</option></select></label>
+    <label>AI <select id="g-ai"><option value="puter">Puter（免金鑰）</option><option value="gemini">Gemini</option><option value="claude">Claude</option></select></label>
     <label>等級 <select id="g-lv"></select></label>
     <label>類型 <select id="g-kind"><option>對話課文</option><option>短文</option><option>例句（8 句）</option><option>閱讀測驗題（3 題選擇題）</option></select></label>
     <label>字數 <input id="g-len" type="number" value="150" min="20" max="900"></label>
@@ -86,7 +124,8 @@
 </main>
 <footer class="cite"><b>資料來源</b>：臺灣華語文能力基準詞語表、漢字表、語法點表與通用詞頻表，國家教育研究院「臺灣華語文語料庫與能力基準整合應用系統」（<a href="https://coct.naer.edu.tw/" target="_blank" rel="noopener">coct.naer.edu.tw</a>）。本工具為曼米中文自行開發，不是國家教育研究院的官方服務；正式送件請以官方「教材編輯輔助系統」的檢核結果為準。
   <button id="cite-copy">複製引用文字</button> <a href="../../docs/%E8%B3%87%E6%96%99%E4%BE%86%E6%BA%90%E8%88%87%E6%8E%88%E6%AC%8A.md" target="_blank">完整出處與授權說明</a></footer>
+<script src="https://js.puter.com/v2/" async></script>
 <script src="../../data.js"></script>
-<script src="tbcl.js?v=1"></script>
+<script src="tbcl.js?v=2"></script>
 </body>
 </html>
