@@ -65,56 +65,77 @@
       return o;
     },
     grass: function(){
-      var f = ""; [[40, 560, "#FF8FB0"], [118, 620, "#FFD23F"], [310, 585, "#C3A0FF"], [360, 650, "#FF8FB0"], [70, 680, "#fff"], [250, 668, "#FFD23F"]].forEach(function(p){ f += flower(p[0], p[1], p[2]); });
-      var fence = ""; for(var i = 0; i < 6; i++) fence += ln("M" + (292 + i * 22) + " 478L" + (292 + i * 22) + " 436L" + (298 + i * 22) + " 428L" + (304 + i * 22) + " 436L" + (304 + i * 22) + " 478Z", "#FFF1D0", 2.6);
-      return rect(-60, 0, 520, 700, "#BFE6FF", 0, 0) + '<!--C-->' + circ(320, 110, 34, "#FFD23F") + '<!--/C-->' + cloud(90, 120, 1, "c1") + cloud(290, 200, .8, "c2") +
-        ln("M-60 420Q70 340 170 392Q260 340 460 410L460 700L-60 700Z", "#A8DC8E") + ln("M-60 470Q120 424 250 466Q330 440 460 462L460 700L-60 700Z", "#7CC76B") +
-        tree(62, 478, 1) + bush(160, 478, .9) + fence + line("M290 452L460 452M290 464L460 464", INK, 2.6) +
-        '<path d="M-60 520Q150 500 460 530L460 700L-60 700Z" fill="#6DBB5E" opacity=".55"/>' + f;
+      var o = rect(-60, 0, 520, 480, "url(#psSky)", 0, 0) + cloud(90, 110, 1, "c1") + cloud(300, 190, .8, "c2") + cloud(210, 60, .6, "c1");
+      o += ln("M-60 330Q40 270 140 316Q230 262 330 310Q400 280 460 320L460 700L-60 700Z", "#B9CF8E") + tree(36, 372, .8, "#8FB56E") + tree(352, 366, .72, "#9CBF78");
+      o += ln("M-60 392Q80 346 200 384Q320 350 460 388L460 700L-60 700Z", "#9DBE63");
+      o += '<!--C-->' + '<g transform="translate(76 438)">' + ln("M-12 0L-8 -96L8 -96L12 0Z", "#A9794F") + line("M-4 -10L-3 -80M5 -20L4 -86", "#6E4B2E", 1.2) + ln("M-76 -90Q-98 -150 -48 -166Q-40 -214 14 -206Q70 -214 80 -160Q112 -128 74 -92Q20 -62 -76 -90Z", "#8DB560") + ln("M-44 -122Q-18 -146 6 -128", "#A9CC7C", 1.5).replace('fill="#A9CC7C"','fill="none"') + circ(-30, -110, 6, "#D9604C", 1.4) + circ(36, -134, 6, "#D9604C", 1.4) + circ(20, -96, 6, "#D9604C", 1.4) + "</g>";
+      for(var i = 0; i < 5; i++) o += ln("M" + (284 + i * 24) + " 468L" + (284 + i * 24) + " 428L" + (291 + i * 24) + " 420L" + (298 + i * 24) + " 428L" + (298 + i * 24) + " 468Z", "#F1E6C8", 1.6);
+      o += line("M280 442L400 442M280 456L400 456", INK, 1.6) + '<!--/C-->';
+      o += ln("M-60 440Q100 420 230 436Q340 424 460 440L460 700L-60 700Z", "#8FAE50") + '<path d="M-60 520Q150 500 460 530L460 700L-60 700Z" fill="#7C9A44" opacity=".4"/>';
+      o += tufts([[40, 470], [150, 500], [300, 486], [372, 520], [90, 560], [250, 580], [340, 640], [60, 650]]);
+      [[56, 540, "#E6909E"], [112, 600, "#E9C25A"], [322, 560, "#B8A0DE"], [372, 628, "#E6909E"], [228, 660, "#F4E9CC"], [168, 520, "#E9C25A"]].forEach(function(p){ o += flower(p[0], p[1], p[2]); });
+      o += '<!--C-->' + ell(200, 556, 120, 24, "#E6909E", 1.6) + ell(200, 556, 96, 17, "#F6D9DC", 1.1) + '<path d="M120 556L280 556M140 546L260 546M140 566L260 566" stroke="#E6909E" stroke-width="1.4" opacity=".7"/>' + '<!--/C-->';
+      return o;
     },
     room: function(){
-      var st = ""; for(var i = 0; i < 10; i++) st += '<rect x="' + (i * 44) + '" y="0" width="22" height="450" fill="#F9D6B0"/>';
-      var pl = ""; for(var j = 0; j < 7; j++) pl += line("M-60 " + (500 + j * 34) + "L460 " + (500 + j * 34), "#B87A45", 2); 
-      return rect(-60, 0, 520, 700, "#FFE4C4", 0, 0) + st + rect(-60, 440, 520, 34, "#FFF6E4", 0) + line("M-60 440L460 440M-60 474L460 474") +
-        '<rect x="-60" y="474" width="520" height="230" fill="#E3AA6E"/>' + pl + line("M-60 474L460 474") +
-        '<!--C-->' + rect(246, 120, 124, 150, "#BFE6FF", 6) + line("M308 120L308 270M246 195L370 195") + circ(280, 160, 12, "#fff", 0) + cloud(330, 232, .35, "") + rect(240, 112, 136, 14, "#FFF6E4", 5) +
-        ln("M236 126L236 286Q248 270 262 286L262 126Z", "#FF9A80") + ln("M380 126L380 286Q368 270 356 286L356 126Z", "#FF9A80") +
-        rect(38, 150, 100, 78, "#FFF6E4", 5) + rect(48, 160, 80, 58, "#CDEBB0", 3) + ln("M48 218L72 186L92 206L106 192L128 218Z", "#7CC76B", 2.6) + circ(112, 178, 8, "#FFD23F", 2.6) +
-        rect(40, 300, 100, 10, "#B98482", 4) + rect(52, 268, 24, 32, "#FF9A80", 4) + rect(84, 276, 20, 24, "#7EC8F0", 4) + '<!--/C-->';
+      var o = rect(-60, 0, 520, 450, "#EFD9B8", 0, 0), d;
+      for(d = 0; d < 11; d++) o += '<rect x="' + (-40 + d * 46) + '" y="0" width="23" height="450" fill="#E7CDA6" opacity=".7"/>';
+      for(var r = 0; r < 5; r++) for(var c = 0; c < 10; c++) o += '<circle cx="' + (-30 + c * 46 + (r % 2) * 23) + '" cy="' + (30 + r * 80) + '" r="4" fill="#D9A58A" opacity=".5"/>';
+      o += rect(-60, 400, 520, 30, "#F8EEDC", 0) + line("M-60 400L460 400");
+      o += '<!--C--><g transform="translate(0 30)">' + rect(236, 54, 118, 150, "#CFE3EA", 8, 2.2) + line("M295 54L295 204M236 129L354 129", "#F8EEDC", 4) + rect(230, 46, 130, 14, "#A9794F", 4) + ln("M226 56L226 226Q242 206 258 226L258 56Z", "#D9806A") + ln("M362 56L362 226Q346 206 330 226L330 56Z", "#D9806A") + '<path d="M246 70Q262 66 270 76L246 110Z" fill="#fff" opacity=".4"/>';
+      o += rect(40, 70, 82, 98, "#F8EEDC", 4) + rect(50, 80, 62, 78, "#CFE0B0", 2) + ln("M50 158L72 120L90 144L102 130L112 158Z", "#8DB560", 1.6) + circ(98, 100, 8, "#E9C25A", 1.4);
+      o += rect(34, 232, 96, 8, "url(#psWood)", 2) + rect(40, 196, 14, 36, "#D9806A", 2) + rect(58, 204, 12, 28, "#7C9FCB", 2) + rect(74, 192, 16, 40, "#9AB85A", 2) + rect(94, 208, 20, 24, "#E9C25A", 2);
+      o += '</g><!--/C-->';
+      o += ln("M-60 424L460 424L460 700L-60 700Z", "url(#psFloor)");
+      for(d = 0; d < 7; d++) o += line("M-60 " + (456 + d * 38) + "L460 " + (456 + d * 38), "#A98C5C", 1.2);
+      o += '<!--C-->' + ell(200, 560, 150, 36, "#7C9FCB", 1.8) + ell(200, 560, 114, 26, "#E9D9B0", 1.2) + ell(200, 560, 74, 15, "#7C9FCB", 1.2) + '<g transform="translate(350 470)">' + ln("M-18 60L-14 0L14 0L18 60Z", "#D9806A") + ln("M0 0Q-34 -20 -26 -56Q-2 -40 0 0Z", "#8DB560") + ln("M0 0Q30 -26 24 -70Q-2 -44 0 0Z", "#9AB85A") + "</g>" + '<!--/C-->';
+      return o;
     },
     beach: function(){
-      var w = ""; for(var i = 0; i < 4; i++) w += line("M" + (20 + i * 100) + " " + (418 + (i % 2) * 14) + "Q" + (45 + i * 100) + " " + (406 + (i % 2) * 14) + " " + (70 + i * 100) + " " + (418 + (i % 2) * 14), "#fff", 3.4);
-      return rect(-60, 0, 520, 700, "#9ADBF7", 0, 0) + '<!--C-->' + circ(70, 120, 36, "#FFD23F") + '<!--/C-->' + cloud(250, 150, 1, "c1") + cloud(120, 250, .7, "c2") +
-        '<rect x="-60" y="380" width="520" height="90" fill="#4BB7E8"/>' + line("M-60 380L460 380") + w +
-        ln("M-60 470Q150 440 300 470Q360 484 460 470L460 700L-60 700Z", "#F7E2A8") + '<path d="M-60 520Q150 500 460 535L460 700L-60 700Z" fill="#E8CF8A" opacity=".6"/>' +
-        '<g transform="translate(336 470)">' + ln("M-6 0Q-10 -60 6 -118L14 -118Q2 -60 8 0Z", "#B98482") + ln("M10 -118Q-30 -140 -56 -112Q-24 -122 10 -108Z", "#4FB36E") + ln("M10 -118Q50 -142 76 -112Q40 -124 10 -108Z", "#4FB36E") + ln("M10 -118Q8 -160 -14 -170Q10 -150 10 -118Z", "#6CC36B") + "</g>" +
-        '<g transform="translate(70 500)">' + line("M0 0L0 -90", INK, 4) + ln("M-62 -78Q0 -130 62 -78Z", "#FF6B6B") + ln("M-62 -78Q-31 -92 0 -78Q31 -92 62 -78Q31 -70 0 -78Q-31 -70 -62 -78Z", "#fff", 2.6) + "</g>" +
-        ln("M190 640Q205 622 222 640Q205 652 190 640Z", "#FF8FB0", 2.6) + circ(300, 620, 5, "#FF8FB0", 2);
+      var o = rect(-60, 0, 520, 340, "url(#psSkyB)", 0, 0) + '<!--C-->' + circ(300, 96, 34, "#F4D98A", 1.6) + '<!--/C-->' + cloud(110, 110, 1, "c1") + cloud(330, 190, .7, "c2");
+      o += rect(-60, 320, 520, 110, "#8BC1D2", 0, 0) + rect(-60, 320, 520, 26, "#A5D1DE", 0, 0) + line("M-60 320L460 320", INK, 1.4);
+      for(var i = 0; i < 6; i++) o += line("M" + (-20 + i * 90) + " " + (372 + (i % 2) * 16) + "q22 -12 44 0", "#F4F7F0", 2.6);
+      o += '<!--C-->' + '<g transform="translate(120 338)">' + ln("M-26 0L26 0L18 12L-18 12Z", "#A9794F") + line("M0 0L0 -52", INK, 1.8) + ln("M0 -50L28 -8L0 -8Z", "#F4E9CC") + ln("M-2 -44L-22 -8L-2 -8Z", "#E6909E") + "</g>" + '<!--/C-->';
+      o += ln("M-60 420Q90 392 240 416Q350 398 460 414L460 700L-60 700Z", "#E9D8A8") + '<path d="M-60 428Q90 402 240 424Q350 408 460 424L460 440Q350 424 240 440Q90 418 -60 446Z" fill="#CBB886" opacity=".5"/><path d="M-60 520Q150 500 460 532L460 700L-60 700Z" fill="#D8C48E" opacity=".5"/>';
+      o += '<!--C-->' + '<g transform="translate(346 470)">' + ln("M-6 0Q-12 -70 6 -150L14 -150Q0 -70 8 0Z", "#A9794F") + ln("M10 -150Q-30 -176 -62 -140Q-26 -154 10 -136Z", "#6F9A5A") + ln("M10 -150Q52 -178 84 -140Q46 -156 10 -136Z", "#6F9A5A") + ln("M10 -150Q-6 -192 -34 -196Q-2 -176 10 -150Z", "#8DB560") + ln("M10 -150Q34 -194 64 -194Q30 -176 10 -150Z", "#8DB560") + circ(12, -146, 7, "#8A5E3B", 1.4) + "</g>";
+      o += '<g transform="translate(66 520)">' + line("M0 0L0 -104", INK, 3.4) + line("M0 0L0 -104", "#C9A06E", 1.6) + ln("M-76 -92Q0 -156 76 -92Z", "#D9806A") + ln("M-76 -92Q-38 -108 0 -92Q38 -108 76 -92Q38 -80 0 -92Q-38 -80 -76 -92Z", "#F4E9CC", 1.6) + ln("M-30 -126Q0 -150 30 -126Q0 -100 -30 -126Z", "#F4E9CC", 1.2).replace('fill="#F4E9CC"','fill="#F4E9CC" opacity=".0"') + "</g>";
+      o += ell(220, 600, 56, 14, "#F4E9CC", 1.4) + line("M180 600Q220 592 260 600", "#D9806A", 3) + ln("M300 640Q316 624 330 640Q316 652 300 640Z", "#E6909E", 1.4) + ln("M130 650L136 632L142 650L158 650L146 660L150 676L136 666L122 676L126 660L114 650Z", "#E9A06A", 1.3) + '<!--/C-->';
+      return o;
     },
     garden: function(){
-      var f = ""; [[30, 520, "#FF8FB0"], [88, 560, "#FFD23F"], [150, 505, "#C3A0FF"], [250, 515, "#FF8FB0"], [320, 560, "#FFD23F"], [370, 510, "#fff"], [60, 640, "#C3A0FF"], [140, 676, "#FF8FB0"], [280, 660, "#fff"], [350, 650, "#FF8FB0"]].forEach(function(p){ f += flower(p[0], p[1], p[2]); });
-      return rect(-60, 0, 520, 700, "#FFE3EE", 0, 0) + cloud(100, 130, 1, "c1") + cloud(310, 200, .8, "c2") +
-        ln("M-60 450Q100 400 200 440Q300 400 460 440L460 700L-60 700Z", "#BFE8A6") + ln("M-60 490Q150 454 460 494L460 700L-60 700Z", "#9ADB86") +
-        '<!--C--><g transform="translate(200 478)">' + ln("M-96 0L-96 -170Q-96 -250 0 -250Q96 -250 96 -170L96 0L78 0L78 -170Q78 -232 0 -232Q-78 -232 -78 -170L-78 0Z", "#FFF6E4") + circ(-86, -150, 12, "#FF8FB0", 2.6) + circ(-86, -100, 12, "#FFD23F", 2.6) + circ(86, -150, 12, "#C3A0FF", 2.6) + circ(86, -100, 12, "#FF8FB0", 2.6) + circ(0, -240, 12, "#FF8FB0", 2.6) + "</g><!--/C-->" +
-        bush(40, 480, 1) + bush(364, 480, 1) + f +
-        ln("M120 330Q108 316 118 304Q130 308 130 322Z", "#FFD23F", 2.4) + ln("M130 322Q142 312 152 322Q148 336 132 330Z", "#FF8FB0", 2.4) + line("M130 322L132 330", INK, 2.4);
+      var o = rect(-60, 0, 520, 450, "url(#psSkyG)", 0, 0) + cloud(90, 100, 1, "c1") + cloud(320, 170, .75, "c2");
+      o += ln("M-60 360Q70 316 190 350Q300 318 460 356L460 700L-60 700Z", "#B7D08C") + bush(40, 410, 1.3) + bush(362, 408, 1.2) + bush(136, 420, .9);
+      for(var i = 0; i < 9; i++) o += ln("M" + (-20 + i * 52) + " 440L" + (-20 + i * 52) + " 392L" + (-12 + i * 52) + " 382L" + (-4 + i * 52) + " 392L" + (-4 + i * 52) + " 440Z", "#F1E6C8", 1.5);
+      o += line("M-60 404L460 404M-60 424L460 424", INK, 1.5);
+      o += '<!--C-->' + '<g transform="translate(200 440)">' + ln("M-92 0L-92 -150Q-92 -232 0 -232Q92 -232 92 -150L92 0L76 0L76 -150Q76 -216 0 -216Q-76 -216 -76 -150L-76 0Z", "#F4E9CC");
+      [[-84, -60, "#E6909E"], [-86, -110, "#F4E9CC"], [-80, -160, "#E6909E"], [-56, -204, "#E9C25A"], [0, -222, "#E6909E"], [58, -204, "#F4E9CC"], [82, -160, "#E9C25A"], [86, -110, "#E6909E"], [84, -60, "#F4E9CC"]].forEach(function(p){ o += circ(p[0], p[1], 11, p[2], 1.5) + ell(p[0] + 12, p[1] + 8, 9, 5, "#8DB560", 1.2); });
+      o += "</g>" + '<!--/C-->';
+      o += ln("M-60 440Q100 424 220 438Q330 426 460 440L460 700L-60 700Z", "#9ABF68") + '<path d="M-60 520Q150 504 460 534L460 700L-60 700Z" fill="#86AB54" opacity=".45"/>';
+      o += tufts([[50, 480], [150, 520], [320, 500], [380, 560], [100, 600], [260, 610], [60, 660]]);
+      [[34, 512, "#E6909E"], [78, 548, "#E9C25A"], [136, 506, "#B8A0DE"], [262, 516, "#E6909E"], [318, 552, "#F4E9CC"], [372, 508, "#E9C25A"], [60, 628, "#B8A0DE"], [140, 660, "#E6909E"], [288, 652, "#F4E9CC"], [350, 640, "#E6909E"]].forEach(function(p){ o += flower(p[0], p[1], p[2]); });
+      o += '<!--C-->' + '<g transform="translate(336 560)">' + ln("M-20 0L-16 -34L20 -34L24 0Z", "#7C9FCB") + ln("M20 -26Q44 -30 46 -50L38 -52Q36 -38 20 -34Z", "#7C9FCB") + line("M-16 -30Q-40 -50 -34 -74", "#5E86B5", 3) + ell(0, -34, 20, 5, "#A9C6E4", 1.2) + "</g>" + ln("M110 360Q98 346 108 334Q120 338 120 352Z", "#E9C25A", 1.3) + ln("M120 352Q132 342 142 352Q138 366 122 360Z", "#E6909E", 1.3) + '<!--/C-->';
+      return o;
     },
     space: function(){
-      var s = ""; for(var i = 0; i < 40; i++) s += '<circle class="pg-star" style="animation-delay:' + ((i * .37) % 3) + 's" cx="' + ((i * 83) % 400) + '" cy="' + ((i * 127) % 420) + '" r="' + (1 + (i % 3) * .8) + '" fill="#fff"/>';
-      return rect(-60, 0, 520, 700, "#241B5E", 0, 0) + s +
-        '<!--C--><g transform="translate(290 150)">' + circ(0, 0, 50, "#FFB35C") + '<path d="M-36 -20Q0 -6 40 -34L46 -20Q4 4 -42 -4Z" fill="#E0883A" opacity=".7"/>' + ln("M-84 12Q0 52 84 -16Q0 24 -84 12Z", "#FFE0A8", 2.6) + "</g><!--/C-->" +
-        circ(80, 220, 22, "#E6E6F2") + circ(72, 212, 5, "#C9C9DA", 0) +
-        ln("M-60 470Q120 436 250 466Q330 446 460 462L460 700L-60 700Z", "#9A93C9") + ln("M-60 520Q150 500 460 530L460 700L-60 700Z", "#7E76B8") +
-        ell(80, 560, 34, 11, "#6A63A6", 2.6) + ell(300, 610, 28, 9, "#6A63A6", 2.6) + ell(190, 660, 40, 12, "#6A63A6", 2.6) +
-        '<g transform="translate(330 470)">' + ln("M0 -110Q26 -80 26 -34L26 0L-26 0L-26 -34Q-26 -80 0 -110Z", "#fff") + circ(0, -62, 10, "#7EC8F0") + ln("M-26 -20L-48 6L-26 0Z", "#FF6B6B") + ln("M26 -20L48 6L26 0Z", "#FF6B6B") + ln("M0 -110Q10 -100 14 -90L-14 -90Q-10 -100 0 -110Z", "#FF6B6B") + "</g>";
+      var o = rect(-60, 0, 520, 470, "url(#psSkyS)", 0, 0), i;
+      for(i = 0; i < 46; i++) o += '<circle class="pg-star" style="animation-delay:' + ((i * .37) % 3) + 's" cx="' + (-40 + (i * 83) % 480) + '" cy="' + ((i * 127) % 420) + '" r="' + (1 + (i % 3) * .7) + '" fill="#F4EBD0"/>';
+      o += '<!--C-->' + '<g transform="translate(296 140)">' + circ(0, 0, 52, "#E9B97A", 1.8) + '<path d="M-40 -22Q0 -4 44 -34L50 -20Q4 8 -46 -6Z" fill="#CB925A" opacity=".7"/>' + ln("M-92 12Q0 56 92 -18Q0 24 -92 12Z", "#F2DDB0", 1.6) + "</g>" + circ(76, 210, 24, "#E2DFE8", 1.6) + circ(68, 202, 5, "#C4C0D0", 0) + circ(84, 220, 4, "#C4C0D0", 0) + '<!--/C-->';
+      o += ln("M-60 440Q100 410 240 436Q350 418 460 434L460 700L-60 700Z", "#A9A3C4") + '<path d="M-60 520Q150 500 460 532L460 700L-60 700Z" fill="#8D86AE" opacity=".55"/>';
+      [[70, 540, 38, 11], [300, 590, 30, 9], [190, 650, 44, 12], [372, 520, 22, 7], [40, 640, 26, 8]].forEach(function(c){ o += ell(c[0], c[1], c[2], c[3], "#8D86AE", 1.4) + ell(c[0], c[1] - 1, c[2] - 5, c[3] - 3, "#9C95BC", 0); });
+      o += '<!--C-->' + '<g transform="translate(340 470)">' + ln("M0 -118Q30 -84 30 -34L30 0L-30 0L-30 -34Q-30 -84 0 -118Z", "#F4E9CC") + circ(0, -62, 11, "#8BC1D2", 1.6) + ln("M-30 -22L-52 6L-30 0Z", "#D9806A") + ln("M30 -22L52 6L30 0Z", "#D9806A") + ln("M0 -118Q12 -108 16 -96L-16 -96Q-12 -108 0 -118Z", "#D9806A") + ln("M-14 0L14 0L8 22L-8 22Z", "#E9C25A", 1.4) + "</g>";
+      o += '<g transform="translate(60 470)">' + line("M0 0L0 -70", INK, 2.4) + ln("M0 -70L40 -60L0 -48Z", "#D9806A", 1.5) + "</g>" + '<!--/C-->';
+      return o;
     },
     castle: function(){
-      return rect(-60, 0, 520, 700, "#F6D2F0", 0, 0) + cloud(80, 130, 1, "c1") + cloud(320, 190, .8, "c2") +
-        ln("M-60 450Q120 420 250 448Q330 436 460 448L460 700L-60 700Z", "#CDEBB0") + ln("M-60 500Q150 478 460 506L460 700L-60 700Z", "#A8DC8E") +
-        '<!--C--><g transform="translate(200 470)">' + ln("M-120 0L-120 -170L-86 -170L-86 -190L-70 -190L-70 -170L-52 -170L-52 -70L52 -70L52 -170L70 -170L70 -190L86 -190L86 -170L120 -170L120 0Z", "#E8D9F7") +
-        ln("M-124 -170L-103 -230L-82 -170Z", "#FF8FB0") + ln("M82 -170L103 -230L124 -170Z", "#FF8FB0") + ln("M-30 -72L-30 -150L30 -150L30 -72Z", "#E8D9F7", 2.6) + ln("M-34 -150L0 -208L34 -150Z", "#7EC8F0") + line("M0 -208L0 -240", INK, 3) + ln("M0 -240L22 -232L0 -224Z", "#FFD23F", 2.6) +
-        ln("M-26 0L-26 -46Q0 -78 26 -46L26 0Z", "#B98482") + rect(-104, -128, 16, 28, "#7EC8F0", 8, 2.6) + rect(88, -128, 16, 28, "#7EC8F0", 8, 2.6) + "</g><!--/C-->" +
-        flower(50, 530, "#FF8FB0") + flower(350, 540, "#FFD23F") + flower(90, 650, "#C3A0FF") + flower(310, 660, "#fff");
+      var o = rect(-60, 0, 520, 450, "url(#psSkyC)", 0, 0) + cloud(80, 110, 1, "c1") + cloud(330, 180, .8, "c2");
+      o += ln("M-60 350Q70 306 190 344Q300 312 460 350L460 700L-60 700Z", "#C4D8A0");
+      o += '<!--C-->' + '<g transform="translate(200 440)">' + ln("M-120 0L-120 -170L-86 -170L-86 -184L-70 -184L-70 -170L-52 -170L-52 -76L52 -76L52 -170L70 -170L70 -184L86 -184L86 -170L120 -170L120 0Z", "#E7DAF2") + ln("M-126 -170L-103 -232L-80 -170Z", "#E6909E") + ln("M80 -170L103 -232L126 -170Z", "#E6909E") + ln("M-36 -150L-36 -76L36 -76L36 -150Z", "#E7DAF2", 1.6) + ln("M-40 -150L0 -216L40 -150Z", "#8BC1D2") + line("M0 -216L0 -246", INK, 2) + ln("M0 -246L24 -238L0 -230Z", "#E9C25A", 1.4);
+      o += ln("M-28 0L-28 -48Q0 -82 28 -48L28 0Z", "#A9794F") + line("M0 -70L0 0", "#6E4B2E", 1.2) + rect(-104, -132, 16, 30, "#8BC1D2", 8, 1.6) + rect(88, -132, 16, 30, "#8BC1D2", 8, 1.6) + rect(-8, -128, 16, 26, "#8BC1D2", 8, 1.6) + "</g>" + '<!--/C-->';
+      o += ln("M-60 440Q100 420 230 436Q340 424 460 440L460 700L-60 700Z", "#A9C98A") + '<path d="M-60 520Q150 504 460 534L460 700L-60 700Z" fill="#92B572" opacity=".45"/>';
+      o += '<path d="M150 442Q200 470 250 442L300 700L100 700Z" fill="#E7D9B0" stroke="' + INK + '" stroke-width="1.6" stroke-opacity=".7"/>';
+      o += tufts([[50, 480], [330, 500], [370, 560], [80, 600], [320, 640], [60, 660]]);
+      [[40, 530, "#E6909E"], [96, 580, "#F4E9CC"], [350, 540, "#E9C25A"], [372, 630, "#E6909E"], [56, 650, "#B8A0DE"]].forEach(function(p){ o += flower(p[0], p[1], p[2]); });
+      return o;
     }
   };
   var FU = {
@@ -124,7 +145,7 @@
     toybox: function(){ return '<g transform="translate(268 486)">' + ln("M0 10L0 46L66 46L66 10Z", "#A87B52") + ln("M-4 4Q33 -8 70 4L66 14L0 14Z", "#B98A5B") + line("M33 14L33 46", "#6E4B2E", 1.4) + circ(33, 26, 3.4, "#E9C25A", 1) + circ(18, -2, 9, "#D9806A", 1.4) + rect(40, -10, 14, 14, "#7C9FCB", 2, 1.4) + "</g>"; },
     rug: function(){ return ell(200, 524, 140, 30, "#E6909E", 1.8) + ell(200, 524, 108, 22, "#F6D3D8", 1.2) + ell(200, 524, 74, 14, "#E6909E", 1.2) + ell(200, 524, 36, 6, "#F6D3D8", 1.1); }
   };
-  var DEFS = '<defs><linearGradient id="psWall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9AABB6"/><stop offset="1" stop-color="#6F8392"/></linearGradient><linearGradient id="psWood" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#9C6E46"/><stop offset=".5" stop-color="#A9794F"/><stop offset="1" stop-color="#8A5E3B"/></linearGradient><linearGradient id="psFloor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#D7C292"/><stop offset="1" stop-color="#BCA474"/></linearGradient><filter id="psSat"><feColorMatrix type="saturate" values=".78"/></filter><filter id="psGrain" x="-60" y="0" width="520" height="700" filterUnits="userSpaceOnUse"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="4" result="n"/><feColorMatrix type="matrix" values="0 0 0 0 .3  0 0 0 0 .2  0 0 0 0 .1  0 0 0 .55 -.12"/></filter></defs>';
+  var DEFS = '<defs><linearGradient id="psWall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9AABB6"/><stop offset="1" stop-color="#6F8392"/></linearGradient><linearGradient id="psWood" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#9C6E46"/><stop offset=".5" stop-color="#A9794F"/><stop offset="1" stop-color="#8A5E3B"/></linearGradient><linearGradient id="psSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B9D6E4"/><stop offset="1" stop-color="#EEF1D8"/></linearGradient><linearGradient id="psSkyB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#BFDDE8"/><stop offset="1" stop-color="#F0EEDC"/></linearGradient><linearGradient id="psSkyG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F1D9D6"/><stop offset="1" stop-color="#FAF0DC"/></linearGradient><linearGradient id="psSkyS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#262657"/><stop offset="1" stop-color="#5A4C8A"/></linearGradient><linearGradient id="psSkyC" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EBCFE0"/><stop offset="1" stop-color="#FBEBD6"/></linearGradient><linearGradient id="psFloor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#D7C292"/><stop offset="1" stop-color="#BCA474"/></linearGradient><filter id="psSat"><feColorMatrix type="saturate" values=".78"/></filter><filter id="psGrain" x="-60" y="0" width="520" height="700" filterUnits="userSpaceOnUse"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="4" result="n"/><feColorMatrix type="matrix" values="0 0 0 0 .3  0 0 0 0 .2  0 0 0 0 .1  0 0 0 .55 -.12"/></filter></defs>';
   window.PETSCENE = {
     scene: function(id, side){ var x = (SC[id] || SC.home)(); x = side ? x.replace(/<!--C-->[\s\S]*?<!--\/C-->/g, "") : x.replace(/<!--\/?C-->/g, ""); return DEFS + '<g filter="url(#psSat)">' + x + '</g><rect x="-60" y="0" width="520" height="700" filter="url(#psGrain)" opacity=".5" style="pointer-events:none"/>'; },
     furn: function(inv){ inv = inv || {}; var out = ""; ["rug", "bed", "plant", "lamp", "toybox"].forEach(function(k){ if(inv["fu_" + k]) out += FU[k](); }); return out; },
