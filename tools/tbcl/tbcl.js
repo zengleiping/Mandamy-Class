@@ -214,15 +214,22 @@ function renderLog(){var h='<table><tr><th>使用環節</th><th>使用工具（�
   LOG.forEach(function(x){h+='<tr><td>'+esc(x.step)+'</td><td>'+esc(x.tool)+'</td><td>'+esc(x.purpose)+'</td><td>'+esc(x.how)+'</td><td>'+esc(x.prompt)+'</td><td>'+esc(x.note)+'</td></tr>'});
   $("g-log").innerHTML=LOG.length?h+'</table>':'<p class="note">還沒有紀錄。</p>'}
 function keyOf(k){try{return localStorage.getItem(k)||""}catch(e){return""}}
+/* Gemini 常常換模型名稱、停用舊的；先問 Google 這把金鑰現在能用哪些，挑最新的 flash（不含 lite），最多試三個 */
+var GM=null;
+async function geminiModels(key){if(GM&&GM.key===key)return GM.list;var list=[];
+  try{var r=await fetch("https://generativelanguage.googleapis.com/v1beta/models?pageSize=200&key="+encodeURIComponent(key)),d=await r.json();
+    if(r.ok&&d.models){list=d.models.filter(function(m){return(m.supportedGenerationMethods||[]).indexOf("generateContent")>=0&&/^models\/gemini-[\d.]+-flash(-latest)?$/.test(m.name)}).map(function(m){return m.name});
+      list.sort(function(a,b){return parseFloat(b.replace(/[^\d.]/g,"")||0)-parseFloat(a.replace(/[^\d.]/g,"")||0)})}}catch(e){}
+  list=list.slice(0,3);if(!list.length)list=["models/gemini-flash-latest","models/gemini-2.5-flash"];GM={key:key,list:list};return list}
 async function callAI(kind,prompt){
   if(kind==="puter")return callPuter(prompt);
   if(kind==="claude"){var k=keyOf("mm_tr_aikey");if(!k)throw new Error("還沒有 Claude 金鑰（到「AI 設定」貼上）");
     var r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"content-type":"application/json","x-api-key":k,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-haiku-5-5",max_tokens:1800,messages:[{role:"user",content:prompt}]})});
     var d=await r.json();if(!r.ok)throw new Error((d.error&&d.error.message)||r.status);return{text:d.content.map(function(c){return c.text||""}).join(""),model:"claude-haiku-5-5"}}
   var g=keyOf("mm_gemini_key");if(!g)throw new Error("還沒有 Gemini 金鑰（到「AI 設定」貼上）");
-  var ms=["gemini-flash-latest","gemini-2.5-flash"],err="";
-  for(var i=0;i<ms.length;i++){try{var r2=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+ms[i]+":generateContent?key="+encodeURIComponent(g),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})});
-    var d2=await r2.json();if(!r2.ok)throw new Error((d2.error&&d2.error.message)||r2.status);return{text:d2.candidates[0].content.parts.map(function(p){return p.text||""}).join(""),model:ms[i]}}catch(e){err=e.message}}
+  var ms=await geminiModels(g),err="";
+  for(var i=0;i<ms.length;i++){try{var r2=await fetch("https://generativelanguage.googleapis.com/v1beta/"+ms[i]+":generateContent?key="+encodeURIComponent(g),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})});
+    var d2=await r2.json();if(!r2.ok)throw new Error((d2.error&&d2.error.message)||r2.status);return{text:d2.candidates[0].content.parts.map(function(p){return p.text||""}).join(""),model:ms[i].replace("models/","")}}catch(e){err=err||e.message}}
   throw new Error(err)}
 $("g-go").onclick=async function(){
   await load();var lv=+$("g-lv").value,kind=$("g-kind").value,topic=$("g-topic").value.trim(),must=$("g-must").value.trim(),len=$("g-len").value,ai=$("g-ai").value,st=$("g-st");
@@ -297,7 +304,7 @@ for(var gi=1;gi<=5;gi++){var go=document.createElement("option");go.value=gi;go.
 /* ===== ⑧ 寫教材引導：設定 → 挑詞和語法點 → 寫 → 到國教院檢核 → 看結果；去國教院複製後回到這裡會自動接著走 ===== */
 var GD_KEY="mm_tbcl_guide",GD_OCC=["交通、旅遊","休閒、娛樂","個人資料","公共服務","安全","情緒、態度","教育、學習","文化","日常起居","社交、人際","社會","科技","職業","自然環境","購物、商店","身體、醫療","餐飲、烹飪"];
 var GD_JUNK=new Set(["書面","口語","語料庫","國語辭典","音讀","詞語","等級","情境","筆數","核心詞","基礎","進階","精熟"]);
-var GD=(function(){var d={lv:3,occ:"",kind:"短文",lim:15,words:[],gram:[],text:"",step:0,off:null,seen:""};try{var o=JSON.parse(localStorage.getItem(GD_KEY)||"null");if(o)for(var k in o)d[k]=o[k]}catch(e){}return d})();
+var GD=(function(){var d={lv:3,occ:"",kind:"短文",len:200,lim:15,words:[],gram:[],text:"",step:0,off:null,seen:""};try{var o=JSON.parse(localStorage.getItem(GD_KEY)||"null");if(o)for(var k in o)d[k]=o[k]}catch(e){}return d})();
 function gdSave(){try{localStorage.setItem(GD_KEY,JSON.stringify(GD))}catch(e){}}
 var GD_NAMES=["設定","挑詞和語法點","寫文章","到國教院檢核","看結果"];
 function gdCode(n,star){var m={1:[2,3],2:[4,5],3:[6,7],4:[9,10],5:[11,11],6:[13,13],7:[14,14]}[n]||[2,3];return star?m[1]:m[0]}
@@ -326,10 +333,13 @@ function gdRender(){gdSteps();var h="",lvOpt="";for(var i=1;i<=7;i++)lvOpt+='<op
      +'<div class="row"><label>自己加一個詞<input id="gd-one" size="8"></label><button id="gd-one-b">加</button></div>'
      +'<div id="gd-chips">'+(GD.words.length?gdWords():'<span class="note">還沒有挑詞。可以先跳過，寫完再檢查。</span>')+'</div></div>'
      +'<div class="card gd-gram"><b>② 選要練習的語法點</b><span class="note">　第 '+GD.lv+' 級共 '+gl.length+' 個（官方語法點表）。<a href="https://coct.naer.edu.tw/grammar.jsp" target="_blank" rel="noopener">到國教院看完整說明 ↗</a></span>'
+     +'<div class="row" style="margin:8px 0"><button data-g="grec">推薦 4 個</button><button data-g="grand">隨機選 3 個</button><button data-g="gall">全選</button><button data-g="gclr">清除</button><span class="note" id="gd-ghint"></span></div>'
      +'<div style="max-height:260px;overflow:auto;margin-top:6px">'+gl.map(function(g){var on=GD.gram.indexOf(g.name)>=0;return'<label><input type="checkbox" class="gd-g" data-n="'+esc(g.name)+'"'+(on?" checked":"")+'><span><b>'+esc(g.name)+'</b>　<span class="note">'+esc(g.ex)+'</span></span></label>'}).join("")+'</div></div>'
      +gdNav(true,true)}
   else if(GD.step===2){
-    h='<div class="card"><b>③ 寫文章</b><span class="note">　寫的時候右邊的數字會即時更新。專有名詞請先到首頁「先檢查斷詞」標起來，這裡會一起排除。</span>'
+    h='<div class="card"><b>讓 AI 先寫一版</b><span class="note">　用你挑的詞和語法點，寫成'+GD.kind+'，寫完會自動檢查超綱，太多會請 AI 改。AI 寫的一定要自己看過、改過。</span>'
+     +'<div class="row"><label>字數<select id="gd-len">'+[100,150,200,300,400].map(function(n){return'<option'+(GD.len===n?" selected":"")+'>'+n+'</option>'}).join("")+'</select></label><button class="pri" data-g="gen">幫我寫一篇</button><span class="note" id="gd-gst"></span></div></div>'
+     +'<div class="card"><b>③ 寫文章</b><span class="note">　寫的時候右邊的數字會即時更新。專有名詞請先到首頁「先檢查斷詞」標起來，這裡會一起排除。</span>'
      +'<textarea id="gd-txt" style="min-height:230px" placeholder="在這裡寫'+GD.kind+'⋯⋯">'+esc(GD.text)+'</textarea><div id="gd-live"></div></div>'+gdNav(true,true,"寫好了，去檢核")}
   else if(GD.step===3){
     h='<div class="card"><b>④ 到國教院檢核</b><p class="note">比賽規定要用國教院「教材編輯輔助系統」檢核，並附上結果。</p>'
@@ -379,6 +389,37 @@ function gdReport(){var o=GD.off,res=gdOver(o,GD.lv,GD.pn||0),r=analyze(GD.text,
    +'<p>超綱比例 '+res.ratio.toFixed(1)+'%（標準 '+GD.lim+'% 以內：'+(res.ratio<=GD.lim?"符合":"超過")+'；專有名詞 '+(GD.pn||0)+' 個不計）</p>'
    +(GD.words.length?'<h2>選用的詞</h2><p>'+GD.words.map(esc).join("、")+'</p>':"")+(GD.gram.length?'<h2>練習的語法點</h2><p>'+GD.gram.map(esc).join("、")+'</p>':"")
    +'<p>（本頁為整理用；比賽要附的檢核結果請另存國教院結果頁的 PDF。）</p>'}
+
+/* 語法點：推薦／隨機／全選／清除 */
+function gdPickGram(how){var all=GRAM_CACHE.filter(function(g){return g.lv===GD.lv}),pick=[];
+  if(how==="gall")pick=all.map(function(g){return g.name});
+  else if(how==="gclr")pick=[];
+  else if(how==="grand")pick=shuf(all).slice(0,3).map(function(g){return g.name});
+  else{var c=all.filter(function(g){return!g.star&&gramPat(g.name)});if(c.length<4)c=all.filter(function(g){return gramPat(g.name)});pick=shuf(c).slice(0,4).map(function(g){return g.name})}
+  GD.gram=pick;gdSave();var y=window.scrollY;gdRender();window.scrollTo(0,y);
+  var n=pick.length,h=$("gd-ghint");if(h)h.textContent=n?("選了 "+n+" 個。"+(n>6?"一篇文章放太多語法點會很硬、很長（約需 "+n*40+" 字以上），建議 3–5 個，其餘留給別篇。":"一篇約 "+Math.max(100,n*40)+" 字以上比較自然。")):""}
+/* AI 依挑的詞和語法點寫文章，程式檢查超綱、有沒有用到，不合就帶著問題再請 AI 改，最多 3 輪 */
+async function gdGenerate(){var st=$("gd-gst");st.textContent="準備中…";
+  try{await load();if(!(await ensureAi())){st.textContent="還沒有可用的 AI，請到「AI 設定」";return}
+    var gl=GRAM_CACHE.filter(function(g){return GD.gram.indexOf(g.name)>=0}),len=GD.len||200;
+    var base="你是台灣華語老師，請為母語非華語學習者寫一篇「"+GD.kind+"」。\n- 一律用繁體中文、台灣用語。\n- 難度：臺灣華語文能力基準（TBCL）第 "+GD.lv+" 級；詞語和句型盡量只用第 "+GD.lv+" 級以內（含以下）。\n"+(GD.occ?"- 情境：「"+GD.occ+"」。\n":"")+"- 長度約 "+len+" 字。\n"
+      +(GD.words.length?"- 一定要自然地用到這些詞（每個至少一次）："+GD.words.join("、")+"。\n":"")
+      +(gl.length?"- 一定要用到這些語法點（括號是官方例句，請照這種用法）：\n"+gl.map(function(g){return"  · "+g.name+"（例：「"+g.ex+"」）"}).join("\n")+"\n":"")
+      +"- 內容要自然連貫，像真實的教材，不要為了用詞硬塞。\n"+(GD.kind==="會話"?"- 會話每行寫成「名字：話」。\n":"")+"- 不要人名以外的專有名詞，不要網址。\n- 只輸出文章本身，不要標題、說明或翻譯。";
+    var prompt=base,out="",res=null,round,issues="";
+    for(round=1;round<=3;round++){st.textContent="第 "+round+" 輪寫作中…";
+      res=await aiText(prompt);out=res.text.trim().replace(/^```[a-z]*\n?|```$/g,"").trim();
+      var r=analyze(out,GD.lv,EX),miss=GD.words.filter(function(w){return out.indexOf(w)<0}),sents=splitSent(out).map(function(x){return x.s}),
+          gmiss=gl.filter(function(g){var s=gramPat(g.name);return s&&!sents.some(function(x){return gramHit(x,s)})}).map(function(g){return g.name});
+      issues="";if(r.ratio>GD.lim)issues+="超出第 "+GD.lv+" 級的詞："+r.list.slice(0,25).map(function(x){return x.w}).join("、")+"，請換成簡單的詞。";
+      if(miss.length)issues+=(issues?"\n":"")+"還沒用到這些詞："+miss.join("、")+"。";
+      if(gmiss.length)issues+=(issues?"\n":"")+"還沒用到這些語法點："+gmiss.join("、")+"。";
+      if(!issues)break;if(round<3)prompt=base+"\n\n上一版：\n"+out+"\n\n請修改上一版，解決下面的問題，其他意思盡量不變：\n"+issues}
+    round=Math.min(round,3);    GD.text=out;gdSave();var ta=$("gd-txt");if(ta)ta.value=out;gdLive();
+    var r2=analyze(out,GD.lv,EX);st.textContent="寫好了（"+round+" 輪）：超綱 "+r2.ratio.toFixed(1)+"%"+(issues?"；還有問題：「"+issues.replace(/\n/g," ")+"」，可以再按一次，或自己改":"")+"。請看過、改過再去檢核。";
+    logAI("寫教材：文章初稿","AI（"+res.model+"）","依 TBCL 第 "+GD.lv+" 級、挑選的詞和語法點產出"+GD.kind+"初稿","設計者挑詞和語法點 → AI 生成 → 程式用 TBCL 詞表檢查超綱、用到的詞和語法點，不合就請 AI 修改（共 "+round+" 輪）→ 人工審閱修訂","詞："+GD.words.join("、")+"；語法："+GD.gram.join("、")+"；約 "+len+" 字")
+  }catch(e){st.textContent="失敗："+e.message}}
+
 /* 讀剪貼簿，自動前進 */
 function gdTakeWords(t){var junk=GD_JUNK,occ=new Set(GD_OCC.join("、").split("、")),out=[],seen=new Set(GD.words);
   (t.match(/[一-鿿]+/g)||[]).forEach(function(w){if(junk.has(w)||occ.has(w)||seen.has(w))return;var l=LV.get(w);if(l==null||Math.floor(l)!==GD.lv)return;seen.add(w);out.push(w)});return out}
@@ -396,9 +437,12 @@ $("gd-body").addEventListener("change",function(e){var el=e.target;
   if(el.id==="gd-lv"){GD.lv=+el.value;GD.words=[];GD.gram=[];gdSave()}
   else if(el.id==="gd-occ"){GD.occ=el.value;gdSave()}else if(el.id==="gd-kind"){GD.kind=el.value;gdSave()}else if(el.id==="gd-lim"){GD.lim=+el.value;gdSave()}
   else if(el.classList.contains("gd-g")){var n=el.dataset.n,i=GD.gram.indexOf(n);if(el.checked&&i<0)GD.gram.push(n);if(!el.checked&&i>=0)GD.gram.splice(i,1);gdSave()}
+  else if(el.id==="gd-len"){GD.len=+el.value;gdSave()}
   else if(el.id==="gd-pn"){GD.pn=Math.max(0,+el.value||0);gdSave();gdRender()}});
 $("gd-body").addEventListener("input",function(e){if(e.target.id==="gd-txt"){GD.text=e.target.value;gdSave();gdLive()}});
 $("gd-body").addEventListener("click",function(e){var b=e.target.closest("[data-g],button,a");if(!b)return;var g=b.getAttribute("data-g"),id=b.id;
+  if(g==="grec"||g==="grand"||g==="gall"||g==="gclr"){gdPickGram(g);return}
+  if(g==="gen"){gdGenerate();return}
   if(g==="next")gdGo(GD.step+1);else if(g==="back")gdGo(GD.step-1);else if(g==="recheck")gdGo(3);
   else if(g==="delw"){GD.words.splice(+b.dataset.i,1);gdSave();$("gd-chips").innerHTML=GD.words.length?gdWords():""}
   else if(g==="find"){var w=b.getAttribute("data-w"),s=splitSent(GD.text).map(function(x){return x.s.trim()}).filter(function(x){return x.indexOf(w)>=0});$("gd-find").textContent="「"+w+"」在："+s.slice(0,3).join(" ／ ")}
@@ -527,13 +571,13 @@ async function prepAiFill(){var st=$("pr-ai-st"),todo=PREP.rows.filter(function(
   st.textContent="AI 處理中…";
   try{if(!(await ensureAi())){st.textContent="還沒有可用的 AI，請到「AI 設定」";return}
     var out=await aiText('請替下面的華語生詞寫「詞性」和「英文」'+(L.length?'，還有這些語言的意思：'+L.join("、"):"")+'。每個詞都附了它出現的句子，請依句子裡的意思，不要寫字典裡其他的意思。詞性只用：名詞、動詞、形容詞、副詞、介詞、連詞、助詞、量詞、代名詞、數詞。每種語言都要短（1–3 個意思）。\n只回傳 JSON 陣列，每項 {"w":"詞","pos":"詞性","en":"英文"'+(L.length?',"tr":{'+L.map(function(l){return'"'+l+'":"…"'}).join(",")+'}':"")+'}，不要其他文字。\n'+JSON.stringify(todo.map(function(x){return{w:x.w,s:x.ex}})));
-    var m=String(out).match(/\[[\s\S]*\]/);if(!m)throw new Error("AI 回傳的格式不對");var arr=JSON.parse(m[0]),n=0;
+    var m=String(out.text).match(/\[[\s\S]*\]/);if(!m)throw new Error("AI 回傳的格式不對");var arr=JSON.parse(m[0]),n=0;
     arr.forEach(function(a){PREP.rows.forEach(function(x){if(x.w===a.w&&x.on){if(a.en){x.en=a.en;n++}if(a.pos)x.pos=a.pos;if(a.tr){x.tr=x.tr||{};L.forEach(function(l){if(a.tr[l])x.tr[l]=a.tr[l]})}}})});
     prepRender();$("pr-ai-st").textContent="整理了 "+n+" 個，請老師看過"}catch(e){st.textContent="失敗："+e.message}}
 async function prepAiQ(){var st=$("pr-q-st");st.textContent="AI 處理中…";
   try{if(!(await ensureAi())){st.textContent="還沒有可用的 AI，請到「AI 設定」";return}
     var out=await aiText("根據下面這篇文章，給 TBCL 第 "+PREP.t+" 級的外國學生，寫 3 個課堂討論問題和 2 個課堂活動建議。問題要短，用這個等級的詞。活動要說明怎麼進行（分組、做什麼、多久），而且要用到文章裡的內容，不要太空泛。\n只回傳 JSON：{\"questions\":[\"…\"],\"activities\":[{\"title\":\"活動名稱\",\"how\":\"怎麼進行\"}]}，不要其他文字。\n\n"+PREP.text.slice(0,1500));
-    var m=String(out).match(/\{[\s\S]*\}/);if(!m)throw new Error("AI 回傳的格式不對");var o=JSON.parse(m[0]);
+    var m=String(out.text).match(/\{[\s\S]*\}/);if(!m)throw new Error("AI 回傳的格式不對");var o=JSON.parse(m[0]);
     PREP.acts.q=(o.questions||[]).map(String).slice(0,4);PREP.acts.ai=(o.activities||[]).slice(0,3);prepRender()}catch(e){st.textContent="失敗："+e.message}}
 /* 互動課文：生詞畫底線，點一下看意思（學生用）；也可下載成單一網頁 */
 function prepReaderHtml(){var P=PREP,rows=P.rows.filter(function(x){return x.on}),words=rows.map(function(x){return x.w}).sort(function(a,b){return b.length-a.length});
