@@ -527,13 +527,17 @@ function gramPat(name){var n=String(name).replace(/[（(][^）)]*[）)]/g,"").re
 function gramHit(sent,segs){var pos=0;for(var i=0;i<segs.length;i++){var best=-1,bl=0;
     segs[i].forEach(function(a){var k=sent.indexOf(a,pos);if(k>=0&&(best<0||k<best)){best=k;bl=a.length}});
     if(best<0)return false;pos=best+bl}return true}
+var PV=null;
+function platVocab(){if(PV)return PV;PV=new Map();lessons().forEach(function(les){(les.vocab||[]).forEach(function(v){var w=v["生詞"];if(w&&!PV.has(w))PV.set(w,v)})});return PV}
 function prepBuild(text,t,low,G,VI){
   var r=analyze(text,t,EX),sents=splitSent(text).map(function(x){return x.s.trim().replace(/^[」』”’）)\s]+/,"")}).filter(Boolean),seen=new Set(),rows=[];
   function sentOf(w){for(var i=0;i<sents.length;i++)if(sents[i].indexOf(w)>=0)return sents[i];return""}
   r.toks.forEach(function(tk){if(!tk.han||tk.st==="ex"||seen.has(tk.w))return;seen.add(tk.w);
     var l=tk.lv,eff=l==null?99:effLv(tk.w,l),kind=l==null?"unk":eff>t?"over":(Math.floor(l)===t?"new":"low");
     if(kind==="low"&&!low)return;if(tk.w.length===1&&kind==="low")return;
-    var vi=VI[tk.w]||["","",""];rows.push({w:tk.w,lv:lvTag(tk.w,l),kind:kind,py:vi[0],pos:vi[1],en:vi[2],ex:sentOf(tk.w),on:kind==="new"||kind==="over"||kind==="unk"})});
+    var vi=VI[tk.w]||["","",""],pv=platVocab().get(tk.w),src="";
+    if(pv){src="曼米教材";vi=[pv["拼音"]||vi[0],pv["詞性"]||vi[1],pv["英文翻譯"]||vi[2]]}
+    rows.push({w:tk.w,lv:lvTag(tk.w,l),kind:kind,py:vi[0],pos:vi[1],en:vi[2],ex:sentOf(tk.w),ex2:pv&&pv["例句（中文）"]?pv["例句（中文）"]:"",src:src,tr:pv&&pv["泰文翻譯"]?{"泰文":pv["泰文翻譯"]}:{},on:kind==="new"||kind==="over"||kind==="unk"})});
   var order={over:0,unk:0,"new":1,low:2};rows.sort(function(a,b){return order[a.kind]-order[b.kind]});
   var n=0;rows.forEach(function(x){if(x.kind==="new"){n++;if(n>15)x.on=false}});
   var gr=[];G.forEach(function(g){var segs=gramPat(g.name);if(!segs)return;
@@ -553,12 +557,12 @@ function prepRender(){var P=PREP;if(!P)return;var h="",r=P.r,t=P.t;
   h+='<div class="card"><b>這篇文章</b>　第 '+t+' 級　<span class="note">超綱 '+r.ratio.toFixed(1)+'%（教材 15% 以內：'+(okp?"符合":"超過")+'；試題 10% 以內：'+(r.ratio<=10?"符合":"超過")+'）</span></div>';
   h+='<div class="card"><b>① 生詞表</b><span class="note">　拼音、詞性、英文是查詞典帶入的，多義詞可能不符合這篇文章的意思（例如「一邊」），請老師看過；格子可以直接改。取消勾選的詞不會出現在下載的檔案裡。</span>'
    +'<div class="row" style="margin:8px 0"><span class="note">學生的語言（英文已經有）：</span>'+["日文","韓文","越南文","泰文"].map(function(l){return'<label class="chk"><input type="checkbox" class="pr-lang" value="'+l+'"'+(P.langs.indexOf(l)>=0?" checked":"")+'>'+l+'</label>'}).join("")+'<input id="pr-lang-o" placeholder="其他語言" size="8"></div>'
-   +'<div class="row" style="margin:8px 0"><button id="pr-ai">用 AI 依文章意思整理英文、詞性和上面選的語言</button><span class="note" id="pr-ai-st"></span></div>'
-   +'<table><tr><th></th><th>詞</th><th>拼音</th><th>詞性</th><th>英文</th>'+P.langs.map(function(l){return'<th>'+esc(l)+'</th>'}).join("")+'<th>等級</th><th>文章裡的句子</th></tr>';
+   +'<div class="row" style="margin:8px 0"><button id="pr-ai">用 AI 補英文、詞性、造句和上面選的語言</button><span class="note" id="pr-ai-st"></span></div>'
+   +'<table><tr><th></th><th>詞</th><th>拼音</th><th>詞性</th><th>英文</th>'+P.langs.map(function(l){return'<th>'+esc(l)+'</th>'}).join("")+'<th>等級</th><th>造句</th><th>文章裡的句子</th></tr>';
   P.rows.forEach(function(x,i){var tag=x.kind==="over"||x.kind==="unk"?'<span class="tag bad">'+(x.kind==="unk"?"未收錄":"超綱")+'</span>':"";
     h+='<tr><td><input type="checkbox" class="pr-on" data-i="'+i+'"'+(x.on?" checked":"")+'></td><td class="w"><b>'+esc(x.w)+'</b>'+tag+'</td>'
      +'<td><input data-i="'+i+'" data-f="py" value="'+esc(x.py)+'"></td><td><input data-i="'+i+'" data-f="pos" value="'+esc(x.pos)+'" size="5"></td>'
-     +'<td><input data-i="'+i+'" data-f="en" value="'+esc(x.en)+'"></td>'+P.langs.map(function(l){return'<td><input data-i="'+i+'" data-f="tr:'+esc(l)+'" value="'+esc((x.tr||{})[l]||"")+'"></td>'}).join("")+'<td>'+esc(x.lv)+'</td><td>'+esc(x.ex)+'</td></tr>'});
+     +'<td><input data-i="'+i+'" data-f="en" value="'+esc(x.en)+'"></td>'+P.langs.map(function(l){return'<td><input data-i="'+i+'" data-f="tr:'+esc(l)+'" value="'+esc((x.tr||{})[l]||"")+'"></td>'}).join("")+'<td>'+esc(x.lv)+'</td><td><input data-i="'+i+'" data-f="ex2" value="'+esc(x.ex2||"")+'" placeholder="（空白）"></td><td>'+esc(x.ex)+'</td></tr>'});
   h+='</table></div>';
   h+='<div class="card"><b>② 語法點</b><span class="note">　文章裡可能出現的 TBCL 語法點（用名稱自動比對，請老師確認）。</span>';
   if(!P.gr.length)h+='<p class="note">沒有比對到。</p>';
@@ -579,12 +583,12 @@ function prepRender(){var P=PREP;if(!P)return;var h="",r=P.r,t=P.t;
   if(A.ai&&A.ai.length)h+='<p><b>活動建議</b>（AI 產生，請老師看過）</p><ol>'+A.ai.map(function(x){return'<li><b>'+esc(x.title)+'</b>：'+esc(x.how)+'</li>'}).join("")+'</ol>';
   if(!A.cloze.length&&A.match.words.length<3&&!A.order.length)h+='<p class="note">文章太短或勾選的生詞太少，做不出活動。</p>';
   h+='</div>';
-  h+='<div class="card"><b>④ 互動課文</b><span class="note">　學生點有底線的詞，就能看意思、聽發音。可以下載成一個網頁檔，傳給學生用瀏覽器開，不用登入。</span><div id="pr-read" style="position:relative;margin-top:10px;font-size:18px;line-height:2.1">'+prepReaderHtml()+'<div id="pr-pop" hidden></div></div><div class="row"><button id="pr-rd-dl">下載互動課文（網頁檔）</button></div></div>';
+  h+='<div class="card"><b>④ 互動課文</b><span class="note">　把滑鼠移到有底線的詞上，就能看拼音、意思和造句（手機點一下）。可以下載成一個網頁檔，傳給學生用瀏覽器開，不用登入。</span><div id="pr-read" style="position:relative;margin-top:10px;font-size:18px;line-height:2.1">'+prepReaderHtml()+'<div id="pr-pop" hidden></div></div><div class="row"><button id="pr-rd-dl">下載互動課文（網頁檔）</button></div></div>';
   h+='<div class="row"><button class="pri" id="pr-doc">下載 Word</button><button id="pr-print">列印</button><span class="note">下載的檔案不含姓名或單位。</span></div>';
   $("pr-out").innerHTML=h}
 function prepDoc(){var P=PREP,A=P.acts,h='<h1>備課包（TBCL 第 '+P.t+' 級）</h1><h2>課文</h2>'+P.text.split(/\n+/).map(function(x){return'<p>'+esc(x)+'</p>'}).join("");
   var rows=P.rows.filter(function(x){return x.on});
-  h+='<h2>生詞表</h2><table border="1" cellspacing="0" cellpadding="5"><tr><th>詞</th><th>拼音</th><th>詞性</th><th>英文</th>'+P.langs.map(function(l){return'<th>'+esc(l)+'</th>'}).join("")+'<th>等級</th><th>例句</th></tr>'+rows.map(function(x){return'<tr><td>'+esc(x.w)+'</td><td>'+esc(x.py)+'</td><td>'+esc(x.pos)+'</td><td>'+esc(x.en)+'</td>'+P.langs.map(function(l){return'<td>'+esc((x.tr||{})[l]||"")+'</td>'}).join("")+'<td>'+esc(x.lv)+'</td><td>'+esc(x.ex)+'</td></tr>'}).join("")+'</table>';
+  h+='<h2>生詞表</h2><table border="1" cellspacing="0" cellpadding="5"><tr><th>詞</th><th>拼音</th><th>詞性</th><th>英文</th>'+P.langs.map(function(l){return'<th>'+esc(l)+'</th>'}).join("")+'<th>等級</th><th>例句</th></tr>'+rows.map(function(x){return'<tr><td>'+esc(x.w)+'</td><td>'+esc(x.py)+'</td><td>'+esc(x.pos)+'</td><td>'+esc(x.en)+'</td>'+P.langs.map(function(l){return'<td>'+esc((x.tr||{})[l]||"")+'</td>'}).join("")+'<td>'+esc(x.lv)+'</td><td>'+esc(x.ex2||x.ex)+'</td></tr>'}).join("")+'</table>';
   var g=P.gr.filter(function(x){return x.on});
   if(g.length)h+='<h2>語法點</h2><table border="1" cellspacing="0" cellpadding="5"><tr><th>等級</th><th>語法點</th><th>例句</th><th>課文裡的句子</th></tr>'+g.map(function(x){return'<tr><td>第 '+x.lv+(x.star?"*":"")+' 級</td><td>'+esc(x.name)+'</td><td>'+esc(x.ex)+'</td><td>'+esc(x.sent)+'</td></tr>'}).join("")+'</table>';
   h+='<h2>課堂活動</h2>';
@@ -610,6 +614,9 @@ $("pr-out").addEventListener("change",function(e){var el=e.target;if(!PREP)retur
   else if(el.id==="pr-lang-o"){var v=el.value.trim();if(v&&PREP.langs.indexOf(v)<0){PREP.langs.push(v);prepRender()}}
   else if(el.classList.contains("pr-on")){PREP.rows[+el.dataset.i].on=el.checked}
   else if(el.classList.contains("pr-gon")){PREP.gr[+el.dataset.i].on=el.checked}});
+var PHIDE=null;
+$("pr-out").addEventListener("mouseover",function(e){var sp=e.target.closest&&e.target.closest(".rw");if(PREP&&$("pr-read")){if(sp&&$("pr-read").contains(sp)){clearTimeout(PHIDE);prepPop(sp)}else if(e.target.closest&&e.target.closest("#pr-pop"))clearTimeout(PHIDE)}});
+$("pr-out").addEventListener("mouseout",function(e){var f=e.target.closest&&e.target.closest(".rw,#pr-pop"),to=e.relatedTarget&&e.relatedTarget.closest&&e.relatedTarget.closest(".rw,#pr-pop");if(f&&!to){clearTimeout(PHIDE);PHIDE=setTimeout(function(){var p=$("pr-pop");if(p)p.hidden=true},250)}});
 $("pr-out").addEventListener("click",function(e){if(!PREP)return;var sp=e.target.closest(".rw"),sb=e.target.closest(".pp-say");
   if(sb){prepSay(sb.dataset.w);return}if(sp&&$("pr-read")&&$("pr-read").contains(sp)){prepPop(sp);return}if($("pr-pop")&&!e.target.closest("#pr-pop"))$("pr-pop").hidden=true;
   var b=e.target.closest("button");if(!b)return;
@@ -624,10 +631,10 @@ async function prepAiFill(){var st=$("pr-ai-st"),todo=PREP.rows.filter(function(
   if(!todo.length){st.textContent="沒有勾選的詞";return}
   st.textContent="AI 處理中…";
   try{if(!(await ensureAi())){st.textContent="還沒有可用的 AI，請到「AI 設定」";return}
-    var out=await aiText('請替下面的華語生詞寫「詞性」和「英文」'+(L.length?'，還有這些語言的意思：'+L.join("、"):"")+'。每個詞都附了它出現的句子，請依句子裡的意思，不要寫字典裡其他的意思。詞性只用：名詞、動詞、形容詞、副詞、介詞、連詞、助詞、量詞、代名詞、數詞。每種語言都要短（1–3 個意思）。\n只回傳 JSON 陣列，每項 {"w":"詞","pos":"詞性","en":"英文"'+(L.length?',"tr":{'+L.map(function(l){return'"'+l+'":"…"'}).join(",")+'}':"")+'}，不要其他文字。\n'+JSON.stringify(todo.map(function(x){return{w:x.w,s:x.ex}})));
-    var m=String(out.text).match(/\[[\s\S]*\]/);if(!m)throw new Error("AI 回傳的格式不對");var arr=JSON.parse(m[0]),n=0;
-    arr.forEach(function(a){PREP.rows.forEach(function(x){if(x.w===a.w&&x.on){if(a.en){x.en=a.en;n++}if(a.pos)x.pos=a.pos;if(a.tr){x.tr=x.tr||{};L.forEach(function(l){if(a.tr[l])x.tr[l]=a.tr[l]})}}})});
-    prepRender();$("pr-ai-st").textContent="整理了 "+n+" 個，請老師看過"}catch(e){st.textContent="失敗："+e.message}}
+    var out=await aiText('請替下面的華語生詞寫「詞性」和「英文」'+(L.length?'，還有這些語言的意思：'+L.join("、"):"")+'。每個詞都附了它出現的句子，請依句子裡的意思，不要寫字典裡其他的意思。詞性只用：名詞、動詞、形容詞、副詞、介詞、連詞、助詞、量詞、代名詞、數詞。每種語言都要短（1–3 個意思）。另外請為每個詞寫一個全新的短例句（"ex"，8–15 個字，不要抄課文的句子，句子裡的其他詞都要在 TBCL 第 '+PREP.t+' 級以內，每個詞的句子情境要不一樣）。\n只回傳 JSON 陣列，每項 {"w":"詞","pos":"詞性","en":"英文","ex":"例句"'+(L.length?',"tr":{'+L.map(function(l){return'"'+l+'":"…"'}).join(",")+'}':"")+'}，不要其他文字。\n'+JSON.stringify(todo.map(function(x){return{w:x.w,s:x.ex}})));
+    var m=String(out.text).match(/\[[\s\S]*\]/);if(!m)throw new Error("AI 回傳的格式不對");var arr=JSON.parse(m[0]),n=0,ne=0;
+    arr.forEach(function(a){PREP.rows.forEach(function(x){if(x.w===a.w&&x.on){if(a.en){x.en=a.en;n++}if(a.pos)x.pos=a.pos;if(a.ex&&String(a.ex).indexOf(x.w)>=0){var rr=analyze(String(a.ex),PREP.t,EX).list.filter(function(o){return x.w.indexOf(o.w)<0&&o.w.indexOf(x.w)<0});if(!rr.length){x.ex2=String(a.ex);ne++}}if(a.tr){x.tr=x.tr||{};L.forEach(function(l){if(a.tr[l])x.tr[l]=a.tr[l]})}}})});
+    prepRender();$("pr-ai-st").textContent="整理了 "+n+" 個，造句 "+ne+" 個（超出等級的造句已丟掉），請老師看過"}catch(e){st.textContent="失敗："+e.message}}
 async function prepAiQ(){var st=$("pr-q-st");st.textContent="AI 處理中…";
   try{if(!(await ensureAi())){st.textContent="還沒有可用的 AI，請到「AI 設定」";return}
     var out=await aiText("根據下面這篇文章，給 TBCL 第 "+PREP.t+" 級的外國學生，寫 3 個課堂討論問題和 2 個課堂活動建議。問題要短，用這個等級的詞。活動要說明怎麼進行（分組、做什麼、多久），而且要用到文章裡的內容，不要太空泛。\n只回傳 JSON：{\"questions\":[\"…\"],\"activities\":[{\"title\":\"活動名稱\",\"how\":\"怎麼進行\"}]}，不要其他文字。\n\n"+PREP.text.slice(0,1500));
@@ -640,17 +647,25 @@ function prepReaderHtml(){var P=PREP,rows=P.rows.filter(function(x){return x.on}
 function prepPopHtml(x,langs){var h='<div class="pp-h"><b>'+esc(x.w)+'</b> <button class="pp-say" data-w="'+esc(x.w)+'" title="聽發音">🔊</button><span class="pp-t">'+esc(x.pos||"")+' <span class="tag">'+esc(x.lv)+'</span></span></div>';
   if(x.py)h+='<div class="pp-py">'+esc(x.py)+'</div>';
   h+='<div class="pp-m"><div><b>EN</b>　'+esc((x.en||"").split(";")[0]||"—")+'</div>'+langs.map(function(l){return'<div><b>'+esc(l)+'</b>　'+esc((x.tr||{})[l]||"—")+'</div>'}).join("")+'</div>';
-  if(x.ex)h+='<div class="pp-e"><small>例句</small><br>'+esc(x.ex)+'</div>';return h}
+  h+='<div class="pp-e"><small>造句</small><br>'+(x.ex2?esc(x.ex2):'<span class="note">（還沒有造句：按上面「用 AI 補…」，或自己在表格填）</span>')+'</div>';return h}
 function prepSay(w){try{speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(w);u.lang="zh-TW";u.rate=0.85;speechSynthesis.speak(u)}catch(e){}}
 function prepPop(span){var P=PREP,x=P.rows.filter(function(r){return r.w===span.dataset.w})[0],pop=$("pr-pop");if(!x||!pop)return;pop.innerHTML=prepPopHtml(x,P.langs);pop.hidden=false;
   var r=span.getBoundingClientRect(),host=$("pr-read").getBoundingClientRect();pop.style.top=(r.bottom-host.top+6)+"px";pop.style.left=Math.max(0,Math.min(r.left-host.left,host.width-pop.offsetWidth-4))+"px"}
-function prepReaderDoc(){var P=PREP,rows=P.rows.filter(function(x){return x.on}).map(function(x){return{w:x.w,py:x.py,pos:x.pos,en:x.en,tr:x.tr||{},lv:x.lv,ex:x.ex}}),langs=P.langs;
-  var css='body{font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;max-width:760px;margin:0 auto;padding:20px 16px;line-height:2.1;font-size:19px;color:#222;background:#faf8f3}.rw{border-bottom:2px dashed #b23b32;cursor:pointer}.rw:hover{background:#f3dcd9}#pop{position:absolute;background:#fff;border:1px solid #ccc;border-radius:8px;padding:12px 14px;box-shadow:0 4px 18px rgba(0,0,0,.15);font-size:15px;line-height:1.7;width:min(320px,92vw)}.pp-t{float:right;color:#777;font-size:13px}.pp-py{color:#777}.pp-e{margin-top:6px;border-top:1px solid #eee;padding-top:6px}button{border:0;background:none;cursor:pointer;font-size:16px}h1{font-size:22px}';
-  var js='var D='+JSON.stringify(rows).replace(/</g,"\\u003c")+',L='+JSON.stringify(langs)+';function e(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",\'"\':"&quot;"}[c]})}var pop=document.getElementById("pop"),host=document.getElementById("rd");function say(w){try{speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(w);u.lang="zh-TW";u.rate=.85;speechSynthesis.speak(u)}catch(x){}}'
-   +'document.addEventListener("click",function(ev){var s=ev.target.closest(".rw"),b=ev.target.closest(".pp-say");if(b){say(b.dataset.w);return}if(!s){pop.hidden=true;return}var x=D.filter(function(r){return r.w===s.dataset.w})[0];if(!x)return;'
-   +'var h=\'<div><b>\'+e(x.w)+\'</b> <button class="pp-say" data-w="\'+e(x.w)+\'">🔊</button><span class="pp-t">\'+e(x.pos)+\' \'+e(x.lv)+\'</span></div>\'+(x.py?\'<div class="pp-py">\'+e(x.py)+\'</div>\':"")+\'<div><b>EN</b>　\'+e((x.en||"").split(";")[0]||"—")+\'</div>\'+L.map(function(l){return\'<div><b>\'+e(l)+\'</b>　\'+e(x.tr[l]||"—")+\'</div>\'}).join("")+(x.ex?\'<div class="pp-e"><small>例句</small><br>\'+e(x.ex)+\'</div>\':"");'
-   +'pop.innerHTML=h;pop.hidden=false;var r=s.getBoundingClientRect(),hr=host.getBoundingClientRect();pop.style.top=(r.bottom-hr.top+6)+"px";pop.style.left=Math.max(0,Math.min(r.left-hr.left,hr.width-pop.offsetWidth-4))+"px"});';
-  return'<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>互動課文</title><style>'+css+'</style></head><body><h1>互動課文（TBCL 第 '+P.t+' 級）</h1><p style="font-size:14px;color:#777;line-height:1.6">點有底線的詞，可以看意思和聽發音。</p><div id="rd" style="position:relative">'+prepReaderHtml()+'<div id="pop" hidden></div></div><script>'+js.replace(/<\/script/g,"<\\/script")+'<\/script></body></html>'}
+function readerBoot(D,L){
+  function e(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  var pop=document.getElementById("pop"),host=document.getElementById("rd"),hideT=null;
+  function say(w){try{speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(w);u.lang="zh-TW";u.rate=0.85;speechSynthesis.speak(u)}catch(x){}}
+  function show(s){var x=D.filter(function(r){return r.w===s.getAttribute("data-w")})[0];if(!x)return;
+    var h='<div><b>'+e(x.w)+'</b> <button class="pp-say" data-w="'+e(x.w)+'">🔊</button><span class="pp-t">'+e(x.pos)+' '+e(x.lv)+'</span></div>'+(x.py?'<div class="pp-py">'+e(x.py)+'</div>':"")
+      +'<div><b>EN</b>　'+e((x.en||"").split(";")[0]||"—")+'</div>'+L.map(function(l){return'<div><b>'+e(l)+'</b>　'+e((x.tr||{})[l]||"—")+'</div>'}).join("")+(x.ex2?'<div class="pp-e"><small>造句</small><br>'+e(x.ex2)+'</div>':"");
+    pop.innerHTML=h;pop.hidden=false;var r=s.getBoundingClientRect(),hr=host.getBoundingClientRect();pop.style.top=(r.bottom-hr.top+6)+"px";pop.style.left=Math.max(0,Math.min(r.left-hr.left,hr.width-pop.offsetWidth-4))+"px"}
+  document.addEventListener("mouseover",function(ev){var s=ev.target.closest&&ev.target.closest(".rw");if(s){clearTimeout(hideT);show(s)}else if(ev.target.closest&&ev.target.closest("#pop"))clearTimeout(hideT)});
+  document.addEventListener("mouseout",function(ev){var f=ev.target.closest&&ev.target.closest(".rw,#pop"),to=ev.relatedTarget&&ev.relatedTarget.closest&&ev.relatedTarget.closest(".rw,#pop");if(f&&!to){hideT=setTimeout(function(){pop.hidden=true},250)}});
+  document.addEventListener("click",function(ev){var b=ev.target.closest(".pp-say"),s=ev.target.closest(".rw");if(b){say(b.getAttribute("data-w"));return}if(s){show(s);return}if(!ev.target.closest("#pop"))pop.hidden=true})}
+function prepReaderDoc(){var P=PREP,rows=P.rows.filter(function(x){return x.on}).map(function(x){return{w:x.w,py:x.py,pos:x.pos,en:x.en,tr:x.tr||{},lv:x.lv,ex2:x.ex2||""}}),langs=P.langs;
+  var css='body{font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;max-width:760px;margin:0 auto;padding:20px 16px;line-height:2.1;font-size:19px;color:#222;background:#faf8f3}.rw{border-bottom:2px dashed #b23b32;cursor:pointer}.rw:hover{background:#f3dcd9}#pop{position:absolute;z-index:5;background:#fff;border:1px solid #ccc;border-radius:8px;padding:12px 14px;box-shadow:0 4px 18px rgba(0,0,0,.15);font-size:15px;line-height:1.7;width:min(320px,92vw)}.pp-t{float:right;color:#777;font-size:13px}.pp-py{color:#777}.pp-e{margin-top:6px;border-top:1px solid #eee;padding-top:6px}button{border:0;background:none;cursor:pointer;font-size:16px}h1{font-size:22px}';
+  var js='('+readerBoot.toString()+')('+JSON.stringify(rows).replace(/</g,"\\u003c")+','+JSON.stringify(langs)+');';
+  return'<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>互動課文</title><style>'+css+'</style></head><body><h1>互動課文（TBCL 第 '+P.t+' 級）</h1><p style="font-size:14px;color:#777;line-height:1.6">把滑鼠移到有底線的詞上，可以看拼音、意思和造句；手機請點一下。</p><div id="rd" style="position:relative">'+prepReaderHtml()+'<div id="pop" hidden></div></div><script>'+js.replace(/<\/script/g,"<\\/script")+'<\/script></body></html>'}
 
 /* ===== ⑥ 整篇文章：找出全部超綱詞，逐個給建議，一鍵（或逐一）套用 ===== */
 var ART=null;
