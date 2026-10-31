@@ -558,7 +558,7 @@ function prepIdeas(P){var on=P.rows.filter(function(x){return x.on}).map(functio
   {k:"read",title:"找錯誤",how:"老師念一段改過的課文，故意放 3 個錯（詞語、數字或意思），學生聽完舉手找出來，並說出正確的說法。"},
   {k:"write",title:"我的版本",how:"讀完課文，每個人仿寫一段「我的……」，用到 3 個以上生詞（"+W(5)+"），寫完貼在牆上，同學用貼紙投票。"}];
   var pick=[],used={};shuf(all).forEach(function(x){if(pick.length<3&&!used[x.k]){used[x.k]=1;pick.push({title:x.title,how:x.how})}});return pick}
-function prepIdeaHtml(list){return'<div class="pr-ideas">'+list.map(function(x,i){return'<div class="pr-idea"><small>活動 '+(i+1)+'</small><b>'+esc(x.title)+'</b><p>'+esc(x.how)+(x.words&&x.words.length?'<br><span class="note">用到：'+esc(x.words.join("、"))+'</span>':"")+'</p></div>'}).join("")+'</div>'}
+function prepIdeaHtml(list){return'<div class="pr-ideas">'+list.map(function(x,i){return'<div class="pr-idea"><small>活動 '+(i+1)+'</small><b>'+esc(x.title)+'</b><p>'+esc(x.how)+(x.words&&x.words.length?'<br><span class="note">課文裡的：'+esc(x.words.join("、"))+'</span>':"")+'</p></div>'}).join("")+'</div>'}
 function prepActs(P){var on=P.rows.filter(function(x){return x.on&&x.w.length>=1}),used=new Set(),cl=[];
   shuf(on).forEach(function(x){if(cl.length>=6)return;var s=P.sents.filter(function(z){return z.indexOf(x.w)>=0&&z.length<=40&&!used.has(z)})[0];
     if(!s)return;used.add(s);cl.push({w:x.w,s:s.replace(x.w,"＿＿＿＿")})});
@@ -652,9 +652,26 @@ async function prepAiFill(){var st=$("pr-ai-st"),todo=PREP.rows.filter(function(
     prepRender();$("pr-ai-st").textContent="整理了 "+n+" 個，造句 "+ne+" 個（超出等級的造句已丟掉），請老師看過"}catch(e){st.textContent="失敗："+e.message}}
 async function prepAiQ(){var st=$("pr-q-st");st.textContent="AI 處理中…";
   try{if(!(await ensureAi())){st.textContent="還沒有可用的 AI，請到「AI 設定」";return}
-    var out=await aiText("根據下面這篇文章，給 TBCL 第 "+PREP.t+" 級的外國學生，寫 3 個課堂討論問題和 3 個課堂活動建議。問題要短，用這個等級的詞。活動要有趣、有一個吸引人的名字，緊扣這篇文章的情境和內容（例如文章裡的地點、人物、事件），說明怎麼進行（幾個人一組、做什麼、大約幾分鐘），並列出會用到的生詞（從這些詞裡挑："+PREP.rows.filter(function(x){return x.on}).map(function(x){return x.w}).join("、")+"）。不要太空泛，不要只寫「分組討論」。\n只回傳 JSON：{\"questions\":[\"…\"],\"activities\":[{\"title\":\"活動名稱\",\"how\":\"怎麼進行\",\"words\":[\"用到的生詞\"]}]}，不要其他文字。\n\n"+PREP.text.slice(0,1500));
-    var m=String(out.text).match(/\{[\s\S]*\}/);if(!m)throw new Error("AI 回傳的格式不對");var o=JSON.parse(m[0]);
-    PREP.acts.q=(o.questions||[]).map(String).slice(0,4);PREP.acts.ai=(o.activities||[]).slice(0,3).map(function(x){return{title:String(x.title||""),how:String(x.how||""),words:Array.isArray(x.words)?x.words.map(String):[]}});prepRender()}catch(e){st.textContent="失敗："+e.message}}
+    var words=PREP.rows.filter(function(x){return x.on}).map(function(x){return x.w}),text=PREP.text.slice(0,1800),
+    base="你是有經驗的華語老師。請根據下面這篇文章，給 TBCL 第 "+PREP.t+" 級的外國學生，設計 3 個課堂討論問題和 3 個課堂活動。\n"
+     +"做法：先找出文章裡的場景（地點）、人物、事件和重要的東西，再把活動設計在這些具體的內容上。\n"
+     +"活動要求：\n- 要有一個有趣、具體的名字，例如「角色扮演：校園一日」「合成歷史報告」，不要叫「分組討論」。\n- 說明怎麼進行：幾個人一組、做什麼、大約幾分鐘，2–3 句話。\n- 一定要提到文章裡出現的具體內容（地點、人物、事件、物品），不能是放在任何文章都能用的通用活動。\n- 三個活動要不同類型（例如說、讀、寫、玩遊戲各不同）。\n- 「anchors」填你用到的文章內容，必須是文章裡原本就有的詞或短語（至少 2 個）；「words」從這些生詞裡挑："+words.join("、")+"。\n"
+     +"問題要短，用這個等級的詞，而且要問到文章裡的內容。\n"
+     +"只回傳 JSON：{\"questions\":[\"…\"],\"activities\":[{\"title\":\"活動名稱\",\"how\":\"怎麼進行\",\"anchors\":[\"文章裡的詞\"],\"words\":[\"生詞\"]}]}，不要其他文字。\n\n文章：\n"+text,
+    prompt=base,o=null,bad="",round;
+    var inText=function(s){return String(s||"").length>=1&&PREP.text.indexOf(String(s))>=0};
+    for(round=1;round<=3;round++){st.textContent="第 "+round+" 輪：AI 設計中（最多 3 輪）…";
+      var res=await aiText(prompt),m=String(res.text).match(/\{[\s\S]*\}/);if(!m){bad="格式不對，請只回傳 JSON。"}else{
+        try{o=JSON.parse(m[0])}catch(e){o=null;bad="JSON 無法解析，請只回傳乾淨的 JSON。"}
+        if(o){var acts=(o.activities||[]).map(function(x){var an=(Array.isArray(x.anchors)?x.anchors:[]).map(String).filter(inText);
+            var hit=an.filter(function(w){return String(x.how||"").indexOf(w)>=0||String(x.title||"").indexOf(w)>=0});
+            return{title:String(x.title||""),how:String(x.how||""),anchors:an,hit:hit,words:(Array.isArray(x.words)?x.words.map(String):[]).filter(function(w){return words.indexOf(w)>=0})}}),
+          weak=acts.filter(function(x){return x.hit.length<2||x.how.length<30||/^分組討論|^小組討論$/.test(x.title)});
+          bad="";if(acts.length<3)bad="活動不足 3 個。";if(weak.length)bad+=(bad?"\n":"")+"這些活動沒有緊扣文章（說明裡要提到至少 2 個文章裡的具體內容，且說明要完整）："+weak.map(function(x){return"「"+x.title+"」"}).join("、")+"。請改成用文章裡的地點、人物或事件。";
+          if(!bad||round===3){PREP.acts.ai=acts.slice(0,3).map(function(x){return{title:x.title,how:x.how,words:x.anchors.concat(x.words.filter(function(w){return x.anchors.indexOf(w)<0}))}});
+            PREP.acts.q=(o.questions||[]).map(String).slice(0,4);logAI("備課包：課堂活動建議","AI（"+res.model+"）","依課文內容設計討論問題和活動","AI 設計 → 程式檢查每個活動是否提到課文裡的具體內容，不夠就請 AI 重寫（共 "+round+" 輪）→ 老師審閱","第 "+PREP.t+" 級課文");break}}}
+      prompt=base+"\n\n上一版的問題："+bad+"\n請重寫。"}
+    prepRender();if(bad){var s2=$("pr-q-st");if(s2)s2.textContent="有幾個活動可能還不夠貼近課文，請老師看過，或再按一次。"}}catch(e){st.textContent="失敗："+e.message}}
 /* 互動課文：生詞畫底線，點一下看意思（學生用）；也可下載成單一網頁 */
 function prepReaderHtml(){var P=PREP,rows=P.rows.filter(function(x){return x.on}),map={};
   rows.forEach(function(x){map[x.w]=x.w;(x.surf||[]).forEach(function(s){map[s]=x.w})});
