@@ -72,6 +72,18 @@ for w, role, vs in roles:
     for v in vs:
         if all(x[0] != v or x[2] != role for x in lst):
             lst.append([v, lv_of(v), role])
+# 異體字別名：同一個成語常有不同寫法（琳琅／琳瑯、如痴／如癡…），用 OpenCC 轉成臺灣用字再各存一份
+try:
+    from opencc import OpenCC
+    _t2s, _s2tw = OpenCC("t2s"), OpenCC("s2twp")
+    for w in list(out):
+        for alt in {_s2tw.convert(_t2s.convert(w)), _s2tw.convert(w), w.replace("痴", "癡"), w.replace("癡", "痴"), w.replace("琅", "瑯"), w.replace("瑯", "琅")}:
+            if alt != w and alt not in out:
+                out[alt] = out[w]
+                if alt not in known and len(alt) >= 3 and alt not in missing:
+                    missing.append(alt)
+except ImportError:
+    print("沒有安裝 opencc-python-reimplemented，略過異體字別名")
 json.dump(out, open(os.path.join(HERE, "..", "data", "curated.json"), "w", encoding="utf8"), ensure_ascii=False, separators=(",", ":"))
 open(os.path.join(HERE, "..", "data", "lexicon-curated.txt"), "w", encoding="utf8").write("\n".join(missing))
 import collections
