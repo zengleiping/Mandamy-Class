@@ -6452,7 +6452,7 @@ function lessonDeckMenu(no, kind, btn){
   var fit = pids.filter(function(p){ return (ps[p][kind] || 0) > 0 || p === S.sub; }); if(fit.length) pids = fit;   // 投影片只列有投影片的、測驗只列有題目的
   var curPid = S.tab === kind ? (S.sub && pids.indexOf(S.sub) >= 0 ? S.sub : pids[0]) : null;
   var items = pids.map(function(p){ var on = p === curPid; return '<button type="button" class="tab-dd-item' + (on ? ' on' : '') + '" data-ddtab="' + kind + '" data-ddsub="' + esc(p) + '">' + (on ? '✓ ' : '') + esc(ps[p].title || "（未命名）") + '</button>'; }).join("");
-  var acts = curPid ? '<div class="tab-dd-sep"></div><button type="button" class="tab-dd-item sm" data-ddact="resync" data-ddpid="' + esc(curPid) + '" title="通用教材改過之後，想讓這個班用最新版時按這個。這個班目前的筆記會收起來（不會刪掉）">↻ 用最新的通用教材重建這個班的存檔</button><button type="button" class="tab-dd-item sm" data-ddact="editmaster" data-ddpid="' + esc(curPid) + '" title="通用教材只能在教材區編輯">✎ 到教材區編輯通用版</button>' : '';
+  var acts = curPid ? '<div class="tab-dd-sep"></div><button type="button" class="tab-dd-item sm" data-ddact="resync" data-ddpid="' + esc(curPid) + '" title="通用教材改過之後，想讓這個班用最新版時按這個。這個班目前的筆記和自己改過的內容會收起來（不會刪掉）">↻ 用最新的通用教材重建這個班的存檔</button><button type="button" class="tab-dd-item sm" data-ddact="editmaster" data-ddpid="' + esc(curPid) + '" title="通用教材只能在教材區編輯">✎ 到教材區編輯通用版</button>' : '';
   return '<span class="tab-dd">' + btn.replace('</button>', ' <span class="tab-dd-arrow">▾</span></button>') + '<div class="tab-dd-menu">' + items + acts + '</div></span>';
 }
 // 班級存檔／通用教材的動作（從分頁下拉選單或「這一課還沒有簡報」按鈕）
@@ -6460,7 +6460,7 @@ async function classDeckAction(act, pid, kind){
   if(!S.teacher) return;
   var pk = S.lesson ? parseKey(S.lesson) : null;
   if(act === "editmaster" || act === "newmaster"){
-    if(S.live && S.live.on){ alert("上課中不能改通用教材。\n請先結束上課，到教材區編輯；上課當下想補充的內容，直接在投影片上寫筆記就好。"); return; }
+    if(S.live && S.live.on){ alert("上課中不能改「通用教材」（大家共用的版本）。\n\n臨時想改這個班自己用的內容：在投影片左邊工具列按「🧰 完整工具」就能編輯，只影響這個班，不會動到通用教材。\n按「放映」之後，放映前的內容就鎖定、不能移動，只能加筆記。"); return; }
     var key = S.lesson; S.lib = pk ? (act === "editmaster" ? { book: pk.book, key: key, pid: pid } : { book: pk.book, key: key, creating: key }) : { book: DEFAULT_BOOK };
     S.lesson = null; S.tab = null; S.sub = null; render(); return;
   }
@@ -6468,7 +6468,7 @@ async function classDeckAction(act, pid, kind){
     if(S.live && S.live.on){ alert("上課中不能重建存檔，請先結束上課。"); return; }
     var cur = S.sel && S.sel.c && S.classRooms && S.classRooms[S.sel.c] && S.classRooms[S.sel.c][pid];
     if(!cur || !cur.room){ alert("這個班還沒有這份教材的存檔，下次打開會自動用最新的通用教材建立。"); return; }
-    if(!confirm("要用最新的通用教材，重新建立這個班的存檔嗎？\n\n• 通用教材後來新增、修改的內容，這個班才會看到\n• 這個班目前這份的筆記會收起來（不會刪掉，但上課畫面不會再出現）")) return;
+    if(!confirm("要用最新的通用教材，重新建立這個班的存檔嗎？\n\n• 通用教材後來新增、修改的內容，這個班才會看到\n• 這個班目前這份的筆記、以及這個班自己改過的內容，都會收起來（不會刪掉，但上課畫面不會再出現）")) return;
     var old = Object.assign({}, cur.old || {}); old[String(Date.now())] = cur.room;
     var rec = { room: null, old: old, at: Date.now() };
     S.classRooms[S.sel.c][pid] = rec;

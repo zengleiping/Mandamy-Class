@@ -1489,7 +1489,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
     body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical > .tb-head{ display:none; }
     body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical .tool-btn-v{ min-height:25px; }
   }
-  body.classcopy #btn-prep-mode, body.classcopy .rb-teach-btn{ display:none !important; }
+  body.classcopy.kind-quiz #btn-prep-mode, body.classcopy.kind-quiz .rb-teach-btn{ display:none !important; }
   /* 班級存檔的測驗／練習：不能改題目（通用版要到教材區改），只能作答、加筆記 */
   body.classcopy.kind-quiz .section-head-actions, body.classcopy.kind-quiz .q-action-btns, body.classcopy.kind-quiz #btn-new-section, body.classcopy.kind-quiz #bank-menu-wrap, body.classcopy.kind-quiz #add-slide-menu-wrap, body.classcopy.kind-quiz .drag-handle-icon{ display:none !important; }
   /* 平台裡的簡報／測驗頁：上方計時／房間列縮小（會用到，但不是重點） */
@@ -11608,7 +11608,7 @@ window.mmTA = (function(){
       // 定稿是空的（例如整頁只有匯入的背景圖、沒有物件）時，資料庫不會存空的清單：有 finalAt 就代表存過了，不能每次都重存
       // （以前會一直重存→房間更新→又檢查→又重存，無限循環，畫面卡死、拖不動）
       var pr = getProgress(q.id), fs = pr.finalIds || (pr.finalAt ? {} : null);
-      if(!fs && !isStudent && !window.__solo && slideSecInfo && slideSecInfo.sec.type === "board" && ((container.classList.contains("canvas-fs-active") && !container.classList.contains("fs-edit")) || (window.__classCopy && inRoom()))){
+      if(!fs && !isStudent && !window.__solo && slideSecInfo && slideSecInfo.sec.type === "board" && (container.classList.contains("canvas-fs-active") && !container.classList.contains("fs-edit"))){
         fs = curIds(); setProgDirect(q.id, { finalIds: fs, finalAt: Date.now() }); if(!inRoom()) saveFS();   // 這頁沒存過定稿就開始放映：以目前內容當定稿
       }
       return fs || null;
@@ -11622,7 +11622,7 @@ window.mmTA = (function(){
       else if(finalDirty() && confirm("這份簡報在上次「儲存定稿」之後又有修改。\n\n按「確定」＝先儲存最新版，再開始放映\n按「取消」＝直接放映（鎖定的是上次儲存的版本）")) finalizeSection();
       undoStack.length = 0; redoStack.length = 0; updateUndoRedoBtns();   // 復原只能復原放映中的新內容，不會退回到定稿之前
     });
-    function presentLock(){ if(window.__solo) return true; if(window.__classCopy && !isStudent && inRoom() && slideSecInfo && slideSecInfo.sec.type === "board") return true; return !isStudent && !!(slideSecInfo && slideSecInfo.sec.type === "board") && container.classList.contains("canvas-fs-active") && !container.classList.contains("fs-edit"); }
+    function presentLock(){ if(window.__solo) return true; return !isStudent && !!(slideSecInfo && slideSecInfo.sec.type === "board") && container.classList.contains("canvas-fs-active") && !container.classList.contains("fs-edit"); }
     // 小白板：只留筆、文字、橡皮擦、清空、圖案（多媒體放在題目上方，由題目設定，不是浮在畫布上）
     var simpleBoard = !!(slideSecInfo && slideSecInfo.sec.type === "whiteboard");
     // 老師預設是「文字」：點空白處新增文字方塊；點到任何框框（文字／圖片／圖案／表格）就自動變成「選取」，Ctrl／Shift 可以加選；學生和小白板預設是筆
@@ -13657,7 +13657,7 @@ window.mmTA = (function(){
     }
     // 一次全改：這一頁，或整份簡報裡所有文字方塊的字型（拼音／注音／不加）。同時把「之後新打的字」的預設也換成同一個
     function bulkSetPh(scope, mode){
-      if(isStudent || window.__classCopy) return;
+      if(isStudent) return;
       var NAME = { pinyin: "拼音", zhuyin: "注音", off: "不加注音" };
       var proj = null; try{ proj = getActiveProject(); }catch(e){}
       var qids = [];
@@ -15076,7 +15076,6 @@ window.mmTA = (function(){
       syncObjInteractive();
     }
     new MutationObserver(applyPresentLockState).observe(container, { attributes: true, attributeFilter: ["class"] });
-    if(window.__classCopy) setTimeout(function(){ try{ if(container.isConnected) applyPresentLockState(); }catch(er){} }, 0);   // 班級存檔：一進來就是「原本內容鎖住、只能加筆記」（等這一頁的設定跑完再套用）
     function switchToSelectTool(){
       if(boardState.tool === "select") return;
       boardState.tool = "select";
@@ -16827,7 +16826,7 @@ window.mmTA = (function(){
     window.__openMediaManager = openMediaManager;
     function openMediaManager(){
       var ids = (slideSiblingIds && slideSiblingIds.length) ? slideSiblingIds.slice() : [q.id];
-      var canEdit = !isStudent && !window.__classCopy;
+      var canEdit = !isStudent;
       var back = document.createElement("div"); back.className = "tb-modal-back";
       var modal = document.createElement("div"); modal.className = "tb-modal"; modal.style.width = "min(680px,95vw)"; back.appendChild(modal);
       var KIND = { audio: "🎵 音樂", video: "🎬 影片", youtube: "▶ YouTube" };
