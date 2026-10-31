@@ -34,7 +34,10 @@ function bmm(s){var o=[],j=s.length;while(j>0){var L=Math.min(MAXLEN,j),w=s[j-1]
 function segRun(s){var a=fmm(s),b=bmm(s);if(a.length!==b.length)return a.length<b.length?a:b;var sa=a.filter(function(x){return x.length===1}).length,sb=b.filter(function(x){return x.length===1}).length;return sb<sa?b:a}
 function tokens(str){var o=[],buf="";function f(){if(buf){segRun(buf).forEach(function(w){o.push({w:w,han:true})});buf=""}}
   for(var ch of str){if(isHan(ch))buf+=ch;else{f();o.push({w:ch,han:false})}}f();return o}
-function levelOf(w){if(CUSTOM.has(w))return CUSTOM.get(w)||null;if(EXT.has(w))return null;var l=LV.get(w);return l==null?null:l}
+function levelOf(w){if(CUSTOM.has(w))return CUSTOM.get(w)||null;var l=LV.get(w);if(l!=null)return l;if(EXT.has(w)&&!redup(w))return null;
+  var r=redup(w);if(r){var rl=LV.get(r);if(rl!=null)return rl}return null}
+/* 疊字：急急忙忙（AABB）、討論討論（ABAB）按原詞（急忙、討論）的等級算 */
+function redup(w){if(w.length!==4)return null;if(w[0]===w[1]&&w[2]===w[3]&&w[0]!==w[2])return w[1]+w[2];if(w[0]===w[2]&&w[1]===w[3]&&w[0]!==w[1])return w.slice(0,2);return null}
 /* 檢核：「* 級」詞（如第 3* 級）可選擇算在該級內，或算比該級更高 */
 function effLv(w,l){return(!$("incstar").checked&&STAR.has(w))?l+0.5:l}
 
