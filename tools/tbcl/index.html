@@ -7,7 +7,7 @@
 <link rel="icon" href="../../icons/logo.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap">
-<link rel="stylesheet" href="tbcl.css?v=8">
+<link rel="stylesheet" href="tbcl.css?v=9">
 <script>if(/[?&]embed=1(&|$)/.test(location.search))document.documentElement.classList.add("mm-embed")</script>
 </head>
 <body>
@@ -63,10 +63,19 @@
   <h1 class="ttl">AI 設定</h1><p class="lead">改寫時用哪個 AI。</p>
   <div class="card">
     <label class="chk"><input type="radio" name="eng" value="puter" checked> <span><b>Puter（建議，不需要金鑰）</b><br><small>第一次使用要登入免費的 Puter 帳號，用量算在登入的人自己的帳號上。</small></span></label>
-    <label class="chk"><input type="radio" name="eng" value="gemini"> <span><b>Gemini（自己的金鑰）</b><br><small>用平台已存的 Gemini 金鑰（簡報「AI 造句」那邊填的）。</small></span></label>
-    <label class="chk"><input type="radio" name="eng" value="claude"> <span><b>Claude（自己的金鑰）</b><br><small>用平台翻譯設定裡的 Claude 金鑰。</small></span></label>
+  </div>
+  <div class="card">
+    <label class="chk"><input type="radio" name="eng" value="gemini"> <span><b>Gemini（自己的金鑰）</b><br><small>到 Google AI Studio 申請金鑰，貼在下面。和平台簡報「AI 造句」用同一把。</small></span></label>
+    <div class="keyrow"><input type="password" id="k-gemini" placeholder="貼上 Gemini 金鑰" autocomplete="off" spellcheck="false"><button id="k-gemini-save" class="pri">儲存</button><button id="k-gemini-test">測試</button><button class="link" id="k-gemini-clear">清除</button><span class="hint" id="k-gemini-st"></span></div>
+  </div>
+  <div class="card">
+    <label class="chk"><input type="radio" name="eng" value="claude"> <span><b>Claude（自己的金鑰）</b><br><small>到 Anthropic Console 申請金鑰，貼在下面。和平台翻譯設定用同一把。</small></span></label>
+    <div class="keyrow"><input type="password" id="k-claude" placeholder="貼上 Claude 金鑰" autocomplete="off" spellcheck="false"><button id="k-claude-save" class="pri">儲存</button><button id="k-claude-test">測試</button><button class="link" id="k-claude-clear">清除</button><span class="hint" id="k-claude-st"></span></div>
+  </div>
+  <div class="card">
     <label class="chk"><input type="radio" name="eng" value="none"> <span><b>不用 AI</b><br><small>只用內建詞庫換詞，換不掉的列出來自己決定。</small></span></label>
   </div>
+  <p class="note">金鑰只存在這個瀏覽器，不會上傳到我們的伺服器；改寫時由你的瀏覽器直接送給 Google 或 Anthropic，費用算在你的金鑰上。共用電腦請不要儲存，用完按「清除」。</p>
 </section>
 
 <section id="p-check" hidden>
@@ -135,6 +144,6 @@
   <button id="cite-copy">複製引用文字</button> <a href="../../docs/%E8%B3%87%E6%96%99%E4%BE%86%E6%BA%90%E8%88%87%E6%8E%88%E6%AC%8A.md" target="_blank">出處與授權</a></footer>
 <script src="https://js.puter.com/v2/" async></script>
 <script src="../../data.js"></script>
-<script src="tbcl.js?v=8"></script>
+<script src="tbcl.js?v=9"></script>
 </body>
 </html>

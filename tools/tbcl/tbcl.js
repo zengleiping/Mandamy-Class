@@ -216,10 +216,10 @@ function renderLog(){var h='<table><tr><th>使用環節</th><th>使用工具（�
 function keyOf(k){try{return localStorage.getItem(k)||""}catch(e){return""}}
 async function callAI(kind,prompt){
   if(kind==="puter")return callPuter(prompt);
-  if(kind==="claude"){var k=keyOf("mm_tr_aikey");if(!k)throw new Error("找不到 Claude 金鑰（到平台翻譯設定填一次）");
+  if(kind==="claude"){var k=keyOf("mm_tr_aikey");if(!k)throw new Error("還沒有 Claude 金鑰（到「AI 設定」貼上）");
     var r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"content-type":"application/json","x-api-key":k,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-haiku-5-5",max_tokens:1800,messages:[{role:"user",content:prompt}]})});
     var d=await r.json();if(!r.ok)throw new Error((d.error&&d.error.message)||r.status);return{text:d.content.map(function(c){return c.text||""}).join(""),model:"claude-haiku-5-5"}}
-  var g=keyOf("mm_gemini_key");if(!g)throw new Error("找不到 Gemini 金鑰（到簡報編輯區「AI 造句」貼一次）");
+  var g=keyOf("mm_gemini_key");if(!g)throw new Error("還沒有 Gemini 金鑰（到「AI 設定」貼上）");
   var ms=["gemini-flash-latest","gemini-2.5-flash"],err="";
   for(var i=0;i<ms.length;i++){try{var r2=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+ms[i]+":generateContent?key="+encodeURIComponent(g),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})});
     var d2=await r2.json();if(!r2.ok)throw new Error((d2.error&&d2.error.message)||r2.status);return{text:d2.candidates[0].content.parts.map(function(p){return p.text||""}).join(""),model:ms[i]}}catch(e){err=e.message}}
@@ -546,7 +546,19 @@ $("q-out").addEventListener("click",function(e){var bt=e.target.closest("button"
   else if(q==="proper"){EX.add(bt.getAttribute("data-w"));qShow($("q-new").value,"",[])}
   else if(q==="alt"){var cd=CANDREG[bt.getAttribute("data-cid")],w0=bt.getAttribute("data-w");if(cd){var txt=$("q-new").value,i=txt.indexOf(w0);if(i>=0){var role=roleAt(txt[i-1],txt[i+w0.length]);txt=txt.slice(0,i)+formFor(cd,role,role==="C"?txt.slice(Math.max(0,i-3),i-1):txt.slice(Math.max(0,i-2),i),txt[i+w0.length]).text+txt.slice(i+w0.length);qShow(txt,"",[])}}}
   else if(q==="swap"){var w=bt.getAttribute("data-w"),inp=document.querySelector("#q-fix input.qc");if(inp&&inp.value.trim())qShow($("q-new").value.split(w).join(inp.value.trim()),"",[])}});
-function engineUi(){var e=engine();document.querySelectorAll('input[name=eng]').forEach(function(r){r.checked=r.value===e;r.onchange=function(){if(r.checked){setEngine(r.value);engineHint()}}})}
+/* 金鑰：存在這個瀏覽器（和平台其他功能共用同一個位置：Gemini＝mm_gemini_key、Claude＝mm_tr_aikey） */
+var KEYS_STORE={gemini:"mm_gemini_key",claude:"mm_tr_aikey"};
+function keyStatus(k){var v=keyOf(KEYS_STORE[k]),st=$("k-"+k+"-st");if(st)st.textContent=v?"已儲存（結尾 "+v.slice(-4)+"）":"還沒有儲存";if($("k-"+k)&&!$("k-"+k).value)$("k-"+k).placeholder=v?"已儲存，要換就貼新的":"貼上 "+(k==="gemini"?"Gemini":"Claude")+" 金鑰"}
+["gemini","claude"].forEach(function(k){
+  $("k-"+k+"-save").onclick=function(){var v=$("k-"+k).value.trim();if(!v){$("k-"+k+"-st").textContent="先貼上金鑰";return}
+    try{localStorage.setItem(KEYS_STORE[k],v)}catch(e){$("k-"+k+"-st").textContent="這個瀏覽器不能儲存";return}
+    $("k-"+k).value="";setEngine(k);engineUi();engineHint();keyStatus(k)};
+  $("k-"+k+"-clear").onclick=function(){try{localStorage.removeItem(KEYS_STORE[k])}catch(e){}$("k-"+k).value="";if(engine()===k){setEngine("puter");engineUi();engineHint()}keyStatus(k)};
+  $("k-"+k+"-test").onclick=async function(){var st=$("k-"+k+"-st"),pending=$("k-"+k).value.trim();
+    if(pending){try{localStorage.setItem(KEYS_STORE[k],pending)}catch(e){}$("k-"+k).value=""}
+    if(!keyOf(KEYS_STORE[k])){st.textContent="先貼上並儲存金鑰";return}
+    st.textContent="測試中…";try{var r=await callAI(k,"請只回答兩個字：可以");setEngine(k);engineUi();engineHint();st.textContent="✓ 連得上（"+r.model+"）"}catch(e){st.textContent="✗ 不行："+e.message}}});
+function engineUi(){["gemini","claude"].forEach(keyStatus);var e=engine();document.querySelectorAll('input[name=eng]').forEach(function(r){r.checked=r.value===e;r.onchange=function(){if(r.checked){setEngine(r.value);engineHint()}}})}
 function engineHint(){var e=engine(),m={puter:"AI：Puter（第一次要登入免費帳號）",gemini:"AI：Gemini（自己的金鑰）",claude:"AI：Claude（自己的金鑰）",none:"不用 AI（只用詞庫換詞）"};$("q-ai-hint").textContent=m[e]||""}
 
 /* 分頁 */
