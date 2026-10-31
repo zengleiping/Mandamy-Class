@@ -369,12 +369,19 @@ function buildRewrite(r,items,choiceFn,t){var ch={};items.forEach(function(it){v
   return{out:out,html:html,n:n,warns:warns,ins:ins}}
 function levelWords(t,n){var arr=[];LV.forEach(function(l,w){if(l<=t&&w.length>=1&&!EXT.has(w))arr.push(w)});
   var F=FREQV||new Map();arr.sort(function(a,b){return((F.get(a)||{rank:1e9}).rank)-((F.get(b)||{rank:1e9}).rank)});return arr.slice(0,n)}
+/* 太難又換不掉的名稱（例如布袋戲、毽子、扯鈴）怎麼處理：老師選，預設「省略舉例」，避免用拐彎抹角的描述亂翻 */
+function hardMode(){var s=$("q-hard");return s?s.value:"omit"}
+function hardRule(){var m=hardMode();
+  var base="4. 太難的詞，如果有意思相同的簡單說法就換掉。";
+  if(m==="keep")return base+"找不到簡單說法、又不能省略的詞，保留原詞，第一次出現時在後面用括號寫一個簡單的解釋。\n";
+  if(m==="describe")return base+"找不到簡單說法的名稱，用簡單的話描述，但描述要自然，不要拐彎抹角、不要用「一種…的東西」這類說法。\n";
+  return base+"找不到簡單說法的名稱（特別是舉例時列出的文化、物品、食物名稱，例如「比如說毽子、布袋戲、扯鈴」），不要用奇怪的描述去解釋，也不要硬翻；請直接省略這些舉例，只保留上面的類別或主要句子（例如「有很多文化活動用的東西，都可以租借」）。\n"}
 function qPrompt(text,t,bad,prev,ctx){var names=[...EX].filter(function(w){return text.indexOf(w)>=0});var vw=levelWords(t,t<=3?700:450).join("、");
   return"請把下面的文章改寫成適合「臺灣華語文能力基準（TBCL）第 "+t+" 級」學習者讀的版本。\n規則：\n"+
   "1. 一句對一句：每個原句改成一到兩個短句，不要合併、不要刪掉、不要換順序。\n"+
   "2. 只改寫原文已有的意思。不要加任何原文沒有的評論、感想或形容（例如「很有意思」「很重要」「很棒」），也不要補充原文沒提到的資訊。\n"+
   "3. 人名、地名、機構名、英文和數字保持原樣"+(names.length?"（這些是專有名詞："+names.join("、")+"）":"")+"。\n"+
-  "4. 太難的詞，換成意思相同的簡單說法；如果找不到簡單說法、又不能省略，就保留原詞，第一次出現時在後面用括號寫一個簡單的解釋。\n"+
+  hardRule()+
   "5. 用詞和句型盡量只用第 "+t+" 級（含以下）的。\n"+
   "6. 句子要像臺灣人平常會說的話，通順自然，保留原本的段落。\n"+
   (bad.length?"7. 這些詞對學生太難，請避免使用，改用簡單的說法："+bad.join("、")+"。\n":"")+
@@ -407,11 +414,11 @@ async function aiRewriteText(text,t,lim,onStep){var chunks=chunkText(text,260),r
   logAI("一鍵改寫","AI（"+Object.keys(models).join("、")+"）","把文章改寫成指定 TBCL 等級","AI 依等級與難詞清單，一次改幾句，每段用 TBCL 詞表檢查，還有難詞就對照原文再修（每段最多 3 次）→ 老師確認","一鍵改寫 第 "+t+" 級");
   return res.join("\n")}
 /* 改完再請 AI 對照原文，找出「多加了意思、漏掉、改錯」的句子 */
-async function aiVerify(orig,out){var p="下面是原文和改寫後的文章。請找出改寫後意思有問題的句子：(1) 加了原文沒有的意思或評論；(2) 漏掉原文重要的資訊；(3) 意思改錯、不通順。只列真的有問題的，最多 6 個。\n只輸出 JSON 陣列：[{\"orig\":\"原文裡對應的句子\",\"new\":\"改寫後文章裡對應的句子（必須和改寫後文章的字完全一樣）\",\"problem\":\"一句話說明問題\"}]；沒有問題就輸出 []。\n\n原文：\n"+orig+"\n\n改寫後：\n"+out;
+async function aiVerify(orig,out){var p="下面是原文和改寫後的文章。"+(hardMode()==="omit"?"改寫時刻意省略了太難的舉例，這不算問題。":"")+"請找出改寫後意思有問題的句子：(1) 加了原文沒有的意思或評論；(2) 漏掉原文重要的資訊；(3) 意思改錯、不通順。只列真的有問題的，最多 6 個。\n只輸出 JSON 陣列：[{\"orig\":\"原文裡對應的句子\",\"new\":\"改寫後文章裡對應的句子（必須和改寫後文章的字完全一樣）\",\"problem\":\"一句話說明問題\"}]；沒有問題就輸出 []。\n\n原文：\n"+orig+"\n\n改寫後：\n"+out;
   var r=await aiText(p),m=r.text.match(/\[[\s\S]*\]/);if(!m)return[];var arr;try{arr=JSON.parse(m[0])}catch(e){return[]}
   logAI("一鍵改寫後檢查意思","AI（"+r.model+"）","對照原文，找出改寫時多加、漏掉或改錯的句子","AI 對照原文和改寫稿 → 老師決定要不要重改","檢查改寫");
   return(Array.isArray(arr)?arr:[]).filter(function(x){return x&&typeof x["new"]==="string"&&out.indexOf(x["new"])>=0&&x["new"]!==x.orig}).slice(0,6)}
-async function aiRedo(item,t){var p="請重新改寫下面這個句子：意思要和原句一致，不要加原句沒有的意思或評論；用詞和句型盡量只用臺灣華語文能力基準（TBCL）第 "+t+" 級（含以下），太難的詞換成簡單的說法，找不到簡單說法就保留原詞並在後面用括號解釋；句子要通順自然。\n原句："+item.orig+"\n目前的改寫："+item["new"]+"\n問題："+item.problem+"\n只輸出重新改寫後的句子。";
+async function aiRedo(item,t){var p="請重新改寫下面這個句子：意思要和原句一致，不要加原句沒有的意思或評論；用詞和句型盡量只用臺灣華語文能力基準（TBCL）第 "+t+" 級（含以下），"+hardRule().replace(/^4\. /,"")+"句子要通順自然。\n原句："+item.orig+"\n目前的改寫："+item["new"]+"\n問題："+item.problem+"\n只輸出重新改寫後的句子。";
   var r=await aiText(p);return r.text.trim().replace(/^```[a-z]*\n?|```$/g,"").replace(/^[「"]|[」"]$/g,"").trim()}
 
 
@@ -502,6 +509,8 @@ async function quickGo(){var text=$("q-txt").value,t=qLevel(),lim=+$("q-lim").va
   btn.disabled=false}
 async function quickAgain(){var out=$("q-new").value;if(!await ensureAi())return;var st=["AI 再改一次"];qSteps(st,0);
   try{var ai=await aiRewriteText(out,QK.t,QK.lim,function(m){var li=document.querySelector("#q-steps li");if(li)li.lastChild.textContent=m});try{QK.checks=await aiVerify(QK.text,ai)}catch(e){QK.checks=[]}qSteps(null);qShow(ai,"",[],"又請 AI 改了一次。")}catch(e){qSteps(null);qShow(out,"",[],"AI 沒有成功（"+e.message+"）。")}}
+try{var hs=localStorage.getItem("mm_tbcl_hard");if(hs)$("q-hard").value=hs}catch(e){}
+$("q-hard").onchange=function(){try{localStorage.setItem("mm_tbcl_hard",this.value)}catch(e){}};
 $("q-run").onclick=quickGo;
 document.querySelectorAll("[data-sample]").forEach(function(b){b.onclick=function(){var t=$("q-txt");t.value=QSAMPLES[+b.getAttribute("data-sample")];t.dispatchEvent(new Event("input"));t.focus()}});
 $("q-txt").oninput=function(){$("q-count").textContent=this.value.replace(/\s/g,"").length+" 字";if(!$("q-seg").hidden){SEGSEL=-1;segRender()}};

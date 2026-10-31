@@ -169,3 +169,6 @@ mark{background:var(--yellow-soft);padding:0 2px;color:inherit}
 .segbar input{width:150px}
 .seglegend{display:flex;gap:12px;flex-wrap:wrap;font-size:12.5px;color:var(--ink-3);margin-top:8px}
 .seglegend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+
+.lbl2{font-size:14px;color:var(--ink-2)}
+.field.inline select{padding:4px 8px;font-size:14px}
