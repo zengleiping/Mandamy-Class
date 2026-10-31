@@ -155,3 +155,17 @@ mark{background:var(--yellow-soft);padding:0 2px;color:inherit}
   .ttl{font-size:22px}
 }
 @media print{.hd,.cite,.btn,button,textarea{display:none!important}}
+
+/* ---- 斷詞與專有名詞檢視 ---- */
+.segview{margin:-8px 0 22px;border:1px solid var(--line-2);border-radius:var(--r);background:var(--panel);padding:14px 16px}
+.segview .tips{font-size:13.5px;color:var(--ink-3);margin:0 0 10px}
+.segtext{font-size:18px;line-height:2.4;white-space:pre-wrap}
+.tk{cursor:pointer;padding:3px 1px;border-radius:3px;border-bottom:2px solid transparent;margin:0 1px;background:var(--bg)}
+.tk:hover{border-bottom-color:var(--red)}
+.tk.hard{background:var(--red-soft)}.tk.unk{background:var(--yellow-soft)}.tk.ex{background:var(--blue-soft)}
+.tk.sel{outline:2px solid var(--red);outline-offset:1px}
+.segbar{margin-top:10px;padding-top:10px;border-top:1px solid var(--line);display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:14px}
+.segbar b{margin-right:4px}
+.segbar input{width:150px}
+.seglegend{display:flex;gap:12px;flex-wrap:wrap;font-size:12.5px;color:var(--ink-3);margin-top:8px}
+.seglegend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:4px;vertical-align:-1px}
