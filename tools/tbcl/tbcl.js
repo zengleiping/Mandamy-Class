@@ -338,7 +338,7 @@ function gdRender(){gdSteps();var h="",lvOpt="";for(var i=1;i<=7;i++)lvOpt+='<op
      +gdNav(true,true)}
   else if(GD.step===2){
     h='<div class="card"><b>讓 AI 先寫一版</b><span class="note">　用你挑的詞和語法點，寫成'+GD.kind+'，寫完會自動檢查超綱，太多會請 AI 改。AI 寫的一定要自己看過、改過。</span>'
-     +'<div class="row"><label>字數<select id="gd-len">'+[100,150,200,300,400].map(function(n){return'<option'+(GD.len===n?" selected":"")+'>'+n+'</option>'}).join("")+'</select></label><button class="pri" data-g="gen">幫我寫一篇</button><span class="note" id="gd-gst"></span></div></div>'
+     +'<div class="row"><label>字數<select id="gd-len">'+[100,150,200,300,400].map(function(n){return'<option'+(GD.len===n?" selected":"")+'>'+n+'</option>'}).join("")+'</select></label><button class="pri" data-g="gen">幫我寫一篇</button><span class="note" id="gd-gst"></span></div><div class="gd-pbar" id="gd-pbar" hidden><i></i></div></div>'
      +'<div class="card"><b>③ 寫文章</b><span class="note">　寫的時候右邊的數字會即時更新。專有名詞請先到首頁「先檢查斷詞」標起來，這裡會一起排除。</span>'
      +'<textarea id="gd-txt" style="min-height:230px" placeholder="在這裡寫'+GD.kind+'⋯⋯">'+esc(GD.text)+'</textarea><div id="gd-live"></div></div>'+gdNav(true,true,"寫好了，去檢核")}
   else if(GD.step===3){
@@ -349,7 +349,7 @@ function gdRender(){gdSteps();var h="",lvOpt="";for(var i=1;i<=7;i++)lvOpt+='<op
      +'<div class="row"><label class="grow">或把結果貼在這裡<textarea id="gd-paste3" style="min-height:60px" placeholder="貼上國教院結果頁的內容"></textarea></label><button id="gd-add3">讀取</button></div>'
      +'<p class="note">要附的檢核結果：在國教院結果頁按 Ctrl+P，存成 PDF。</p></div>'+gdNav(true,false)}
   else{h=gdResult()}
-  $("gd-body").innerHTML=h;if(GD.step===2)gdLive()}
+  $("gd-body").innerHTML=h;if(GD.step===2){gdLive();var g0=$("gd-gst");if(g0&&GD.note){g0.textContent=GD.note;GD.note=""}}}
 var GRAM_CACHE=[];
 /* 即時檢查 */
 function gdLive(){var t=GD.text,box=$("gd-live");if(!box)return;
@@ -357,7 +357,7 @@ function gdLive(){var t=GD.text,box=$("gd-live");if(!box)return;
   var r=analyze(t,GD.lv,EX),ok=r.ratio<=GD.lim,used=GD.words.filter(function(w){return t.indexOf(w)>=0}),left=GD.words.filter(function(w){return t.indexOf(w)<0});
   var sents=splitSent(t).map(function(x){return x.s});
   var h='<div class="row" style="align-items:center"><span class="gd-meter '+(ok?"ok":"bad")+'">超綱 '+r.ratio.toFixed(1)+'%</span><span class="note">'+(ok?"✔ 在 "+GD.lim+"% 以內":"✘ 超過 "+GD.lim+"%")+'　共 '+t.replace(/\s/g,"").length+' 字、'+r.total+' 個詞次</span></div>';
-  if(r.list.length)h+='<div class="note">超綱的詞（點一下可以看在哪一句）：</div><div class="chips">'+r.list.slice(0,40).map(function(x){return'<span class="chip" data-g="find" data-w="'+esc(x.w)+'">'+esc(x.w)+'<small>'+(x.lv==null?"未收錄":"第 "+x.lv+" 級")+(x.n>1?"×"+x.n:"")+'</small></span>'}).join("")+'</div><div id="gd-find" class="note"></div>';
+  if(r.list.length)h+='<div class="note">超綱的詞（點一下可以換成別的詞）：</div><div class="chips">'+r.list.slice(0,40).map(function(x){return'<span class="chip gd-ec" data-w="'+esc(x.w)+'">'+esc(x.w)+'<small>'+(x.lv==null?"未收錄":"第 "+x.lv+" 級")+(x.n>1?"×"+x.n:"")+'</small></span>'}).join("")+'</div><div id="gd-find" class="note"></div>';
   if(GD.words.length)h+='<div class="note" style="margin-top:8px">挑的詞：已用 '+used.length+'／'+GD.words.length+(left.length?"，還沒用到：":"")+'</div><div>'+left.map(function(w){return'<span class="gd-chip">'+esc(w)+'</span>'}).join("")+used.map(function(w){return'<span class="gd-chip used">'+esc(w)+'</span>'}).join("")+'</div>';
   if(GD.gram.length){h+='<div class="note" style="margin-top:8px">語法點：</div><ul style="margin:4px 0;padding-left:20px">'+GD.gram.map(function(n){var segs=gramPat(n),hit=segs?sents.some(function(s){return gramHit(s,segs)}):null;return'<li>'+esc(n)+'　'+(hit===null?'<span class="note">（這個語法點要自己確認）</span>':hit?"✔ 用到了":'<span class="note">還沒用到</span>')+'</li>'}).join("")+'</ul>'}
   box.innerHTML=h}
@@ -377,10 +377,10 @@ function gdResult(){var o=GD.off;if(!o)return'<div class="card"><p>還沒有官�
    +'<div class="row" style="align-items:center"><span class="gd-meter '+(okp?"ok":"bad")+'">超綱 '+res.ratio.toFixed(1)+'%</span><span class="note">'+(okp?"✔ 在 ":"✘ 超過 ")+GD.lim+'% 標準（官方分布計算；不含標點符號）</span></div>'
    +'<table><tr><th>等級</th><th>詞數</th><th>判定</th></tr>'+res.rows.map(function(x){return'<tr><td>'+esc(x[0])+'</td><td>'+x[1]+'</td><td>'+esc(x[2])+'</td></tr>'}).join("")+'</table>'
    +(o.d.X?'<div class="row"><label>未收錄（X）裡有幾個是專有名詞？<input type="number" id="gd-pn" min="0" max="'+o.d.X+'" value="'+pn+'" style="width:5em"></label><span class="note">專有名詞（人名、地名等）不算超綱。'+(xw.length?"官方標成專有名詞（Nb）的 "+nb+" 個已先幫你扣掉，不對可以改。":"請數一數填進來。")+'</span></div>':"")
-   +(xw.length?'<div class="note" style="margin-top:8px">對照詞表，官方可能算成「未收錄」的詞（不是專有名詞的，建議換掉）：</div><div class="chips">'+xw.map(function(x){return'<span class="chip">'+esc(x.w)+'<small>'+(x.tag==="Nb"?"專有名詞":"未收錄")+'</small></span>'}).join("")+'</div>':"")+'</div>'
+   +(xw.length?'<div class="note" style="margin-top:8px">對照詞表，官方可能算成「未收錄」的詞（點一下可以換掉；專有名詞不用換）：</div><div class="chips">'+xw.map(function(x){return'<span class="chip gd-ec" data-w="'+esc(x.w)+'">'+esc(x.w)+'<small>'+(x.tag==="Nb"?"專有名詞":"未收錄")+'</small></span>'}).join("")+'</div>':"")+'</div>'
    +(xw.length?'<div class="note" style="margin-top:8px">對照詞表，官方可能算成「未收錄」的詞（不是專有名詞的，建議換掉）：</div><div class="chips">'+xw.map(function(x){return'<span class="chip">'+esc(x.w)+'<small>'+(x.tag==="Nb"?"專有名詞":"未收錄")+'</small></span>'}).join("")+'</div>':"")+'</div>'
    +'<div class="card"><b>和我們的結果比一比</b><div class="note">我們算出來超綱 '+r.ratio.toFixed(1)+'%（'+r.total+' 個詞次）。斷詞方式不同，數字可能有一點差，<b>比賽以官方結果為準</b>。</div>'
-   +(r.list.length?'<div class="chips">'+r.list.slice(0,40).map(function(x){return'<span class="chip">'+esc(x.w)+'<small>'+(x.lv==null?"未收錄":"第 "+x.lv+" 級")+'</small></span>'}).join("")+'</div>':'<div class="note">我們這邊沒有找到超綱詞。</div>')+'</div>'
+   +(r.list.length?'<div class="chips">'+r.list.slice(0,40).map(function(x){return'<span class="chip gd-ec" data-w="'+esc(x.w)+'">'+esc(x.w)+'<small>'+(x.lv==null?"未收錄":"第 "+x.lv+" 級")+'</small></span>'}).join("")+'</div>':'<div class="note">我們這邊沒有找到超綱詞。</div>')+'</div>'
    +'<div class="gd-go"><button data-g="back">‹ 回去改文章</button><button data-g="recheck">改完再檢核一次</button><button class="pri" id="gd-doc">下載檢核報告（Word）</button><button id="gd-to-prep">做成備課包</button></div>';
   return h}
 function gdReport(){var o=GD.off,res=gdOver(o,GD.lv,GD.pn||0),r=analyze(GD.text,GD.lv,EX);
@@ -399,6 +399,14 @@ function gdPickGram(how){var all=GRAM_CACHE.filter(function(g){return g.lv===GD.
   GD.gram=pick;gdSave();var y=window.scrollY;gdRender();window.scrollTo(0,y);
   var n=pick.length,h=$("gd-ghint");if(h)h.textContent=n?("選了 "+n+" 個。"+(n>6?"一篇文章放太多語法點會很硬、很長（約需 "+n*40+" 字以上），建議 3–5 個，其餘留給別篇。":"一篇約 "+Math.max(100,n*40)+" 字以上比較自然。")):""}
 /* AI 依挑的詞和語法點寫文章，程式檢查超綱、有沒有用到，不合就帶著問題再請 AI 改，最多 3 輪 */
+var GDP=null;
+function gdProg(on,round,txt){var bar=$("gd-pbar"),st=$("gd-gst");if(!bar)return;
+  if(GDP){clearInterval(GDP.t);GDP=null}
+  if(!on){bar.hidden=true;return}
+  bar.hidden=false;var t0=Date.now(),i=bar.firstChild;
+  GDP={t:setInterval(function(){var s=(Date.now()-t0)/1000,frac=1-Math.exp(-s/12),pct=Math.min(95,((round-1)+frac*0.9)/3*100);i.style.width=pct.toFixed(0)+"%";
+    st.textContent=txt+"　已等 "+Math.floor(s)+" 秒"+(s>60?"（AI 比較慢，再等一下；超過兩分鐘沒反應可以重按）":"")},250)};
+  i.style.width=(((round-1)/3)*100).toFixed(0)+"%"}
 async function gdGenerate(){var st=$("gd-gst");st.textContent="準備中…";
   try{await load();if(!(await ensureAi())){st.textContent="還沒有可用的 AI，請到「AI 設定」";return}
     var gl=GRAM_CACHE.filter(function(g){return GD.gram.indexOf(g.name)>=0}),len=GD.len||200;
@@ -407,8 +415,8 @@ async function gdGenerate(){var st=$("gd-gst");st.textContent="準備中…";
       +(gl.length?"- 一定要用到這些語法點（括號是官方例句，請照這種用法）：\n"+gl.map(function(g){return"  · "+g.name+"（例：「"+g.ex+"」）"}).join("\n")+"\n":"")
       +"- 內容要自然連貫，像真實的教材，不要為了用詞硬塞。\n"+(GD.kind==="會話"?"- 會話每行寫成「名字：話」。\n":"")+"- 不要人名以外的專有名詞，不要網址。\n- 只輸出文章本身，不要標題、說明或翻譯。";
     var prompt=base,out="",res=null,round,issues="";
-    for(round=1;round<=3;round++){st.textContent="第 "+round+" 輪寫作中…";
-      res=await aiText(prompt);out=res.text.trim().replace(/^```[a-z]*\n?|```$/g,"").trim();
+    for(round=1;round<=3;round++){gdProg(true,round,"第 "+round+" 輪寫作中（最多 3 輪，通常 20–60 秒）");
+      res=await aiText(prompt);gdProg(false);st.textContent="檢查超綱和用詞…";out=res.text.trim().replace(/^```[a-z]*\n?|```$/g,"").trim();
       var r=analyze(out,GD.lv,EX),miss=GD.words.filter(function(w){return out.indexOf(w)<0}),sents=splitSent(out).map(function(x){return x.s}),
           gmiss=gl.filter(function(g){var s=gramPat(g.name);return s&&!sents.some(function(x){return gramHit(x,s)})}).map(function(g){return g.name});
       issues="";if(r.ratio>GD.lim)issues+="超出第 "+GD.lv+" 級的詞："+r.list.slice(0,25).map(function(x){return x.w}).join("、")+"，請換成簡單的詞。";
@@ -418,7 +426,53 @@ async function gdGenerate(){var st=$("gd-gst");st.textContent="準備中…";
     round=Math.min(round,3);    GD.text=out;gdSave();var ta=$("gd-txt");if(ta)ta.value=out;gdLive();
     var r2=analyze(out,GD.lv,EX);st.textContent="寫好了（"+round+" 輪）：超綱 "+r2.ratio.toFixed(1)+"%"+(issues?"；還有問題：「"+issues.replace(/\n/g," ")+"」，可以再按一次，或自己改":"")+"。請看過、改過再去檢核。";
     logAI("寫教材：文章初稿","AI（"+res.model+"）","依 TBCL 第 "+GD.lv+" 級、挑選的詞和語法點產出"+GD.kind+"初稿","設計者挑詞和語法點 → AI 生成 → 程式用 TBCL 詞表檢查超綱、用到的詞和語法點，不合就請 AI 修改（共 "+round+" 輪）→ 人工審閱修訂","詞："+GD.words.join("、")+"；語法："+GD.gram.join("、")+"；約 "+len+" 字")
-  }catch(e){st.textContent="失敗："+e.message}}
+  }catch(e){gdProg(false);st.textContent="失敗："+e.message}}
+
+
+/* 超綱詞：點（或滑鼠移上去）就能看出現的句子、選建議的換法、自己打一個、或標成專有名詞 */
+var GDE={w:null,timer:null};
+function gdPopClose(){var p=$("gd-pop");if(p)p.hidden=true;GDE.w=null}
+async function gdPopOpen(chip){var w=chip.getAttribute("data-w");if(!w||!GD.text)return;GDE.w=w;await load();await loadSyn();
+  var pop=$("gd-pop");if(!pop){pop=document.createElement("div");pop.id="gd-pop";document.body.appendChild(pop)}
+  var l=levelOf(w),sents=splitSent(GD.text).map(function(x){return x.s.trim()}).filter(function(s){return s.indexOf(w)>=0}),n=GD.text.split(w).length-1;
+  var cs=[];try{cs=dictCands(w,GD.lv,sents[0]||"")}catch(e){}
+  var h='<div class="gp-h"><b>'+esc(w)+'</b><span class="note">　'+(l==null?"未收錄":"第 "+l+" 級")+'，文章裡 '+n+' 處</span><button class="gp-x" data-gp="close" title="關閉">✕</button></div>'
+    +'<div class="gp-s">'+sents.slice(0,3).map(function(s){return'<div>'+esc(s).split(esc(w)).join("<mark>"+esc(w)+"</mark>")+'</div>'}).join("")+'</div>'
+    +'<div class="gp-l">換成：</div><div class="gp-c">'+(cs.length?cs.map(function(c){return'<button class="cand" data-gp="cand" data-cid="'+c.id+'">'+esc(c.c)+'<small>'+esc(c.src||"")+'</small></button>'}).join(" "):'<span class="note">詞庫裡沒有建議</span>')+'</div>'
+    +'<div class="gp-l"><button data-gp="ai">請 AI 找替代詞</button> <span class="note" id="gp-ai-st"></span></div><div class="gp-c" id="gp-ai"></div>'
+    +'<div class="row" style="margin:8px 0 0"><input id="gp-own" placeholder="自己打要換成什麼" size="14"><button class="pri" data-gp="own">換掉</button></div>'
+    +'<div class="gp-f"><button data-gp="pn">這是專有名詞，不用換</button></div>'
+    +'<div class="note" style="margin-top:6px">換進去後請自己再讀一遍，看通不通順。</div>';
+  pop.innerHTML=h;pop.hidden=false;var r=chip.getBoundingClientRect(),W=Math.min(360,window.innerWidth-16);pop.style.width=W+"px";
+  var x=Math.max(8,Math.min(r.left,window.innerWidth-W-8)),y=r.bottom+6;pop.style.left=x+"px";pop.style.top=Math.min(y,Math.max(8,window.innerHeight-pop.offsetHeight-8))+"px"}
+function gdReplace(w,to,label){var T=GD.text,ss=splitSent(T),out="",n=0;
+  ss.forEach(function(x,k){if(x.s.indexOf(w)<0)return});
+  var res=T;
+  if(typeof to==="object"){var safe=0,txt="",pos=0;ss.forEach(function(x){txt+=T.slice(pos,x.i);pos=x.i+x.s.length;var s=x.s;while(s.indexOf(w)>=0&&safe++<60){var ns=replaceInSent(s,w,to,GD.lv);if(ns===s)break;s=ns;n++}txt+=s});txt+=T.slice(pos);res=txt}
+  else{n=T.split(w).length-1;res=T.split(w).join(to)}
+  if(!n)return false;GD.text=res;gdSave();gdPopClose();
+  GD.note="已把「"+w+"」換成「"+label+"」（"+n+" 處），請再讀一遍看通不通順；改完要再到國教院檢核一次。";
+  if(GD.step===2){var ta=$("gd-txt");if(ta)ta.value=res;gdLive();var g=$("gd-gst");if(g)g.textContent=GD.note}else{GD.off=null;gdGo(2)}
+  return true}
+document.addEventListener("click",function(e){var ch=e.target.closest(".gd-ec"),pop=$("gd-pop");
+  if(ch){gdPopOpen(ch);return}
+  var b=e.target.closest("[data-gp]");if(b&&pop&&pop.contains(b)){var a=b.getAttribute("data-gp"),w=GDE.w;
+    if(a==="close")gdPopClose();
+    else if(a==="cand"){var c=CANDREG[b.dataset.cid];if(c)gdReplace(w,c,c.c)}
+    else if(a==="own"){var v=$("gp-own").value.trim();if(v)gdReplace(w,v,v)}
+    else if(a==="pn"){EX.add(w);gdPopClose();if(GD.step===2)gdLive();else gdRender()}
+    else if(a==="ai"){gdPopAi(w)}return}
+  if(pop&&!pop.hidden&&!e.target.closest("#gd-pop"))gdPopClose()});
+document.addEventListener("keydown",function(e){if(e.key==="Escape")gdPopClose()});
+document.addEventListener("mouseover",function(e){var ch=e.target.closest&&e.target.closest(".gd-ec");if(!ch||(GDE.w===ch.getAttribute("data-w")&&$("gd-pop")&&!$("gd-pop").hidden))return;clearTimeout(GDE.timer);GDE.timer=setTimeout(function(){gdPopOpen(ch)},350)});
+document.addEventListener("mouseout",function(e){if(e.target.closest&&e.target.closest(".gd-ec"))clearTimeout(GDE.timer)});
+async function gdPopAi(w){var st=$("gp-ai-st"),box=$("gp-ai");st.textContent="AI 找詞中…";
+  try{if(!(await ensureAi())){st.textContent="還沒有可用的 AI，請到「AI 設定」";return}
+    var s=splitSent(GD.text).map(function(x){return x.s.trim()}).filter(function(x){return x.indexOf(w)>=0})[0]||w;
+    var r=await aiText("句子：「"+s+"」\n請列出 6 個可以取代句中「"+w+"」的詞或短語：意思相近、放在原位置語句通順、臺灣常用、而且只用臺灣華語文能力基準（TBCL）第 "+GD.lv+" 級（含以下）的詞。只輸出 JSON 陣列，例如 [\"詞1\",\"詞2\"]。"),m=r.text.match(/\[[\s\S]*\]/),arr=m?JSON.parse(m[0]):[],good=[];
+    arr.forEach(function(c){c=String(c).trim();if(c&&c!==w&&analyze(c,GD.lv,EX).over===0)good.push(c)});
+    box.innerHTML=good.length?good.map(function(c){var cd=reg({c:c,l:0,src:"AI·已驗證",x:1,forms:{P:[c]}});return'<button class="cand ai" data-gp="cand" data-cid="'+cd.id+'">'+esc(c)+'<small>AI·已驗證</small></button>'}).join(" "):'<span class="note">AI 的建議沒有一個全部在這個等級內。</span>';st.textContent="";
+    logAI("寫教材：超綱詞換詞","AI（"+r.model+"）","找較低等級的替代詞","AI 提出替代詞 → 程式用 TBCL 詞表驗證，只保留全部在本級以內的 → 人工決定是否套用","取代「"+w+"」")}catch(e){st.textContent="失敗："+e.message}}
 
 /* 讀剪貼簿，自動前進 */
 function gdTakeWords(t){var junk=GD_JUNK,occ=new Set(GD_OCC.join("、").split("、")),out=[],seen=new Set(GD.words);
