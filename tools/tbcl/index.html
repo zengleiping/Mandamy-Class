@@ -6,76 +6,63 @@
 <title>TBCL 等級檢核｜曼米中文</title>
 <link rel="icon" href="../../icons/logo.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@500;700;900&display=swap">
-<link rel="stylesheet" href="tbcl.css?v=3">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="tbcl.css?v=4">
 <script>if(/[?&]embed=1(&|$)/.test(location.search))document.documentElement.classList.add("mm-embed")</script>
 </head>
 <body>
 <header class="hd"><div class="hd-in">
   <a class="back" href="../../app.html">‹ 平台</a>
-  <div class="brand"><span class="logo" aria-hidden="true">級</span><span>等級檢核與改寫</span><small>曼米中文</small></div>
-  <button class="crumb" id="crumb">‹ 回一鍵改寫</button>
+  <span class="brand">等級改寫</span>
+  <button class="crumb" id="crumb">‹ 回首頁</button>
   <span class="sp"></span>
   <span class="src" id="src">載入詞表中…</span>
   <div class="menu-wrap">
-    <button class="btn-ghost" id="menu-btn" aria-haspopup="true" aria-expanded="false">進階工具 ▾</button>
-    <nav class="tabs" id="tabs" aria-label="進階工具">
-      <button data-t="art"><b>逐詞挑選改寫</b><span>整篇文章列出每個難詞，自己選要換成什麼</span></button>
-      <button data-t="check"><b>等級檢核</b><span>標出超綱詞、算超綱比例，送官方系統覆核</span></button>
-      <button data-t="gen"><b>依等級生成</b><span>輸入主題，AI 直接寫一篇指定等級的短文</span></button>
-      <button data-t="inv"><b>教材等級盤點</b><span>全部生詞的等級分布與各課超綱比例</span></button>
-      <button data-t="kwic"><b>語料庫例句</b><span>在教材裡查一個詞怎麼用、詞頻</span></button>
-      <button data-t="gram"><b>語法點表</b><span>官方語法點分級查詢</span></button>
-      <button data-t="engine"><b>AI 設定</b><span>選擇用哪個 AI 改寫</span></button>
+    <button class="btn-ghost" id="menu-btn" aria-haspopup="true" aria-expanded="false">其他工具 ▾</button>
+    <nav class="tabs" id="tabs" aria-label="其他工具">
+      <button data-t="art"><b>逐詞挑選</b><span>列出每個難詞，自己選要換成什麼</span></button>
+      <button data-t="check"><b>等級檢核</b><span>標出超綱詞，算超綱比例</span></button>
+      <button data-t="gen"><b>依等級寫短文</b><span>輸入主題，產生指定等級的短文</span></button>
+      <button data-t="inv"><b>教材盤點</b><span>各課生詞等級與超綱比例</span></button>
+      <button data-t="kwic"><b>例句與詞頻</b><span>在教材裡查一個詞的用法</span></button>
+      <button data-t="gram"><b>語法點表</b><span>官方語法點分級</span></button>
+      <button data-t="engine"><b>AI 設定</b><span>選擇改寫用的 AI</span></button>
     </nav>
   </div>
 </div></header>
 
 <main>
 <section id="p-quick">
-  <div class="hero">
-    <div class="hero-copy">
-      <div class="eyebrow">TBCL 等級改寫</div>
-      <h1>把文章，改成學生<br class="wide">看得懂的等級</h1>
-      <p>貼上任何文章，選學生的程度，一鍵改寫。難詞和成語換成簡單的說法，再用官方詞表逐段檢查。</p>
-    </div>
-    <div class="stamp" id="q-stamp" aria-hidden="true"><div class="stamp-in"><span class="stamp-top">第</span><b id="q-stamp-n">3</b><span class="stamp-bot">級</span></div></div>
-  </div>
+  <h1 class="ttl">文章等級改寫</h1>
+  <p class="lead">貼上文章，選學生的等級，改寫後會附上超綱比例。</p>
 
-  <div class="composer">
-    <div class="paper">
-      <textarea id="q-txt" aria-label="文章" placeholder="在這裡貼上文章……&#10;例如新聞、課本、網路文章。"></textarea>
-    </div>
-    <div class="foot">
-      <span class="count" id="q-count">0 字</span>
-      <span class="samples">試試範例：<button class="link" data-sample="0">夜市新聞</button><button class="link" data-sample="1">文言文</button><button class="link" data-sample="2">說明文</button></span>
-      <span class="sp"></span>
-      <span class="pills" role="group" aria-label="檢核標準"><button id="q-lim15" aria-pressed="true">教材 15%</button><button id="q-lim10" aria-pressed="false">試題 10%</button></span>
-    </div>
-  </div>
+  <textarea id="q-txt" class="area" aria-label="文章" placeholder="貼上文章"></textarea>
+  <div class="under"><span id="q-count">0 字</span><span class="sp"></span><span>範例：<button class="link" data-sample="0">夜市</button><button class="link" data-sample="1">文言</button><button class="link" data-sample="2">說明文</button></span></div>
 
-  <div class="ladder-wrap">
-    <div class="ladder-h"><span>學生的程度</span><span class="hint" id="q-lvnote"></span></div>
-    <div class="ladder" id="q-levels" role="group" aria-label="學生等級"><div class="track"><i id="q-fill"></i></div></div>
-    <div class="sample-line" id="q-lvsample"></div>
+  <div class="field">
+    <div class="lbl">學生等級</div>
+    <div class="seg" id="q-levels" role="group" aria-label="學生等級"></div>
+    <div class="sub" id="q-lvsample"></div>
+  </div>
+  <div class="field inline">
+    <div class="lbl">標準</div>
+    <span class="pills" role="group" aria-label="檢核標準"><button id="q-lim15" aria-pressed="true">教材 15%</button><button id="q-lim10" aria-pressed="false">試題 10%</button></span>
+    <span class="hint" id="q-ai-hint"></span>
   </div>
   <select id="q-lv" hidden></select><select id="q-lim" hidden><option value="15">15</option><option value="10">10</option></select>
 
-  <div class="go">
-    <button class="cta" id="q-run"><span class="cta-t" id="q-run-t">改寫成第 3 級</span><span class="cta-arrow" aria-hidden="true">→</span></button>
-    <span class="hint" id="q-ai-hint"></span>
-  </div>
+  <button class="cta" id="q-run"><span id="q-run-t">改寫成第 3 級</span></button>
   <ol class="steps" id="q-steps" hidden></ol>
   <div id="q-out" class="result"></div>
 </section>
 
 <section id="p-engine" hidden>
-  <div class="hero"><h1>AI 設定</h1><p>一鍵改寫要請 AI 把整篇文章改通順。選一種方式即可。</p></div>
+  <h1 class="ttl">AI 設定</h1><p class="lead">改寫時用哪個 AI。</p>
   <div class="card">
-    <label class="chk"><input type="radio" name="eng" value="puter" checked> <span><b>Puter（建議，不需要金鑰）</b><br><small>第一次使用會請你登入免費的 Puter 帳號，AI 的用量由你的 Puter 帳號負擔，不會用到我們的費用。</small></span></label>
-    <label class="chk"><input type="radio" name="eng" value="gemini"> <span><b>Gemini（自己的金鑰）</b><br><small>沿用平台已經存好的 Gemini 金鑰（簡報「AI 造句」）。</small></span></label>
-    <label class="chk"><input type="radio" name="eng" value="claude"> <span><b>Claude（自己的金鑰）</b><br><small>沿用平台翻譯設定裡的 Claude 金鑰。</small></span></label>
-    <label class="chk"><input type="radio" name="eng" value="none"> <span><b>不用 AI</b><br><small>只用內建的詞庫換詞，換不掉的詞列出來讓你自己決定。</small></span></label>
+    <label class="chk"><input type="radio" name="eng" value="puter" checked> <span><b>Puter（建議，不需要金鑰）</b><br><small>第一次使用要登入免費的 Puter 帳號，用量算在登入的人自己的帳號上。</small></span></label>
+    <label class="chk"><input type="radio" name="eng" value="gemini"> <span><b>Gemini（自己的金鑰）</b><br><small>用平台已存的 Gemini 金鑰（簡報「AI 造句」那邊填的）。</small></span></label>
+    <label class="chk"><input type="radio" name="eng" value="claude"> <span><b>Claude（自己的金鑰）</b><br><small>用平台翻譯設定裡的 Claude 金鑰。</small></span></label>
+    <label class="chk"><input type="radio" name="eng" value="none"> <span><b>不用 AI</b><br><small>只用內建詞庫換詞，換不掉的列出來自己決定。</small></span></label>
   </div>
 </section>
 
@@ -90,14 +77,14 @@
     <button id="printc">列印／存成 PDF</button>
     <button id="official" title="把文字送到國教院「教材編輯輔助系統」，在新視窗看官方檢核結果">送官方系統檢核 ↗</button>
     <label class="chk"><input type="checkbox" id="incstar" checked> * 級詞算在該級內</label>
-    <label>AI 助手（換詞／換句話說用） <select id="c-ai"><option value="puter">Puter（免金鑰）</option><option value="gemini">Gemini</option><option value="claude">Claude</option></select></label>
+    <label>AI <select id="c-ai"><option value="puter">Puter（免金鑰）</option><option value="gemini">Gemini</option><option value="claude">Claude</option></select></label>
   </div>
-  <textarea id="txt" placeholder="貼上課文、教材或試題文字。專有名詞（人名、地名、機構名）請在結果中點一下，就會排除在超綱比例之外。"></textarea>
+  <textarea id="txt" placeholder="貼上課文或試題。專有名詞（人名、地名）在結果裡點一下，就不算超綱。"></textarea>
   <div id="res"></div>
 </section>
 
 <section id="p-gen" hidden>
-  <p class="note">輸入主題與等級，AI 產生文字後會<b>自動用上面的檢核</b>，超綱太多就帶著超綱詞清單請 AI 改寫（最多 3 輪）。每次呼叫都會記在下方「人機協作紀錄」，可直接貼進競賽附件 3。金鑰沿用平台已經存好的（Gemini：簡報「AI 造句」；Claude：翻譯設定）。</p>
+  <p class="note">輸入主題和等級，AI 寫一篇，寫完自動檢查超綱比例，太高會請它再改（最多 3 輪）。每次呼叫都記在下面的表，可以貼進競賽附件 3。</p>
   <div class="row">
     <label>AI <select id="g-ai"><option value="puter">Puter（免金鑰）</option><option value="gemini">Gemini</option><option value="claude">Claude</option></select></label>
     <label>等級 <select id="g-lv"></select></label>
@@ -107,7 +94,7 @@
   <div class="row"><label class="grow">主題 <input id="g-topic" placeholder="例如：在夜市點餐"></label>
     <label class="grow">一定要用的詞（選填） <input id="g-must" placeholder="例如：便宜、好吃、老闆"></label></div>
   <div class="row"><button id="g-go" class="pri">產生並自動檢核</button><span id="g-st" class="note"></span></div>
-  <textarea id="g-out" placeholder="結果會出現在這裡，可以直接修改。人工修改後按「送去檢核」。"></textarea>
+  <textarea id="g-out" placeholder="結果會出現在這裡，可以直接改。改完按「送去檢核」。"></textarea>
   <div class="row"><button id="g-chk">送去檢核</button></div>
   <h3>人機協作紀錄（附件 3）</h3>
   <div id="g-log"></div>
@@ -120,31 +107,31 @@
 </section>
 
 <section id="p-kwic" hidden>
-  <p class="note">在曼米教材的課文與例句裡找一個詞怎麼用（數據驅動學習 DDL）。目前語料是平台自己的教材；詞頻資料來自 COCT 通用詞頻表；例句語料是平台自己的教材，可直接用來做課堂觀察活動。</p>
+  <p class="note">在曼米教材的課文和例句裡找一個詞怎麼用，詞頻來自 COCT 通用詞頻表。</p>
   <div class="row"><label class="grow">查詞 <input id="k-q" placeholder="例如：喜歡"></label><button id="k-go" class="pri">查詢</button></div>
   <div id="k-freq"></div><div id="k-out"></div>
 </section>
 <section id="p-art" hidden>
-  <p class="note">貼上整篇文章（例如從網路複製的），選好學生的等級，工具會找出所有超綱詞和詞表沒有的詞，逐個列出建議的簡單說法。你可以全部採用，也可以一個一個選，最後產生改寫後的文章。建議僅供參考，換進句子後請老師再順一下。</p>
+  <p class="note">貼上整篇文章，列出每個難詞和建議的換法，可以全部採用，也可以一個一個選。換進句子後請自己再順一下。</p>
   <div class="row">
     <label>學生等級 TBCL <select id="a-lv"></select></label>
     <label>檢核標準 <select id="a-lim"><option value="15">教材（15%）</option><option value="10">試題（10%）</option></select></label>
     <button id="a-run" class="pri">分析整篇文章</button>
   </div>
-  <textarea id="a-txt" style="min-height:200px" placeholder="在這裡貼上文章。專有名詞（人名、地名）請先到「① 等級檢核」點一下標成專有名詞，這裡會一起排除。"></textarea>
+  <textarea id="a-txt" style="min-height:200px" placeholder="貼上文章。專有名詞請先到「等級檢核」點一下標起來，這裡會一起排除。"></textarea>
   <div id="a-out"></div>
 </section>
 
 <section id="p-gram" hidden>
-  <p class="note">國家教育研究院「臺灣華語文能力基準語法點表」（目前官方表涵蓋第 1–5 級；* 級是該級的擴充）。</p>
+  <p class="note">國教院語法點表（官方目前只有第 1–5 級；* 級是該級的延伸）。</p>
   <div class="row"><label>等級 <select id="gr-lv"><option value="0">全部</option></select></label><label class="grow">搜尋名稱或例句 <input id="gr-q"></label></div>
   <div id="gr-out"></div>
 </section>
 </main>
-<footer class="cite"><b>資料來源</b>：臺灣華語文能力基準詞語表、漢字表、語法點表與通用詞頻表，國家教育研究院「臺灣華語文語料庫與能力基準整合應用系統」（<a href="https://coct.naer.edu.tw/" target="_blank" rel="noopener">coct.naer.edu.tw</a>）。本工具為曼米中文自行開發，不是國家教育研究院的官方服務；正式送件請以官方「教材編輯輔助系統」的檢核結果為準。
-  <button id="cite-copy">複製引用文字</button> <a href="../../docs/%E8%B3%87%E6%96%99%E4%BE%86%E6%BA%90%E8%88%87%E6%8E%88%E6%AC%8A.md" target="_blank">完整出處與授權說明</a></footer>
+<footer class="cite">詞表與詞頻：國家教育研究院「臺灣華語文語料庫與能力基準整合應用系統」（<a href="https://coct.naer.edu.tw/" target="_blank" rel="noopener">coct.naer.edu.tw</a>）。本工具不是官方服務，送件請以官方系統的檢核結果為準。
+  <button id="cite-copy">複製引用文字</button> <a href="../../docs/%E8%B3%87%E6%96%99%E4%BE%86%E6%BA%90%E8%88%87%E6%8E%88%E6%AC%8A.md" target="_blank">出處與授權</a></footer>
 <script src="https://js.puter.com/v2/" async></script>
 <script src="../../data.js"></script>
-<script src="tbcl.js?v=3"></script>
+<script src="tbcl.js?v=4"></script>
 </body>
 </html>

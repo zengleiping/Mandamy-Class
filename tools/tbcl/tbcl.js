@@ -150,7 +150,7 @@ function parseArr(tx){var m=tx.match(/\[[\s\S]*\]/);if(!m)return[];try{var a=JSO
 function sugCard(text,t){
   var ss=splitSent(text).map(function(x,k){var a=analyze(x.s,t,EX);return{k:k,s:x.s,a:a}}).filter(function(x){return x.a.list.length});
   if(!ss.length)return'<div class="card"><b>逐句修改建議</b><p class="note">沒有超綱的句子。</p></div>';
-  loadSyn();var h='<div class="card" id="sug"><b>逐句修改建議</b>'+(UNDO.length?' <button data-act="undo">↶ 復原上一步</button>':"")+'<p class="note">每個超綱詞可以「換詞」（先查詞典，沒有再問 AI，AI 給的詞一律用詞表驗證）；整句改不動時用「換句話說」。需要 AI 金鑰（Gemini 或 Claude）。詞典的建議只看詞義與等級，不保證放進句子還通順（例如「許多書」換成「多」就不通），滑鼠移上去可以先看換完的句子；套用前請老師確認語意，按「復原上一步」可以退回。</p>';
+  loadSyn();var h='<div class="card" id="sug"><b>逐句修改建議</b>'+(UNDO.length?' <button data-act="undo">↶ 復原上一步</button>':"")+'<p class="note">每個難詞可以換詞：先用詞庫，沒有再問 AI（AI 給的詞會用詞表驗證）。整句換句話說需要 AI。詞庫的換法不保證通順，例如「許多書」換成「多」就不通；滑鼠移到按鈕上可以先看換完的句子，不滿意按「復原」。</p>';
   ss.forEach(function(x){h+='<div class="sent" data-k="'+x.k+'"><div class="hl" style="font-size:16px">';
     x.a.toks.forEach(function(tk){h+=tk.han?'<span class="w '+(tk.st==="ok"?"":tk.st)+'">'+esc(tk.w)+'</span>':esc(tk.w)});h+='</div><div class="row" style="margin:4px 0">';
     var seen={};x.a.list.forEach(function(it){if(seen[it.w])return;seen[it.w]=1;var cs=dictCands(it.w,t);
@@ -397,38 +397,31 @@ var QSAMPLES=["台灣的夜市文化聞名國際，每到傍晚，各式各樣�
   "隨著人工智慧技術的快速發展，假影音和假語音日益增加，不僅影響選舉的公平，也使民眾難以分辨真偽，因此政府必須健全法制，守住民主防線。"];
 var QLEVEL_LINE=["我喜歡喝茶，你呢？","昨天我和朋友去夜市，吃了很多好吃的東西。","因為下雨，所以我們決定在家看電影。","他每天早上跑步，希望身體可以更健康。","這個城市的交通很方便，吸引了許多外國遊客。","隨著科技的進步，人們的生活方式也產生了很大的改變。","面對日益嚴峻的環境問題，各國政府必須採取更積極的因應措施。"];
 function qLevel(){return+$("q-lv").value}
-function qBuildLevels(){var box=$("q-levels");box.querySelectorAll("button").forEach(function(b){b.remove()});
-  for(var i=1;i<=7;i++){var b=document.createElement("button");b.type="button";b.setAttribute("data-l",i);b.innerHTML='<span class="node">'+i+'</span><span class="lab"></span>';box.appendChild(b)}}
-function qSyncLevel(first){var t=qLevel(),cnt={};LV.forEach(function(l){cnt[l]=(cnt[l]||0)+1});var acc=0,tot={};for(var i=1;i<=7;i++){acc+=cnt[i]||0;tot[i]=acc}
-  document.querySelectorAll("#q-levels button").forEach(function(b){var l=+b.getAttribute("data-l");b.setAttribute("aria-pressed",l===t?"true":"false");b.classList.toggle("passed",l<t);
-    var lab=b.querySelector(".lab");if(lab)lab.textContent=tot[l]?tot[l].toLocaleString()+" 詞":""});
-  $("q-fill").style.width=((t-1)/6*100)+"%";$("q-run-t").textContent="改寫成第 "+t+" 級";
-  var sn=$("q-stamp-n");if(sn.textContent!==String(t)){sn.textContent=t;var st=$("q-stamp");st.classList.remove("hit");void st.offsetWidth;st.classList.add("hit")}
-  $("q-lvnote").textContent=tot[t]?"第 "+t+" 級以內，詞表共 "+tot[t].toLocaleString()+" 個詞":"";
-  $("q-lvsample").innerHTML='<small>第 '+t+' 級大概是這樣的句子</small>'+esc(QLEVEL_LINE[t-1])}
-function qSteps(names,on){var ol=$("q-steps");ol.hidden=!names;if(!names)return;ol.innerHTML=names.map(function(n,i){return'<li class="'+(i<on?"done":i===on?"on":"")+'">'+(i<on?"✓":i===on?'<span class="spin"></span>':"")+n+"</li>"}).join("")}
-function qGauge(orig,now,lim){var R=54,C=2*Math.PI*R,cap=Math.max(50,Math.ceil(Math.max(orig,now,lim*2)/10)*10),f=function(x){return Math.min(1,x/cap)},ok=now<=lim,ang=f(lim)*360-90,rad=ang*Math.PI/180;
-  var x1=66+(R-9)*Math.cos(rad),y1=66+(R-9)*Math.sin(rad),x2=66+(R+9)*Math.cos(rad),y2=66+(R+9)*Math.sin(rad);
-  return'<div class="gauge '+(ok?"ok":"bad")+'"><svg viewBox="0 0 132 132" aria-hidden="true"><circle class="g-bg" cx="66" cy="66" r="'+R+'"/><circle class="g-new" cx="66" cy="66" r="'+R+'" stroke-dasharray="'+C+'" stroke-dashoffset="'+(C*(1-f(now)))+'"/>'+
-    '<line class="g-tick" x1="'+(x1-66+66)+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" transform="rotate(90 66 66)"/></svg><div class="gauge-c"><b>'+now.toFixed(1)+'%</b><small>超綱</small></div></div>'}
+function qBuildLevels(){var box=$("q-levels");box.innerHTML="";
+  for(var i=1;i<=7;i++){var b=document.createElement("button");b.type="button";b.setAttribute("data-l",i);b.innerHTML='<b>'+i+'</b><span></span>';box.appendChild(b)}}
+function qSyncLevel(){var t=qLevel(),cnt={};LV.forEach(function(l){cnt[l]=(cnt[l]||0)+1});var acc=0,tot={};for(var i=1;i<=7;i++){acc+=cnt[i]||0;tot[i]=acc}
+  document.querySelectorAll("#q-levels button").forEach(function(b){var l=+b.getAttribute("data-l");b.setAttribute("aria-pressed",l===t?"true":"false");b.querySelector("span").textContent=tot[l]?tot[l].toLocaleString():""});
+  $("q-run-t").textContent="改寫成第 "+t+" 級";
+  $("q-lvsample").textContent="第 "+t+" 級以內共 "+(tot[t]||0).toLocaleString()+" 個詞。例：「"+QLEVEL_LINE[t-1]+"」"}
+function qSteps(names,on){var ol=$("q-steps");ol.hidden=!names;if(!names)return;ol.innerHTML=names.map(function(n,i){return'<li class="'+(i<on?"done":i===on?"on":"")+'">'+(i<on?"✓ ":i===on?'<span class="spin"></span>':"")+n+"</li>"}).join("")}
 function qMark(text,t,cls){var a=analyze(text,t,EX),h="";a.toks.forEach(function(tk){h+=tk.han&&(tk.st==="over"||tk.st==="unk")?'<span class="'+cls+'" title="'+(tk.lv==null?"詞表沒有":"第 "+tk.lv+" 級")+'">'+esc(tk.w)+'</span>':esc(tk.w)});return{a:a,html:h}}
 function qShow(out,marks,warns,note){var t=QK.t,lim=QK.lim,nw=qMark(out,t,"left"),og=qMark(QK.text,t,"hard"),a=nw.a,okp=a.ratio<=lim;QK.cur=out;QK.a=a;
-  var gained=Math.max(0,QK.orig-a.ratio),h='<div class="sheet"><div class="summary">'+qGauge(QK.orig,a.ratio,lim)+'<div><p class="verdict '+(okp?"ok":"bad")+'">'+(okp?"達到第 "+t+" 級的"+(lim===15?"教材":"試題")+"標準了":"還差一點，超綱比例是 "+a.ratio.toFixed(1)+"%")+'</p>'+
-    '<div class="facts"><span>原文超綱 <b>'+QK.orig.toFixed(1)+'%</b></span><span>降低了 <b>'+gained.toFixed(1)+'</b> 個百分點</span><span>標準 <b>'+lim+'%</b> 以內</span>'+(a.list.length?'<span>剩下 <b>'+a.list.length+'</b> 個難詞</span>':'<span>沒有難詞了</span>')+'</div>'+
-    (note?'<p class="note-line">'+esc(note)+'</p>':'')+'</div></div></div>'+
-    '<div class="compare"><div class="col"><h4><i></i>原文</h4><div class="rtext">'+og.html+'</div></div>'+
-    '<div class="col new"><h4><i></i>第 '+t+' 級版本</h4><div id="q-view" class="rtext">'+(marks||nw.html)+'</div><textarea id="q-new" hidden>'+esc(out)+'</textarea>'+
-    '<div class="actions"><button class="btn pri" id="q-copy">複製</button><button class="btn" id="q-edit">編輯文字</button>'+(a.list.length&&aiReady()?'<button class="btn" id="q-again">再請 AI 改一次</button>':'')+'</div></div></div>'+
-    (warns&&warns.length?'<p class="hint" style="margin:0 0 14px"><b>請檢查這幾處</b>（說法放在這裡可能不通順）：<br>'+warns.map(esc).join('<br>')+'</p>':'');
-  if(a.list.length){h+='<div class="sheet"><b>還有 '+a.list.length+' 個詞超過第 '+t+' 級</b><span class="hint">　點一個詞可以換掉；人名、地名請選「專有名詞」。</span><div class="chips">'+
+  var h='<div class="stats"><span class="n '+(okp?"ok":"bad")+'">'+a.ratio.toFixed(1)+'%</span><span>超綱（原文 '+QK.orig.toFixed(1)+'%）</span><span>標準 '+lim+'% 以內</span>'+
+    (okp?'<span class="v ok">符合</span>':'<span class="v bad">還差 '+(a.ratio-lim).toFixed(1)+' 個百分點</span>')+'</div>'+
+    (note?'<p class="note-line">'+esc(note)+'</p>':'')+
+    '<div class="cols"><div class="col"><h4>原文</h4><div class="rtext">'+og.html+'</div></div>'+
+    '<div class="col"><h4>第 '+t+' 級版本</h4><div id="q-view" class="rtext">'+(marks||nw.html)+'</div><textarea id="q-new" hidden>'+esc(out)+'</textarea>'+
+    '<div class="actions"><button class="btn pri" id="q-copy">複製</button><button class="btn" id="q-edit">編輯</button>'+(a.list.length&&aiReady()?'<button class="btn" id="q-again">再請 AI 改一次</button>':'')+'</div></div></div>'+
+    (warns&&warns.length?'<p class="hint" style="margin-top:10px">這幾處換進去可能不通順：<br>'+warns.map(esc).join('<br>')+'</p>':'');
+  if(a.list.length){h+='<div class="rest"><b>還有 '+a.list.length+' 個詞超過第 '+t+' 級</b><span class="hint">（點詞可以換掉；人名、地名請按「專有名詞」）</span><div class="chips">'+
     a.list.slice(0,24).map(function(x){return'<button class="chip" data-q="chip" data-w="'+esc(x.w)+'" aria-expanded="false">'+esc(x.w)+'<small>'+(x.lv==null?"未收錄":"第"+x.lv+"級")+(x.n>1?" ×"+x.n:"")+'</small></button>'}).join("")+'</div><div id="q-fix"></div></div>'}
-  if(!okp){h+='<details class="more"><summary>不想用內建 AI？複製指令到 ChatGPT／Gemini／Claude 網頁，再把結果貼回來</summary>'+
-    '<p class="hint">指令已經附上這個等級的常用詞和還太難的詞。</p><textarea id="q-prompt" readonly style="width:100%;min-height:90px">'+esc(qPrompt(out,t,a.list.slice(0,15).map(function(x){return x.w})))+'</textarea>'+
-    '<div class="actions"><button class="btn" id="q-pcopy">複製指令</button></div><textarea id="q-back" style="width:100%;min-height:90px;margin-top:10px" placeholder="把 AI 改好的文章貼在這裡"></textarea><div class="actions"><button class="btn" id="q-bcheck">檢核貼回的文章</button></div></details>'}
+  if(!okp){h+='<details class="more"><summary>不用內建 AI：複製指令到 ChatGPT、Gemini 或 Claude 網頁，再把結果貼回來</summary>'+
+    '<p class="hint">指令裡附了這個等級的常用詞和還太難的詞。</p><textarea id="q-prompt" readonly style="width:100%;min-height:90px">'+esc(qPrompt(out,t,a.list.slice(0,15).map(function(x){return x.w})))+'</textarea>'+
+    '<div class="actions"><button class="btn" id="q-pcopy">複製指令</button></div><textarea id="q-back" style="width:100%;min-height:90px;margin-top:10px" placeholder="把 AI 改好的文章貼在這裡"></textarea><div class="actions"><button class="btn" id="q-bcheck">檢查這篇</button></div></details>'}
   $("q-out").innerHTML=h}
-function qFixPanel(w){var t=QK.t,cs=dictCands(w,t).slice(0,4),h='<div class="fix"><b>'+esc(w)+'</b>　<span class="hint">換成：</span>';
+function qFixPanel(w){var t=QK.t,cs=dictCands(w,t).slice(0,4),h='<div class="fix"><b>'+esc(w)+'</b>　<span class="hint">可以換成：</span>';
   cs.forEach(function(c){h+=' <button class="cand" data-q="alt" data-w="'+esc(w)+'" data-cid="'+c.id+'">'+esc(c.c)+'<small>'+c.src+'</small></button>'});
-  if(!cs.length)h+='<span class="hint">辭典裡沒有適合這個等級的說法。</span>';
+  if(!cs.length)h+='<span class="hint">詞庫裡沒有適合這個等級的說法。</span>';
   h+='<div class="row"><input class="qc" placeholder="自己輸入要換成的詞" size="14"><button data-q="swap" data-w="'+esc(w)+'">換掉</button><button data-q="proper" data-w="'+esc(w)+'">這是專有名詞，不計入</button></div></div>';$("q-fix").innerHTML=h}
 async function quickGo(){var text=$("q-txt").value,t=qLevel(),lim=+$("q-lim").value;if(!text.trim()){$("q-out").innerHTML='<p class="hint">請先貼上文章。</p>';return}
   var useAi=false;if(engine()!=="none")useAi=await ensureAi();       // 要在按鈕點擊的當下登入（瀏覽器只允許使用者操作時開登入視窗）
@@ -439,14 +432,14 @@ async function quickGo(){var text=$("q-txt").value,t=qLevel(),lim=+$("q-lim").va
     var a1=analyze(out,t,EX);
     if(useAi&&a1.ratio>lim){qSteps(steps,2);
       try{var ai=await aiRewriteText(text,t,lim,function(m){var li=document.querySelectorAll("#q-steps li")[2];if(li)li.lastChild.textContent=m});
-        var a2=analyze(ai,t,EX);if(a2.ratio<=a1.ratio+1){out=ai;note="已用 AI 改寫，並用詞表檢核。"}else note="AI 改的結果沒有比詞庫換詞更好，保留詞庫換詞的版本。"}
-      catch(e){note="AI 這次沒有成功（"+e.message+"）。先顯示詞庫換詞的結果。"}}
-    else if(!useAi&&a1.ratio>lim&&engine()!=="none")note="沒有登入 AI，所以只用詞庫換詞。可以到右上角「進階工具 → AI 設定」改用其他方式。";
+        var a2=analyze(ai,t,EX);if(a2.ratio<=a1.ratio+1){out=ai;note="AI 改寫過，已用詞表檢查。"}else note="AI 改的沒有比詞庫換詞好，留用詞庫換詞的結果。"}
+      catch(e){note="AI 沒有成功（"+e.message+"），先顯示詞庫換詞的結果。"}}
+    else if(!useAi&&a1.ratio>lim&&engine()!=="none")note="沒有登入 AI，只用詞庫換詞。要改用其他方式，到右上角「其他工具」→「AI 設定」。";
     qSteps(steps,steps.length-1);qShow(out,out===res.out&&res.n?res.html:"",res.warns,note);qSteps(null)}
   catch(e){$("q-out").innerHTML='<p class="hint">失敗：'+esc(e.message)+'</p>';qSteps(null)}
   btn.disabled=false}
 async function quickAgain(){var out=$("q-new").value;if(!await ensureAi())return;var st=["AI 再改一次"];qSteps(st,0);
-  try{var ai=await aiRewriteText(out,QK.t,QK.lim,function(m){var li=document.querySelector("#q-steps li");if(li)li.lastChild.textContent=m});qSteps(null);qShow(ai,"",[],"已再請 AI 改一次。")}catch(e){qSteps(null);qShow(out,"",[],"AI 這次沒有成功（"+e.message+"）。")}}
+  try{var ai=await aiRewriteText(out,QK.t,QK.lim,function(m){var li=document.querySelector("#q-steps li");if(li)li.lastChild.textContent=m});qSteps(null);qShow(ai,"",[],"又請 AI 改了一次。")}catch(e){qSteps(null);qShow(out,"",[],"AI 沒有成功（"+e.message+"）。")}}
 $("q-run").onclick=quickGo;
 document.querySelectorAll("[data-sample]").forEach(function(b){b.onclick=function(){var t=$("q-txt");t.value=QSAMPLES[+b.getAttribute("data-sample")];t.dispatchEvent(new Event("input"));t.focus()}});
 $("q-txt").oninput=function(){$("q-count").textContent=this.value.replace(/\s/g,"").length+" 字"};
@@ -456,7 +449,7 @@ $("q-lim15").onclick=function(){qLim(15)};$("q-lim10").onclick=function(){qLim(1
 $("q-out").addEventListener("click",function(e){var bt=e.target.closest("button");if(!bt)return;var id=bt.id,q=bt.getAttribute("data-q");
   var cp=function(v){navigator.clipboard.writeText(v).then(function(){bt.textContent="已複製 ✓"},function(){prompt("複製：",v)})};
   if(id==="q-copy")cp($("q-new").value);
-  else if(id==="q-edit"){var ta=$("q-new"),vw=$("q-view");ta.hidden=!ta.hidden;vw.hidden=!ta.hidden;bt.textContent=ta.hidden?"編輯文字":"完成編輯";if(ta.hidden)qShow(ta.value,"",[])}
+  else if(id==="q-edit"){var ta=$("q-new"),vw=$("q-view");ta.hidden=!ta.hidden;vw.hidden=!ta.hidden;bt.textContent=ta.hidden?"編輯":"完成";if(ta.hidden)qShow(ta.value,"",[])}
   else if(id==="q-again")quickAgain();
   else if(id==="q-pcopy")cp($("q-prompt").value);
   else if(id==="q-bcheck"){var v=$("q-back").value.trim();if(v)qShow(v,"",[])}
@@ -465,7 +458,7 @@ $("q-out").addEventListener("click",function(e){var bt=e.target.closest("button"
   else if(q==="alt"){var cd=CANDREG[bt.getAttribute("data-cid")],w0=bt.getAttribute("data-w");if(cd){var txt=$("q-new").value,i=txt.indexOf(w0);if(i>=0){var role=roleAt(txt[i-1],txt[i+w0.length]);txt=txt.slice(0,i)+formFor(cd,role,role==="C"?txt.slice(Math.max(0,i-3),i-1):txt.slice(Math.max(0,i-2),i),txt[i+w0.length]).text+txt.slice(i+w0.length);qShow(txt,"",[])}}}
   else if(q==="swap"){var w=bt.getAttribute("data-w"),inp=document.querySelector("#q-fix input.qc");if(inp&&inp.value.trim())qShow($("q-new").value.split(w).join(inp.value.trim()),"",[])}});
 function engineUi(){var e=engine();document.querySelectorAll('input[name=eng]').forEach(function(r){r.checked=r.value===e;r.onchange=function(){if(r.checked){setEngine(r.value);engineHint()}}})}
-function engineHint(){var e=engine(),m={puter:"AI：Puter（首次使用需登入免費帳號）",gemini:"AI：Gemini（自己的金鑰）",claude:"AI：Claude（自己的金鑰）",none:"不用 AI（只用詞庫換詞）"};$("q-ai-hint").textContent=m[e]||""}
+function engineHint(){var e=engine(),m={puter:"AI：Puter（第一次要登入免費帳號）",gemini:"AI：Gemini（自己的金鑰）",claude:"AI：Claude（自己的金鑰）",none:"不用 AI（只用詞庫換詞）"};$("q-ai-hint").textContent=m[e]||""}
 
 /* 分頁 */
 function tab(n){["quick","engine","check","gen","inv","kwic","gram","art"].forEach(function(k){$("p-"+k).hidden=k!==n});[].forEach.call($("tabs").children,function(b){b.className=b.getAttribute("data-t")===n?"on":""});
