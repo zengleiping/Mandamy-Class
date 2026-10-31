@@ -392,26 +392,35 @@ async function aiRewriteText(text,t,lim,onStep){var chunks=chunkText(text,450),r
   return res.join("\n")}
 
 /* ---- 畫面 ---- */
-var LVNAME=["入門","","初級","","中級","","高級"];
+var QSAMPLES=["台灣的夜市文化聞名國際，每到傍晚，各式各樣的小吃攤位就擠滿了人潮。許多外國遊客慕名而來，品嚐珍珠奶茶、臭豆腐和蚵仔煎，體驗當地獨特的飲食文化。",
+  "桃花源裡落英繽紛，芳草鮮美。村人怡然自樂，過著與世無爭的生活。他們見到漁人，大吃一驚，問他從哪裡來。",
+  "隨著人工智慧技術的快速發展，假影音和假語音日益增加，不僅影響選舉的公平，也使民眾難以分辨真偽，因此政府必須健全法制，守住民主防線。"];
+var QLEVEL_LINE=["我喜歡喝茶，你呢？","昨天我和朋友去夜市，吃了很多好吃的東西。","因為下雨，所以我們決定在家看電影。","他每天早上跑步，希望身體可以更健康。","這個城市的交通很方便，吸引了許多外國遊客。","隨著科技的進步，人們的生活方式也產生了很大的改變。","面對日益嚴峻的環境問題，各國政府必須採取更積極的因應措施。"];
 function qLevel(){return+$("q-lv").value}
-function qBuildLevels(){var box=$("q-levels");box.innerHTML="";for(var i=1;i<=7;i++){var b=document.createElement("button");b.type="button";b.setAttribute("data-l",i);b.innerHTML="<b>"+i+"</b><span>第 "+i+" 級</span>";b.setAttribute("aria-pressed",i===qLevel()?"true":"false");box.appendChild(b)}}
-function qSyncLevel(){document.querySelectorAll("#q-levels button").forEach(function(b){b.setAttribute("aria-pressed",+b.getAttribute("data-l")===qLevel()?"true":"false")});
-  var t=qLevel(),n=0;LV.forEach(function(l){if(l<=t)n++});$("q-run").textContent="改寫成第 "+t+" 級";
-  $("q-lvnote").textContent=n?"第 "+t+" 級以內約有 "+n.toLocaleString()+" 個詞（詞表分級）。":""}
+function qBuildLevels(){var box=$("q-levels");box.querySelectorAll("button").forEach(function(b){b.remove()});
+  for(var i=1;i<=7;i++){var b=document.createElement("button");b.type="button";b.setAttribute("data-l",i);b.innerHTML='<span class="node">'+i+'</span><span class="lab"></span>';box.appendChild(b)}}
+function qSyncLevel(first){var t=qLevel(),cnt={};LV.forEach(function(l){cnt[l]=(cnt[l]||0)+1});var acc=0,tot={};for(var i=1;i<=7;i++){acc+=cnt[i]||0;tot[i]=acc}
+  document.querySelectorAll("#q-levels button").forEach(function(b){var l=+b.getAttribute("data-l");b.setAttribute("aria-pressed",l===t?"true":"false");b.classList.toggle("passed",l<t);
+    var lab=b.querySelector(".lab");if(lab)lab.textContent=tot[l]?tot[l].toLocaleString()+" 詞":""});
+  $("q-fill").style.width=((t-1)/6*100)+"%";$("q-run-t").textContent="改寫成第 "+t+" 級";
+  var sn=$("q-stamp-n");if(sn.textContent!==String(t)){sn.textContent=t;var st=$("q-stamp");st.classList.remove("hit");void st.offsetWidth;st.classList.add("hit")}
+  $("q-lvnote").textContent=tot[t]?"第 "+t+" 級以內，詞表共 "+tot[t].toLocaleString()+" 個詞":"";
+  $("q-lvsample").innerHTML='<small>第 '+t+' 級大概是這樣的句子</small>'+esc(QLEVEL_LINE[t-1])}
 function qSteps(names,on){var ol=$("q-steps");ol.hidden=!names;if(!names)return;ol.innerHTML=names.map(function(n,i){return'<li class="'+(i<on?"done":i===on?"on":"")+'">'+(i<on?"✓":i===on?'<span class="spin"></span>':"")+n+"</li>"}).join("")}
-function qMeter(orig,now,lim){var cap=Math.max(40,Math.ceil(Math.max(orig,now,lim*2)/10)*10),pw=function(x){return Math.min(100,x/cap*100)};
-  return'<div class="meter'+(now>lim?" bad":"")+'"><i class="m-orig" style="width:'+pw(orig)+'%"></i><i class="m-new" style="width:'+pw(now)+'%"></i><span class="m-lim" style="left:'+pw(lim)+'%" title="標準 '+lim+'%"></span></div>'}
-function qHighlight(out,t){var a=analyze(out,t,EX),h="";a.toks.forEach(function(tk){h+=tk.han&&(tk.st==="over"||tk.st==="unk")?'<span class="left" title="'+(tk.lv==null?"詞表沒有":"第 "+tk.lv+" 級")+'">'+esc(tk.w)+'</span>':esc(tk.w)});return{a:a,html:h}}
-function qShow(out,mine,warns,note){var t=QK.t,lim=QK.lim,hl=qHighlight(out,t),a=hl.a,okp=a.ratio<=lim;QK.cur=out;QK.a=a;
-  var mineHtml=mine||"",h='<div class="panel"><div class="meter-wrap"><div class="pct '+(okp?"ok":"bad")+'">'+a.ratio.toFixed(1)+'%<small>超綱（原文 '+QK.orig.toFixed(1)+'%）</small></div>'+qMeter(QK.orig,a.ratio,lim)+'</div>'+
-    '<div class="meter-cap"><span>'+(okp?"✔ 已達":"✘ 還沒達到")+" "+lim+"% 標準（第 "+t+' 級）</span><span>淺色條＝原文　深色條＝改寫後　黑線＝標準</span></div>'+
-    (note?'<p class="hint" style="margin:10px 0 0">'+esc(note)+'</p>':'')+
-    '<div id="q-view" class="rtext">'+(mineHtml||hl.html)+'</div>'+
-    '<textarea id="q-new" hidden style="min-height:170px;width:100%;font-size:17px;line-height:1.85">'+esc(out)+'</textarea>'+
-    '<div class="actions"><button class="btn pri" id="q-copy">複製</button><button class="btn" id="q-edit">編輯文字</button><button class="btn" id="q-cmp">對照原文</button>'+(a.list.length&&aiReady()?'<button class="btn" id="q-again">再請 AI 改一次</button>':'')+'</div>'+
-    '<div id="q-cmpbox" hidden class="compare" style="margin-top:14px"><div><h4>原文</h4><div class="rtext" style="font-size:15.5px">'+esc(QK.text)+'</div></div><div><h4>改寫後</h4><div class="rtext" style="font-size:15.5px">'+esc(out)+'</div></div></div>'+
-    (warns&&warns.length?'<p class="hint" style="margin-top:12px"><b>請檢查這幾處</b>（說法放在這裡可能不通順）：<br>'+warns.map(esc).join('<br>')+'</p>':'')+'</div>';
-  if(a.list.length){h+='<div class="panel" style="margin-top:14px"><b>還有 '+a.list.length+' 個詞超過第 '+t+' 級</b><span class="hint">　點一個詞可以換掉；人名、地名請選「專有名詞」。</span><div class="chips">'+
+function qGauge(orig,now,lim){var R=54,C=2*Math.PI*R,cap=Math.max(50,Math.ceil(Math.max(orig,now,lim*2)/10)*10),f=function(x){return Math.min(1,x/cap)},ok=now<=lim,ang=f(lim)*360-90,rad=ang*Math.PI/180;
+  var x1=66+(R-9)*Math.cos(rad),y1=66+(R-9)*Math.sin(rad),x2=66+(R+9)*Math.cos(rad),y2=66+(R+9)*Math.sin(rad);
+  return'<div class="gauge '+(ok?"ok":"bad")+'"><svg viewBox="0 0 132 132" aria-hidden="true"><circle class="g-bg" cx="66" cy="66" r="'+R+'"/><circle class="g-new" cx="66" cy="66" r="'+R+'" stroke-dasharray="'+C+'" stroke-dashoffset="'+(C*(1-f(now)))+'"/>'+
+    '<line class="g-tick" x1="'+(x1-66+66)+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" transform="rotate(90 66 66)"/></svg><div class="gauge-c"><b>'+now.toFixed(1)+'%</b><small>超綱</small></div></div>'}
+function qMark(text,t,cls){var a=analyze(text,t,EX),h="";a.toks.forEach(function(tk){h+=tk.han&&(tk.st==="over"||tk.st==="unk")?'<span class="'+cls+'" title="'+(tk.lv==null?"詞表沒有":"第 "+tk.lv+" 級")+'">'+esc(tk.w)+'</span>':esc(tk.w)});return{a:a,html:h}}
+function qShow(out,marks,warns,note){var t=QK.t,lim=QK.lim,nw=qMark(out,t,"left"),og=qMark(QK.text,t,"hard"),a=nw.a,okp=a.ratio<=lim;QK.cur=out;QK.a=a;
+  var gained=Math.max(0,QK.orig-a.ratio),h='<div class="sheet"><div class="summary">'+qGauge(QK.orig,a.ratio,lim)+'<div><p class="verdict '+(okp?"ok":"bad")+'">'+(okp?"達到第 "+t+" 級的"+(lim===15?"教材":"試題")+"標準了":"還差一點，超綱比例是 "+a.ratio.toFixed(1)+"%")+'</p>'+
+    '<div class="facts"><span>原文超綱 <b>'+QK.orig.toFixed(1)+'%</b></span><span>降低了 <b>'+gained.toFixed(1)+'</b> 個百分點</span><span>標準 <b>'+lim+'%</b> 以內</span>'+(a.list.length?'<span>剩下 <b>'+a.list.length+'</b> 個難詞</span>':'<span>沒有難詞了</span>')+'</div>'+
+    (note?'<p class="note-line">'+esc(note)+'</p>':'')+'</div></div></div>'+
+    '<div class="compare"><div class="col"><h4><i></i>原文</h4><div class="rtext">'+og.html+'</div></div>'+
+    '<div class="col new"><h4><i></i>第 '+t+' 級版本</h4><div id="q-view" class="rtext">'+(marks||nw.html)+'</div><textarea id="q-new" hidden>'+esc(out)+'</textarea>'+
+    '<div class="actions"><button class="btn pri" id="q-copy">複製</button><button class="btn" id="q-edit">編輯文字</button>'+(a.list.length&&aiReady()?'<button class="btn" id="q-again">再請 AI 改一次</button>':'')+'</div></div></div>'+
+    (warns&&warns.length?'<p class="hint" style="margin:0 0 14px"><b>請檢查這幾處</b>（說法放在這裡可能不通順）：<br>'+warns.map(esc).join('<br>')+'</p>':'');
+  if(a.list.length){h+='<div class="sheet"><b>還有 '+a.list.length+' 個詞超過第 '+t+' 級</b><span class="hint">　點一個詞可以換掉；人名、地名請選「專有名詞」。</span><div class="chips">'+
     a.list.slice(0,24).map(function(x){return'<button class="chip" data-q="chip" data-w="'+esc(x.w)+'" aria-expanded="false">'+esc(x.w)+'<small>'+(x.lv==null?"未收錄":"第"+x.lv+"級")+(x.n>1?" ×"+x.n:"")+'</small></button>'}).join("")+'</div><div id="q-fix"></div></div>'}
   if(!okp){h+='<details class="more"><summary>不想用內建 AI？複製指令到 ChatGPT／Gemini／Claude 網頁，再把結果貼回來</summary>'+
     '<p class="hint">指令已經附上這個等級的常用詞和還太難的詞。</p><textarea id="q-prompt" readonly style="width:100%;min-height:90px">'+esc(qPrompt(out,t,a.list.slice(0,15).map(function(x){return x.w})))+'</textarea>'+
@@ -433,12 +442,13 @@ async function quickGo(){var text=$("q-txt").value,t=qLevel(),lim=+$("q-lim").va
         var a2=analyze(ai,t,EX);if(a2.ratio<=a1.ratio+1){out=ai;note="已用 AI 改寫，並用詞表檢核。"}else note="AI 改的結果沒有比詞庫換詞更好，保留詞庫換詞的版本。"}
       catch(e){note="AI 這次沒有成功（"+e.message+"）。先顯示詞庫換詞的結果。"}}
     else if(!useAi&&a1.ratio>lim&&engine()!=="none")note="沒有登入 AI，所以只用詞庫換詞。可以到右上角「進階工具 → AI 設定」改用其他方式。";
-    qSteps(steps,steps.length-1);qShow(out,"",res.warns,note);qSteps(null)}
+    qSteps(steps,steps.length-1);qShow(out,out===res.out&&res.n?res.html:"",res.warns,note);qSteps(null)}
   catch(e){$("q-out").innerHTML='<p class="hint">失敗：'+esc(e.message)+'</p>';qSteps(null)}
   btn.disabled=false}
 async function quickAgain(){var out=$("q-new").value;if(!await ensureAi())return;var st=["AI 再改一次"];qSteps(st,0);
   try{var ai=await aiRewriteText(out,QK.t,QK.lim,function(m){var li=document.querySelector("#q-steps li");if(li)li.lastChild.textContent=m});qSteps(null);qShow(ai,"",[],"已再請 AI 改一次。")}catch(e){qSteps(null);qShow(out,"",[],"AI 這次沒有成功（"+e.message+"）。")}}
 $("q-run").onclick=quickGo;
+document.querySelectorAll("[data-sample]").forEach(function(b){b.onclick=function(){var t=$("q-txt");t.value=QSAMPLES[+b.getAttribute("data-sample")];t.dispatchEvent(new Event("input"));t.focus()}});
 $("q-txt").oninput=function(){$("q-count").textContent=this.value.replace(/\s/g,"").length+" 字"};
 $("q-levels").onclick=function(e){var b=e.target.closest("button");if(!b)return;$("q-lv").value=b.getAttribute("data-l");qSyncLevel()};
 function qLim(v){$("q-lim").value=v;$("q-lim15").setAttribute("aria-pressed",v===15?"true":"false");$("q-lim10").setAttribute("aria-pressed",v===10?"true":"false")}
@@ -447,7 +457,6 @@ $("q-out").addEventListener("click",function(e){var bt=e.target.closest("button"
   var cp=function(v){navigator.clipboard.writeText(v).then(function(){bt.textContent="已複製 ✓"},function(){prompt("複製：",v)})};
   if(id==="q-copy")cp($("q-new").value);
   else if(id==="q-edit"){var ta=$("q-new"),vw=$("q-view");ta.hidden=!ta.hidden;vw.hidden=!ta.hidden;bt.textContent=ta.hidden?"編輯文字":"完成編輯";if(ta.hidden)qShow(ta.value,"",[])}
-  else if(id==="q-cmp"){var cb=$("q-cmpbox");cb.hidden=!cb.hidden;bt.textContent=cb.hidden?"對照原文":"收起對照"}
   else if(id==="q-again")quickAgain();
   else if(id==="q-pcopy")cp($("q-prompt").value);
   else if(id==="q-bcheck"){var v=$("q-back").value.trim();if(v)qShow(v,"",[])}

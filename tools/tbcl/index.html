@@ -6,14 +6,14 @@
 <title>TBCL 等級檢核｜曼米中文</title>
 <link rel="icon" href="../../icons/logo.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@700&display=swap">
-<link rel="stylesheet" href="tbcl.css?v=2">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@500;700;900&display=swap">
+<link rel="stylesheet" href="tbcl.css?v=3">
 <script>if(/[?&]embed=1(&|$)/.test(location.search))document.documentElement.classList.add("mm-embed")</script>
 </head>
 <body>
 <header class="hd"><div class="hd-in">
   <a class="back" href="../../app.html">‹ 平台</a>
-  <div class="brand">等級檢核與改寫 <small>曼米中文</small></div>
+  <div class="brand"><span class="logo" aria-hidden="true">級</span><span>等級檢核與改寫</span><small>曼米中文</small></div>
   <button class="crumb" id="crumb">‹ 回一鍵改寫</button>
   <span class="sp"></span>
   <span class="src" id="src">載入詞表中…</span>
@@ -34,18 +34,37 @@
 <main>
 <section id="p-quick">
   <div class="hero">
-    <h1>把文章改成學生看得懂的等級</h1>
-    <p>貼上任何文章，選學生的 TBCL 等級，一鍵改寫。難詞和成語換成簡單的說法，並用官方詞表檢查結果。</p>
+    <div class="hero-copy">
+      <div class="eyebrow">TBCL 等級改寫</div>
+      <h1>把文章，改成學生<br class="wide">看得懂的等級</h1>
+      <p>貼上任何文章，選學生的程度，一鍵改寫。難詞和成語換成簡單的說法，再用官方詞表逐段檢查。</p>
+    </div>
+    <div class="stamp" id="q-stamp" aria-hidden="true"><div class="stamp-in"><span class="stamp-top">第</span><b id="q-stamp-n">3</b><span class="stamp-bot">級</span></div></div>
   </div>
-  <div class="panel">
-    <textarea id="q-txt" aria-label="文章" placeholder="在這裡貼上文章，例如從新聞、課本或網路複製的內容……"></textarea>
-    <div class="foot"><span id="q-count">0 字</span><span class="sp"></span>
-      <span class="pills" role="group" aria-label="檢核標準"><button id="q-lim15" aria-pressed="true">教材 15%</button><button id="q-lim10" aria-pressed="false">試題 10%</button></span></div>
+
+  <div class="composer">
+    <div class="paper">
+      <textarea id="q-txt" aria-label="文章" placeholder="在這裡貼上文章……&#10;例如新聞、課本、網路文章。"></textarea>
+    </div>
+    <div class="foot">
+      <span class="count" id="q-count">0 字</span>
+      <span class="samples">試試範例：<button class="link" data-sample="0">夜市新聞</button><button class="link" data-sample="1">文言文</button><button class="link" data-sample="2">說明文</button></span>
+      <span class="sp"></span>
+      <span class="pills" role="group" aria-label="檢核標準"><button id="q-lim15" aria-pressed="true">教材 15%</button><button id="q-lim10" aria-pressed="false">試題 10%</button></span>
+    </div>
   </div>
-  <div class="lvl" id="q-levels" role="group" aria-label="學生等級"></div>
-  <div class="lvl-note" id="q-lvnote"></div>
+
+  <div class="ladder-wrap">
+    <div class="ladder-h"><span>學生的程度</span><span class="hint" id="q-lvnote"></span></div>
+    <div class="ladder" id="q-levels" role="group" aria-label="學生等級"><div class="track"><i id="q-fill"></i></div></div>
+    <div class="sample-line" id="q-lvsample"></div>
+  </div>
   <select id="q-lv" hidden></select><select id="q-lim" hidden><option value="15">15</option><option value="10">10</option></select>
-  <div class="go"><button class="btn pri big-go" id="q-run">改寫成第 3 級</button><span class="hint" id="q-ai-hint"></span></div>
+
+  <div class="go">
+    <button class="cta" id="q-run"><span class="cta-t" id="q-run-t">改寫成第 3 級</span><span class="cta-arrow" aria-hidden="true">→</span></button>
+    <span class="hint" id="q-ai-hint"></span>
+  </div>
   <ol class="steps" id="q-steps" hidden></ol>
   <div id="q-out" class="result"></div>
 </section>
@@ -126,6 +145,6 @@
   <button id="cite-copy">複製引用文字</button> <a href="../../docs/%E8%B3%87%E6%96%99%E4%BE%86%E6%BA%90%E8%88%87%E6%8E%88%E6%AC%8A.md" target="_blank">完整出處與授權說明</a></footer>
 <script src="https://js.puter.com/v2/" async></script>
 <script src="../../data.js"></script>
-<script src="tbcl.js?v=2"></script>
+<script src="tbcl.js?v=3"></script>
 </body>
 </html>
