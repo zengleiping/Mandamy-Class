@@ -100,7 +100,7 @@
   // ---------- 老師端：工具箱裡的「寵物遊戲」 ----------
   function addTool(){
     if(!window.CT) return; var CT = window.CT;
-    CT.add({ id: "pets", cat: "fun", icon: "🐾", name: "寵物遊戲", w: 700, h: 680, build: function(bd, win){
+    CT.add({ id: "pets", hide: true, cat: "fun", icon: "🐾", name: "寵物遊戲", w: 700, h: 680, build: function(bd, win){
       var c = ctx(), sel = c.teacherSel && c.teacherSel(); if(!sel){ bd.textContent = "請先進到一個班級。"; return; }
       var r = root(), cfg = Object.assign({}, DEF), data = {}, redeem = {}, names = [], unsubs = [], box = h("div"), view = "cls";
       bd.appendChild(box);
