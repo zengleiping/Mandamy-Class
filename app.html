@@ -2512,26 +2512,27 @@ function openSlotDialog(id, date){
   });
 }
 // ---------- 課表 Excel：匯出成 .xlsx 方便大量修改，改完再匯入（有「編號」的列＝更新那一堂，沒有編號＝新增，動作寫「刪除」＝刪掉）----------
-var XLSX_COLS = ["編號", "日期", "開始", "結束", "結束日期", "名稱", "學校／班級（僅供參考）", "課次（僅供參考）", "備註", "連結", "狀態（僅供參考）", "動作"];
+var XLSX_COLS = ["編號", "日期", "開始", "結束", "結束日期", "名稱", "學校／班級", "課次（僅供參考）", "備註", "連結", "節數", "背景色", "文字色", "狀態（僅供參考）", "動作"];
 function loadXlsxLib(){
   if(window.XLSX) return Promise.resolve(window.XLSX);
   return new Promise(function(ok, bad){ var sc = document.createElement("script"); sc.src = "slides/vendor/xlsx.full.min.js"; sc.onload = function(){ ok(window.XLSX); }; sc.onerror = function(){ bad(new Error("xlsx")); }; document.head.appendChild(sc); });
 }
+function slotWho(sl){ var ci = sl.s ? classInfo(sl) : null; return ci ? (ci.school + (ci.cls ? " " + ci.cls : "")) : ""; }
 async function exportScheduleXlsx(){
   var m = schedMap(), ids = Object.keys(m).filter(function(k){ return m[k].date; }).sort(function(a, b){ var x = m[a], y = m[b]; return (x.date + (x.start || "")).localeCompare(y.date + (y.start || "")); });
   if(!ids.length){ alert("課表還沒有課可以匯出。"); return; }
   var X; try{ X = await loadXlsxLib(); }catch(e){ alert("Excel 元件載入失敗，請檢查網路後再試。"); return; }
   var rows = [XLSX_COLS];
   ids.forEach(function(k){
-    var sl = m[k], ci = sl.s ? classInfo(sl) : null, les = sl.lesson && (S.plat.lessons || {})[sl.lesson] ? lessonTitle(sl.lesson) : "";
-    var who = ci ? (ci.school + (ci.cls ? " " + ci.cls : "")) : "";
-    rows.push([k, sl.date, sl.start || "", sl.end || "", sl.endDate || "", slotText(sl), who, les, sl.note || "", safeUrl(sl.url) || "", sl.resched ? "已調課（這列不會被匯入修改）" : sl.makeupOf ? "補課" : "", ""]);
+    var sl = m[k], les = sl.lesson && (S.plat.lessons || {})[sl.lesson] ? lessonTitle(sl.lesson) : "";
+    rows.push([k, sl.date, sl.start || "", sl.end || "", sl.endDate || "", slotText(sl), slotWho(sl), les, sl.note || "", safeUrl(sl.url) || "", sl.periods != null && sl.periods !== "" ? sl.periods : "", sl.bg || "", sl.fg || "", sl.resched ? "已調課（這列不會被匯入修改）" : sl.makeupOf ? "補課" : "", ""]);
   });
-  var help = [["曼米中文課表 Excel 使用說明"], [""], ["1. 直接改「課表」工作表：日期、開始、結束、結束日期、名稱、備註、連結都可以改。"], ["2. 日期寫 2026-11-02（年-月-日），時間寫 15:15（24 小時制）。"],
-    ["3. 「編號」不要改也不要刪：有編號的列＝更新那一堂課。"], ["4. 新增課：在最下面加一列，編號留空，至少填日期、開始、名稱。名稱和現有的學校／行程名稱一樣時，會自動沿用那間學校的班級與顏色。"],
-    ["5. 刪除課：在最右邊「動作」欄寫「刪除」。"], ["6. 灰字的欄位（學校／班級、課次、狀態）只是給你看的，改了不會生效；要換學校、班級或課次，請回平台的課表修改。"], ["7. 已調課的列不會被匯入修改。改好存檔後，回到平台按「匯入課表…」選這個檔案。"]];
+  var help = [["曼米中文課表 Excel 使用說明"], [""], ["1. 直接改「課表」工作表：日期、開始、結束、結束日期、名稱、備註、連結、節數都可以改。"], ["2. 日期寫 2026-11-02（年-月-日），時間寫 15:15（24 小時制）。整天的行程（放假、秋假）開始和結束都留空，跨好幾天就填「結束日期」。"],
+    ["3. 「編號」不要改也不要刪：有編號的列＝更新那一堂課。"], ["4. 新增課：在最下面加一列，編號留空，至少填日期、開始、名稱（整天的行程不用開始）。「學校／班級」寫成和平台上看到的一模一樣（例如 線上課程 蔦松藝術高中（香苗）），就會歸到那個班、沿用它的顏色；沒填的話，名稱和現有的學校一樣也會自動沿用。"],
+    ["5. 想把某一堂換到別的班：把「學校／班級」改成另一個現有班級的名稱。"], ["6. 刪除課：在最右邊「動作」欄寫「刪除」。"], ["7. 「節數」不填，平台會用開始～結束的時間長度自動算（約 55 分鐘 1 節）。「背景色」「文字色」可填色碼，例如 #B23B32。"],
+    ["8. 名稱以「放假」開頭的整天行程，匯入時如果有課排在那幾天，會先提醒你。備註寫「影響：五結國中、蔦松藝術高中」就只提醒這幾間的課。"], ["9. 已調課的列不會被匯入修改。改好存檔後，回到平台按「匯入課表…」選這個檔案。"]];
   var ws = X.utils.aoa_to_sheet(rows), ws2 = X.utils.aoa_to_sheet(help);
-  ws["!cols"] = [{ wch: 12 }, { wch: 12 }, { wch: 8 }, { wch: 8 }, { wch: 12 }, { wch: 22 }, { wch: 24 }, { wch: 18 }, { wch: 30 }, { wch: 30 }, { wch: 22 }, { wch: 8 }]; ws["!freeze"] = { xSplit: 0, ySplit: 1 }; ws2["!cols"] = [{ wch: 100 }];
+  ws["!cols"] = [{ wch: 12 }, { wch: 12 }, { wch: 8 }, { wch: 8 }, { wch: 12 }, { wch: 22 }, { wch: 28 }, { wch: 18 }, { wch: 30 }, { wch: 30 }, { wch: 6 }, { wch: 10 }, { wch: 10 }, { wch: 22 }, { wch: 8 }]; ws["!freeze"] = { xSplit: 0, ySplit: 1 }; ws2["!cols"] = [{ wch: 110 }];
   var wb = X.utils.book_new(); X.utils.book_append_sheet(wb, ws, "課表"); X.utils.book_append_sheet(wb, ws2, "說明");
   X.writeFile(wb, "曼米中文課表_" + ymd(new Date()) + ".xlsx");
   toast("已下載 " + ids.length + " 堂課的 Excel。改好後按「匯入課表…」選這個檔案就會更新。");
@@ -2550,35 +2551,47 @@ async function importScheduleXlsx(file){
   var X; try{ X = await loadXlsxLib(); }catch(e){ alert("Excel 元件載入失敗，請檢查網路後再試。"); return; }
   var wb; try{ wb = X.read(await file.arrayBuffer(), { type: "array" }); }catch(e){ alert("這個檔案讀不出來，請確認是從這裡匯出的 .xlsx。"); return; }
   var ws = wb.Sheets["課表"] || wb.Sheets[wb.SheetNames[0]], data = X.utils.sheet_to_json(ws, { header: 1, defval: "", raw: true });
-  var hdr = (data[0] || []).map(function(x){ return String(x).trim(); }), col = {}; XLSX_COLS.forEach(function(n){ col[n] = hdr.indexOf(n); });
+  var hdr = (data[0] || []).map(function(x){ return String(x).trim(); }), col = {}; XLSX_COLS.forEach(function(n){ col[n] = hdr.indexOf(n); }); if(col["學校／班級"] < 0) col["學校／班級"] = hdr.indexOf("學校／班級（僅供參考）");
   if(col["日期"] < 0 || col["開始"] < 0 || col["名稱"] < 0){ alert("找不到「日期、開始、名稱」欄位。請用「匯出 Excel」下載的檔案來改，不要改第一列的標題。"); return; }
   var m = schedMap(), base = "teacherPlatform/" + S.teacher.id + "/schedule", get = function(r, n){ return col[n] >= 0 ? r[col[n]] : ""; };
-  var byText = {}; Object.keys(m).forEach(function(k){ var x = m[k]; if(x.s && !x.resched){ var t = slotText(x); if(!byText[t] || (x.date || "") > (byText[t].date || "")) byText[t] = x; } });
-  var upd = [], add = [], del = [], skip = [], series = uid("ser_");
+  var byWho = {}, byText = {}; Object.keys(m).forEach(function(k){ var x = m[k]; if(x.s && !x.resched && !x.makeupOf){ var w = slotWho(x), t = slotSchoolName(x); if(w && (!byWho[w] || (x.date || "") > (byWho[w].date || ""))) byWho[w] = x; if(!byText[t] || (x.date || "") > (byText[t].date || "")) byText[t] = x; } });
+  var upd = [], add = [], del = [], skip = [], series = uid("ser_"), isDel = function(a){ return /^(刪除|delete|del|x)$/i.test(a); };
   for(var i = 1; i < data.length; i++){
     var r = data[i]; if(!r || r.every(function(c){ return c === "" || c == null; })) continue;
     var id = String(get(r, "編號") || "").trim(), act = String(get(r, "動作") || "").trim(), line = i + 1;
     var date = xDate(get(r, "日期")), start = xTime(get(r, "開始")), end = xTime(get(r, "結束")), endDate = xDate(get(r, "結束日期")), name = String(get(r, "名稱") || "").trim(), note = String(get(r, "備註") || "").trim(), url = String(get(r, "連結") || "").trim();
+    var who = String(get(r, "學校／班級") || "").trim(), per = get(r, "節數"), bg = String(get(r, "背景色") || "").trim(), fg = String(get(r, "文字色") || "").trim();
     if(id){
       var sl = m[id]; if(!sl){ skip.push("第 " + line + " 列：找不到這個編號（可能已被刪除）"); continue; }
-      if(/^(刪除|delete|del|x)$/i.test(act)){ del.push(id); continue; }
+      if(isDel(act)){ del.push(id); continue; }
       if(sl.resched){ skip.push("第 " + line + " 列：已調課的課不從 Excel 修改"); continue; }
       if(!date){ skip.push("第 " + line + " 列：日期看不懂（請寫 2026-11-02）"); continue; }
-      if(!start){ skip.push("第 " + line + " 列：開始時間看不懂（請寫 15:15）"); continue; }
+      if(!start && sl.start){ skip.push("第 " + line + " 列：開始時間看不懂（請寫 15:15）"); continue; }
       var patch = {}, same = function(a, b){ return (a || "") === (b || ""); };
       if(!same(date, sl.date)) patch.date = date; if(!same(start, sl.start)) patch.start = start; if(!same(end, sl.end)) patch.end = end;
       if(!same(endDate, sl.endDate)) patch.endDate = endDate || null; if(!same(note, sl.note)) patch.note = note; if(!same(url ? (safeUrl(url) || "") : "", safeUrl(sl.url) || "")) patch.url = url ? (safeUrl(url) || null) : null;
       if(name && name !== slotText(sl)) patch.title = name;
+      if(per !== "" && per != null && String(per) !== String(sl.periods != null ? sl.periods : "")){ var pn = Number(per); if(pn >= 0) patch.periods = pn; }
+      if(bg && bg !== (sl.bg || "")) patch.bg = bg; if(fg && fg !== (sl.fg || "")) patch.fg = fg;   // 顏色留空＝不改
+      if(who && sl.s && who !== slotWho(sl)){ var tgt = byWho[who]; if(tgt){ patch.s = tgt.s; patch.t = tgt.t; patch.c = tgt.c || null; } else skip.push("第 " + line + " 列：找不到班級「" + who + "」，班級沒有換（請寫成和平台上看到的一模一樣）"); }
       if(Object.keys(patch).length) upd.push({ id: id, patch: patch });
     } else {
-      if(/^(刪除|delete|del|x)$/i.test(act)) continue;
-      if(!date || !start || !name){ skip.push("第 " + line + " 列：新增的課需要日期、開始、名稱都填（日期 2026-11-02、時間 15:15）"); continue; }
-      var src = byText[name], rec = { s: src ? src.s : null, t: src ? src.t : null, c: src ? src.c || null : null, title: src ? null : name, url: safeUrl(url) || null, bg: src ? src.bg || null : null, fg: src ? src.fg || null : null, date: date, endDate: endDate || null, start: start, end: end || "", lesson: null, note: note, series: series };
+      if(isDel(act)) continue;
+      var allDay = !start && !end;
+      if(!date || !name || (!start && !allDay)){ skip.push("第 " + line + " 列：新增的課需要日期、開始、名稱都填（整天的行程只要日期和名稱）"); continue; }
+      var src = who ? byWho[who] : byText[name]; if(who && !src) skip.push("第 " + line + " 列：找不到班級「" + who + "」，這堂會當成一般行程新增");
+      var pn2 = per === "" || per == null ? null : Number(per);
+      var rec = { s: src ? src.s : null, t: src ? src.t : null, c: src ? src.c || null : null, title: src ? (name !== slotSchoolName(src) ? name : null) : name, url: safeUrl(url) || null, bg: bg || (src ? src.bg || null : null), fg: fg || (src ? src.fg || null : null), date: date, endDate: endDate || null, start: start || "", end: end || "", lesson: null, note: note, series: series };
+      if(pn2 != null && pn2 >= 0) rec.periods = pn2;
       add.push({ id: uid("sl_"), rec: rec, linked: !!src });
     }
   }
   if(!upd.length && !add.length && !del.length){ alert(skip.length ? "沒有可以匯入的變更。\n\n" + skip.slice(0, 8).join("\n") : "這份 Excel 和目前課表一樣，沒有需要更新的地方。"); return; }
-  var msg = "匯入這份 Excel：\n• 更新 " + upd.length + " 堂\n• 新增 " + add.length + " 堂" + (add.length ? "（其中 " + add.filter(function(a){ return a.linked; }).length + " 堂沿用現有學校的班級與顏色）" : "") + "\n• 刪除 " + del.length + " 堂" + (skip.length ? "\n• 略過 " + skip.length + " 列：\n   " + skip.slice(0, 6).join("\n   ") + (skip.length > 6 ? "\n   …" : "") : "") + "\n\n確定要套用嗎？" + (del.length ? "\n（刪除的課無法復原）" : "");
+  // 放假提醒：名稱以「放假」開頭的整天行程，如果匯入後還有課排在那幾天，先告訴老師
+  var finalSlots = {}; Object.keys(m).forEach(function(k){ if(del.indexOf(k) < 0) finalSlots[k] = Object.assign({}, m[k]); }); upd.forEach(function(u){ Object.assign(finalSlots[u.id], u.patch); }); add.forEach(function(a2){ finalSlots[a2.id] = a2.rec; });
+  var offs = Object.keys(finalSlots).map(function(k){ return finalSlots[k]; }).filter(function(x){ return !x.start && /^放假/.test(slotText(x)); }), warns = [];
+  Object.keys(finalSlots).forEach(function(k){ var x = finalSlots[k]; if(!x.start || x.resched) return; offs.forEach(function(o){ if(x.date < o.date || x.date > (o.endDate || o.date)) return; var af = /^影響[:：](.*)/.exec(String(o.note || "").split("\n")[0]); if(af){ var names = af[1].split(/[、,，\s]+/).filter(Boolean); if(names.indexOf(slotText(x)) < 0 && (!x.s || names.indexOf(slotSchoolName(x)) < 0)) return; } warns.push(x.date + " " + x.start + " " + slotText(x) + "（" + slotText(o) + "）"); }); });
+  var msg = "匯入這份 Excel：\n• 更新 " + upd.length + " 堂\n• 新增 " + add.length + " 堂" + (add.length ? "（其中 " + add.filter(function(a2){ return a2.linked; }).length + " 堂歸到現有的班級）" : "") + "\n• 刪除 " + del.length + " 堂" + (skip.length ? "\n• 略過／提醒 " + skip.length + " 列：\n   " + skip.slice(0, 6).join("\n   ") + (skip.length > 6 ? "\n   …" : "") : "") + (warns.length ? "\n\n⚠ 有 " + warns.length + " 堂課排在放假日：\n   " + warns.slice(0, 6).join("\n   ") + (warns.length > 6 ? "\n   …" : "") : "") + "\n\n確定要套用嗎？" + (del.length ? "\n（刪除的課無法復原）" : "");
   if(!confirm(msg)) return;
   for(var a = 0; a < upd.length; a++){ var u = upd[a]; Object.assign(m[u.id], u.patch); var wr = {}; Object.keys(u.patch).forEach(function(k){ wr[k] = u.patch[k] == null ? null : u.patch[k]; }); await fbUpdate(base + "/" + u.id, wr); }
   for(var b = 0; b < add.length; b++){ m[add[b].id] = add[b].rec; await fbSet(base + "/" + add[b].id, add[b].rec); }
