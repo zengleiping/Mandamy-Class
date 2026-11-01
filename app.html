@@ -2598,7 +2598,7 @@ async function importScheduleXlsx(file){
   for(var c = 0; c < del.length; c++){ delete m[del[c]]; await fbSet(base + "/" + del[c], null); }
   toast("已套用：更新 " + upd.length + "、新增 " + add.length + "、刪除 " + del.length); render();
 }
-// ---------- 課表 PDF：選月份、選要放進去的行程，產生乾淨的月曆（沒有連結、備註可選），用瀏覽器「列印→另存為 PDF」，可以分享給家人 ----------
+// ---------- 課表 PDF：選月份、選要放進去的行程，直接產生 PDF 檔（手機、電腦都能下載，手機還能直接分享給家人）----------
 function schedulePdfHtml(from, to, opt, names){
   var pages = [], months = monthsBetween(from, to), WD = ["日", "一", "二", "三", "四", "五", "六"];
   months.forEach(function(ym){
@@ -2615,32 +2615,70 @@ function schedulePdfHtml(from, to, opt, names){
     }
     pages.push('<section><h1>' + yy + ' 年 ' + (mm + 1) + ' 月　' + esc(opt.title || "課表") + '</h1><div class="g">' + WD.map(function(w){ return '<div class="w">' + w + '</div>'; }).join("") + cells + '</div></section>');
   });
-  return '<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><title>' + esc(opt.title || "課表") + '</title><style>@page{size:A4 landscape;margin:10mm}*{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}body{margin:0;font-family:"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;color:#3b2f27}section{page-break-after:always;break-after:page}section:last-child{page-break-after:auto;break-after:auto}h1{font-size:20pt;margin:0 0 6mm}.g{display:grid;grid-template-columns:repeat(7,1fr);gap:1.2mm}.w{text-align:center;font-weight:700;font-size:11pt;padding:1.5mm 0;background:#8B5E3C;color:#fff;border-radius:1.5mm}.d{min-height:27mm;border:.3mm solid #e2d6c6;border-radius:1.5mm;padding:1mm;background:#fff}.d.e{border:0;background:none}.d.we{background:#faf5ee}.n{font-size:10pt;font-weight:700;color:#8a7a6a;margin-bottom:.6mm}.c{font-size:8.2pt;line-height:1.25;border-radius:1mm;padding:.5mm 1.2mm;margin-bottom:.6mm;word-break:break-all}.c b{font-weight:700}.nt{opacity:.85}</style></head><body>' + pages.join("") + '</body></html>';
+  return '<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><title>' + esc(opt.title || "課表") + '</title><style>*{box-sizing:border-box}html,body{margin:0;background:#fff}body{width:1123px;min-height:794px;padding:30px 34px;font-family:"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;color:#3b2f27}h1{font-size:28px;margin:0 0 14px}.g{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}.w{text-align:center;font-weight:700;font-size:15px;padding:5px 0;background:#8B5E3C;color:#fff;border-radius:5px}.d{min-height:104px;border:1px solid #e2d6c6;border-radius:5px;padding:4px;background:#fff}.d.e{border:0;background:none}.d.we{background:#faf5ee}.n{font-size:14px;font-weight:700;color:#8a7a6a;margin-bottom:2px}.c{font-size:11.5px;line-height:1.3;border-radius:4px;padding:2px 5px;margin-bottom:2px;word-break:break-all}.c b{font-weight:700}.nt{opacity:.85}</style></head><body>' + pages.join("") + '</body></html>';
+}
+function loadScriptOnce(src, test){
+  if(test()) return Promise.resolve();
+  return new Promise(function(ok, bad){ var sc = document.createElement("script"); sc.src = src; sc.onload = function(){ ok(); }; sc.onerror = function(){ bad(new Error(src)); }; document.head.appendChild(sc); });
+}
+// 把每個月的畫面轉成圖片，一頁一張，包成 PDF（A4 橫向）
+async function buildSchedulePdf(from, to, opt, names){
+  await loadScriptOnce("slides/vendor/html2canvas.min.js", function(){ return !!window.html2canvas; });
+  var months = monthsBetween(from, to), jpgs = [];
+  for(var i = 0; i < months.length; i++){
+    var html = schedulePdfHtml(months[i], months[i], opt, names);
+    var fr = document.createElement("iframe"); fr.style.cssText = "position:fixed;left:-12000px;top:0;width:1123px;height:900px;border:0;"; document.body.appendChild(fr);
+    await new Promise(function(ok){ fr.onload = ok; fr.srcdoc = html; });
+    await new Promise(function(r){ setTimeout(r, 150); });
+    var body = fr.contentDocument.body, cv = await window.html2canvas(body, { scale: 2, backgroundColor: "#ffffff", width: 1123, height: Math.max(794, body.scrollHeight), windowWidth: 1123 });
+    fr.remove();
+    var url = cv.toDataURL("image/jpeg", 0.92), bin = atob(url.slice(url.indexOf(",") + 1)), arr = new Uint8Array(bin.length); for(var k = 0; k < bin.length; k++) arr[k] = bin.charCodeAt(k);
+    jpgs.push({ w: cv.width, h: cv.height, data: arr });
+  }
+  var parts = [], offs = [], pos = 0, enc = new TextEncoder();
+  function put(x){ var u = typeof x === "string" ? enc.encode(x) : x; parts.push(u); pos += u.length; }
+  function obj(n, body){ offs[n] = pos; put(n + " 0 obj\n" + body + "\nendobj\n"); }
+  var n = jpgs.length, kids = []; for(var j = 0; j < n; j++) kids.push((3 + j * 3) + " 0 R");
+  put("%PDF-1.4\n"); obj(1, "<< /Type /Catalog /Pages 2 0 R >>"); obj(2, "<< /Type /Pages /Kids [" + kids.join(" ") + "] /Count " + n + " >>");
+  for(var q = 0; q < n; q++){
+    var pg = 3 + q * 3, ct = pg + 1, im = pg + 2, J = jpgs[q], PW = 842, PH = Math.round(842 * J.h / J.w), stream = "q " + PW + " 0 0 " + PH + " 0 0 cm /Im0 Do Q";
+    obj(pg, "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 " + PW + " " + PH + "] /Resources << /XObject << /Im0 " + im + " 0 R >> >> /Contents " + ct + " 0 R >>");
+    obj(ct, "<< /Length " + stream.length + " >>\nstream\n" + stream + "\nendstream");
+    offs[im] = pos; put(im + " 0 obj\n<< /Type /XObject /Subtype /Image /Width " + J.w + " /Height " + J.h + " /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length " + J.data.length + " >>\nstream\n"); put(J.data); put("\nendstream\nendobj\n");
+  }
+  var xr = pos, total = 3 + n * 3; put("xref\n0 " + total + "\n0000000000 65535 f \n"); for(var z = 1; z < total; z++) put(("0000000000" + offs[z]).slice(-10) + " 00000 n \n");
+  put("trailer\n<< /Size " + total + " /Root 1 0 R >>\nstartxref\n" + xr + "\n%%EOF");
+  return new Blob(parts, { type: "application/pdf" });
 }
 function exportSchedulePdf(){
   var m = schedMap(), shown = Object.keys(m).map(function(k){ return m[k]; }).filter(function(x){ return x.date && !x.resched; });
   if(!shown.length){ alert("課表還沒有課可以匯出。"); return; }
   var cur = S.month || ymd(new Date()).slice(0, 7), names = []; shown.forEach(function(x){ var t = slotText(x); if(names.indexOf(t) < 0) names.push(t); });
+  var canShare = false; try{ canShare = !!(navigator.canShare && navigator.canShare({ files: [new File([""], "a.pdf", { type: "application/pdf" })] })); }catch(e){}
   var d = document.getElementById("pdfdlg"); if(d) d.remove();
   d = document.createElement("dialog"); d.id = "pdfdlg"; d.style.width = "min(480px,94vw)";
-  d.innerHTML = '<form method="dialog"><h3 style="margin-bottom:6px;">匯出課表 PDF</h3><p class="note" style="margin:0 0 10px;">產生乾淨的月曆（不含連結），用瀏覽器的「列印 → 另存為 PDF」存成檔案，就能傳給家人。</p>' +
+  d.innerHTML = '<form method="dialog"><h3 style="margin-bottom:6px;">匯出課表 PDF</h3><p class="note" style="margin:0 0 10px;">產生乾淨的月曆（不含連結），手機和電腦都能直接下載，傳給家人。</p>' +
     '<label>標題</label><input type="text" id="pdf-t" value="課表">' +
     '<label>從</label><input type="month" id="pdf-f" value="' + cur + '"><label>到</label><input type="month" id="pdf-to" value="' + cur + '">' +
     '<label style="margin-top:8px;">要放進 PDF 的行程（取消勾選就不會出現）</label><div id="pdf-n" style="max-height:170px;overflow:auto;border:1.5px solid var(--line);border-radius:10px;padding:6px 10px;">' + names.map(function(n, i){ return '<label style="display:flex;align-items:center;gap:6px;margin:2px 0;font-weight:400;"><input type="checkbox" data-n="' + i + '" checked>' + esc(n) + '</label>'; }).join("") + '</div>' +
     '<label style="display:flex;align-items:center;gap:6px;margin-top:8px;font-weight:400;"><input type="checkbox" id="pdf-end" checked>顯示下課時間</label><label style="display:flex;align-items:center;gap:6px;font-weight:400;"><input type="checkbox" id="pdf-note">顯示備註（例如節次）</label>' +
-    '<div class="tools" style="margin-top:12px;justify-content:flex-end;"><button type="button" class="btn" id="pdf-x">取消</button><button type="button" class="btn primary" id="pdf-go">產生 PDF</button></div></form>';
+    '<div class="note" id="pdf-msg" style="min-height:1.4em;margin-top:8px;"></div><div class="tools" style="margin-top:6px;justify-content:flex-end;"><button type="button" class="btn" id="pdf-x">關閉</button>' + (canShare ? '<button type="button" class="btn" id="pdf-share">分享…</button>' : '') + '<button type="button" class="btn primary" id="pdf-go">下載 PDF</button></div></form>';
   document.body.appendChild(d); d.showModal();
   document.getElementById("pdf-x").onclick = function(){ d.close(); d.remove(); };
-  document.getElementById("pdf-go").onclick = function(){
+  async function make(share){
     var f = document.getElementById("pdf-f").value, t = document.getElementById("pdf-to").value; if(!f || !t || t < f){ alert("請選好月份範圍（到的月份不能比從的月份早）。"); return; }
     var chosen = names.filter(function(n, i){ return d.querySelector('[data-n="' + i + '"]').checked; }); if(!chosen.length){ alert("至少要選一個行程。"); return; }
     if(monthsBetween(f, t).length > 12){ alert("一次最多 12 個月。"); return; }
-    var html = schedulePdfHtml(f, t, { title: document.getElementById("pdf-t").value.trim() || "課表", end: document.getElementById("pdf-end").checked, note: document.getElementById("pdf-note").checked }, chosen);
-    d.close(); d.remove();
-    var fr = document.createElement("iframe"); fr.style.cssText = "position:fixed;right:0;bottom:0;width:0;height:0;border:0;"; document.body.appendChild(fr);
-    fr.onload = function(){ setTimeout(function(){ try{ fr.contentWindow.focus(); fr.contentWindow.print(); }catch(e){ alert("無法開啟列印視窗，請改用電腦的瀏覽器。"); } setTimeout(function(){ fr.remove(); }, 60000); }, 300); };
-    fr.srcdoc = html; toast("在列印視窗選「另存為 PDF」就會存成檔案");
-  };
+    var msg = document.getElementById("pdf-msg"), btns = d.querySelectorAll("button"); msg.textContent = "產生中，請稍候…"; btns.forEach(function(b){ b.disabled = true; });
+    try{
+      var title = document.getElementById("pdf-t").value.trim() || "課表", blob = await buildSchedulePdf(f, t, { title: title, end: document.getElementById("pdf-end").checked, note: document.getElementById("pdf-note").checked }, chosen), fname = title + "_" + f + (t !== f ? "_" + t : "") + ".pdf";
+      if(share){ try{ await navigator.share({ files: [new File([blob], fname, { type: "application/pdf" })], title: title }); msg.textContent = "已開啟分享。"; }catch(e){ msg.textContent = e && e.name === "AbortError" ? "已取消分享。" : "分享沒有成功，請改用「下載 PDF」。"; } }
+      else { var el = document.createElement("a"); el.href = URL.createObjectURL(blob); el.download = fname; document.body.appendChild(el); el.click(); setTimeout(function(){ URL.revokeObjectURL(el.href); el.remove(); }, 4000); msg.textContent = "已產生 " + fname + "，請到下載資料夾（手機可在瀏覽器的下載清單）找。"; }
+    }catch(e){ console.warn(e); msg.textContent = "產生失敗：" + (e && e.message ? e.message : "請檢查網路後再試"); }
+    btns.forEach(function(b){ b.disabled = false; });
+  }
+  document.getElementById("pdf-go").onclick = function(){ make(false); };
+  var sh = document.getElementById("pdf-share"); if(sh) sh.onclick = function(){ make(true); };
 }
 // 匯入課表檔：{ slots: [{ date, start, end, title, note, bg, fg, url }] }；日期＋開始時間＋文字都相同的會略過，重複匯入不會變兩份
 async function importSchedule(file){
