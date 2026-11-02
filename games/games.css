@@ -291,3 +291,90 @@ h2 .en, h3 .en{ display:block; margin:2px 0 0; font-size:.6em; }
 
 .mg-game{ display:grid; grid-template-columns:auto 1fr; column-gap:14px; align-items:center; }
 .mg-game-img{ width:58px; height:58px; object-fit:contain; grid-row:span 2; }
+
+/* ===== 快問快答 Quiz ===== */
+.qz-bar{ height:8px; background:var(--surface-2); }
+.qz-bar i{ display:block; height:100%; width:100%; background:var(--bamboo); transition:width .12s linear; }
+.qz-bar.warn i{ background:#D9534F; }
+.qz-stage{ flex:1; display:flex; flex-direction:column; gap:14px; padding:14px; max-width:960px; width:100%; margin:0 auto; }
+.qz-q{ background:var(--surface); border:1.5px solid var(--line); border-radius:20px; padding:16px 18px 20px; text-align:center; min-height:150px; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:8px; }
+.qz-q small{ color:var(--ink-soft); font-weight:700; font-size:15px; }
+.qz-prompt{ width:100%; display:flex; justify-content:center; align-items:center; min-height:64px; }
+.qz-prompt .fit{ display:block; max-width:100%; overflow:hidden; white-space:nowrap; font-weight:800; line-height:1.15; }
+.qz-prompt .fit.zh{ font-family:var(--zh); }
+.qz-prompt .pic.emo{ font-size:72px; line-height:1; }
+.qz-prompt img.pic{ max-height:130px; max-width:100%; }
+.qz-opts{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.qz-opt{ position:relative; display:flex; align-items:center; gap:12px; min-height:92px; padding:12px 16px; border:0; border-radius:18px; background:var(--c); color:#fff; text-align:left; font-weight:800; box-shadow:0 4px 0 rgba(0,0,0,.22); transition:transform .08s, opacity .2s, filter .2s; touch-action:manipulation; }
+.qz-opt b{ flex:none; width:36px; height:36px; border-radius:50%; background:rgba(255,255,255,.28); display:flex; align-items:center; justify-content:center; font-size:19px; }
+.qz-opt .fit{ flex:1; min-width:0; display:block; overflow:hidden; white-space:nowrap; line-height:1.2; }
+.qz-opt .fit.zh{ font-family:var(--zh); }
+.qz-opt .pic.emo{ font-size:48px; } .qz-opt img.pic{ height:64px; border-radius:8px; background:#fff; }
+.qz-opt:active:not(:disabled){ transform:translateY(3px); box-shadow:0 1px 0 rgba(0,0,0,.22); }
+.qz-opt:disabled{ cursor:default; }
+.qz-opt.pick{ outline:4px solid var(--ink); outline-offset:2px; }
+.qz-opt.dim{ opacity:.35; filter:grayscale(.5); }
+.qz-opt.right{ outline:5px solid #2E7D32; outline-offset:2px; animation:qzpop .4s; }
+.qz-opt.wrong{ outline:5px solid #B23B32; outline-offset:2px; }
+@keyframes qzpop{ 0%{transform:scale(1)} 40%{transform:scale(1.04)} 100%{transform:scale(1)} }
+.qz-msg{ min-height:56px; text-align:center; font-size:19px; font-weight:800; border-radius:16px; padding:10px 14px; }
+.qz-msg small{ display:block; font-weight:600; color:var(--ink-soft); font-size:15px; margin-top:3px; }
+.qz-msg .zh{ font-family:var(--zh); }
+.qz-msg.wait{ color:var(--ink-soft); background:var(--surface-2); }
+.qz-msg.good{ color:#256A2A; background:#E3F4E4; }
+.qz-msg.bad{ color:#9C3028; background:#FBE5E2; }
+.qz-msg.show{ background:var(--surface-2); }
+@media (max-width:560px){ .qz-opts{ grid-template-columns:1fr; } .qz-opt{ min-height:70px; } .qz-q{ min-height:120px; } }
+
+/* ===== 聽音排序 Listen & Order ===== */
+.od-stage{ flex:1; display:flex; flex-direction:column; gap:14px; padding:14px; max-width:960px; width:100%; margin:0 auto; }
+.od-banner{ text-align:center; font-size:16px; border-radius:14px; background:#FFF3D6; color:#7A5A12; padding:0; transition:padding .2s; }
+.od-banner:not(:empty){ padding:10px 14px; }
+.od.ghost .od-stage{ background:repeating-linear-gradient(135deg, transparent 0 14px, rgba(0,0,0,.025) 14px 28px); }
+.od-top{ display:flex; align-items:center; justify-content:center; gap:14px; flex-wrap:wrap; }
+.od-wave{ display:inline-flex; align-items:flex-end; gap:4px; height:30px; opacity:.25; }
+.od-wave i{ width:6px; height:10px; border-radius:3px; background:var(--seal); }
+.od.speaking .od-wave{ opacity:1; }
+.od.speaking .od-wave i{ animation:odwave .7s ease-in-out infinite; }
+.od-wave i:nth-child(2){ animation-delay:.1s !important; } .od-wave i:nth-child(3){ animation-delay:.2s !important; } .od-wave i:nth-child(4){ animation-delay:.3s !important; } .od-wave i:nth-child(5){ animation-delay:.4s !important; }
+@keyframes odwave{ 0%,100%{ height:8px } 50%{ height:30px } }
+.od-slots{ display:flex; flex-wrap:wrap; gap:10px; justify-content:center; padding:12px; background:var(--surface); border:1.5px solid var(--line); border-radius:18px; min-height:104px; }
+.od-slot{ position:relative; width:104px; height:84px; border:2.5px dashed rgba(43,35,32,.25); border-radius:14px; background:var(--surface-2); display:flex; align-items:center; justify-content:center; transition:background .15s, border-color .15s; }
+.od-slot em{ position:absolute; top:-10px; left:-6px; width:24px; height:24px; border-radius:50%; background:var(--ink); color:#fff; font-style:normal; font-size:14px; font-weight:800; display:flex; align-items:center; justify-content:center; z-index:2; }
+.od-slot.hot{ background:var(--seal-soft); border-color:var(--seal); }
+.od-slot.on{ border-style:solid; border-color:rgba(43,35,32,.18); background:#fff; }
+.od-slot.ok{ border-color:#2E7D32; background:#E3F4E4; }
+.od-slot.bad{ border-color:#B23B32; background:#FBE5E2; }
+.od-bank{ display:flex; flex-wrap:wrap; gap:10px; justify-content:center; min-height:90px; padding:6px; }
+.od-hole{ width:104px; height:84px; border-radius:14px; background:rgba(43,35,32,.05); }
+.od-tile{ width:104px; height:84px; border:1.5px solid var(--line); border-radius:14px; background:#fff; box-shadow:0 3px 0 rgba(0,0,0,.14); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; padding:2px 4px; touch-action:none; cursor:grab; }
+.od-tile.in{ box-shadow:none; border-color:transparent; width:96px; height:76px; }
+.od-tile .zh{ font-family:var(--zh); font-size:25px; font-weight:700; line-height:1.1; max-width:100%; overflow:hidden; white-space:nowrap; }
+.od-tile i{ font-style:normal; font-size:13px; color:var(--ink-soft); line-height:1.1; max-width:100%; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+.od-tile i.zh{ font-family:var(--zh); font-size:13px; font-weight:400; }
+.od-tile.lift{ opacity:.35; }
+.od-ghost{ position:fixed; z-index:99; pointer-events:none; transform:translate(-50%,-50%) scale(1.08); box-shadow:0 10px 24px rgba(0,0,0,.28); }
+.od-ctl{ display:flex; gap:10px; justify-content:center; }
+.od-msg{ min-height:48px; text-align:center; font-size:19px; font-weight:800; border-radius:16px; padding:10px 14px; }
+.od-msg:empty{ padding:0; min-height:0; }
+.od-msg.lead{ color:var(--seal); background:var(--seal-soft); }
+.od-msg.wait{ color:var(--ink-soft); background:var(--surface-2); }
+.od-msg.good{ color:#256A2A; background:#E3F4E4; }
+.od-msg.bad{ color:#9C3028; background:#FBE5E2; }
+.od-ans{ display:none; text-align:center; }
+.od-ans.show{ display:block; }
+.od-ans small{ display:block; color:var(--ink-soft); font-weight:700; margin-bottom:6px; }
+.od-ans > div{ display:flex; flex-wrap:wrap; gap:8px; justify-content:center; }
+.od-chip{ display:inline-flex; flex-direction:column; align-items:center; padding:6px 12px; border-radius:12px; background:var(--bamboo-soft); position:relative; }
+.od-chip em{ position:absolute; top:-8px; left:-6px; width:20px; height:20px; border-radius:50%; background:var(--bamboo); color:#fff; font-style:normal; font-size:12px; font-weight:800; display:flex; align-items:center; justify-content:center; }
+.od-chip .zh{ font-family:var(--zh); font-size:22px; font-weight:700; }
+.od-chip i{ font-style:normal; font-size:12.5px; color:var(--ink-soft); }
+.od-chip i.zh{ font-family:var(--zh); font-weight:400; font-size:12.5px; }
+@media (max-width:560px){ .od-slot, .od-hole, .od-tile{ width:84px; height:72px; } .od-tile.in{ width:78px; height:66px; } .od-tile .zh{ font-size:21px; } }
+
+/* 老師端即時畫面：快問快答、聽音排序的投影畫面（跟學生同一個時鐘） */
+.lv-stage{ margin-bottom:14px; border:1.5px solid var(--line); border-radius:18px; overflow:hidden; background:var(--paper); }
+.lv-stage:empty{ display:none; }
+.lv-stage .gm{ min-height:0; }
+.lv-stage .qz-opt:disabled, .lv-stage .od-slot{ cursor:default; }
+.mg-game-emo{ display:flex; align-items:center; justify-content:center; font-size:40px; }

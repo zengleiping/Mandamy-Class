@@ -6445,6 +6445,8 @@ async function deleteUnit(key){
 var ACTS = [
   { id: "match", e: "", img: "icons/act-match.png", t: "配對 Match", d: "詞語和拼音／翻譯配對，比速度或限時；可以全班即時比賽、分組、出作業連結", et: "Match", en: "Match words with pinyin, meanings or pictures", need: "lesson", game: true },
   { id: "blast", e: "", img: "icons/act-blast.png", t: "Blast", d: "答案從畫面掉下來，點對的那個；四種主題，可以全班即時比賽", et: "Blast", en: "Tap the right answer as it falls", need: "lesson", game: true },
+  { id: "quiz", e: "🎯", t: "快問快答 Quiz", d: "像 Kahoot：一題一題出，四選一，越快分數越高；全班同一秒進到同一題，可以分組、出作業連結", et: "Quiz", en: "Answer fast to score more, one question at a time", need: "lesson", game: true },
+  { id: "order", e: "👂", t: "聽音排序 Listen & Order", d: "聽一串詞語，拖成聽到的順序；每輪多一個詞，越來越難；被淘汰還能旁觀練習、復活", et: "Listen & Order", en: "Listen, then drag the words into the order you heard", need: "lesson", game: true },
   { id: "flashcard", e: "", t: "字卡練習", d: "生詞字卡，翻面看注音和意思", et: "Flashcards", en: "Flip a card to see zhuyin and meaning", need: "lesson" },
   { id: "flip", e: "", img: "icons/act-flip.png", t: "翻卡遊戲", d: "翻牌配對，記憶生詞", et: "Memory Game", en: "Flip two cards and find a pair", need: "lesson" },
   { id: "bingo", e: "", img: "icons/act-bingo.png", t: "賓果卡", d: "產生賓果卡、老師念詞", et: "Bingo Cards", en: "Print bingo cards; the teacher calls words", need: "lesson" },
@@ -6676,7 +6678,7 @@ function renderLessonCommon(no, open, teacher, liveStudent){
     else if(actOk && actById(subId).game){
       if(teacher){
         S.gameCtx = { game: subId, sel: S.sel, ls: subLs || [String(no)] };
-        sub = '<div class="subbar"><button class="tab" data-actback="1" style="padding:5px 14px;font-size:15px;">‹ 其他活動</button><span class="note">生詞遊戲（配對 Match／Blast）　｜　出題範圍在下面設定，可以選好幾課</span></div>';
+        sub = '<div class="subbar"><button class="tab" data-actback="1" style="padding:5px 14px;font-size:15px;">‹ 其他活動</button><span class="note">生詞遊戲（配對／Blast／快問快答／聽音排序）　｜　出題範圍在下面設定，可以選好幾課</span></div>';
         frame = gameFrameHtml(subId);
       } else {
         frame = (S.live && S.live.game) ? lessonHtmlFrame("games/index.html?v=" + MM_V + "&embed=1&code=" + encodeURIComponent(S.live.game) + "&auto=1&name=" + encodeURIComponent(S.student ? S.student.name : "")) : '<div class="empty"><h3 style="margin-bottom:8px;">' + esc(actById(subId).t) + '</h3><p class="note">老師正在設定遊戲，開好房間後這裡會自動加入，請稍候…</p></div>';
