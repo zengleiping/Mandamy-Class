@@ -17489,7 +17489,9 @@ window.mmTA = (function(){
   }
   function renderBingoBoard(q, container){
     var words = (Array.isArray(q.words) ? q.words : []).map(String).filter(Boolean), allowDup = words.length < 25;
-    var wrap = document.createElement("div"); wrap.className = "bg5-wrap"; container.appendChild(wrap);
+    // 賓果卡每次有人填格子、點格子，整張卡片都會重畫。學生的瀏覽器如果開了「自動翻譯」（Chrome 把中文頁翻成英文），
+    // 翻好的英文會被重畫蓋回中文、再翻一次，卡片就在中英文之間跳來跳去。卡片上的詞要保持中文才玩得下去，所以整個賓果區塊禁止翻譯。
+    var wrap = document.createElement("div"); wrap.className = "bg5-wrap notranslate"; wrap.setAttribute("translate", "no"); container.appendChild(wrap);
     var demoOpen = false; if(isStudent){ try{ if(!localStorage.getItem('mm_bg5_demo_seen')){ demoOpen = true; localStorage.setItem('mm_bg5_demo_seen', '1'); } }catch(er){} }
     var sel = -1, localRec = { cells: bgCells(null), marks: {}, ready: false }, whoSel = "", whoTxt = "", msg = "";
     function pg(){ return getProgress(q.id) || {}; }
