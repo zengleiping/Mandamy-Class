@@ -129,7 +129,7 @@
     if(T.buf[k]) return Promise.resolve(T.buf[k]);
     if(T.pend[k]) return T.pend[k];
     var srv = T.srv(), ctx = MG.audioCtx && MG.audioCtx();
-    if(!srv || !ctx || !text || Date.now() < T.down) return Promise.resolve(null);
+    if(!srv || !ctx || !text) return Promise.resolve(null);
     var p = (async function(){
       var ctl = new AbortController(), to = setTimeout(function(){ ctl.abort(); }, o.timeout || 15000);
       try{
@@ -138,14 +138,15 @@
         var ab = await r.arrayBuffer();
         return await new Promise(function(res, rej){ var q = ctx.decodeAudioData(ab, res, rej); if(q && q.then) q.then(res, rej); });
       } finally { clearTimeout(to); }
-    })().then(function(b){ delete T.pend[k]; if(b) T.buf[k] = b; return b; }, function(){ delete T.pend[k]; T.down = Date.now() + 20000; T.wake(); return null; });
+    })().then(function(b){ delete T.pend[k]; if(b) T.buf[k] = b; return b; }, function(){ delete T.pend[k]; return null; });
     T.pend[k] = p; return p;
   };
   // 一批詞先下載好（同時 3 個）；回傳成功幾個
   T.preload = async function(texts, o){
     var list = [], seen = {}; (texts || []).forEach(function(t){ if(t && !seen[t]){ seen[t] = 1; list.push(t); } });
     var i = 0, ok = 0; T.wake();
-    async function worker(){ while(i < list.length){ var b = await T.load(list[i++], Object.assign({ timeout: 30000 }, o || {})); if(b) ok++; } }
+    // 每個詞最多試 3 次（免費主機剛醒來或偶爾失敗時，不要因為一次失敗就缺詞）
+    async function worker(){ while(i < list.length){ var t = list[i++], b = null; for(var n = 0; n < 3 && !b; n++){ if(n) await new Promise(function(r){ setTimeout(r, 800 * n); }); b = await T.load(t, Object.assign({ timeout: 30000 }, o || {})); } if(b) ok++; } }
     await Promise.all([worker(), worker(), worker()]); return ok;
   };
 
@@ -179,12 +180,12 @@
   MG.speak = function(text, o){
     o = o || {}; var fin = false, timer = 0, src = null;
     var done = function(){ if(fin) return; fin = true; clearTimeout(timer); if(o.done) o.done(); };
-    var b = T.ready(text, o);
+    var b = o.device ? null : T.ready(text, o);
     if(b){
       src = playBuf(b, done);
       if(src){ timer = setTimeout(done, b.duration * 1000 + 600); return function(){ fin = true; clearTimeout(timer); try{ src.stop(); }catch(e){} }; }
     } else {
-      T.load(text, o);   // 這次先用裝置語音；順便下載，下次就用自然語音
+      if(!o.device) T.load(text, o);   // 這次先用裝置語音；順便下載，下次就用自然語音
       if(T.srv() && !o.quiet && Date.now() - (MG.speak.lastNote || 0) > 60000){ MG.speak.lastNote = Date.now(); MG.toast("語音伺服器還沒準備好，先用裝置內建的語音（聲音可能不一樣） Server voice not ready — using the device voice", 4500); }
     }
     if(!window.speechSynthesis || !text){ setTimeout(done, 0); return function(){}; }
@@ -209,7 +210,7 @@
       tms.push(setTimeout(function(){
         if(stopped) return; if(o.each) o.each(i);
         if(all){ var s = playBuf(bufs[i]); if(s) cancels.push(function(){ try{ s.stop(); }catch(e){} }); }
-        else cancels.push(MG.speak(t, { rate: o.rate, voice: o.voice }));
+        else cancels.push(MG.speak(t, { rate: o.rate, voice: o.voice, device: true, quiet: i > 0 }));   // 整串都用同一個聲音：沒全部載好就整串用裝置語音，不混著播
       }, starts[i]));
     });
     tms.push(setTimeout(function(){ if(!stopped && o.done) o.done(); }, ends + 150));
