@@ -12,8 +12,8 @@
       game: game || "match", lessons: {}, custom: [], sample: "fixed", cap: 30, lang: "en", phon: "zy",
       match: { mode: "speed", seconds: 60, pair: "p", batch: 6, theme: "plain", themeFree: true, music: "happy" },
       blast: { q: "w2p", input: "tap", lives: 3, speed: 3, seconds: 0, theme: "space", themeFree: true, music: "space", liveOut: "revive" },
-      quiz: { q: "mix", count: 10, sec: 15, music: "happy" },
-      order: { mode: "survive", lives: 2, comeback: true, start: 2, maxLen: 6, plays: 2, perWord: 3.5, show: "both", music: "relax" },
+      quiz: { q: "mix", count: 10, sec: 15, voice: "zh-TW-HsiaoChenNeural", music: "happy" },
+      order: { mode: "survive", flow: "free", pace: "fast", voice: "zh-TW-HsiaoChenNeural", lives: 2, comeback: true, start: 2, maxLen: 6, plays: 2, perWord: 3.5, show: "both", music: "relax" },
       live: { scoring: "avg", seconds: 90, stuMusic: true }
     };
   }
@@ -118,16 +118,20 @@
     var quizOpts = '<div class="mg-opt"><label>題型</label>' + seg("quiz.q", qz.q, [["mix", "綜合（每題不一樣）"], ["w2p", "看詞語選拼音"], ["w2t", "看詞語選翻譯"], ["p2w", "看拼音選詞語"], ["t2w", "看翻譯選詞語"], ["a2w", "聽聲音選詞語"], ["a2t", "聽聲音選翻譯"], ["w2i", "看詞語選圖片"], ["i2w", "看圖片選詞語"]]) +
       '<label>題數</label>' + seg("quiz.count", qz.count, [[5, "5 題"], [10, "10 題"], [15, "15 題"], [20, "20 題"]]) +
       '<label>每題幾秒</label>' + seg("quiz.sec", qz.sec, [[10, "10 秒"], [15, "15 秒"], [20, "20 秒"], [30, "30 秒"]]) +
-      '<div class="note" style="margin-top:6px;">即時多人：全班同一秒進到同一題，時間到公布答案再出下一題，老師不用一題一題按。答對 100 分＋速度加分（最多 50 分），答錯扣 20 分，沒作答不扣分。「聽聲音」題用裝置內建的中文語音念詞語。作業連結／自己練習：答完就公布答案，再進下一題。</div></div>';
+      (qz.q === "mix" || qz.q === "a2w" || qz.q === "a2t" ? '<label>發音</label>' + seg("quiz.voice", qz.voice || MG.TTS_VOICES[0][0], MG.TTS_VOICES) : '') +
+      '<div class="note" style="margin-top:6px;">即時多人：全班同一秒進到同一題，時間到公布答案再出下一題，老師不用一題一題按。答對 100 分＋速度加分（最多 50 分），答錯扣 20 分，沒作答不扣分。「聽聲音」題用曼米語音伺服器的自然語音念詞語（連不上時改用裝置內建語音）。作業連結／自己練習：答完就公布答案，再進下一題。</div></div>';
     var orderOpts = '<div class="mg-opt"><label>玩法</label><div>' + seg("order.mode", od.mode, [["survive", "生存：答錯扣命，最後比誰撐得久"], ["score", "累積：沒有淘汰，比總分"]]) + '<div class="note" style="margin-top:4px;">' + (od.mode === "score" ? '每個人打滿所有輪，答得越快、排得越長分數越高。' : '答錯扣一條命；命用完就被淘汰，但還是可以「旁觀練習」——照樣聽、照樣排、照樣批改，只是不計分，所以不會沒事做。') + '</div></div>' +
       (od.mode === "score" ? '' : '<label>生命</label>' + seg("order.lives", od.lives, [[1, "1 條"], [2, "2 條"], [3, "3 條"]]) +
         '<label>復活</label><label style="display:flex;gap:6px;align-items:center;font-weight:400;"><input type="checkbox" data-chk="order.comeback"' + (od.comeback !== false ? " checked" : "") + '> 被淘汰的學生連續答對 2 輪就復活（回到遊戲，有 1 條命）</label>') +
       '<label>第一輪幾個詞</label>' + seg("order.start", od.start, [[2, "2 個"], [3, "3 個"]]) +
       '<label>最多幾個詞</label>' + seg("order.maxLen", od.maxLen, [[4, "4 個"], [5, "5 個"], [6, "6 個"], [8, "8 個"]]) +
-      '<label>每輪可以聽幾次</label>' + seg("order.plays", od.plays, [[1, "1 次"], [2, "2 次"], [3, "3 次"]]) +
+      '<label>怎麼聽</label><div>' + seg("order.flow", od.flow || "free", [["free", "自由：邊聽邊排，可以重聽"], ["memory", "考記憶：全班先聽完才能作答"]]) + '<div class="note" style="margin-top:4px;">' + (od.flow === "memory" ? '每一輪全班一起聽一次音檔（不能重聽），整段念完才開始作答，考驗記憶力。聽的時候卡片會先出現但不能動。' : '每一輪一開始就會念，邊聽邊把卡片排進格子，也可以按「聽」重聽。') + '</div></div>' +
+      (od.flow === "memory" ? '' : '<label>每輪可以聽幾次</label>' + seg("order.plays", od.plays, [[1, "1 次"], [2, "2 次"], [3, "3 次"]])) +
+      '<label>語速</label>' + seg("order.pace", od.pace || "fast", [["slow", "慢"], ["normal", "一般"], ["fast", "快（預設）"]]) +
+      '<label>發音</label>' + seg("order.voice", od.voice || MG.TTS_VOICES[0][0], MG.TTS_VOICES) +
       '<label>作答時間</label>' + seg("order.perWord", od.perWord, [["2.5", "緊湊"], ["3.5", "一般"], ["5", "寬鬆"]]) +
       '<label>卡片上顯示</label>' + seg("order.show", od.show || "both", [["both", "詞語＋讀音"], ["zh", "只有詞語"], ["phon", "只有讀音"]]) +
-      '<div class="note" style="margin-top:6px;">每一輪比上一輪多一個詞（詞表是同一份，但念的順序每輪重新打亂）。把卡片拖進格子排成聽到的順序（手機上點一下卡片也會放進下一個空格）。即時多人：全班同一秒進到同一輪。全對得 100 分＋長度加分＋速度加分；排錯的輪，每個放對位置的詞也有一點分數。需要裝置有中文語音。</div></div>';
+      '<div class="note" style="margin-top:6px;">每一輪比上一輪多一個詞（詞表是同一份，但念的順序每輪重新打亂）。把卡片拖進格子排成聽到的順序（手機上點一下卡片也會放進下一個空格）。即時多人：全班同一秒進到同一輪。全對得 100 分＋長度加分＋速度加分；排錯的輪，每個放對位置的詞也有一點分數。語音用曼米語音伺服器的自然語音（預設曉臻，跟平台生詞發音同一個）；連不上時才改用裝置內建的中文語音。</div></div>';
     var gameOpts = c.game === "quiz" ? quizOpts : c.game === "order" ? orderOpts : c.game === "match" ?
       '<div class="mg-opt"><label>模式</label>' + seg("match.mode", m.mode, [["speed", "比速度：全部配完"], ["timed", "限時：時間內配越多越好"]]) +
       '<label>時間（限時模式）</label><span><input type="number" class="mg-num" min="15" max="600" step="5" data-num="match.seconds" value="' + m.seconds + '"> 秒</span>' +
