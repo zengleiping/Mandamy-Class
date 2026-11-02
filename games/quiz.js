@@ -15,6 +15,8 @@
   MG.QUIZ_Q = Q_NAME;
   var REVEAL = 3500, REVEAL_SELF = 2200;
   var ANS_KIND = { w2p: "p", w2t: "t", p2w: "w", t2w: "w", w2i: "i", i2w: "w", a2w: "w", a2t: "t" };
+  var SAY_RATE = 1.1;   // 聽聲音題：念的速度
+  function audioTexts(qs){ return qs.filter(function(Q){ return Q.type === "a2w" || Q.type === "a2t"; }).map(function(Q){ return Q.w.w; }); }
   var COLORS = ["#D9534F", "#4C7FBF", "#E0A526", "#4C8577"], LETTERS = ["A", "B", "C", "D"];
 
   function slotMs(o){ return (Number(o.sec) || 15) * 1000 + REVEAL; }
@@ -100,7 +102,7 @@
       if(!spectate && (Q.type === "a2w" || Q.type === "a2t")) say(Q);
       if(!MG.hasZhVoice() && (Q.type === "a2w" || Q.type === "a2t") && !spectate && !enter.warned){ enter.warned = 1; MG.toast("這個裝置沒有中文語音，聽不到聲音 No Chinese voice on this device", 4500); }
     }
-    function say(Q){ if(cancelSpeech) cancelSpeech(); cancelSpeech = MG.speak(Q.w.w, { rate: 0.8 }); }
+    function say(Q){ if(cancelSpeech) cancelSpeech(); cancelSpeech = MG.speak(Q.w.w, { rate: SAY_RATE, voice: o.voice }); }
     function setLocked(text){ msg.className = "qz-msg wait"; msg.textContent = text; }
     function answer(k){
       if(spectate || ended || phase !== "ask" || locked) return;
@@ -168,10 +170,16 @@
     if(o.onQuit) MG.$(".qz-quit", el).onclick = function(){ if(cancelSpeech) cancelSpeech(); MG.music.stop(); o.onQuit(); };
     MG.bindMusicBtn(el, o.music);
     if(!n){ msg.className = "qz-msg bad"; msg.textContent = "沒有可以出的題目（可能缺拼音、翻譯或詞語太少）"; return { stop: function(){}, finish: function(){}, score: function(){ return sc; }, result: result }; }
+    if(!spectate){ var at = audioTexts(qs); if(at.length) MG.tts.preload(at, { rate: SAY_RATE, voice: o.voice }); }   // 聽聲音的題：先把語音下載好
     hud(); tick(); timer = setInterval(tick, 100);
     if(o.music && !spectate) MG.music.play(o.music);
     MG.audioHint(el);
     return { stop: function(){ if(cancelSpeech) cancelSpeech(); MG.music.stop(); if(!ended){ ended = now(); clearInterval(timer); } }, finish: finish, score: function(){ return sc; }, result: result };
   }
-  MG.Quiz = { create: create, totalMs: totalMs, count: countOf, build: build };
+  // 等待室先下載語音：words 是這局的詞（給 live.js 用；o 要帶 seed、q、count、lang）
+  function prefetch(o, words){
+    var ws = MG.withPhon(words, o.phon).filter(function(w){ return w && w.w; }), at = audioTexts(build(ws, o));
+    return at.length ? MG.tts.preload(at, { rate: SAY_RATE, voice: o.voice }) : Promise.resolve(0);
+  }
+  MG.Quiz = { create: create, totalMs: totalMs, count: countOf, build: build, prefetch: prefetch };
 })();

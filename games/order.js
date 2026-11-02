@@ -8,36 +8,55 @@
    即時多人：全班用同一個開始時間排程，每個人自動在同一秒進到同一輪。自己練習（self）：送出後公布，過一下進下一輪。
    MG.Order.create(root, { words, lang, phon, seed, mode, lives, comeback, start, maxLen, plays, perWord, show,
                            sync, spectate, startAt, now, init, music, onScore, onEnd, onQuit, title })
-   MG.Order.totalMs(o, nWords) 一局總共多久 */
+   flow: "free" 邊聽邊排、可重聽（預設）｜"memory" 考記憶：全班先一起聽完（只聽一次），聽完才能作答
+   pace: "slow"|"normal"|"fast"（預設）語速；voice: 伺服器語音（預設曉臻）
+   MG.Order.totalMs(o, words) 一局總共多久；MG.Order.prefetch(o, words) 先下載語音 */
 (function(){
   var MG = window.MG;
   var LEAD = 1800, REVEAL = 5000, REVEAL_SELF = 4000;
-  function audioMs(L){ return L * 1700 + 600; }
-  function winMs(o, L){ return (Number(o.plays) || 2) * audioMs(L) + 4000 + L * (Number(o.perWord) || 3.5) * 1000; }
-  function plan(o, nWords){
-    var start = MG.clamp(Number(o.start) || 2, 2, 6), maxL = Math.min(MG.clamp(Number(o.maxLen) || 6, 2, 10), nWords), lens = [], offs = [], t = 0;
-    for(var L = start; L <= maxL; L++){ lens.push(L); offs.push(t); t += LEAD + winMs(o, L) + REVEAL; }
-    return { lens: lens, offs: offs, total: t, start: start };
+  // 語速：rate 是伺服器語音的速度（0.7～1.2）；gap 是詞跟詞之間停多久。預設「快」，聽起來比較刺激。
+  var PACE = { slow: { rate: 0.95, gap: 420 }, normal: { rate: 1.1, gap: 300 }, fast: { rate: 1.2, gap: 200 } };
+  function paceOf(o){ return PACE[o.pace] || PACE.fast; }
+  function hanLen(w){ return Math.max(1, Array.from(String(w.w || "")).length); }
+  // 每個詞「開始念」的時間是固定算出來的（跟詞的長度有關，跟裝置無關），所以全班聽到的節奏一樣，也算得出整段多長
+  function slotMs(w, pc){ return pc.gap + 450 + 230 * hanLen(w); }
+  function lensOf(o, nWords){
+    var start = MG.clamp(Number(o.start) || 2, 2, 6), maxL = Math.min(MG.clamp(Number(o.maxLen) || 6, 2, 10), nWords), lens = [];
+    for(var L = start; L <= maxL; L++) lens.push(L);
+    return { start: start, lens: lens };
   }
-  function totalMs(o, nWords){ return plan(o, nWords).total + 800; }
-  function rounds(words, o, P){
-    var seed = Number(o.seed) || 1, base = MG.shuffle(words, MG.rng(seed + 57)).slice(0, P.lens[P.lens.length - 1] || 0);
-    return P.lens.map(function(L, r){
-      var rnd = MG.rng(seed * 131 + r * 977 + 7), set = base.slice(0, L), heard = MG.shuffle(set, rnd), bank = MG.shuffle(set, rnd);
+  function rounds(words, o){
+    var seed = Number(o.seed) || 1, pc = paceOf(o), memory = o.flow === "memory", per = (Number(o.perWord) || 3.5) * 1000, plays = Number(o.plays) || 2, LS = lensOf(o, words.length);
+    var base = MG.shuffle(words, MG.rng(seed + 57)).slice(0, LS.lens[LS.lens.length - 1] || 0);
+    return LS.lens.map(function(L, r){
+      var rnd = MG.rng(seed * 131 + r * 977 + 7), set = base.slice(0, L), heard = MG.shuffle(set, rnd), bank = MG.shuffle(set, rnd), starts = [], acc = 0;
       if(L > 1 && bank.every(function(w, i){ return w === heard[i]; })) bank = bank.slice(1).concat(bank[0]);
-      return { L: L, heard: heard, bank: bank };
+      heard.forEach(function(w){ starts.push(acc); acc += slotMs(w, pc); });
+      var audio = acc + 400;
+      // 自由：邊聽邊排，可以重聽（plays 次）。考記憶：全班先聽完（只聽一次）才開始作答，作答時間另外算。
+      return { L: L, heard: heard, bank: bank, starts: starts, audio: audio, pre: memory ? audio + 400 : 0, win: memory ? 3500 + L * per : plays * audio + 4000 + L * per };
     });
+  }
+  function plan(R, o){
+    var offs = [], t = 0; R.forEach(function(r){ offs.push(t); t += LEAD + r.pre + r.win + REVEAL; });
+    return { lens: R.map(function(r){ return r.L; }), offs: offs, total: t, start: R.length ? R[0].L : 2 };
+  }
+  function totalMs(o, words){ return plan(rounds(MG.withPhon(words, "py").filter(function(w){ return w && w.w; }), o), o).total + 800; }
+  // 先把這一局要念的詞下載好（等待室就可以先做）；回傳成功幾個
+  function prefetch(o, words){
+    var R = rounds((words || []).filter(function(w){ return w && w.w; }), o), last = R[R.length - 1], pc = paceOf(o);
+    return last ? MG.tts.preload(last.heard.map(function(w){ return w.w; }), { rate: pc.rate, voice: o.voice }) : Promise.resolve(0);
   }
 
   function create(root, o){
     var now = o.now || function(){ return Date.now(); };
     var words = MG.withPhon(o.words, o.phon).filter(function(w){ return w && w.w; });
     var sync = !!o.sync, spectate = !!o.spectate, survive = o.mode !== "score", comeback = o.comeback !== false, show = o.show || "both";
-    var P = plan(o, words.length), R = rounds(words, o, P), nR = R.length, maxLives = survive ? MG.clamp(Number(o.lives) || 2, 1, 5) : null;
+    var memory = o.flow === "memory", pc = paceOf(o), R = rounds(words, o), P = plan(R, o), nR = R.length, maxLives = survive ? MG.clamp(Number(o.lives) || 2, 1, 5) : null;
     var sc = MG.newScore(o.init), init = o.init || {};
     var lives = survive ? (typeof init.lives === "number" ? init.lives : maxLives) : null, ghost = survive && !!init.gh, gs = init.gs || 0, best = init.best || 0, lastQ = typeof init.q === "number" ? init.q : -1;
     var startAt = o.startAt || now(), ended = false, timer = 0, missed = {};
-    var cur = -1, roundStart = 0, sawAsk = false, phase = "", slots = [], bankList = [], submitted = false, submittedAt = 0, scored = false, playsLeft = 0, speaking = false, cancelSpeech = null, revealAt = 0, info = null;
+    var cur = -1, roundStart = 0, joinedLate = false, sawAsk = false, phase = "", slots = [], bankList = [], submitted = false, submittedAt = 0, scored = false, playsLeft = 0, speaking = false, cancelSpeech = null, revealAt = 0, info = null;
 
     root.innerHTML = '<div class="gm od">' +
       '<div class="gm-hud"><span class="gm-title">' + MG.esc(o.title || "聽音排序 Listen & Order") + '</span><span class="note od-no"></span><span class="grow"></span>' +
@@ -124,34 +143,40 @@
     function enter(r, start){
       cur = r; roundStart = start; phase = ""; sawAsk = false; submitted = false; submittedAt = 0; info = null;
       bankList = R[r].bank.slice(); slots = []; for(var i = 0; i < R[r].L; i++) slots.push(null);
-      playsLeft = Number(o.plays) || 2; speaking = false; if(cancelSpeech){ cancelSpeech(); cancelSpeech = null; }
+      playsLeft = memory ? 1 : Number(o.plays) || 2; speaking = false; joinedLate = memory && sync && now() - start > LEAD + 1500;   // 考記憶：聽音一半才進來的人，這輪沒聽全，不計分 if(cancelSpeech){ cancelSpeech(); cancelSpeech = null; }
       scored = !spectate && r <= lastQ;   // 重新整理後回來：這輪已經答過了，不重複計分
       msg.className = "od-msg"; msg.textContent = ""; ansEl.innerHTML = ""; ansEl.className = "od-ans";
       playUi(); hud(); draw();
     }
     function playUi(){
-      var canPlay = !spectate && phase === "ask" && !submitted && playsLeft > 0 && !speaking;
-      playBtn.disabled = !canPlay; playBtn.style.display = spectate ? "none" : "";
-      MG.$(".od-plays", el).textContent = spectate ? "" : phase === "ask" ? "還可以聽 " + playsLeft + " 次 Plays left: " + playsLeft : "";
+      var canPlay = !memory && !spectate && phase === "ask" && !submitted && playsLeft > 0 && !speaking;
+      playBtn.disabled = !canPlay; playBtn.style.display = spectate || memory ? "none" : "";
+      MG.$(".od-plays", el).textContent = spectate ? "" : memory ? "" : phase === "ask" ? "還可以聽 " + playsLeft + " 次 Plays left: " + playsLeft : "";
       el.classList.toggle("speaking", speaking);
     }
     function play(){
-      if(spectate || phase !== "ask" || submitted || playsLeft <= 0 || speaking) return;
+      if(spectate || (phase !== "ask" && phase !== "listen") || submitted || playsLeft <= 0 || speaking) return;
       playsLeft--; speaking = true; playUi();
       var words = R[cur].heard.map(function(w){ return w.w; });
-      cancelSpeech = MG.speakSeq(words, { rate: 0.8, gap: 700, done: function(){ speaking = false; cancelSpeech = null; playUi(); } });
+      cancelSpeech = MG.speakSeq(words, { rate: pc.rate, voice: o.voice, starts: R[cur].starts, done: function(){ speaking = false; cancelSpeech = null; playUi(); } });
     }
     function setPhase(ph){
       phase = ph;
       if(ph === "lead"){ msg.className = "od-msg lead"; msg.innerHTML = '準備好，仔細聽！<span class="en">Get ready and listen carefully!</span>'; draw(); playUi(); }
+      else if(ph === "listen"){
+        msg.className = "od-msg lead"; msg.innerHTML = scored ? "這輪你已經答過了 Already answered" : joinedLate ? "這輪你來晚了，先看看 You joined late" : '全班一起聽，聽完才能作答！<span class="en">Listen together — you can answer after the audio ends</span>';
+        if(!scored && !joinedLate){ noVoiceWarn(); draw(); playUi(); play(); } else { submitted = true; draw(); playUi(); }
+      }
       else if(ph === "ask"){
-        sawAsk = true;
-        msg.className = "od-msg"; msg.textContent = scored ? "這輪你已經答過了 Already answered" : "";
-        if(!scored){ if(!MG.hasZhVoice() && !setPhase.warned && !spectate){ setPhase.warned = 1; MG.toast("這個裝置沒有中文語音，聽不到聲音 No Chinese voice on this device", 4500); } draw(); playUi(); play(); }
+        if(!joinedLate) sawAsk = true;
+        msg.className = "od-msg"; msg.textContent = scored ? "這輪你已經答過了 Already answered" : joinedLate ? "這輪你沒聽到音檔，不計分 You missed the audio" : memory ? "開始排！ Go!" : "";
+        if(joinedLate && !scored){ submitted = true; draw(); playUi(); }
+        else if(!scored){ if(!memory){ noVoiceWarn(); } draw(); playUi(); if(!memory) play(); }
         else { submitted = true; draw(); playUi(); }
       }
       else if(ph === "reveal"){ if(cancelSpeech){ cancelSpeech(); cancelSpeech = null; } speaking = false; grade(); }
     }
+    function noVoiceWarn(){ if(!MG.hasZhVoice() && !setPhase.warned && !spectate){ setPhase.warned = 1; MG.toast("這個裝置沒有中文語音，聽不到聲音 No Chinese voice on this device", 4500); } }
     function submit(){
       if(!canEdit() || !slots.every(function(x){ return x != null; })) return;
       submitted = true; submittedAt = now(); if(cancelSpeech){ cancelSpeech(); cancelSpeech = null; } speaking = false;
@@ -159,7 +184,7 @@
       MG.beep("tick"); draw(); playUi();
     }
     function grade(){
-      var Rd = R[cur], L = Rd.L, W = winMs(o, L), t0 = roundStart + LEAD, ans = slots.map(function(id){ return id == null ? null : bankList[id]; });
+      var Rd = R[cur], L = Rd.L, W = Rd.win, t0 = roundStart + LEAD + Rd.pre, ans = slots.map(function(id){ return id == null ? null : bankList[id]; });
       var pos = 0; ans.forEach(function(w, i){ if(w && w.w === Rd.heard[i].w) pos++; });
       var full = pos === L, res = "", pts = 0;
       if(!scored && !spectate && !sawAsk){ res = ""; msg.className = "od-msg"; msg.textContent = "這輪你還沒加入，不計分 You joined late — not scored"; }
@@ -203,24 +228,25 @@
         var elapsed = t - startAt; if(elapsed < 0) return;
         if(elapsed >= P.total){ finish(); return; }
         var r = 0; for(var i = 0; i < P.offs.length; i++){ if(elapsed >= P.offs[i]) r = i; }
-        var rel = elapsed - P.offs[r], W = winMs(o, R[r].L);
+        var rel = elapsed - P.offs[r], W = R[r].win, pre = R[r].pre;
         if(r !== cur) enter(r, startAt + P.offs[r]);
-        var ph = rel < LEAD ? "lead" : rel < LEAD + W ? "ask" : "reveal";
+        var ph = rel < LEAD ? "lead" : rel < LEAD + pre ? "listen" : rel < LEAD + pre + W ? "ask" : "reveal";
         if(ph !== phase) setPhase(ph);
-        left = ph === "ask" ? LEAD + W - rel : 0;
-        bar.style.width = (ph === "ask" ? MG.clamp(left / W, 0, 1) * 100 : 0) + "%";
+        left = ph === "ask" ? LEAD + pre + W - rel : 0;
+        bar.style.width = (ph === "ask" ? MG.clamp(left / W, 0, 1) * 100 : ph === "listen" ? MG.clamp((LEAD + pre - rel) / pre, 0, 1) * 100 : 0) + "%";
         bar.parentElement.classList.toggle("warn", ph === "ask" && left < 8000);
       } else {
         if(cur < 0){ enter(0, t); setPhase("lead"); }
-        var relS = t - roundStart, Ws = winMs(o, R[cur].L);
-        if(phase === "lead" && relS >= LEAD) setPhase("ask");
-        if(phase === "ask" && (submitted || relS >= LEAD + Ws)){ setPhase("reveal"); revealAt = t; }
+        var relS = t - roundStart, Ws = R[cur].win, preS = R[cur].pre;
+        if(phase === "lead" && relS >= LEAD) setPhase(memory ? "listen" : "ask");
+        if(phase === "listen" && relS >= LEAD + preS) setPhase("ask");
+        if(phase === "ask" && (submitted || relS >= LEAD + preS + Ws)){ setPhase("reveal"); revealAt = t; }
         if(phase === "reveal" && t - revealAt >= REVEAL_SELF){
           if(cur + 1 >= nR || (lives != null && lives <= 0)){ finish(); return; }
           enter(cur + 1, t); setPhase("lead");
         }
-        left = phase === "ask" ? LEAD + Ws - relS : 0;
-        bar.style.width = (phase === "ask" ? MG.clamp(left / Ws, 0, 1) * 100 : 0) + "%";
+        left = phase === "ask" ? LEAD + preS + Ws - relS : 0;
+        bar.style.width = (phase === "ask" ? MG.clamp(left / Ws, 0, 1) * 100 : phase === "listen" ? MG.clamp((LEAD + preS - relS) / preS, 0, 1) * 100 : 0) + "%";
         bar.parentElement.classList.toggle("warn", phase === "ask" && left < 8000);
       }
     }
@@ -240,5 +266,5 @@
     MG.audioHint(el);
     return { stop: function(){ if(cancelSpeech) cancelSpeech(); MG.music.stop(); if(!ended){ ended = now(); clearInterval(timer); } }, finish: finish, score: function(){ return sc; }, result: result };
   }
-  MG.Order = { create: create, totalMs: totalMs, plan: plan };
+  MG.Order = { create: create, totalMs: totalMs, prefetch: prefetch, rounds: rounds, plan: plan, PACE: PACE };
 })();

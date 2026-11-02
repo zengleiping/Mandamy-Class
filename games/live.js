@@ -173,7 +173,7 @@
   function syncedTotal(c, round){
     var ws = MG.withPhon(c.words || [], c.phon);
     if(c.game === "quiz") return MG.Quiz.totalMs(c.quiz, MG.Quiz.build(ws, Object.assign({}, c.quiz, { lang: c.lang, seed: seedFor(c, round) })).length);
-    return MG.Order.totalMs(c.order, ws.length);
+    return MG.Order.totalMs(Object.assign({}, c.order, { seed: seedFor(c, round) }), c.words || []);
   }
   function orderSub(r){ return "對 " + r.c + "・錯 " + r.w + (r.best ? "・最長 " + r.best + " 個詞" : "") + (r.gh ? "・旁觀練習中" : r.lives != null ? "・" + new Array(Math.max(0, r.lives) + 1).join("♥") : "") + (r.done ? "・結束" : ""); }
   async function startRound(){
@@ -388,6 +388,13 @@
   function waitView(){
     if(!SL || !SL.cfg) return;
     var ps = list(SL.players).filter(function(p){ return !p.kicked; }), gname = myGroupName(), c = SL.cfg;
+    // 快問快答（聽聲音的題）、聽音排序：在等待室就先把語音下載好，開始時才不用等
+    var pk = c.game + "|" + c.seed + "|" + (SL.state && SL.state.round);
+    if(MG.isSynced(c.game) && SL.preKey !== pk){
+      SL.preKey = pk;
+      var po = Object.assign({}, c[c.game], { seed: seedFor(c, (SL.state && SL.state.round) || 1), lang: c.lang, phon: c.phon });
+      try{ (c.game === "quiz" ? MG.Quiz : MG.Order).prefetch(po, c.words || []).catch(function(){}); }catch(e){}
+    }
     app.innerHTML = '<div class="lv-wait"><div class="brand-line" style="justify-content:center;"><img src="../icons/logo.svg" alt="">曼米中文・房間 ' + SL.code + '</div><div class="note">你好！ Hi!</div><div class="me">' + MG.esc(SL.name) + '</div>' + (gname ? '<div class="note" style="font-size:16px;">你在 Your team：<b>' + MG.esc(gname) + '</b></div>' : '') +
       '<div class="mg-panel" style="margin-top:14px;"><b>' + MG.esc(MG.gameTitle(c.game)) + '</b><div class="note">' + MG.esc(c.game === "quiz" || c.game === "order" ? MG.gameSummary(c.game, c[c.game], c.phon) : c.game === "match" ? (c.match.mode === "timed" ? "限時 " + c.match.seconds + " 秒，配越多越好" : "比速度，全部配完") + "・" + MG.ph(MG.MATCH_PAIRS[c.match.pair], c.phon) : (c.blast.input === "type" ? "看詞語，打拼音（數字標調）" : MG.ph(MG.BLAST_Q[c.blast.q], c.phon)) + (c.blast.lives ? "・" + c.blast.lives + " 條命" : "")) + '</div><p style="margin:10px 0 0;font-weight:700;color:var(--seal);">等老師開始… Waiting for the teacher to start…</p></div>' +
       '<div class="note">已經有 ' + ps.length + ' 人加入 · ' + ps.length + ' joined</div><div class="lv-pl">' + ps.map(function(p){ return '<span' + (p.uid === SL.uid ? ' class="me"' : '') + '>' + MG.esc(p.name) + '</span>'; }).join("") + '</div></div>';

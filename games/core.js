@@ -107,21 +107,61 @@
     c = c || {};
     if(game === "match") return "配對 Match・" + (c.mode === "timed" ? "限時 " + c.seconds + " 秒" : "比速度") + "・" + MG.ph((MG.MATCH_PAIRS || {})[c.pair] || "", phon);
     if(game === "quiz") return "快問快答 Quiz・" + MG.ph((MG.QUIZ_Q || {})[c.q || "mix"] || "", phon) + "・" + (c.count || 10) + " 題・每題 " + (c.sec || 15) + " 秒";
-    if(game === "order") return "聽音排序 Listen & Order・" + (c.mode === "score" ? "累積分數，沒有淘汰" : "生存（" + (c.lives || 2) + " 條命" + (c.comeback !== false ? "，可以復活" : "") + "）") + "・" + (c.start || 2) + "～" + (c.maxLen || 6) + " 個詞";
+    if(game === "order") return "聽音排序 Listen & Order・" + (c.flow === "memory" ? "考記憶・" : "") + (c.mode === "score" ? "累積分數，沒有淘汰" : "生存（" + (c.lives || 2) + " 條命" + (c.comeback !== false ? "，可以復活" : "") + "）") + "・" + (c.start || 2) + "～" + (c.maxLen || 6) + " 個詞";
     return "Blast・" + (c.input === "type" ? "打拼音" : MG.ph((MG.BLAST_Q || {})[c.q] || "", phon));
   };
   // 由共用時鐘排程的遊戲（快問快答、聽音排序）：全班同一秒進到同一題，不用老師一題一題按下一題
   MG.isSynced = function(g){ return g === "quiz" || g === "order"; };
 
-  // ---------- 朗讀（瀏覽器內建語音，優先台灣華語） ----------
+  // ---------- 朗讀 ----------
+  // 優先用曼米語音伺服器的自然語音（跟平台生詞發音同一個，預設「曉臻」）：先把每個詞下載好，用 WebAudio 播。
+  // 這樣聲音自然、速度由我們控制，每個詞的長度固定，全班聽到的節奏一樣，也不受裝置內建語音好壞影響。
+  // 伺服器連不上（或這個詞還沒載好）才改用裝置內建的中文語音（優先「雅婷」等台灣語音）。
+  MG.TTS_VOICES = [["zh-TW-HsiaoChenNeural", "曉臻／曉珍（女）"], ["zh-TW-HsiaoYuNeural", "曉雨（女）"], ["zh-TW-YunJheNeural", "雲哲（男）"]];
+  var T = MG.tts = { buf: {}, pend: {}, down: 0 };
+  function tkey(text, o){ return (o.voice || MG.TTS_VOICES[0][0]) + "|" + (o.rate || 1) + "|" + text; }
+  T.srv = function(){ var u = ""; try{ u = localStorage.getItem("mm_tts_server") || ""; }catch(e){} if(!u) u = window.MM_TTS_SERVER || ""; return String(u).replace(/\/+$/, ""); };
+  // 免費主機閒置會休眠：先叫醒，真的要播的時候大多已經醒了
+  T.wake = function(){ var s = T.srv(); if(s) try{ fetch(s + "/health", { mode: "cors" }).catch(function(){}); }catch(e){} };
+  T.ready = function(text, o){ return T.buf[tkey(text, o || {})] || null; };
+  T.load = function(text, o){
+    o = o || {}; var k = tkey(text, o);
+    if(T.buf[k]) return Promise.resolve(T.buf[k]);
+    if(T.pend[k]) return T.pend[k];
+    var srv = T.srv(), ctx = MG.audioCtx && MG.audioCtx();
+    if(!srv || !ctx || !text || Date.now() < T.down) return Promise.resolve(null);
+    var p = (async function(){
+      var ctl = new AbortController(), to = setTimeout(function(){ ctl.abort(); }, o.timeout || 15000);
+      try{
+        var r = await fetch(srv + "/api/tts", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text: text, rate: o.rate || 1, voice: o.voice || MG.TTS_VOICES[0][0] }), signal: ctl.signal });
+        if(!r.ok) throw new Error("http " + r.status);
+        var ab = await r.arrayBuffer();
+        return await new Promise(function(res, rej){ var q = ctx.decodeAudioData(ab, res, rej); if(q && q.then) q.then(res, rej); });
+      } finally { clearTimeout(to); }
+    })().then(function(b){ delete T.pend[k]; if(b) T.buf[k] = b; return b; }, function(){ delete T.pend[k]; T.down = Date.now() + 20000; T.wake(); return null; });
+    T.pend[k] = p; return p;
+  };
+  // 一批詞先下載好（同時 3 個）；回傳成功幾個
+  T.preload = async function(texts, o){
+    var list = [], seen = {}; (texts || []).forEach(function(t){ if(t && !seen[t]){ seen[t] = 1; list.push(t); } });
+    var i = 0, ok = 0; T.wake();
+    async function worker(){ while(i < list.length){ var b = await T.load(list[i++], Object.assign({ timeout: 30000 }, o || {})); if(b) ok++; } }
+    await Promise.all([worker(), worker(), worker()]); return ok;
+  };
+
+  // 裝置內建語音（備用）：曉臻（曉珍）> 其他台灣語音 > 任何中文語音
   var voiceCache = null;
   function zhVoice(){
     if(!window.speechSynthesis) return null;
     var vs = speechSynthesis.getVoices() || [];
     if(voiceCache && vs.indexOf(voiceCache) >= 0) return voiceCache;
-    var pick = function(re){ return vs.filter(function(v){ return re.test(v.lang.replace("_", "-")); })[0]; };
-    voiceCache = pick(/^zh-TW$/i) || pick(/^zh-(HK|CN)$/i) || pick(/^zh/i) || null;
-    return voiceCache;
+    var best = null, bs = -1;
+    vs.forEach(function(v){
+      var lang = String(v.lang || "").replace("_", "-"); if(!/^zh/i.test(lang) && !/曉臻|曉珍|HsiaoChen/i.test(v.name)) return;
+      var n = 1; if(/曉臻|曉珍|HsiaoChen/i.test(v.name)) n += 100; if(/^zh-TW$/i.test(lang)) n += 40; if(/Taiwan|臺灣|台灣/i.test(v.name)) n += 30; if(/Mei-?Jia|美佳/i.test(v.name)) n += 20; if(/Natural|Online/i.test(v.name)) n += 5;
+      if(n > bs){ bs = n; best = v; }
+    });
+    voiceCache = best; return best;
   }
   if(window.speechSynthesis){ try{ speechSynthesis.onvoiceschanged = function(){ voiceCache = null; }; }catch(e){} }
   // iOS／Safari 要有人點過畫面才允許朗讀：第一次點畫面時先「無聲」念一下，之後定時自動播放才有聲音
@@ -129,32 +169,48 @@
     document.removeEventListener("pointerdown", unlock, true);
     try{ if(window.speechSynthesis){ var u = new SpeechSynthesisUtterance(" "); u.volume = 0; speechSynthesis.speak(u); } }catch(e){}
   }, true);
-  MG.canSpeak = function(){ return !!window.speechSynthesis; };
-  MG.hasZhVoice = function(){ return !!zhVoice(); };
-  // 念一個詞；done 在念完（或念不出來、逾時）時呼叫一次
+  MG.canSpeak = function(){ return !!window.speechSynthesis || !!T.srv(); };
+  MG.hasZhVoice = function(){ return !!zhVoice() || !!T.srv(); };
+  function playBuf(b, done){
+    var ctx = MG.audioCtx && MG.audioCtx(); if(!ctx) return null;
+    try{ var s = ctx.createBufferSource(); s.buffer = b; s.connect(ctx.destination); s.onended = done || null; s.start(); return s; }catch(e){ return null; }
+  }
+  // 念一個詞；o = { rate, voice, done }。done 在念完（或念不出來、逾時）時呼叫一次；回傳取消用的函式
   MG.speak = function(text, o){
-    o = o || {}; var fin = false, timer = 0;
+    o = o || {}; var fin = false, timer = 0, src = null;
     var done = function(){ if(fin) return; fin = true; clearTimeout(timer); if(o.done) o.done(); };
+    var b = T.ready(text, o);
+    if(b){
+      src = playBuf(b, done);
+      if(src){ timer = setTimeout(done, b.duration * 1000 + 600); return function(){ fin = true; clearTimeout(timer); try{ src.stop(); }catch(e){} }; }
+    } else T.load(text, o);   // 這次先用裝置語音；順便下載，下次就用自然語音
     if(!window.speechSynthesis || !text){ setTimeout(done, 0); return function(){}; }
     try{
       var u = new SpeechSynthesisUtterance(String(text)), v = zhVoice();
-      u.lang = (v && v.lang) || "zh-TW"; if(v) u.voice = v; u.rate = o.rate || 0.8; u.onend = done; u.onerror = done;
+      u.lang = (v && v.lang) || "zh-TW"; if(v) u.voice = v; u.rate = MG.clamp(o.rate || 1, 0.5, 1.6); u.onend = done; u.onerror = done;
       speechSynthesis.speak(u);
-      timer = setTimeout(done, 1800 + String(text).length * 600);   // 有些瀏覽器不會觸發 onend
+      timer = setTimeout(done, 1500 + String(text).length * 500);   // 有些瀏覽器不會觸發 onend
     }catch(e){ setTimeout(done, 0); }
     return function(){ fin = true; clearTimeout(timer); };
   };
-  // 依序念一串詞，每個詞中間停 gap 毫秒；回傳取消用的函式
+  // 依序念一串詞。o = { rate, voice, gap, starts, each(k), done }
+  //   starts：每個詞「開始念」的時間（毫秒，從頭算）。有給就照這個節奏念（全班一樣）；沒給就一個念完、停 gap 毫秒再念下一個。
   MG.speakSeq = function(texts, o){
-    o = o || {}; var i = 0, stopped = false, tm = 0, cancelOne = function(){};
+    o = o || {}; var stopped = false, tms = [], cancels = [], bufs = texts.map(function(t){ return T.ready(t, o); }), all = bufs.every(Boolean) && !!(MG.audioCtx && MG.audioCtx());
     try{ if(window.speechSynthesis) speechSynthesis.cancel(); }catch(e){}
-    (function next(){
-      if(stopped) return;
-      if(i >= texts.length){ if(o.done) o.done(); return; }
-      var k = i++; if(o.each) o.each(k);
-      cancelOne = MG.speak(texts[k], { rate: o.rate, done: function(){ if(stopped) return; tm = setTimeout(next, o.gap == null ? 650 : o.gap); } });
-    })();
-    return function(){ stopped = true; clearTimeout(tm); cancelOne(); try{ if(window.speechSynthesis) speechSynthesis.cancel(); }catch(e){} };
+    texts.forEach(function(t){ if(!T.ready(t, o)) T.load(t, o); });
+    var gap = o.gap == null ? 300 : o.gap, starts = o.starts, acc = 0, ends = 0;
+    if(!starts){ starts = []; texts.forEach(function(t, i){ starts.push(acc); acc += (all ? bufs[i].duration * 1000 : String(t).length * 330 + 400) + gap; }); }
+    texts.forEach(function(t, i){
+      var d = all ? bufs[i].duration * 1000 : String(t).length * 330 + 400; ends = Math.max(ends, starts[i] + d);
+      tms.push(setTimeout(function(){
+        if(stopped) return; if(o.each) o.each(i);
+        if(all){ var s = playBuf(bufs[i]); if(s) cancels.push(function(){ try{ s.stop(); }catch(e){} }); }
+        else cancels.push(MG.speak(t, { rate: o.rate, voice: o.voice }));
+      }, starts[i]));
+    });
+    tms.push(setTimeout(function(){ if(!stopped && o.done) o.done(); }, ends + 150));
+    return function(){ stopped = true; tms.forEach(clearTimeout); cancels.forEach(function(c){ try{ c(); }catch(e){} }); try{ if(window.speechSynthesis) speechSynthesis.cancel(); }catch(e){} };
   };
 
   // ---------- 小視窗 ----------
@@ -244,8 +300,64 @@
     return tone ? body + ["", "ˊ", "ˇ", "ˋ"][tone - 1] : "˙" + body;
   }
   // 生詞庫有「注音」就用；沒有就從拼音轉（拼音要一個音節一個空格才轉得準）
-  MG.zyFromPy = function(py){ return MG.pySyllables(py).map(function(x){ return zySyl(x.l, x.t || 0); }).join(" "); };
-  MG.zyOf = function(w){ return String((w && w.zy) || "").trim() || (w && w.p ? MG.zyFromPy(w.p) : ""); };
+  // 拼音 → 注音：先把拼音切成一個一個音節（拼音黏在一起也沒問題，例如 shuǐguǒ、xièxie），再逐個轉。
+  // 切不出來就回傳空字串（寧可不顯示，也不要顯示亂碼）。
+  var STAND_OK = { a:1, o:1, e:1, "ê":1, ai:1, ei:1, ao:1, ou:1, an:1, en:1, ang:1, eng:1, er:1 };
+  function validBase(b){
+    if(!b) return false; if(ZY_STAND[b]) return true;
+    var ini = ZY_INI[b.slice(0, 2)] ? b.slice(0, 2) : ZY_INI[b[0]] ? b[0] : "", rest = b.slice(ini.length);
+    if(!ini) return !!STAND_OK[rest];
+    if((ini === "j" || ini === "q" || ini === "x") && rest[0] === "u") rest = "ü" + rest.slice(1);
+    return ZY_FIN[rest] !== undefined;
+  }
+  var TONE_OF = {}; Object.keys(MARKS).forEach(function(ch){ var v = MARKS[ch]; TONE_OF[ch] = [v.slice(0, -1), Number(v.slice(-1))]; });
+  function splitToken(tok){
+    var letters = [], tones = [];
+    Array.from(tok).forEach(function(ch){
+      if(TONE_OF[ch]){ letters.push(TONE_OF[ch][0]); tones.push(TONE_OF[ch][1]); }
+      else if(/[a-zü]/.test(ch)){ letters.push(ch === "v" ? "ü" : ch); tones.push(0); }
+    });
+    var n = letters.length; if(!n) return null;
+    // best[i]：前 i 個字母最少切成幾個音節；每個音節要是合法的，而且最多一個帶調號的字母
+    var best = [0], from = [-1], INF = 1e9;
+    for(var i = 1; i <= n; i++){
+      best[i] = INF; from[i] = -1;
+      for(var j = Math.max(0, i - 6); j < i; j++){
+        if(best[j] >= INF) continue;
+        var marked = 0; for(var k = j; k < i; k++) if(tones[k]) marked++;
+        if(marked > 1 || !validBase(letters.slice(j, i).join(""))) continue;
+        if(best[j] + 1 < best[i]){ best[i] = best[j] + 1; from[i] = j; }
+      }
+    }
+    if(best[n] >= INF) return null;
+    var out = [], pos = n;
+    while(pos > 0){ var j0 = from[pos], t = 0; for(var q = j0; q < pos; q++) if(tones[q]) t = tones[q]; out.unshift({ l: letters.slice(j0, pos).join(""), t: t }); pos = j0; }
+    return out;
+  }
+  MG.zyFromPy = function(py){
+    var toks = String(py || "").toLowerCase().replace(/[0-5]/g, function(d){ return d; }).split(/[\s'’\-·,，、]+/).filter(Boolean), out = [];
+    for(var i = 0; i < toks.length; i++){
+      var tk = /[0-5]/.test(toks[i]) ? MG.pyNum(toks[i]) : toks[i], syl = splitToken(tk);
+      if(!syl) return "";
+      syl.forEach(function(x){ out.push(zySyl(x.l, x.t)); });
+    }
+    return out.join(" ");
+  };
+  // 用漢字本身查讀音（pinyin-pro＋台灣讀音修正表）轉注音；一個字一個音節，不會有切音節的問題
+  function zyFromChars(zh){
+    try{
+      var pp = window.pinyinPro; if(!pp || !pp.pinyin || !zh || !/^[㐀-䶿一-鿿]+$/.test(zh)) return "";
+      var arr = pp.pinyin(zh, { type: "array", toneType: "symbol" }), out = arr.map(function(x){ return MG.zyFromPy(x); });
+      return out.length && out.every(Boolean) ? out.join(" ") : "";
+    }catch(e){ return ""; }
+  }
+  // 生詞庫有「注音」就用；沒有就從拼音轉；拼音轉不出來、或音節數跟字數對不上，就用漢字查讀音
+  MG.zyOf = function(w){
+    if(!w) return ""; var z = String(w.zy || "").trim(); if(z) return z;
+    var han = (String(w.w || "").match(/[㐀-䶿一-鿿]/g) || []).length, fromPy = w.p ? MG.zyFromPy(w.p) : "";
+    if(fromPy && (!han || fromPy.split(" ").length === han || !/^[㐀-䶿一-鿿]+$/.test(w.w || ""))) return fromPy;
+    return zyFromChars(w.w) || fromPy;
+  };
   MG.phonName = function(phon){ return phon === "zy" ? "注音" : "拼音"; };
   MG.ph = function(text, phon){ return phon === "zy" ? String(text).replace(/拼音/g, "注音").replace(/pinyin/g, "zhuyin").replace(/Pinyin/g, "Zhuyin") : text; };
   // 用注音玩：把每個詞的「讀音」換成注音（原本的拼音留在 py），遊戲裡出現拼音的地方就都變成注音
