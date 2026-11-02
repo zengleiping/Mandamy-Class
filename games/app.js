@@ -120,14 +120,19 @@
       '<label>每題幾秒</label>' + seg("quiz.sec", qz.sec, [[10, "10 秒"], [15, "15 秒"], [20, "20 秒"], [30, "30 秒"]]) +
       (qz.q === "mix" || qz.q === "a2w" || qz.q === "a2t" ? '<label>發音</label>' + seg("quiz.voice", qz.voice || MG.TTS_VOICES[0][0], MG.TTS_VOICES) : '') +
       '<div class="note" style="margin-top:6px;">即時多人：全班同一秒進到同一題，時間到公布答案再出下一題，老師不用一題一題按。答對 100 分＋速度加分（最多 50 分），答錯扣 20 分，沒作答不扣分。「聽聲音」題用曼米語音伺服器的自然語音念詞語（連不上時改用裝置內建語音）。作業連結／自己練習：答完就公布答案，再進下一題。</div></div>';
+    var odInfo = "";
+    if(c.game === "order"){
+      var odPool = poolFor(1).filter(function(w){ return w && w.w; }), odR = MG.Order.rounds(odPool, Object.assign({ seed: 1 }, od)), odN = odR.length ? odR[odR.length - 1].L : 0, odMin = Math.round(MG.Order.totalMs(Object.assign({ seed: 1 }, od), odPool) / 60000);
+      odInfo = '<div class="note" style="margin-top:4px;">' + (odN ? '目前出題範圍有 ' + odPool.length + ' 個詞：會從 ' + odR[0].L + ' 個詞排到 ' + odN + ' 個詞，共 ' + odR.length + ' 輪，整局大約 ' + odMin + ' 分鐘。' + (Number(od.maxLen) && Number(od.maxLen) > odPool.length ? '（想排到 ' + od.maxLen + ' 個詞的話，要多勾幾課，或把「一局最多」調高。）' : '') : '生詞太少，至少要 ' + (od.start || 2) + ' 個詞。') + '</div>';
+    }
     var orderOpts = '<div class="mg-opt"><label>玩法</label><div>' + seg("order.mode", od.mode, [["survive", "生存：答錯扣命，最後比誰撐得久"], ["score", "累積：沒有淘汰，比總分"]]) + '<div class="note" style="margin-top:4px;">' + (od.mode === "score" ? '每個人打滿所有輪，答得越快、排得越長分數越高。' : '答錯扣一條命；命用完就被淘汰，但還是可以「旁觀練習」——照樣聽、照樣排、照樣批改，只是不計分，所以不會沒事做。') + '</div></div>' +
       (od.mode === "score" ? '' : '<label>生命</label>' + seg("order.lives", od.lives, [[1, "1 條"], [2, "2 條"], [3, "3 條"]]) +
         '<label>復活</label><label style="display:flex;gap:6px;align-items:center;font-weight:400;"><input type="checkbox" data-chk="order.comeback"' + (od.comeback !== false ? " checked" : "") + '> 被淘汰的學生連續答對 2 輪就復活（回到遊戲，有 1 條命）</label>') +
       '<label>第一輪幾個詞</label>' + seg("order.start", od.start, [[2, "2 個"], [3, "3 個"]]) +
-      '<label>最多幾個詞</label>' + seg("order.maxLen", od.maxLen, [[4, "4 個"], [5, "5 個"], [6, "6 個"], [8, "8 個"]]) +
+      '<label>最多幾個詞</label><div>' + seg("order.maxLen", od.maxLen, [[4, "4"], [5, "5"], [6, "6"], [8, "8"], [10, "10"], [12, "12"], [15, "15"], [20, "20"], [30, "30"], [0, "用完所有詞"]]) + odInfo + '</div>' +
       '<label>怎麼聽</label><div>' + seg("order.flow", od.flow || "free", [["free", "自由：邊聽邊排，可以重聽"], ["memory", "考記憶：全班先聽完才能作答"]]) + '<div class="note" style="margin-top:4px;">' + (od.flow === "memory" ? '每一輪全班一起聽一次音檔（不能重聽），整段念完才開始作答，考驗記憶力。聽的時候卡片會先出現但不能動。' : '每一輪一開始就會念，邊聽邊把卡片排進格子，也可以按「聽」重聽。') + '</div></div>' +
       (od.flow === "memory" ? '' : '<label>每輪可以聽幾次</label>' + seg("order.plays", od.plays, [[1, "1 次"], [2, "2 次"], [3, "3 次"]])) +
-      '<label>語速</label>' + seg("order.pace", od.pace || "fast", [["slow", "慢"], ["normal", "一般"], ["fast", "快（預設）"]]) +
+      '<label>語速</label>' + seg("order.pace", od.pace || "fast", [["slow", "慢"], ["normal", "一般"], ["fast", "快（預設）"], ["faster", "更快"], ["fastest", "極快"]]) +
       '<label>發音</label>' + seg("order.voice", od.voice || MG.TTS_VOICES[0][0], MG.TTS_VOICES) +
       '<label>作答時間</label>' + seg("order.perWord", od.perWord, [["2.5", "緊湊"], ["3.5", "一般"], ["5", "寬鬆"]]) +
       '<label>卡片上顯示</label>' + seg("order.show", od.show || "both", [["both", "詞語＋讀音"], ["zh", "只有詞語"], ["phon", "只有讀音"]]) +

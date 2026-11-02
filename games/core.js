@@ -107,7 +107,7 @@
     c = c || {};
     if(game === "match") return "配對 Match・" + (c.mode === "timed" ? "限時 " + c.seconds + " 秒" : "比速度") + "・" + MG.ph((MG.MATCH_PAIRS || {})[c.pair] || "", phon);
     if(game === "quiz") return "快問快答 Quiz・" + MG.ph((MG.QUIZ_Q || {})[c.q || "mix"] || "", phon) + "・" + (c.count || 10) + " 題・每題 " + (c.sec || 15) + " 秒";
-    if(game === "order") return "聽音排序 Listen & Order・" + (c.flow === "memory" ? "考記憶・" : "") + (c.mode === "score" ? "累積分數，沒有淘汰" : "生存（" + (c.lives || 2) + " 條命" + (c.comeback !== false ? "，可以復活" : "") + "）") + "・" + (c.start || 2) + "～" + (c.maxLen || 6) + " 個詞";
+    if(game === "order") return "聽音排序 Listen & Order・" + (c.flow === "memory" ? "考記憶・" : "") + (c.mode === "score" ? "累積分數，沒有淘汰" : "生存（" + (c.lives || 2) + " 條命" + (c.comeback !== false ? "，可以復活" : "") + "）") + "・" + (c.start || 2) + "～" + (c.maxLen === 0 || c.maxLen === "0" ? "全部" : c.maxLen || 6) + " 個詞";
     return "Blast・" + (c.input === "type" ? "打拼音" : MG.ph((MG.BLAST_Q || {})[c.q] || "", phon));
   };
   // 由共用時鐘排程的遊戲（快問快答、聽音排序）：全班同一秒進到同一題，不用老師一題一題按下一題
@@ -122,7 +122,21 @@
   function tkey(text, o){ return (o.voice || MG.TTS_VOICES[0][0]) + "|" + (o.rate || 1) + "|" + text; }
   T.srv = function(){ var u = ""; try{ u = localStorage.getItem("mm_tts_server") || ""; }catch(e){} if(!u) u = window.MM_TTS_SERVER || ""; return String(u).replace(/\/+$/, ""); };
   // 免費主機閒置會休眠：先叫醒，真的要播的時候大多已經醒了
-  T.wake = function(){ var s = T.srv(); if(s) try{ fetch(s + "/health", { mode: "cors" }).catch(function(){}); }catch(e){} };
+  T.maxRate = null;
+  // 問伺服器念得到多快（/health 的 maxRate；舊版沒有這個欄位＝1.2）。順便叫醒休眠的主機。
+  T.probe = function(){
+    if(T.maxRate != null) return Promise.resolve(T.maxRate);
+    if(T.probing) return T.probing;
+    var s = T.srv(); if(!s){ T.maxRate = 1.2; return Promise.resolve(1.2); }
+    T.probing = (async function(){
+      var ctl = new AbortController(), to = setTimeout(function(){ ctl.abort(); }, 45000);
+      try{ var r = await fetch(s + "/health", { mode: "cors", signal: ctl.signal }), j = await r.json(); T.maxRate = Number(j && j.maxRate) || 1.2; return T.maxRate; }
+      catch(e){ T.probing = null; return 1.2; }   // 這次沒問到（例如主機還在醒）：先當 1.2，下次再問
+      finally{ clearTimeout(to); }
+    })();
+    return T.probing;
+  };
+  T.wake = function(){ T.probe(); };
   T.ready = function(text, o){ return T.buf[tkey(text, o || {})] || null; };
   T.load = function(text, o){
     o = o || {}; var k = tkey(text, o);
@@ -133,10 +147,14 @@
     var p = (async function(){
       var ctl = new AbortController(), to = setTimeout(function(){ ctl.abort(); }, o.timeout || 15000);
       try{
-        var r = await fetch(srv + "/api/tts", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text: text, rate: o.rate || 1, voice: o.voice || MG.TTS_VOICES[0][0] }), signal: ctl.signal });
+        // 要的速度比伺服器念得到的快：伺服器念到它的上限，剩下的用播放速度補（會稍微變尖一點）
+        var want = o.rate || 1, eff = want > 1.2 ? Math.min(want, await T.probe()) : want;
+        var r = await fetch(srv + "/api/tts", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text: text, rate: eff, voice: o.voice || MG.TTS_VOICES[0][0] }), signal: ctl.signal });
         if(!r.ok) throw new Error("http " + r.status);
         var ab = await r.arrayBuffer();
-        return await new Promise(function(res, rej){ var q = ctx.decodeAudioData(ab, res, rej); if(q && q.then) q.then(res, rej); });
+        var buf = await new Promise(function(res, rej){ var q = ctx.decodeAudioData(ab, res, rej); if(q && q.then) q.then(res, rej); });
+        if(want / eff > 1.001) buf.mmExtra = want / eff;
+        return buf;
       } finally { clearTimeout(to); }
     })().then(function(b){ delete T.pend[k]; if(b) T.buf[k] = b; return b; }, function(){ delete T.pend[k]; return null; });
     T.pend[k] = p; return p;
@@ -174,7 +192,7 @@
   MG.hasZhVoice = function(){ return !!zhVoice() || !!T.srv(); };
   function playBuf(b, done){
     var ctx = MG.audioCtx && MG.audioCtx(); if(!ctx) return null;
-    try{ var s = ctx.createBufferSource(); s.buffer = b; s.connect(ctx.destination); s.onended = done || null; s.start(); return s; }catch(e){ return null; }
+    try{ var s = ctx.createBufferSource(); s.buffer = b; if(b.mmExtra) s.playbackRate.value = b.mmExtra; s.connect(ctx.destination); s.onended = done || null; s.start(); return s; }catch(e){ return null; }
   }
   // 念一個詞；o = { rate, voice, done }。done 在念完（或念不出來、逾時）時呼叫一次；回傳取消用的函式
   MG.speak = function(text, o){
@@ -183,7 +201,7 @@
     var b = o.device ? null : T.ready(text, o);
     if(b){
       src = playBuf(b, done);
-      if(src){ timer = setTimeout(done, b.duration * 1000 + 600); return function(){ fin = true; clearTimeout(timer); try{ src.stop(); }catch(e){} }; }
+      if(src){ timer = setTimeout(done, b.duration * 1000 / (b.mmExtra || 1) + 600); return function(){ fin = true; clearTimeout(timer); try{ src.stop(); }catch(e){} }; }
     } else {
       if(!o.device) T.load(text, o);   // 這次先用裝置語音；順便下載，下次就用自然語音
       if(T.srv() && !o.quiet && Date.now() - (MG.speak.lastNote || 0) > 60000){ MG.speak.lastNote = Date.now(); MG.toast("語音伺服器還沒準備好，先用裝置內建的語音（聲音可能不一樣） Server voice not ready — using the device voice", 4500); }
@@ -204,9 +222,9 @@
     try{ if(window.speechSynthesis) speechSynthesis.cancel(); }catch(e){}
     texts.forEach(function(t){ if(!T.ready(t, o)) T.load(t, o); });
     var gap = o.gap == null ? 300 : o.gap, starts = o.starts, acc = 0, ends = 0;
-    if(!starts){ starts = []; texts.forEach(function(t, i){ starts.push(acc); acc += (all ? bufs[i].duration * 1000 : String(t).length * 330 + 400) + gap; }); }
+    if(!starts){ starts = []; texts.forEach(function(t, i){ starts.push(acc); acc += (all ? bufs[i].duration * 1000 / (bufs[i].mmExtra || 1) : String(t).length * 330 + 400) + gap; }); }
     texts.forEach(function(t, i){
-      var d = all ? bufs[i].duration * 1000 : String(t).length * 330 + 400; ends = Math.max(ends, starts[i] + d);
+      var d = all ? bufs[i].duration * 1000 / (bufs[i].mmExtra || 1) : String(t).length * 330 + 400; ends = Math.max(ends, starts[i] + d);
       tms.push(setTimeout(function(){
         if(stopped) return; if(o.each) o.each(i);
         if(all){ var s = playBuf(bufs[i]); if(s) cancels.push(function(){ try{ s.stop(); }catch(e){} }); }

@@ -30,7 +30,7 @@ uvicorn main:app --port 8000
 | `POST /api/tts` | JSON `{"text":"…","rate":0.9,"voice":"zh-TW-HsiaoChenNeural"}` → `audio/mpeg` |
 | `GET /api/tts?text=…&rate=1.0` | 同上，可直接放在 `<audio src>` |
 
-- `rate` 範圍 0.7～1.2（伺服器會強制限制）。單次上限 3000 字。
+- `rate` 範圍 0.7～1.6（伺服器會強制限制；`/health` 會回報 `maxRate`。舊版上限是 1.2，生詞遊戲「聽音排序」的「更快／極快」語速需要新版）。單次上限 3000 字。
 - 相同「文字＋語速＋語音」會快取，反覆播放不會重複呼叫微軟。
 
 ## 重要提醒

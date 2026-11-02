@@ -3,7 +3,7 @@
 路由
   GET  /health            健康檢查
   GET  /api/voices        可用的 zh-TW 語音清單
-  POST /api/tts           {text, rate(0.7~1.2), voice?}  ->  audio/mpeg
+  POST /api/tts           {text, rate(0.7~1.6), voice?}  ->  audio/mpeg
   GET  /api/tts?text=...&rate=1.0&voice=...              ->  audio/mpeg（方便直接當 <audio src> 用）
 
 同樣的 文字+語速+語音 會快取成檔案，聽力測驗反覆播放不會重複呼叫微軟。
@@ -27,6 +27,7 @@ ALLOWED_VOICES = {
     "zh-TW-YunJheNeural": "雲哲（男）",
 }
 MAX_CHARS = 3000
+MAX_RATE = 1.6   # 遊戲「更快／極快」要用；舊版是 1.2。/health 會回報，網頁用它判斷伺服器念得到多快
 CACHE_DIR = Path(os.environ.get("TTS_CACHE_DIR", "/tmp/mandamy-tts-cache"))
 CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -53,7 +54,7 @@ class TtsReq(BaseModel):
 
 
 def rate_str(rate: float) -> str:
-    rate = max(0.7, min(1.2, float(rate)))
+    rate = max(0.7, min(MAX_RATE, float(rate)))
     pct = round((rate - 1.0) * 100)
     return f"{pct:+d}%"
 
@@ -96,7 +97,7 @@ async def root():
 
 @app.get("/health")
 async def health():
-    return {"ok": True, "voice": DEFAULT_VOICE}
+    return {"ok": True, "voice": DEFAULT_VOICE, "maxRate": MAX_RATE}
 
 
 @app.get("/api/voices")
