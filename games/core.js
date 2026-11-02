@@ -94,6 +94,69 @@
   MG.fmtTime = function(ms){ ms = Math.max(0, ms || 0); var s = Math.floor(ms / 1000), m = Math.floor(s / 60); return m + ":" + String(s % 60).padStart(2, "0"); };
   MG.fmtSec = function(ms){ return (Math.max(0, ms || 0) / 1000).toFixed(1) + " 秒"; };
 
+  // ---------- 遊戲清單（標題、至少要幾個生詞） ----------
+  MG.GAME_INFO = {
+    match: { title: "配對 Match", need: 3 },
+    blast: { title: "Blast", need: 4 },
+    quiz:  { title: "快問快答 Quiz", need: 4 },
+    order: { title: "聽音排序 Listen & Order", need: 3 }
+  };
+  MG.gameTitle = function(g){ return (MG.GAME_INFO[g] || MG.GAME_INFO.blast).title; };
+  // 一行說明這局怎麼玩（等待室、作業連結頁用）；c 是那個遊戲自己的設定（cfg.match／blast／quiz／order）
+  MG.gameSummary = function(game, c, phon){
+    c = c || {};
+    if(game === "match") return "配對 Match・" + (c.mode === "timed" ? "限時 " + c.seconds + " 秒" : "比速度") + "・" + MG.ph((MG.MATCH_PAIRS || {})[c.pair] || "", phon);
+    if(game === "quiz") return "快問快答 Quiz・" + MG.ph((MG.QUIZ_Q || {})[c.q || "mix"] || "", phon) + "・" + (c.count || 10) + " 題・每題 " + (c.sec || 15) + " 秒";
+    if(game === "order") return "聽音排序 Listen & Order・" + (c.mode === "score" ? "累積分數，沒有淘汰" : "生存（" + (c.lives || 2) + " 條命" + (c.comeback !== false ? "，可以復活" : "") + "）") + "・" + (c.start || 2) + "～" + (c.maxLen || 6) + " 個詞";
+    return "Blast・" + (c.input === "type" ? "打拼音" : MG.ph((MG.BLAST_Q || {})[c.q] || "", phon));
+  };
+  // 由共用時鐘排程的遊戲（快問快答、聽音排序）：全班同一秒進到同一題，不用老師一題一題按下一題
+  MG.isSynced = function(g){ return g === "quiz" || g === "order"; };
+
+  // ---------- 朗讀（瀏覽器內建語音，優先台灣華語） ----------
+  var voiceCache = null;
+  function zhVoice(){
+    if(!window.speechSynthesis) return null;
+    var vs = speechSynthesis.getVoices() || [];
+    if(voiceCache && vs.indexOf(voiceCache) >= 0) return voiceCache;
+    var pick = function(re){ return vs.filter(function(v){ return re.test(v.lang.replace("_", "-")); })[0]; };
+    voiceCache = pick(/^zh-TW$/i) || pick(/^zh-(HK|CN)$/i) || pick(/^zh/i) || null;
+    return voiceCache;
+  }
+  if(window.speechSynthesis){ try{ speechSynthesis.onvoiceschanged = function(){ voiceCache = null; }; }catch(e){} }
+  // iOS／Safari 要有人點過畫面才允許朗讀：第一次點畫面時先「無聲」念一下，之後定時自動播放才有聲音
+  document.addEventListener("pointerdown", function unlock(){
+    document.removeEventListener("pointerdown", unlock, true);
+    try{ if(window.speechSynthesis){ var u = new SpeechSynthesisUtterance(" "); u.volume = 0; speechSynthesis.speak(u); } }catch(e){}
+  }, true);
+  MG.canSpeak = function(){ return !!window.speechSynthesis; };
+  MG.hasZhVoice = function(){ return !!zhVoice(); };
+  // 念一個詞；done 在念完（或念不出來、逾時）時呼叫一次
+  MG.speak = function(text, o){
+    o = o || {}; var fin = false, timer = 0;
+    var done = function(){ if(fin) return; fin = true; clearTimeout(timer); if(o.done) o.done(); };
+    if(!window.speechSynthesis || !text){ setTimeout(done, 0); return function(){}; }
+    try{
+      var u = new SpeechSynthesisUtterance(String(text)), v = zhVoice();
+      u.lang = (v && v.lang) || "zh-TW"; if(v) u.voice = v; u.rate = o.rate || 0.8; u.onend = done; u.onerror = done;
+      speechSynthesis.speak(u);
+      timer = setTimeout(done, 1800 + String(text).length * 600);   // 有些瀏覽器不會觸發 onend
+    }catch(e){ setTimeout(done, 0); }
+    return function(){ fin = true; clearTimeout(timer); };
+  };
+  // 依序念一串詞，每個詞中間停 gap 毫秒；回傳取消用的函式
+  MG.speakSeq = function(texts, o){
+    o = o || {}; var i = 0, stopped = false, tm = 0, cancelOne = function(){};
+    try{ if(window.speechSynthesis) speechSynthesis.cancel(); }catch(e){}
+    (function next(){
+      if(stopped) return;
+      if(i >= texts.length){ if(o.done) o.done(); return; }
+      var k = i++; if(o.each) o.each(k);
+      cancelOne = MG.speak(texts[k], { rate: o.rate, done: function(){ if(stopped) return; tm = setTimeout(next, o.gap == null ? 650 : o.gap); } });
+    })();
+    return function(){ stopped = true; clearTimeout(tm); cancelOne(); try{ if(window.speechSynthesis) speechSynthesis.cancel(); }catch(e){} };
+  };
+
   // ---------- 小視窗 ----------
   MG.dialog = function(html, opts){
     opts = opts || {};

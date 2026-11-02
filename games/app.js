@@ -12,6 +12,8 @@
       game: game || "match", lessons: {}, custom: [], sample: "fixed", cap: 30, lang: "en", phon: "zy",
       match: { mode: "speed", seconds: 60, pair: "p", batch: 6, theme: "plain", themeFree: true, music: "happy" },
       blast: { q: "w2p", input: "tap", lives: 3, speed: 3, seconds: 0, theme: "space", themeFree: true, music: "space", liveOut: "revive" },
+      quiz: { q: "mix", count: 10, sec: 15, music: "happy" },
+      order: { mode: "survive", lives: 2, comeback: true, start: 2, maxLen: 6, plays: 2, perWord: 3.5, show: "both", music: "relax" },
       live: { scoring: "avg", seconds: 90, stuMusic: true }
     };
   }
@@ -101,7 +103,7 @@
 
   // ---------- 老師：設定頁 ----------
   function viewSetup(){
-    var c = G.cfg, ctx = G.ctx, m = c.match, b = c.blast;
+    var c = G.cfg, ctx = G.ctx, m = c.match, b = c.blast, qz = c.quiz, od = c.order;
     var pctOpts = function(v){ var s = ""; for(var p = 0; p <= 100; p += 10) s += '<option value="' + p + '"' + (p === v ? " selected" : "") + '>' + (p ? p + "%" : "不用") + '</option>'; return s; };
     var selL = lessonsSel(), cnts = MG.poolCounts(selL, c.cap), cntOf = {}; selL.forEach(function(l, i){ cntOf[l.key] = cnts[i]; });
     var rows = ctx.lessons.map(function(l){
@@ -113,7 +115,20 @@
     var recOpts = ctx.lessons.map(function(l){ return '<option value="' + MG.esc(l.key) + '"' + (l.key === recent ? " selected" : "") + '>' + MG.esc(l.title) + '</option>'; }).join("");
     var langOpts = MG.LANGS.map(function(l){ return '<option value="' + l.k + '"' + (l.k === c.lang ? " selected" : "") + '>' + MG.esc(l.n) + '</option>'; }).join("");
     var seg = function(name, val, list){ return '<div class="mg-seg" data-seg="' + name + '">' + list.map(function(x){ return '<button type="button" data-v="' + x[0] + '"' + (String(val) === String(x[0]) ? ' class="on"' : '') + '>' + MG.esc(x[1]) + '</button>'; }).join("") + '</div>'; };
-    var gameOpts = c.game === "match" ?
+    var quizOpts = '<div class="mg-opt"><label>題型</label>' + seg("quiz.q", qz.q, [["mix", "綜合（每題不一樣）"], ["w2p", "看詞語選拼音"], ["w2t", "看詞語選翻譯"], ["p2w", "看拼音選詞語"], ["t2w", "看翻譯選詞語"], ["a2w", "聽聲音選詞語"], ["a2t", "聽聲音選翻譯"], ["w2i", "看詞語選圖片"], ["i2w", "看圖片選詞語"]]) +
+      '<label>題數</label>' + seg("quiz.count", qz.count, [[5, "5 題"], [10, "10 題"], [15, "15 題"], [20, "20 題"]]) +
+      '<label>每題幾秒</label>' + seg("quiz.sec", qz.sec, [[10, "10 秒"], [15, "15 秒"], [20, "20 秒"], [30, "30 秒"]]) +
+      '<div class="note" style="margin-top:6px;">即時多人：全班同一秒進到同一題，時間到公布答案再出下一題，老師不用一題一題按。答對 100 分＋速度加分（最多 50 分），答錯扣 20 分，沒作答不扣分。「聽聲音」題用裝置內建的中文語音念詞語。作業連結／自己練習：答完就公布答案，再進下一題。</div></div>';
+    var orderOpts = '<div class="mg-opt"><label>玩法</label><div>' + seg("order.mode", od.mode, [["survive", "生存：答錯扣命，最後比誰撐得久"], ["score", "累積：沒有淘汰，比總分"]]) + '<div class="note" style="margin-top:4px;">' + (od.mode === "score" ? '每個人打滿所有輪，答得越快、排得越長分數越高。' : '答錯扣一條命；命用完就被淘汰，但還是可以「旁觀練習」——照樣聽、照樣排、照樣批改，只是不計分，所以不會沒事做。') + '</div></div>' +
+      (od.mode === "score" ? '' : '<label>生命</label>' + seg("order.lives", od.lives, [[1, "1 條"], [2, "2 條"], [3, "3 條"]]) +
+        '<label>復活</label><label style="display:flex;gap:6px;align-items:center;font-weight:400;"><input type="checkbox" data-chk="order.comeback"' + (od.comeback !== false ? " checked" : "") + '> 被淘汰的學生連續答對 2 輪就復活（回到遊戲，有 1 條命）</label>') +
+      '<label>第一輪幾個詞</label>' + seg("order.start", od.start, [[2, "2 個"], [3, "3 個"]]) +
+      '<label>最多幾個詞</label>' + seg("order.maxLen", od.maxLen, [[4, "4 個"], [5, "5 個"], [6, "6 個"], [8, "8 個"]]) +
+      '<label>每輪可以聽幾次</label>' + seg("order.plays", od.plays, [[1, "1 次"], [2, "2 次"], [3, "3 次"]]) +
+      '<label>作答時間</label>' + seg("order.perWord", od.perWord, [["2.5", "緊湊"], ["3.5", "一般"], ["5", "寬鬆"]]) +
+      '<label>卡片上顯示</label>' + seg("order.show", od.show || "both", [["both", "詞語＋讀音"], ["zh", "只有詞語"], ["phon", "只有讀音"]]) +
+      '<div class="note" style="margin-top:6px;">每一輪比上一輪多一個詞（詞表是同一份，但念的順序每輪重新打亂）。把卡片拖進格子排成聽到的順序（手機上點一下卡片也會放進下一個空格）。即時多人：全班同一秒進到同一輪。全對得 100 分＋長度加分＋速度加分；排錯的輪，每個放對位置的詞也有一點分數。需要裝置有中文語音。</div></div>';
+    var gameOpts = c.game === "quiz" ? quizOpts : c.game === "order" ? orderOpts : c.game === "match" ?
       '<div class="mg-opt"><label>模式</label>' + seg("match.mode", m.mode, [["speed", "比速度：全部配完"], ["timed", "限時：時間內配越多越好"]]) +
       '<label>時間（限時模式）</label><span><input type="number" class="mg-num" min="15" max="600" step="5" data-num="match.seconds" value="' + m.seconds + '"> 秒</span>' +
       '<label>配對方式</label>' + seg("match.pair", m.pair, [["p", "詞語 ↔ 拼音"], ["t", "詞語 ↔ 翻譯"], ["pt", "詞語 ↔ 拼音＋翻譯"], ["i", "詞語 ↔ 圖片"]]) +
@@ -127,23 +142,25 @@
       '</div>';
 
     gameOpts = MG.ph(gameOpts, c.phon);
-    var gm = c.game === "match" ? m : b, thList = c.game === "match" ? MG.MATCH_THEMES : MG.THEME_ORDER;
-    gameOpts += '<div class="mg-opt" style="margin-top:12px;"><label>主題（背景）</label><div><div class="th-list">' + thList.map(function(id){ return '<button type="button" class="th-card' + (gm.theme === id ? " on" : "") + '" data-theme="' + id + '">' + MG.themeSwatch(id) + '<b>' + MG.esc(MG.THEMES[id].name) + '</b></button>'; }).join("") + '</div>' +
-      '<label style="display:flex;gap:6px;align-items:center;margin-top:8px;font-weight:400;"><input type="checkbox" data-chk="' + c.game + '.themeFree"' + (gm.themeFree !== false ? " checked" : "") + '> 學生自己練習時可以換主題</label><div class="note" style="margin-top:4px;">選主題時，背景音樂會換成搭配的曲子（下面還可以改）。</div></div></div>' +
+    var gm = c[c.game], thList = c.game === "match" ? MG.MATCH_THEMES : MG.THEME_ORDER, hasTheme = c.game === "match" || c.game === "blast";
+    gameOpts += (!hasTheme ? '' : '<div class="mg-opt" style="margin-top:12px;"><label>主題（背景）</label><div><div class="th-list">' + thList.map(function(id){ return '<button type="button" class="th-card' + (gm.theme === id ? " on" : "") + '" data-theme="' + id + '">' + MG.themeSwatch(id) + '<b>' + MG.esc(MG.THEMES[id].name) + '</b></button>'; }).join("") + '</div>' +
+      '<label style="display:flex;gap:6px;align-items:center;margin-top:8px;font-weight:400;"><input type="checkbox" data-chk="' + c.game + '.themeFree"' + (gm.themeFree !== false ? " checked" : "") + '> 學生自己練習時可以換主題</label><div class="note" style="margin-top:4px;">選主題時，背景音樂會換成搭配的曲子（下面還可以改）。</div></div></div>') +
       '<div class="mg-opt" style="margin-top:12px;"><label>背景音樂</label><div class="mg-row">' + seg(c.game + ".music", gm.music || "", [["", "關"]].concat(MG.MUSIC_ORDER.map(function(k){ return [k, MG.MUSIC[k].name]; }))) + (gm.music ? '<button type="button" class="mg-btn sm" data-preview="' + gm.music + '">試聽</button>' : '') + '</div>' +
       '<label></label><label style="display:flex;gap:6px;align-items:center;font-weight:400;"><input type="checkbox" data-chk="live.stuMusic"' + (c.live.stuMusic !== false ? " checked" : "") + '> 即時多人時，學生的裝置也播放音樂和音效（學生可以自己關掉）</label></div>';
     app.innerHTML = '<div class="mg-wrap">' +
       '<div id="lv-resume"></div><div class="mg-head"><h2>生詞遊戲</h2><span class="note">' + MG.esc(ctx.cls ? ctx.cls.name : "沒有指定班級") + '</span><span class="grow"></span></div>' +
       '<div class="mg-panel"><div class="mg-games">' +
       '<button class="mg-game' + (c.game === "match" ? " on" : "") + '" data-game="match"><img class="mg-game-img" src="../icons/act-match.png" alt=""><b>配對 Match</b><span class="note">詞語和拼音／翻譯配成一對，比速度或限時。</span></button>' +
-      '<button class="mg-game' + (c.game === "blast" ? " on" : "") + '" data-game="blast"><img class="mg-game-img" src="../icons/act-blast.png" alt=""><b>Blast</b><span class="note">答案從畫面掉下來，點對的那個。可以選主題。</span></button></div></div>' +
+      '<button class="mg-game' + (c.game === "blast" ? " on" : "") + '" data-game="blast"><img class="mg-game-img" src="../icons/act-blast.png" alt=""><b>Blast</b><span class="note">答案從畫面掉下來，點對的那個。可以選主題。</span></button>' +
+      '<button class="mg-game' + (c.game === "quiz" ? " on" : "") + '" data-game="quiz"><span class="mg-game-img mg-game-emo">🎯</span><b>快問快答 Quiz</b><span class="note">像 Kahoot：一題一題出，四選一，越快分數越高。全班同一秒進到同一題。</span></button>' +
+      '<button class="mg-game' + (c.game === "order" ? " on" : "") + '" data-game="order"><span class="mg-game-img mg-game-emo">👂</span><b>聽音排序 Listen &amp; Order</b><span class="note">聽一串詞語，拖成聽到的順序；每輪多一個詞，越來越難。被淘汰也能旁觀練習、復活。</span></button></div></div>' +
       '<div class="mg-panel"><h3>出題範圍 <span class="note">勾選課次，設定每一課抽幾成的生詞</span></h3>' +
       '<div class="mg-row" style="margin-bottom:10px;"><span class="note">從最近一課往前：100%、80%、60%、40%、20%</span><select class="mg-sel" id="sc-rec" style="max-width:280px;">' + recOpts + '</select><button class="mg-btn sm" id="sc-preset">套用</button><button class="mg-btn sm ghost" id="sc-clear">全部不用</button><button class="mg-btn sm" id="sc-custom" title="不用教材的生詞，自己輸入想考的詞語">✏️ 自己輸入生詞</button></div>' +
       (rows ? '<div class="sc-list"><div class="sc-row head"><span></span><span>課次</span><span class="n">生詞</span><span>抽幾成</span><span></span></div>' + rows + '</div>' : '<p class="note">這個班的教材還沒有生詞。</p>') +
       '<div class="mg-row" style="margin-top:10px;"><span>抽題方式</span>' + seg("sample", c.sample, [["fixed", "固定（照課本順序取前面的）"], ["random", "隨機（每次不一樣）"]]) + '</div><div class="mg-row" style="margin-top:8px;"><span>一局最多</span>' + seg("cap", c.cap, [[10, "10 個"], [20, "20 個"], [30, "30 個"], [50, "50 個"], [0, "不限"]]) + '<span class="note">超過時每一課照比例一起減少</span><span class="grow" style="flex:1"></span><span class="sc-sum">共 ' + sum + ' 個生詞</span></div></div>' +
       '<div class="mg-panel"><h3>讀音 <span class="note">遊戲裡顯示注音還是拼音</span></h3>' + seg("phon", c.phon || "zy", [["zy", "注音"], ["py", "拼音"]]) + '</div>' +
       '<div class="mg-panel"><h3>翻譯語言 <span class="note">配對的翻譯、Blast 的意思都用這個語言</span></h3><div class="mg-row"><select class="mg-sel" id="lang">' + langOpts + '</select><button class="mg-btn sm" id="tr-edit">檢查／修改翻譯、拼音、圖片</button><span class="note" id="tr-miss"></span></div></div>' +
-      '<div class="mg-panel"><h3>' + (c.game === "match" ? "配對設定" : "Blast 設定") + '</h3>' + gameOpts + '</div>' +
+      '<div class="mg-panel"><h3>' + (c.game === "match" ? "配對設定" : c.game === "blast" ? "Blast 設定" : MG.gameTitle(c.game).split(" ")[0] + "設定") + '</h3>' + gameOpts + '</div>' +
       '<div class="mg-panel"><h3>開始</h3><div class="mg-row">' +
       '<button class="mg-btn big primary" id="go-live">即時多人遊戲</button>' +
       '<button class="mg-btn big" id="go-solo">老師投影試玩</button>' +
@@ -190,13 +207,15 @@
       if(t.id === "lang"){ G.cfg.lang = t.value; saveCfg(); updateMissing(); return; }
     };
   }
+  // 這個設定的題目需要翻譯／圖片嗎（綜合題型沒有翻譯的詞會自動跳過，所以不強迫）
+  function needTr(c){ var g = c.game, q = (c[g] || {}).q; return g === "match" ? c.match.pair !== "p" : g === "blast" ? (q === "w2t" || q === "t2w") && c.blast.input !== "type" : g === "quiz" ? (q === "w2t" || q === "t2w" || q === "a2t") : false; }
+  function needPic(c){ var g = c.game, q = (c[g] || {}).q; return g === "match" ? c.match.pair === "i" : g === "blast" ? (q === "w2i" || q === "i2w") && c.blast.input !== "type" : g === "quiz" ? (q === "w2i" || q === "i2w") : false; }
   function checkPool(){
     var pool = poolFor(1);
     if(!pool.length){ MG.toast("請先在「出題範圍」勾選課次"); return false; }
-    var need = G.cfg.game === "match" ? 3 : 4;
+    var need = MG.GAME_INFO[G.cfg.game].need;
     if(pool.length < need){ MG.toast("生詞太少了，至少要 " + need + " 個，請多勾幾課或提高比例"); return false; }
-    var lang = G.cfg.lang, usesTr = G.cfg.game === "match" ? G.cfg.match.pair !== "p" : (G.cfg.blast.q === "w2t" || G.cfg.blast.q === "t2w") && G.cfg.blast.input !== "type";
-    var usesPic = G.cfg.game === "match" ? G.cfg.match.pair === "i" : (G.cfg.blast.q === "w2i" || G.cfg.blast.q === "i2w") && G.cfg.blast.input !== "type";
+    var lang = G.cfg.lang, usesTr = needTr(G.cfg), usesPic = needPic(G.cfg);
     if(usesPic){
       var withPic = pool.filter(function(w){ return MG.picOf(w); }).length;
       if(withPic < need){ MG.toast("有圖片的詞語只有 " + withPic + " 個，至少要 " + need + " 個；請在表格裡補上 Emoji 或圖片"); trEditor(); return false; }
@@ -274,23 +293,25 @@
   MG.playGame = function(root, game, words, o){
     var opts = Object.assign({ words: words, lang: o.lang }, o);
     if(game === "match") return MG.Match.create(root, Object.assign(opts, o.match || {}, o.theme ? { theme: o.theme } : {}));
+    if(game === "quiz") return MG.Quiz.create(root, Object.assign(opts, o.quiz || {}));
+    if(game === "order") return MG.Order.create(root, Object.assign(opts, o.order || {}));
     return MG.Blast.create(root, Object.assign(opts, o.blast || {}, { theme: o.theme || (o.blast || {}).theme }));
   };
   MG.resultHtml = function(game, r, title){
     var acc = Math.round(MG.acc(r) * 100), avg = MG.avgRt(r);
     var stats = '<div><small>答對 Correct</small><b>' + r.c + '</b></div><div><small>答錯 Wrong</small><b>' + r.w + '</b></div><div><small>正確率 Accuracy</small><b>' + acc + '%</b></div>' +
-      (game === "match" ? '<div><small>' + (r.done ? "完成時間 Finish time" : "時間 Time") + '</small><b>' + MG.fmtSec(r.time) + '</b></div>' : '<div><small>平均反應 Avg. speed</small><b>' + (avg ? (avg / 1000).toFixed(1) + " 秒" : "—") + '</b></div>');
+      (game === "match" ? '<div><small>' + (r.done ? "完成時間 Finish time" : "時間 Time") + '</small><b>' + MG.fmtSec(r.time) + '</b></div>' : game === "order" ? '<div><small>最長排對 Longest</small><b>' + (r.best || 0) + ' 個詞</b></div>' : '<div><small>平均反應 Avg. speed</small><b>' + (avg ? (avg / 1000).toFixed(1) + " 秒" : "—") + '</b></div>');
     var miss = (r.missed || []).length ? '<div class="gm-miss"><div class="note">再複習一下 Review these words：</div>' + r.missed.map(function(w){ return '<span>' + MG.esc(w.w) + '<i>' + MG.esc(w.p || "") + '</i></span>'; }).join("") + '</div>' : '';
     return '<h2>' + MG.esc(title || (r.done ? "全部配完了！ All matched!" : "時間到！ Time's up!")) + '</h2><div class="note">分數 Score</div><div class="big">' + r.s + '</div><div class="grid">' + stats + '</div>' + miss;
   };
-  function gameOpts(cfg){ return { lang: cfg.lang, phon: cfg.phon, match: cfg.match, blast: cfg.blast }; }
+  function gameOpts(cfg){ return { lang: cfg.lang, phon: cfg.phon, match: cfg.match, blast: cfg.blast, quiz: cfg.quiz, order: cfg.order }; }
 
   function teacherSolo(){
     var seed = MG.newSeed(), words = poolFor(seed), cfg = G.cfg;
     var run = function(){
-      var g = MG.playGame(app, cfg.game, words, Object.assign(gameOpts(cfg), { seed: seed, title: cfg.game === "match" ? "配對 Match" : "Blast",
+      var g = MG.playGame(app, cfg.game, words, Object.assign(gameOpts(cfg), { seed: seed, title: MG.gameTitle(cfg.game),
         onQuit: function(){ g.stop(); viewSetup(); },
-        onEnd: function(r){ setTimeout(function(){ app.innerHTML = '<div class="gm-res">' + MG.resultHtml(cfg.game, r, cfg.game === "blast" ? "遊戲結束" : null) + '<div class="mg-row" style="justify-content:center;margin-top:14px;"><button class="mg-btn big primary" id="again">再玩一次</button><button class="mg-btn big" id="back">回設定</button></div></div>'; MG.$("#again").onclick = function(){ seed = MG.newSeed(); if(cfg.sample === "random") words = poolFor(seed); run(); }; MG.$("#back").onclick = viewSetup; }, 700); } }));
+        onEnd: function(r){ setTimeout(function(){ app.innerHTML = '<div class="gm-res">' + MG.resultHtml(cfg.game, r, cfg.game === "match" ? null : "遊戲結束") + '<div class="mg-row" style="justify-content:center;margin-top:14px;"><button class="mg-btn big primary" id="again">再玩一次</button><button class="mg-btn big" id="back">回設定</button></div></div>'; MG.$("#again").onclick = function(){ seed = MG.newSeed(); if(cfg.sample === "random") words = poolFor(seed); run(); }; MG.$("#back").onclick = viewSetup; }, 700); } }));
     };
     countdown(3, run);
   }
@@ -305,9 +326,9 @@
   async function makeLink(){
     var c = G.cfg, t = G.ctx.t; if(!t){ MG.toast("要登入老師帳號才能產生連結"); return; }
     var lessons = lessonsSel().map(function(l){ return { title: l.title, pct: l.pct, words: MG.applyTr(cloneLesson(l).words, G.trStore).map(slim) }; });
-    var title = await MG.ask("連結名稱（學生會看到）", (c.game === "match" ? "配對 Match" : "Blast") + "：" + lessonsSel().map(function(l){ return l.short || l.title; }).join("、"), "產生連結");
+    var title = await MG.ask("連結名稱（學生會看到）", MG.gameTitle(c.game).split(" ")[0] + "：" + lessonsSel().map(function(l){ return l.short || l.title; }).join("、"), "產生連結");
     if(!title) return;
-    var id = MG.fb.newId(), set = { title: title.slice(0, 120), game: c.game, sample: c.sample, cap: c.cap || 0, lang: c.lang, phon: c.phon || "py", match: c.match, blast: c.blast, lessons: lessons, cls: G.ctx.cls ? G.ctx.cls.name : "", clsId: G.ctx.cls ? G.ctx.cls.c : "", createdAt: Date.now() };
+    var id = MG.fb.newId(), set = { title: title.slice(0, 120), game: c.game, sample: c.sample, cap: c.cap || 0, lang: c.lang, phon: c.phon || "py", match: c.match, blast: c.blast, quiz: c.quiz, order: c.order, lessons: lessons, cls: G.ctx.cls ? G.ctx.cls.name : "", clsId: G.ctx.cls ? G.ctx.cls.c : "", createdAt: Date.now() };
     try{ await MG.fb.set("teacherPlatform/" + t + "/gameSets/" + id, set); }catch(e){ MG.toast("產生失敗，請檢查網路"); return; }
     showLink(id, set);
   }
@@ -346,12 +367,12 @@
     if(!set){ app.innerHTML = '<div class="solo-card"><h2>找不到這個練習</h2><p class="note">連結可能已經被老師刪除，請跟老師確認。</p></div>'; return; }
     var name = ""; try{ name = localStorage.getItem("mm_game_name") || ""; }catch(e){}
     var gcfg = set[set.game] || {}, lang = set.lang || "en", theme = gcfg.theme || (set.game === "match" ? "plain" : "space"), thList = set.game === "match" ? MG.MATCH_THEMES : MG.THEME_ORDER;
-    var usesTr = set.game === "match" ? (set.match || {}).pair !== "p" : ["w2t", "t2w"].indexOf((set.blast || {}).q) >= 0 && (set.blast || {}).input !== "type";
+    var usesTr = needTr(set), hasTheme = set.game === "match" || set.game === "blast";
     function form(){
-      app.innerHTML = '<div class="solo-card"><div class="brand-line"><img src="../icons/logo.svg" alt="">曼米中文</div><h2>' + MG.esc(set.title) + '</h2><div class="note">' + MG.esc(set.game === "match" ? "配對 Match・" + (set.match.mode === "timed" ? "限時 " + set.match.seconds + " 秒" : "比速度") + "・" + MG.ph(MG.MATCH_PAIRS[set.match.pair], set.phon) : "Blast・" + (set.blast.input === "type" ? "打拼音" : MG.ph(MG.BLAST_Q[set.blast.q], set.phon))) + '</div>' +
+      app.innerHTML = '<div class="solo-card"><div class="brand-line"><img src="../icons/logo.svg" alt="">曼米中文</div><h2>' + MG.esc(set.title) + '</h2><div class="note">' + MG.esc(MG.gameSummary(set.game, set[set.game], set.phon)) + '</div>' +
         '<label>你的名字 Your name</label><input class="mg-in" id="nm" maxlength="20" value="' + MG.esc(name) + '" placeholder="老師才知道是誰玩的 So your teacher knows it\'s you">' +
         (usesTr ? '<label>翻譯語言 Language</label><select class="mg-sel" id="lg" style="width:100%;">' + MG.LANGS.map(function(l){ return '<option value="' + l.k + '"' + (l.k === lang ? " selected" : "") + '>' + MG.esc(l.n) + '</option>'; }).join("") + '</select>' : '') +
-        (gcfg.themeFree !== false ? '<label>主題 Theme</label><div class="th-list">' + thList.map(function(k){ return '<button type="button" class="th-card' + (k === theme ? " on" : "") + '" data-theme="' + k + '">' + MG.themeSwatch(k) + '<b>' + MG.esc(MG.THEMES[k].name) + '</b></button>'; }).join("") + '</div>' : '') +
+        (hasTheme && gcfg.themeFree !== false ? '<label>主題 Theme</label><div class="th-list">' + thList.map(function(k){ return '<button type="button" class="th-card' + (k === theme ? " on" : "") + '" data-theme="' + k + '">' + MG.themeSwatch(k) + '<b>' + MG.esc(MG.THEMES[k].name) + '</b></button>'; }).join("") + '</div>' : '') +
         '<button class="mg-btn big primary" id="start">開始 Start</button><p class="note" id="st" style="text-align:center;margin-top:8px;"></p></div>';
       app.onclick = function(e){ var b = e.target.closest("[data-theme]"); if(b){ theme = b.dataset.theme; MG.$$(".th-card").forEach(function(x){ x.classList.toggle("on", x === b); }); } };
       MG.$("#start").onclick = start;
@@ -368,11 +389,11 @@
       countdown(3, function(){
         // 學生換了主題：音樂也換成搭配的（老師有開音樂才會播）
         var musOv = theme !== gcfg.theme && gcfg.music && MG.THEMES[theme] ? { music: MG.THEMES[theme].music } : {};
-        var g = MG.playGame(app, set.game, words, { lang: lang, phon: set.phon, match: Object.assign({}, set.match, musOv), blast: Object.assign({}, set.blast, musOv), theme: theme, seed: seed, title: set.title,
+        var g = MG.playGame(app, set.game, words, { lang: lang, phon: set.phon, match: Object.assign({}, set.match, musOv), blast: Object.assign({}, set.blast, musOv), quiz: set.quiz, order: set.order, theme: theme, seed: seed, title: set.title,
           onQuit: function(){ g.stop(); form(); },
           onEnd: function(r){
             MG.fb.set("teacherPlatform/" + t + "/gameResults/" + id + "/" + MG.fb.newId(), { name: name.slice(0, 20), s: r.s, c: r.c, w: r.w, rt: r.rt, n: r.n, time: Math.round(r.time), done: !!r.done, lang: lang, at: Date.now() }).catch(function(){});
-            setTimeout(function(){ app.innerHTML = '<div class="gm-res">' + MG.resultHtml(set.game, r, set.game === "blast" ? "遊戲結束 Game over" : null) + '<p class="note">成績已經記下來了，可以再玩一次挑戰更高分。<br>Your score is saved. Play again to beat it!</p><div class="mg-row" style="justify-content:center;margin-top:14px;"><button class="mg-btn big primary" id="again">再玩一次 Play again</button><button class="mg-btn big" id="back">換設定 Settings</button></div></div>'; MG.$("#again").onclick = function(){ form(); start(); }; MG.$("#back").onclick = form; }, 700);
+            setTimeout(function(){ app.innerHTML = '<div class="gm-res">' + MG.resultHtml(set.game, r, set.game === "match" ? null : "遊戲結束 Game over") + '<p class="note">成績已經記下來了，可以再玩一次挑戰更高分。<br>Your score is saved. Play again to beat it!</p><div class="mg-row" style="justify-content:center;margin-top:14px;"><button class="mg-btn big primary" id="again">再玩一次 Play again</button><button class="mg-btn big" id="back">換設定 Settings</button></div></div>'; MG.$("#again").onclick = function(){ form(); start(); }; MG.$("#back").onclick = form; }, 700);
           } });
       });
     }
