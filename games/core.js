@@ -158,7 +158,7 @@
     var best = null, bs = -1;
     vs.forEach(function(v){
       var lang = String(v.lang || "").replace("_", "-"); if(!/^zh/i.test(lang) && !/曉臻|曉珍|HsiaoChen/i.test(v.name)) return;
-      var n = 1; if(/曉臻|曉珍|HsiaoChen/i.test(v.name)) n += 100; if(/^zh-TW$/i.test(lang)) n += 40; if(/Taiwan|臺灣|台灣/i.test(v.name)) n += 30; if(/Mei-?Jia|美佳/i.test(v.name)) n += 20; if(/Natural|Online/i.test(v.name)) n += 5;
+      var n = 1; if(/曉臻|曉珍|HsiaoChen/i.test(v.name)) n += 100; if(/^zh-TW$/i.test(lang)) n += 40; if(/Taiwan|臺灣|台灣/i.test(v.name)) n += 30; if(/Mei-?Jia|美佳/i.test(v.name)) n += 20; if(/Natural|Online/i.test(v.name)) n += 5; if(/Zhiwei|志偉|Danny|Li-?mu|Yunjhe|YunJhe|雲哲|Kangkang|Yunyang|\bMale\b|男/i.test(v.name)) n -= 80;   // 已知的男聲往後排
       if(n > bs){ bs = n; best = v; }
     });
     voiceCache = best; return best;
@@ -183,7 +183,10 @@
     if(b){
       src = playBuf(b, done);
       if(src){ timer = setTimeout(done, b.duration * 1000 + 600); return function(){ fin = true; clearTimeout(timer); try{ src.stop(); }catch(e){} }; }
-    } else T.load(text, o);   // 這次先用裝置語音；順便下載，下次就用自然語音
+    } else {
+      T.load(text, o);   // 這次先用裝置語音；順便下載，下次就用自然語音
+      if(T.srv() && !o.quiet && Date.now() - (MG.speak.lastNote || 0) > 60000){ MG.speak.lastNote = Date.now(); MG.toast("語音伺服器還沒準備好，先用裝置內建的語音（聲音可能不一樣） Server voice not ready — using the device voice", 4500); }
+    }
     if(!window.speechSynthesis || !text){ setTimeout(done, 0); return function(){}; }
     try{
       var u = new SpeechSynthesisUtterance(String(text)), v = zhVoice();
