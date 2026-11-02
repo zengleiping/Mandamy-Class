@@ -15,13 +15,14 @@
   var MG = window.MG;
   var LEAD = 1800, REVEAL = 5000, REVEAL_SELF = 4000;
   // 語速：rate 是伺服器語音的速度（0.7～1.2）；gap 是詞跟詞之間停多久。預設「快」，聽起來比較刺激。
-  var PACE = { slow: { rate: 0.95, gap: 420 }, normal: { rate: 1.1, gap: 300 }, fast: { rate: 1.2, gap: 200 } };
+  //   k：每個詞的長度要乘多少（念得越快，每個詞佔的時間越短）
+  var PACE = { slow: { rate: 0.95, gap: 420, k: 1 }, normal: { rate: 1.1, gap: 300, k: 1 }, fast: { rate: 1.2, gap: 200, k: 1 }, faster: { rate: 1.4, gap: 150, k: 0.86 }, fastest: { rate: 1.6, gap: 100, k: 0.75 } };
   function paceOf(o){ return PACE[o.pace] || PACE.fast; }
   function hanLen(w){ return Math.max(1, Array.from(String(w.w || "")).length); }
   // 每個詞「開始念」的時間是固定算出來的（跟詞的長度有關，跟裝置無關），所以全班聽到的節奏一樣，也算得出整段多長
-  function slotMs(w, pc){ return pc.gap + 450 + 230 * hanLen(w); }
+  function slotMs(w, pc){ return Math.round(pc.gap + (450 + 230 * hanLen(w)) * pc.k); }
   function lensOf(o, nWords){
-    var start = MG.clamp(Number(o.start) || 2, 2, 6), maxL = Math.min(MG.clamp(Number(o.maxLen) || 6, 2, 10), nWords), lens = [];
+    var start = MG.clamp(Number(o.start) || 2, 2, 6), want = o.maxLen === 0 || o.maxLen === "0" || o.maxLen === "all" ? 40 : MG.clamp(Number(o.maxLen) || 6, 2, 40), maxL = Math.min(want, nWords), lens = [];
     for(var L = start; L <= maxL; L++) lens.push(L);
     return { start: start, lens: lens };
   }
@@ -146,6 +147,7 @@
       playsLeft = memory ? 1 : Number(o.plays) || 2; speaking = false; joinedLate = memory && sync && now() - start > LEAD + 1500;   // 考記憶：聽音一半才進來的人，這輪沒聽全，不計分 if(cancelSpeech){ cancelSpeech(); cancelSpeech = null; }
       scored = !spectate && r <= lastQ;   // 重新整理後回來：這輪已經答過了，不重複計分
       msg.className = "od-msg"; msg.textContent = ""; ansEl.innerHTML = ""; ansEl.className = "od-ans";
+      el.classList.toggle("many", R[r].L > 10);
       playUi(); hud(); draw();
       if(!spectate) MG.tts.preload(R[r].heard.map(function(w){ return w.w; }), { rate: pc.rate, voice: o.voice });   // 這輪要念的詞再確認一次都載好了（已經有的不會重抓）
     }

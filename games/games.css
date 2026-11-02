@@ -378,3 +378,9 @@ h2 .en, h3 .en{ display:block; margin:2px 0 0; font-size:.6em; }
 .lv-stage .gm{ min-height:0; }
 .lv-stage .qz-opt:disabled, .lv-stage .od-slot{ cursor:default; }
 .mg-game-emo{ display:flex; align-items:center; justify-content:center; font-size:40px; }
+
+/* 聽音排序：詞很多時（超過 10 個）卡片縮小一點，一個畫面放得下 */
+.od.many .od-slot, .od.many .od-hole, .od.many .od-tile{ width:78px; height:64px; }
+.od.many .od-tile.in{ width:72px; height:58px; }
+.od.many .od-tile .zh{ font-size:20px; } .od.many .od-slots, .od.many .od-bank{ gap:7px; }
+.od.many .od-slot em{ width:20px; height:20px; font-size:12px; top:-8px; }
