@@ -128,7 +128,7 @@
     var orderOpts = '<div class="mg-opt"><label>玩法</label><div>' + seg("order.mode", od.mode, [["survive", "生存：答錯扣命，最後比誰撐得久"], ["score", "累積：沒有淘汰，比總分"]]) + '<div class="note" style="margin-top:4px;">' + (od.mode === "score" ? '每個人打滿所有輪，答得越快、排得越長分數越高。' : '答錯扣一條命；命用完就被淘汰，但還是可以「旁觀練習」——照樣聽、照樣排、照樣批改，只是不計分，所以不會沒事做。') + '</div></div>' +
       (od.mode === "score" ? '' : '<label>生命</label>' + seg("order.lives", od.lives, [[1, "1 條"], [2, "2 條"], [3, "3 條"]]) +
         '<label>復活</label><label style="display:flex;gap:6px;align-items:center;font-weight:400;"><input type="checkbox" data-chk="order.comeback"' + (od.comeback !== false ? " checked" : "") + '> 被淘汰的學生連續答對 2 輪就復活（回到遊戲，有 1 條命）</label>') +
-      '<label>第一輪幾個詞</label>' + seg("order.start", od.start, [[2, "2 個"], [3, "3 個"]]) +
+      '<label>第一輪幾個詞</label>' + seg("order.start", od.start, [[2, "2"], [3, "3"], [4, "4"], [5, "5"], [6, "6"], [8, "8"], [10, "10"], [12, "12"]]) +
       '<label>最多幾個詞</label><div>' + seg("order.maxLen", od.maxLen, [[4, "4"], [5, "5"], [6, "6"], [8, "8"], [10, "10"], [12, "12"], [15, "15"], [20, "20"], [30, "30"], [0, "用完所有詞"]]) + odInfo + '</div>' +
       '<label>怎麼聽</label><div>' + seg("order.flow", od.flow || "free", [["free", "自由：邊聽邊排，可以重聽"], ["memory", "考記憶：全班先聽完才能作答"]]) + '<div class="note" style="margin-top:4px;">' + (od.flow === "memory" ? '每一輪全班一起聽一次音檔（不能重聽），整段念完才開始作答，考驗記憶力。聽的時候卡片會先出現但不能動。' : '每一輪一開始就會念，邊聽邊把卡片排進格子，也可以按「聽」重聽。') + '</div></div>' +
       (od.flow === "memory" ? '' : '<label>每輪可以聽幾次</label>' + seg("order.plays", od.plays, [[1, "1 次"], [2, "2 次"], [3, "3 次"]])) +
@@ -222,7 +222,7 @@
   function checkPool(){
     var pool = poolFor(1);
     if(!pool.length){ MG.toast("請先在「出題範圍」勾選課次"); return false; }
-    var need = MG.GAME_INFO[G.cfg.game].need;
+    var need = G.cfg.game === "order" ? Math.max(MG.GAME_INFO.order.need, Number(G.cfg.order.start) || 2) : MG.GAME_INFO[G.cfg.game].need;
     if(pool.length < need){ MG.toast("生詞太少了，至少要 " + need + " 個，請多勾幾課或提高比例"); return false; }
     var lang = G.cfg.lang, usesTr = needTr(G.cfg), usesPic = needPic(G.cfg);
     if(usesPic){
