@@ -117,7 +117,7 @@
   // 優先用曼米語音伺服器的自然語音（跟平台生詞發音同一個，預設「曉臻」）：先把每個詞下載好，用 WebAudio 播。
   // 這樣聲音自然、速度由我們控制，每個詞的長度固定，全班聽到的節奏一樣，也不受裝置內建語音好壞影響。
   // 伺服器連不上（或這個詞還沒載好）才改用裝置內建的中文語音（優先「雅婷」等台灣語音）。
-  MG.TTS_VOICES = [["zh-TW-HsiaoChenNeural", "曉臻（女）"], ["zh-TW-HsiaoYuNeural", "曉雨（女）"], ["zh-TW-YunJheNeural", "雲哲（男）"]];
+  MG.TTS_VOICES = [["zh-TW-HsiaoChenNeural", "曉臻／曉珍（女）"], ["zh-TW-HsiaoYuNeural", "曉雨（女）"], ["zh-TW-YunJheNeural", "雲哲（男）"]];
   var T = MG.tts = { buf: {}, pend: {}, down: 0 };
   function tkey(text, o){ return (o.voice || MG.TTS_VOICES[0][0]) + "|" + (o.rate || 1) + "|" + text; }
   T.srv = function(){ var u = ""; try{ u = localStorage.getItem("mm_tts_server") || ""; }catch(e){} if(!u) u = window.MM_TTS_SERVER || ""; return String(u).replace(/\/+$/, ""); };
@@ -149,7 +149,7 @@
     await Promise.all([worker(), worker(), worker()]); return ok;
   };
 
-  // 裝置內建語音（備用）：雅婷 > 曉臻 > 其他台灣語音 > 任何中文語音
+  // 裝置內建語音（備用）：曉臻（曉珍）> 其他台灣語音 > 任何中文語音
   var voiceCache = null;
   function zhVoice(){
     if(!window.speechSynthesis) return null;
@@ -157,8 +157,8 @@
     if(voiceCache && vs.indexOf(voiceCache) >= 0) return voiceCache;
     var best = null, bs = -1;
     vs.forEach(function(v){
-      var lang = String(v.lang || "").replace("_", "-"); if(!/^zh/i.test(lang) && !/雅婷|Yating|曉臻|HsiaoChen/i.test(v.name)) return;
-      var n = 1; if(/雅婷|Yating/i.test(v.name)) n += 100; if(/曉臻|HsiaoChen/i.test(v.name)) n += 60; if(/^zh-TW$/i.test(lang)) n += 40; if(/Taiwan|臺灣|台灣/i.test(v.name)) n += 30; if(/Mei-?Jia|美佳/i.test(v.name)) n += 20; if(/Natural|Online/i.test(v.name)) n += 5;
+      var lang = String(v.lang || "").replace("_", "-"); if(!/^zh/i.test(lang) && !/曉臻|曉珍|HsiaoChen/i.test(v.name)) return;
+      var n = 1; if(/曉臻|曉珍|HsiaoChen/i.test(v.name)) n += 100; if(/^zh-TW$/i.test(lang)) n += 40; if(/Taiwan|臺灣|台灣/i.test(v.name)) n += 30; if(/Mei-?Jia|美佳/i.test(v.name)) n += 20; if(/Natural|Online/i.test(v.name)) n += 5;
       if(n > bs){ bs = n; best = v; }
     });
     voiceCache = best; return best;
