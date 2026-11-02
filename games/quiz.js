@@ -60,7 +60,7 @@
     var sec = MG.clamp(Number(o.sec) || 15, 5, 60), sync = !!o.sync, spectate = !!o.spectate, lang = o.lang;
     var qs = build(words, o), n = qs.length;
     var sc = MG.newScore(o.init), lastQ = o.init && typeof o.init.q === "number" ? o.init.q : -1, streak = o.init && o.init.streak || 0;
-    var startAt = o.startAt || now(), slot = slotMs(o), ended = false, timer = 0, missed = {}, revealAt = 0;
+    var gateAt = !sync && !spectate && !!MG.tts.srv() && audioTexts(qs).length > 0, startAt = o.startAt || now(), slot = slotMs(o), ended = false, timer = 0, missed = {}, revealAt = 0;
     var cur = -1, t0 = 0, sawAsk = false, phase = "", chosen = -1, locked = false, scored = false, lastPts = 0, cancelSpeech = null;
 
     root.innerHTML = '<div class="gm qz">' +
@@ -146,6 +146,7 @@
         if(ph !== phase) setPhase(ph);
         left = ph === "ask" ? sec * 1000 - within : 0;
       } else {
+        if(gateAt) return;
         if(cur < 0){ enter(0, t); setPhase("ask"); }
         if(phase === "ask" && (chosen >= 0 || t >= t0 + sec * 1000)){ setPhase("reveal"); revealAt = t; }
         left = phase === "ask" ? t0 + sec * 1000 - t : 0;
@@ -170,7 +171,10 @@
     if(o.onQuit) MG.$(".qz-quit", el).onclick = function(){ if(cancelSpeech) cancelSpeech(); MG.music.stop(); o.onQuit(); };
     MG.bindMusicBtn(el, o.music);
     if(!n){ msg.className = "qz-msg bad"; msg.textContent = "沒有可以出的題目（可能缺拼音、翻譯或詞語太少）"; return { stop: function(){}, finish: function(){}, score: function(){ return sc; }, result: result }; }
-    if(!spectate){ var at = audioTexts(qs); if(at.length) MG.tts.preload(at, { rate: SAY_RATE, voice: o.voice }); }   // 聽聲音的題：先把語音下載好
+    if(!spectate){   // 聽聲音的題：先把語音下載好；自己練習／試玩要等到載好（最多 10 秒）才開始
+      var at = audioTexts(qs);
+      if(at.length){ var pf = MG.tts.preload(at, { rate: SAY_RATE, voice: o.voice }); if(gateAt){ msg.className = "qz-msg wait"; msg.textContent = "載入語音中… Loading the voice…"; Promise.race([pf, new Promise(function(r){ setTimeout(r, 10000); })]).then(function(){ gateAt = false; startAt = now(); msg.className = "qz-msg"; msg.textContent = ""; }, function(){ gateAt = false; startAt = now(); }); } }
+    }
     hud(); tick(); timer = setInterval(tick, 100);
     if(o.music && !spectate) MG.music.play(o.music);
     MG.audioHint(el);

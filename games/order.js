@@ -55,7 +55,7 @@
     var memory = o.flow === "memory", pc = paceOf(o), R = rounds(words, o), P = plan(R, o), nR = R.length, maxLives = survive ? MG.clamp(Number(o.lives) || 2, 1, 5) : null;
     var sc = MG.newScore(o.init), init = o.init || {};
     var lives = survive ? (typeof init.lives === "number" ? init.lives : maxLives) : null, ghost = survive && !!init.gh, gs = init.gs || 0, best = init.best || 0, lastQ = typeof init.q === "number" ? init.q : -1;
-    var startAt = o.startAt || now(), ended = false, timer = 0, missed = {};
+    var gate = !sync && !spectate && !!MG.tts.srv(), startAt = o.startAt || now(), ended = false, timer = 0, missed = {};
     var cur = -1, roundStart = 0, joinedLate = false, sawAsk = false, phase = "", slots = [], bankList = [], submitted = false, submittedAt = 0, scored = false, playsLeft = 0, speaking = false, cancelSpeech = null, revealAt = 0, info = null;
 
     root.innerHTML = '<div class="gm od">' +
@@ -236,6 +236,7 @@
         bar.style.width = (ph === "ask" ? MG.clamp(left / W, 0, 1) * 100 : ph === "listen" ? MG.clamp((LEAD + pre - rel) / pre, 0, 1) * 100 : 0) + "%";
         bar.parentElement.classList.toggle("warn", ph === "ask" && left < 8000);
       } else {
+        if(gate) return;
         if(cur < 0){ enter(0, t); setPhase("lead"); }
         var relS = t - roundStart, Ws = R[cur].win, preS = R[cur].pre;
         if(phase === "lead" && relS >= LEAD) setPhase(memory ? "listen" : "ask");
@@ -261,6 +262,11 @@
     if(o.onQuit) MG.$(".od-quit", el).onclick = function(){ if(cancelSpeech) cancelSpeech(); MG.music.stop(); o.onQuit(); };
     MG.bindMusicBtn(el, o.music);
     if(!nR){ msg.className = "od-msg bad"; msg.textContent = "生詞太少了，至少要 2 個才能玩聽音排序"; return { stop: function(){}, finish: function(){}, score: function(){ return sc; }, result: result }; }
+    // 語音先載好：自己練習／試玩要等到載好（最多等 10 秒）才開始；即時房間共用時鐘不能等，所以在等待室就先載
+    if(!spectate){
+      var pf = prefetch(o, words); 
+      if(gate){ msg.className = "od-msg wait"; msg.innerHTML = '載入語音中…<span class="en">Loading the voice…</span>'; Promise.race([pf, new Promise(function(r){ setTimeout(r, 10000); })]).then(function(){ gate = false; startAt = now(); msg.className = "od-msg"; msg.textContent = ""; }, function(){ gate = false; startAt = now(); }); }
+    }
     hud(); tick(); timer = setInterval(tick, 100);
     if(o.music && !spectate) MG.music.play(o.music);
     MG.audioHint(el);
