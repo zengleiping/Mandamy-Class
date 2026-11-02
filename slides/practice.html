@@ -17459,7 +17459,8 @@ window.mmTA = (function(){
        bingo/{學生} { name, cells:[25 個詞], ready, round, marks:{格子:true}, lines }   每位學生自己的卡片
        bingoWins/{學生} { name, lines, at, round }   連成線（賓果）了：所有人的畫面跳出公告 */
   var BG5_LINES = (function(){ var out = [], i, j; for(i = 0; i < 5; i++){ var r = [], c = []; for(j = 0; j < 5; j++){ r.push(i * 5 + j); c.push(j * 5 + i); } out.push(r, c); } out.push([0, 6, 12, 18, 24], [4, 8, 12, 16, 20]); return out; })();
-  var bingoSeen = {}, bingoRefreshFn = null, lastDrawPick = null;
+  var bingoSeen = {}, bingoRefreshFn = null, lastDrawPick = null, bgOffset = 0, bgOffsetOn = false;
+  function bgServerNow(){ if(!bgOffsetOn && window.db){ bgOffsetOn = true; try{ onValue(ref(db, ".info/serverTimeOffset"), function(sn){ bgOffset = Number(sn.val()) || 0; }); }catch(e){} } return Date.now() + bgOffset; }
   window.addEventListener("message", function(e){ var d = e.data; if(d && d.mm === "drawPick"){ lastDrawPick = { name: String(d.name || ""), at: d.at || Date.now() }; if(bingoRefreshFn) try{ bingoRefreshFn(); }catch(er){} } });
   function bgList(x){ if(!x) return []; if(Array.isArray(x)) return x.filter(Boolean); return Object.keys(x).sort(function(a, b){ return a - b; }).map(function(k){ return x[k]; }).filter(Boolean); }
   function bgCells(x){ var out = []; for(var i = 0; i < 25; i++) out.push(x && x[i] != null ? String(x[i]) : ""); return out; }
@@ -17508,10 +17509,16 @@ window.mmTA = (function(){
       update(ref(db, "rooms/" + activeRoomId + "/sharedProgress/" + q.id + "/bingo/" + myId), Object.assign(base, patch));
     }
     function calledSet(){ var o = {}; bgList(game().called).forEach(function(c){ o[c.w] = 1; }); return o; }
+    // 誰 bingo 了：用「這個人＋輪數＋連線數」當記號，沒看過的就跳公告（進來時已經有的舊公告不重播）。
+    // 以前是比時間：寫入的是「贏的那台裝置的時鐘」，再跟每個人自己的時鐘比較。只要有一台裝置的時鐘偏快幾分鐘，
+    // 就會把「已看過的最新時間」推到未來，之後時鐘正常的同學 bingo 時，公告都被當成舊的，要等到時間追上才會顯示。
     function checkWins(){
-      var wins = pg().bingoWins || {}, mx = 0; Object.keys(wins).forEach(function(k){ mx = Math.max(mx, wins[k].at || 0); });
-      if(bingoSeen[q.id] === undefined){ bingoSeen[q.id] = mx; return; }   // 剛進來看到的舊公告不重播
-      Object.keys(wins).forEach(function(k){ var w = wins[k]; if(w.at && w.at > bingoSeen[q.id]){ bingoSeen[q.id] = w.at; if(Date.now() - w.at < 30000) bingoBanner(w.name || "有人"); } });
+      var wins = pg().bingoWins || {}, seen = bingoSeen[q.id], keyOf = function(k, w){ return k + "|" + (w.round || 0) + "|" + (w.lines || 0); };
+      if(!seen){ seen = bingoSeen[q.id] = {}; Object.keys(wins).forEach(function(k){ seen[keyOf(k, wins[k])] = 1; }); return; }
+      Object.keys(wins).forEach(function(k){
+        var w = wins[k], key = keyOf(k, w); if(seen[key]) return; seen[key] = 1;
+        if(!w.at || bgServerNow() - w.at < 60000) bingoBanner(w.name || "有人");   // 太舊的（例如離開這一題很久又回來）不補播
+      });
     }
     function stuStatus(playing, ready, filled, lines){
       return playing ? '<b>遊戲開始了！</b>聽到老師或同學唸的詞，就點你卡片上的那一格。連成一條線（橫、直、斜）就賓果！' + (lines ? ' 你已經連成 ' + lines + ' 條線。' : '') + '<span class="bg5-en"><b>The game has started!</b> When you hear a word, tap that square on your card. Get a full line (across, down or diagonal) to call bingo!' + (lines ? ' You have ' + lines + (lines === 1 ? ' line.' : ' lines.') : '') + '</span>'
@@ -17550,10 +17557,12 @@ window.mmTA = (function(){
       var bank = words.map(function(w){ var u = !allowDup && used[w]; return '<button type="button" class="bg5-word' + (locked ? '' : ' drg') + (u ? ' used' : '') + '" data-w="' + escapeHtml(w) + '"' + (locked ? ' disabled' : '') + '>' + escapeHtml(w) + '</button>'; }).join("");
       var grid = cells.map(function(c, i){ return '<button type="button" class="bg5-cell' + (i === sel && !locked ? ' sel' : '') + (rec.marks[i] ? ' mark' : '') + (c ? '' : ' empty') + '" data-i="' + i + '">' + escapeHtml(c) + '</button>'; }).join("");
       var status = stuStatus(playing, rec.ready, filled, rec.lines);
-      wrap.innerHTML = '<div class="bg5-head"><div><b>' + escapeHtml(q.title || "賓果卡") + '</b>' + (q.desc ? '<div class="bg5-note">' + escapeHtml(q.desc) + '</div>' : '') + '</div></div><div class="bg5-status"><button type="button" class="bg5-qbtn" data-a="demo" title="How to play">▶ 操作示範 Demo</button>' + status + (demoOpen ? bingoDemoHtml() : '') + (msg ? '<div class="bg5-warn">' + escapeHtml(msg) + '</div>' : '') + '</div>' +
+      var html5 = '<div class="bg5-head"><div><b>' + escapeHtml(q.title || "賓果卡") + '</b>' + (q.desc ? '<div class="bg5-note">' + escapeHtml(q.desc) + '</div>' : '') + '</div></div><div class="bg5-status"><button type="button" class="bg5-qbtn" data-a="demo" title="How to play">▶ 操作示範 Demo</button>' + status + (demoOpen ? bingoDemoHtml() : '') + (msg ? '<div class="bg5-warn">' + escapeHtml(msg) + '</div>' : '') + '</div>' +
         '<div class="bg5-body"><div class="bg5-bank"><div class="bg5-cap">生詞表 Word list（' + words.length + '）</div><div class="bg5-words">' + bank + '</div></div>' +
         '<div class="bg5-cardwrap"><div class="bg5-grid">' + grid + '</div>' +
         (playing ? '' : '<div class="bg5-btns">' + (rec.ready ? '<button type="button" class="btn btn-sm" data-a="unready">修改卡片 Edit card</button>' : '<button type="button" class="btn btn-sm" data-a="rand">🎲 隨機填滿剩下的格子 Fill the rest randomly</button><button type="button" class="btn btn-sm btn-ghost" data-a="clearcell">清掉這一格 Clear square</button><button type="button" class="btn btn-sm btn-ghost" data-a="clearall">全部清空 Clear all</button><button type="button" class="btn btn-sm btn-primary" data-a="ready"' + (filled < 25 ? ' disabled' : '') + '>我填好了 Done</button>') + '</div>') + '</div></div>';
+      // 別人點格子、填卡也會讓全班的畫面重畫；我的卡片沒變就不要換掉整個畫面（少閃、少卡，也避免瀏覽器自動翻譯來回覆蓋）
+      if(wrap.__bg5 !== html5){ wrap.innerHTML = html5; wrap.__bg5 = html5; }
       wrap.onclick = function(e){
         var b = e.target.closest("button"); if(!b || b.disabled) return; if(dragJust) return; msg = "";
         if(b.dataset.a === "demo"){ demoOpen = !demoOpen; draw(); return; }
@@ -17566,7 +17575,7 @@ window.mmTA = (function(){
             if(lines > (rec2.lines || 0)){
               var cs2 = calledSet(), bad = Object.keys(marks).filter(function(k){ return !cs2[cs[k]]; });
               if(bad.length){ msg = "再聽聽看～還有格子的詞老師和同學還沒有唸到喔。Listen again — some words on your marked squares haven't been called yet."; patch.lines = rec2.lines || 0; }
-              else if(inRoom()){ update(ref(db, "rooms/" + activeRoomId + "/sharedProgress/" + q.id + "/bingoWins/" + myId), { name: myName || "學生", lines: lines, at: Date.now(), round: g2.round || 0 }); }
+              else if(inRoom()){ update(ref(db, "rooms/" + activeRoomId + "/sharedProgress/" + q.id + "/bingoWins/" + myId), { name: myName || "學生", lines: lines, at: serverTimestamp(), round: g2.round || 0 }); }
               else bingoBanner(myName || "你");
             }
             saveMine(patch); draw(); return;
@@ -17638,7 +17647,7 @@ window.mmTA = (function(){
     }
     function draw(){
       if(!document.body.contains(wrap)) return false;
-      if(!isStudent && document.activeElement && document.activeElement.id === "bg5-who-txt") return true;   // 老師正在打名字：不重畫
+      if(!isStudent && document.activeElement && document.activeElement.id === "bg5-who-txt"){ checkWins(); return true; }   // 老師正在打名字：不重畫（但 bingo 公告還是要跳）
       isStudent ? drawStudent() : drawTeacher(); checkWins(); return true;
     }
     liveBoardQId = q.id; liveBoardRefresh = draw; bingoRefreshFn = draw;
