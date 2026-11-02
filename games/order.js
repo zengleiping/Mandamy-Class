@@ -147,6 +147,7 @@
       scored = !spectate && r <= lastQ;   // 重新整理後回來：這輪已經答過了，不重複計分
       msg.className = "od-msg"; msg.textContent = ""; ansEl.innerHTML = ""; ansEl.className = "od-ans";
       playUi(); hud(); draw();
+      if(!spectate) MG.tts.preload(R[r].heard.map(function(w){ return w.w; }), { rate: pc.rate, voice: o.voice });   // 這輪要念的詞再確認一次都載好了（已經有的不會重抓）
     }
     function playUi(){
       var canPlay = !memory && !spectate && phase === "ask" && !submitted && playsLeft > 0 && !speaking;
