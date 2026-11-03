@@ -7987,7 +7987,7 @@ window.mmTA = (function(){
     slideListArmed = true;
     writeSections(secs, newId);
   }
-  var slideCtxEl = null;
+  var slideCtxEl = null, slideCtxOpenedAt = 0;
   function closeSlideCtx(){ if(slideCtxEl){ slideCtxEl.remove(); slideCtxEl = null; } try{ clearAllDragIndicators(); }catch(_e){} }
   document.addEventListener("contextmenu", function(e){
     if(isStudent || !e.target.closest) return;
@@ -8007,15 +8007,17 @@ window.mmTA = (function(){
     m.innerHTML = '<div class="slide-ctx-h">在第 ' + idx + ' 張和第 ' + (idx + 1) + ' 張之間</div>';
     if(!prevRow) m.firstChild.textContent = "放在第一張前面"; else if(!nextRow) m.firstChild.textContent = "放在最後一張後面";
     items.forEach(function(it){ var b = document.createElement("button"); b.type = "button"; b.textContent = it.t; b.onclick = function(ev){ ev.stopPropagation(); closeSlideCtx(); it.f(); }; m.appendChild(b); });
-    document.body.appendChild(m); slideCtxEl = m;
+    document.body.appendChild(m); slideCtxEl = m; slideCtxOpenedAt = Date.now();
     var W = m.offsetWidth, H = m.offsetHeight;
     m.style.left = Math.max(4, Math.min(e.clientX, window.innerWidth - W - 6)) + "px";
     m.style.top = Math.max(4, Math.min(e.clientY, window.innerHeight - H - 6)) + "px";
   });
-  document.addEventListener("click", function(e){ if(slideCtxEl && !e.target.closest(".slide-ctx")) closeSlideCtx(); });
+  // 選單只在「真的點了別處」「按 Esc」「用滾輪捲動」時關掉；視窗失焦、清單自己捲動、縮圖載入這些都不關（以前會讓選單一閃就消失）
+  function ctxOutside(e){ if(slideCtxEl && Date.now() - slideCtxOpenedAt > 300 && !(e.target.closest && e.target.closest(".slide-ctx"))) closeSlideCtx(); }
+  document.addEventListener("mousedown", function(e){ if(e.button === 0) ctxOutside(e); }, true);
+  document.addEventListener("touchstart", ctxOutside, true);
   document.addEventListener("keydown", function(e){ if(e.key === "Escape") closeSlideCtx(); });
-  window.addEventListener("blur", closeSlideCtx);
-  document.addEventListener("scroll", closeSlideCtx, true);
+  document.addEventListener("wheel", function(e){ if(slideCtxEl && !(e.target.closest && e.target.closest(".slide-ctx")) && Date.now() - slideCtxOpenedAt > 300) closeSlideCtx(); }, { passive: true, capture: true });
   // 上課中：在「目前這一張」後面插入一張空白投影片（工具列「新增頁」用）
   function addBlankSlideAfterCurrent(){
     var info = getCurrentQInfo(); if(!info) return;
