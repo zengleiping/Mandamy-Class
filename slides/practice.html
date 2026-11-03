@@ -1538,15 +1538,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .question-item-btn:hover .q-hide-btn, .question-item-btn.is-hidden-q .q-hide-btn{ display:inline-block; }
   .question-item-btn.is-hidden-q .q-hide-btn{ opacity:1; color:var(--seal); }
   body.teach-mode .section-head-actions button:not(.btn-sorter):not(.btn-hide-sec){ display:none !important; }
-  .slide-ctx{ position:fixed; z-index:99999; min-width:210px; background:#fff; border:1px solid var(--line,#ddd); border-radius:10px; box-shadow:0 8px 28px rgba(0,0,0,.22); padding:6px; font-size:14px; }
-  .slide-ctx-h{ padding:4px 10px 6px; color:var(--ink-soft,#777); font-size:12.5px; border-bottom:1px solid var(--line,#eee); margin-bottom:4px; }
-  .slide-ctx button{ display:block; width:100%; text-align:left; border:0; background:none; padding:8px 10px; border-radius:6px; cursor:pointer; font-size:14px; }
-  .slide-ctx button:hover{ background:var(--seal-soft,#f6e8e6); }
-  /* 上課中也能新增、刪除投影片：左邊清單滑鼠移上去有「複製／刪除」，工具列有「新增頁／刪除頁」 */
-  body.teach-mode .question-item-btn[data-slide-row] .q-action-btns .btn-edit-q{ display:none !important; }
-  .slide-edit-row{ display:none; }
-  body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical .slide-edit-row{ display:flex; flex-direction:row; gap:3px; }
-  body.teach-mode .board-area:not(.canvas-fs-active) .draw-toolbar-vertical .slide-edit-row .tool-btn-v{ min-width:0; flex:1; width:auto !important; }
+  body.teach-mode .question-item-btn[data-slide-row] .q-action-btns{ display:none !important; }
   body.teach-mode .section-head{ cursor:default; }
   /* 功能區：比較窄的視窗也盡量排成一排（字變小一點、群組間距縮小） */
   body.embed.kind-slides:not(.teach-mode) .rb-group[data-g="home:繪圖"] .rb-group-body{ display:grid; grid-template-columns:repeat(2, auto); grid-auto-rows:min-content; gap:3px 4px; align-content:start; }
@@ -7944,80 +7936,6 @@ window.mmTA = (function(){
     slideListArmed = true;
     writeSections(secs, qId);
   }
-  // ===== 左邊投影片清單：在兩頁中間按右鍵 → 在這裡新增空白投影片／複製前一張／複製後一張／貼上 =====
-  function insertBlankSlideAt(secId, idx){
-    var secs = getSections(); var sec = secs[secId]; if(!sec) return;
-    var keys = getSortedQuestionKeys(sec); var qId = uid("q");
-    if(!sec.questions) sec.questions = {};
-    sec.questions[qId] = { id: qId, order: 0, title: "投影片 " + (keys.length + 1), desc: "", bgImage: "", gridType: "none", media: [], teacherNote: "", weight: 1 };
-    keys.splice(Math.max(0, Math.min(idx, keys.length)), 0, qId);
-    keys.forEach(function(k, i){ sec.questions[k].order = i; });
-    slideListArmed = true;
-    writeSections(secs, qId);
-  }
-  function insertSlideCopyAt(secId, idx, qData, progData){
-    var secs = getSections(); var sec = secs[secId]; if(!sec || !qData) return;
-    var clone = JSON.parse(JSON.stringify(qData)); var newId = uid("q"); clone.id = newId;
-    var prog = JSON.parse(JSON.stringify(progData || {}));
-    ["revealStep", "strokesRevSeq", "strokesRevBy", "lastEvent", "wrongFlash", "mediaState"].forEach(function(k){ delete prog[k]; });
-    var keys = getSortedQuestionKeys(sec);
-    keys.splice(Math.max(0, Math.min(idx, keys.length)), 0, newId);
-    if(!sec.questions) sec.questions = {};
-    sec.questions[newId] = clone;
-    keys.forEach(function(k, i){ sec.questions[k].order = i; });
-    if(Object.keys(prog).length) writeProgress(newId, prog);
-    slideListArmed = true;
-    writeSections(secs, newId);
-  }
-  var slideCtxEl = null;
-  function closeSlideCtx(){ if(slideCtxEl){ slideCtxEl.remove(); slideCtxEl = null; } try{ clearAllDragIndicators(); }catch(_e){} }
-  document.addEventListener("contextmenu", function(e){
-    if(isStudent || !e.target.closest) return;
-    var body = e.target.closest(".section-body[data-board-sec]"); if(!body) return;
-    var rows = [].slice.call(body.querySelectorAll("[data-slide-row]")); if(!rows.length) return;
-    e.preventDefault(); closeSlideCtx();
-    var secId = body.getAttribute("data-board-sec"), idx = rows.length;
-    for(var i = 0; i < rows.length; i++){ var r = rows[i].getBoundingClientRect(); if(e.clientY < r.top + r.height / 2){ idx = i; break; } }
-    var prevRow = rows[idx - 1] || null, nextRow = rows[idx] || null;
-    if(nextRow) nextRow.classList.add("drag-indicator-top"); else rows[rows.length - 1].classList.add("drag-indicator-bottom");
-    var secs = getSections(), sec = secs[secId]; if(!sec) return;
-    var items = [{ t: "＋ 在這裡新增空白投影片", f: function(){ insertBlankSlideAt(secId, idx); } }];
-    if(prevRow) items.push({ t: "⧉ 複製前一張（貼到這裡）", f: function(){ var id = prevRow.getAttribute("data-qid"); if(sec.questions[id]) insertSlideCopyAt(secId, idx, sec.questions[id], getProgress(id) || {}); } });
-    if(nextRow) items.push({ t: "⧉ 複製後一張（貼到這裡）", f: function(){ var id = nextRow.getAttribute("data-qid"); if(sec.questions[id]) insertSlideCopyAt(secId, idx, sec.questions[id], getProgress(id) || {}); } });
-    if(slideClipboard && slideClipboard.q) items.push({ t: "📋 貼上剛複製的投影片", f: function(){ insertSlideCopyAt(secId, idx, slideClipboard.q, slideClipboard.prog); } });
-    var m = document.createElement("div"); m.className = "slide-ctx";
-    m.innerHTML = '<div class="slide-ctx-h">在第 ' + idx + ' 張和第 ' + (idx + 1) + ' 張之間</div>';
-    if(!prevRow) m.firstChild.textContent = "放在第一張前面"; else if(!nextRow) m.firstChild.textContent = "放在最後一張後面";
-    items.forEach(function(it){ var b = document.createElement("button"); b.type = "button"; b.textContent = it.t; b.onclick = function(ev){ ev.stopPropagation(); closeSlideCtx(); it.f(); }; m.appendChild(b); });
-    document.body.appendChild(m); slideCtxEl = m;
-    var W = m.offsetWidth, H = m.offsetHeight;
-    m.style.left = Math.max(4, Math.min(e.clientX, window.innerWidth - W - 6)) + "px";
-    m.style.top = Math.max(4, Math.min(e.clientY, window.innerHeight - H - 6)) + "px";
-  });
-  document.addEventListener("click", function(e){ if(slideCtxEl && !e.target.closest(".slide-ctx")) closeSlideCtx(); });
-  document.addEventListener("keydown", function(e){ if(e.key === "Escape") closeSlideCtx(); });
-  window.addEventListener("blur", closeSlideCtx);
-  document.addEventListener("scroll", closeSlideCtx, true);
-  // 上課中：在「目前這一張」後面插入一張空白投影片（工具列「新增頁」用）
-  function addBlankSlideAfterCurrent(){
-    var info = getCurrentQInfo(); if(!info) return;
-    var found = findSectionForQuestion(info.question.id); if(!found || found.sec.type !== "board") return;
-    var secs = getSections(); var sec = secs[found.secId]; if(!sec) return;
-    var keys = getSortedQuestionKeys(sec); var idx = keys.indexOf(info.question.id);
-    var qId = uid("q");
-    if(!sec.questions) sec.questions = {};
-    sec.questions[qId] = { id: qId, order: 0, title: "投影片 " + (keys.length + 1), desc: "", bgImage: "", gridType: "none", media: [], teacherNote: "", weight: 1 };
-    keys.splice(idx + 1, 0, qId);
-    keys.forEach(function(k, i){ sec.questions[k].order = i; });
-    slideListArmed = true;
-    writeSections(secs, qId);
-  }
-  // 上課中：刪除「目前這一張」（會先問一次）
-  function deleteCurrentSlide(){
-    var info = getCurrentQInfo(); if(!info) return;
-    var found = findSectionForQuestion(info.question.id); if(!found || found.sec.type !== "board") return;
-    deleteQuestionById(found.secId, info.question.id);
-  }
   // 刪除一題（按鈕、鍵盤 Backspace／Delete 共用）。刪掉之後自動跳到同一份簡報裡相鄰的那一張。
   function deleteQuestionById(secId, qId){
     var secs = getSections(); var sec = secs[secId];
@@ -8782,7 +8700,6 @@ window.mmTA = (function(){
 
       if(!isCollapsed){
         var body = document.createElement("div"); body.className = "section-body";
-        if(sec.type === "board") body.setAttribute("data-board-sec", secId);
         if(qKeys.length === 0){
           body.innerHTML = `<span class="section-body-empty">尚無小題 No questions yet</span>`;
         } else {
@@ -8793,7 +8710,7 @@ window.mmTA = (function(){
             qBtn.setAttribute("draggable", "true");
             qBtn.title = dispTitle(sec, q);
             if(q.hidden || sec.hidden) qBtn.classList.add("is-hidden-q");
-            if(sec.type === "board"){ qBtn.setAttribute("data-slide-row", "1"); qBtn.setAttribute("data-qid", qId); }
+            if(sec.type === "board") qBtn.setAttribute("data-slide-row", "1");
             qBtn.innerHTML = `
               <span class="q-item-left">
                 <span class="drag-handle-icon" title="按住拖曳小題重排 Drag to reorder">⋮⋮</span>
@@ -11757,11 +11674,6 @@ window.mmTA = (function(){
       try{ localStorage.setItem("mm-teach-on", on ? "1" : "0"); }catch(e){}   // 老師自己按的才記住；不會自動切換
       requestAnimationFrame(fitCanvasToViewport); setTimeout(fitCanvasToViewport, 120); setTimeout(fitCanvasToViewport, 300);
     }
-    vToolbar.addEventListener("click", function(e){
-      var ab = e.target.closest && e.target.closest("#btn-slide-add-after"), db = e.target.closest && e.target.closest("#btn-slide-del-cur");
-      if(ab){ e.preventDefault(); e.stopPropagation(); addBlankSlideAfterCurrent(); }
-      else if(db){ e.preventDefault(); e.stopPropagation(); deleteCurrentSlide(); }
-    });
     vToolbar.addEventListener("click", function(e){ var b = e.target.closest && e.target.closest("#btn-prep-mode"); if(!b) return; e.preventDefault(); e.stopPropagation(); setTeachMode(false); });
     // 顏色選項共用內容：畫筆／打字兩個工具各自 hover 才浮現一份，選色會同步套用到 boardState.color
     var colorDotsHtml = `
@@ -11802,11 +11714,6 @@ window.mmTA = (function(){
         <button type="button" class="tool-btn-v slide-nav-btn" id="btn-slide-next" ${slideIndex >= slideSiblingIds.length - 1 ? 'disabled' : ''} title="下一步／下一頁 Next step or slide（鍵盤 → 或空白鍵）"><span class="tool-btn-v-icon">▶</span></button>
       </div>
       <div class="slide-nav-counter">${slideIndex + 1} / ${slideSiblingIds.length}</div>` : ''}
-      ${!isStudent ? `
-      <div class="slide-edit-row">
-        <button type="button" class="tool-btn-v slide-edit-btn" id="btn-slide-add-after" title="在這一張後面新增一張空白投影片 Add a blank slide after this one"><span class="tool-btn-v-icon">＋</span><span class="tool-btn-v-label">新增頁</span></button>
-        <button type="button" class="tool-btn-v slide-edit-btn" id="btn-slide-del-cur" title="刪除這一張投影片（會先問你一次）Delete this slide"><span class="tool-btn-v-icon">🗑</span><span class="tool-btn-v-label">刪除頁</span></button>
-      </div>` : ''}
       ${(isMultiSlideDeck && !isStudent) ? `
       <div class="tool-btn-v-wrap">
         <button type="button" class="tool-btn-v" id="btn-transition" title="轉場（切換投影片時的效果，套用到整份簡報）Transition"><span class="tool-btn-v-icon">✨</span><span class="tool-btn-v-label">轉場</span></button>
