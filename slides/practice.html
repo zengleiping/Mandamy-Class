@@ -4431,8 +4431,16 @@ window.mmTA = (function(){
 
   var activeRoomId = null; var roomRole = isStudent ? "student" : "teacher";
   var myName = urlName || (isStudent ? "" : "老師");
-  var myId = isStudent ? (localStorage.getItem("hanyu_my_id") || uid("stu")) : "teacher";
-  localStorage.setItem("hanyu_my_id", myId);
+  // 學生的編號：以前整個瀏覽器只有一個編號（存在 localStorage），同一台電腦開好幾個學生分頁、或兩位學生共用一台電腦時，
+  // 大家會共用同一個編號，賓果卡、作答互相蓋掉。現在編號 = 這台裝置 + 學生名字，名字不同就是不同的人（同一個人重新整理或隔天回來，還是同一個編號）。
+  var myId = "teacher";
+  if(isStudent){
+    var devId = localStorage.getItem("hanyu_dev_id") || localStorage.getItem("hanyu_my_id") || uid("stu"), nmKey = String(urlName || "").trim();
+    try{ localStorage.setItem("hanyu_dev_id", devId); }catch(e){}
+    if(nmKey){ var hh = 5381, kk = devId + "|" + nmKey; for(var hi = 0; hi < kk.length; hi++) hh = ((hh * 33) ^ kk.charCodeAt(hi)) >>> 0; myId = "stu_" + hh.toString(36) + kk.length.toString(36); }
+    else myId = localStorage.getItem("hanyu_my_id") || devId;
+  }
+  try{ localStorage.setItem("hanyu_my_id", myId); }catch(e){}
   // 2026-09-29 修正：白板同步要能分辨「這筆資料是不是我自己這一台裝置剛剛寫的回音」，之前是拿
   // Date.now()（每台裝置自己的系統時間）來比大小，但老師常常同時用好幾台裝置開同一個房間
   // （例如電腦＋iPad，帳號都是同一個「teacher」，myId 分不出是哪一台），不同裝置的時鐘不保證
