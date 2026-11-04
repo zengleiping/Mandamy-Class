@@ -99,18 +99,22 @@
     match: { title: "配對 Match", need: 3 },
     blast: { title: "Blast", need: 4 },
     quiz:  { title: "快問快答 Quiz", need: 4 },
-    order: { title: "聽音排序 Listen & Order", need: 3 }
+    order: { title: "聽音排序 Listen & Order", need: 3 },
+    cards: { title: "翻卡選題 Card Pick", need: 6 }
   };
   MG.gameTitle = function(g){ return (MG.GAME_INFO[g] || MG.GAME_INFO.blast).title; };
   // 一行說明這局怎麼玩（等待室、作業連結頁用）；c 是那個遊戲自己的設定（cfg.match／blast／quiz／order）
   MG.gameSummary = function(game, c, phon){
     c = c || {};
     if(game === "match") return "配對 Match・" + (c.mode === "timed" ? "限時 " + c.seconds + " 秒" : "比速度") + "・" + MG.ph((MG.MATCH_PAIRS || {})[c.pair] || "", phon);
+    if(game === "cards") return MG.Cards ? MG.Cards.summary(c, phon) : "翻卡選題 Card Pick";
     if(game === "quiz") return "快問快答 Quiz・" + MG.ph((MG.QUIZ_Q || {})[c.q || "mix"] || "", phon) + "・" + (c.count || 10) + " 題・每題 " + (c.sec || 15) + " 秒";
     if(game === "order") return "聽音排序 Listen & Order・" + (c.flow === "memory" ? "考記憶・" : "") + (c.mode === "score" ? "累積分數，沒有淘汰" : "生存（" + (c.lives || 2) + " 條命" + (c.comeback !== false ? "，可以復活" : "") + "）") + "・" + (c.start || 2) + "～" + (c.maxLen === 0 || c.maxLen === "0" ? "全部" : c.maxLen || 6) + " 個詞";
     return "Blast・" + (c.input === "type" ? "打拼音" : MG.ph((MG.BLAST_Q || {})[c.q] || "", phon));
   };
   // 由共用時鐘排程的遊戲（快問快答、聽音排序）：全班同一秒進到同一題，不用老師一題一題按下一題
+  // 只能開即時多人的遊戲（沒有作業連結、也沒有單人練習）
+  MG.isLiveOnly = function(g){ return g === "cards"; };
   MG.isSynced = function(g){ return g === "quiz" || g === "order"; };
 
   // ---------- 朗讀 ----------

@@ -14,6 +14,7 @@
       blast: { q: "w2p", input: "tap", lives: 3, speed: 3, seconds: 0, theme: "space", themeFree: true, music: "space", liveOut: "revive" },
       quiz: { q: "mix", count: 10, sec: 15, voice: "zh-TW-HsiaoChenNeural", music: "happy" },
       order: { mode: "survive", flow: "free", pace: "fast", voice: "zh-TW-HsiaoChenNeural", lives: 2, comeback: true, start: 2, maxLen: 6, plays: 2, perWord: 3.5, show: "both", music: "relax" },
+      cards: { n: 12, back: "num", label: "show", ans: "mc", q: "mix", sec: 20, pts: 10, music: "" },
       live: { scoring: "avg", seconds: 90, stuMusic: true }
     };
   }
@@ -137,7 +138,16 @@
       '<label>作答時間</label>' + seg("order.perWord", od.perWord, [["2.5", "緊湊"], ["3.5", "一般"], ["5", "寬鬆"]]) +
       '<label>卡片上顯示</label>' + seg("order.show", od.show || "both", [["both", "詞語＋讀音"], ["zh", "只有詞語"], ["phon", "只有讀音"]]) +
       '<div class="note" style="margin-top:6px;">每一輪比上一輪多一個詞（詞表是同一份，但念的順序每輪重新打亂）。把卡片拖進格子排成聽到的順序（手機上點一下卡片也會放進下一個空格）。即時多人：全班同一秒進到同一輪。全對得 100 分＋長度加分＋速度加分；排錯的輪，每個放對位置的詞也有一點分數。語音用曼米語音伺服器的自然語音（預設曉臻，跟平台生詞發音同一個）；連不上時才改用裝置內建的中文語音。</div></div>';
-    var gameOpts = c.game === "quiz" ? quizOpts : c.game === "order" ? orderOpts : c.game === "match" ?
+    var cd = c.cards;
+    var cdPool = c.game === "cards" ? poolFor(1).filter(function(w){ return w && w.w; }).length : 0, cdMax = MG.Cards ? MG.Cards.maxCards(cd, cdPool) : 0;
+    var cardsOpts = '<div class="mg-opt"><label>卡背</label><div>' + seg("cards.back", cd.back, [["num", "數字"], ["fruit", "水果（學水果的中文）"], ["animal", "動物（學動物的中文）"]]) + '<div class="note" style="margin-top:4px;">' + (cd.back === "num" ? '卡牌蓋著只顯示號碼，學生說出想要的號碼。' : '卡背是' + (cd.back === "fruit" ? "水果" : "動物") + '圖案，學生可以順便練習說「我要蘋果」這樣的中文。最多 ' + MG.Cards[cd.back === "fruit" ? "FRUITS" : "ANIMALS"].length + ' 張。') + '</div></div>' +
+      (cd.back === "num" ? '' : '<label>卡背上的字</label>' + seg("cards.label", cd.label || "show", [["show", "顯示中文名字和讀音"], ["hide", "只有圖案（學生自己說，卡上有小號碼）"]])) +
+      '<label>幾張卡</label>' + seg("cards.n", cd.n, [[6, "6"], [8, "8"], [12, "12"], [16, "16"], [20, "20"], [24, "24"], [30, "30"], [40, "40"]]) + '<div class="note" style="margin-top:4px;">' + (cdMax < Number(cd.n) ? '⚠ 目前出題範圍只能發 ' + cdMax + ' 張（每張卡一個不同的生詞），請多勾幾課。' : '目前出題範圍有 ' + cdPool + ' 個詞，可以發 ' + Math.min(Number(cd.n), cdMax) + ' 張。') + '</div>' +
+      '<label>翻開後怎麼回答</label>' + seg("cards.ans", cd.ans, [["mc", "選擇題（學生用自己的裝置選，自動算分）"], ["oral", "口說（唸出來、說意思或造句，老師按對錯）"]]) +
+      (cd.ans === "oral" ? '' : '<label>題型</label>' + seg("cards.q", cd.q || "mix", [["mix", "綜合"], ["w2p", "看詞語選讀音"], ["p2w", "看讀音選詞語"], ["w2t", "看詞語選翻譯"]]) + '<label>每題幾秒</label>' + seg("cards.sec", cd.sec, [[10, "10 秒"], [15, "15 秒"], [20, "20 秒"], [30, "30 秒"], [0, "不限"]])) +
+      '<label>答對得幾分</label>' + seg("cards.pts", cd.pts, [[5, "5"], [10, "10"], [20, "20"]]) +
+      '<div class="note" style="margin-top:6px;">只有即時多人：學生用手機或電腦加入。輪到的人（有分組就小組輪流，每組再輪流派人）自己選一張卡，卡翻開是生詞，答對幫自己和小組得分，翻過的卡不能再選。老師的畫面是投影用的牌桌，也可以直接點卡代替沒有裝置的學生。沒有學生的裝置時，在等待室用「分組比賽」就可以分小組比分。</div></div>';
+    var gameOpts = c.game === "cards" ? cardsOpts : c.game === "quiz" ? quizOpts : c.game === "order" ? orderOpts : c.game === "match" ?
       '<div class="mg-opt"><label>模式</label>' + seg("match.mode", m.mode, [["speed", "比速度：全部配完"], ["timed", "限時：時間內配越多越好"]]) +
       '<label>時間（限時模式）</label><span><input type="number" class="mg-num" min="15" max="600" step="5" data-num="match.seconds" value="' + m.seconds + '"> 秒</span>' +
       '<label>配對方式</label>' + seg("match.pair", m.pair, [["p", "詞語 ↔ 拼音"], ["t", "詞語 ↔ 翻譯"], ["pt", "詞語 ↔ 拼音＋翻譯"], ["i", "詞語 ↔ 圖片"]]) +
@@ -162,7 +172,8 @@
       '<button class="mg-game' + (c.game === "match" ? " on" : "") + '" data-game="match"><img class="mg-game-img" src="../icons/act-match.png" alt=""><b>配對 Match</b><span class="note">詞語和拼音／翻譯配成一對，比速度或限時。</span></button>' +
       '<button class="mg-game' + (c.game === "blast" ? " on" : "") + '" data-game="blast"><img class="mg-game-img" src="../icons/act-blast.png" alt=""><b>Blast</b><span class="note">答案從畫面掉下來，點對的那個。可以選主題。</span></button>' +
       '<button class="mg-game' + (c.game === "quiz" ? " on" : "") + '" data-game="quiz"><span class="mg-game-img mg-game-emo">🎯</span><b>快問快答 Quiz</b><span class="note">像 Kahoot：一題一題出，四選一，越快分數越高。全班同一秒進到同一題。</span></button>' +
-      '<button class="mg-game' + (c.game === "order" ? " on" : "") + '" data-game="order"><span class="mg-game-img mg-game-emo">👂</span><b>聽音排序 Listen &amp; Order</b><span class="note">聽一串詞語，拖成聽到的順序；每輪多一個詞，越來越難。被淘汰也能旁觀練習、復活。</span></button></div></div>' +
+      '<button class="mg-game' + (c.game === "order" ? " on" : "") + '" data-game="order"><span class="mg-game-img mg-game-emo">👂</span><b>聽音排序 Listen &amp; Order</b><span class="note">聽一串詞語，拖成聽到的順序；每輪多一個詞，越來越難。被淘汰也能旁觀練習、復活。</span></button>' +
+      '<button class="mg-game' + (c.game === "cards" ? " on" : "") + '" data-game="cards"><span class="mg-game-img mg-game-emo">🃏</span><b>翻卡選題 Card Pick</b><span class="note">蓋著的卡（數字、水果或動物），學生自己選一張，翻開是生詞，答對幫小組得分。只有即時多人。</span></button></div></div>' +
       '<div class="mg-panel"><h3>出題範圍 <span class="note">勾選課次，設定每一課抽幾成的生詞</span></h3>' +
       '<div class="mg-row" style="margin-bottom:10px;"><span class="note">從最近一課往前：100%、80%、60%、40%、20%</span><select class="mg-sel" id="sc-rec" style="max-width:280px;">' + recOpts + '</select><button class="mg-btn sm" id="sc-preset">套用</button><button class="mg-btn sm ghost" id="sc-clear">全部不用</button><button class="mg-btn sm" id="sc-custom" title="不用教材的生詞，自己輸入想考的詞語">✏️ 自己輸入生詞</button></div>' +
       (rows ? '<div class="sc-list"><div class="sc-row head"><span></span><span>課次</span><span class="n">生詞</span><span>抽幾成</span><span></span></div>' + rows + '</div>' : '<p class="note">這個班的教材還沒有生詞。</p>') +
@@ -172,11 +183,11 @@
       '<div class="mg-panel"><h3>' + (c.game === "match" ? "配對設定" : c.game === "blast" ? "Blast 設定" : MG.gameTitle(c.game).split(" ")[0] + "設定") + '</h3>' + gameOpts + '</div>' +
       '<div class="mg-panel"><h3>開始</h3><div class="mg-row">' +
       '<button class="mg-btn big primary" id="go-live">即時多人遊戲</button>' +
-      '<button class="mg-btn big" id="go-solo">老師投影試玩</button>' +
-      '<button class="mg-btn big" id="go-link">作業／自主練習連結</button>' +
+      (MG.isLiveOnly(c.game) ? '' : '<button class="mg-btn big" id="go-solo">老師投影試玩</button>' +
+      '<button class="mg-btn big" id="go-link">作業／自主練習連結</button>') +
       (ctx.cls ? '<button class="mg-btn big" id="go-groups">分組</button>' : '') +
-      '</div><p class="note" style="margin-top:8px;">即時多人：學生用手機或電腦輸入房間代碼（或掃 QR code）加入，只要填名字。作業連結：學生自己練習，成績會記在這裡。</p>' +
-      '<div class="mg-row" style="margin-top:6px;"><button class="mg-btn sm ghost" id="go-results">查看作業連結的成績</button></div></div>' +
+      '</div><p class="note" style="margin-top:8px;">即時多人：學生用手機或電腦輸入房間代碼（或掃 QR code）加入，只要填名字。' + (MG.isLiveOnly(c.game) ? '這個遊戲只能開即時多人。' : '作業連結：學生自己練習，成績會記在這裡。') + '</p>' +
+      (MG.isLiveOnly(c.game) ? '' : '<div class="mg-row" style="margin-top:6px;"><button class="mg-btn sm ghost" id="go-results">查看作業連結的成績</button></div>') + '</div>' +
       '</div>';
     bindSetup();
     updateMissing();
@@ -217,7 +228,7 @@
     };
   }
   // 這個設定的題目需要翻譯／圖片嗎（綜合題型沒有翻譯的詞會自動跳過，所以不強迫）
-  function needTr(c){ var g = c.game, q = (c[g] || {}).q; return g === "match" ? c.match.pair !== "p" : g === "blast" ? (q === "w2t" || q === "t2w") && c.blast.input !== "type" : g === "quiz" ? (q === "w2t" || q === "t2w" || q === "a2t") : false; }
+  function needTr(c){ var g = c.game, q = (c[g] || {}).q; return g === "match" ? c.match.pair !== "p" : g === "blast" ? (q === "w2t" || q === "t2w") && c.blast.input !== "type" : g === "quiz" ? (q === "w2t" || q === "t2w" || q === "a2t") : g === "cards" ? (c.cards.ans !== "oral" && q === "w2t") : false; }
   function needPic(c){ var g = c.game, q = (c[g] || {}).q; return g === "match" ? c.match.pair === "i" : g === "blast" ? (q === "w2i" || q === "i2w") && c.blast.input !== "type" : g === "quiz" ? (q === "w2i" || q === "i2w") : false; }
   function checkPool(){
     var pool = poolFor(1);
