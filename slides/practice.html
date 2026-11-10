@@ -15257,7 +15257,7 @@ window.mmTA = (function(){
       // 快速滑動仍然是平移，按住不到 0.12 秒就放開或移動超過約 10px 也不會抓取，避免誤動。
       if(e.pointerType === "touch" && boardState.tool !== "pan" && !(deckStudent) && (isPalmTouch(e) || autoPanEligible(p))){
         var lpHit = null; try{ lpHit = hitTestItem(p); }catch(er0){}
-        if(lpHit && presentLock() && !isLiveItem(lpHit)) lpHit = null; // 放映中：只有上課中新增的筆記可以長按抓起，定稿內容不行
+        if(lpHit && presentLock() && (!isLiveItem(lpHit) || boardState.tool === "pen" || boardState.tool === "highlighter")) lpHit = null; // 放映中：畫筆／螢光筆只寫字，不抓取物件；其餘只有上課中新增的筆記可以長按抓起 // 放映中：只有上課中新增的筆記可以長按抓起，定稿內容不行
         if(lpHit){
           var lpId = e.pointerId, lpX0 = e.clientX, lpY0 = e.clientY, lpDone = false;
           var lpTimer = setTimeout(function(){
@@ -15333,7 +15333,7 @@ window.mmTA = (function(){
       // 放映中用滑鼠／觸控筆：在「上課筆記」上按住不動約 0.12 秒＝抓起來搬動（不用換工具）；一按下就移動＝照常寫字
       if(presentLock() && !isStudent && e.pointerType !== "touch" && boardState.tool === "pen"){
         var gHit = null; try{ gHit = hitTestItem(p); }catch(erG){}
-        if(gHit && gHit.k !== "stroke" && isLiveItem(gHit)) armPresentGrab(e, gHit);
+        if(gHit && gHit.k !== "stroke" && isLiveItem(gHit) && false) armPresentGrab(e, gHit);   // 放映中用畫筆：一律只寫字，不再長按搬動文字框／圖片（要搬請改用文字工具點選）
       }
       isDrawing = true;
       currentPath = [p];
