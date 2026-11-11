@@ -4786,7 +4786,7 @@ window.mmTA = (function(){
       if(!MO || !MO.ok || !window.storageApi){ mediaShareBusy[bk] = false; return; }
       var rec = await MO.getMedia(r.key);
       if(!rec || !rec.blob){ toast("學生看不到這個影片：這台裝置找不到檔案，請把影片重新插入一次。"); return; }
-      if(rec.blob.size > 29 * 1024 * 1024){ toast("這個影片有 " + (rec.blob.size / 1048576).toFixed(0) + " MB，超過 30MB 上限，學生端無法同步。請壓縮或剪短後重新插入。"); return; }
+      if(rec.blob.size > 29 * 1024 * 1024){ toast("這個影片有 " + (rec.blob.size / 1048576).toFixed(0) + " MB，太大了，學生端無法同步。請改用「▶ YouTube」貼網址，全班可同步播放。"); return; }
       toast("正在把影片傳給學生…（" + (rec.blob.size / 1048576).toFixed(1) + " MB）");
       var sr = window.storageApi.ref(window.storageApi.storage, "teacherMedia/" + ((currentTeacher && currentTeacher.id) || "room") + "/" + r.key);
       await window.storageApi.uploadBytes(sr, rec.blob, { contentType: rec.blob.type || rec.type || "application/octet-stream", cacheControl: "public, max-age=31536000" });
@@ -4794,7 +4794,7 @@ window.mmTA = (function(){
       var md = Object.assign({}, (getProgress(qId) || {}).mediaData || {}); md[mediaId] = "mm:" + r.key + "@" + url;
       writeProgress(qId, { mediaData: md });
       toast("影片已傳給學生，可以同步播放了");
-    }catch(e){ console.warn("影片上傳失敗", e); toast("影片傳給學生失敗，學生端暫時無法播放（請檢查網路後重新整理再試）。"); mediaShareBusy[bk] = false; }
+    }catch(e){ console.warn("影片上傳失敗", e); toast("影片傳不到雲端，學生端看不到。目前雲端檔案儲存無法使用（Firebase 免費方案不支援），請改用「▶ YouTube」：把影片傳到 YouTube（設成不公開）後貼網址，全班可同步播放。"); mediaShareBusy[bk] = false; }
   }
   function countUnsyncedMedia(lib){ var n = 0; collectMediaSlots(lib).forEach(function(sl){ var r = parseMediaRef(sl.get()); if(r && !r.url) n++; }); return n; }
   window.addEventListener("firebase-storage-ready", function(){ setTimeout(function(){ syncMediaToCloud(); }, 3000); });
@@ -6968,7 +6968,7 @@ window.mmTA = (function(){
     history.replaceState(null, "", "?room=" + rId); renderTopbar();
     var link = location.origin + location.pathname + "?room=" + rId + "&role=student";
     if(silent === true) return; // 平台自動開房間：不複製連結、不跳提示
-    navigator.clipboard.writeText(link).then(function(){ alert("✅ 房間已開好！學生連結已複製。\nRoom is ready! Student link copied." + (unsyncedAudio ? "\n\n⚠ 有 " + unsyncedAudio + " 個音檔還沒上傳到雲端（可能是離線、或雲端儲存無法使用），學生端會聽不到這些音檔；你自己的畫面可以正常播放。\n" + unsyncedAudio + " audio file(s) are not on the cloud yet — students won't hear them." : "")); });
+    navigator.clipboard.writeText(link).then(function(){ alert("✅ 房間已開好！學生連結已複製。\nRoom is ready! Student link copied." + (unsyncedAudio ? "\n\n⚠ 有 " + unsyncedAudio + " 個音檔還沒上傳到雲端（雲端檔案儲存目前無法使用），學生端會聽不到／看不到。影片請改用「▶ YouTube」貼網址（可設成不公開），全班可同步播放；你自己的畫面可以正常播放。\n" + unsyncedAudio + " file(s) are not on the cloud — students can't play them. For video, use ▶ YouTube instead." : "")); });
   }
 
   function leaveRoom(){
