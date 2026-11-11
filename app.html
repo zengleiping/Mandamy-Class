@@ -6658,7 +6658,7 @@ function renderLessonCommon(no, open, teacher, liveStudent){
   var cur = tabs.filter(function(t){ return t[0] === S.tab; })[0];
   var live = S.live && S.live.on;
   var html = '<div class="tabs">' + (liveStudent ? '' : '<button class="tab" data-back="1">‹ 返回</button>' + tabs.filter(function(t){ return t[0] !== "bingo"; }).map(function(t){ var on = t[0] === S.tab || (t[0] === "activities" && S.tab === "bingo"); var btn = '<button class="tab' + (on ? ' on' : '') + '" data-tab="' + t[0] + '">' + t[1] + '</button>'; return teacher && (t[0] === "slides" || t[0] === "quiz") ? lessonDeckMenu(no, t[0], btn) : btn; }).join("") + (teacher ? '<!--copyto-->' : '') +
-    (teacher ? '<button class="tab focus-btn" data-actmenu="1" style="margin-left:auto;" title="叫出課堂活動選單（常用、最近用過）">⚡ 活動選單</button><button class="tab focus-btn" data-brk="1" style="margin-left:6px;" title="下課休息倒數：時間到會響鈴提醒回來上課（上課中，學生畫面也會一起倒數）">下課鬧鐘</button><button class="tab focus-btn" data-draw="1" style="margin-left:6px;" title="籤筒：從班上同學隨機抽一位（不重複，抽完換下一輪；學生的畫面也看得到抽到誰）"><img src="icons/draw-wheel.png" alt="" style="width:1.25em;height:1.25em;vertical-align:-.25em;margin-right:3px;">籤筒</button><button class="tab focus-btn" data-ct="1" style="margin-left:6px;" title="開關畫面底部的課堂工具列：計時器、分組、記分板、白板、便利貼…30 多種小工具，視窗可以自由拖曳，也有一鍵純淨桌面">🧰 工具箱</button>' : '') + (teacher ? ((live ? '<button class="tab focus-btn" data-fs="1" style="margin-left:6px;" title="瀏覽器全螢幕（Esc 退出，不會結束上課）">⛶ 全螢幕</button><button class="tab focus-btn" data-focus="1" style="margin-left:6px;">' + (S.focus ? "顯示欄位" : "隱藏欄位") + '</button><button class="tab focus-btn" data-live="1" style="margin-left:6px;background:var(--seal);color:#fff;">⏹ 結束上課</button>' : '<button class="tab focus-btn" data-live="1" title="開始上課：學生會自動跟著你的畫面，並隱藏上方與左側欄位">🎬 開始上課</button>')) : '')) + '</div>';
+    (teacher ? '<button class="tab focus-btn" data-actmenu="1" style="margin-left:auto;" title="叫出課堂活動選單（常用、最近用過）">⚡ 活動選單</button><button class="tab focus-btn" data-brk="1" style="margin-left:6px;" title="下課休息倒數：時間到會響鈴提醒回來上課（上課中，學生畫面也會一起倒數）">下課鬧鐘</button><button class="tab focus-btn" data-draw="1" style="margin-left:6px;" title="籤筒：從班上同學隨機抽一位（不重複，抽完換下一輪；學生的畫面也看得到抽到誰）"><img src="icons/draw-wheel.png" alt="" style="width:1.25em;height:1.25em;vertical-align:-.25em;margin-right:3px;">籤筒</button><button class="tab focus-btn" data-ct="1" style="margin-left:6px;" title="開關畫面底部的課堂工具列：計時器、分組、記分板、白板、便利貼…30 多種小工具，視窗可以自由拖曳，也有一鍵純淨桌面">🧰 工具箱</button>' : '') + (teacher ? ((S.sel && S.sel.c ? '<button class="tab focus-btn" data-slink="1" style="margin-left:6px;" title="複製這個班的學生連結（上課中隨時可以貼給學生）">🔗 學生連結</button>' : '') + (live ? '<button class="tab focus-btn" data-fs="1" style="margin-left:6px;" title="瀏覽器全螢幕（Esc 退出，不會結束上課）">⛶ 全螢幕</button><button class="tab focus-btn" data-focus="1" style="margin-left:6px;">' + (S.focus ? "顯示欄位" : "隱藏欄位") + '</button><button class="tab focus-btn" data-live="1" style="margin-left:6px;background:var(--seal);color:#fff;">⏹ 結束上課</button>' : '<button class="tab focus-btn" data-live="1" title="開始上課：學生會自動跟著你的畫面，並隱藏上方與左側欄位">🎬 開始上課</button>')) : '')) + '</div>';
   var sub = '', frame = '', role = teacher ? '' : '&role=student';
   if(S.tab === "material"){
     var subs = [["vocab","生詞"],["grammar","語法"],["text","課文"]].filter(function(s){ return teacher || open[s[0]]; });
@@ -7119,6 +7119,13 @@ function bindLessonNav(cls, backFn, renderFn){
     var b = e.target.closest("button"); if(!b) return;
     if(b.dataset.back){ if(S.focus) setFocus(false); backFn(); if(S.teacher) pushLive(true); return; }
     if(b.dataset.focus){ setFocus(!S.focus); return; }
+    if(b.dataset.slink){
+      var sc0 = S.sel && S.plat.schools && S.plat.schools[S.sel.s], cl0 = sc0 && ((sc0.terms || {})[S.sel.t] || {}).classes && sc0.terms[S.sel.t].classes[S.sel.c];
+      if(!cl0 || !cl0.code){ toast("找不到這個班的代碼"); return; }
+      var lk0 = studentLink(cl0.code);
+      (navigator.clipboard ? navigator.clipboard.writeText(lk0) : Promise.reject()).then(function(){ toast("學生連結已複製：" + lk0); }, function(){ prompt("學生連結（請複製）", lk0); });
+      return;
+    }
     if(b.dataset.live){ toggleLive(); return; }
     if(b.dataset.fs){ toggleBrowserFullscreen(); return; }
     if(b.dataset.copyto){ copyToLesson(b.dataset.copyto); return; }
