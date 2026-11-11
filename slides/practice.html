@@ -14572,7 +14572,7 @@ window.mmTA = (function(){
       var prev = cur[h.m.id] || {};
       mediaSeqLocal = Math.max(mediaSeqLocal, prev.seq || 0, h.lastSeq || 0) + 1;
       var ns = Object.assign({}, cur);
-      ns[h.m.id] = { playing: !!playing, pos: Math.round((pos || 0) * 100) / 100, seq: mediaSeqLocal, by: deviceInstanceId };
+      ns[h.m.id] = { playing: !!playing, pos: Math.round((pos || 0) * 100) / 100, seq: mediaSeqLocal, by: deviceInstanceId, fs: !!h.fs };
       h.lastSeq = mediaSeqLocal; h.expPos = pos || 0; h.expAt = Date.now(); h.expPlaying = !!playing; h.lastPubAt = Date.now();
       writeProgress(q.id, { mediaState: ns });
     }
@@ -14629,15 +14629,23 @@ window.mmTA = (function(){
         var isFs = function(){ return document.fullscreenElement === root || document.webkitFullscreenElement === root || root.classList.contains("media-pfs"); };
         var exitFs = function(){ root.classList.remove("media-pfs"); if(document.fullscreenElement === root){ try{ document.exitFullscreen(); }catch(e){} } else if(document.webkitFullscreenElement === root){ try{ document.webkitExitFullscreen(); }catch(e){} } };
         fsBtn.onpointerdown = function(e){ e.stopPropagation(); };
+        // 老師：全螢幕狀態同步給全班（寫進 mediaState.fs）
+        var syncFs = function(v){
+          if(isStudent || !!h.fs === v) return; h.fs = v;
+          var pl = h.audio ? !h.audio.paused : !!(h.player && h.player.getPlayerState && h.player.getPlayerState() === 1);
+          try{ publishMedia(h, pl, h.getPos ? h.getPos() : 0); }catch(er){}
+        };
+        var fsWatch = function(){ if(!isStudent && h.fs && !isFs()) syncFs(false); };
+        document.addEventListener("fullscreenchange", fsWatch); document.addEventListener("webkitfullscreenchange", fsWatch);
         fsBtn.onclick = function(e){
           e.stopPropagation();
-          if(isFs()){ exitFs(); return; }
+          if(isFs()){ exitFs(); syncFs(false); return; }
+          syncFs(true);
           var rq = root.requestFullscreen || root.webkitRequestFullscreen;
           if(rq){ try{ var pr = rq.call(root); if(pr && pr.catch) pr.catch(function(){ root.classList.add("media-pfs"); }); }catch(er){ root.classList.add("media-pfs"); } }
           else root.classList.add("media-pfs");
         };
-        root.addEventListener("keydown", function(e){ if(e.key === "Escape" && root.classList.contains("media-pfs")) exitFs(); });
-        document.addEventListener("keydown", function(e){ if(e.key === "Escape" && root.classList.contains("media-pfs")) exitFs(); });
+        document.addEventListener("keydown", function(e){ if(e.key === "Escape" && root.classList.contains("media-pfs")){ exitFs(); syncFs(false); } });
       }
       return h;
     }
@@ -14758,6 +14766,8 @@ window.mmTA = (function(){
     function applyMediaState(h, st){
       if(!h || !st || !h.applyState) return;
       h.lastState = st;
+      // 老師按全螢幕：學生也跟著全螢幕（瀏覽器不允許沒有點擊就開原生全螢幕，所以學生端用整頁覆蓋的方式）
+      if(isStudent && h.root && !!st.fs !== !!h.lastFs){ h.lastFs = !!st.fs; h.root.classList.toggle("media-pfs", !!st.fs); }
       if(st.seq === h.lastSeq) return;
       if(st.by === deviceInstanceId){ h.lastSeq = st.seq; return; }
       h.lastSeq = st.seq;
