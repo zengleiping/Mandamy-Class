@@ -4769,6 +4769,33 @@ window.mmTA = (function(){
     } finally { mediaSyncing = false; }
     return { uploaded: uploaded, pending: pending };
   }
+  // 上課中（老師在房間裡）：影片／音檔如果還是「只在這台裝置」的參照（mm:key，沒有雲端網址），學生端就找不到檔案、無法同步播放。
+  // 這裡把它上傳到雲端，並把房間裡這一題的參照換成 mm:key@網址（學生才抓得到）。檔案超過 30MB 或這台裝置找不到檔案時提醒老師。
+  var mediaShareBusy = {};
+  function toast(msg){
+    try{
+      var el = document.createElement("div"); el.textContent = msg;
+      el.style.cssText = "position:fixed;left:50%;bottom:90px;transform:translateX(-50%);max-width:86vw;background:rgba(40,34,30,.94);color:#fff;padding:10px 18px;border-radius:12px;font-size:15.5px;line-height:1.5;z-index:100000;box-shadow:0 6px 20px rgba(0,0,0,.3);pointer-events:none;";
+      document.body.appendChild(el); setTimeout(function(){ if(el.parentNode) el.parentNode.removeChild(el); }, 4500);
+    }catch(e){}
+  }
+  async function shareMediaToCloud(qId, mediaId, srcRaw){
+    var r = parseMediaRef(srcRaw); if(!r || r.url || isStudent || !inRoom()) return;
+    var bk = qId + "|" + mediaId; if(mediaShareBusy[bk]) return; mediaShareBusy[bk] = true;
+    try{
+      if(!MO || !MO.ok || !window.storageApi){ mediaShareBusy[bk] = false; return; }
+      var rec = await MO.getMedia(r.key);
+      if(!rec || !rec.blob){ toast("學生看不到這個影片：這台裝置找不到檔案，請把影片重新插入一次。"); return; }
+      if(rec.blob.size > 29 * 1024 * 1024){ toast("這個影片有 " + (rec.blob.size / 1048576).toFixed(0) + " MB，超過 30MB 上限，學生端無法同步。請壓縮或剪短後重新插入。"); return; }
+      toast("正在把影片傳給學生…（" + (rec.blob.size / 1048576).toFixed(1) + " MB）");
+      var sr = window.storageApi.ref(window.storageApi.storage, "teacherMedia/" + ((currentTeacher && currentTeacher.id) || "room") + "/" + r.key);
+      await window.storageApi.uploadBytes(sr, rec.blob, { contentType: rec.blob.type || rec.type || "application/octet-stream", cacheControl: "public, max-age=31536000" });
+      var url = await window.storageApi.getDownloadURL(sr);
+      var md = Object.assign({}, (getProgress(qId) || {}).mediaData || {}); md[mediaId] = "mm:" + r.key + "@" + url;
+      writeProgress(qId, { mediaData: md });
+      toast("影片已傳給學生，可以同步播放了");
+    }catch(e){ console.warn("影片上傳失敗", e); toast("影片傳給學生失敗，學生端暫時無法播放（請檢查網路後重新整理再試）。"); mediaShareBusy[bk] = false; }
+  }
   function countUnsyncedMedia(lib){ var n = 0; collectMediaSlots(lib).forEach(function(sl){ var r = parseMediaRef(sl.get()); if(r && !r.url) n++; }); return n; }
   window.addEventListener("firebase-storage-ready", function(){ setTimeout(function(){ syncMediaToCloud(); }, 3000); });
 
@@ -14659,6 +14686,7 @@ window.mmTA = (function(){
       var srcRaw = (getProgress(q.id).mediaData || {})[m.id];
       if(isVid) body.insertBefore(audio, body.firstChild); else body.appendChild(audio);
       h.audio = audio;
+      if(!isStudent && inRoom() && srcRaw) shareMediaToCloud(q.id, m.id, srcRaw);
       var btn = body.querySelector(".ma-play"), seek = body.querySelector(".ma-seek"), tm = body.querySelector(".ma-time");
       // 2026-10-01：音檔本體可能是資料網址（舊）、雲端網址，或「mm:」參照（存在這台裝置的 IndexedDB，見 resolveMediaSrc）
       if(srcRaw){
