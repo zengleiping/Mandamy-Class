@@ -90,6 +90,19 @@
    "book": "b1",
    "lesson": 8,
    "file": "content/b1-lesson8-quiz.json"
+  },
+  {
+   "id": "b3-6",
+   "bookTitle": "《學華語向前走》第三冊",
+   "lesson": 6,
+   "file": "content/b3-lesson6.json"
+  },
+  {
+   "id": "b3-6-quiz",
+   "type": "project",
+   "bookTitle": "《學華語向前走》第三冊",
+   "lesson": 6,
+   "file": "content/b3-lesson6-quiz.json"
   }
  ]
 }

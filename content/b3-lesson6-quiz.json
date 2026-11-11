@@ -1,0 +1,1341 @@
+{
+ "id": "proj_b3l6quiz",
+ "title": "第三冊 第六課 聖誕節快到了 練習題",
+ "desc": "依第三冊第六課簡報（課文、生詞、句型、習寫漢字、認讀漢字、練習、綜合活動、任務活動）整理；題目說明附英文",
+ "sections": {
+  "s36_1": {
+   "id": "s36_1",
+   "title": "第 1 大題：連連看（生詞和注音） Match the words with zhuyin",
+   "type": "match",
+   "order": 0,
+   "questions": {
+    "q36_01_01": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "哇",
+       "right": "ㄨㄚ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "好",
+       "right": "ㄏㄠˇ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "平常",
+       "right": "ㄆㄧㄥˊ ㄔㄤˊ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "就是",
+       "right": "ㄐㄧㄡˋ ㄕˋ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "聖誕節",
+       "right": "ㄕㄥˋ ㄉㄢˋ ㄐㄧㄝˊ"
+      }
+     },
+     "id": "q36_01_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_01_02": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "棵",
+       "right": "ㄎㄜ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "聖誕樹",
+       "right": "ㄕㄥˋ ㄉㄢˋ ㄕㄨˋ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "彩色",
+       "right": "ㄘㄞˇ ㄙㄜˋ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "燈",
+       "right": "ㄉㄥ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "掛",
+       "right": "ㄍㄨㄚˋ"
+      }
+     },
+     "id": "q36_01_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_01_03": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "窗戶",
+       "right": "ㄔㄨㄤ ˙ㄏㄨ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "輛",
+       "right": "ㄌㄧㄤˋ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "聖誕老人",
+       "right": "ㄕㄥˋ ㄉㄢˋ ㄌㄠˇ ㄖㄣˊ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "聽話",
+       "right": "ㄊㄧㄥ ㄏㄨㄚˋ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "洋娃娃",
+       "right": "ㄧㄤˊ ㄨㄚˊ ˙ㄨㄚ"
+      }
+     },
+     "id": "q36_01_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_01_04": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "卡片",
+       "right": "ㄎㄚˇ ㄆㄧㄢˋ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "寄",
+       "right": "ㄐㄧˋ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "隻",
+       "right": "ㄓ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "聖誕襪",
+       "right": "ㄕㄥˋ ㄉㄢˋ ㄨㄚˋ"
+      }
+     },
+     "id": "q36_01_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s36_2": {
+   "id": "s36_2",
+   "title": "第 2 大題：連連看（生詞和意思） Match the words with their meanings",
+   "type": "match",
+   "order": 1,
+   "questions": {
+    "q36_02_01": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "哇",
+       "right": "wow"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "好",
+       "right": "quite; so"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "平常",
+       "right": "usual"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "就是",
+       "right": "to be (exactly)"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "聖誕節",
+       "right": "Christmas"
+      }
+     },
+     "id": "q36_02_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_02_02": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "棵",
+       "right": "M.W. for trees"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "聖誕樹",
+       "right": "Christmas tree"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "彩色",
+       "right": "colorful"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "燈",
+       "right": "lamp; light"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "掛",
+       "right": "to hang"
+      }
+     },
+     "id": "q36_02_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_02_03": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "窗戶",
+       "right": "window"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "輛",
+       "right": "M.W. for vehicles"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "聖誕老人",
+       "right": "Santa Claus"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "聽話",
+       "right": "obedient"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "洋娃娃",
+       "right": "doll"
+      }
+     },
+     "id": "q36_02_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_02_04": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "卡片",
+       "right": "card"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "寄",
+       "right": "to send; to mail"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "隻",
+       "right": "M.W. for animals"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "聖誕襪",
+       "right": "Christmas stocking"
+      }
+     },
+     "id": "q36_02_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s36_3": {
+   "id": "s36_3",
+   "title": "第 3 大題：我會寫（寫出正確的漢字） Write the characters",
+   "type": "fill",
+   "order": 2,
+   "questions": {
+    "q36_03_01": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "大文說今天人好多，跟{平}{常}不一樣。",
+     "id": "q36_03_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_03_02": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "媽媽說下個月{就}{是}聖誕節，大家都來買東西。",
+     "id": "q36_03_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_03_03": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "爸爸要買一些{彩}色的燈{掛}在{窗}戶上。",
+     "id": "q36_03_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_03_04": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "大文想要一輛玩具車，爸爸說如果他{聽}話，聖誕老人會送給他。",
+     "id": "q36_03_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_03_05": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "文文想買一個洋{娃}{娃}，還要再買一張{卡}{片}{寄}給外公、外婆。",
+     "id": "q36_03_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s36_4": {
+   "id": "s36_4",
+   "title": "第 4 大題：大文的日記 Da Wen's diary",
+   "type": "fill",
+   "order": 3,
+   "questions": {
+    "q36_04_01": {
+     "prompt": "下面是大文的日記（十一月二十五號），請根據課文寫上正確的漢字。 This is Da Wen's diary. Fill in the correct characters.",
+     "template": "今天我們家去百貨公司買東西，今天人好多，跟{平}{常}不一樣。媽媽說下個月{就}是聖誕節了，所以大家都來買東西。",
+     "id": "q36_04_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_04_02": {
+     "prompt": "下面是大文的日記（十一月二十五號），請根據課文寫上正確的漢字。 This is Da Wen's diary. Fill in the correct characters.",
+     "template": "爸爸說要買一些{彩}{色}的燈{掛}在{窗}戶上。我想要一輛玩具車，爸爸說如果我{聽}{話}，聖誕老人就會送給我。",
+     "id": "q36_04_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_04_03": {
+     "prompt": "下面是大文的日記（十一月二十五號），請根據課文寫上正確的漢字。 This is Da Wen's diary. Fill in the correct characters.",
+     "template": "妹妹想要一個洋娃娃，還要再買一{張}{卡}{片}{寄}給外公、外婆。我最喜歡聖誕節了。",
+     "id": "q36_04_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s36_5": {
+   "id": "s36_5",
+   "title": "第 5 大題：綜合活動（搭配量詞） Measure words",
+   "type": "fill",
+   "order": 4,
+   "questions": {
+    "q36_05_01": {
+     "prompt": "請搭配量詞，在空格寫上正確的量詞。 Fill in the correct measure word.",
+     "template": "一{棵}聖誕樹",
+     "id": "q36_05_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_05_02": {
+     "prompt": "請搭配量詞，在空格寫上正確的量詞。 Fill in the correct measure word.",
+     "template": "一{輛}玩具車",
+     "id": "q36_05_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_05_03": {
+     "prompt": "請搭配量詞，在空格寫上正確的量詞。 Fill in the correct measure word.",
+     "template": "一{隻}貓",
+     "id": "q36_05_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_05_04": {
+     "prompt": "請搭配量詞，在空格寫上正確的量詞。 Fill in the correct measure word.",
+     "template": "一{張}卡片",
+     "id": "q36_05_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_05_05": {
+     "prompt": "請搭配量詞，在空格寫上正確的量詞。 Fill in the correct measure word.",
+     "template": "一{個}洋娃娃",
+     "id": "q36_05_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_05_06": {
+     "prompt": "請搭配量詞，在空格寫上正確的量詞。 Fill in the correct measure word.",
+     "template": "一{隻}聖誕襪",
+     "id": "q36_05_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s36_6": {
+   "id": "s36_6",
+   "title": "第 6 大題：句型填空 Fill in the sentence patterns",
+   "type": "fill",
+   "order": 5,
+   "questions": {
+    "q36_06_01": {
+     "prompt": "用「好」完成句子。 Use 好 (quite / so).",
+     "template": "大文天天練習跑步，所以跑得{好}快。",
+     "id": "q36_06_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_06_02": {
+     "prompt": "用「好」完成句子。 Use 好 (quite / so).",
+     "template": "超市裡的餅乾、糖果{好}多。",
+     "id": "q36_06_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_06_03": {
+     "prompt": "用「就是」完成句子。 Use 就是 (is).",
+     "template": "下個星期三{就是}聖誕節了。",
+     "id": "q36_06_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_06_04": {
+     "prompt": "用「就是」完成句子。 Use 就是 (is).",
+     "template": "這個星期天{就是}張莉的生日。",
+     "id": "q36_06_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_06_05": {
+     "prompt": "用「掛在」完成句子。 Use 掛在 (hang at / in / on).",
+     "template": "弟弟的聖誕襪{掛在}房間裡。",
+     "id": "q36_06_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_06_06": {
+     "prompt": "用「掛在」完成句子。 Use 掛在 (hang at / in / on).",
+     "template": "媽媽，我的衣服呢？你的衣服{掛在}房間裡。",
+     "id": "q36_06_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_06_07": {
+     "prompt": "用量詞完成句子。 Fill in the measure word.",
+     "template": "心美生日的時候，她想要買一{個}洋娃娃。",
+     "id": "q36_06_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_06_08": {
+     "prompt": "用量詞完成句子。 Fill in the measure word.",
+     "template": "弟弟的聖誕禮物是三{輛}玩具車。",
+     "id": "q36_06_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_06_09": {
+     "prompt": "用量詞完成句子。 Fill in the measure word.",
+     "template": "我想養一{隻}貓或是一{隻}狗。",
+     "id": "q36_06_09",
+     "order": 8,
+     "title": "第 9 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s36_7": {
+   "id": "s36_7",
+   "title": "第 7 大題：選擇題（句型） Choose the correct answer",
+   "type": "choice",
+   "order": 6,
+   "questions": {
+    "q36_07_01": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n今天人＿＿多，跟平常不一樣。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "好"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "就"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "掛"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q36_07_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_07_02": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n下個月＿＿聖誕節了。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "就是"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "就會"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "好是"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q36_07_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_07_03": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n彩色的燈要＿＿窗戶上。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "掛在"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "看在"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "買在"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q36_07_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_07_04": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n一＿＿聖誕樹",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "棵"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "輛"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "隻"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q36_07_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_07_05": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n弟弟想要三＿＿玩具車。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "輛"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "棵"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "張"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q36_07_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_07_06": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n我想養一＿＿貓。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "隻"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "棵"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "輛"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q36_07_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_07_07": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n文文要寄一＿＿卡片給外公、外婆。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "張"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "隻"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "棵"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q36_07_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s36_8": {
+   "id": "s36_8",
+   "title": "第 8 大題：閱讀理解（課文） Reading comprehension",
+   "type": "choice",
+   "order": 7,
+   "questions": {
+    "q36_08_01": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n今天商店裡的人怎麼樣？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "人很多，跟平常不一樣"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "人很少"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "跟平常一樣"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：哇！今天人好多，跟平常不一樣。\n媽媽：下個月就是聖誕節了，大家都來買東西。\n文文：媽媽，你看那棵聖誕樹好漂亮！\n爸爸：我們也要買一些彩色的燈掛在窗戶上。今年你想要什麼禮物？\n大文：我想要一輛玩具車，聖誕老人會送給我嗎？\n爸爸：如果你聽話，聖誕老人就會送給你。\n文文：我想買一個洋娃娃，再買一張卡片寄給外公、外婆。\n媽媽：我們還要買一隻聖誕襪掛在房間裡。",
+     "id": "q36_08_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_08_02": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n下個月是什麼節日？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "聖誕節"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "新年"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "生日"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：哇！今天人好多，跟平常不一樣。\n媽媽：下個月就是聖誕節了，大家都來買東西。\n文文：媽媽，你看那棵聖誕樹好漂亮！\n爸爸：我們也要買一些彩色的燈掛在窗戶上。今年你想要什麼禮物？\n大文：我想要一輛玩具車，聖誕老人會送給我嗎？\n爸爸：如果你聽話，聖誕老人就會送給你。\n文文：我想買一個洋娃娃，再買一張卡片寄給外公、外婆。\n媽媽：我們還要買一隻聖誕襪掛在房間裡。",
+     "id": "q36_08_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_08_03": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n爸爸要買什麼掛在窗戶上？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "彩色的燈"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "聖誕襪"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "卡片"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：哇！今天人好多，跟平常不一樣。\n媽媽：下個月就是聖誕節了，大家都來買東西。\n文文：媽媽，你看那棵聖誕樹好漂亮！\n爸爸：我們也要買一些彩色的燈掛在窗戶上。今年你想要什麼禮物？\n大文：我想要一輛玩具車，聖誕老人會送給我嗎？\n爸爸：如果你聽話，聖誕老人就會送給你。\n文文：我想買一個洋娃娃，再買一張卡片寄給外公、外婆。\n媽媽：我們還要買一隻聖誕襪掛在房間裡。",
+     "id": "q36_08_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_08_04": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n大文想要什麼禮物？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "玩具車"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "洋娃娃"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "聖誕襪"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：哇！今天人好多，跟平常不一樣。\n媽媽：下個月就是聖誕節了，大家都來買東西。\n文文：媽媽，你看那棵聖誕樹好漂亮！\n爸爸：我們也要買一些彩色的燈掛在窗戶上。今年你想要什麼禮物？\n大文：我想要一輛玩具車，聖誕老人會送給我嗎？\n爸爸：如果你聽話，聖誕老人就會送給你。\n文文：我想買一個洋娃娃，再買一張卡片寄給外公、外婆。\n媽媽：我們還要買一隻聖誕襪掛在房間裡。",
+     "id": "q36_08_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_08_05": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n文文想買什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "洋娃娃"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "玩具車"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "彩色的燈"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：哇！今天人好多，跟平常不一樣。\n媽媽：下個月就是聖誕節了，大家都來買東西。\n文文：媽媽，你看那棵聖誕樹好漂亮！\n爸爸：我們也要買一些彩色的燈掛在窗戶上。今年你想要什麼禮物？\n大文：我想要一輛玩具車，聖誕老人會送給我嗎？\n爸爸：如果你聽話，聖誕老人就會送給你。\n文文：我想買一個洋娃娃，再買一張卡片寄給外公、外婆。\n媽媽：我們還要買一隻聖誕襪掛在房間裡。",
+     "id": "q36_08_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_08_06": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n媽媽說要買一隻什麼掛在房間裡？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "聖誕襪"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "聖誕樹"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "卡片"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：哇！今天人好多，跟平常不一樣。\n媽媽：下個月就是聖誕節了，大家都來買東西。\n文文：媽媽，你看那棵聖誕樹好漂亮！\n爸爸：我們也要買一些彩色的燈掛在窗戶上。今年你想要什麼禮物？\n大文：我想要一輛玩具車，聖誕老人會送給我嗎？\n爸爸：如果你聽話，聖誕老人就會送給你。\n文文：我想買一個洋娃娃，再買一張卡片寄給外公、外婆。\n媽媽：我們還要買一隻聖誕襪掛在房間裡。",
+     "id": "q36_08_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_08_07": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n文文要把卡片寄給誰？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "外公、外婆"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "爸爸、媽媽"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "聖誕老人"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：哇！今天人好多，跟平常不一樣。\n媽媽：下個月就是聖誕節了，大家都來買東西。\n文文：媽媽，你看那棵聖誕樹好漂亮！\n爸爸：我們也要買一些彩色的燈掛在窗戶上。今年你想要什麼禮物？\n大文：我想要一輛玩具車，聖誕老人會送給我嗎？\n爸爸：如果你聽話，聖誕老人就會送給你。\n文文：我想買一個洋娃娃，再買一張卡片寄給外公、外婆。\n媽媽：我們還要買一隻聖誕襪掛在房間裡。",
+     "id": "q36_08_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s36_9": {
+   "id": "s36_9",
+   "title": "第 9 大題：是非題（課文） True or false",
+   "type": "choice",
+   "order": 8,
+   "questions": {
+    "q36_09_01": {
+     "prompt": "判斷對錯。 True or false?\n\n今天人很少。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c2"
+     ],
+     "passage": "大文：哇！今天人好多，跟平常不一樣。\n媽媽：下個月就是聖誕節了，大家都來買東西。\n文文：媽媽，你看那棵聖誕樹好漂亮！\n爸爸：我們也要買一些彩色的燈掛在窗戶上。今年你想要什麼禮物？\n大文：我想要一輛玩具車，聖誕老人會送給我嗎？\n爸爸：如果你聽話，聖誕老人就會送給你。\n文文：我想買一個洋娃娃，再買一張卡片寄給外公、外婆。\n媽媽：我們還要買一隻聖誕襪掛在房間裡。",
+     "id": "q36_09_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_09_02": {
+     "prompt": "判斷對錯。 True or false?\n\n下個月就是聖誕節。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：哇！今天人好多，跟平常不一樣。\n媽媽：下個月就是聖誕節了，大家都來買東西。\n文文：媽媽，你看那棵聖誕樹好漂亮！\n爸爸：我們也要買一些彩色的燈掛在窗戶上。今年你想要什麼禮物？\n大文：我想要一輛玩具車，聖誕老人會送給我嗎？\n爸爸：如果你聽話，聖誕老人就會送給你。\n文文：我想買一個洋娃娃，再買一張卡片寄給外公、外婆。\n媽媽：我們還要買一隻聖誕襪掛在房間裡。",
+     "id": "q36_09_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_09_03": {
+     "prompt": "判斷對錯。 True or false?\n\n大文想要一輛玩具車。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：哇！今天人好多，跟平常不一樣。\n媽媽：下個月就是聖誕節了，大家都來買東西。\n文文：媽媽，你看那棵聖誕樹好漂亮！\n爸爸：我們也要買一些彩色的燈掛在窗戶上。今年你想要什麼禮物？\n大文：我想要一輛玩具車，聖誕老人會送給我嗎？\n爸爸：如果你聽話，聖誕老人就會送給你。\n文文：我想買一個洋娃娃，再買一張卡片寄給外公、外婆。\n媽媽：我們還要買一隻聖誕襪掛在房間裡。",
+     "id": "q36_09_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_09_04": {
+     "prompt": "判斷對錯。 True or false?\n\n文文想買聖誕襪。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c2"
+     ],
+     "passage": "大文：哇！今天人好多，跟平常不一樣。\n媽媽：下個月就是聖誕節了，大家都來買東西。\n文文：媽媽，你看那棵聖誕樹好漂亮！\n爸爸：我們也要買一些彩色的燈掛在窗戶上。今年你想要什麼禮物？\n大文：我想要一輛玩具車，聖誕老人會送給我嗎？\n爸爸：如果你聽話，聖誕老人就會送給你。\n文文：我想買一個洋娃娃，再買一張卡片寄給外公、外婆。\n媽媽：我們還要買一隻聖誕襪掛在房間裡。",
+     "id": "q36_09_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_09_05": {
+     "prompt": "判斷對錯。 True or false?\n\n如果大文聽話，聖誕老人就會送禮物給他。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：哇！今天人好多，跟平常不一樣。\n媽媽：下個月就是聖誕節了，大家都來買東西。\n文文：媽媽，你看那棵聖誕樹好漂亮！\n爸爸：我們也要買一些彩色的燈掛在窗戶上。今年你想要什麼禮物？\n大文：我想要一輛玩具車，聖誕老人會送給我嗎？\n爸爸：如果你聽話，聖誕老人就會送給你。\n文文：我想買一個洋娃娃，再買一張卡片寄給外公、外婆。\n媽媽：我們還要買一隻聖誕襪掛在房間裡。",
+     "id": "q36_09_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s36_10": {
+   "id": "s36_10",
+   "title": "第 10 大題：讀讀看，寫上漢字 Read the zhuyin and write the characters",
+   "type": "fill",
+   "order": 9,
+   "questions": {
+    "q36_10_01": {
+     "prompt": "讀出注音，寫出正確的漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄆㄧㄥˊ ㄔㄤˊ → {平常}",
+     "id": "q36_10_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_10_02": {
+     "prompt": "讀出注音，寫出正確的漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄘㄞˇ ㄙㄜˋ → {彩色}",
+     "id": "q36_10_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_10_03": {
+     "prompt": "讀出注音，寫出正確的漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄕㄥˋ ㄉㄢˋ ㄕㄨˋ → {聖誕樹}",
+     "id": "q36_10_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_10_04": {
+     "prompt": "讀出注音，寫出正確的漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄔㄨㄤ ˙ㄏㄨ → {窗戶}",
+     "id": "q36_10_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_10_05": {
+     "prompt": "讀出注音，寫出正確的漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄎㄚˇ ㄆㄧㄢˋ → {卡片}",
+     "id": "q36_10_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_10_06": {
+     "prompt": "讀出注音，寫出正確的漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄊㄧㄥ ㄏㄨㄚˋ → {聽話}",
+     "id": "q36_10_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_10_07": {
+     "prompt": "讀出注音，寫出正確的漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄧㄤˊ ㄨㄚˊ ˙ㄨㄚ → {洋娃娃}",
+     "id": "q36_10_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_10_08": {
+     "prompt": "讀出注音，寫出正確的漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄕㄥˋ ㄉㄢˋ ㄨㄚˋ → {聖誕襪}",
+     "id": "q36_10_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s36_11": {
+   "id": "s36_11",
+   "title": "第 11 大題：任務活動（完成對話） Complete the dialogue",
+   "type": "fill",
+   "order": 10,
+   "questions": {
+    "q36_11_01": {
+     "prompt": "和另一位同學一起完成對話，寫上正確的漢字。 Complete the dialogue with a partner.",
+     "template": "A：今年你想要什麼聖誕禮物？\nB：我想要一{輛}玩具車。",
+     "id": "q36_11_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_11_02": {
+     "prompt": "和另一位同學一起完成對話，寫上正確的漢字。 Complete the dialogue with a partner.",
+     "template": "A：聖誕老人會送給我嗎？\nB：如果你{聽}{話}，聖誕老人就會送給你。",
+     "id": "q36_11_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_11_03": {
+     "prompt": "和另一位同學一起完成對話，寫上正確的漢字。 Complete the dialogue with a partner.",
+     "template": "A：我們要買一{隻}聖誕襪{掛}在房間裡。\nB：好，我們也要買一些{彩}色的燈。",
+     "id": "q36_11_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_11_04": {
+     "prompt": "和另一位同學一起完成對話，寫上正確的漢字。 Complete the dialogue with a partner.",
+     "template": "A：你想買什麼寄給外公、外婆？\nB：我想買一張{卡}{片}。",
+     "id": "q36_11_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s36_12": {
+   "id": "s36_12",
+   "title": "第 12 大題：說說看（句型、任務活動） Speaking",
+   "type": "record",
+   "order": 11,
+   "questions": {
+    "q36_12_01": {
+     "prompt": "今天人好多嗎？請用「好＋多／少／大／小」說一個句子。 Use 好 + adj. to make a sentence.",
+     "reference": "今天人好多，跟平常不一樣。",
+     "maxSec": 30,
+     "id": "q36_12_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_12_02": {
+     "prompt": "今天（或這個星期）是什麼日子？請用「就是」回答。 Answer with 就是.",
+     "reference": "這個星期天就是我的生日。",
+     "maxSec": 30,
+     "id": "q36_12_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_12_03": {
+     "prompt": "你的衣服掛在哪裡？請用「掛在」回答。 Answer with 掛在.",
+     "reference": "我的衣服掛在房間裡。",
+     "maxSec": 30,
+     "id": "q36_12_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_12_04": {
+     "prompt": "請問你的同學：今年想要什麼聖誕禮物？ Ask your classmate what Christmas gift they want this year.",
+     "reference": "你今年想要什麼聖誕禮物？我想要一輛玩具車。",
+     "maxSec": 30,
+     "id": "q36_12_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s36_13": {
+   "id": "s36_13",
+   "title": "第 13 大題：習寫漢字 Write the characters",
+   "type": "hanzi",
+   "order": 12,
+   "questions": {
+    "q36_13_01": {
+     "char": "平",
+     "desc": "5畫，部首：干",
+     "id": "q36_13_01",
+     "order": 0,
+     "title": "第 1 題：平",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_13_02": {
+     "char": "就",
+     "desc": "12畫，部首：尢",
+     "id": "q36_13_02",
+     "order": 1,
+     "title": "第 2 題：就",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_13_03": {
+     "char": "棵",
+     "desc": "12畫，部首：木",
+     "id": "q36_13_03",
+     "order": 2,
+     "title": "第 3 題：棵",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_13_04": {
+     "char": "彩",
+     "desc": "11畫，部首：彡",
+     "id": "q36_13_04",
+     "order": 3,
+     "title": "第 4 題：彩",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_13_05": {
+     "char": "掛",
+     "desc": "11畫，部首：手",
+     "id": "q36_13_05",
+     "order": 4,
+     "title": "第 5 題：掛",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_13_06": {
+     "char": "窗",
+     "desc": "12畫，部首：穴",
+     "id": "q36_13_06",
+     "order": 5,
+     "title": "第 6 題：窗",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_13_07": {
+     "char": "聽",
+     "desc": "22畫，部首：耳",
+     "id": "q36_13_07",
+     "order": 6,
+     "title": "第 7 題：聽",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_13_08": {
+     "char": "卡",
+     "desc": "5畫，部首：卜",
+     "id": "q36_13_08",
+     "order": 7,
+     "title": "第 8 題：卡",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_13_09": {
+     "char": "片",
+     "desc": "4畫，部首：片",
+     "id": "q36_13_09",
+     "order": 8,
+     "title": "第 9 題：片",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_13_10": {
+     "char": "寄",
+     "desc": "11畫，部首：宀",
+     "id": "q36_13_10",
+     "order": 9,
+     "title": "第 10 題：寄",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s36_14": {
+   "id": "s36_14",
+   "title": "第 14 大題：我會念（課文、認讀漢字） Read aloud",
+   "type": "record",
+   "order": 13,
+   "questions": {
+    "q36_14_01": {
+     "prompt": "請念出課文第一段。 Read the first part of the text.",
+     "reference": "大文：哇！今天人好多，跟平常不一樣。\n媽媽：下個月就是聖誕節了，大家都來買東西。\n文文：媽媽，你看那棵聖誕樹好漂亮！\n爸爸：我們也要買一些彩色的燈掛在窗戶上。今年你想要什麼禮物？\n大文：我想要一輛玩具車，聖誕老人會送給我嗎？",
+     "maxSec": 60,
+     "passage": "大文：哇！今天人好多，跟平常不一樣。\n媽媽：下個月就是聖誕節了，大家都來買東西。\n文文：媽媽，你看那棵聖誕樹好漂亮！\n爸爸：我們也要買一些彩色的燈掛在窗戶上。今年你想要什麼禮物？\n大文：我想要一輛玩具車，聖誕老人會送給我嗎？",
+     "id": "q36_14_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_14_02": {
+     "prompt": "請念出課文第二段。 Read the second part of the text.",
+     "reference": "爸爸：如果你聽話，聖誕老人就會送給你。\n文文：我想買一個洋娃娃，再買一張卡片寄給外公、外婆。\n媽媽：我們還要買一隻聖誕襪掛在房間裡。",
+     "maxSec": 45,
+     "passage": "爸爸：如果你聽話，聖誕老人就會送給你。\n文文：我想買一個洋娃娃，再買一張卡片寄給外公、外婆。\n媽媽：我們還要買一隻聖誕襪掛在房間裡。",
+     "id": "q36_14_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q36_14_03": {
+     "prompt": "請念出這些認讀漢字。 Read these characters aloud.",
+     "reference": "聖　誕　節　燈　輛　娃　襪　哇",
+     "maxSec": 30,
+     "id": "q36_14_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  }
+ }
+}
