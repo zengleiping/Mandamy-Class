@@ -7084,7 +7084,9 @@ window.mmTA = (function(){
       if(window.__grade) gradeBarRender();
       if(window.__embedReveal) setTimeout(window.__embedReveal, 80);
     });
-    onValue(ref(db, "roomCursors/" + rId), function(snap){ renderMultiCursors(snap.val()); });
+    onValue(ref(db, "roomCursors/" + rId), function(snap){ lastCursorsData = snap.val(); renderMultiCursors(lastCursorsData); });
+    // 游標資料帶有時間：很久沒動（或上次上課殘留、對方已經關掉頁面）的游標不要一直留在畫面上，每 5 秒清一次
+    if(!window.__cursorPruneTimer) window.__cursorPruneTimer = setInterval(function(){ if(lastCursorsData) renderMultiCursors(lastCursorsData); }, 5000);
     // 「跟隨大師」邊錄邊即時廣播：只有目前畫面上真的是那一題寫字板時，liveTraceHandler 才會被設定，
     // 不然就什麼都不用做（例如老師在錄別的題目，或大家還在別的題型畫面）。
     onValue(ref(db, "roomMasterTraceLive/" + rId), function(snap){ if(liveTraceHandler) liveTraceHandler(snap.val()); });
@@ -7439,6 +7441,7 @@ window.mmTA = (function(){
   function getCursorRefEl(boardArea){
     return (boardArea && boardArea.querySelector(".canvas-stage-wrap")) || boardArea;
   }
+  var lastCursorsData = null, CURSOR_TTL_MS = 20000;
   function renderMultiCursors(cursorsData){
     var box = document.getElementById("multi-cursor-box");
     if(!box) return;
@@ -7460,6 +7463,7 @@ window.mmTA = (function(){
       if(pid === myId) return;
       var c = cursorsData[pid];
       if(!c || c.qId !== curQId) return;
+      if(!c.t || Date.now() - c.t > CURSOR_TTL_MS) return;   // 沒有時間（舊的殘留資料）或超過 20 秒沒動：不顯示
       // 測驗／考試中：學生看不到其他同學的游標（不然看得出別人選哪個）
       if(isStudent && isTestMode() && c.role !== "teacher") return;
       activePeerIds[pid] = true;
@@ -7542,7 +7546,9 @@ window.mmTA = (function(){
     wasCursorOnBoard = true;
     var x = (e.clientX - rect.left) / rect.width * 100;
     var y = (e.clientY - rect.top) / rect.height * 100;
-    set(ref(db, "roomCursors/" + activeRoomId + "/" + myId), { x: x, y: y, name: myName, role: roomRole, qId: qInfo.question.id });
+    var curRef = ref(db, "roomCursors/" + activeRoomId + "/" + myId);
+    set(curRef, { x: x, y: y, name: myName, role: roomRole, qId: qInfo.question.id, t: Date.now() });
+    if(!window.__curDiscRef || window.__curDiscRef !== activeRoomId + "|" + myId){ window.__curDiscRef = activeRoomId + "|" + myId; try{ onDisconnect(curRef).remove(); }catch(e){} }   // 關掉頁面／斷線就自動移除
   });
 
   /* ================== 側欄渲染 ================== */
