@@ -7380,7 +7380,20 @@ var B = null;
 function bA(x){ if(!x) return []; if(Array.isArray(x)) return x.slice(); return Object.keys(x).sort(function(a, b){ return a - b; }).map(function(k){ return x[k]; }); }
 function bBase(){ return S.teacher ? "teacherPlatform/" + S.teacher.id + "/bingo/" + S.sel.c : "teacherPlatform/" + S.student.idx.t + "/bingo/" + S.student.idx.c; }
 function bMyKey(){ return S.student ? hwSkey(S.student.name) : null; }
-function bLines(has){ var n = 0; BG_LINES.forEach(function(L){ if(L.every(has)) n++; }); return n; }
+// 連線長度 len（5＝整排、4、3）：列、欄、兩條對角線上所有連續 len 格的組合都算一條線
+var BG_LINES_CACHE = {};
+function bgLinesOf(len){
+  len = Number(len) || 5; if(len >= 5) return BG_LINES; if(BG_LINES_CACHE[len]) return BG_LINES_CACHE[len];
+  var out = [], r, c, t, L;
+  [[0, 1], [1, 0], [1, 1], [1, -1]].forEach(function(d){
+    for(r = 0; r < 5; r++) for(c = 0; c < 5; c++){
+      L = []; for(t = 0; t < len; t++){ var rr = r + d[0] * t, cc = c + d[1] * t; if(rr < 0 || rr > 4 || cc < 0 || cc > 4){ L = null; break; } L.push(rr * 5 + cc); }
+      if(L) out.push(L);
+    }
+  });
+  return (BG_LINES_CACHE[len] = out);
+}
+function bLines(has, len){ var n = 0; bgLinesOf(len).forEach(function(L){ if(L.every(has)) n++; }); return n; }
 function bCells(x){ var out = []; for(var i = 0; i < 25; i++) out.push((x && x[i]) || { w: "", p: "" }); return out; }
 function bShuffle(a){ a = a.slice(); for(var i = a.length - 1; i > 0; i--){ var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
 function bName(d, k){ var m = (d.members || {})[k]; return m ? m.name : (function(){ try{ return decodeURIComponent(k); }catch(e){ return k; } })(); }
@@ -7442,7 +7455,7 @@ function bingoAuthority(d){
   if(ph === "play"){
     var keys = Object.keys(d.members || {}), lines = d.lines || {}, up = {}, got = [], mode = d.cfg.mode, marks = d.marks || {}, owner = d.owner || {};
     keys.forEach(function(k){
-      var n = mode === "claim" ? bLines(function(c){ return owner[c] === k; }) : bLines(function(c){ return !!(marks[k] && marks[k][c]); });
+      var ln = d.cfg.len || 5, n = mode === "claim" ? bLines(function(c){ return owner[c] === k; }, ln) : bLines(function(c){ return !!(marks[k] && marks[k][c]); }, ln);
       if(n > (lines[k] || 0)){ up[k] = n; got.push(k); }
     });
     var full = mode === "claim" ? bA(owner).filter(Boolean).length >= 25 || Object.keys(owner).length >= 25 : (d.called && bA(d.called).length >= bA(d.pool).length);
@@ -7454,6 +7467,12 @@ function bingoAuthority(d){
       else if(full){
         patch.phase = "done"; var best = 0; keys.forEach(function(k){ best = Math.max(best, nl[k] || 0); });
         patch.winners = best ? keys.filter(function(k){ return (nl[k] || 0) === best; }) : [];
+        // 盤面佔滿了、還是沒有人連成線：改比「佔到最多格」的人（同格數就一起算贏家），不會白玩一場
+        if(!best && mode === "claim"){
+          var cnt = {}; Object.keys(owner).forEach(function(c){ var o = owner[c]; if(o) cnt[o] = (cnt[o] || 0) + 1; });
+          var mx = 0; keys.forEach(function(k){ mx = Math.max(mx, cnt[k] || 0); });
+          patch.winners = mx ? keys.filter(function(k){ return (cnt[k] || 0) === mx; }) : []; patch.byCells = true;
+        }
       }
     }
   }
@@ -7566,7 +7585,7 @@ function bgFormInit(d){
   if(B.form) return;
   var cfg = d.cfg || {}, ls = {}; if(S.lesson) ls[S.lesson] = true;
   var mem = {}; Object.keys(d.members || {}).forEach(function(k){ mem[k] = d.members[k].name; });
-  B.form = { mode: cfg.mode || "claim", win: cfg.win || "first", pinyin: cfg.pinyin !== false, source: cfg.source || "vocab", lessons: ls, manual: "", cells: null, pool: null, members: mem, group: !!cfg.group, press: cfg.press || "student", teams: null, tsel: null };
+  B.form = { mode: cfg.mode || "claim", win: cfg.win || "first", pinyin: cfg.pinyin !== false, source: cfg.source || "vocab", lessons: ls, manual: "", cells: null, pool: null, members: mem, group: !!cfg.group, press: cfg.press || "student", teams: null, tsel: null, len: cfg.len || ((cfg.mode || "claim") === "claim" ? 4 : 5) };
   if(cfg.group && d.members){ B.form.members = {}; B.form.teams = Object.keys(d.members).filter(function(k){ return d.members[k].team; }).map(function(k){ var m = d.members[k]; bA(m.students).forEach(function(sk){ B.form.members[sk] = (m.names || {})[sk] || sk; }); return { name: m.name, members: bA(m.students) }; }); }
 }
 function bgParseManual(txt){
@@ -7587,6 +7606,11 @@ function bingoDrawSetup(d){
     '<div class="panel"><h3>玩法</h3><div class="bg-opts">' +
     '<label class="bg-opt"><input type="radio" name="bg-mode" value="claim"' + (f.mode === "claim" ? ' checked' : '') + '><b>全班共用一張盤</b><span class="note">輪到的人點一格，老師判定答對才佔格（變成他的顏色），先連成線的人賓果</span></label>' +
     '<label class="bg-opt"><input type="radio" name="bg-mode" value="personal"' + (f.mode === "personal" ? ' checked' : '') + '><b>每人各一張盤</b><span class="note">每人盤上的詞順序不同；老師抽詞念出來，大家在自己盤上點</span></label></div>' +
+    '<h3 style="margin-top:12px;">幾格連成線算賓果</h3><div class="bg-opts">' +
+    '<label class="bg-opt"><input type="radio" name="bg-len" value="5"' + (f.len === 5 ? ' checked' : '') + '><b>5 格（整排）</b><span class="note">標準賓果，人多時比較難連成</span></label>' +
+    '<label class="bg-opt"><input type="radio" name="bg-len" value="4"' + (f.len === 4 ? ' checked' : '') + '><b>4 格連線</b><span class="note">橫、直、斜任 4 格相連（建議：全班共用一張盤）</span></label>' +
+    '<label class="bg-opt"><input type="radio" name="bg-len" value="3"' + (f.len === 3 ? ' checked' : '') + '><b>3 格連線</b><span class="note">最容易分出勝負</span></label></div>' +
+    '<p class="note" style="margin:6px 0 0;">盤面佔滿、還是沒有人連成線時，會改比誰佔到的格子最多。</p>' +
     '<h3 style="margin-top:12px;">賓果成立後</h3><div class="bg-opts">' +
     '<label class="bg-opt"><input type="radio" name="bg-win" value="first"' + (f.win === "first" ? ' checked' : '') + '><b>第一個賓果就結束</b><span class="note">所有人螢幕顯示得主</span></label>' +
     '<label class="bg-opt"><input type="radio" name="bg-win" value="full"' + (f.win === "full" ? ' checked' : '') + '><b>繼續玩到結束</b><span class="note">每次有人連成新的線都會提示，最後比誰的線多</span></label></div>' +
@@ -7609,6 +7633,7 @@ function bingoDrawSetup(d){
     '<div class="tools"><button class="btn primary" data-b="start">開始 ▶</button></div><div id="bg-err" class="note" style="color:#B23B32;margin-top:8px;"></div></div>';
   var $ = function(s){ return root.querySelector(s); };
   root.querySelectorAll('[name="bg-mode"]').forEach(function(r){ r.onchange = function(){ f.mode = r.value; bgDrawPreview(); }; });
+  root.querySelectorAll('[name="bg-len"]').forEach(function(r){ r.onchange = function(){ f.len = Number(r.value); }; });
   root.querySelectorAll('[name="bg-win"]').forEach(function(r){ r.onchange = function(){ f.win = r.value; }; });
   root.querySelectorAll('[name="bg-grp"]').forEach(function(r){ r.onchange = function(){ f.group = r.value === "1"; bingoDrawMembers(true); }; });
   root.querySelectorAll('[name="bg-press"]').forEach(function(r){ r.onchange = function(){ f.press = r.value; }; });
@@ -7681,7 +7706,7 @@ async function bingoStart(){
   } else keys.forEach(function(k, i){ members[k] = { name: f.members[k], color: BG_COLORS[i % BG_COLORS.length] }; });
   var cells = []; for(var i = 0; i < 25; i++) cells.push(f.source === "fill" ? { w: "", p: "" } : (f.mode === "claim" ? (f.cells || bShuffle(pool).slice(0, 25))[i] : { w: "", p: "" }));
   var needOrder = f.mode === "claim" || f.source === "fill";
-  var base = { cfg: { mode: f.mode, win: f.win, pinyin: f.pinyin, source: f.source, group: !!f.group, press: f.press || "student" }, phase: needOrder ? "order" : "play", members: members, tturn: null, lock: null, pool: f.source === "fill" ? null : pool, cells: f.mode === "claim" || f.source === "fill" ? cells : null,
+  var base = { cfg: { mode: f.mode, win: f.win, len: f.len || 5, pinyin: f.pinyin, source: f.source, group: !!f.group, press: f.press || "student" }, phase: needOrder ? "order" : "play", members: members, tturn: null, lock: null, pool: f.source === "fill" ? null : pool, cells: f.mode === "claim" || f.source === "fill" ? cells : null,
     order: null, turn: 0, owner: null, pending: null, boards: null, marks: null, called: null, current: null, lines: null, winners: null, wheel: null, announce: null };
   if(!needOrder) Object.assign(base, bgPlayPatch(base));
   B.form = null; B.wheelId = undefined; B.seenAnn = undefined;
@@ -7735,7 +7760,7 @@ function bingoDrawPlay(d){
     (B.teacher ? '<div class="tools">' + (done ? '' : bLockBtn(d)) + '<button class="btn sm" data-b="end">' + (done ? '再來一局' : '結束這局') + '</button>' + (done ? '<button class="btn sm ghost" data-b="close">關閉賓果</button>' : '') + '</div>' : '') + '</div>' + bgMyBar(d);
   if(done){
     var win = bA(d.winners);
-    html += '<div class="panel bg-win">' + (win.length ? '賓果得主 Winner：' + win.map(function(k){ return bChip(d, k, ' <small>' + ((d.lines || {})[k] || 0) + ' 條線 lines</small>'); }).join(" ") : '這局沒有人連成線。 No lines this round.') + '</div>';
+    html += '<div class="panel bg-win">' + (win.length ? (d.byCells ? '沒有人連成線，佔格最多的是 Most squares：' + win.map(function(k){ return bChip(d, k, ' <small>' + Object.keys(d.owner || {}).filter(function(c){ return d.owner[c] === k; }).length + ' 格 squares</small>'); }).join(" ") : '賓果得主 Winner：' + win.map(function(k){ return bChip(d, k, ' <small>' + ((d.lines || {})[k] || 0) + ' 條線 lines</small>'); }).join(" ")) : (d.byCells ? '' : '這局沒有人連成線。 No lines this round.')) + '</div>';
   }
   if(cfg.mode === "claim") html += bingoClaimHtml(d, done); else html += bingoPersonalHtml(d, done);
   html += '<div class="panel"><h3>計分 Score</h3><div class="bg-score">' + Object.keys(d.members || {}).map(function(k){ return bChip(d, k, '　' + ((d.lines || {})[k] || 0) + ' 條線 lines' + (cfg.mode === "claim" ? '・佔 ' + Object.keys(d.owner || {}).filter(function(c){ return d.owner[c] === k; }).length + ' 格' : '')); }).join(" ") + '</div></div></div>';
@@ -7852,10 +7877,12 @@ async function bingoClick(e){
       await fbSet(base + "/marks/" + mk + "/" + pos, true); return;
     }
     if(a === "end"){
-      if(d.phase === "done"){ B.form = null; await bSave({ phase: "setup", order: null, turn: 0, tturn: null, lock: null, owner: null, pending: null, boards: null, marks: null, called: null, current: null, lines: null, winners: null, wheel: null, announce: null, cells: null, pool: null }); return; }
+      if(d.phase === "done"){ B.form = null; await bSave({ phase: "setup", order: null, turn: 0, tturn: null, lock: null, owner: null, pending: null, boards: null, marks: null, called: null, current: null, lines: null, winners: null, wheel: null, announce: null, cells: null, pool: null, byCells: null }); return; }
       if(!confirm("結束這一局？")) return;
       var best = 0, lines = d.lines || {}, keys = Object.keys(d.members || {}); keys.forEach(function(k){ best = Math.max(best, lines[k] || 0); });
-      await bSave({ phase: "done", winners: best ? keys.filter(function(k){ return (lines[k] || 0) === best; }) : [] }); return;
+      var wn = best ? keys.filter(function(k){ return (lines[k] || 0) === best; }) : [], byC = false;
+      if(!best && (d.cfg || {}).mode === "claim"){ var cn = {}, ow = d.owner || {}, mxc = 0; Object.keys(ow).forEach(function(c){ if(ow[c]) cn[ow[c]] = (cn[ow[c]] || 0) + 1; }); keys.forEach(function(k){ mxc = Math.max(mxc, cn[k] || 0); }); if(mxc){ wn = keys.filter(function(k){ return (cn[k] || 0) === mxc; }); byC = true; } }
+      await bSave({ phase: "done", winners: wn, byCells: byC }); return;
     }
     if(a === "close"){ if(!confirm("關閉賓果？學生會回到等待畫面。")) return; B.form = null; await fbSet(base, null); return; }
   }catch(er){ toast("操作失敗，請檢查網路"); }
