@@ -1111,6 +1111,16 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .media-audio-row .ma-time{ font-size:13.5px; font-variant-numeric:tabular-nums; flex:none; }
   .media-resize{ position:absolute; right:0; bottom:0; width:16px; height:16px; cursor:nwse-resize; background:linear-gradient(135deg,transparent 50%,rgba(255,255,255,.85) 50%); z-index:3; touch-action:none; }
   .media-opt{ display:block; width:100%; text-align:left; }
+  /* 影片／YouTube 全螢幕：⛶ 按鈕（老師在標題列、學生在右上角）；Esc 或再按一次離開。不支援原生全螢幕的裝置改用整頁覆蓋 */
+  .media-fs-btn{ font-size:16px; }
+  .media-fs-float{ position:absolute; top:6px; right:6px; z-index:6; width:34px; height:34px; border-radius:8px; border:none; background:rgba(0,0,0,.55); color:#fff; font-size:18px; cursor:pointer; }
+  .media-box:fullscreen, .media-box.media-pfs{ position:fixed !important; left:0 !important; top:0 !important; width:100vw !important; height:100vh !important; max-width:none !important; border-radius:0 !important; background:#000; z-index:99999; }
+  .media-box.media-pfs{ inset:0; }
+  .media-box:fullscreen .media-body, .media-box.media-pfs .media-body{ flex:1; min-height:0; display:flex; flex-direction:column; aspect-ratio:auto !important; }
+  .media-box:fullscreen .media-body video, .media-box.media-pfs .media-body video{ flex:1; min-height:0; max-height:none !important; height:auto !important; width:100% !important; object-fit:contain; }
+  .media-box:fullscreen .media-resize, .media-box.media-pfs .media-resize{ display:none; }
+  .media-box:fullscreen .media-yt .yt-host, .media-box.media-pfs .yt-host{ position:absolute; inset:0; }
+  .media-box:fullscreen.media-yt .media-body, .media-box.media-pfs.media-yt .media-body{ position:relative; }
 
   /* 2026-10-01 上方工具列＋可自訂／可收合：老師自己決定每個工具放左側、上方或隱藏，順序也能調 */
   .draw-toolbar-top{ display:flex; flex-direction:row; flex-wrap:wrap; align-items:center; gap:6px; padding:6px 10px; background:var(--surface-2); border:1.5px solid rgba(28,33,30,0.16); border-radius:14px; box-shadow:var(--shadow); margin-bottom:8px; width:100%; box-sizing:border-box; }
@@ -14588,7 +14598,7 @@ window.mmTA = (function(){
       root.className = "media-box " + (m.kind === "youtube" ? "media-yt" : (m.kind === "video" ? "media-au media-vid" : "media-au"));
       root.dataset.mediaId = m.id;
       h.root = root;
-      var barHtml = isStudent ? "" : '<div class="media-bar" title="拖曳移動位置"><span class="media-title"></span><button type="button" class="media-del" title="移除">✕</button></div>';
+      var barHtml = isStudent ? "" : '<div class="media-bar" title="拖曳移動位置"><span class="media-title"></span>' + (m.kind !== "audio" ? '<button type="button" class="media-fs-btn" title="全螢幕播放（Esc 離開）">⛶</button>' : '') + '<button type="button" class="media-del" title="移除">✕</button></div>';
       root.innerHTML = barHtml + '<div class="media-body"></div>' + ((!isStudent && m.kind !== "audio") ? '<div class="media-resize" title="拖曳縮放"></div>' : '');
       var body = root.querySelector(".media-body");
       var titleEl = root.querySelector(".media-title"); if(titleEl) titleEl.textContent = (m.kind === "youtube" ? "▶ YouTube" : (m.kind === "video" ? "🎬 影片" : "🎵 音檔"));
@@ -14596,7 +14606,7 @@ window.mmTA = (function(){
         var bar = root.querySelector(".media-bar");
         root.querySelector(".media-del").onclick = function(e){ e.stopPropagation(); if(confirm("移除這個媒體？\nRemove this media?")) removeMedia(m.id); };
         bar.onpointerdown = function(e){
-          if(e.target.closest(".media-del")) return;
+          if(e.target.closest(".media-del") || e.target.closest(".media-fs-btn")) return;
           e.preventDefault(); try{ bar.setPointerCapture(e.pointerId); }catch(er){}
           var cr = cWrap.getBoundingClientRect(); var sx = e.clientX, sy = e.clientY, ox = h.m.x, oy = h.m.y;
           function mv(ev){ h.m.x = Math.max(0, Math.min(90, ox + (ev.clientX - sx) / cr.width * 100)); h.m.y = Math.max(0, Math.min(90, oy + (ev.clientY - sy) / cr.height * 100)); root.style.left = h.m.x + "%"; root.style.top = h.m.y + "%"; }
@@ -14613,6 +14623,22 @@ window.mmTA = (function(){
         };
       }
       if(m.kind === "audio" || m.kind === "video") buildAudioBody(h, body); else buildYouTubeBody(h, body);
+      if(m.kind !== "audio"){
+        var fsBtn = root.querySelector(".media-fs-btn");
+        if(!fsBtn){ fsBtn = document.createElement("button"); fsBtn.type = "button"; fsBtn.className = "media-fs-float"; fsBtn.textContent = "⛶"; fsBtn.title = "全螢幕（Esc 離開）"; body.appendChild(fsBtn); }
+        var isFs = function(){ return document.fullscreenElement === root || document.webkitFullscreenElement === root || root.classList.contains("media-pfs"); };
+        var exitFs = function(){ root.classList.remove("media-pfs"); if(document.fullscreenElement === root){ try{ document.exitFullscreen(); }catch(e){} } else if(document.webkitFullscreenElement === root){ try{ document.webkitExitFullscreen(); }catch(e){} } };
+        fsBtn.onpointerdown = function(e){ e.stopPropagation(); };
+        fsBtn.onclick = function(e){
+          e.stopPropagation();
+          if(isFs()){ exitFs(); return; }
+          var rq = root.requestFullscreen || root.webkitRequestFullscreen;
+          if(rq){ try{ var pr = rq.call(root); if(pr && pr.catch) pr.catch(function(){ root.classList.add("media-pfs"); }); }catch(er){ root.classList.add("media-pfs"); } }
+          else root.classList.add("media-pfs");
+        };
+        root.addEventListener("keydown", function(e){ if(e.key === "Escape" && root.classList.contains("media-pfs")) exitFs(); });
+        document.addEventListener("keydown", function(e){ if(e.key === "Escape" && root.classList.contains("media-pfs")) exitFs(); });
+      }
       return h;
     }
     function buildAudioBody(h, body){
