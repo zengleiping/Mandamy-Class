@@ -7089,6 +7089,12 @@ window.addEventListener("message", function(e){
   var fr = document.getElementById("fr"); if(!fr || fr.contentWindow !== e.source) return;
   if(TR.box) trToggle();
 });
+// 簡報頁放映／上課模式的工具列「籤筒」按鈕：叫出平台的抽籤畫面
+window.addEventListener("message", function(e){
+  if(!e.data || e.data.mm !== "openDraw" || !S.teacher) return;
+  var fr = document.getElementById("fr"); if(!fr || fr.contentWindow !== e.source) return;
+  try{ drOpen(); }catch(er){ console.warn("openDraw", er); }
+});
 // 平台頁面本身也支援 Alt+T
 document.addEventListener("keydown", function(e){ if(e.altKey && (e.key === "t" || e.key === "T") && S.teacher && TR.box){ e.preventDefault(); trToggle(); } });
 // 簡報頁（iframe）按「全螢幕編輯／放映」：把這個 iframe 撐滿整個視窗，蓋掉平台的導覽列、分頁與計時列

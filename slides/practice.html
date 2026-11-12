@@ -12771,7 +12771,7 @@ window.mmTA = (function(){
       rbShow(rbCur);
       rbApplyCollapse();
       // 放映（全螢幕）時：功能區收起，左邊浮出簡單的放映工具列（放映／翻頁／筆／橡皮擦／清除／放映工具）；結束放映再放回功能區
-      var fsSlots = [];
+      var fsSlots = [], rbDrawBtn = null;
       function rbFsSync(){
         var fsOn = container.classList.contains("canvas-fs-active"), presenting = fsOn && !container.classList.contains("fs-edit");
         var inFs = presenting || (!fsOn && document.body.classList.contains("teach-mode"));   // 上課模式（沒全螢幕）也用這條簡單工具列
@@ -12789,6 +12789,11 @@ window.mmTA = (function(){
         } else if(!inFs && fsSlots.length){
           fsSlots.forEach(function(s2){ if(s2.ph.parentNode) s2.ph.parentNode.replaceChild(s2.n, s2.ph); }); fsSlots = [];
         }
+        // 放映／上課模式的簡單工具列多一個「籤筒」：直接叫出平台的抽籤畫面（放映中也能抽人）
+        if(inFs && !isStudent && window.parent !== window){
+          if(!rbDrawBtn){ rbDrawBtn = rbBtn("🎲", "籤筒", function(){ try{ window.parent.postMessage({ mm: "openDraw" }, "*"); }catch(e){} }, "籤筒：從班上同學隨機抽一位"); rbDrawBtn.id = "btn-fs-draw"; }
+          if(rbDrawBtn.parentNode !== vToolbar) vToolbar.appendChild(rbDrawBtn);
+        } else if(rbDrawBtn && rbDrawBtn.parentNode){ rbDrawBtn.parentNode.removeChild(rbDrawBtn); }
       }
       new MutationObserver(rbFsSync).observe(container, { attributes: true, attributeFilter: ["class"] });
       new MutationObserver(function(){ if(document.body.contains(container)) rbFsSync(); }).observe(document.body, { attributes: true, attributeFilter: ["class"] });
