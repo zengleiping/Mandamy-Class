@@ -14,11 +14,13 @@
     var state = { rec: null, chunks: [], streams: [], ac: null, t0: 0, paused: 0, pauseAt: 0, timer: null, kind: "", ext: "webm", mime: "" };
     var micChk = h("input", { type: "checkbox", id: "ctrec-mic" }); micChk.checked = CT.load("rec_mic", true);
     micChk.onchange = function(){ CT.save("rec_mic", micChk.checked); };
+    var sysChk = h("input", { type: "checkbox" }); sysChk.checked = CT.load("rec_sys", false);
+    sysChk.onchange = function(){ CT.save("rec_sys", sysChk.checked); };
     var timeEl = h("div", { class: "ct-big", text: "00:00", style: "font-size:2.6em;" }), stat = h("div", { class: "ct-muted ct-c", text: "按下面的按鈕開始" });
     var bVid = h("button", { class: "ct-btn pri", style: "width:100%;padding:.7em;text-align:left;", html: "<b>🔴 錄影：畫面＋聲音</b><br><span style='font-weight:400;font-size:.85em;'>選「這個分頁」或整個螢幕；畫筆、聚光燈、簡報都會錄進去</span>", onclick: function(){ start("video"); } });
     var bAud = h("button", { class: "ct-btn", style: "width:100%;padding:.7em;text-align:left;", html: "<b>🎙 只錄音</b><br><span style='font-weight:400;font-size:.85em;'>錄老師講課的聲音，檔案小，適合做逐字稿</span>", onclick: function(){ start("audio"); } });
     var bPause = h("button", { class: "ct-btn", text: "⏸ 暫停", onclick: togglePause }), bStop = h("button", { class: "ct-btn pri", text: "⏹ 停止並儲存", onclick: stop });
-    var idle = h("div", {}, [bVid, h("div", { style: "height:8px;" }), bAud, h("label", { class: "ct-row", style: "margin-top:10px;cursor:pointer;" }, [micChk, h("span", { text: "錄影時加入麥克風（老師的聲音）" })])]);
+    var idle = h("div", {}, [bVid, h("div", { style: "height:8px;" }), bAud, h("label", { class: "ct-row", style: "margin-top:10px;cursor:pointer;" }, [micChk, h("span", { text: "錄影時加入麥克風（老師的聲音）" })]), h("label", { class: "ct-row", style: "cursor:pointer;align-items:flex-start;" }, [sysChk, h("span", { html: "「只錄音」時，也錄電腦播放的聲音<br><span class='ct-muted'>例如 Meet／Zoom 上學生的聲音。按開始後選「Chrome 分頁」，並勾選「同時分享分頁音訊」</span>" })])]);
     var running = h("div", { style: "display:none;" }, [h("div", { class: "ct-row", style: "justify-content:center;" }, [bPause, bStop])]);
     bd.appendChild(timeEl); bd.appendChild(stat); bd.appendChild(h("div", { style: "height:8px;" })); bd.appendChild(idle); bd.appendChild(running);
     bd.appendChild(h("div", { class: "ct-muted", style: "margin-top:12px;line-height:1.6;", text: "停止後會自動下載到這台電腦，檔案只存在這台電腦，不會上傳。建議用電腦版 Chrome 或 Edge。" }));
@@ -48,6 +50,17 @@
         } else {
           var m = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
           streams.push(m); out = m;
+          if(sysChk.checked && navigator.mediaDevices.getDisplayMedia){
+            try{
+              var sd = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true }); streams.push(sd);
+              sd.getVideoTracks().forEach(function(t){ t.stop(); });
+              if(sd.getAudioTracks().length){
+                var AC2 = window.AudioContext || window.webkitAudioContext, ac2 = new AC2(), dest2 = ac2.createMediaStreamDestination();
+                ac2.createMediaStreamSource(m).connect(dest2); ac2.createMediaStreamSource(new MediaStream(sd.getAudioTracks())).connect(dest2);
+                state.ac = ac2; out = dest2.stream;
+              } else CT.toast("沒有取得電腦播放的聲音（選分頁時要勾「同時分享分頁音訊」），這次只錄麥克風");
+            }catch(e2){ CT.toast("沒有分享電腦聲音，這次只錄麥克風"); }
+          }
           state.mime = pick(["audio/webm;codecs=opus", "audio/webm", "audio/mp4"]);
         }
       }catch(e){ streams.forEach(function(s){ s.getTracks().forEach(function(t){ t.stop(); }); }); CT.toast(e && e.name === "NotAllowedError" ? "沒有允許錄影／錄音（可以再按一次，選「允許」）" : "無法開始：" + (e && e.message || e)); return; }
