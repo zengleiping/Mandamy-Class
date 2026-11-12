@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>手機實物投影機</title>
+<style>
+  :root{ --bg:#f6efe6; --ink:#2a2018; --seal:#C0623A; }
+  *{ box-sizing:border-box; }
+  body{ margin:0; font-family:-apple-system,"PingFang TC","Noto Sans TC",sans-serif; background:var(--bg); color:var(--ink); min-height:100vh; display:flex; flex-direction:column; padding:16px; gap:12px; }
+  h1{ font-size:20px; margin:4px 0 0; text-align:center; }
+  .stage{ background:#111; border-radius:14px; overflow:hidden; aspect-ratio:3/4; max-height:62vh; width:100%; display:flex; align-items:center; justify-content:center; }
+  video{ width:100%; height:100%; object-fit:cover; background:#000; }
+  button{ font:inherit; font-size:17px; border:0; border-radius:12px; padding:14px; background:#e9ddcd; color:var(--ink); cursor:pointer; }
+  button.stop{ background:#fde3dd; color:#b23b32; font-weight:700; }
+  .status{ text-align:center; font-size:15px; min-height:1.5em; }
+  .ok{ color:#1b7a4b; font-weight:700; } .bad{ color:#b23b32; font-weight:700; }
+</style>
+</head>
+<body>
+<h1>📱 手機實物投影機</h1>
+<div class="stage"><video id="v" autoplay playsinline muted></video></div>
+<div class="status" id="st">準備中…</div>
+<button id="flip" style="display:none;">🔄 切換前／後鏡頭</button>
+<button id="stop" class="stop" style="display:none;">■ 停止傳送</button>
+<script>
+  window.FIREBASE_CONFIG = {
+    apiKey: "AIzaSyC6DjPDuRCdSKuZYKKiCSlbWI_eLVM05oc",
+    authDomain: "chinese-onlineboard.firebaseapp.com",
+    databaseURL: "https://chinese-onlineboard-default-rtdb.asia-southeast1.firebasedatabase.app/",
+    projectId: "chinese-onlineboard",
+    storageBucket: "chinese-onlineboard.firebasestorage.app",
+    messagingSenderId: "635462964030",
+    appId: "1:635462964030:web:4059918956a649bf6a926f"
+  };
+</script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+import { getDatabase, ref, set, get, onValue } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-database.js";
+import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
+var $ = function(id){ return document.getElementById(id); }, st = $("st"), video = $("v");
+function say(t, cls){ st.textContent = t; st.className = "status " + (cls || ""); }
+var sid = new URLSearchParams(location.search).get("s");
+var ICE = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }, { urls: "stun:stun1.l.google.com:19302" }] };
+(async function(){
+  if(!sid){ say("連結不完整，請重新掃描老師畫面上的 QR Code", "bad"); return; }
+  var db, stream = null, pc = null, facing = "environment", wake = null;
+  try{
+    var app = initializeApp(window.FIREBASE_CONFIG); db = getDatabase(app); var auth = getAuth(app);
+    await new Promise(function(res, rej){ onAuthStateChanged(auth, function(u){ if(u) res(u); }); signInAnonymously(auth).catch(rej); });
+  }catch(e){ say("無法連上雲端，請檢查網路後重新整理", "bad"); return; }
+  var base = "docCam/" + sid;
+  var snap = await get(ref(db, base)); if(!snap.exists()){ say("這個連線已經失效，請老師重新按「開啟手機連線」再掃描", "bad"); return; }
+  async function getCam(){
+    return navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: facing }, width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false });
+  }
+  try{ stream = await getCam(); }catch(e){ say("無法開啟相機：請在瀏覽器允許使用相機後重新整理（iPhone 請用 Safari、Android 請用 Chrome）", "bad"); return; }
+  video.srcObject = stream;
+  try{ if(navigator.wakeLock) wake = await navigator.wakeLock.request("screen"); }catch(e){}
+  var offerId = Date.now();
+  pc = new RTCPeerConnection(ICE);
+  stream.getTracks().forEach(function(t){ pc.addTrack(t, stream); });
+  pc.onicecandidate = function(ev){ if(ev.candidate) set(ref(db, base + "/iceP/" + Math.random().toString(36).slice(2, 10)), JSON.parse(JSON.stringify(ev.candidate))).catch(function(){}); };
+  pc.onconnectionstatechange = function(){
+    if(pc.connectionState === "connected") say("傳送中，請保持這個畫面開著", "ok");
+    else if(pc.connectionState === "failed") say("連線失敗：請確認手機和電腦在同一個 Wi-Fi，再重新整理", "bad");
+  };
+  var seen = {}, remoteSet = false, queue = [];
+  onValue(ref(db, base), function(s){
+    var d = s.val(); if(!d){ say("老師已經關閉連線", "bad"); return; }
+    if(d.answer && d.answer.id === offerId && !remoteSet){
+      remoteSet = true;
+      pc.setRemoteDescription({ type: d.answer.type, sdp: d.answer.sdp }).then(function(){ queue.forEach(function(c){ pc.addIceCandidate(c).catch(function(){}); }); queue = []; });
+    }
+    if(d.iceT){ Object.keys(d.iceT).forEach(function(k){ if(seen[k]) return; seen[k] = 1; if(remoteSet) pc.addIceCandidate(d.iceT[k]).catch(function(){}); else queue.push(d.iceT[k]); }); }
+  });
+  var offer = await pc.createOffer(); await pc.setLocalDescription(offer);
+  await set(ref(db, base + "/offer"), { id: offerId, type: offer.type, sdp: offer.sdp }); await set(ref(db, base + "/status"), "live");
+  say("連線中…", "");
+  $("flip").style.display = ""; $("stop").style.display = "";
+  $("flip").onclick = async function(){
+    facing = facing === "environment" ? "user" : "environment";
+    try{
+      var ns = await getCam(), nt = ns.getVideoTracks()[0], sender = pc.getSenders().find(function(x){ return x.track && x.track.kind === "video"; });
+      if(sender) await sender.replaceTrack(nt);
+      stream.getTracks().forEach(function(t){ t.stop(); }); stream = ns; video.srcObject = ns;
+    }catch(e){ say("切換鏡頭失敗", "bad"); facing = facing === "environment" ? "user" : "environment"; }
+  };
+  $("stop").onclick = async function(){
+    try{ await set(ref(db, base + "/status"), "stopped"); }catch(e){}
+    try{ pc.close(); }catch(e){} stream.getTracks().forEach(function(t){ t.stop(); }); video.srcObject = null;
+    $("flip").style.display = "none"; $("stop").style.display = "none"; say("已停止傳送，可以關閉這個頁面", "");
+  };
+  document.addEventListener("visibilitychange", async function(){ if(document.visibilityState === "visible" && navigator.wakeLock && stream){ try{ wake = await navigator.wakeLock.request("screen"); }catch(e){} } });
+})();
+</script>
+</body>
+</html>

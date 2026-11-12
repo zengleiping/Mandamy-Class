@@ -305,6 +305,12 @@
         }
       }
     },
+    "docCam": {
+      "$sid": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+    },
     "liveGames": {
       "$code": {
         ".read": "auth != null",
