@@ -149,7 +149,7 @@
       '<label>答對得幾分</label>' + seg("cards.pts", cd.pts, [[5, "5"], [10, "10"], [20, "20"]]) +
       '<div class="note" style="margin-top:6px;">只有即時多人：學生用手機或電腦加入。輪到的人（有分組就小組輪流，每組再輪流派人）自己選一張卡，卡翻開是生詞，答對幫自己和小組得分，翻過的卡不能再選。老師的畫面是投影用的牌桌，也可以直接點卡代替沒有裝置的學生。沒有學生的裝置時，在等待室用「分組比賽」就可以分小組比分。</div></div>';
     var wk = c.whack || {};
-    var whackOpts = '<div class="mg-opt"><label>題目</label>' + seg("whack.q", wk.q || "w2p", [["w2p", "看詞語打拼音"], ["w2t", "看詞語打翻譯"], ["p2w", "看拼音打詞語"], ["t2w", "看翻譯打詞語"], ["a2w", "聽聲音打詞語"], ["a2t", "聽聲音打翻譯"], ["a2i", "聽聲音打圖片"], ["i2w", "看圖片打詞語"], ["w2i", "看詞語打圖片"]]) +
+    var whackOpts = '<div class="mg-opt"><label>題目</label>' + seg("whack.q", wk.q || "w2p", [["w2p", "看詞語打拼音"], ["w2t", "看詞語打翻譯"], ["p2w", "看拼音打詞語"], ["t2w", "看翻譯打詞語"], ["a2w", "聽聲音打詞語"], ["a2t", "聽聲音打翻譯"], ["a2i", "聽聲音，地鼠是圖片"], ["i2w", "題目是圖片，地鼠是文字"], ["w2i", "題目是文字，地鼠是圖片"]]) +
       ((wk.q || "w2p").charAt(0) === "a" ? '<label>發音</label>' + seg("whack.voice", wk.voice || MG.TTS_VOICES[0][0], MG.TTS_VOICES) + '<div class="note" style="margin-top:4px;">聽聲音：用曼米語音伺服器的自然語音（預設曉臻），每一隻地鼠冒出來前先念一次，題目上有「再聽一次」。語音會在等待室先下載好。</div>' : '') +
       (/^(a2i|i2w|w2i)$/.test(wk.q || "") ? '<div class="note" style="margin-top:4px;">圖片以生詞庫的圖片／Emoji 圖示為主；沒有圖片的詞不會出現。要換圖片或補圖片：按「翻譯語言」那一格的「檢查／修改翻譯、拼音、圖片」，每個詞都可以改 Emoji 或上傳圖片（也可以直接在教材的生詞卡上傳）。</div>' : '') +
       '<label>生命</label><span><input type="number" class="mg-num" min="0" max="10" data-num="whack.lives" value="' + (wk.lives == null ? 3 : wk.lives) + '"> 條 <span class="note">（0＝不限，要搭配時間）</span></span>' +

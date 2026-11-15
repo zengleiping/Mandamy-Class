@@ -5,7 +5,7 @@
 (function(){
   var MG = window.MG;
   var Q_NAME = { w2p: "看詞語，打拼音 Word → pinyin", w2t: "看詞語，打翻譯 Word → meaning", p2w: "看拼音，打詞語 Pinyin → word", t2w: "看翻譯，打詞語 Meaning → word",
-    a2w: "聽聲音，打詞語 Listen → word", a2t: "聽聲音，打翻譯 Listen → meaning", a2i: "聽聲音，打圖片 Listen → picture", i2w: "看圖片，打詞語 Picture → word", w2i: "看詞語，打圖片 Word → picture" };
+    a2w: "聽聲音，打詞語 Listen → word", a2t: "聽聲音，打翻譯 Listen → meaning", a2i: "聽聲音，打圖片地鼠 Listen → picture", i2w: "看圖片，打文字地鼠 Picture → word", w2i: "看詞語，打圖片地鼠 Word → picture" };
   var ANS_KIND = { w2p: "p", w2t: "t", p2w: "w", t2w: "w", a2w: "w", a2t: "t", a2i: "i", i2w: "w", w2i: "i" };
   var SAY_RATE = 1.0;
   MG.WHACK_Q = Q_NAME;

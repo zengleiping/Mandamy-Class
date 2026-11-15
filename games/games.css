@@ -439,3 +439,7 @@ h2 .en, h3 .en{ display:block; margin:2px 0 0; font-size:.6em; }
 .wk-sign.picl img.pic{ max-height:clamp(40px,9vw,72px); width:auto; }
 .wk-qs + .fit .wk-play{ font-size:18px; padding:6px 16px; }
 .wk-stage .bl-q .fit .wk-play{ pointer-events:auto; }
+.wk-stage .bl-q .fit.picq{ height:92px; }
+.wk-stage .bl-q .fit.picq .pic.emo{ font-size:80px; }
+.wk-stage .bl-q .fit.picq img.pic{ height:92px; }
+.wk-stage:has(.fit.picq) .wk-grid{ margin-top:118px; }
