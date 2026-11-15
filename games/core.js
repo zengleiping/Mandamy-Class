@@ -100,13 +100,15 @@
     blast: { title: "Blast", need: 4 },
     quiz:  { title: "快問快答 Quiz", need: 4 },
     order: { title: "聽音排序 Listen & Order", need: 3 },
-    cards: { title: "翻卡選題 Card Pick", need: 6 }
+    cards: { title: "翻卡選題 Card Pick", need: 6 },
+    whack: { title: "打地鼠 Whack-a-Mole", need: 4 }
   };
   MG.gameTitle = function(g){ return (MG.GAME_INFO[g] || MG.GAME_INFO.blast).title; };
   // 一行說明這局怎麼玩（等待室、作業連結頁用）；c 是那個遊戲自己的設定（cfg.match／blast／quiz／order）
   MG.gameSummary = function(game, c, phon){
     c = c || {};
     if(game === "match") return "配對 Match・" + (c.mode === "timed" ? "限時 " + c.seconds + " 秒" : "比速度") + "・" + MG.ph((MG.MATCH_PAIRS || {})[c.pair] || "", phon);
+    if(game === "whack") return "打地鼠 Whack-a-Mole・" + MG.ph((MG.WHACK_Q || {})[c.q || "w2p"] || "", phon) + (c.seconds ? "・" + c.seconds + " 秒" : "") + (c.lives ? "・" + c.lives + " 條命" : "");
     if(game === "cards") return MG.Cards ? MG.Cards.summary(c, phon) : "翻卡選題 Card Pick";
     if(game === "quiz") return "快問快答 Quiz・" + MG.ph((MG.QUIZ_Q || {})[c.q || "mix"] || "", phon) + "・" + (c.count || 10) + " 題・每題 " + (c.sec || 15) + " 秒";
     if(game === "order") return "聽音排序 Listen & Order・" + (c.flow === "memory" ? "考記憶・" : "") + (c.mode === "score" ? "累積分數，沒有淘汰" : "生存（" + (c.lives || 2) + " 條命" + (c.comeback !== false ? "，可以復活" : "") + "）") + "・" + (c.start || 2) + "～" + (c.maxLen === 0 || c.maxLen === "0" ? "全部" : c.maxLen || 6) + " 個詞";

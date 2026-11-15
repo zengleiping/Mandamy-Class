@@ -413,3 +413,24 @@ h2 .en, h3 .en{ display:block; margin:2px 0 0; font-size:.6em; }
 .cp-card.ok{ background:#E3F0E6; border-color:#4C9A63; color:#2F7A45; } .cp-card.bad{ background:#FDECEA; border-color:#D9604C; color:#B23B32; }
 .cp-w{ font-size:24px; font-weight:800; line-height:1.2; text-align:center; } .cp-by{ font-size:12.5px; font-weight:700; }
 @media (max-width:520px){ .cp-grid{ grid-template-columns:repeat(auto-fill,minmax(84px,1fr)); gap:7px; } .cp-card{ min-height:84px; } .cp-num,.cp-emo{ font-size:34px; } }
+
+/* ---------- 打地鼠 Whack-a-Mole ---------- */
+.wk-stage{ position:relative; flex:1; overflow:hidden; touch-action:manipulation; background:linear-gradient(#BFE6F7 0, #DDF1E0 28%, #8FD08A 28%, #6FBF73 100%); display:flex; align-items:flex-end; justify-content:center; padding:0 10px 14px; }
+.wk-stage::before{ content:""; position:absolute; left:0; right:0; top:0; height:28%; background:radial-gradient(ellipse at 20% 100%, #fff 0 14%, transparent 15%), radial-gradient(ellipse at 70% 80%, #fff 0 10%, transparent 11%); opacity:.7; pointer-events:none; }
+.wk-stage .bl-q{ top:10px; }
+.wk-grid{ position:relative; display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(4px,1.6vh,14px) clamp(6px,2vw,22px); width:min(100%,640px); margin-top:78px; }
+.wk-cell{ position:relative; aspect-ratio:1.28/1; overflow:hidden; user-select:none; -webkit-user-select:none; }
+.wk-hole{ position:absolute; left:6%; right:6%; bottom:4%; height:30%; border-radius:50%; background:radial-gradient(ellipse at 50% 35%, #2B1A10 0, #4A2E1B 60%, #6B4528 100%); box-shadow:0 3px 0 rgba(0,0,0,.18); }
+.wk-front{ position:absolute; left:2%; right:2%; bottom:0; height:19%; border-radius:50% 50% 40% 40%/90% 90% 30% 30%; background:linear-gradient(#7DCB78, #5CAE63); box-shadow:0 -2px 0 rgba(255,255,255,.2) inset; pointer-events:none; z-index:3; }
+.wk-mole{ position:absolute; left:15%; right:15%; bottom:12%; height:88%; transform:translateY(105%); transition:transform .22s cubic-bezier(.3,1.5,.5,1); z-index:2; cursor:pointer; touch-action:manipulation; }
+.wk-mole.up{ transform:translateY(0); }
+.wk-mole .wk-svg{ position:absolute; left:0; right:0; bottom:0; width:100%; height:100%; pointer-events:none; }
+.wk-sign{ position:absolute; left:-4%; right:-4%; bottom:6%; min-height:30%; background:#FFF8E8; border:3px solid #8B5E3C; border-radius:12px; display:flex; align-items:center; justify-content:center; padding:3px 6px; box-shadow:0 3px 0 rgba(0,0,0,.18); pointer-events:none; }
+.wk-sign .fit{ display:block; width:100%; text-align:center; overflow:hidden; white-space:nowrap; font-weight:800; color:#2B2320; line-height:1.15; }
+.wk-sign .fit.zh{ font-family:var(--zh); font-weight:700; }
+.wk-mole.hit{ transform:translateY(40%) scale(.92,.78); transition:transform .12s; filter:brightness(1.1); }
+.wk-mole.hit::after{ content:"💥"; position:absolute; left:50%; top:-8%; transform:translateX(-50%); font-size:34px; animation:gmPop .6s ease-out forwards; }
+.wk-mole.bad{ filter:grayscale(.8); animation:mtBad .38s; }
+.wk-cell.bonk .wk-hole{ animation:wkBonk .25s; }
+@keyframes wkBonk{ 0%{ transform:scale(1); } 50%{ transform:scale(.94,.8); } 100%{ transform:scale(1); } }
+@media (max-width:600px){ .wk-grid{ margin-top:70px; } .wk-sign{ border-width:2px; padding:2px 3px; } }

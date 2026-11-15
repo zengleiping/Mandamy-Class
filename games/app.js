@@ -14,6 +14,7 @@
       blast: { q: "w2p", input: "tap", lives: 3, speed: 3, seconds: 0, theme: "space", themeFree: true, music: "space", liveOut: "revive" },
       quiz: { q: "mix", count: 10, sec: 15, voice: "zh-TW-HsiaoChenNeural", music: "happy" },
       order: { mode: "survive", flow: "free", pace: "fast", voice: "zh-TW-HsiaoChenNeural", lives: 2, comeback: true, start: 2, maxLen: 6, plays: 2, perWord: 3.5, show: "both", music: "relax" },
+      whack: { q: "w2p", lives: 3, speed: 3, seconds: 90, music: "happy" },
       cards: { n: 12, back: "num", label: "show", ans: "mc", q: "mix", sec: 20, pts: 10, music: "" },
       live: { scoring: "avg", seconds: 90, stuMusic: true }
     };
@@ -147,7 +148,13 @@
       (cd.ans === "oral" ? '' : '<label>題型</label>' + seg("cards.q", cd.q || "mix", [["mix", "綜合"], ["w2p", "看詞語選讀音"], ["p2w", "看讀音選詞語"], ["w2t", "看詞語選翻譯"]]) + '<label>每題幾秒</label>' + seg("cards.sec", cd.sec, [[10, "10 秒"], [15, "15 秒"], [20, "20 秒"], [30, "30 秒"], [0, "不限"]])) +
       '<label>答對得幾分</label>' + seg("cards.pts", cd.pts, [[5, "5"], [10, "10"], [20, "20"]]) +
       '<div class="note" style="margin-top:6px;">只有即時多人：學生用手機或電腦加入。輪到的人（有分組就小組輪流，每組再輪流派人）自己選一張卡，卡翻開是生詞，答對幫自己和小組得分，翻過的卡不能再選。老師的畫面是投影用的牌桌，也可以直接點卡代替沒有裝置的學生。沒有學生的裝置時，在等待室用「分組比賽」就可以分小組比分。</div></div>';
-    var gameOpts = c.game === "cards" ? cardsOpts : c.game === "quiz" ? quizOpts : c.game === "order" ? orderOpts : c.game === "match" ?
+    var wk = c.whack || {};
+    var whackOpts = '<div class="mg-opt"><label>題目</label>' + seg("whack.q", wk.q || "w2p", [["w2p", "看詞語打拼音"], ["w2t", "看詞語打翻譯"], ["p2w", "看拼音打詞語"], ["t2w", "看翻譯打詞語"]]) +
+      '<label>生命</label><span><input type="number" class="mg-num" min="0" max="10" data-num="whack.lives" value="' + (wk.lives == null ? 3 : wk.lives) + '"> 條 <span class="note">（0＝不限，要搭配時間）</span></span>' +
+      '<label>速度</label>' + seg("whack.speed", wk.speed || 3, [[1, "1 很慢"], [2, "2"], [3, "3"], [4, "4"], [5, "5 很快"]]) +
+      '<label>時間</label>' + seg("whack.seconds", wk.seconds == null ? 90 : wk.seconds, [[0, "不限（命用完就結束）"], [60, "60 秒"], [90, "90 秒"], [120, "2 分鐘"], [180, "3 分鐘"]]) +
+      '<div class="note" style="margin-top:6px;">上面出一個題目，地洞裡同時冒出 4 隻地鼠，每隻舉著一個答案，點對的那隻。打錯、或讓對的那隻縮回去都會少一條命。可以老師投影試玩、出作業連結讓學生自己玩，也可以開即時多人：個人比分數，開「分組」就是小組比賽（沒設時間時即時多人用 90 秒）。</div></div>';
+    var gameOpts = c.game === "whack" ? whackOpts : c.game === "cards" ? cardsOpts : c.game === "quiz" ? quizOpts : c.game === "order" ? orderOpts : c.game === "match" ?
       '<div class="mg-opt"><label>模式</label>' + seg("match.mode", m.mode, [["speed", "比速度：全部配完"], ["timed", "限時：時間內配越多越好"]]) +
       '<label>時間（限時模式）</label><span><input type="number" class="mg-num" min="15" max="600" step="5" data-num="match.seconds" value="' + m.seconds + '"> 秒</span>' +
       '<label>配對方式</label>' + seg("match.pair", m.pair, [["p", "詞語 ↔ 拼音"], ["t", "詞語 ↔ 翻譯"], ["pt", "詞語 ↔ 拼音＋翻譯"], ["i", "詞語 ↔ 圖片"]]) +
@@ -171,6 +178,7 @@
       '<div class="mg-panel"><div class="mg-games">' +
       '<button class="mg-game' + (c.game === "match" ? " on" : "") + '" data-game="match"><img class="mg-game-img" src="../icons/act-match.png" alt=""><b>配對 Match</b><span class="note">詞語和拼音／翻譯配成一對，比速度或限時。</span></button>' +
       '<button class="mg-game' + (c.game === "blast" ? " on" : "") + '" data-game="blast"><img class="mg-game-img" src="../icons/act-blast.png" alt=""><b>Blast</b><span class="note">答案從畫面掉下來，點對的那個。可以選主題。</span></button>' +
+      '<button class="mg-game' + (c.game === "whack" ? " on" : "") + '" data-game="whack"><span class="mg-game-img mg-game-emo">🔨</span><b>打地鼠 Whack-a-Mole</b><span class="note">地洞冒出舉著答案的地鼠，打對的那隻。自己玩，或分組競賽。</span></button>' +
       '<button class="mg-game' + (c.game === "quiz" ? " on" : "") + '" data-game="quiz"><span class="mg-game-img mg-game-emo">🎯</span><b>快問快答 Quiz</b><span class="note">像 Kahoot：一題一題出，四選一，越快分數越高。全班同一秒進到同一題。</span></button>' +
       '<button class="mg-game' + (c.game === "order" ? " on" : "") + '" data-game="order"><span class="mg-game-img mg-game-emo">👂</span><b>聽音排序 Listen &amp; Order</b><span class="note">聽一串詞語，拖成聽到的順序；每輪多一個詞，越來越難。被淘汰也能旁觀練習、復活。</span></button>' +
       '<button class="mg-game' + (c.game === "cards" ? " on" : "") + '" data-game="cards"><span class="mg-game-img mg-game-emo">🃏</span><b>翻卡選題 Card Pick</b><span class="note">蓋著的卡（數字、水果或動物），學生自己選一張，翻開是生詞，答對幫小組得分。只有即時多人。</span></button></div></div>' +
@@ -228,7 +236,7 @@
     };
   }
   // 這個設定的題目需要翻譯／圖片嗎（綜合題型沒有翻譯的詞會自動跳過，所以不強迫）
-  function needTr(c){ var g = c.game, q = (c[g] || {}).q; return g === "match" ? c.match.pair !== "p" : g === "blast" ? (q === "w2t" || q === "t2w") && c.blast.input !== "type" : g === "quiz" ? (q === "w2t" || q === "t2w" || q === "a2t") : g === "cards" ? (c.cards.ans !== "oral" && q === "w2t") : false; }
+  function needTr(c){ var g = c.game, q = (c[g] || {}).q; return g === "match" ? c.match.pair !== "p" : g === "blast" ? (q === "w2t" || q === "t2w") && c.blast.input !== "type" : g === "quiz" ? (q === "w2t" || q === "t2w" || q === "a2t") : g === "cards" ? (c.cards.ans !== "oral" && q === "w2t") : g === "whack" ? (q === "w2t" || q === "t2w") : false; }
   function needPic(c){ var g = c.game, q = (c[g] || {}).q; return g === "match" ? c.match.pair === "i" : g === "blast" ? (q === "w2i" || q === "i2w") && c.blast.input !== "type" : g === "quiz" ? (q === "w2i" || q === "i2w") : false; }
   function checkPool(){
     var pool = poolFor(1);
@@ -315,6 +323,7 @@
     if(game === "match") return MG.Match.create(root, Object.assign(opts, o.match || {}, o.theme ? { theme: o.theme } : {}));
     if(game === "quiz") return MG.Quiz.create(root, Object.assign(opts, o.quiz || {}));
     if(game === "order") return MG.Order.create(root, Object.assign(opts, o.order || {}));
+    if(game === "whack") return MG.Whack.create(root, Object.assign(opts, o.whack || {}));
     return MG.Blast.create(root, Object.assign(opts, o.blast || {}, { theme: o.theme || (o.blast || {}).theme }));
   };
   MG.resultHtml = function(game, r, title){
@@ -324,7 +333,7 @@
     var miss = (r.missed || []).length ? '<div class="gm-miss"><div class="note">再複習一下 Review these words：</div>' + r.missed.map(function(w){ return '<span>' + MG.esc(w.w) + '<i>' + MG.esc(w.p || "") + '</i></span>'; }).join("") + '</div>' : '';
     return '<h2>' + MG.esc(title || (r.done ? "全部配完了！ All matched!" : "時間到！ Time's up!")) + '</h2><div class="note">分數 Score</div><div class="big">' + r.s + '</div><div class="grid">' + stats + '</div>' + miss;
   };
-  function gameOpts(cfg){ return { lang: cfg.lang, phon: cfg.phon, match: cfg.match, blast: cfg.blast, quiz: cfg.quiz, order: cfg.order }; }
+  function gameOpts(cfg){ return { lang: cfg.lang, phon: cfg.phon, match: cfg.match, blast: cfg.blast, whack: cfg.whack, quiz: cfg.quiz, order: cfg.order }; }
 
   function teacherSolo(){
     var seed = MG.newSeed(), words = poolFor(seed), cfg = G.cfg;
@@ -348,7 +357,7 @@
     var lessons = lessonsSel().map(function(l){ return { title: l.title, pct: l.pct, words: MG.applyTr(cloneLesson(l).words, G.trStore).map(slim) }; });
     var title = await MG.ask("連結名稱（學生會看到）", MG.gameTitle(c.game).split(" ")[0] + "：" + lessonsSel().map(function(l){ return l.short || l.title; }).join("、"), "產生連結");
     if(!title) return;
-    var id = MG.fb.newId(), set = { title: title.slice(0, 120), game: c.game, sample: c.sample, cap: c.cap || 0, lang: c.lang, phon: c.phon || "py", match: c.match, blast: c.blast, quiz: c.quiz, order: c.order, lessons: lessons, cls: G.ctx.cls ? G.ctx.cls.name : "", clsId: G.ctx.cls ? G.ctx.cls.c : "", createdAt: Date.now() };
+    var id = MG.fb.newId(), set = { title: title.slice(0, 120), game: c.game, sample: c.sample, cap: c.cap || 0, lang: c.lang, phon: c.phon || "py", match: c.match, blast: c.blast, whack: c.whack, quiz: c.quiz, order: c.order, lessons: lessons, cls: G.ctx.cls ? G.ctx.cls.name : "", clsId: G.ctx.cls ? G.ctx.cls.c : "", createdAt: Date.now() };
     try{ await MG.fb.set("teacherPlatform/" + t + "/gameSets/" + id, set); }catch(e){ MG.toast("產生失敗，請檢查網路"); return; }
     showLink(id, set);
   }
@@ -409,7 +418,7 @@
       countdown(3, function(){
         // 學生換了主題：音樂也換成搭配的（老師有開音樂才會播）
         var musOv = theme !== gcfg.theme && gcfg.music && MG.THEMES[theme] ? { music: MG.THEMES[theme].music } : {};
-        var g = MG.playGame(app, set.game, words, { lang: lang, phon: set.phon, match: Object.assign({}, set.match, musOv), blast: Object.assign({}, set.blast, musOv), quiz: set.quiz, order: set.order, theme: theme, seed: seed, title: set.title,
+        var g = MG.playGame(app, set.game, words, { lang: lang, phon: set.phon, match: Object.assign({}, set.match, musOv), blast: Object.assign({}, set.blast, musOv), whack: Object.assign({}, set.whack, musOv), quiz: set.quiz, order: set.order, theme: theme, seed: seed, title: set.title,
           onQuit: function(){ g.stop(); form(); },
           onEnd: function(r){
             MG.fb.set("teacherPlatform/" + t + "/gameResults/" + id + "/" + MG.fb.newId(), { name: name.slice(0, 20), s: r.s, c: r.c, w: r.w, rt: r.rt, n: r.n, time: Math.round(r.time), done: !!r.done, lang: lang, at: Date.now() }).catch(function(){});
