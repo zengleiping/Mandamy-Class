@@ -1,4 +1,4 @@
-/* 寵物第四套畫風「像素貓咪」：像素藝術（pixel art）的小貓，深色外框、一格一格的色塊，有橘虎斑、灰虎斑、黑貓、燕尾服、三花、暹羅六種花色。
+/* 寵物第四套畫風「像素貓咪」：像素藝術（pixel art）的側身小貓（頭朝前、身體側面、四隻細腳、尾巴翹起、長鬍鬚），深色外框、一格一格的色塊，有橘虎斑、灰虎斑、黑貓、燕尾服、三花、暹羅六種花色。
    用法跟 PETART 一樣：PETART.svg({ sp, style: "pixel", stage, eq, anim })。選了「像素貓咪」風格的班級，領養／神蛋孵出的是這六隻貓；
    不是貓的寵物（獅子、老虎…）在這個風格下仍用「軟萌」畫風；貓的花色在其他風格下一律畫成橘貓。 */
 (function(){
@@ -22,34 +22,44 @@
   A.norm = function(s){ return s === "pixel" ? "pixel" : normPrev(s); };
   var orig = A.svg;
 
-  // 左半邊（12 欄，右半邊自動鏡射成 24 欄）。B 底色、S 條紋、W 白（嘴巴、胸口、腳）、P 耳朵內側、E 眼睛、N 鼻子、M 嘴巴
-  var LEFT = [
-    "....B.......", "...BPB......", "..BBPPB.....", "..BBBBBBBBBB", ".BBBBBBBBBBS", ".BBBBBBBBBSS",
-    ".BBBLEBBBBBB", ".BBBEEBBBBBB", ".BBBEEBBBBBB", ".BBBBBBBBBBB", ".BBBBBBWWWWN", ".BBBBBWWWWWM",
-    "..BBBBBWWWWW", "...BBBBBBBBB", "....BBBBBBBB", "....BBBBWWWW", "....BBBBWWWW", "...BBBBBWWWW",
-    "...BBBBBWWWW", "...BBBBBBWWW", "...BBBBBBBBB", "...BBBBBBBBB", "...BBWWWWBBB", "...BWWWWWBBB"
-  ];
-  var TAIL = [[21, 22], [22, 22], [23, 21], [23, 20], [23, 19], [24, 18], [24, 17], [24, 16]];
-  var CELL = 14, X0 = 88, Y0 = 131;
-
+  // 側身貓（參考像素風小貓：頭朝向前方、身體側面、四隻細腳、尾巴翹起來、長長的鬍鬚）。一格一格用「畫長方形」的方式組出來
+  var CELL = 13, OFF = 2, GW = 40, GH = 21, X0 = -4, Y0 = 222, HEAD = { c1: 16, c2: 29, r1: 3, r2: 12 };
   function build(c){
-    var H = LEFT.length, W = 24, g = [], r, x;
-    for(r = 0; r < H; r++){ var row = [], half = LEFT[r]; for(x = 0; x < 12; x++) row[x] = half[x] === "." ? "" : half[x]; for(x = 0; x < 12; x++) row[23 - x] = row[x]; g.push(row); }
-    function fill(r1, r2, c1, c2, k, only){ for(var y = r1; y <= r2; y++) for(var xx = c1; xx <= c2; xx++){ var cur = g[y] && g[y][xx]; if(cur && only.indexOf(cur) >= 0) g[y][xx] = k; } }
+    var g = [], r, x;
+    for(r = 0; r < GH; r++){ g.push([]); for(x = 0; x < GW; x++) g[r][x] = ""; }
+    function P(r1, r2, c1, c2, k){ for(var y = r1; y <= r2; y++) for(var xx = c1; xx <= c2; xx++) g[y][xx + OFF] = k; }
+    function Q(y, xx, k){ g[y][xx + OFF] = k; }
+    function inGrid(y, xx){ return g[y] && g[y][xx + OFF] !== undefined; }
+    // 身體、腳
+    P(11, 17, 5, 24, "B"); Q(11, 5, ""); Q(17, 5, ""); Q(11, 24, ""); P(18, 20, 6, 7, "B"); P(18, 20, 10, 11, "B"); P(18, 20, 19, 20, "B"); P(18, 20, 23, 24, "B");
+    P(20, 20, 6, 7, "W"); P(20, 20, 10, 11, "W"); P(20, 20, 19, 20, "W"); P(20, 20, 23, 24, "W");
+    P(17, 17, 10, 16, "P");                       // 肚子上粉紅色的一塊
+    [8, 11, 14].forEach(function(cx){ P(11, 14, cx, cx, "S"); });   // 背上的條紋
+    // 頭、耳朵
+    P(3, 12, 16, 29, "B"); Q(12, 16, ""); Q(12, 29, ""); Q(3, 16, ""); Q(3, 29, "");
+    P(1, 2, 16, 17, "B"); P(1, 2, 28, 29, "B"); Q(1, 17, ""); Q(1, 28, ""); Q(2, 17, "P"); Q(2, 28, "P"); Q(3, 17, "B"); Q(3, 28, "B");
+    P(4, 5, 19, 19, "S"); P(4, 5, 22, 22, "S"); P(4, 5, 25, 25, "S");     // 額頭條紋
+    P(8, 11, 20, 25, "W");                        // 白色的嘴巴周圍
+    Q(6, 19, "E"); Q(7, 19, "E"); Q(6, 26, "E"); Q(7, 26, "E");     // 眼睛（點點眼）
+    Q(8, 22, "N"); Q(8, 23, "N"); Q(9, 22, "M"); Q(9, 23, "M");
+    P(13, 16, 22, 24, "W");                       // 胸口
+    // 鬍鬚（外框色，不會再被描邊）
+    P(8, 8, 12, 15, "K"); P(10, 10, 13, 15, "K"); P(8, 8, 30, 33, "K"); P(10, 10, 30, 32, "K");
+    // 尾巴：從屁股往上翹
+    var tail = {};
+    function T(y, xx, k){ tail[(xx + OFF) + "," + y] = k || "B"; }
+    [[13, 5], [13, 4], [12, 4], [12, 3], [11, 3], [10, 3], [9, 2], [8, 2], [7, 2], [6, 2], [5, 2], [4, 2]].forEach(function(t){ T(t[0], t[1]); });
+    T(4, 3, "S"); T(3, 3, "S"); T(3, 2, "S");
     var plain = ["B", "S", "W"];
-    if(c.calico){   // 三花：白底＋橘色、黑色大色塊
-      fill(1, 6, 1, 7, "D", ["B", "S", "W"]); fill(3, 9, 13, 22, "C", plain); fill(15, 21, 12, 19, "D", plain); fill(15, 19, 4, 7, "C", plain);
-    }
-    if(c.siamese){  // 暹羅：臉、耳朵、腳和尾巴是深色
-      fill(0, 5, 1, 7, "D", ["B", "S"]); fill(0, 5, 16, 22, "D", ["B", "S"]); fill(7, 12, 8, 15, "D", ["B", "S", "W"]); fill(21, 23, 3, 20, "D", ["W", "B"]);
-    }
-    // 尾巴
-    var tail = {}; TAIL.forEach(function(t, i){ tail[t[0] + "," + t[1]] = i >= TAIL.length - 2 ? "S" : "B"; });
-    return { g: g, tail: tail, W: W, H: H };
+    function fill(r1, r2, c1, c2, k, only){ for(var y = r1; y <= r2; y++) for(var xx = c1; xx <= c2; xx++){ var cur = inGrid(y, xx) && g[y][xx + OFF]; if(cur && only.indexOf(cur) >= 0) g[y][xx + OFF] = k; } }
+    var tailMark = null;
+    if(c.calico){ fill(1, 8, 16, 21, "D", plain); fill(3, 9, 26, 29, "C", plain); fill(11, 15, 8, 14, "C", plain); fill(12, 17, 17, 22, "D", plain); fill(18, 20, 6, 7, "C", plain); tailMark = "D"; }
+    if(c.siamese){ fill(1, 4, 16, 18, "D", ["B", "S"]); fill(1, 4, 27, 29, "D", ["B", "S"]); fill(5, 12, 19, 26, "D", ["B", "S", "W"]); fill(19, 20, 6, 7, "D", ["B", "W"]); fill(19, 20, 10, 11, "D", ["B", "W"]); fill(19, 20, 19, 20, "D", ["B", "W"]); fill(19, 20, 23, 24, "D", ["B", "W"]); tailMark = "D"; }
+    return { g: g, tail: tail, W: GW, H: GH, tailMark: tailMark };
   }
   function colorOf(c, k){
     if(k === "B") return c.B; if(k === "S") return c.S; if(k === "W") return c.W; if(k === "C") return c.C; if(k === "D") return c.D;
-    if(k === "P") return "#F4A6B4"; if(k === "N") return "#E57F8F"; if(k === "M") return OL; if(k === "E") return c.E; if(k === "L") return "#ffffff"; return c.B;
+    if(k === "P") return "#F4A6B4"; if(k === "N") return "#E57F8F"; if(k === "M") return OL; if(k === "E") return c.E; if(k === "L") return "#ffffff"; if(k === "K") return OL; return c.B;
   }
   function rect(x, y, w, h, f){ return '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" fill="' + f + '"/>'; }
   // 一格一格畫，同一列顏色相同的連續格子合併成一塊（檔案小，也不會有縫）
@@ -65,19 +75,20 @@
   function render(c){
     var m = build(c), g = m.g, tail = m.tail, H = m.H, W = m.W, x, y, body = {}, eyes = {}, bodyO = {}, tailF = {}, tailO = {};
     for(y = 0; y < H; y++) for(x = 0; x < W; x++){ var k = g[y][x]; if(!k) continue; if(k === "E" || k === "L") eyes[x + "," + y] = colorOf(c, k); else body[x + "," + y] = colorOf(c, k); }
-    Object.keys(tail).forEach(function(key){ tailF[key] = tail[key] === "S" ? (c.siamese ? c.D : c.S) : (c.siamese ? c.D : c.B); });
-    function filled(xx, yy){ return !!((g[yy] && g[yy][xx]) || tail[xx + "," + yy]); }
+    Object.keys(tail).forEach(function(key){ tailF[key] = m.tailMark ? colorOf(c, m.tailMark) : (tail[key] === "S" ? c.S : c.B); });
+    function solid(yy, xx){ var k2 = g[yy] && g[yy][xx]; return !!k2 && k2 !== "K"; }
+    function filled(xx, yy){ return solid(yy, xx) || !!tail[xx + "," + yy]; }
     var D4 = [[1, 0], [-1, 0], [0, 1], [0, -1]];
-    for(y = -1; y <= H; y++) for(x = -1; x <= W + 3; x++){
-      if(filled(x, y)) continue;
+    for(y = -1; y <= H; y++) for(x = -1; x <= W + 1; x++){
+      if(filled(x, y) || (g[y] && g[y][x] === "K")) continue;
       var nearBody = false, nearTail = false;
-      D4.forEach(function(d){ var nx = x + d[0], ny = y + d[1]; if(g[ny] && g[ny][nx]) nearBody = true; if(tail[nx + "," + ny]) nearTail = true; });
+      D4.forEach(function(d){ var nx = x + d[0], ny = y + d[1]; if(solid(ny, nx)) nearBody = true; if(tail[nx + "," + ny]) nearTail = true; });
       if(nearBody) bodyO[x + "," + y] = OL; else if(nearTail) tailO[x + "," + y] = OL;
     }
     return { body: rowsSvg(bodyO) + rowsSvg(body), eyes: rowsSvg(eyes), tail: rowsSvg(tailO) + rowsSvg(tailF) };
   }
 
-  var STAGE_SC = [0.74, 0.87, 1, 1.06], G = { head: { cx: 256, cy: 250, rx: 150, ry: 134 }, eyes: { y: 262 } };
+  var STAGE_SC = [0.74, 0.87, 1, 1.06], G = { head: { cx: X0 + (23 + OFF + 0.5) * CELL, cy: Y0 + 8 * CELL, rx: 7.5 * CELL, ry: 5.5 * CELL }, eyes: { y: Y0 + 7 * CELL } };
   A.svg = function(o){
     var st = A.norm(o.style), cat = BY[o.sp];
     if(st !== "pixel"){
@@ -87,16 +98,16 @@
     if(!cat) return orig(Object.assign({}, o, { style: "soft" }));
     var stage = Math.max(0, Math.min(3, o.stage || 0)), eq = o.eq || {}, anim = o.anim !== false, id = "px" + (++UID), R = render(cat);
     var defs = '<defs><radialGradient id="paAuraG"><stop offset="0" stop-color="#FFE98A" stop-opacity=".85"/><stop offset=".7" stop-color="#FFD23F" stop-opacity=".25"/><stop offset="1" stop-color="#FFD23F" stop-opacity="0"/></radialGradient></defs>';
-    var pre = '<ellipse cx="256" cy="' + (Y0 + 24 * CELL + 14) + '" rx="150" ry="12" fill="#2c2331" opacity=".16"/>';
+    var pre = '<ellipse cx="256" cy="' + (Y0 + 21 * CELL + 8) + '" rx="190" ry="12" fill="#2c2331" opacity=".16"/>';
     if(stage >= 3) pre = '<g class="' + (anim ? "pa-aura" : "") + '"><circle cx="255" cy="290" r="290" fill="url(#paAuraG)"/></g>' + pre;
     var inn = '<g class="' + (anim ? "pa-tailg" : "") + '" shape-rendering="crispEdges">' + R.tail + '</g>';
     inn += '<g shape-rendering="crispEdges">' + R.body + '<g class="pa-eyes">' + R.eyes + '</g></g>';
     var SLOT = A.ACC_SLOT || {};
     ["side", "neck", "face", "head"].forEach(function(sl){ var aid = eq[sl]; if(!aid || !SLOT[aid]) return; var raw = A.accSvg(aid, "outline").replace(/#1b1212/g, OL), k, tx, ty, g = G.head;
-      if(sl === "head"){ k = (g.rx * 2) / 116 * 0.92; tx = g.cx - 100 * k; ty = (g.cy - g.ry) - 26 * k + 10; }
-      else if(sl === "face"){ k = 2.0; tx = 256 - 100 * k; ty = G.eyes.y - 84 * k - 6; }
-      else if(sl === "neck"){ k = (g.rx * 2) / 116 * 0.9; tx = 256 - 100 * k; ty = (g.cy + g.ry) - 138 * k; }
-      else { k = 2.3; tx = 256 - 100 * k; ty = 392 - 150 * k; }
+      if(sl === "head"){ k = (g.rx * 2) / 116 * 0.92; tx = g.cx - 100 * k; ty = (g.cy - g.ry) - 26 * k + 6; }
+      else if(sl === "face"){ k = (g.rx * 2) / 116 * 1.0; tx = g.cx - 100 * k; ty = G.eyes.y - 84 * k; }
+      else if(sl === "neck"){ k = (g.rx * 2) / 116 * 0.9; tx = g.cx - 100 * k; ty = (g.cy + g.ry) - 138 * k - 4; }
+      else { k = 1.4; tx = (X0 + 12 * CELL) - 100 * k; ty = (Y0 + 14 * CELL) - 150 * k; }
       inn += '<g transform="translate(' + tx + " " + ty + ") scale(" + k + ')">' + raw + "</g>"; });
     var gg = '<g class="' + (anim ? "pa-body-g" : "") + '">' + inn + "</g>", sc = STAGE_SC[stage], tf = "translate(" + (255 - 255 * sc) + " " + (505 - 505 * sc) + ") scale(" + sc + ")", post = "";
     if(stage >= 2){ [[52, 120, 34], [470, 160, 28], [500, 330, 24], [20, 340, 26]].forEach(function(p, i){ post += '<g class="' + (anim ? "pa-spark" : "") + '" style="animation-delay:' + (i * .45) + 's;transform-box:fill-box;transform-origin:center"><path d="M' + p[0] + " " + (p[1] - p[2]) + " L" + (p[0] + p[2] * .3) + " " + (p[1] - p[2] * .3) + " L" + (p[0] + p[2]) + " " + p[1] + " L" + (p[0] + p[2] * .3) + " " + (p[1] + p[2] * .3) + " L" + p[0] + " " + (p[1] + p[2]) + " L" + (p[0] - p[2] * .3) + " " + (p[1] + p[2] * .3) + " L" + (p[0] - p[2]) + " " + p[1] + " L" + (p[0] - p[2] * .3) + " " + (p[1] - p[2] * .3) + ' Z" fill="#F2D27A"/></g>'; }); }
