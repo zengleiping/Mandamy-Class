@@ -14,7 +14,7 @@
       blast: { q: "w2p", input: "tap", lives: 3, speed: 3, seconds: 0, theme: "space", themeFree: true, music: "space", liveOut: "revive" },
       quiz: { q: "mix", count: 10, sec: 15, voice: "zh-TW-HsiaoChenNeural", music: "happy" },
       order: { mode: "survive", flow: "free", pace: "fast", voice: "zh-TW-HsiaoChenNeural", lives: 2, comeback: true, start: 2, maxLen: 6, plays: 2, perWord: 3.5, show: "both", music: "relax" },
-      whack: { q: "w2p", lives: 3, speed: 3, seconds: 90, music: "happy" },
+      whack: { char: "cat", q: "w2p", lives: 3, speed: 3, seconds: 90, music: "happy" },
       cards: { n: 12, back: "num", label: "show", ans: "mc", q: "mix", sec: 20, pts: 10, music: "" },
       live: { scoring: "avg", seconds: 90, stuMusic: true }
     };
@@ -149,7 +149,7 @@
       '<label>答對得幾分</label>' + seg("cards.pts", cd.pts, [[5, "5"], [10, "10"], [20, "20"]]) +
       '<div class="note" style="margin-top:6px;">只有即時多人：學生用手機或電腦加入。輪到的人（有分組就小組輪流，每組再輪流派人）自己選一張卡，卡翻開是生詞，答對幫自己和小組得分，翻過的卡不能再選。老師的畫面是投影用的牌桌，也可以直接點卡代替沒有裝置的學生。沒有學生的裝置時，在等待室用「分組比賽」就可以分小組比分。</div></div>';
     var wk = c.whack || {};
-    var whackOpts = '<div class="mg-opt"><label>題目</label>' + seg("whack.q", wk.q || "w2p", [["w2p", "看詞語打拼音"], ["w2t", "看詞語打翻譯"], ["p2w", "看拼音打詞語"], ["t2w", "看翻譯打詞語"], ["a2w", "聽聲音打詞語"], ["a2t", "聽聲音打翻譯"], ["a2i", "聽聲音，地鼠是圖片"], ["i2w", "題目是圖片，地鼠是文字"], ["w2i", "題目是文字，地鼠是圖片"]]) +
+    var whackOpts = '<div class="mg-opt"><label>角色</label>' + seg("whack.char", wk.char || "cat", [["cat", "貓咪（像素貓，六種花色）"], ["mole", "地鼠"]]) + '<label>題目</label>' + seg("whack.q", wk.q || "w2p", [["w2p", "看詞語打拼音"], ["w2t", "看詞語打翻譯"], ["p2w", "看拼音打詞語"], ["t2w", "看翻譯打詞語"], ["a2w", "聽聲音打詞語"], ["a2t", "聽聲音打翻譯"], ["a2i", "聽聲音，地鼠是圖片"], ["i2w", "題目是圖片，地鼠是文字"], ["w2i", "題目是文字，地鼠是圖片"]]) +
       ((wk.q || "w2p").charAt(0) === "a" ? '<label>發音</label>' + seg("whack.voice", wk.voice || MG.TTS_VOICES[0][0], MG.TTS_VOICES) + '<div class="note" style="margin-top:4px;">聽聲音：用曼米語音伺服器的自然語音（預設曉臻），每一隻地鼠冒出來前先念一次，題目上有「再聽一次」。語音會在等待室先下載好。</div>' : '') +
       (/^(a2i|i2w|w2i)$/.test(wk.q || "") ? '<div class="note" style="margin-top:4px;">圖片以生詞庫的圖片／Emoji 圖示為主；沒有圖片的詞不會出現。要換圖片或補圖片：按「翻譯語言」那一格的「檢查／修改翻譯、拼音、圖片」，每個詞都可以改 Emoji 或上傳圖片（也可以直接在教材的生詞卡上傳）。</div>' : '') +
       '<label>生命</label><span><input type="number" class="mg-num" min="0" max="10" data-num="whack.lives" value="' + (wk.lives == null ? 3 : wk.lives) + '"> 條 <span class="note">（0＝不限，要搭配時間）</span></span>' +
@@ -180,7 +180,7 @@
       '<div class="mg-panel"><div class="mg-games">' +
       '<button class="mg-game' + (c.game === "match" ? " on" : "") + '" data-game="match"><img class="mg-game-img" src="../icons/act-match.png" alt=""><b>配對 Match</b><span class="note">詞語和拼音／翻譯配成一對，比速度或限時。</span></button>' +
       '<button class="mg-game' + (c.game === "blast" ? " on" : "") + '" data-game="blast"><img class="mg-game-img" src="../icons/act-blast.png" alt=""><b>Blast</b><span class="note">答案從畫面掉下來，點對的那個。可以選主題。</span></button>' +
-      '<button class="mg-game' + (c.game === "whack" ? " on" : "") + '" data-game="whack"><span class="mg-game-img mg-game-emo">🔨</span><b>打地鼠 Whack-a-Mole</b><span class="note">地洞冒出舉著答案的地鼠，打對的那隻。自己玩，或分組競賽。</span></button>' +
+      '<button class="mg-game' + (c.game === "whack" ? " on" : "") + '" data-game="whack"><span class="mg-game-img mg-game-emo">🔨</span><b>打貓咪 Whack-a-Cat</b><span class="note">地洞冒出舉著答案牌的像素貓（也可以選地鼠），打對的那隻。自己玩，或分組競賽。</span></button>' +
       '<button class="mg-game' + (c.game === "quiz" ? " on" : "") + '" data-game="quiz"><span class="mg-game-img mg-game-emo">🎯</span><b>快問快答 Quiz</b><span class="note">像 Kahoot：一題一題出，四選一，越快分數越高。全班同一秒進到同一題。</span></button>' +
       '<button class="mg-game' + (c.game === "order" ? " on" : "") + '" data-game="order"><span class="mg-game-img mg-game-emo">👂</span><b>聽音排序 Listen &amp; Order</b><span class="note">聽一串詞語，拖成聽到的順序；每輪多一個詞，越來越難。被淘汰也能旁觀練習、復活。</span></button>' +
       '<button class="mg-game' + (c.game === "cards" ? " on" : "") + '" data-game="cards"><span class="mg-game-img mg-game-emo">🃏</span><b>翻卡選題 Card Pick</b><span class="note">蓋著的卡（數字、水果或動物），學生自己選一張，翻開是生詞，答對幫小組得分。只有即時多人。</span></button></div></div>' +

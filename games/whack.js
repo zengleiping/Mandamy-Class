@@ -5,7 +5,7 @@
 (function(){
   var MG = window.MG;
   var Q_NAME = { w2p: "看詞語，打拼音 Word → pinyin", w2t: "看詞語，打翻譯 Word → meaning", p2w: "看拼音，打詞語 Pinyin → word", t2w: "看翻譯，打詞語 Meaning → word",
-    a2w: "聽聲音，打詞語 Listen → word", a2t: "聽聲音，打翻譯 Listen → meaning", a2i: "聽聲音，打圖片地鼠 Listen → picture", i2w: "看圖片，打文字地鼠 Picture → word", w2i: "看詞語，打圖片地鼠 Word → picture" };
+    a2w: "聽聲音，打詞語 Listen → word", a2t: "聽聲音，打翻譯 Listen → meaning", a2i: "聽聲音，打圖片牌 Listen → picture", i2w: "看圖片，打文字牌 Picture → word", w2i: "看詞語，打圖片牌 Word → picture" };
   var ANS_KIND = { w2p: "p", w2t: "t", p2w: "w", t2w: "w", a2w: "w", a2t: "t", a2i: "i", i2w: "w", w2i: "i" };
   var SAY_RATE = 1.0;
   MG.WHACK_Q = Q_NAME;
@@ -19,9 +19,38 @@
       '<ellipse cx="50" cy="54" rx="8" ry="6" fill="#E58E8E"/><path d="M45 62 Q50 67 55 62" stroke="#5A3A24" stroke-width="2" fill="none" stroke-linecap="round"/><rect x="46.5" y="62.5" width="7" height="7" rx="1.5" fill="#fff" stroke="#5A3A24" stroke-width="1"/></svg>';
   }
 
+  // 像素貓：頭＋肩膀（耳朵、點點眼睛、鬍鬚、深色外框），六種花色輪流出現
+  var COATS = [
+    { B: "#F0A24C", S: "#D07A2A", W: "#FFF0D6", E: "#2c2331" }, { B: "#9AA0B4", S: "#747A92", W: "#E9EBF2", E: "#2c2331" },
+    { B: "#3c3a47", S: "#3c3a47", W: "#555362", E: "#F2D14F" }, { B: "#34323e", S: "#34323e", W: "#FFFFFF", E: "#7CCB62" },
+    { B: "#FBF6EC", S: "#FBF6EC", W: "#FBF6EC", E: "#2c2331", C: "#EDA04A", D: "#3b3945", calico: true }, { B: "#F3E6D2", S: "#F3E6D2", W: "#FBF3E6", E: "#6FA8DC", D: "#7A5646", siamese: true }
+  ];
+  var CAT_CACHE = {};
+  function catSvg(i){
+    var ci = ((i % COATS.length) + COATS.length) % COATS.length; if(CAT_CACHE[ci]) return CAT_CACHE[ci];
+    var c = COATS[ci], OLc = "#2c2331", W = 18, H = 15, g = [], y, x;
+    for(y = 0; y < H; y++){ g.push([]); for(x = 0; x < W; x++) g[y][x] = ""; }
+    function P(r1, r2, c1, c2, k){ for(var yy = r1; yy <= r2; yy++) for(var xx = c1; xx <= c2; xx++) g[yy][xx] = k; }
+    P(2, 11, 2, 15, "B"); g[11][2] = ""; g[11][15] = ""; P(12, 14, 3, 14, "B"); P(0, 1, 2, 3, "B"); P(0, 1, 14, 15, "B"); g[0][2] = ""; g[0][15] = ""; g[1][3] = "P"; g[1][14] = "P";
+    [5, 12].forEach(function(cx){ P(2, 3, cx, cx, "S"); }); P(2, 4, 8, 9, "S");
+    P(7, 10, 6, 11, "W"); g[7][8] = "N"; g[7][9] = "N"; g[8][7] = "M"; g[8][10] = "M"; g[9][8] = "M"; g[9][9] = "M";
+    P(5, 6, 5, 5, "E"); P(5, 6, 12, 12, "E"); g[4][5] = "L"; g[4][12] = "L";
+    P(7, 7, 0, 1, "K"); P(9, 9, 0, 1, "K"); P(7, 7, 16, 17, "K"); P(9, 9, 16, 17, "K");
+    if(c.calico){ for(y = 0; y <= 6; y++) for(x = 2; x <= 7; x++) if(g[y][x] === "B") g[y][x] = "D"; for(y = 2; y <= 8; y++) for(x = 12; x <= 15; x++) if(g[y][x] === "B") g[y][x] = "C"; for(y = 12; y <= 14; y++) for(x = 8; x <= 14; x++) if(g[y][x] === "B") g[y][x] = "D"; }
+    if(c.siamese){ for(y = 0; y <= 3; y++) for(x = 2; x <= 15; x++) if(g[y][x] === "B" && (x <= 4 || x >= 13)) g[y][x] = "D"; for(y = 4; y <= 11; y++) for(x = 5; x <= 12; x++) if(g[y][x] === "B" || g[y][x] === "W") g[y][x] = "D"; }
+    var col = { B: c.B, S: c.S, W: c.W, C: c.C, D: c.D, P: "#F4A6B4", N: "#E57F8F", M: OLc, E: c.E, L: "#ffffff", K: OLc };
+    var cells = {}; for(y = 0; y < H; y++) for(x = 0; x < W; x++) if(g[y][x]) cells[x + "," + y] = col[g[y][x]];
+    function solid(yy, xx){ var k = g[yy] && g[yy][xx]; return !!k && k !== "K"; }
+    var out = {};
+    for(y = -1; y <= H; y++) for(x = -1; x <= W; x++){ if(solid(y, x) || (g[y] && g[y][x] === "K")) continue; if(solid(y, x - 1) || solid(y, x + 1) || solid(y - 1, x) || solid(y + 1, x)) out[x + "," + y] = OLc; }
+    function runs(map){ var rows = {}, svg = ""; Object.keys(map).forEach(function(k){ var p = k.split(","); (rows[+p[1]] = rows[+p[1]] || []).push([+p[0], map[k]]); });
+      Object.keys(rows).forEach(function(yy){ var a = rows[yy].sort(function(p, q){ return p[0] - q[0]; }), i2 = 0; while(i2 < a.length){ var j = i2; while(j + 1 < a.length && a[j + 1][0] === a[j][0] + 1 && a[j + 1][1] === a[i2][1]) j++; svg += '<rect x="' + (a[i2][0] + 1) + '" y="' + (+yy + 1) + '" width="' + (a[j][0] - a[i2][0] + 1.04) + '" height="1.04" fill="' + a[i2][1] + '"/>'; i2 = j + 1; } }); return svg; }
+    return (CAT_CACHE[ci] = '<svg viewBox="0 0 ' + (W + 2) + ' ' + (H + 2) + '" class="wk-svg wk-cat" shape-rendering="crispEdges" preserveAspectRatio="xMidYMax meet" aria-hidden="true">' + runs(out) + runs(cells) + '</svg>');
+  }
+
   function create(root, o){
     var now = o.now || function(){ return Date.now(); };
-    var rnd = MG.rng(o.seed || 1), q = Q_NAME[o.q] ? o.q : "w2p";
+    var rnd = MG.rng(o.seed || 1), q = Q_NAME[o.q] ? o.q : "w2p", asCat = o.char !== "mole";
     var ansKind = ANS_KIND[q], zyM = o.phon === "zy", audioQ = q.charAt(0) === "a", picPrompt = q === "i2w";
     var words = MG.withPhon(o.words, o.phon).filter(function(w){ return w && w.w && MG.sideText(w, ansKind, o.lang) && (q !== "p2w" || w.p) && (q !== "t2w" || MG.trOf(w, o.lang)) && ((ansKind !== "i" && !picPrompt) || MG.picOf(w)); });
     var cancelSpeech = null;
@@ -35,16 +64,16 @@
 
     var cells = ""; for(var i = 0; i < HOLES; i++) cells += '<div class="wk-cell" data-i="' + i + '"><div class="wk-hole"></div><div class="wk-mole"></div><div class="wk-front"></div></div>';
     root.innerHTML = '<div class="gm wk">' +
-      '<div class="gm-hud"><span class="gm-title">' + MG.esc(o.title || "打地鼠 Whack-a-Mole") + '</span><span class="note">' + MG.esc(MG.ph(Q_NAME[q], o.phon)) + '</span><span class="gm-sp"></span>' +
+      '<div class="gm-hud"><span class="gm-title">' + MG.esc(o.title || (asCat ? "打貓咪 Whack-a-Cat" : "打地鼠 Whack-a-Mole")) + '</span><span class="note">' + MG.esc(MG.ph(Q_NAME[q], o.phon)) + '</span><span class="gm-sp"></span>' +
       (maxLives ? '<div class="gm-stat"><small>生命 Lives</small><span class="bl-lives"></span></div>' : '') +
       '<div class="gm-stat time"><small>' + (endAt ? "剩下 Left" : "時間 Time") + '</small><b class="wk-time">0:00</b></div>' +
       '<div class="gm-stat"><small>答錯 Wrong</small><b class="wk-err">0</b></div>' +
       '<div class="gm-stat score"><small>分數 Score</small><b class="wk-score">0</b></div>' +
       MG.musicBtn(o.music) + '<button class="mg-btn sm ghost wk-snd">' + (MG.sound.on ? "音效 開 Sound on" : "音效 關 Sound off") + '</button>' +
       (o.onQuit ? '<button class="mg-btn sm wk-quit">結束 Quit</button>' : '') + '</div>' +
-      '<div class="wk-stage"><div class="bl-q"><small class="wk-qs"></small><span class="fit"></span></div><div class="wk-grid">' + cells + '</div></div></div>';
+      '<div class="wk-stage' + (asCat ? " cat" : "") + '"><div class="bl-q"><small class="wk-qs"></small><span class="fit"></span></div><div class="wk-grid">' + cells + '</div></div></div>';
     var el = root.firstChild, stage = MG.$(".wk-stage", el), qEl = MG.$(".bl-q .fit", el), qSmall = MG.$(".wk-qs", el), cellEls = [].slice.call(el.querySelectorAll(".wk-cell"));
-    qSmall.textContent = audioQ ? "聽聲音，打對的地鼠 Listen and whack the right mole" : q === "i2w" ? "看圖片，找出詞語 Find the word for the picture" : q === "w2i" ? "找出這個詞語的圖片 Find the picture" : ansKind === "w" ? "找出這個詞語 Find the word" : ansKind === "p" ? MG.ph("找出拼音 Find the pinyin", o.phon) : "找出翻譯 Find the meaning";
+    qSmall.textContent = audioQ ? (asCat ? "聽聲音，打對的貓咪 Listen and whack the right cat" : "聽聲音，打對的地鼠 Listen and whack the right mole") : q === "i2w" ? "看圖片，找出詞語 Find the word for the picture" : q === "w2i" ? "找出這個詞語的圖片 Find the picture" : ansKind === "w" ? "找出這個詞語 Find the word" : ansKind === "p" ? MG.ph("找出拼音 Find the pinyin", o.phon) : "找出翻譯 Find the meaning";
     qEl.parentNode.addEventListener("click", function(e){ if(e.target.closest(".wk-play") && round) say(round.w); });
 
     function hud(){
@@ -76,7 +105,7 @@
       var opts = options(w), holes = MG.shuffle(cellEls.map(function(_, i){ return i; }), rnd).slice(0, opts.length), maxEnd = 0, okEnd = 0;
       opts.forEach(function(x, k){
         var cell = cellEls[holes[k]], m = MG.$(".wk-mole", cell), txt = MG.sideText(x, ansKind, o.lang), zh = ansKind === "w" || (zyM && ansKind === "p");
-        m.innerHTML = moleSvg() + (ansKind === "i" ? '<div class="wk-sign picl">' + MG.picHtml(txt) + '</div>' : '<div class="wk-sign"><span class="fit' + (zh ? " zh" : "") + '" data-fmax="' + (zh ? 28 : 20) + '">' + MG.esc(txt) + '</span></div>');
+        m.innerHTML = (asCat ? catSvg(roundNo + k) : moleSvg()) + (ansKind === "i" ? '<div class="wk-sign picl">' + MG.picHtml(txt) + '</div>' : '<div class="wk-sign"><span class="fit' + (zh ? " zh" : "") + '" data-fmax="' + (zh ? 28 : 20) + '">' + MG.esc(txt) + '</span></div>');
         m._o = { ok: x.w === w.w, cell: cell };
         var delay = 120 + k * 150 + Math.floor(rnd() * 220);
         later(function(){ if(ended || !round || round.done) return; m.classList.add("up"); var fe = MG.$(".fit", m); if(fe) MG.fit(fe, zh ? 28 : 20, 11); }, delay);
