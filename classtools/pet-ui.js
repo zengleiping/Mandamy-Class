@@ -431,10 +431,12 @@
   // ---------- 收藏：圖鑑、神秘蛋、稀有度 ----------
   var RAR = { c: { n: "普通", col: "#9AA7B5" }, r: { n: "稀有", col: "#3B82F6" }, e: { n: "史詩", col: "#A855F7" }, l: { n: "傳說", col: "#F59E0B" } };
   var RAREMAP = { "🦁": "r", "🐯": "r", "🐺": "r", "🦅": "r", "🦖": "e", "🦄": "e", "🐲": "l", "🐉": "l" };
-  function rarityOf(sp){ return RAREMAP[sp] || "c"; }
+  function rarityOf(sp){ return RAREMAP[sp] || (A.pixelRarity && A.pixelRarity(sp)) || "c"; }
   var EGG_PRICE = 60, EGGODDS = [["c", 0.58], ["r", 0.28], ["e", 0.10], ["l", 0.04]], MILES = [[5, 10], [10, 25], [15, 50], [20, 100]];
-  function allSpecies(){ return P.BASIC.concat(P.PREMIUM.map(function(x){ return x.e; })); }
-  function nameOfSp(e){ var x = P.PREMIUM.filter(function(q){ return q.e === e; })[0]; return x ? x.n : (A.byEmoji(e).name || e); }
+  // 像素貓咪風格：普通寵物換成六種花色的像素貓（其他風格照舊）
+  function basicList(){ return curStyle() === "pixel" && A.pixelCats ? A.pixelCats : P.BASIC; }
+  function allSpecies(){ return basicList().concat(P.PREMIUM.map(function(x){ return x.e; })); }
+  function nameOfSp(e){ var x = P.PREMIUM.filter(function(q){ return q.e === e; })[0]; return x ? x.n : ((A.pixelName && A.pixelName(e)) || A.byEmoji(e).name || e); }
   function ownedSet(me){ var o = {}; Object.keys(me.pets || {}).forEach(function(k){ o[me.pets[k].sp] = Math.max(o[me.pets[k].sp] || 0, P.stageOf(me.pets[k].xp) + 1); }); (me.cs || []).forEach(function(e){ o[e] = o[e] || 1; }); return o; }
   function rollEgg(){ var r = Math.random(), acc = 0, pick = "c"; for(var i = 0; i < EGGODDS.length; i++){ acc += EGGODDS[i][1]; if(r < acc){ pick = EGGODDS[i][0]; break; } } var pool = allSpecies().filter(function(e){ return rarityOf(e) === pick; }); return pool[Math.floor(Math.random() * pool.length)]; }
   var collTab = "dex";
@@ -472,7 +474,7 @@
   }
   function sAdopt(body, me){
     var first = !P.actPet(me), chosen = "";
-    body.innerHTML = '<div class="pg-hint">' + (first ? "選一隻寵物當你的夥伴！答對問題、交作業賺點數，就能買飼料、衣服，把牠養大。" : "領養新寵物（" + ti("star") + P.price("new", P.NEWPET) + "）") + '</div><div class="pg-grid4">' + P.BASIC.map(function(e){ return '<button type="button" class="pg-it" data-sp="' + e + '"><span class="pg-ic pga" data-e="' + e + '"></span></button>'; }).join("") + '</div><div class="pg-row"><input id="pg-nm" maxlength="10" placeholder="幫牠取個名字"></div><button type="button" class="pg-big" id="pg-ad">就是牠了！</button>';
+    body.innerHTML = '<div class="pg-hint">' + (first ? "選一隻寵物當你的夥伴！答對問題、交作業賺點數，就能買飼料、衣服，把牠養大。" : "領養新寵物（" + ti("star") + P.price("new", P.NEWPET) + "）") + '</div><div class="pg-grid4">' + basicList().map(function(e){ return '<button type="button" class="pg-it" data-sp="' + e + '"><span class="pg-ic pga" data-e="' + e + '"></span></button>'; }).join("") + '</div><div class="pg-row"><input id="pg-nm" maxlength="10" placeholder="幫牠取個名字"></div><button type="button" class="pg-big" id="pg-ad">就是牠了！</button>';
     [].forEach.call(body.querySelectorAll(".pga"), function(el){ A.render(el, { sp: el.dataset.e, style: curStyle(), mood: "happy", stage: 1, anim: false }); });
     body.querySelector(".pg-grid4").onclick = function(e){ var b = e.target.closest("[data-sp]"); if(!b) return; chosen = b.dataset.sp; [].forEach.call(body.querySelectorAll("[data-sp]"), function(x){ x.classList.toggle("on", x === b); }); SFX.pop(); };
     body.querySelector("#pg-ad").onclick = async function(){ var nm = body.querySelector("#pg-nm").value.trim() || "小寶"; if(!chosen){ say("先選一隻寵物喔"); return; } var np0 = P.price("new", P.NEWPET);
