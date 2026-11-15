@@ -4,7 +4,10 @@
    MG.Whack.create(root, { words, lang, phon, q:"w2p"|"w2t"|"p2w"|"t2w", lives, speed, seconds, count, seed, startAt, endAt, now, init, onScore, onEnd, onQuit, title, music }) */
 (function(){
   var MG = window.MG;
-  var Q_NAME = { w2p: "看詞語，打拼音 Word → pinyin", w2t: "看詞語，打翻譯 Word → meaning", p2w: "看拼音，打詞語 Pinyin → word", t2w: "看翻譯，打詞語 Meaning → word" };
+  var Q_NAME = { w2p: "看詞語，打拼音 Word → pinyin", w2t: "看詞語，打翻譯 Word → meaning", p2w: "看拼音，打詞語 Pinyin → word", t2w: "看翻譯，打詞語 Meaning → word",
+    a2w: "聽聲音，打詞語 Listen → word", a2t: "聽聲音，打翻譯 Listen → meaning", a2i: "聽聲音，打圖片 Listen → picture", i2w: "看圖片，打詞語 Picture → word", w2i: "看詞語，打圖片 Word → picture" };
+  var ANS_KIND = { w2p: "p", w2t: "t", p2w: "w", t2w: "w", a2w: "w", a2t: "t", a2i: "i", i2w: "w", w2i: "i" };
+  var SAY_RATE = 1.0;
   MG.WHACK_Q = Q_NAME;
   var STAY = [4600, 3700, 3000, 2400, 1900];   // 速度 1～5：地鼠露出來幾毫秒
   var HOLES = 9;
@@ -19,13 +22,15 @@
   function create(root, o){
     var now = o.now || function(){ return Date.now(); };
     var rnd = MG.rng(o.seed || 1), q = Q_NAME[o.q] ? o.q : "w2p";
-    var ansKind = q === "w2p" ? "p" : q === "w2t" ? "t" : "w", zyM = o.phon === "zy";
-    var words = MG.withPhon(o.words, o.phon).filter(function(w){ return w && w.w && MG.sideText(w, ansKind, o.lang) && (q !== "p2w" || w.p) && (q !== "t2w" || MG.trOf(w, o.lang)); });
+    var ansKind = ANS_KIND[q], zyM = o.phon === "zy", audioQ = q.charAt(0) === "a", picPrompt = q === "i2w";
+    var words = MG.withPhon(o.words, o.phon).filter(function(w){ return w && w.w && MG.sideText(w, ansKind, o.lang) && (q !== "p2w" || w.p) && (q !== "t2w" || MG.trOf(w, o.lang)) && ((ansKind !== "i" && !picPrompt) || MG.picOf(w)); });
+    var cancelSpeech = null;
+    function say(w){ if(cancelSpeech) cancelSpeech(); cancelSpeech = MG.speak(w.w, { rate: SAY_RATE, voice: o.voice }); }
     var seconds = Number(o.seconds) || 0, maxLives = Number(o.lives); if(isNaN(maxLives)) maxLives = 3;
     if(!seconds && !maxLives) maxLives = 3;
     var sc = MG.newScore(o.init), lives = o.init && typeof o.init.lives === "number" ? o.init.lives : maxLives;
     var startAt = o.startAt || now(), endAt = seconds ? (o.endAt || startAt + seconds * 1000) : (o.endAt || 0);
-    var stayMs = STAY[MG.clamp(Number(o.speed) || 3, 1, 5) - 1];
+    var stayMs = STAY[MG.clamp(Number(o.speed) || 3, 1, 5) - 1] + (audioQ ? 700 : 0);
     var queue = [], round = null, ended = false, timers = [], tick = 0, streak = 0, missed = {}, roundNo = 0;
 
     var cells = ""; for(var i = 0; i < HOLES; i++) cells += '<div class="wk-cell" data-i="' + i + '"><div class="wk-hole"></div><div class="wk-mole"></div><div class="wk-front"></div></div>';
@@ -39,7 +44,8 @@
       (o.onQuit ? '<button class="mg-btn sm wk-quit">結束 Quit</button>' : '') + '</div>' +
       '<div class="wk-stage"><div class="bl-q"><small class="wk-qs"></small><span class="fit"></span></div><div class="wk-grid">' + cells + '</div></div></div>';
     var el = root.firstChild, stage = MG.$(".wk-stage", el), qEl = MG.$(".bl-q .fit", el), qSmall = MG.$(".wk-qs", el), cellEls = [].slice.call(el.querySelectorAll(".wk-cell"));
-    qSmall.textContent = ansKind === "w" ? "找出這個詞語 Find the word" : ansKind === "p" ? MG.ph("找出拼音 Find the pinyin", o.phon) : "找出翻譯 Find the meaning";
+    qSmall.textContent = audioQ ? "聽聲音，打對的地鼠 Listen and whack the right mole" : q === "i2w" ? "看圖片，找出詞語 Find the word for the picture" : q === "w2i" ? "找出這個詞語的圖片 Find the picture" : ansKind === "w" ? "找出這個詞語 Find the word" : ansKind === "p" ? MG.ph("找出拼音 Find the pinyin", o.phon) : "找出翻譯 Find the meaning";
+    qEl.parentNode.addEventListener("click", function(e){ if(e.target.closest(".wk-play") && round) say(round.w); });
 
     function hud(){
       MG.$(".wk-score", el).textContent = sc.s; MG.$(".wk-err", el).textContent = sc.w;
@@ -64,15 +70,16 @@
       clearTimers(); clearMoles(); roundNo++;
       var w = nextWord(); if(!w){ finish(); return; }
       round = { w: w, t0: now(), done: false };
-      qEl.className = "fit" + (q === "t2w" || (q === "p2w" && !zyM) ? "" : " zh"); qEl.textContent = promptOf(w);
-      requestAnimationFrame(function(){ MG.fit(qEl); });
+      if(audioQ){ qEl.className = "fit"; qEl.innerHTML = '<button type="button" class="mg-btn wk-play">🔊 再聽一次 Play again</button>'; later(function(){ if(!ended && round && !round.done) say(w); }, 150); }
+      else if(picPrompt){ qEl.className = "fit picq"; qEl.innerHTML = MG.picHtml(MG.picOf(w)); }
+      else { qEl.className = "fit" + (q === "t2w" || (q === "p2w" && !zyM) ? "" : " zh"); qEl.textContent = promptOf(w); requestAnimationFrame(function(){ MG.fit(qEl); }); }
       var opts = options(w), holes = MG.shuffle(cellEls.map(function(_, i){ return i; }), rnd).slice(0, opts.length), maxEnd = 0, okEnd = 0;
       opts.forEach(function(x, k){
         var cell = cellEls[holes[k]], m = MG.$(".wk-mole", cell), txt = MG.sideText(x, ansKind, o.lang), zh = ansKind === "w" || (zyM && ansKind === "p");
-        m.innerHTML = moleSvg() + '<div class="wk-sign"><span class="fit' + (zh ? " zh" : "") + '" data-fmax="' + (zh ? 28 : 20) + '">' + MG.esc(txt) + '</span></div>';
+        m.innerHTML = moleSvg() + (ansKind === "i" ? '<div class="wk-sign picl">' + MG.picHtml(txt) + '</div>' : '<div class="wk-sign"><span class="fit' + (zh ? " zh" : "") + '" data-fmax="' + (zh ? 28 : 20) + '">' + MG.esc(txt) + '</span></div>');
         m._o = { ok: x.w === w.w, cell: cell };
         var delay = 120 + k * 150 + Math.floor(rnd() * 220);
-        later(function(){ if(ended || !round || round.done) return; m.classList.add("up"); MG.fitAll ? MG.fitAll(m) : MG.fit(MG.$(".fit", m), zh ? 28 : 20, 11); }, delay);
+        later(function(){ if(ended || !round || round.done) return; m.classList.add("up"); var fe = MG.$(".fit", m); if(fe) MG.fit(fe, zh ? 28 : 20, 11); }, delay);
         later(function(){ m.classList.remove("up"); }, delay + stayMs);
         if(delay + stayMs > maxEnd) maxEnd = delay + stayMs; if(m._o.ok) okEnd = delay + stayMs;
         m.onpointerdown = function(e){ e.preventDefault(); whack(m); };
@@ -104,7 +111,7 @@
     function emit(){ if(o.onScore) o.onScore(Object.assign({}, sc, { lives: lives, time: now() - startAt })); }
     function result(){ return Object.assign({}, sc, { lives: lives, time: Math.max(0, (ended || now()) - startAt), missed: Object.keys(missed).map(function(k){ return missed[k]; }) }); }
     function finish(){
-      if(ended) return; ended = now(); clearInterval(tick); clearTimers(); clearMoles(); MG.music.stop(); MG.beep("end");
+      if(ended) return; ended = now(); clearInterval(tick); clearTimers(); clearMoles(); if(cancelSpeech) cancelSpeech(); MG.music.stop(); MG.beep("end");
       if(o.onEnd) o.onEnd(result());
     }
     MG.$(".wk-snd", el).onclick = function(){ MG.sound.on = !MG.sound.on; this.textContent = MG.sound.on ? "音效 開 Sound on" : "音效 關 Sound off"; };
@@ -113,9 +120,18 @@
     hud();
     if(words.length < 2){ stage.insertAdjacentHTML("beforeend", '<div class="bl-ans" style="animation:none">這個題型沒有可以用的詞語（可能缺拼音或翻譯）</div>'); return { stop: function(){}, finish: function(){}, score: function(){ return sc; }, result: result }; }
     tick = setInterval(clock, 250); clock();
-    if(maxLives && lives <= 0) setTimeout(finish, 0); else { newRound(); if(o.music) MG.music.play(o.music); }
+    function begin(){ if(ended) return; if(maxLives && lives <= 0) setTimeout(finish, 0); else { newRound(); if(o.music) MG.music.play(o.music); } }
+    if(audioQ){
+      // 聽聲音：先把這局的詞語音下載好（最多等 8 秒），開始才不會卡
+      var gate = document.createElement("div"); gate.className = "bl-ans"; gate.style.animation = "none"; gate.textContent = "載入語音中… Loading the voice…"; stage.appendChild(gate);
+      var uniq = {}, texts = words.map(function(w){ return w.w; }).filter(function(t){ if(uniq[t]) return false; uniq[t] = 1; return true; }).slice(0, 60);
+      Promise.race([MG.tts.preload(texts, { rate: SAY_RATE, voice: o.voice }).catch(function(){}), new Promise(function(r){ setTimeout(r, 8000); })]).then(function(){ gate.remove(); begin(); });
+      if(!MG.hasZhVoice()) MG.toast("這個裝置沒有中文語音，聽不到聲音 No Chinese voice on this device", 4500);
+    } else begin();
     MG.audioHint(el);
-    return { stop: function(){ MG.music.stop(); if(!ended){ ended = now(); clearInterval(tick); clearTimers(); } }, finish: finish, score: function(){ return sc; }, result: result };
+    return { stop: function(){ MG.music.stop(); if(cancelSpeech) cancelSpeech(); if(!ended){ ended = now(); clearInterval(tick); clearTimers(); } }, finish: finish, score: function(){ return sc; }, result: result };
   }
-  MG.Whack = { create: create };
+  // 聽聲音模式：在等待室先把語音下載好
+  function prefetch(o, words){ var uniq = {}, t = (words || []).map(function(w){ return w && w.w; }).filter(function(x){ if(!x || uniq[x]) return false; uniq[x] = 1; return true; }).slice(0, 60); return t.length ? MG.tts.preload(t, { rate: SAY_RATE, voice: o.voice }) : Promise.resolve(0); }
+  MG.Whack = { create: create, prefetch: prefetch };
 })();

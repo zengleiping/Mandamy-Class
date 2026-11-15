@@ -149,7 +149,9 @@
       '<label>答對得幾分</label>' + seg("cards.pts", cd.pts, [[5, "5"], [10, "10"], [20, "20"]]) +
       '<div class="note" style="margin-top:6px;">只有即時多人：學生用手機或電腦加入。輪到的人（有分組就小組輪流，每組再輪流派人）自己選一張卡，卡翻開是生詞，答對幫自己和小組得分，翻過的卡不能再選。老師的畫面是投影用的牌桌，也可以直接點卡代替沒有裝置的學生。沒有學生的裝置時，在等待室用「分組比賽」就可以分小組比分。</div></div>';
     var wk = c.whack || {};
-    var whackOpts = '<div class="mg-opt"><label>題目</label>' + seg("whack.q", wk.q || "w2p", [["w2p", "看詞語打拼音"], ["w2t", "看詞語打翻譯"], ["p2w", "看拼音打詞語"], ["t2w", "看翻譯打詞語"]]) +
+    var whackOpts = '<div class="mg-opt"><label>題目</label>' + seg("whack.q", wk.q || "w2p", [["w2p", "看詞語打拼音"], ["w2t", "看詞語打翻譯"], ["p2w", "看拼音打詞語"], ["t2w", "看翻譯打詞語"], ["a2w", "聽聲音打詞語"], ["a2t", "聽聲音打翻譯"], ["a2i", "聽聲音打圖片"], ["i2w", "看圖片打詞語"], ["w2i", "看詞語打圖片"]]) +
+      ((wk.q || "w2p").charAt(0) === "a" ? '<label>發音</label>' + seg("whack.voice", wk.voice || MG.TTS_VOICES[0][0], MG.TTS_VOICES) + '<div class="note" style="margin-top:4px;">聽聲音：用曼米語音伺服器的自然語音（預設曉臻），每一隻地鼠冒出來前先念一次，題目上有「再聽一次」。語音會在等待室先下載好。</div>' : '') +
+      (/^(a2i|i2w|w2i)$/.test(wk.q || "") ? '<div class="note" style="margin-top:4px;">圖片以生詞庫的圖片／Emoji 圖示為主；沒有圖片的詞不會出現。要換圖片或補圖片：按「翻譯語言」那一格的「檢查／修改翻譯、拼音、圖片」，每個詞都可以改 Emoji 或上傳圖片（也可以直接在教材的生詞卡上傳）。</div>' : '') +
       '<label>生命</label><span><input type="number" class="mg-num" min="0" max="10" data-num="whack.lives" value="' + (wk.lives == null ? 3 : wk.lives) + '"> 條 <span class="note">（0＝不限，要搭配時間）</span></span>' +
       '<label>速度</label>' + seg("whack.speed", wk.speed || 3, [[1, "1 很慢"], [2, "2"], [3, "3"], [4, "4"], [5, "5 很快"]]) +
       '<label>時間</label>' + seg("whack.seconds", wk.seconds == null ? 90 : wk.seconds, [[0, "不限（命用完就結束）"], [60, "60 秒"], [90, "90 秒"], [120, "2 分鐘"], [180, "3 分鐘"]]) +
@@ -236,8 +238,8 @@
     };
   }
   // 這個設定的題目需要翻譯／圖片嗎（綜合題型沒有翻譯的詞會自動跳過，所以不強迫）
-  function needTr(c){ var g = c.game, q = (c[g] || {}).q; return g === "match" ? c.match.pair !== "p" : g === "blast" ? (q === "w2t" || q === "t2w") && c.blast.input !== "type" : g === "quiz" ? (q === "w2t" || q === "t2w" || q === "a2t") : g === "cards" ? (c.cards.ans !== "oral" && q === "w2t") : g === "whack" ? (q === "w2t" || q === "t2w") : false; }
-  function needPic(c){ var g = c.game, q = (c[g] || {}).q; return g === "match" ? c.match.pair === "i" : g === "blast" ? (q === "w2i" || q === "i2w") && c.blast.input !== "type" : g === "quiz" ? (q === "w2i" || q === "i2w") : false; }
+  function needTr(c){ var g = c.game, q = (c[g] || {}).q; return g === "match" ? c.match.pair !== "p" : g === "blast" ? (q === "w2t" || q === "t2w") && c.blast.input !== "type" : g === "quiz" ? (q === "w2t" || q === "t2w" || q === "a2t") : g === "cards" ? (c.cards.ans !== "oral" && q === "w2t") : g === "whack" ? (q === "w2t" || q === "t2w" || q === "a2t") : false; }
+  function needPic(c){ var g = c.game, q = (c[g] || {}).q; return g === "match" ? c.match.pair === "i" : g === "blast" ? (q === "w2i" || q === "i2w") && c.blast.input !== "type" : g === "quiz" ? (q === "w2i" || q === "i2w") : g === "whack" ? (q === "a2i" || q === "i2w" || q === "w2i") : false; }
   function checkPool(){
     var pool = poolFor(1);
     if(!pool.length){ MG.toast("請先在「出題範圍」勾選課次"); return false; }

@@ -401,6 +401,7 @@
     var ps = list(SL.players).filter(function(p){ return !p.kicked; }), gname = myGroupName(), c = SL.cfg;
     // 快問快答（聽聲音的題）、聽音排序：在等待室就先把語音下載好，開始時才不用等
     var pk = c.game + "|" + c.seed + "|" + (SL.state && SL.state.round);
+    if(c.game === "whack" && (c.whack.q || "").charAt(0) === "a" && SL.preKey !== pk){ SL.preKey = pk; try{ MG.Whack.prefetch(c.whack, c.words || []).catch(function(){}); }catch(e){} }
     if(MG.isSynced(c.game) && SL.preKey !== pk){
       SL.preKey = pk;
       var po = Object.assign({}, c[c.game], { seed: seedFor(c, (SL.state && SL.state.round) || 1), lang: c.lang, phon: c.phon });
