@@ -31,7 +31,7 @@
       "p4": {
        "id": "p4",
        "left": "一會兒",
-       "right": "ㄧˊ ㄏㄨㄟˋ ˙ㄦ"
+       "right": "ㄧˋ ㄏㄨㄟˇ ㄦ"
       },
       "p5": {
        "id": "p5",
@@ -1116,7 +1116,7 @@
     },
     "q311_12_03": {
      "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
-     "template": "ㄧˊ ㄏㄨㄟˋ ˙ㄦ → {一會兒}",
+     "template": "ㄧˋ ㄏㄨㄟˇ ㄦ → {一會兒}",
      "id": "q311_12_03",
      "order": 2,
      "title": "第 3 題",
