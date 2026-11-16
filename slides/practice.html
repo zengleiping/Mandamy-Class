@@ -12140,8 +12140,10 @@ window.mmTA = (function(){
       }
     }
     tbq.all(".tool-btn-v-wrap").forEach(function(wrap){
-      wrap.addEventListener("mouseenter", function(){ positionWrapPopover(wrap); });
+      wrap.addEventListener("mouseenter", function(){ wrap.classList.remove("force-closed"); positionWrapPopover(wrap); });
       wrap.addEventListener("focusin", function(){ positionWrapPopover(wrap); });
+      // 選完顏色／粗細，滑鼠移開選單就收起來（按鈕還停在「焦點」狀態會讓選單一直開著、擋住畫面）
+      wrap.addEventListener("mouseleave", function(){ var ae = document.activeElement; if(ae && wrap.contains(ae) && (ae.tagName === "BUTTON" || (ae.tagName === "INPUT" && ae.type === "range"))){ try{ ae.blur(); }catch(er){} } });
     });
     // iPad／觸控沒有「滑鼠移入」：點一下按鈕＝展開／收起它的選單（筆／橡皮擦／文字格式…），點選單以外收起。
     function closeWrapPopovers(except){
@@ -12164,6 +12166,14 @@ window.mmTA = (function(){
     container.addEventListener("mouseleave", function(){ container.querySelectorAll(".force-closed").forEach(function(w){ w.classList.remove("force-closed"); }); }, true);
     document.addEventListener("pointerdown", function outsidePopoverTap(e){
       if(!document.body.contains(container)){ document.removeEventListener("pointerdown", outsidePopoverTap, true); return; }
+      var inWrap = e.target.closest && (e.target.closest(".tool-btn-v-wrap") || e.target.closest(".color-popover"));
+      if(!inWrap){
+        // 在畫面上落筆／點一下：所有展開的選單（筆刷顏色、橡皮擦、放映工具…）立刻收起來，不擋畫面；滑鼠再移回按鈕才會重新展開
+        var ae = document.activeElement; if(ae && ae !== document.body && ae.closest && ae.closest(".tool-btn-v-wrap, .color-popover") && !/^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName)){ try{ ae.blur(); }catch(er){} }
+        closeWrapPopovers(null);
+        container.querySelectorAll(".tool-btn-v-wrap").forEach(function(w){ if(w.querySelector(".color-popover")) w.classList.add("force-closed"); });
+        return;
+      }
       if(!container.querySelector(".tool-btn-v-wrap.open")) return;
       if(!(e.target.closest && e.target.closest(".tool-btn-v-wrap.open"))) closeWrapPopovers(null);
     }, true);
