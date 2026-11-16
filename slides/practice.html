@@ -12881,7 +12881,7 @@ window.mmTA = (function(){
         }
         // 放映／上課模式的簡單工具列多一個「籤筒」：直接叫出平台的抽籤畫面（放映中也能抽人）
         if(inFs && !isStudent && window.parent !== window){
-          if(!rbDrawBtn){ rbDrawBtn = rbBtn("🎲", "籤筒", function(){ try{ window.parent.postMessage({ mm: "openDraw" }, "*"); }catch(e){} }, "籤筒：從班上同學隨機抽一位"); rbDrawBtn.id = "btn-fs-draw"; }
+          if(!rbDrawBtn){ rbDrawBtn = rbBtn('<img src="../icons/draw-wheel.png" alt="" style="width:1.35em;height:1.35em;vertical-align:middle;">', "籤筒", function(){ try{ window.parent.postMessage({ mm: "openDraw" }, "*"); }catch(e){} }, "籤筒：從班上同學隨機抽一位"); rbDrawBtn.id = "btn-fs-draw"; }
           if(rbDrawBtn.parentNode !== vToolbar) vToolbar.appendChild(rbDrawBtn);
         } else if(rbDrawBtn && rbDrawBtn.parentNode){ rbDrawBtn.parentNode.removeChild(rbDrawBtn); }
       }
