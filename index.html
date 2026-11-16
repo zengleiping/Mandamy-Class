@@ -696,6 +696,18 @@ img.vimg{ width:100%; height:100%; object-fit:contain; border-radius:10px; displ
   .flip-card .flip-emoji{ font-size:22px; line-height:1; }
   .flip-card .flip-word{ font-size:17px; font-weight:800; line-height:1.2; word-break:keep-all; }
   .flip-card .flip-zy{ font-size:10px; color:var(--ink-soft); }
+  .flip-grid.v2{ grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:14px; }
+  .flip-card2{ aspect-ratio:4/3; perspective:900px; cursor:pointer; }
+  .flip-card2 .fc-inner{ position:relative; width:100%; height:100%; transition:transform .45s; transform-style:preserve-3d; }
+  .flip-card2.flipped .fc-inner{ transform:rotateY(180deg); }
+  .flip-card2:hover .fc-inner{ filter:brightness(1.03); }
+  .fc-face{ position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden; border-radius:14px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:8px; text-align:center; box-shadow:var(--shadow); overflow:hidden; }
+  .fc-front{ background:var(--card); border:1.5px solid var(--border); color:var(--ink); }
+  .fc-back{ transform:rotateY(180deg); background:#FFF3E6; border:1.5px solid var(--brand); color:var(--ink); }
+  .fc-zy{ font-size:clamp(18px,2.4vw,26px); font-weight:800; line-height:1.25; letter-spacing:.02em; }
+  .fc-py{ font-size:clamp(16px,2vw,22px); font-weight:700; color:var(--ink-soft); font-family:'Times New Roman',serif; line-height:1.2; }
+  .fc-zh{ font-size:clamp(26px,3.6vw,42px); font-weight:800; line-height:1.15; word-break:keep-all; }
+  .fc-pic{ font-size:22px; line-height:1; } .fc-pic img.vimg{ width:42px; height:42px; object-fit:contain; }
   .flip-card .flip-zy.only{ font-size:15.5px; font-weight:800; color:var(--ink); }
 
   /* 課堂活動選單 */
@@ -1359,7 +1371,12 @@ img.vimg{ width:100%; height:100%; object-fit:contain; border-radius:10px; displ
     <option value="100">100 張</option>
     <option value="all">所選課次全部生詞</option>
   </select>
-  <div class="lang-toggle" id="flipDisplayToggle">
+  <div class="lang-toggle" id="flipFaceToggle" title="卡片兩面怎麼放">
+    <button class="active" data-face="py2zh">注音拼音 → 中文</button>
+    <button data-face="zh2py">中文 → 注音拼音</button>
+    <button data-face="num">蓋牌（號碼）</button>
+  </div>
+  <div class="lang-toggle" id="flipDisplayToggle" style="display:none;">
     <button data-mode="zh">中文</button>
     <button data-mode="zhuyin">注音</button>
     <button class="active" data-mode="both">中文＋注音</button>
@@ -2532,6 +2549,7 @@ function boardLabel(i){
 let selectedFlipLessons = new Set();
 let flipCards = null;
 let flipDisplayMode = 'both';
+let flipFace = 'py2zh';   // py2zh：一面是注音＋拼音、翻過來是中文；zh2py：反過來；num：蓋牌只看號碼（舊玩法）
 let flipTeams = [
   { name:'南伊', score:0 },
   { name:'愛黛', score:0 },
@@ -4508,7 +4526,7 @@ function renderFlip(){
     stage.innerHTML = `
       <div class="empty">
         <div class="big">🃏</div>
-        <p>選好課次與張數後，點選上面的「發牌」開始遊戲！卡牌會先蓋牌顯示號碼，學生喊出想要的號碼，老師再點開讓學生唸出生詞。選「所選課次全部生詞」可以把目前範圍內的生詞全部列出來。</p>
+        <p>選好課次與張數後，點選上面的「發牌」開始遊戲！每張卡一面是注音＋拼音、另一面是中文：學生看著注音拼音猜是哪個詞，點一下卡片翻過來對答案（也可以改成先看中文、翻過來是注音拼音）。選「所選課次全部生詞」可以把目前範圍內的生詞全部列出來。</p>
       </div>`;
     return;
   }
@@ -4521,6 +4539,34 @@ function renderFlip(){
     return;
   }
   const revealedCount = flipCards.filter(c=>c.revealed).length;
+  if(flipFace !== 'num'){
+    const pyFace = w => `<div class="fc-zy">${w['注音']||''}</div><div class="fc-py">${w['拼音']||''}</div>`;
+    const zhFace = w => `<div class="fc-pic">${vPicHtml(w)}</div><div class="fc-zh">${w['生詞']||''}</div>`;
+    const cards2 = flipCards.map((c, i)=>{
+      const front = flipFace === 'py2zh' ? pyFace(c.word) : zhFace(c.word);
+      const back = flipFace === 'py2zh' ? zhFace(c.word) : pyFace(c.word) ;
+      return `<div class="flip-card2${c.revealed?' flipped':''}" data-idx="${i}"><div class="fc-inner"><div class="fc-face fc-front">${front}</div><div class="fc-face fc-back">${back}</div></div></div>`;
+    }).join('');
+    stage.innerHTML = `
+      <div class="progress">已翻開 <span id="flipProg">${revealedCount}</span> / ${flipCards.length} 張　<span style="color:var(--ink-soft);font-size:13px;">${flipFace==='py2zh'?'先看注音＋拼音，點一下翻成中文':'先看中文，點一下翻成注音＋拼音'}</span></div>
+      <div class="flip-grid v2">${cards2}</div>
+      <div class="bingo-actions"><button class="reveal-btn" id="flipResetBtn">🙈 全部蓋回</button></div>`;
+    stage.querySelectorAll('.flip-card2[data-idx]').forEach(card=>{
+      card.addEventListener('click', ()=>{
+        const idx = Number(card.dataset.idx);
+        flipCards[idx].revealed = !flipCards[idx].revealed;
+        card.classList.toggle('flipped', flipCards[idx].revealed);
+        const pg = document.getElementById('flipProg'); if(pg) pg.textContent = flipCards.filter(c=>c.revealed).length;
+      });
+    });
+    const rb2 = document.getElementById('flipResetBtn');
+    if(rb2) rb2.addEventListener('click', ()=>{
+      flipCards.forEach(c => c.revealed = false);
+      stage.querySelectorAll('.flip-card2.flipped').forEach(c=>c.classList.remove('flipped'));
+      const pg = document.getElementById('flipProg'); if(pg) pg.textContent = 0;
+    });
+    return;
+  }
   const showZh = flipDisplayMode !== 'zhuyin';
   const gridHtml = flipCards.map((c, i)=>{
     if(c.revealed){
@@ -4692,6 +4738,15 @@ document.getElementById('bingoModeToggle').addEventListener('click', e=>{
 document.getElementById('flipGenBtn').addEventListener('click', generateFlipCards);
 document.getElementById('flipCountSelect').addEventListener('change', ()=>{
   flipCards = null;
+  renderFlip();
+});
+document.getElementById('flipFaceToggle').addEventListener('click', e=>{
+  const btn = e.target.closest('button'); if(!btn) return;
+  document.querySelectorAll('#flipFaceToggle button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  flipFace = btn.dataset.face;
+  document.getElementById('flipDisplayToggle').style.display = flipFace === 'num' ? '' : 'none';
+  if(flipCards && flipCards !== 'insufficient') flipCards.forEach(c => c.revealed = false);
   renderFlip();
 });
 document.getElementById('flipDisplayToggle').addEventListener('click', e=>{
