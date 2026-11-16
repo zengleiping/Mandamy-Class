@@ -13241,6 +13241,17 @@ window.mmTA = (function(){
     boardResizeHandler = fitCanvasToViewport;
     requestAnimationFrame(fitCanvasToViewport);
     window.addEventListener("resize", fitCanvasToViewport);
+    // 版面還沒穩定就量尺寸（iframe 剛從隱藏變顯示、側欄收合、字型載入、放映前後）會把畫布量成最小寬度、
+    // 縮在最左邊，而且之後沒有視窗 resize 就不會重算。這裡盯著容器本身，尺寸一變就重新計算；再補幾次延遲重算當保險。
+    (function(){
+      var fitTimer = 0;
+      function again(){ if(!document.body.contains(cWrap)) return; if(fitTimer) return; fitTimer = requestAnimationFrame(function(){ fitTimer = 0; fitCanvasToViewport(); }); }
+      if(window.ResizeObserver){
+        try{ var roFit = new ResizeObserver(function(){ if(!document.body.contains(cWrap)){ roFit.disconnect(); return; } again(); }); roFit.observe(layout); if(stageWrapEl) roFit.observe(stageWrapEl); }catch(er){}
+      }
+      [150, 600, 1500].forEach(function(ms){ setTimeout(again, ms); });
+      document.addEventListener("visibilitychange", again);
+    })();
 
     // 全螢幕作答區右上角的浮動退出鈕（跟工具列裡那顆「全螢幕／退出全螢幕」按鈕互為備援，
     // 平常畫面上完全看不到，只有 .canvas-fs-active 生效時才會浮現，見前面的 CSS）
