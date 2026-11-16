@@ -6753,6 +6753,7 @@ function renderLessonCommon(no, open, teacher, liveStudent){
     var ps = ((S.plat.lessons || {})[no] || {}).projects || {}, pids = Object.keys(ps);
     var kind = S.tab === "slides" ? "slides" : "quiz";
     if(!teacher) pids = pids.filter(function(p){ return (ps[p][kind] || 0) > 0; });
+    else pids = pids.filter(function(p){ return (ps[p][kind] || 0) > 0 || !((ps[p].slides || 0) + (ps[p].quiz || 0)); });   // 老師：投影片分頁只列有投影片的、練習題分頁只列有題目的（以前會點到沒有投影片的練習題檔，整頁空白）；剛建好還是空的照常列出
     if(teacher){
       if(!pids.length){
         frame = '<div class="empty"><h3 style="margin-bottom:8px;">' + lessonTitle(no) + '</h3><p class="note" style="margin-bottom:12px;">這一課還沒有' + (kind === "slides" ? "投影片" : "測驗與練習") + '。<br>教材要先在「教材」區建立（那裡是大家通用的版本），建好之後這裡就能選來上課。</p><button class="btn" data-ddact="newmaster" data-kind="' + kind + '">到教材區建立 ›</button></div>';

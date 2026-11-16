@@ -98,6 +98,13 @@
    "file": "content/b3-lesson6.json"
   },
   {
+   "id": "b3-6-slides",
+   "type": "project",
+   "bookTitle": "《學華語向前走》第三冊",
+   "lesson": 6,
+   "file": "content/b3-lesson6-slides.json"
+  },
+  {
    "id": "b3-6-quiz",
    "type": "project",
    "bookTitle": "《學華語向前走》第三冊",
