@@ -1,0 +1,1390 @@
+{
+ "id": "proj_b3l7quiz",
+ "title": "第三冊 第七課 東明生病了 練習題",
+ "desc": "依第三冊第七課簡報（課文、生詞、句型、習寫漢字、認讀漢字、練習、綜合活動、任務活動）整理；題目說明附英文",
+ "sections": {
+  "s37_1": {
+   "id": "s37_1",
+   "title": "第 1 大題：連連看（生詞和注音） Match the words with zhuyin",
+   "type": "match",
+   "order": 0,
+   "questions": {
+    "q37_01_01": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "怎麼了",
+       "right": "ㄗㄣˇ ˙ㄇㄜ ˙ㄌㄜ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "為什麼",
+       "right": "ㄨㄟˋ ㄕㄣˊ ˙ㄇㄜ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "趴",
+       "right": "ㄆㄚ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "好像",
+       "right": "ㄏㄠˇ ㄒㄧㄤˋ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "生病",
+       "right": "ㄕㄥ ㄅㄧㄥˋ"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "可能",
+       "right": "ㄎㄜˇ ㄋㄥˊ"
+      }
+     },
+     "id": "q37_01_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_01_02": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "發燒",
+       "right": "ㄈㄚ ㄕㄠ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "早上",
+       "right": "ㄗㄠˇ ˙ㄕㄤ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "喉嚨",
+       "right": "ㄏㄡˊ ㄌㄨㄥˊ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "痛",
+       "right": "ㄊㄨㄥˋ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "休息",
+       "right": "ㄒㄧㄡ ˙ㄒㄧ"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "肚子",
+       "right": "ㄉㄨˋ ˙ㄗ"
+      }
+     },
+     "id": "q37_01_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_01_03": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "吐",
+       "right": "ㄊㄨˋ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "上廁所",
+       "right": "ㄕㄤˋ ㄘㄜˋ ㄙㄨㄛˇ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "陪",
+       "right": "ㄆㄟˊ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "接",
+       "right": "ㄐㄧㄝ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "看醫生",
+       "right": "ㄎㄢˋ ㄧ ㄕㄥ"
+      }
+     },
+     "id": "q37_01_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s37_2": {
+   "id": "s37_2",
+   "title": "第 2 大題：連連看（生詞和意思） Match the words with their meanings",
+   "type": "match",
+   "order": 1,
+   "questions": {
+    "q37_02_01": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "怎麼了",
+       "right": "what's wrong"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "為什麼",
+       "right": "why"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "趴",
+       "right": "to lie face down"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "好像",
+       "right": "seems like"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "生病",
+       "right": "to be sick"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "可能",
+       "right": "maybe"
+      }
+     },
+     "id": "q37_02_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_02_02": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "發燒",
+       "right": "to have a fever"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "早上",
+       "right": "morning"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "喉嚨",
+       "right": "throat"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "痛",
+       "right": "to hurt"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "休息",
+       "right": "to rest"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "肚子",
+       "right": "stomach"
+      }
+     },
+     "id": "q37_02_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_02_03": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "吐",
+       "right": "to vomit"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "上廁所",
+       "right": "to go to the bathroom"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "陪",
+       "right": "to accompany"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "接",
+       "right": "to pick up"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "看醫生",
+       "right": "to see a doctor"
+      }
+     },
+     "id": "q37_02_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s37_3": {
+   "id": "s37_3",
+   "title": "第 3 大題：我會寫（寫出正確的漢字） Write the characters",
+   "type": "fill",
+   "order": 2,
+   "questions": {
+    "q37_03_01": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "東明{覺}得身體不舒服，好{像}生病了。",
+     "id": "q37_03_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_03_02": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "老師想東明是感冒了，要他先休{息}一下。",
+     "id": "q37_03_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_03_03": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "心美的{肚}子很{痛}，很想{吐}。",
+     "id": "q37_03_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_03_04": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "張莉要{陪}心美去上廁所。",
+     "id": "q37_03_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_03_05": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "東明的媽媽等一下會來{接}他，帶他去看{醫}生。",
+     "id": "q37_03_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s37_4": {
+   "id": "s37_4",
+   "title": "第 4 大題：張莉的日記 Zhang Li's diary",
+   "type": "fill",
+   "order": 3,
+   "questions": {
+    "q37_04_01": {
+     "prompt": "下面是張莉的日記（三月十號），請根據內容寫上正確的拼音或漢字。 This is Zhang Li's diary. Fill in the correct pinyin or characters.",
+     "template": "今天班上有很多同學{生}{病}了。東明{說}他喉嚨{痛}，頭也很痛。",
+     "id": "q37_04_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_04_02": {
+     "prompt": "下面是張莉的日記（三月十號），請根據內容寫上正確的拼音或漢字。 This is Zhang Li's diary. Fill in the correct pinyin or characters.",
+     "template": "老師要東明先{休}{息}一下，他媽媽會來{接}他，帶他去看{醫}生。",
+     "id": "q37_04_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_04_03": {
+     "prompt": "下面是張莉的日記（三月十號），請根據內容寫上正確的拼音或漢字。 This is Zhang Li's diary. Fill in the correct pinyin or characters.",
+     "template": "心美的{肚}子很痛，很想{吐}。她想去上廁所，我想{陪}她去。他們看起來很不舒服，希望他們能快點好。",
+     "id": "q37_04_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s37_5": {
+   "id": "s37_5",
+   "title": "第 5 大題：綜合活動（他們怎麼了？） What's wrong with them?",
+   "type": "match",
+   "order": 4,
+   "questions": {
+    "q37_05_01": {
+     "leftLabel": "他們怎麼了？",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "發燒",
+       "right": "fever"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "喉嚨痛",
+       "right": "sore throat"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "頭痛",
+       "right": "headache"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "肚子痛",
+       "right": "stomachache"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "吐",
+       "right": "to throw up"
+      }
+     },
+     "id": "q37_05_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s37_6": {
+   "id": "s37_6",
+   "title": "第 6 大題：綜合活動（根據課文回答） Answer according to the text",
+   "type": "fill",
+   "order": 5,
+   "questions": {
+    "q37_06_01": {
+     "prompt": "根據課文回答問題，寫上正確的詞語。 Answer the questions based on the text.",
+     "template": "東明為什麼趴在桌子上？\n因為他身體不舒服，好像{生}{病}了。",
+     "id": "q37_06_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_06_02": {
+     "prompt": "根據課文回答問題，寫上正確的詞語。 Answer the questions based on the text.",
+     "template": "東明的臉為什麼有點紅？\n因為好像{發}{燒}了。",
+     "id": "q37_06_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_06_03": {
+     "prompt": "根據課文回答問題，寫上正確的詞語。 Answer the questions based on the text.",
+     "template": "心美為什麼想去上廁所？\n因為她肚子{很}{痛}、很想{吐}。",
+     "id": "q37_06_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s37_7": {
+   "id": "s37_7",
+   "title": "第 7 大題：句型填空 Fill in the sentence patterns",
+   "type": "fill",
+   "order": 6,
+   "questions": {
+    "q37_07_01": {
+     "prompt": "用「怎麼了」完成句子。 Use 怎麼了.",
+     "template": "妹妹{怎麼了}？她為什麼不想吃飯？",
+     "id": "q37_07_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_07_02": {
+     "prompt": "用「怎麼了」完成句子。 Use 怎麼了.",
+     "template": "你的身體熱熱的，{怎麼了}？",
+     "id": "q37_07_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_07_03": {
+     "prompt": "用「因為」完成句子。 Use 因為.",
+     "template": "東明的臉為什麼有點紅？{因為}他生病了。",
+     "id": "q37_07_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_07_04": {
+     "prompt": "用「為什麼」完成句子。 Use 為什麼.",
+     "template": "你{為什麼}買黃色的背包？因為又便宜又好看。",
+     "id": "q37_07_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_07_05": {
+     "prompt": "用「說」完成句子。 Use 說.",
+     "template": "爸爸{說}他有點胖。",
+     "id": "q37_07_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_07_06": {
+     "prompt": "用「說」完成句子。 Use 說.",
+     "template": "東明{說}他身體不舒服。",
+     "id": "q37_07_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_07_07": {
+     "prompt": "用「好像」完成句子。 Use 好像.",
+     "template": "妹妹喉嚨痛，{好像}生病了。",
+     "id": "q37_07_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_07_08": {
+     "prompt": "用「好像」完成句子。 Use 好像.",
+     "template": "春天{好像}快到了。",
+     "id": "q37_07_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_07_09": {
+     "prompt": "用「陪」完成句子。 Use 陪.",
+     "template": "張莉{陪}心美去上廁所。",
+     "id": "q37_07_09",
+     "order": 8,
+     "title": "第 9 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_07_10": {
+     "prompt": "用「陪」完成句子。 Use 陪.",
+     "template": "爺爺{陪}奶奶去買東西了。",
+     "id": "q37_07_10",
+     "order": 9,
+     "title": "第 10 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s37_8": {
+   "id": "s37_8",
+   "title": "第 8 大題：選擇題（句型） Choose the correct answer",
+   "type": "choice",
+   "order": 7,
+   "questions": {
+    "q37_08_01": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n東明趴在桌子上，老師問他：「你＿＿？」",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "怎麼了"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "為什麼了"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "什麼了"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q37_08_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_08_02": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\nA：東明的臉為什麼有點紅？　B：＿＿他生病了。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "因為"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "所以"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "可是"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q37_08_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_08_03": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n東明＿＿他身體不舒服。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "說"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "問"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "叫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q37_08_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_08_04": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n弟弟＿＿發燒了，他的身體熱熱的。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "好像"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "一定"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "為什麼"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q37_08_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_08_05": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n張莉＿＿心美去上廁所。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "陪"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "接"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "吐"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q37_08_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_08_06": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n東明的媽媽會來＿＿他，帶他去看醫生。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "接"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "陪"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "趴"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q37_08_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_08_07": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n我的肚子很痛，很想＿＿。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "吐"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "陪"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "接"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q37_08_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s37_9": {
+   "id": "s37_9",
+   "title": "第 9 大題：閱讀理解（課文） Reading comprehension",
+   "type": "choice",
+   "order": 8,
+   "questions": {
+    "q37_09_01": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n東明為什麼趴在桌子上？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "他身體不舒服"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "他很想睡覺"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "他在寫功課"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "老師：東明，你怎麼了？為什麼趴在桌子上？\n張莉：老師，東明說他身體不舒服，好像生病了。\n老師：東明，你的臉有點紅，可能是發燒了。你什麼時候開始覺得不舒服？\n東明：早上的時候就有點不舒服，現在喉嚨痛，頭也很痛。\n老師：我想你是感冒了。你先休息一下，我給你媽媽打電話。\n心美：老師，我的肚子很痛，很想吐。我想去上廁所，可以嗎？\n張莉：老師，我陪心美去。\n老師：東明，等一下你媽媽會來接你，帶你去看醫生。",
+     "id": "q37_09_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_09_02": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n老師覺得東明可能怎麼了？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "發燒了"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "吃太多了"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "沒有寫功課"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "老師：東明，你怎麼了？為什麼趴在桌子上？\n張莉：老師，東明說他身體不舒服，好像生病了。\n老師：東明，你的臉有點紅，可能是發燒了。你什麼時候開始覺得不舒服？\n東明：早上的時候就有點不舒服，現在喉嚨痛，頭也很痛。\n老師：我想你是感冒了。你先休息一下，我給你媽媽打電話。\n心美：老師，我的肚子很痛，很想吐。我想去上廁所，可以嗎？\n張莉：老師，我陪心美去。\n老師：東明，等一下你媽媽會來接你，帶你去看醫生。",
+     "id": "q37_09_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_09_03": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n東明什麼時候開始不舒服？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "早上"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "晚上"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "下午"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "老師：東明，你怎麼了？為什麼趴在桌子上？\n張莉：老師，東明說他身體不舒服，好像生病了。\n老師：東明，你的臉有點紅，可能是發燒了。你什麼時候開始覺得不舒服？\n東明：早上的時候就有點不舒服，現在喉嚨痛，頭也很痛。\n老師：我想你是感冒了。你先休息一下，我給你媽媽打電話。\n心美：老師，我的肚子很痛，很想吐。我想去上廁所，可以嗎？\n張莉：老師，我陪心美去。\n老師：東明，等一下你媽媽會來接你，帶你去看醫生。",
+     "id": "q37_09_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_09_04": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n東明哪裡痛？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "喉嚨和頭"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "肚子"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "腳"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "老師：東明，你怎麼了？為什麼趴在桌子上？\n張莉：老師，東明說他身體不舒服，好像生病了。\n老師：東明，你的臉有點紅，可能是發燒了。你什麼時候開始覺得不舒服？\n東明：早上的時候就有點不舒服，現在喉嚨痛，頭也很痛。\n老師：我想你是感冒了。你先休息一下，我給你媽媽打電話。\n心美：老師，我的肚子很痛，很想吐。我想去上廁所，可以嗎？\n張莉：老師，我陪心美去。\n老師：東明，等一下你媽媽會來接你，帶你去看醫生。",
+     "id": "q37_09_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_09_05": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n老師要東明先做什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "休息一下"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "去上廁所"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "回家寫功課"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "老師：東明，你怎麼了？為什麼趴在桌子上？\n張莉：老師，東明說他身體不舒服，好像生病了。\n老師：東明，你的臉有點紅，可能是發燒了。你什麼時候開始覺得不舒服？\n東明：早上的時候就有點不舒服，現在喉嚨痛，頭也很痛。\n老師：我想你是感冒了。你先休息一下，我給你媽媽打電話。\n心美：老師，我的肚子很痛，很想吐。我想去上廁所，可以嗎？\n張莉：老師，我陪心美去。\n老師：東明，等一下你媽媽會來接你，帶你去看醫生。",
+     "id": "q37_09_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_09_06": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n心美為什麼想去上廁所？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "她肚子很痛，很想吐"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "她很想喝水"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "她想回家"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "老師：東明，你怎麼了？為什麼趴在桌子上？\n張莉：老師，東明說他身體不舒服，好像生病了。\n老師：東明，你的臉有點紅，可能是發燒了。你什麼時候開始覺得不舒服？\n東明：早上的時候就有點不舒服，現在喉嚨痛，頭也很痛。\n老師：我想你是感冒了。你先休息一下，我給你媽媽打電話。\n心美：老師，我的肚子很痛，很想吐。我想去上廁所，可以嗎？\n張莉：老師，我陪心美去。\n老師：東明，等一下你媽媽會來接你，帶你去看醫生。",
+     "id": "q37_09_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_09_07": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n誰陪心美去上廁所？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "張莉"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "東明"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "老師"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "老師：東明，你怎麼了？為什麼趴在桌子上？\n張莉：老師，東明說他身體不舒服，好像生病了。\n老師：東明，你的臉有點紅，可能是發燒了。你什麼時候開始覺得不舒服？\n東明：早上的時候就有點不舒服，現在喉嚨痛，頭也很痛。\n老師：我想你是感冒了。你先休息一下，我給你媽媽打電話。\n心美：老師，我的肚子很痛，很想吐。我想去上廁所，可以嗎？\n張莉：老師，我陪心美去。\n老師：東明，等一下你媽媽會來接你，帶你去看醫生。",
+     "id": "q37_09_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_09_08": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n誰會來接東明？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "他的媽媽"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "他的爸爸"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "張莉"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "老師：東明，你怎麼了？為什麼趴在桌子上？\n張莉：老師，東明說他身體不舒服，好像生病了。\n老師：東明，你的臉有點紅，可能是發燒了。你什麼時候開始覺得不舒服？\n東明：早上的時候就有點不舒服，現在喉嚨痛，頭也很痛。\n老師：我想你是感冒了。你先休息一下，我給你媽媽打電話。\n心美：老師，我的肚子很痛，很想吐。我想去上廁所，可以嗎？\n張莉：老師，我陪心美去。\n老師：東明，等一下你媽媽會來接你，帶你去看醫生。",
+     "id": "q37_09_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s37_10": {
+   "id": "s37_10",
+   "title": "第 10 大題：是非題（課文） True or false",
+   "type": "choice",
+   "order": 9,
+   "questions": {
+    "q37_10_01": {
+     "prompt": "判斷對錯。 True or false?\n\n東明的臉有點紅。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "老師：東明，你怎麼了？為什麼趴在桌子上？\n張莉：老師，東明說他身體不舒服，好像生病了。\n老師：東明，你的臉有點紅，可能是發燒了。你什麼時候開始覺得不舒服？\n東明：早上的時候就有點不舒服，現在喉嚨痛，頭也很痛。\n老師：我想你是感冒了。你先休息一下，我給你媽媽打電話。\n心美：老師，我的肚子很痛，很想吐。我想去上廁所，可以嗎？\n張莉：老師，我陪心美去。\n老師：東明，等一下你媽媽會來接你，帶你去看醫生。",
+     "id": "q37_10_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_10_02": {
+     "prompt": "判斷對錯。 True or false?\n\n東明下午才開始不舒服。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c2"
+     ],
+     "passage": "老師：東明，你怎麼了？為什麼趴在桌子上？\n張莉：老師，東明說他身體不舒服，好像生病了。\n老師：東明，你的臉有點紅，可能是發燒了。你什麼時候開始覺得不舒服？\n東明：早上的時候就有點不舒服，現在喉嚨痛，頭也很痛。\n老師：我想你是感冒了。你先休息一下，我給你媽媽打電話。\n心美：老師，我的肚子很痛，很想吐。我想去上廁所，可以嗎？\n張莉：老師，我陪心美去。\n老師：東明，等一下你媽媽會來接你，帶你去看醫生。",
+     "id": "q37_10_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_10_03": {
+     "prompt": "判斷對錯。 True or false?\n\n老師想東明是感冒了。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "老師：東明，你怎麼了？為什麼趴在桌子上？\n張莉：老師，東明說他身體不舒服，好像生病了。\n老師：東明，你的臉有點紅，可能是發燒了。你什麼時候開始覺得不舒服？\n東明：早上的時候就有點不舒服，現在喉嚨痛，頭也很痛。\n老師：我想你是感冒了。你先休息一下，我給你媽媽打電話。\n心美：老師，我的肚子很痛，很想吐。我想去上廁所，可以嗎？\n張莉：老師，我陪心美去。\n老師：東明，等一下你媽媽會來接你，帶你去看醫生。",
+     "id": "q37_10_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_10_04": {
+     "prompt": "判斷對錯。 True or false?\n\n心美的頭很痛。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c2"
+     ],
+     "passage": "老師：東明，你怎麼了？為什麼趴在桌子上？\n張莉：老師，東明說他身體不舒服，好像生病了。\n老師：東明，你的臉有點紅，可能是發燒了。你什麼時候開始覺得不舒服？\n東明：早上的時候就有點不舒服，現在喉嚨痛，頭也很痛。\n老師：我想你是感冒了。你先休息一下，我給你媽媽打電話。\n心美：老師，我的肚子很痛，很想吐。我想去上廁所，可以嗎？\n張莉：老師，我陪心美去。\n老師：東明，等一下你媽媽會來接你，帶你去看醫生。",
+     "id": "q37_10_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_10_05": {
+     "prompt": "判斷對錯。 True or false?\n\n東明的媽媽會來接他，帶他去看醫生。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "老師：東明，你怎麼了？為什麼趴在桌子上？\n張莉：老師，東明說他身體不舒服，好像生病了。\n老師：東明，你的臉有點紅，可能是發燒了。你什麼時候開始覺得不舒服？\n東明：早上的時候就有點不舒服，現在喉嚨痛，頭也很痛。\n老師：我想你是感冒了。你先休息一下，我給你媽媽打電話。\n心美：老師，我的肚子很痛，很想吐。我想去上廁所，可以嗎？\n張莉：老師，我陪心美去。\n老師：東明，等一下你媽媽會來接你，帶你去看醫生。",
+     "id": "q37_10_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s37_11": {
+   "id": "s37_11",
+   "title": "第 11 大題：讀讀看，寫上漢字 Read the zhuyin and write the characters",
+   "type": "fill",
+   "order": 10,
+   "questions": {
+    "q37_11_01": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄗㄣˇ ˙ㄇㄜ ˙ㄌㄜ → {怎麼了}",
+     "id": "q37_11_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_11_02": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄨㄟˋ ㄕㄣˊ ˙ㄇㄜ → {為什麼}",
+     "id": "q37_11_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_11_03": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄏㄠˇ ㄒㄧㄤˋ → {好像}",
+     "id": "q37_11_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_11_04": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄕㄥ ㄅㄧㄥˋ → {生病}",
+     "id": "q37_11_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_11_05": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄈㄚ ㄕㄠ → {發燒}",
+     "id": "q37_11_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_11_06": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄗㄠˇ ˙ㄕㄤ → {早上}",
+     "id": "q37_11_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_11_07": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄏㄡˊ ㄌㄨㄥˊ → {喉嚨}",
+     "id": "q37_11_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_11_08": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄒㄧㄡ ˙ㄒㄧ → {休息}",
+     "id": "q37_11_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_11_09": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄉㄨˋ ˙ㄗ → {肚子}",
+     "id": "q37_11_09",
+     "order": 8,
+     "title": "第 9 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_11_10": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄕㄤˋ ㄘㄜˋ ㄙㄨㄛˇ → {上廁所}",
+     "id": "q37_11_10",
+     "order": 9,
+     "title": "第 10 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_11_11": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄎㄢˋ ㄧ ㄕㄥ → {看醫生}",
+     "id": "q37_11_11",
+     "order": 10,
+     "title": "第 11 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s37_12": {
+   "id": "s37_12",
+   "title": "第 12 大題：任務活動（完成對話） Complete the dialogue",
+   "type": "fill",
+   "order": 11,
+   "questions": {
+    "q37_12_01": {
+     "prompt": "和另一位同學一起完成對話，寫上正確的漢字。 Complete the dialogue with a partner.",
+     "template": "A：東明怎麼了？為什麼趴在桌子上？\nB：他的臉{紅}{紅}的，可能是發燒了。",
+     "id": "q37_12_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_12_02": {
+     "prompt": "和另一位同學一起完成對話，寫上正確的漢字。 Complete the dialogue with a partner.",
+     "template": "A：東明什麼時候開始覺得不舒服？\nB：他{早}{上}就有點不舒服，頭也很痛。",
+     "id": "q37_12_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_12_03": {
+     "prompt": "和另一位同學一起完成對話，寫上正確的漢字。 Complete the dialogue with a partner.",
+     "template": "A：我想他是感冒了，等一下我帶他去看{醫}{生}。",
+     "id": "q37_12_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s37_13": {
+   "id": "s37_13",
+   "title": "第 13 大題：說說看（句型、任務活動） Speaking",
+   "type": "record",
+   "order": 12,
+   "questions": {
+    "q37_13_01": {
+     "prompt": "你的同學看起來不舒服，請問他：怎麼了？ Ask a classmate who looks unwell what is wrong.",
+     "reference": "你怎麼了？",
+     "maxSec": 30,
+     "id": "q37_13_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_13_02": {
+     "prompt": "請用「為什麼……？因為……」問答一次。 Ask and answer with 為什麼…因為….",
+     "reference": "你為什麼沒來上課？因為我生病了。",
+     "maxSec": 30,
+     "id": "q37_13_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_13_03": {
+     "prompt": "請用「A 說他／她……」轉述朋友說的話。 Report what a friend said with 說他／她.",
+     "reference": "張莉說她今天肚子很痛。",
+     "maxSec": 30,
+     "id": "q37_13_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_13_04": {
+     "prompt": "請用「好像」說一個句子。 Make a sentence with 好像.",
+     "reference": "弟弟好像發燒了。",
+     "maxSec": 30,
+     "id": "q37_13_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_13_05": {
+     "prompt": "請用「陪」說一個句子。 Make a sentence with 陪.",
+     "reference": "我陪朋友去看醫生。",
+     "maxSec": 30,
+     "id": "q37_13_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_13_06": {
+     "prompt": "兩個人一組，根據圖片說說東明怎麼了。 Work in pairs and talk about what is wrong with Dongming.",
+     "reference": "東明怎麼了？他的臉紅紅的，可能是發燒了。",
+     "maxSec": 30,
+     "id": "q37_13_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s37_14": {
+   "id": "s37_14",
+   "title": "第 14 大題：習寫漢字 Write the characters",
+   "type": "hanzi",
+   "order": 13,
+   "questions": {
+    "q37_14_01": {
+     "char": "像",
+     "desc": "14畫，部首：人",
+     "id": "q37_14_01",
+     "order": 0,
+     "title": "第 1 題：像",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_14_02": {
+     "char": "病",
+     "desc": "10畫，部首：疒",
+     "id": "q37_14_02",
+     "order": 1,
+     "title": "第 2 題：病",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_14_03": {
+     "char": "覺",
+     "desc": "20畫，部首：見",
+     "id": "q37_14_03",
+     "order": 2,
+     "title": "第 3 題：覺",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_14_04": {
+     "char": "痛",
+     "desc": "11畫，部首：疒",
+     "id": "q37_14_04",
+     "order": 3,
+     "title": "第 4 題：痛",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_14_05": {
+     "char": "息",
+     "desc": "10畫，部首：心",
+     "id": "q37_14_05",
+     "order": 4,
+     "title": "第 5 題：息",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_14_06": {
+     "char": "肚",
+     "desc": "7畫，部首：肉",
+     "id": "q37_14_06",
+     "order": 5,
+     "title": "第 6 題：肚",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_14_07": {
+     "char": "吐",
+     "desc": "6畫，部首：口",
+     "id": "q37_14_07",
+     "order": 6,
+     "title": "第 7 題：吐",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_14_08": {
+     "char": "陪",
+     "desc": "11畫，部首：阜",
+     "id": "q37_14_08",
+     "order": 7,
+     "title": "第 8 題：陪",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_14_09": {
+     "char": "接",
+     "desc": "11畫，部首：手",
+     "id": "q37_14_09",
+     "order": 8,
+     "title": "第 9 題：接",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_14_10": {
+     "char": "醫",
+     "desc": "18畫，部首：酉",
+     "id": "q37_14_10",
+     "order": 9,
+     "title": "第 10 題：醫",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s37_15": {
+   "id": "s37_15",
+   "title": "第 15 大題：我會念（課文、認讀漢字） Read aloud",
+   "type": "record",
+   "order": 14,
+   "questions": {
+    "q37_15_01": {
+     "prompt": "請念出課文第一段。 Read the first part of the text.",
+     "reference": "老師：東明，你怎麼了？為什麼趴在桌子上？\n張莉：老師，東明說他身體不舒服，好像生病了。\n老師：東明，你的臉有點紅，可能是發燒了。你什麼時候開始覺得不舒服？\n東明：早上的時候就有點不舒服，現在喉嚨痛，頭也很痛。",
+     "maxSec": 60,
+     "passage": "老師：東明，你怎麼了？為什麼趴在桌子上？\n張莉：老師，東明說他身體不舒服，好像生病了。\n老師：東明，你的臉有點紅，可能是發燒了。你什麼時候開始覺得不舒服？\n東明：早上的時候就有點不舒服，現在喉嚨痛，頭也很痛。",
+     "id": "q37_15_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_15_02": {
+     "prompt": "請念出課文第二段。 Read the second part of the text.",
+     "reference": "老師：我想你是感冒了。你先休息一下，我給你媽媽打電話。\n心美：老師，我的肚子很痛，很想吐。我想去上廁所，可以嗎？\n張莉：老師，我陪心美去。\n老師：東明，等一下你媽媽會來接你，帶你去看醫生。",
+     "maxSec": 60,
+     "passage": "老師：我想你是感冒了。你先休息一下，我給你媽媽打電話。\n心美：老師，我的肚子很痛，很想吐。我想去上廁所，可以嗎？\n張莉：老師，我陪心美去。\n老師：東明，等一下你媽媽會來接你，帶你去看醫生。",
+     "id": "q37_15_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q37_15_03": {
+     "prompt": "請念出這些認讀漢字。 Read these characters aloud.",
+     "reference": "喉　嚨　燒　趴　廁",
+     "maxSec": 30,
+     "id": "q37_15_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  }
+ },
+ "currentQId": "q37_01_01"
+}

@@ -104,6 +104,13 @@
    "file": "content/b3-lesson7.json"
   },
   {
+   "id": "b3-7-quiz",
+   "type": "project",
+   "bookTitle": "《學華語向前走》第三冊",
+   "lesson": 7,
+   "file": "content/b3-lesson7-quiz.json"
+  },
+  {
    "id": "b3-6-slides",
    "type": "project",
    "bookTitle": "《學華語向前走》第三冊",
