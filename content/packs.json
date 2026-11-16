@@ -215,6 +215,14 @@
    "lesson": 14,
    "onlyName": "莉評",
    "file": "content/exam-zh-102-quiz.json"
+  },
+  {
+   "id": "gz-b1-7-quiz",
+   "type": "project",
+   "bookTitle": "高中國文 第一冊",
+   "lesson": 7,
+   "onlyName": "莉評",
+   "file": "content/gz-b1-lesson7-quiz.json"
   }
  ]
 }
