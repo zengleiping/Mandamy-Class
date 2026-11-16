@@ -411,6 +411,8 @@
 
   // ---------- 啟動 ----------
   async function startTeacher(ctx){
+    // 平台活動清單裡「聽音排序」的 id 是 listenorder（"order" 已經是原本的「點餐練習」），遊戲內部叫 order
+    if(ctx.game === "listenorder") ctx.game = "order";
     G.ctx = ctx; G.cfg = defaults(ctx.game);
     var saved = null; try{ saved = JSON.parse(localStorage.getItem(prefKey()) || "null"); }catch(e){}
     if(!saved && ctx.t){ saved = await MG.fb.get("teacherPlatform/" + ctx.t + "/gamePrefs/" + (ctx.cls ? ctx.cls.c : "_")).catch(function(){ return null; }); }
