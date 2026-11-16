@@ -1065,6 +1065,8 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .movable-text:has(.tl + .tl){ line-height:1.35; }           /* 多行時行距鬆一點，不然上下行會黏在一起 */
   .movable-text:has(.tl + .tl):has(ruby){ line-height:2.15; } /* 有註音的話仍然要留空間給註音 */
   .movable-text.list-bullet .tl:not(:empty)::before{ content:"•"; display:inline-block; min-width:1.1em; }
+  .movable-text.ind-first .tl{ text-indent:2em; }   /* 首行縮排兩格 */
+  .movable-text.ind-hang .tl{ padding-left:2em; text-indent:-2em; }   /* 凸排：第一行頂格，其餘各行縮兩格 */
   .movable-text.list-number{ counter-reset:tl; }
   .movable-text.list-number .tl:not(:empty){ counter-increment:tl; }
   .movable-text.list-number .tl:not(:empty)::before{ content:counter(tl) "."; display:inline-block; min-width:1.5em; margin-right:0.15em; }
@@ -1210,6 +1212,12 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .select-bar .sb-sep{ width:1px; height:18px; background:rgba(28,33,30,.2); }
   .select-bar .sb-al{ padding:4px 7px; min-width:26px; }
   .select-guide{ position:absolute; background:#E0338A; pointer-events:none; z-index:41; }
+  /* 等距標線：兩個物件之間的間距，兩端有小短線（像 PowerPoint 的智慧參考線） */
+  .select-gap{ position:absolute; pointer-events:none; z-index:41; color:#E0338A; }
+  .select-gap.h{ height:10px; margin-top:-5px; border-left:1.5px solid; border-right:1.5px solid; }
+  .select-gap.h::after{ content:""; position:absolute; left:0; right:0; top:50%; border-top:1.5px solid; }
+  .select-gap.v{ width:10px; margin-left:-5px; border-top:1.5px solid; border-bottom:1.5px solid; }
+  .select-gap.v::after{ content:""; position:absolute; top:0; bottom:0; left:50%; border-left:1.5px solid; }
   .select-bar .sb-count{ font-size:13.5px; font-weight:700; color:var(--ink-soft); }
   .select-bar button{ font-size:13.5px; font-weight:700; padding:4px 9px; border-radius:8px; border:1.5px solid rgba(28,33,30,.16); background:var(--surface); color:var(--ink); cursor:pointer; }
   .select-bar button:hover{ border-color:var(--seal); color:var(--seal); }
@@ -6673,7 +6681,7 @@ window.mmTA = (function(){
     if(ink) h += '<img class="ink" src="' + ink + '" alt="">';
     if((pr.shapes || []).length) h += '<svg class="shp" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none">' + (pr.shapes || []).map(function(sh){ return shapeToSvg(sh, W, H, scale); }).join("") + '</svg>';
     (pr.texts || []).forEach(function(t){
-      var cls = "mt" + (t.list === "bullet" ? " list-bullet" : (t.list === "number" ? " list-number" : ""));
+      var cls = "mt" + (t.list === "bullet" ? " list-bullet" : (t.list === "number" ? " list-number" : "")) + (t.indent === "first" ? " ind-first" : (t.indent === "hang" ? " ind-hang" : ""));
       var bold = (t.bold === undefined) ? true : !!t.bold;
       h += '<div class="' + cls + '" style="left:' + t.x + '%;top:' + t.y + '%;font-size:' + Math.round((t.fontSize || 36) * scale) + 'px;font-weight:' + (bold ? 700 : 400) + ';color:' + escapeHtml(t.color || "#2B2320") + ';text-align:' + (t.align || "left") + ';' + (t.bgOn ? 'background:' + exportRgba(t.bgColor, t.bgOp) + ';padding:.12em .45em;border-radius:.3em;' : '') + (t.w ? 'width:' + t.w + '%;max-width:' + t.w + '%;white-space:pre-wrap;word-break:break-word;' : '') + '">' + buildPhoneticHtml(t.text, t.phoneticOverride, t.ph, t.spans ? { map: mmSpanMap(t), base: t.fontSize || 36 } : null) + '</div>';
     });
@@ -6734,6 +6742,7 @@ window.mmTA = (function(){
       '.mt{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;line-height:1;width:max-content}.mt .tl{white-space:pre;min-height:1em}.mt[style*="pre-wrap"] .tl{white-space:pre-wrap}' +
       '.zy-r{display:inline-flex;align-items:center;vertical-align:middle}.zy-s{display:inline-flex;align-items:center;margin-left:.06em;font-size:.36em;font-weight:600;line-height:1;opacity:.88}.zy-col{display:inline-flex;flex-direction:column;align-items:center}.zy-m{display:flex;flex-direction:column;align-items:center}.zy-ch{display:block;line-height:1.02}.zy-n{line-height:1;margin-bottom:.1em}.zy-t{margin-left:.08em;align-self:center}' +
       '.mt:has(ruby){line-height:2.15;padding-top:.3em}.mt ruby{ruby-position:over}.mt rt{font-size:.42em;font-weight:600;opacity:.8;letter-spacing:0}' +
+      '.mt.ind-first .tl{text-indent:2em}.mt.ind-hang .tl{padding-left:2em;text-indent:-2em}' +
       '.mt.list-bullet .tl:not(:empty)::before{content:"•";display:inline-block;min-width:1.1em}.mt.list-number{counter-reset:tl}.mt.list-number .tl:not(:empty){counter-increment:tl}.mt.list-number .tl:not(:empty)::before{content:counter(tl) ".";display:inline-block;min-width:1.5em;margin-right:.15em}' +
       '.generic{font-size:17px;line-height:1.8}.pairs{border-collapse:collapse}.pairs td{border:1px solid #ddd;padding:4px 12px}.kv b{color:#6B5F55;margin-right:6px}' +
       '.note{margin-top:10px;padding:8px 12px;background:#FFF8E6;border-radius:8px;font-size:14.5px;white-space:pre-wrap}' +
@@ -8695,7 +8704,8 @@ window.mmTA = (function(){
               }
               if(!chs.length) runs += runX("", null);
               lineOff += chs.length + 1;
-              return '<a:p><a:pPr algn="' + al + '">' + (o.lh && Math.abs(o.lh - 1) > 0.02 ? '<a:lnSpc><a:spcPct val="' + Math.round(o.lh * 100000) + '"/></a:lnSpc>' : "") + '</a:pPr>' + runs + '</a:p>';
+              var indEmu = Math.round(fsU * 38100), indAttr = o.indent === "first" ? ' indent="' + indEmu + '"' : (o.indent === "hang" ? ' marL="' + indEmu + '" indent="-' + indEmu + '"' : "");
+              return '<a:p><a:pPr algn="' + al + '"' + indAttr + '>' + (o.lh && Math.abs(o.lh - 1) > 0.02 ? '<a:lnSpc><a:spcPct val="' + Math.round(o.lh * 100000) + '"/></a:lnSpc>' : "") + '</a:pPr>' + runs + '</a:p>';
             }).join("");
             shapesXml.push('<p:sp><p:nvSpPr><p:cNvPr id="' + (nid++) + '" name="文字方塊"/><p:cNvSpPr txBox="1"/><p:nvPr/></p:nvSpPr><p:spPr><a:xfrm><a:off x="' + Math.round(X(o.x) - tw / 2) + '" y="' + Math.round(Y(o.y) - th / 2) + '"/><a:ext cx="' + Math.round(tw) + '" cy="' + Math.round(th) + '"/></a:xfrm><a:prstGeom prst="' + (o.rad > 0 ? "roundRect" : "rect") + '"><a:avLst/></a:prstGeom>' + bg2 + ln2 + '</p:spPr><p:txBody><a:bodyPr wrap="' + (boxed ? "square" : "none") + '" lIns="0" tIns="0" rIns="0" bIns="0" rtlCol="0" anchor="' + (boxed ? "t" : "ctr") + '"><a:noAutofit/></a:bodyPr><a:lstStyle/>' + paras + '</p:txBody></p:sp>');
           }
@@ -11625,7 +11635,7 @@ window.mmTA = (function(){
   // opacity：畫筆濃淡（1 = 全不透明／最濃，數字越小越淡）——老師點重點時可以調淡一點，
   // 學生跟著描的時候才看得出來哪些是老師畫的、哪些是自己描上去的，兩者疊在一起也不會完全分不出來。
   // 2026-09-30：筆刷粗細預設改成 2（使用者要求）；文字新增 bold（加粗）開關，預設不加粗。
-  var boardState = { tool: "pen", color: "#B23B32", size: 2, opacity: 1, fontSize: 36, bold: false, step: 0, align: "left", list: "none", eraserMode: "stroke", shapeType: "rect", shapeSize: 3, shapeFill: false, shapeOpacity: 1, textBgOn: false, textBgColor: "#FFF3B0", textBgOp: 1, lineH: 1 };
+  var boardState = { tool: "pen", color: "#B23B32", size: 2, opacity: 1, fontSize: 36, bold: false, step: 0, align: "left", list: "none", indent: "none", eraserMode: "stroke", shapeType: "rect", shapeSize: 3, shapeFill: false, shapeOpacity: 1, textBgOn: false, textBgColor: "#FFF3B0", textBgOp: 1, lineH: 1 };
   var boardResizeHandler = null; // 記住上一次掛的 resize 監聽器，每次重繪寫字板前先移除，避免每畫一筆就累積一個監聽器
   // pinnedExtraTools：工具列精簡後，格線／底圖／移動畫面／錄示範這些非核心工具預設收合，
   // 使用者從「➕更多」點加入之後記在這裡（模組層級，換題目後還記得），下次換題目就自動接著顯示，
@@ -11990,6 +12000,9 @@ window.mmTA = (function(){
               <span class="fmt-sep"></span>
               <button type="button" class="text-fmt-btn ${boardState.list==='bullet'?'active':''}" data-list="bullet" title="項目符號 Bullets（每一行一個 •）"><svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor"><circle cx="2.5" cy="4" r="1.4"/><circle cx="2.5" cy="8" r="1.4"/><circle cx="2.5" cy="12" r="1.4"/><path d="M6 4h8M6 8h8M6 12h8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
               <button type="button" class="text-fmt-btn ${boardState.list==='number'?'active':''}" data-list="number" title="編號 Numbered list（每一行 1. 2. 3.）">1.</button>
+              <span class="fmt-sep"></span>
+              <button type="button" class="text-fmt-btn ${boardState.indent==='first'?'active':''}" data-indent="first" title="首行縮排：每一段第一行空兩格"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6 3h8M2 6.5h12M2 10h12M2 13.5h8"/></svg></button>
+              <button type="button" class="text-fmt-btn ${boardState.indent==='hang'?'active':''}" data-indent="hang" title="凸排：第一行頂格，其餘各行縮兩格（例如「大文：…」換行後對齊）"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 3h12M6 6.5h8M6 10h8M6 13.5h5"/></svg></button>
             </div>
           </div>
           <div class="popover-field-row">
@@ -13501,7 +13514,7 @@ window.mmTA = (function(){
       var t = {
         id: uid("t"), ph: newTextPh(), text: txt.replace(/\r\n?/g, "\n").trim(), x: 50, y: 50,
         color: boardState.color, fontSize: boardState.fontSize || 36, bold: !!boardState.bold, step: 0,
-        align: boardState.align || "left", list: boardState.list || "none"
+        align: boardState.align || "left", list: boardState.list || "none", indent: boardState.indent || "none"
       };
       applyTextBgDefaults(t);
       if(!t.text) return;
@@ -13670,7 +13683,7 @@ window.mmTA = (function(){
             }
           } else if(val){
             snapshotForUndo();
-            var nt = { id: uid("t"), text: val, ph: newTextPh(), x: newPos.x, y: newPos.y, color: boardState.color, fontSize: boardState.fontSize || 36, bold: !!boardState.bold, step: boardState.step || 0, align: boardState.align || "left", list: boardState.list || "none" };
+            var nt = { id: uid("t"), text: val, ph: newTextPh(), x: newPos.x, y: newPos.y, color: boardState.color, fontSize: boardState.fontSize || 36, bold: !!boardState.bold, step: boardState.step || 0, align: boardState.align || "left", list: boardState.list || "none", indent: boardState.indent || "none" };
             if(presentLock()) nt.live = true; // 放映中新打的筆記字：不在鎖定範圍，可以搬動、改字
             applyTextBgDefaults(nt);
             assignNewZ("text", nt);
@@ -13776,10 +13789,12 @@ window.mmTA = (function(){
 
     // 對齊（靠左／置中／靠右，作用在多行文字每一行之間）與清單（項目符號／編號，每一行一個）。
     // 有選取的文字方塊就改那一個，同時記成之後新打的字的預設；再按一次已啟用的清單按鈕＝取消清單。
-    function syncTextFmtUi(a, l){
+    function syncTextFmtUi(a, l, ind){
+      if(ind === undefined){ var so = activeSelectedTextId ? texts.find(function(item){ return item.id === activeSelectedTextId; }) : null; ind = so ? (so.indent || "none") : (boardState.indent || "none"); }
       tbq.all(".text-fmt-btn").forEach(function(b){
         if(b.dataset.align) b.classList.toggle("active", b.dataset.align === a);
         if(b.dataset.list) b.classList.toggle("active", b.dataset.list === l);
+        if(b.dataset.indent) b.classList.toggle("active", b.dataset.indent === ind);
       });
     }
     tbq.all(".text-fmt-btn").forEach(function(b){
@@ -13787,16 +13802,18 @@ window.mmTA = (function(){
         var selObj = activeSelectedTextId ? texts.find(function(item){ return item.id === activeSelectedTextId; }) : null;
         var curAlign = selObj ? (selObj.align || "left") : boardState.align;
         var curList = selObj ? (selObj.list || "none") : boardState.list;
+        var curInd = selObj ? (selObj.indent || "none") : (boardState.indent || "none");
         if(b.dataset.align) curAlign = b.dataset.align;
+        else if(b.dataset.indent) curInd = (curInd === b.dataset.indent) ? "none" : b.dataset.indent;
         else curList = (curList === b.dataset.list) ? "none" : b.dataset.list;
-        boardState.align = curAlign; boardState.list = curList;
+        boardState.align = curAlign; boardState.list = curList; boardState.indent = curInd;
         if(selObj){
           snapshotForUndo();
-          selObj.align = curAlign; selObj.list = curList;
+          selObj.align = curAlign; selObj.list = curList; selObj.indent = curInd;
           writeProgress(q.id, { texts: texts });
           renderTexts();
         }
-        syncTextFmtUi(curAlign, curList);
+        syncTextFmtUi(curAlign, curList, curInd);
       };
     });
 
@@ -14472,6 +14489,7 @@ window.mmTA = (function(){
         }
         applyObjFmt(div, t, scale);
         if(t.list === "bullet") div.classList.add("list-bullet"); else if(t.list === "number") div.classList.add("list-number");
+        if(t.indent === "first") div.classList.add("ind-first"); else if(t.indent === "hang") div.classList.add("ind-hang");
 
         div.innerHTML = `
           ${(!isStudent && (t.step || 0) > 0) ? '<span class="text-step-badge" title="第 ' + t.step + ' 次點擊出現">' + t.step + '</span>' : ''}
@@ -14578,7 +14596,7 @@ window.mmTA = (function(){
           if(boldBtnSync) boldBtnSync.classList.toggle("active", isTextBold(t)); // 選到哪個文字方塊，B 就顯示那個的狀態
           var stepInputSync = tbq.one(".text-step-input");
           if(stepInputSync) stepInputSync.value = String(t.step || 0);
-          syncTextFmtUi(t.align || "left", t.list || "none");
+          syncTextFmtUi(t.align || "left", t.list || "none", t.indent || "none");
           if(typeof syncTextBgUi === "function") syncTextBgUi(t);
           if(lhInputEl) lhInputEl.value = String(Math.round((t.lh || 1) * 100));
           snapshotForUndo(); // 在拖動開始「之前」存一份快照，上一步就能整個復原成拖動前的位置
@@ -15424,7 +15442,7 @@ window.mmTA = (function(){
               bold: !!boardState.bold,
               step: boardState.step || 0,
               align: boardState.align || "left",
-              list: boardState.list || "none"
+              list: boardState.list || "none", indent: boardState.indent || "none"
             };
             assignNewZ("text", newTextObj);
             texts.push(newTextObj);
@@ -15880,7 +15898,7 @@ window.mmTA = (function(){
       var bb = tbq.one(".text-bold-btn"); if(bb) bb.classList.toggle("active", isTextBold(t));
       var sti = tbq.one(".text-step-input"); if(sti) sti.value = String(t.step || 0);
       var fsx = tbq.one(".text-font-select"); if(fsx && typeof curFontVal === "function") fsx.value = curFontVal();
-      if(typeof syncTextFmtUi === "function") syncTextFmtUi(t.align || "left", t.list || "none");
+      if(typeof syncTextFmtUi === "function") syncTextFmtUi(t.align || "left", t.list || "none", t.indent || "none");
       if(typeof syncTextBgUi === "function") syncTextBgUi(t);
       if(lhInputEl) lhInputEl.value = String(Math.round((t.lh || 1) * 100));
     }
@@ -16049,29 +16067,62 @@ window.mmTA = (function(){
       allItems().forEach(function(it){ if(inSel(it)) return; var b = itemBox(it); if(b) others.push(b); });
       var xT = [0, 50, 100], yT = [0, 50, 100];
       others.forEach(function(b){ xT.push(b.l, (b.l + b.r) / 2, b.r); yT.push(b.t, (b.t + b.b) / 2, b.b); });
+      // 智慧間距線（像 PowerPoint）：同類型的物件（文字對文字、圖片對圖片…）排成一排／一欄時，
+      // 移動中的物件如果跟左右（上下）鄰居的間距，和那一排其他物件之間的間距一樣，就吸附過去並畫出等距的標線
+      var kindSet = {}; selSet.forEach(function(it){ kindSet[it.k] = 1; });
+      var kindKeys = Object.keys(kindSet), onlyKind = kindKeys.length === 1 ? kindKeys[0] : null, spOthers = [];
+      allItems().forEach(function(it){ if(inSel(it) || it.k === "stroke") return; if(onlyKind && it.k !== onlyKind) return; var b = itemBox(it); if(b) spOthers.push({ l: b.l, r: b.r, t: b.t, b: b.b }); });
+      function perpMid(b1, b2, hor){ var a0 = Math.max(hor ? b1.t : b1.l, hor ? b2.t : b2.l), a1 = Math.min(hor ? b1.b : b1.r, hor ? b2.b : b2.r); return a1 > a0 ? (a0 + a1) / 2 : ((hor ? b1.t + b1.b : b1.l + b1.r) / 2); }
+      function spacingSnap(hor, dx, dy){
+        if(!u0 || spOthers.length < 2) return null;
+        var A = hor ? "l" : "t", Z = hor ? "r" : "b", PA = hor ? "t" : "l", PZ = hor ? "b" : "r";
+        var ub = { l: u0.l + dx, r: u0.r + dx, t: u0.t + dy, b: u0.b + dy }, size = ub[Z] - ub[A], s0 = ub[A], e0 = ub[Z];
+        var band = spOthers.filter(function(b){ return Math.min(b[PZ], ub[PZ]) - Math.max(b[PA], ub[PA]) > 0.3; });
+        if(band.length < 2) return null;
+        band.sort(function(a, b){ return a[A] - b[A]; });
+        var gaps = []; for(var i = 0; i < band.length - 1; i++){ var g = band[i + 1][A] - band[i][Z]; if(g > 0.4) gaps.push({ g: g, a: band[i], b: band[i + 1] }); }
+        var Lb = null, Rb = null;
+        band.forEach(function(b){ if(b[Z] <= s0 + 0.2 && (!Lb || b[Z] > Lb[Z])) Lb = b; if(b[A] >= e0 - 0.2 && (!Rb || b[A] < Rb[A])) Rb = b; });
+        var cands = [];
+        function selfBox(tgt){ var o = { l: ub.l, r: ub.r, t: ub.t, b: ub.b }; o[A] = tgt; o[Z] = tgt + size; return o; }
+        if(Lb && Rb){ var tm = (Lb[Z] + Rb[A] - size) / 2; if(tm > Lb[Z] + 0.3 && tm + size < Rb[A] - 0.3){ var sb = selfBox(tm); cands.push({ sh: tm - s0, segs: [{ a: Lb[Z], b: tm, p: perpMid(Lb, sb, hor) }, { a: tm + size, b: Rb[A], p: perpMid(sb, Rb, hor) }] }); } }
+        gaps.forEach(function(G){
+          if(Lb && !(G.a === Lb && false)){ var t1 = Lb[Z] + G.g, sb1 = selfBox(t1); cands.push({ sh: t1 - s0, segs: [{ a: Lb[Z], b: t1, p: perpMid(Lb, sb1, hor) }, { a: G.a[Z], b: G.b[A], p: perpMid(G.a, G.b, hor) }] }); }
+          if(Rb){ var t2 = Rb[A] - G.g - size, sb2 = selfBox(t2); cands.push({ sh: t2 - s0, segs: [{ a: t2 + size, b: Rb[A], p: perpMid(sb2, Rb, hor) }, { a: G.a[Z], b: G.b[A], p: perpMid(G.a, G.b, hor) }] }); }
+        });
+        var best = null; cands.forEach(function(c){ if(Math.abs(c.sh) <= thr && (!best || Math.abs(c.sh) < Math.abs(best.sh))) best = c; });
+        if(!best) return null; best.hor = hor; return best;
+      }
       function snapAxis(a0, a1, targets, d){
         var best = null, cand = [a0 + d, (a0 + a1) / 2 + d, a1 + d];
         cand.forEach(function(c){ targets.forEach(function(t){ var df = t - c; if(Math.abs(df) <= thr && (best === null || Math.abs(df) < Math.abs(best.df))) best = { df: df, at: t }; }); });
         return best;
       }
-      function drawGuides(gx, gy){
-        selectLayer.querySelectorAll(".select-guide").forEach(function(n){ n.remove(); });
+      function drawGuides(gx, gy, gaps){
+        selectLayer.querySelectorAll(".select-guide, .select-gap").forEach(function(n){ n.remove(); });
+        (gaps || []).forEach(function(sg){
+          var d = document.createElement("div"); d.className = "select-gap " + (sg.hor ? "h" : "v");
+          d.style.cssText = sg.hor ? "left:" + sg.a + "%;width:" + (sg.b - sg.a) + "%;top:" + sg.p + "%;" : "top:" + sg.a + "%;height:" + (sg.b - sg.a) + "%;left:" + sg.p + "%;";
+          selectLayer.appendChild(d);
+        });
         if(gx !== null){ var v = document.createElement("div"); v.className = "select-guide"; v.style.cssText = "left:" + gx + "%;top:0;width:1.5px;height:100%;"; selectLayer.appendChild(v); }
         if(gy !== null){ var h = document.createElement("div"); h.className = "select-guide"; h.style.cssText = "top:" + gy + "%;left:0;height:1.5px;width:100%;"; selectLayer.appendChild(h); }
       }
       function apply(){
         raf = 0; if(!last) return;
-        var dx = last.x - p0.x, dy = last.y - p0.y, hasStroke = false, gx = null, gy = null;
+        var dx = last.x - p0.x, dy = last.y - p0.y, hasStroke = false, gx = null, gy = null, gapSegs = [];
         if(u0 && !(window.event && window.event.altKey)){
           var sx = snapAxis(u0.l, u0.r, xT, dx), sy = snapAxis(u0.t, u0.b, yT, dy);
           if(sx){ dx += sx.df; gx = sx.at; } if(sy){ dy += sy.df; gy = sy.at; }
+          if(!sx){ var spx = spacingSnap(true, dx, dy); if(spx){ dx += spx.sh; spx.segs.forEach(function(g){ gapSegs.push({ hor: true, a: g.a, b: g.b, p: g.p }); }); } }
+          if(!sy){ var spy = spacingSnap(false, dx, dy); if(spy){ dy += spy.sh; spy.segs.forEach(function(g){ gapSegs.push({ hor: false, a: g.a, b: g.b, p: g.p }); }); } }
         }
         orig.forEach(function(g){
           if(g.it.k === "stroke"){ hasStroke = true; g.o.points.forEach(function(pt, i){ pt.x = g.pts[i].x + dx; pt.y = g.pts[i].y + dy; }); }
           else { g.o.x = Math.round((g.x + dx) * 100) / 100; g.o.y = Math.round((g.y + dy) * 100) / 100; }
         });
         if(hasStroke) redrawStrokes();
-        renderTexts(); renderSelection(); drawGuides(gx, gy);
+        renderTexts(); renderSelection(); drawGuides(gx, gy, gapSegs);
       }
       function mv(ev){
         var p = getPos(ev);
@@ -16081,7 +16132,7 @@ window.mmTA = (function(){
       function up(){
         window.removeEventListener("pointermove", mv); window.removeEventListener("pointerup", up); window.removeEventListener("pointercancel", up);
         if(raf){ cancelAnimationFrame(raf); apply(); }
-        drawGuides(null, null);
+        drawGuides(null, null, null);
         if(!moved){ if(onTap) onTap(); return; }
         var patch = {}, kinds = {};
         orig.forEach(function(g){ kinds[g.it.k] = true; });
