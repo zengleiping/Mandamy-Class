@@ -3959,6 +3959,7 @@ window.mmTA = (function(){
   // 小白板「文字」工具打字加註音：null 表示這台裝置從沒選過（要先跳出一次選擇視窗），
   // 實際的轉換函式（setPhoneticMode／buildPhoneticHtml…）在下面「打字加註音」那段一起定義。
   var currentPhoneticMode = localStorage.getItem("hanyu_phonetic_mode");
+  function isPhOn(m){ return m === "pinyin" || m === "zhuyin" || m === "both"; }   // both＝注音＋拼音一起加
   // 注音位置：top＝字的正上方（預設）；right＝字的右邊、直式排列（跟生字本的寫法一樣，聲調符號在注音右側）。只對注音有效。
   var currentPhoneticLayout = "right";   // 注音一律放在字的右側（直式）；拼音一律在字的上方。不再有「位置」可以選
 
@@ -6963,7 +6964,7 @@ window.mmTA = (function(){
     collectMediaSlots({ projects: { r: Object.assign({}, roomProject, { progress: seededProgress }) } }).forEach(function(sl2){ var r2 = parseMediaRef(sl2.get()); if(r2 && !r2.url) unsyncedAudio++; });
     await set(ref(db, "rooms/" + rId), {
       project: roomProject, sharedProgress: seededProgress, isOpen: true, theme: { bgMode: currentBgMode, accent: currentAccentColor }, classMode: currentClassMode, lockNoticeLangs: currentLockNoticeLangs,
-      phoneticMode: (currentPhoneticMode === "pinyin" || currentPhoneticMode === "zhuyin") ? currentPhoneticMode : "off",
+      phoneticMode: isPhOn(currentPhoneticMode) ? currentPhoneticMode : "off",
       phoneticLayout: currentPhoneticLayout,
       presence: { teacher: { online:true, name:"老師" } }
     });
@@ -9165,7 +9166,7 @@ window.mmTA = (function(){
   }
   // 改「預設字型」只影響之後新打的字：已經存在、還沒有自己字型設定的文字方塊，先照目前的樣子記下來（不然它們會跟著預設一起變）
   function freezeTextPh(oldMode){
-    var eff = (oldMode === "pinyin" || oldMode === "zhuyin") ? oldMode : "off";
+    var eff = isPhOn(oldMode) ? oldMode : "off";
     var proj = null; try{ proj = getActiveProject(); }catch(e){}
     if(!proj || !proj.sections) return;
     var room = inRoom(), src = room ? ((roomData && roomData.sharedProgress) || {}) : (proj.progress || {});
@@ -9197,7 +9198,7 @@ window.mmTA = (function(){
   // 從房間資料同步套用老師選的注音／拼音模式（不寫回自己的 localStorage——那是個人在房間外
   // 自己練習時用的預設值，跟這堂課老師的選擇是兩回事）。
   function applyRoomPhoneticMode(mode){
-    if(mode !== "pinyin" && mode !== "zhuyin") mode = "off";
+    if(!isPhOn(mode)) mode = "off";
     if(mode === currentPhoneticMode) return;
     currentPhoneticMode = mode;
     document.querySelectorAll(".btn-phonetic-mode").forEach(function(b){
@@ -9371,14 +9372,14 @@ window.mmTA = (function(){
     function plain(){ if(!sp || !sp.map) return escapeHtml(text); return Array.from(text).map(function(ch, i){ return W(i, escapeHtml(ch)); }).join(""); }
     // 「加不加注音」就像一種字型：每個文字方塊有自己的預設（modeArg：pinyin／zhuyin／off，沒設定的舊方塊才跟著整體預設），
     // 方塊裡「選取的某幾個字」可以另外套用別的字型（sp.map[i].f）。overrides：舊版個別字設定（" "＝不加、"+"＝要加）＋手動改讀音
-    var boxMode = (modeArg === "pinyin" || modeArg === "zhuyin" || modeArg === "off") ? modeArg : ((currentPhoneticMode === "pinyin" || currentPhoneticMode === "zhuyin") ? currentPhoneticMode : "off");
+    var boxMode = (modeArg === "pinyin" || modeArg === "zhuyin" || modeArg === "both" || modeArg === "off") ? modeArg : (isPhOn(currentPhoneticMode) ? currentPhoneticMode : "off");
     var chars = Array.from(text), modes = [], anyAnn = false, needP = false, needZ = false;
     for(var k = 0; k < chars.length; k++){
       var st0 = sp && sp.map && sp.map[baseIdx + k], m = (st0 && st0.f) || boxMode, ov0 = overrides && typeof overrides[baseIdx + k] === "string" ? overrides[baseIdx + k] : "";
       if(ov0 === " ") m = "hide"; else if(ov0 === "+" && m === "off") m = (currentPhoneticMode === "zhuyin" ? "zhuyin" : "pinyin");
       if(!isHanChar(chars[k])) m = "none";
       modes.push(m);
-      if(m === "pinyin"){ anyAnn = true; needP = true; } else if(m === "zhuyin"){ anyAnn = true; needZ = true; }
+      if(m === "pinyin"){ anyAnn = true; needP = true; } else if(m === "zhuyin"){ anyAnn = true; needZ = true; } else if(m === "both"){ anyAnn = true; needP = true; needZ = true; }
     }
     if(!anyAnn) return plain();
     if(typeof pinyinPro === "undefined" || typeof pinyinPro.pinyin !== "function") return plain();
@@ -9398,10 +9399,13 @@ window.mmTA = (function(){
       var ovv = overrides && typeof overrides[baseIdx + i] === "string" ? overrides[baseIdx + i] : "";
       var hasOverride = ovv !== "" && ovv !== "+" && ovv !== " ";
       var annotation = hasOverride ? ovv : (md === "zhuyin" ? pinyinSyllableToZhuyin(symN[i]) : symP[i]);
-      if(md === "zhuyin"){
+      if(md === "zhuyin" || md === "both"){
         // 直式、在字右邊：把注音拆成「符號本體」和「聲調符號」，本體直排，聲調放在右邊（輕聲 ˙ 放在上方）
-        var ann = String(annotation || ""), tone = "", neutral = false, main = ann.replace(/[ˊˇˋ˙]/g, function(mm){ if(mm === "˙") neutral = true; else tone = mm; return ""; });
-        html += W(i, "<span class=\"zy-r\" data-ph-idx=\"" + (baseIdx + i) + "\"><span class=\"zy-c\">" + escapeHtml(ch) + "</span><span class=\"zy-s" + (hasOverride ? " ph-overridden" : "") + "\"><span class=\"zy-col\">" + (neutral ? "<span class=\"zy-n\">˙</span>" : "") + "<span class=\"zy-m\">" + Array.from(main).map(function(c){ return "<span class=\"zy-ch\">" + escapeHtml(c) + "</span>"; }).join("") + "</span></span>" + (tone ? "<span class=\"zy-t\">" + tone + "</span>" : "") + "</span></span>");
+        var zyAnn = md === "both" ? (hasOverride ? ovv : pinyinSyllableToZhuyin(symN[i])) : annotation;
+        var ann = String(zyAnn || ""), tone = "", neutral = false, main = ann.replace(/[ˊˇˋ˙]/g, function(mm){ if(mm === "˙") neutral = true; else tone = mm; return ""; });
+        var zyS = "<span class=\"zy-s" + (hasOverride ? " ph-overridden" : "") + "\"><span class=\"zy-col\">" + (neutral ? "<span class=\"zy-n\">˙</span>" : "") + "<span class=\"zy-m\">" + Array.from(main).map(function(c){ return "<span class=\"zy-ch\">" + escapeHtml(c) + "</span>"; }).join("") + "</span></span>" + (tone ? "<span class=\"zy-t\">" + tone + "</span>" : "") + "</span>";
+        var zyC = md === "both" ? "<ruby>" + escapeHtml(ch) + "<rt>" + escapeHtml(symP[i] || "") + "</rt></ruby>" : escapeHtml(ch);   // 注音＋拼音：拼音在字上面、注音在字右邊
+        html += W(i, "<span class=\"zy-r\" data-ph-idx=\"" + (baseIdx + i) + "\"><span class=\"zy-c\">" + zyC + "</span>" + zyS + "</span>");
         continue;
       }
       html += W(i, "<ruby data-ph-idx=\"" + (baseIdx + i) + "\">" + escapeHtml(ch) + "<rt" + (hasOverride ? " class=\"ph-overridden\"" : "") + ">" + escapeHtml(annotation || "") + "</rt></ruby>");
@@ -11990,7 +11994,7 @@ window.mmTA = (function(){
           </div>
           <div class="popover-field-row">
             <div class="popover-field-row-label"><span title="加不加拼音／注音就像一種字型：選取一個文字方塊＝整個方塊；編輯文字時先選取一段字，就只改那一段（跟 PowerPoint 一樣）">字型 Font（加不加注音）</span></div>
-            <div class="anim-row"><select class="text-font-select" title="字型：一般＝不加注音；拼音字型＝字上面加拼音；注音字型＝加注音符號"><option value="off">一般字型（不加注音）</option><option value="pinyin">拼音字型（字上加拼音）</option><option value="zhuyin">注音字型（加注音符號）</option><optgroup label="── 一次全改 ──"><option value="page:pinyin">這一頁全部 → 拼音</option><option value="page:zhuyin">這一頁全部 → 注音</option><option value="page:off">這一頁全部 → 不加注音</option><option value="deck:pinyin">整份簡報全部 → 拼音</option><option value="deck:zhuyin">整份簡報全部 → 注音</option><option value="deck:off">整份簡報全部 → 不加注音</option></optgroup></select></div>
+            <div class="anim-row"><select class="text-font-select" title="字型：一般＝不加注音；拼音字型＝字上面加拼音；注音字型＝加注音符號"><option value="off">一般字型（不加注音）</option><option value="pinyin">拼音字型（字上加拼音）</option><option value="zhuyin">注音字型（加注音符號）</option><option value="both">注音＋拼音字型（兩種都加）</option><optgroup label="── 一次全改 ──"><option value="page:pinyin">這一頁全部 → 拼音</option><option value="page:zhuyin">這一頁全部 → 注音</option><option value="page:both">這一頁全部 → 注音＋拼音</option><option value="page:off">這一頁全部 → 不加注音</option><option value="deck:pinyin">整份簡報全部 → 拼音</option><option value="deck:zhuyin">整份簡報全部 → 注音</option><option value="deck:both">整份簡報全部 → 注音＋拼音</option><option value="deck:off">整份簡報全部 → 不加注音</option></optgroup></select></div>
           </div>
           <details class="pop-more"><summary>進階文字設定 Advanced</summary>
           <div class="popover-field-row">
@@ -13841,18 +13845,18 @@ window.mmTA = (function(){
     }
     // 字型（加不加注音）：有選取文字＝只改選取的那一段；否則改整個文字方塊；都沒選＝之後新打的字的預設
     function phTextObj(){ var id = (inPlaceEdit && inPlaceEdit.textId) || activeSelectedTextId; return id ? texts.find(function(x){ return x.id === id; }) : null; }
-    function newTextPh(){ return boardState.phFont || ((currentPhoneticMode === "pinyin" || currentPhoneticMode === "zhuyin") ? currentPhoneticMode : "off"); }
+    function newTextPh(){ return boardState.phFont || (isPhOn(currentPhoneticMode) ? currentPhoneticMode : "off"); }
     var fontSel = tbq.one(".text-font-select");
     function curFontVal(){
       var t = phTextObj(); if(!t) return newTextPh();
       var rg = inPlaceEdit ? (inPlaceEdit.getRange() || editSel) : null;
       if(rg && rg[1] > rg[0]){ var st = mmStyleArr(t)[rg[0]]; if(st && st.f) return st.f; }
-      return t.ph || ((currentPhoneticMode === "pinyin" || currentPhoneticMode === "zhuyin") ? currentPhoneticMode : "off");
+      return t.ph || (isPhOn(currentPhoneticMode) ? currentPhoneticMode : "off");
     }
     // 一次全改：這一頁，或整份簡報裡所有文字方塊的字型（拼音／注音／不加）。同時把「之後新打的字」的預設也換成同一個
     function bulkSetPh(scope, mode){
       if(isStudent) return;
-      var NAME = { pinyin: "拼音", zhuyin: "注音", off: "不加注音" };
+      var NAME = { pinyin: "拼音", zhuyin: "注音", both: "注音＋拼音", off: "不加注音" };
       var proj = null; try{ proj = getActiveProject(); }catch(e){}
       var qids = [];
       if(scope === "deck" && proj && proj.sections){
@@ -13875,7 +13879,7 @@ window.mmTA = (function(){
     if(fontSel){
       fontSel.onchange = function(){
         var v = fontSel.value;
-        if(/^(page|deck):(pinyin|zhuyin|off)$/.test(v)){ var bs = v.split(":"); fontSel.value = curFontVal(); bulkSetPh(bs[0], bs[1]); return; }
+        if(/^(page|deck):(pinyin|zhuyin|both|off)$/.test(v)){ var bs = v.split(":"); fontSel.value = curFontVal(); bulkSetPh(bs[0], bs[1]); return; }
         if(applySpanFromUi("f", v)) return;
         var t = phTextObj();
         if(t){ snapshotForUndo(); t.ph = v; mmStripSpans(t, ["f"]); writeProgress(q.id, { texts: texts }); renderTexts(); }
@@ -16361,7 +16365,7 @@ window.mmTA = (function(){
         '<span class="tt-g"><label title="儲存格填色">填色 <input type="color" class="tt-bg" value="' + (cell0.bg || "#FFFFFF") + '"></label>' + btn("nobg", "無色", "清除填色") +
         '<label title="文字顏色">字色 <input type="color" class="tt-fc" value="' + (cell0.c || "#2B2320") + '"></label>' + btn("bold", "<b>B</b>", "粗體") + btn("fs-", "A−", "字小一點") + btn("fs+", "A＋", "字大一點") + btn("al-l", "⇤", "靠左") + btn("al-c", "↔", "置中") + btn("al-r", "⇥", "靠右") + '</span>' +
         '<span class="tt-g"><label title="框線顏色">框線 <input type="color" class="tt-bd" value="' + (t.bd || "#555555") + '"></label><input type="number" class="tt-bw" min="0" max="8" step="1" value="' + (t.bw == null ? 2 : t.bw) + '" title="框線粗細（0＝無框線）">' +
-        '<label title="這張表格的注音／拼音">注音 <select class="tt-ph"><option value="">跟隨簡報</option><option value="off">不加</option><option value="pinyin">拼音</option><option value="zhuyin">注音</option></select></label><label title="第一列當標題列"><input type="checkbox" class="tt-hdr" ' + (t.hdr ? "checked" : "") + '> 標題列</label>' + btn("eq", "平均", "平均分配欄寬與列高") + btn("del", "🗑 刪除表格", "刪除整張表格") + '</span>' +
+        '<label title="這張表格的注音／拼音">注音 <select class="tt-ph"><option value="">跟隨簡報</option><option value="off">不加</option><option value="pinyin">拼音</option><option value="zhuyin">注音</option><option value="both">注音＋拼音</option></select></label><label title="第一列當標題列"><input type="checkbox" class="tt-hdr" ' + (t.hdr ? "checked" : "") + '> 標題列</label>' + btn("eq", "平均", "平均分配欄寬與列高") + btn("del", "🗑 刪除表格", "刪除整張表格") + '</span>' +
         '<span class="tt-hint">點一下格子選取（拖曳可選多格）；點兩下輸入文字；Tab 跳下一格；拖曳格線調整欄寬列高</span>';
       bar.addEventListener("pointerdown", function(e){ e.stopPropagation(); });
       bar.addEventListener("click", function(e){
