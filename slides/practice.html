@@ -1211,6 +1211,13 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .select-bar{ position:absolute; display:flex; align-items:center; gap:6px; padding:4px 8px; background:var(--surface); border:1.5px solid var(--seal-ring); border-radius:10px; box-shadow:0 6px 18px rgba(0,0,0,.18); pointer-events:auto; white-space:nowrap; z-index:45; }
   .select-bar .sb-sep{ width:1px; height:18px; background:rgba(28,33,30,.2); }
   .select-bar .sb-al{ padding:4px 7px; min-width:26px; }
+  .cp-dim{ background:rgba(0,0,0,.5); pointer-events:none; }
+  .crop-ui .cp-frame{ border:2px solid #fff; box-shadow:0 0 0 1px #E0338A inset; pointer-events:none; }
+  .crop-ui .cp-h{ position:absolute; width:14px; height:14px; margin:-7px 0 0 -7px; background:#fff; border:2px solid #E0338A; border-radius:3px; z-index:2; }
+  .crop-ui .cp-h[data-h="n"], .crop-ui .cp-h[data-h="s"]{ cursor:ns-resize; } .crop-ui .cp-h[data-h="e"], .crop-ui .cp-h[data-h="w"]{ cursor:ew-resize; }
+  .crop-ui .cp-h[data-h="nw"], .crop-ui .cp-h[data-h="se"]{ cursor:nwse-resize; } .crop-ui .cp-h[data-h="ne"], .crop-ui .cp-h[data-h="sw"]{ cursor:nesw-resize; }
+  .crop-ui .cp-bar{ position:absolute; display:flex; gap:6px; align-items:center; background:#fff; border:1.5px solid #E0338A; border-radius:10px; padding:4px 8px; font-size:13.5px; z-index:3; white-space:nowrap; }
+  .crop-ui .cp-bar button{ border:1.5px solid rgba(28,33,30,.25); background:#fff; border-radius:8px; padding:3px 10px; cursor:pointer; font-weight:700; }
   .select-scale-h{ position:absolute; width:13px; height:13px; margin:-6.5px 0 0 -6.5px; background:#fff; border:2px solid var(--seal); border-radius:3px; pointer-events:auto; z-index:42; touch-action:none; }
   .select-scale-h:hover{ background:var(--seal-soft,#fde6dc); }
   .select-guide{ position:absolute; background:#E0338A; pointer-events:none; z-index:41; }
@@ -14496,6 +14503,7 @@ window.mmTA = (function(){
     function textBgRgba(hex, a){ var h = /^#[0-9a-fA-F]{6}$/.test(hex || "") ? hex : "#FFF3B0"; return "rgba(" + parseInt(h.substr(1, 2), 16) + "," + parseInt(h.substr(3, 2), 16) + "," + parseInt(h.substr(5, 2), 16) + "," + (a == null ? 1 : a) + ")"; }
 
     // 物件格式（框線／陰影／圓角／圖片裁剪）：文字方塊和圖片共用。框線用 box-shadow 畫在外面，不會改變版面大小。
+    var cropEdit = null;   // 正在互動式裁剪的圖片：{ id }（裁剪中先顯示完整圖片，只在外面蓋一層暗色）
     function applyObjFmt(el, o, scale){
       var sh = [];
       if(o.bdW > 0) sh.push("0 0 0 " + Math.max(1, o.bdW * scale) + "px " + (o.bdC || "#333333"));
@@ -14504,7 +14512,7 @@ window.mmTA = (function(){
       if(o.rad > 0) el.style.setProperty("border-radius", Math.round(o.rad * scale) + "px", "important");
       if(o.bdW > 0 && el.classList.contains("movable-text") && !o.bgOn) el.style.setProperty("padding", "0.12em 0.45em", "important");
       var c = o.crop;
-      if(c && (c.l || c.t || c.r || c.b)) el.style.clipPath = "inset(" + (c.t || 0) + "% " + (c.r || 0) + "% " + (c.b || 0) + "% " + (c.l || 0) + "%" + (o.rad > 0 ? " round " + Math.round(o.rad * scale) + "px" : "") + ")";
+      if(c && (c.l || c.t || c.r || c.b) && !(cropEdit && cropEdit.id === o.id)) el.style.clipPath = "inset(" + (c.t || 0) + "% " + (c.r || 0) + "% " + (c.b || 0) + "% " + (c.l || 0) + "%" + (o.rad > 0 ? " round " + Math.round(o.rad * scale) + "px" : "") + ")";
     }
     var lastRevSeen = null, revealAnim = null, revealAnimTimer = 0;
     function syncRevealAnim(){
@@ -15884,6 +15892,126 @@ window.mmTA = (function(){
       writeProgress(q.id, patch);
       renderTexts(); renderSelection();
     }
+    // ===== 圖片互動裁剪（像 PowerPoint）：拖曳四邊／四角決定留下的範圍；不會真的剪掉圖片，之後還能再調或「重設」 =====
+    function startCropEdit(im){
+      if(cropEdit || deckStudent || presentLock()) return;
+      var el = cWrap.querySelector('.board-image[data-img-id="' + im.id + '"]'); if(!el) return;
+      snapshotForUndo();
+      var orig = im.crop ? Object.assign({}, im.crop) : null, cr = Object.assign({ l: 0, r: 0, t: 0, b: 0 }, im.crop || {});
+      cropEdit = { id: im.id };
+      clearObjSelection(); selSet = []; renderSelection();
+      renderImages();
+      var cb = cWrap.getBoundingClientRect(), er = el.getBoundingClientRect();
+      var bx = (er.left - cb.left) / cb.width * 100, by = (er.top - cb.top) / cb.height * 100, bw = er.width / cb.width * 100, bh = er.height / cb.height * 100;
+      var ui = document.createElement("div"); ui.className = "crop-ui"; ui.style.cssText = "position:absolute;inset:0;z-index:9500;touch-action:none;";
+      ui.innerHTML = '<div class="cp-dim" data-d="t"></div><div class="cp-dim" data-d="b"></div><div class="cp-dim" data-d="l"></div><div class="cp-dim" data-d="r"></div><div class="cp-frame"></div>' +
+        ["nw", "n", "ne", "e", "se", "s", "sw", "w"].map(function(h){ return '<div class="cp-h" data-h="' + h + '"></div>'; }).join("") +
+        '<div class="cp-bar"><span>拖曳四邊或四角決定要留下的範圍</span><button type="button" data-c="ok">✓ 完成</button><button type="button" data-c="reset">重設</button><button type="button" data-c="cancel">✕ 取消</button></div>';
+      cWrap.appendChild(ui);
+      function pos(){
+        var L = bx + bw * cr.l / 100, R = bx + bw * (100 - cr.r) / 100, T = by + bh * cr.t / 100, B = by + bh * (100 - cr.b) / 100;
+        function put(sel, l, t, w, h){ var n = ui.querySelector(sel); n.style.cssText = "position:absolute;left:" + l + "%;top:" + t + "%;width:" + w + "%;height:" + h + "%;"; }
+        put('[data-d="t"]', bx, by, bw, T - by); put('[data-d="b"]', bx, B, bw, by + bh - B); put('[data-d="l"]', bx, T, L - bx, B - T); put('[data-d="r"]', R, T, bx + bw - R, B - T);
+        put(".cp-frame", L, T, R - L, B - T);
+        var cxm = (L + R) / 2, cym = (T + B) / 2, pts = { nw: [L, T], n: [cxm, T], ne: [R, T], e: [R, cym], se: [R, B], s: [cxm, B], sw: [L, B], w: [L, cym] };
+        Object.keys(pts).forEach(function(k){ var n = ui.querySelector('[data-h="' + k + '"]'); n.style.left = pts[k][0] + "%"; n.style.top = pts[k][1] + "%"; });
+        var bar = ui.querySelector(".cp-bar"); bar.style.left = Math.max(1, Math.min(70, L)) + "%"; bar.style.top = (T > 12 ? T - 9 : B + 2) + "%";
+      }
+      pos();
+      ui.querySelectorAll(".cp-h").forEach(function(h){
+        h.addEventListener("pointerdown", function(ev){
+          ev.stopPropagation(); ev.preventDefault(); var k = h.dataset.h;
+          function mv(e){
+            var p = getPos(e), px = (p.x - bx) / bw * 100, py = (p.y - by) / bh * 100;
+            if(k.indexOf("w") >= 0) cr.l = Math.max(0, Math.min(90 - cr.r, px));
+            if(k.indexOf("e") >= 0) cr.r = Math.max(0, Math.min(90 - cr.l, 100 - px));
+            if(k.indexOf("n") >= 0) cr.t = Math.max(0, Math.min(90 - cr.b, py));
+            if(k.indexOf("s") >= 0) cr.b = Math.max(0, Math.min(90 - cr.t, 100 - py));
+            pos();
+          }
+          function up(){ window.removeEventListener("pointermove", mv); window.removeEventListener("pointerup", up); window.removeEventListener("pointercancel", up); }
+          window.addEventListener("pointermove", mv); window.addEventListener("pointerup", up); window.addEventListener("pointercancel", up);
+        });
+      });
+      function finish(apply){
+        document.removeEventListener("keydown", keyH, true); ui.remove(); cropEdit = null;
+        if(apply){
+          var any = cr.l > 0.2 || cr.r > 0.2 || cr.t > 0.2 || cr.b > 0.2;
+          if(any) im.crop = { l: Math.round(cr.l * 10) / 10, r: Math.round(cr.r * 10) / 10, t: Math.round(cr.t * 10) / 10, b: Math.round(cr.b * 10) / 10 }; else delete im.crop;
+        } else { if(orig) im.crop = orig; else delete im.crop; }
+        writeProgress(q.id, { images: images }); renderImages(); renderTexts(); selSet = [{ k: "image", id: im.id }]; renderSelection();
+      }
+      function keyH(e){ if(e.key === "Escape"){ e.preventDefault(); e.stopPropagation(); finish(false); } else if(e.key === "Enter"){ e.preventDefault(); e.stopPropagation(); finish(true); } }
+      document.addEventListener("keydown", keyH, true);
+      ui.querySelector(".cp-bar").addEventListener("pointerdown", function(e){ e.stopPropagation(); });
+      ui.querySelector(".cp-bar").addEventListener("click", function(e){ var b = e.target.closest("button"); if(!b) return; if(b.dataset.c === "ok") finish(true); else if(b.dataset.c === "cancel") finish(false); else if(b.dataset.c === "reset"){ cr = { l: 0, r: 0, t: 0, b: 0 }; pos(); } });
+    }
+    // ===== 去背：點一下想去掉的背景顏色（可以連點多處），或讓它從四周邊緣自動找背景；顏色接近的相連區域變透明 =====
+    async function openRemoveBg(im){
+      if(deckStudent || presentLock()) return;
+      var url = await refToDataUrl(im.srcOrig || im.src); if(!url){ alert("這張圖片讀不進來。"); return; }
+      var img = new Image(); img.src = url; try{ await img.decode(); }catch(_){ alert("這張圖片讀不進來。"); return; }
+      var sc = Math.min(1, 1600 / Math.max(img.naturalWidth, img.naturalHeight)), W = Math.max(1, Math.round(img.naturalWidth * sc)), H = Math.max(1, Math.round(img.naturalHeight * sc));
+      var cv = document.createElement("canvas"); cv.width = W; cv.height = H; var cx = cv.getContext("2d", { willReadFrequently: true }); cx.drawImage(img, 0, 0, W, H);
+      var src = cx.getImageData(0, 0, W, H), sd = src.data, seeds = [], tol = 40, soft = true;
+      var back = document.createElement("div"); back.className = "tb-modal-back";
+      var modal = document.createElement("div"); modal.className = "tb-modal"; modal.style.width = "min(720px,96vw)"; back.appendChild(modal);
+      modal.innerHTML = '<h3>🪄 去背</h3><div class="tb-hint">點一下圖片上想去掉的背景（例如天空、白底），顏色接近又相連的地方會變透明；背景有好幾種顏色就多點幾處。滑桿越大，去掉的顏色範圍越廣。</div>' +
+        '<div class="rb-stage" style="background:repeating-conic-gradient(#ddd 0 25%,#fff 0 50%) 0 0/16px 16px;border-radius:8px;text-align:center;max-height:52vh;overflow:auto;"><canvas class="rb-cv" style="max-width:100%;cursor:crosshair;"></canvas></div>' +
+        '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0;font-size:14.5px;"><span style="font-weight:700;">範圍</span><input type="range" class="rb-tol" min="5" max="140" value="40" style="width:160px;"><b class="rb-tv">40</b>' +
+        '<label><input type="checkbox" class="rb-soft" checked> 邊緣柔化</label><button type="button" class="tb-row rb-auto" style="cursor:pointer;margin:0;padding:4px 12px;">從四周自動找背景</button><button type="button" class="tb-row rb-clr" style="cursor:pointer;margin:0;padding:4px 12px;">重來</button></div>' +
+        '<div style="display:flex;gap:8px;justify-content:flex-end;"><button type="button" class="tb-row rb-orig" style="cursor:pointer;margin:0;padding:6px 14px;" ' + (im.srcOrig ? "" : "disabled") + '>還原原圖</button><button type="button" class="tb-row rb-ok" style="cursor:pointer;margin:0;padding:6px 18px;">✓ 套用</button><button type="button" class="tb-row rb-no" style="cursor:pointer;margin:0;padding:6px 14px;">取消</button></div>';
+      document.body.appendChild(back);
+      var dcv = modal.querySelector(".rb-cv"); dcv.width = W; dcv.height = H; var dcx = dcv.getContext("2d");
+      var mask = new Uint8Array(W * H);
+      function dist(i, r, g, b){ var dr = sd[i] - r, dg = sd[i + 1] - g, db = sd[i + 2] - b; return Math.sqrt(dr * dr + dg * dg + db * db); }
+      function compute(){
+        mask.fill(0);
+        seeds.forEach(function(sp){
+          var i0 = (sp.y * W + sp.x) * 4, r = sd[i0], g = sd[i0 + 1], b = sd[i0 + 2], stack = [sp.y * W + sp.x];
+          if(mask[stack[0]]) return;
+          while(stack.length){
+            var pi = stack.pop(); if(mask[pi]) continue;
+            var ii = pi * 4; if(sd[ii + 3] < 8 || dist(ii, r, g, b) > tol) continue;
+            mask[pi] = 1; var x = pi % W, y = (pi - x) / W;
+            if(x > 0) stack.push(pi - 1); if(x < W - 1) stack.push(pi + 1); if(y > 0) stack.push(pi - W); if(y < H - 1) stack.push(pi + W);
+          }
+        });
+      }
+      function paint(){
+        var out = dcx.createImageData(W, H), od = out.data; od.set(sd);
+        for(var pi = 0; pi < W * H; pi++){
+          if(mask[pi]){ od[pi * 4 + 3] = 0; continue; }
+          if(soft){ var x = pi % W, y = (pi - x) / W; if((x > 0 && mask[pi - 1]) || (x < W - 1 && mask[pi + 1]) || (y > 0 && mask[pi - W]) || (y < H - 1 && mask[pi + W])) od[pi * 4 + 3] = Math.round(sd[pi * 4 + 3] * 0.5); }
+        }
+        dcx.putImageData(out, 0, 0);
+      }
+      function refresh(){ compute(); paint(); }
+      paint();
+      dcv.addEventListener("click", function(e){
+        var r = dcv.getBoundingClientRect(), x = Math.floor((e.clientX - r.left) / r.width * W), y = Math.floor((e.clientY - r.top) / r.height * H);
+        if(x < 0 || y < 0 || x >= W || y >= H) return; seeds.push({ x: x, y: y }); refresh();
+      });
+      modal.querySelector(".rb-tol").oninput = function(e){ tol = Number(e.target.value); modal.querySelector(".rb-tv").textContent = tol; if(seeds.length) refresh(); };
+      modal.querySelector(".rb-soft").onchange = function(e){ soft = e.target.checked; paint(); };
+      modal.querySelector(".rb-clr").onclick = function(){ seeds = []; refresh(); };
+      modal.querySelector(".rb-auto").onclick = function(){
+        seeds = []; var n = 24;
+        for(var k = 0; k < n; k++){ var tx = Math.round((W - 1) * k / (n - 1)), ty = Math.round((H - 1) * k / (n - 1)); seeds.push({ x: tx, y: 0 }, { x: tx, y: H - 1 }, { x: 0, y: ty }, { x: W - 1, y: ty }); }
+        refresh();
+      };
+      function close(){ back.remove(); }
+      modal.querySelector(".rb-no").onclick = close; back.addEventListener("click", function(e){ if(e.target === back) close(); });
+      modal.querySelector(".rb-orig").onclick = function(){ if(im.srcOrig){ snapshotForUndo(); im.src = im.srcOrig; delete im.srcOrig; writeProgress(q.id, { images: images }); renderImages(); renderSelection(); } close(); };
+      modal.querySelector(".rb-ok").onclick = async function(e){
+        if(!seeds.length){ close(); return; }
+        var btn = e.target; btn.disabled = true; btn.textContent = "處理中…";
+        var blob = await new Promise(function(r){ dcv.toBlob(r, "image/png"); });
+        var ref = blob ? await storeMediaBlob(blob) : ""; if(!ref){ alert("存圖失敗，請再試一次。"); btn.disabled = false; btn.textContent = "✓ 套用"; return; }
+        snapshotForUndo(); if(!im.srcOrig) im.srcOrig = im.src; im.src = ref;
+        writeProgress(q.id, { images: images }); renderImages(); renderTexts(); renderSelection(); close();
+      };
+    }
     // ===== 物件格式：框線／陰影／圓角（文字方塊、圖片、圖案）、圖片裁剪／去背、圖案漸層填色 =====
     function openObjFormat(){
       var items = expandGroups(selSet).filter(function(it){ return it.k !== "stroke" && it.k !== "table"; });
@@ -16017,6 +16145,7 @@ window.mmTA = (function(){
       bar.innerHTML = '<span class="sb-count">已選 ' + items.length + ' 個</span>' +
         (items.length >= 2 && !oneWholeGroup ? '<button type="button" data-act="group" title="組成群組（Ctrl/⌘+G）：之後點一下就整組一起選取、搬動">🔗 組成群組</button>' : '') +
         (inGroup ? '<button type="button" data-act="ungroup" title="解散群組（Ctrl/⌘+Shift+G）">解散群組</button>' : '') +
+        (items.length === 1 && items[0].k === "image" ? '<button type="button" data-act="crop" title="裁剪圖片：拖曳四邊或四角決定要留下的範圍">✂ 裁剪</button><button type="button" data-act="rmbg" title="去背：點一下想去掉的背景顏色，或讓它從四周自動找背景">🪄 去背</button>' : '') +
         (items.length === 1 && items[0].k !== "stroke" ? '<button type="button" data-act="brush" title="複製格式：複製這個物件的外觀，再點別的物件套用（連按兩下上方「複製格式」鈕＝連續套用）">🖌 複製格式</button>' : '') +
         (items.some(function(x){ return x.k !== "stroke"; }) ? '<button type="button" data-act="link" title="超連結（Ctrl/⌘+K）：跳到投影片或開啟網址">🔗 連結</button>' : '') +
         (items.some(function(x){ return x.k !== "stroke" && x.k !== "table"; }) ? '<button type="button" data-act="fmt" title="物件格式：框線、陰影、圓角、圖片裁剪／去背、圖案漸層">🎨 格式</button>' : '') +
@@ -16085,6 +16214,8 @@ window.mmTA = (function(){
         else if(bt.dataset.act === "copy"){ copySelection(); bt.textContent = "✓ 已複製"; }
         else if(bt.dataset.act === "dup") duplicateSelection();
         else if(bt.dataset.act === "fmt") openObjFormat();
+        else if(bt.dataset.act === "crop"){ var cim = images.find(function(x){ return x.id === items[0].id; }); if(cim) startCropEdit(cim); }
+        else if(bt.dataset.act === "rmbg"){ var rim = images.find(function(x){ return x.id === items[0].id; }); if(rim) openRemoveBg(rim); }
         else if(bt.dataset.act === "link") openLinkDialog();
         else if(bt.dataset.act === "brush") brushStart(false);
         else if(/^al-/.test(bt.dataset.act)) alignSelection(bt.dataset.act.slice(3));
