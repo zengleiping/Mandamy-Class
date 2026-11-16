@@ -9300,6 +9300,44 @@ window.mmTA = (function(){
       return part;
     }).join("");
   }
+  // 注音 ↔ 拼音互轉：老師手動改過讀音（例如輕聲 ˙ㄨㄚ）時，「注音＋拼音」模式兩邊要一起跟著變；輕聲的拼音不標聲調（wa）
+  var ZY_INI = { "ㄅ": "b", "ㄆ": "p", "ㄇ": "m", "ㄈ": "f", "ㄉ": "d", "ㄊ": "t", "ㄋ": "n", "ㄌ": "l", "ㄍ": "g", "ㄎ": "k", "ㄏ": "h", "ㄐ": "j", "ㄑ": "q", "ㄒ": "x", "ㄓ": "zh", "ㄔ": "ch", "ㄕ": "sh", "ㄖ": "r", "ㄗ": "z", "ㄘ": "c", "ㄙ": "s" };
+  var ZY_FIN = { "ㄚ": "a", "ㄛ": "o", "ㄜ": "e", "ㄝ": "ê", "ㄞ": "ai", "ㄟ": "ei", "ㄠ": "ao", "ㄡ": "ou", "ㄢ": "an", "ㄣ": "en", "ㄤ": "ang", "ㄥ": "eng", "ㄦ": "er", "ㄧ": "i", "ㄨ": "u", "ㄩ": "ü",
+    "ㄧㄚ": "ia", "ㄧㄝ": "ie", "ㄧㄠ": "iao", "ㄧㄡ": "iu", "ㄧㄢ": "ian", "ㄧㄣ": "in", "ㄧㄤ": "iang", "ㄧㄥ": "ing", "ㄨㄚ": "ua", "ㄨㄛ": "uo", "ㄨㄞ": "uai", "ㄨㄟ": "ui", "ㄨㄢ": "uan", "ㄨㄣ": "un", "ㄨㄤ": "uang", "ㄨㄥ": "ong", "ㄩㄝ": "üe", "ㄩㄢ": "üan", "ㄩㄣ": "ün", "ㄩㄥ": "iong" };
+  var PY_ALONE = { "i": "yi", "ia": "ya", "ie": "ye", "iao": "yao", "iu": "you", "ian": "yan", "in": "yin", "iang": "yang", "ing": "ying", "u": "wu", "ua": "wa", "uo": "wo", "uai": "wai", "ui": "wei", "uan": "wan", "un": "wen", "uang": "wang", "ong": "weng", "ü": "yu", "üe": "yue", "üan": "yuan", "ün": "yun", "iong": "yong" };
+  var PY_MARK = { a: ["ā", "á", "ǎ", "à"], o: ["ō", "ó", "ǒ", "ò"], e: ["ē", "é", "ě", "è"], i: ["ī", "í", "ǐ", "ì"], u: ["ū", "ú", "ǔ", "ù"], "ü": ["ǖ", "ǘ", "ǚ", "ǜ"] };
+  function zhuyinToPinyin(zy){
+    var t = String(zy || ""), tone = 1;
+    if(t.indexOf("˙") >= 0) tone = 0; else if(t.indexOf("ˊ") >= 0) tone = 2; else if(t.indexOf("ˇ") >= 0) tone = 3; else if(t.indexOf("ˋ") >= 0) tone = 4;
+    t = t.replace(/[˙ˊˇˋ\s]/g, "");
+    var ini = "", fin = "";
+    if(t && ZY_INI[t.charAt(0)]){ ini = ZY_INI[t.charAt(0)]; t = t.slice(1); }
+    if(t){ fin = ZY_FIN[t]; if(fin === undefined) return String(zy); }
+    var out;
+    if(!ini){ out = PY_ALONE[fin] || fin; }
+    else {
+      if(!fin) fin = "i";   // zhi chi shi ri zi ci si
+      if(/^[jqx]$/.test(ini)) fin = fin.replace(/^ü/, "u");
+      else if(fin === "ong" && false) fin = "ong";
+      out = ini + fin;
+    }
+    if(!tone) return out;
+    var vi = -1, ch;
+    if(/(iu)$/.test(out) && !/^yo/.test(out)){ vi = out.length - 1; }
+    else if(/ui$/.test(out)){ vi = out.length - 1; }
+    else { var pri = ["a", "o", "e", "ê"]; for(var k = 0; k < pri.length && vi < 0; k++){ var ix = out.indexOf(pri[k]); if(ix >= 0) vi = ix; } if(vi < 0){ var m = /[iuü]/.exec(out); if(m) vi = m.index; } }
+    if(vi < 0) return out;
+    ch = out.charAt(vi); if(ch === "ê") return out;
+    return out.slice(0, vi) + ((PY_MARK[ch] || [])[tone - 1] || ch) + out.slice(vi + 1);
+  }
+  function pinyinMarkToNum(s){
+    var M = { "ā": "a1", "á": "a2", "ǎ": "a3", "à": "a4", "ē": "e1", "é": "e2", "ě": "e3", "è": "e4", "ī": "i1", "í": "i2", "ǐ": "i3", "ì": "i4", "ō": "o1", "ó": "o2", "ǒ": "o3", "ò": "o4", "ū": "u1", "ú": "u2", "ǔ": "u3", "ù": "u4", "ǖ": "ü1", "ǘ": "ü2", "ǚ": "ü3", "ǜ": "ü4" };
+    var out = "", tone = "";
+    Array.from(String(s || "").trim().toLowerCase().replace(/v/g, "ü")).forEach(function(c){ if(M[c]){ out += M[c].charAt(0); tone = M[c].charAt(1); } else out += c; });
+    if(/[0-5]$/.test(out)) return out;
+    return out + (tone || "0");   // 沒有聲調符號＝輕聲
+  }
+  function isZhuyinStr(x){ return /[ㄅ-ㄩ˙ˊˇˋ]/.test(x); }
   function isHanChar(ch){
     return /[㐀-䶿一-鿿豈-﫿]/.test(ch);
   }
@@ -9408,13 +9446,14 @@ window.mmTA = (function(){
       if(md === "off" || md === "hide"){ html += W(i, needZ ? "<span class=\"zy-r\" data-ph-idx=\"" + (baseIdx + i) + "\"><span class=\"zy-c\">" + escapeHtml(ch) + "</span></span>" : "<ruby data-ph-idx=\"" + (baseIdx + i) + "\">" + escapeHtml(ch) + "<rt></rt></ruby>"); continue; }
       var ovv = overrides && typeof overrides[baseIdx + i] === "string" ? overrides[baseIdx + i] : "";
       var hasOverride = ovv !== "" && ovv !== "+" && ovv !== " ";
-      var annotation = hasOverride ? ovv : (md === "zhuyin" ? pinyinSyllableToZhuyin(symN[i]) : symP[i]);
+      var annotation = hasOverride ? (md === "pinyin" ? (isZhuyinStr(ovv) ? zhuyinToPinyin(ovv) : ovv) : (isZhuyinStr(ovv) ? ovv : pinyinSyllableToZhuyin(pinyinMarkToNum(ovv)))) : (md === "pinyin" ? symP[i] : pinyinSyllableToZhuyin(symN[i]));
+      var bothP = (md === "both") ? (hasOverride ? (isZhuyinStr(ovv) ? zhuyinToPinyin(ovv) : ovv) : symP[i]) : "";
       if(md === "zhuyin" || md === "both"){
         // 直式、在字右邊：把注音拆成「符號本體」和「聲調符號」，本體直排，聲調放在右邊（輕聲 ˙ 放在上方）
-        var zyAnn = md === "both" ? (hasOverride ? ovv : pinyinSyllableToZhuyin(symN[i])) : annotation;
+        var zyAnn = annotation;
         var ann = String(zyAnn || ""), tone = "", neutral = false, main = ann.replace(/[ˊˇˋ˙]/g, function(mm){ if(mm === "˙") neutral = true; else tone = mm; return ""; });
         var zyS = "<span class=\"zy-s" + (hasOverride ? " ph-overridden" : "") + "\"><span class=\"zy-col\">" + (neutral ? "<span class=\"zy-n\">˙</span>" : "") + "<span class=\"zy-m\">" + Array.from(main).map(function(c){ return "<span class=\"zy-ch\">" + escapeHtml(c) + "</span>"; }).join("") + "</span></span>" + (tone ? "<span class=\"zy-t\">" + tone + "</span>" : "") + "</span>";
-        var zyC = md === "both" ? "<ruby>" + escapeHtml(ch) + "<rt>" + escapeHtml(symP[i] || "") + "</rt></ruby>" : escapeHtml(ch);   // 注音＋拼音：拼音在字上面、注音在字右邊
+        var zyC = md === "both" ? "<ruby>" + escapeHtml(ch) + "<rt>" + escapeHtml(bothP || "") + "</rt></ruby>" : escapeHtml(ch);   // 注音＋拼音：拼音在字上面、注音在字右邊
         html += W(i, "<span class=\"zy-r\" data-ph-idx=\"" + (baseIdx + i) + "\"><span class=\"zy-c\">" + zyC + "</span>" + zyS + "</span>");
         continue;
       }
