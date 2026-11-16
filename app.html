@@ -171,7 +171,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .act-fav{ position:absolute; top:10px; right:10px; border:1.5px solid var(--line); background:var(--surface); border-radius:99px; padding:2px 10px; font-size:12.5px; font-weight:700; cursor:pointer; color:var(--ink-soft); } .act-fav:hover{ border-color:var(--seal); color:var(--seal); } .act-fav.on{ color:var(--seal); border-color:var(--seal); background:var(--seal-soft); }
   .act-go b{ padding-right:84px; }
   .act-et{ font-size:.78em; color:var(--ink-soft); font-weight:700; }
-  .act-img{ width:72px; height:72px; object-fit:contain; margin-bottom:2px; }
+  .act-img{ width:56px; height:56px; object-fit:contain; margin-bottom:4px; }
   .act-en{ font-size:.92em; opacity:.85; }
   .act-ctx{ display:flex; gap:8px 12px; align-items:center; flex-wrap:wrap; } .act-ctx label{ margin:0; font-weight:700; font-size:15px; } .act-ctx select{ padding:6px 10px; border-radius:8px; border:1.5px solid var(--line); background:var(--surface-2); max-width:100%; }
   .cl-school{ margin-top:10px; } .cl-sh{ display:flex; align-items:center; gap:8px; margin-bottom:6px; flex-wrap:wrap; }
@@ -368,7 +368,6 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .tab-dd-item:hover{ background:var(--paper); } .tab-dd-item.on{ color:var(--seal); font-weight:700; }
   .tab.focus-btn{ margin-left:auto; color:var(--seal); border:1.5px solid var(--seal); border-radius:10px; padding:4px 12px; margin-bottom:5px; font-size:14.5px; }
 </style>
-<script src="icons/mm-icons.js?v=20261116"></script>
 </head>
 <body>
 <div id="root"></div>
@@ -6504,22 +6503,22 @@ async function deleteUnit(key){
 var ACTS = [
   { id: "match", e: "", img: "icons/act-match.png", t: "配對 Match", d: "詞語和拼音／翻譯配對，比速度或限時；可以全班即時比賽、分組、出作業連結", et: "Match", en: "Match words with pinyin, meanings or pictures", need: "lesson", game: true },
   { id: "blast", e: "", img: "icons/act-blast.png", t: "Blast", d: "答案從畫面掉下來，點對的那個；四種主題，可以全班即時比賽", et: "Blast", en: "Tap the right answer as it falls", need: "lesson", game: true },
-  { id: "whack", e: "", img: "icons/act-whack.png", t: "打貓咪 Whack-a-Cat", d: "地洞冒出舉著答案牌的像素貓（也可以選地鼠），打對的那隻；自己玩、作業連結，或全班即時分組競賽", et: "Whack-a-Cat", en: "Whack the cat holding the right answer", need: "lesson", game: true },
-  { id: "cards", e: "", img: "icons/act-cards.png", t: "翻卡選題 Card Pick", d: "蓋著的卡（數字、水果或動物），輪到的學生用自己的裝置選一張，翻開是生詞，答對幫小組得分；只有即時多人", et: "Card Pick", en: "Pick a hidden card, reveal a word, answer to score for your team", need: "lesson", game: true },
-  { id: "quiz", e: "", img: "icons/act-quiz.png", t: "快問快答 Quiz", d: "像 Kahoot：一題一題出，四選一，越快分數越高；全班同一秒進到同一題，可以分組、出作業連結", et: "Quiz", en: "Answer fast to score more, one question at a time", need: "lesson", game: true },
-  { id: "listenorder", e: "", img: "icons/act-listenorder.png", t: "聽音排序 Listen & Order", d: "聽一串詞語，拖成聽到的順序；每輪多一個詞，越來越難；被淘汰還能旁觀練習、復活", et: "Listen & Order", en: "Listen, then drag the words into the order you heard", need: "lesson", game: true },
-  { id: "flashcard", e: "", img: "icons/act-flashcard.png", t: "字卡練習", d: "生詞字卡，翻面看注音和意思", et: "Flashcards", en: "Flip a card to see zhuyin and meaning", need: "lesson" },
+  { id: "whack", e: "🔨", t: "打貓咪 Whack-a-Cat", d: "地洞冒出舉著答案牌的像素貓（也可以選地鼠），打對的那隻；自己玩、作業連結，或全班即時分組競賽", et: "Whack-a-Cat", en: "Whack the cat holding the right answer", need: "lesson", game: true },
+  { id: "cards", e: "🃏", t: "翻卡選題 Card Pick", d: "蓋著的卡（數字、水果或動物），輪到的學生用自己的裝置選一張，翻開是生詞，答對幫小組得分；只有即時多人", et: "Card Pick", en: "Pick a hidden card, reveal a word, answer to score for your team", need: "lesson", game: true },
+  { id: "quiz", e: "🎯", t: "快問快答 Quiz", d: "像 Kahoot：一題一題出，四選一，越快分數越高；全班同一秒進到同一題，可以分組、出作業連結", et: "Quiz", en: "Answer fast to score more, one question at a time", need: "lesson", game: true },
+  { id: "listenorder", e: "👂", t: "聽音排序 Listen & Order", d: "聽一串詞語，拖成聽到的順序；每輪多一個詞，越來越難；被淘汰還能旁觀練習、復活", et: "Listen & Order", en: "Listen, then drag the words into the order you heard", need: "lesson", game: true },
+  { id: "flashcard", e: "", t: "字卡練習", d: "生詞字卡，翻面看注音和意思", et: "Flashcards", en: "Flip a card to see zhuyin and meaning", need: "lesson" },
   { id: "flip", e: "", img: "icons/act-flip.png", t: "翻卡遊戲", d: "翻牌配對，記憶生詞", et: "Memory Game", en: "Flip two cards and find a pair", need: "lesson" },
   { id: "bingo", e: "", img: "icons/act-bingo.png", t: "賓果卡", d: "產生賓果卡、老師念詞", et: "Bingo Cards", en: "Print bingo cards; the teacher calls words", need: "lesson" },
-  { id: "pbingo", e: "", img: "icons/act-pbingo.png", t: "線上賓果（全班一起）", d: "學生用自己的裝置連進來一起玩", et: "Online Bingo", en: "Play bingo together on your own devices", need: "class" },
-  { id: "qa", e: "", img: "icons/act-qa.png", t: "回答問題", d: "用生詞的延伸問題練口說", et: "Q&A", en: "Answer questions using the new words", need: "lesson" },
-  { id: "kinship", e: "", img: "icons/act-kinship.png", t: "語法遊戲", d: "句型練習遊戲", et: "Grammar Game", en: "Practice sentence patterns", need: "lesson" },
-  { id: "order", e: "", img: "icons/act-order.png", t: "點餐練習", d: "情境對話：點餐", et: "Ordering Food", en: "Role-play ordering breakfast", need: "lesson" },
-  { id: "dtq", e: "", img: "icons/act-dtq.png", t: "年月日問答", d: "日期、星期的問答練習", et: "Dates & Days", en: "Ask and answer about dates and days", need: "lesson" },
-  { id: "wheel", e: "", img: "icons/act-wheel.png", t: "點名輪盤", d: "用班級名單隨機抽人", et: "Name Wheel", en: "Spin to pick a student", need: "classOnly" },
-  { id: "petgame", e: "", img: "icons/act-petgame.png", t: "寵物遊戲", d: "學生用點數養寵物、答生詞題餵牠；在這裡開啟、調整點數與商店價格（預設不開放）", et: "Pet Game", en: "Students earn points and raise a pet", need: "classOnly", pet: "pets" },
-  { id: "petpark", e: "", img: "icons/act-petpark.png", t: "班級寵物園", d: "投影用：全班寵物在草地上走動，還能設全班共同目標", et: "Pet Park", en: "All class pets together, with a class goal", need: "classOnly", pet: "petpark" },
-  { id: "capsule", e: "", img: "icons/act-capsule.png", t: "時空膠囊", d: "學生寫給未來的自己", et: "Time Capsule", en: "Write a letter to your future self", need: "classOnly" }
+  { id: "pbingo", e: "", img: "icons/act-bingo.png", t: "線上賓果（全班一起）", d: "學生用自己的裝置連進來一起玩", et: "Online Bingo", en: "Play bingo together on your own devices", need: "class" },
+  { id: "qa", e: "", t: "回答問題", d: "用生詞的延伸問題練口說", et: "Q&A", en: "Answer questions using the new words", need: "lesson" },
+  { id: "kinship", e: "", t: "語法遊戲", d: "句型練習遊戲", et: "Grammar Game", en: "Practice sentence patterns", need: "lesson" },
+  { id: "order", e: "", t: "點餐練習", d: "情境對話：點餐", et: "Ordering Food", en: "Role-play ordering breakfast", need: "lesson" },
+  { id: "dtq", e: "", t: "年月日問答", d: "日期、星期的問答練習", et: "Dates & Days", en: "Ask and answer about dates and days", need: "lesson" },
+  { id: "wheel", e: "", t: "點名輪盤", d: "用班級名單隨機抽人", et: "Name Wheel", en: "Spin to pick a student", need: "classOnly" },
+  { id: "petgame", e: "", t: "寵物遊戲", d: "學生用點數養寵物、答生詞題餵牠；在這裡開啟、調整點數與商店價格（預設不開放）", et: "Pet Game", en: "Students earn points and raise a pet", need: "classOnly", pet: "pets" },
+  { id: "petpark", e: "", t: "班級寵物園", d: "投影用：全班寵物在草地上走動，還能設全班共同目標", et: "Pet Park", en: "All class pets together, with a class goal", need: "classOnly", pet: "petpark" },
+  { id: "capsule", e: "", t: "時空膠囊", d: "學生寫給未來的自己", et: "Time Capsule", en: "Write a letter to your future self", need: "classOnly" }
 ];
 function actById(id){ return ACTS.filter(function(a){ return a.id === id; })[0]; }
 function actFavs(){ var f = (S.plat.meta || {}).actFav; return Array.isArray(f) ? f : []; }
