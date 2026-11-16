@@ -22,7 +22,7 @@
   // 每個詞「開始念」的時間是固定算出來的（跟詞的長度有關，跟裝置無關），所以全班聽到的節奏一樣，也算得出整段多長
   function slotMs(w, pc){ return Math.round(pc.gap + (450 + 230 * hanLen(w)) * pc.k); }
   function lensOf(o, nWords){
-    var start = MG.clamp(Number(o.start) || 2, 2, 6), want = o.maxLen === 0 || o.maxLen === "0" || o.maxLen === "all" ? 40 : MG.clamp(Number(o.maxLen) || 6, 2, 40), maxL = Math.min(want, nWords), lens = [];
+    var start = MG.clamp(Number(o.start) || 2, 2, 20), want = o.maxLen === 0 || o.maxLen === "0" || o.maxLen === "all" ? 40 : MG.clamp(Number(o.maxLen) || 6, 2, 40), maxL = Math.min(Math.max(want, start), nWords), lens = [];   // 上限比第一輪還小時，至少玩第一輪那一個長度
     for(var L = start; L <= maxL; L++) lens.push(L);
     return { start: start, lens: lens };
   }
