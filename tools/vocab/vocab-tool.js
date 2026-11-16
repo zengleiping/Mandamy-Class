@@ -800,12 +800,12 @@ function relationAttribution(){return relationFields.some(([k])=>withRelation(k)
 function copySentenceHtml(row,index){
  const marked=makeMarked(val(row,'sentence'),val(row,'word'),index);
  return marked.replace(/<span class="preview-underline">([\s\S]*?)<\/span>/g,'<u style="text-decoration:underline;text-decoration-color:#C4623A;text-underline-offset:.32em">$1</u>')
-  .replace(/<span class="preview-blank"[^>]*><span class="blank-line">([\s\S]*?)<\/span><\/span>/g,'<u style="color:#352C27;text-decoration:underline">$1</u>');
+  .replace(/<span class="preview-blank"[^>]*><span class="blank-line">([\s\S]*?)<\/span><\/span>/g,'<u style="color:#2B2320;text-decoration:underline">$1</u>');
 }
 function tableHtml(){
  const base='border:1px solid #888;padding:6px;vertical-align:top;text-align:left;font-family:Microsoft JhengHei,PingFang TC,Arial,sans-serif;font-size:14px;line-height:1.8;';
- let html='<table style="border-collapse:collapse;width:100%;background-color:#FFFFFF;color:#352C27;font-family:Microsoft JhengHei,PingFang TC,Arial,sans-serif;font-size:14px;line-height:1.8"><thead><tr>'+headers().map(x=>`<th bgcolor="#EFE3CC" style="${base}background-color:#EFE3CC;color:#352C27;font-weight:600">${escaped(x)}</th>`).join('')+'</tr></thead><tbody>';
- rows().forEach((r,i)=>{const cells=rowValues(r).slice(0,withSent()?-1:undefined).map((x,k)=>((k===0&&blankWord())||(k===1&&blankPhonetic()))?'<u>　　　　　</u>':escaped(toScript(x)));if(withSent())cells.push(copySentenceHtml(r,i));html+='<tr>'+cells.map(x=>`<td bgcolor="#FFFFFF" style="${base}background-color:#FFFFFF;color:#352C27">${x}</td>`).join('')+'</tr>'});return html+'</tbody></table>'+copyPracticeHtml();
+ let html='<table style="border-collapse:collapse;width:100%;background-color:#FFFFFF;color:#2B2320;font-family:Microsoft JhengHei,PingFang TC,Arial,sans-serif;font-size:14px;line-height:1.8"><thead><tr>'+headers().map(x=>`<th bgcolor="#F2EAE0" style="${base}background-color:#F2EAE0;color:#2B2320;font-weight:600">${escaped(x)}</th>`).join('')+'</tr></thead><tbody>';
+ rows().forEach((r,i)=>{const cells=rowValues(r).slice(0,withSent()?-1:undefined).map((x,k)=>((k===0&&blankWord())||(k===1&&blankPhonetic()))?'<u>　　　　　</u>':escaped(toScript(x)));if(withSent())cells.push(copySentenceHtml(r,i));html+='<tr>'+cells.map(x=>`<td bgcolor="#FFFFFF" style="${base}background-color:#FFFFFF;color:#2B2320">${x}</td>`).join('')+'</tr>'});return html+'</tbody></table>'+copyPracticeHtml();
 }
 function copyTableBySelection(html){
  const selection=window.getSelection?.(),active=document.activeElement;if(!selection||!document.execCommand)return false;
@@ -819,7 +819,7 @@ async function copyFormattedTable(){
  try{await navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([html],{type:'text/html'}),'text/plain':new Blob([plain],{type:'text/plain'})})]);copied=true}catch{try{copied=copyTableBySelection(html)}catch{}}
  $('#export-message').textContent=copied?'表格已複製，包含顏色與格式。':'瀏覽器未允許複製，請改用下載 Word。';
 }
-function documentHtml(){return `<!doctype html><html><head><meta charset="utf-8"><style>body{font-family:Arial,'Noto Sans TC',sans-serif;color:#352C27}h1{font-size:22pt}p{font-size:10pt;color:#555}table{margin-top:1rem}th{background:#EFE3CC}</style><style>.relation-reference{font-size:.78rem;color:var(--muted);padding:.2rem .5rem;line-height:1.5}.relation-reference details{margin:.25rem 0}.relation-reference button{font-size:.8rem;margin:.2rem 0}.relation-reference a{color:var(--ink)}.relation-reference .original{white-space:pre-wrap;overflow-wrap:anywhere}</style></head><body><h1>${escaped(docTitle())}</h1><p>${escaped(MMV.brand)}${!exportLevel()?'':'｜'+escaped(levelLabel())+'為詞表參考'}</p>${tableHtml()}<p>${escaped(relationAttribution())}</p></body></html>`}
+function documentHtml(){return `<!doctype html><html><head><meta charset="utf-8"><style>body{font-family:Arial,'Noto Sans TC',sans-serif;color:#2B2320}h1{font-size:22pt}p{font-size:10pt;color:#555}table{margin-top:1rem}th{background:#F2EAE0}</style><style>.relation-reference{font-size:.78rem;color:var(--muted);padding:.2rem .5rem;line-height:1.5}.relation-reference details{margin:.25rem 0}.relation-reference button{font-size:.8rem;margin:.2rem 0}.relation-reference a{color:var(--ink)}.relation-reference .original{white-space:pre-wrap;overflow-wrap:anywhere}</style></head><body><h1>${escaped(docTitle())}</h1><p>${escaped(MMV.brand)}${!exportLevel()?'':'｜'+escaped(levelLabel())+'為詞表參考'}</p>${tableHtml()}<p>${escaped(relationAttribution())}</p></body></html>`}
 function download(name,content,type){const blob=new Blob([content],{type}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
 function csvCell(x){return '"'+String(x??'').replaceAll('"','""')+'"'}
 function rowValues(r){return [blankWord()?'':val(r,'word'),blankPhonetic()?'':val(r,'pinyin'),...(exportPos()?[val(r,'pos')]:[]),val(r,'meaning'),...(!exportLevel()?[]:[val(r,'level')]),...relationValues(r),...(withSent()?[val(r,'sentence')]:[])].map(toScript)}
@@ -958,13 +958,13 @@ function practiceOrder(){
 }
 function practiceHtml(cellSentence){
  if(!hasBankPractice()||!practiceRows().length)return '';
- const order=practiceOrder(),font='font-family:Microsoft JhengHei,PingFang TC,Arial,sans-serif;font-size:11pt;line-height:2;color:#352C27;';
+ const order=practiceOrder(),font='font-family:Microsoft JhengHei,PingFang TC,Arial,sans-serif;font-size:11pt;line-height:2;color:#2B2320;';
  const bank=order.bank.map(r=>`<span style="white-space:nowrap">${escaped(val(r,'word'))}</span>`).join('　　');
  const questions=order.list.map((r,i)=>`<tr class="practice-question" style="page-break-inside:avoid"><td style="${font}border:0;width:32px;padding:6px 4px 6px 0;vertical-align:top">${i+1}.</td><td style="${font}border:0;padding:6px 0;vertical-align:top">${cellSentence(r,rows().indexOf(r),true)}</td></tr>`).join('');
- return `<section class="fill-practice" style="page-break-before:always;break-before:page;margin-top:7mm;${font}"><h2 style="font-family:Microsoft JhengHei,PingFang TC,Arial,sans-serif;font-size:14pt;color:#352C27;margin:0 0 3mm">填空練習</h2><table class="word-bank" style="display:table;width:100%;border-collapse:collapse;border:1px solid #888;margin-bottom:3mm"><tbody><tr><td style="${font}border:1px solid #888;padding:3mm">${bank}</td></tr></tbody></table><table class="practice-questions" style="width:100%;border:0;border-collapse:collapse"><tbody>${questions}</tbody></table></section>`;
+ return `<section class="fill-practice" style="page-break-before:always;break-before:page;margin-top:7mm;${font}"><h2 style="font-family:Microsoft JhengHei,PingFang TC,Arial,sans-serif;font-size:14pt;color:#2B2320;margin:0 0 3mm">填空練習</h2><table class="word-bank" style="display:table;width:100%;border-collapse:collapse;border:1px solid #888;margin-bottom:3mm"><tbody><tr><td style="${font}border:1px solid #888;padding:3mm">${bank}</td></tr></tbody></table><table class="practice-questions" style="width:100%;border:0;border-collapse:collapse"><tbody>${questions}</tbody></table></section>`;
 }
 function copyPracticeHtml(){
- return practiceHtml((r,i)=>sentenceParts(val(r,'sentence'),val(r,'word')).map(p=>p.hit?`<u style="color:#352C27;text-decoration:underline">${'　'.repeat(Math.max(2,charCount(p.t)))}</u>`:escaped(p.t)).join(''));
+ return practiceHtml((r,i)=>sentenceParts(val(r,'sentence'),val(r,'word')).map(p=>p.hit?`<u style="color:#2B2320;text-decoration:underline">${'　'.repeat(Math.max(2,charCount(p.t)))}</u>`:escaped(p.t)).join(''));
 }
 const wantAnswers=()=>(isWorksheetBlank()||blankWord()||blankPhonetic())&&$('#ws-answers').checked&&(hasBankPractice()?(practiceRows().length>0||mainAnswersNeeded()):(!withSent()||exportRows().every(r=>val(r,'sentence'))));
 const docTitle=()=>toScript($('#doc-title').value.trim()||'我的生詞表');
@@ -990,7 +990,7 @@ function answerValues(r,i){return [String(i+1),val(r,'word'),...(blankPhonetic()
 
 function sheetHtml(){
  const heads=headers(),list=exportRows(),num=$('#ws-header').checked||wantAnswers();
- const cellSentence=(r,i,practice=false)=>sentenceParts(val(r,'sentence'),val(r,'word')).map(p=>{if(!p.hit)return escaped(p.t);const m=practice?'blank':currentMark();if(m==='blank'||m==='bank')return practice?`<u style="color:#352C27;text-decoration:underline">${'　'.repeat(Math.max(2,charCount(p.t)))}</u>`:`<span class="blank">${'　'.repeat(Math.max(2,charCount(p.t)))}</span>`;if(m==='phonetic')return phoneticRuby(p.t,r);if(m==='underline')return `<u>${escaped(p.t)}</u>`;return `<b style="color:${markColor(i)}">${escaped(p.t)}</b>`}).join('');
+ const cellSentence=(r,i,practice=false)=>sentenceParts(val(r,'sentence'),val(r,'word')).map(p=>{if(!p.hit)return escaped(p.t);const m=practice?'blank':currentMark();if(m==='blank'||m==='bank')return practice?`<u style="color:#2B2320;text-decoration:underline">${'　'.repeat(Math.max(2,charCount(p.t)))}</u>`:`<span class="blank">${'　'.repeat(Math.max(2,charCount(p.t)))}</span>`;if(m==='phonetic')return phoneticRuby(p.t,r);if(m==='underline')return `<u>${escaped(p.t)}</u>`;return `<b style="color:${markColor(i)}">${escaped(p.t)}</b>`}).join('');
  const body=list.map((r,i)=>{const v=rowValues(r);if(withSent())v.pop();const cells=v.map((x,k)=>((k===0&&blankWord())||(k===1&&blankPhonetic()))?'<span class="field-blank">　　　　　　</span>':escaped(x));if(withSent())cells.push(cellSentence(r,i));return '<tr>'+(num?`<td class="n">${i+1}</td>`:'')+cells.map(c=>`<td>${c}</td>`).join('')+'</tr>'}).join('');
  const answerList=hasBankPractice()?practiceOrder().list:list;
  const answerTable=(answerRows)=>`<table><thead><tr>${answerHeaders().map(h=>`<th>${escaped(h)}</th>`).join('')}</tr></thead><tbody>${answerRows.map((r,i)=>'<tr>'+answerValues(r,i).map(x=>`<td>${escaped(x)}</td>`).join('')+'</tr>').join('')}</tbody></table>`;
@@ -1002,15 +1002,15 @@ function sheetHtml(){
  const sub=exportLevel()?`<p class="sub">${escaped(levelLabel())}為詞表參考</p>`:'';
  const W={'生詞':1.1,'拼音':1.4,'注音':1.6,'詞性':1.3,'英文翻譯':2.4,'例句':3.6},ks=[...(num?['#']:[]),...heads],wt=ks.map(k=>k==='#'?0.45:(W[Lang.toTrad(k)]||1.5)),tot=wt.reduce((x,y)=>x+y,0),cols='<colgroup>'+wt.map(w=>`<col style="width:${(100*w/tot).toFixed(1)}%">`).join('')+'</colgroup>';
  return toScript(`<!doctype html><html lang="${pref.script==='simp'?'zh-Hans':'zh-Hant'}"><head><meta charset="utf-8"><title>${escaped(docTitle())}</title><style>
- @page{size:A4;margin:16mm 14mm}body{font-family:"Noto Sans TC","Microsoft JhengHei","PingFang TC",sans-serif;color:#352C27;font-size:11pt;margin:0}
+ @page{size:A4;margin:16mm 14mm}body{font-family:"Noto Sans TC","Microsoft JhengHei","PingFang TC",sans-serif;color:#2B2320;font-size:11pt;margin:0}
  h1{font-size:18pt;margin:0 0 2mm}h2{font-size:14pt;margin:0 0 3mm}.sub{font-size:9pt;color:#666;margin:0 0 3mm}
  .ws{margin:2mm 0 5mm;font-size:11pt}.ws span{display:inline-block;width:38mm;border-bottom:1px solid #333;margin:0 6mm 0 1mm}
- table{width:100%;border-collapse:collapse}th,td{border:1px solid #888;padding:2mm 2.4mm;text-align:left;vertical-align:top}th{background:#EFE3CC;font-size:9.5pt}
+ table{width:100%;border-collapse:collapse}th,td{border:1px solid #888;padding:2mm 2.4mm;text-align:left;vertical-align:top}th{background:#F2EAE0;font-size:9.5pt}
  td.n,th.n{text-align:center;color:#555}tr{page-break-inside:avoid}
  .blank{display:inline-block;min-width:16mm;border-bottom:1px solid #222;margin:0 1mm;vertical-align:baseline;padding-bottom:.12em}
  .fill-practice{margin-top:7mm}.fill-practice h2{break-after:avoid}.word-bank{border:1px solid #888;padding:3mm;display:flex;flex-wrap:wrap;gap:3mm 6mm;break-inside:avoid}.fill-practice li{margin:4mm 0;line-height:2;break-inside:avoid}
  .field-blank{display:inline-block;width:90%;max-width:100%;overflow:hidden;min-height:1.5em;border-bottom:1px solid #222}.blank u,u{text-underline-offset:.32em}.answers{page-break-before:always}.foot{margin-top:4mm;font-size:8pt;color:#888}
- ${paged?'@media screen{body.practice-document{background:#EFE3CC}.practice-document>.worksheet-page,.practice-document>.fill-practice,.practice-document>.answers{background:#fff;box-sizing:border-box;min-height:265mm;padding:16px;margin:0 0 24px!important;border:1px solid #E6DDD2}}':''}
+ ${paged?'@media screen{body.practice-document{background:#F2EAE0}.practice-document>.worksheet-page,.practice-document>.fill-practice,.practice-document>.answers{background:#fff;box-sizing:border-box;min-height:265mm;padding:16px;margin:0 0 24px!important;border:1px solid #E6DDD2}}':''}
  </style><style>.relation-reference{font-size:.78rem;color:var(--muted);padding:.2rem .5rem;line-height:1.5}.relation-reference details{margin:.25rem 0}.relation-reference button{font-size:.8rem;margin:.2rem 0}.relation-reference a{color:var(--ink)}.relation-reference .original{white-space:pre-wrap;overflow-wrap:anywhere}</style></head><body${paged?' class="practice-document"':''}>${paged?'<section class="worksheet-page">':''}<h1>${escaped(docTitle())}</h1>${sub}${ws}<table style="table-layout:fixed">${cols}<thead><tr>${num?'<th class="n">#</th>':''}${heads.map(h=>`<th>${escaped(h)}</th>`).join('')}</tr></thead><tbody>${body}</tbody></table>${paged?'<p class="foot">${escaped(MMV.brand)} · 生詞表製作</p></section>':''}${practice}${paged?'':'<p class="foot">${escaped(MMV.brand)} · 生詞表製作</p>'}${answers}<p class="foot">${escaped(relationAttribution())}</p></body></html>`);
 }
 function printSheet(){

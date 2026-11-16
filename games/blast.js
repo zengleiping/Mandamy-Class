@@ -67,7 +67,7 @@
       opts.forEach(function(x, i){
         var it = document.createElement("div"); it.className = "bl-item";
         var txt = typeMode ? x.w : MG.sideText(x, ansKind, o.lang), zh = typeMode || ansKind === "w" || (zyM && ansKind === "p");
-        it.style.setProperty("--lc", lab.lc || "#352C27"); if(lab.ls) it.style.setProperty("--ls", lab.ls); if(lab.ly) it.style.setProperty("--ly", lab.ly); if(lab.lh) it.style.setProperty("--lh", lab.lh);
+        it.style.setProperty("--lc", lab.lc || "#2B2320"); if(lab.ls) it.style.setProperty("--ls", lab.ls); if(lab.ly) it.style.setProperty("--ly", lab.ly); if(lab.lh) it.style.setProperty("--lh", lab.lh);
         it.innerHTML = T.shape(roundNo * 7 + i) + (ansKind === "i" && !typeMode ? '<div class="lbl picl">' + MG.picHtml(txt) + '</div>' : '<div class="lbl"><span class="fit' + (zh ? " zh" : "") + '" data-fmax="' + (zh ? 30 : ansKind === "p" ? 24 : 20) + '" data-fmin="10">' + MG.esc(txt) + '</span></div>');
         stage.appendChild(it);
         // 字比較長（例如一串注音）：果實放大，字不會超出果實，也不會縮到看不清楚
@@ -98,7 +98,7 @@
     function place(obj, y){ var tf = "translate(" + obj.x.toFixed(1) + "px," + y.toFixed(1) + "px)"; obj.el.style.transform = tf; obj.el.style.setProperty("--tf", tf); obj.y = y; }
     function clearItems(){ items.forEach(function(it){ it.el.remove(); }); items = []; }
     function sparks(obj){
-      var cols = T.spark || ["#B25F38"], cx = obj.x + obj.el.offsetWidth / 2, cy = obj.y + obj.el.offsetHeight / 2;
+      var cols = T.spark || ["#E8825A"], cx = obj.x + obj.el.offsetWidth / 2, cy = obj.y + obj.el.offsetHeight / 2;
       for(var i = 0; i < 14; i++){
         var s = document.createElement("div"), a = i / 14 * Math.PI * 2, d = 50 + Math.random() * 50;
         s.className = "bl-spark"; s.style.left = cx + "px"; s.style.top = cy + "px"; s.style.background = cols[i % cols.length];

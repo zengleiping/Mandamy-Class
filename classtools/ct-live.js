@@ -20,7 +20,7 @@
     }
     function show(v){
       var arr = Object.keys(v).map(function(k){ return v[k]; }).sort(function(a, b){ return (a.n || 0) - (b.n || 0); }); rows.innerHTML = "";
-      arr.forEach(function(r, i){ rows.appendChild(h("li", { style: i === 0 ? "font-weight:800;color:#8F4524;font-size:1.3em;" : "", text: r.name + (i === 0 ? "　🥇 最快！" : "") })); });
+      arr.forEach(function(r, i){ rows.appendChild(h("li", { style: i === 0 ? "font-weight:800;color:#C0623A;font-size:1.3em;" : "", text: r.name + (i === 0 ? "　🥇 最快！" : "") })); });
       if(arr.length === 1) CT.beep(1, 880);
     }
     function paint(){ var l = L(), t = l && l.current(); stat.textContent = t && t.type === "buzz" && t.open ? "🔔 搶答進行中…" : ""; }

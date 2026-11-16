@@ -17,7 +17,7 @@
   var ANS_KIND = { w2p: "p", w2t: "t", p2w: "w", t2w: "w", w2i: "i", i2w: "w", a2w: "w", a2t: "t" };
   var SAY_RATE = 1.1;   // 聽聲音題：念的速度
   function audioTexts(qs){ return qs.filter(function(Q){ return Q.type === "a2w" || Q.type === "a2t"; }).map(function(Q){ return Q.w.w; }); }
-  var COLORS = ["#B25F38", "#5A7590", "#B8872E", "#647E58"], LETTERS = ["A", "B", "C", "D"];
+  var COLORS = ["#D9534F", "#4C7FBF", "#E0A526", "#4C8577"], LETTERS = ["A", "B", "C", "D"];
 
   function slotMs(o){ return (Number(o.sec) || 15) * 1000 + REVEAL; }
   function countOf(o, nWords){ return Math.max(1, Math.min(Number(o.count) || 10, nWords)); }

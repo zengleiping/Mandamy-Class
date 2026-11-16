@@ -40,7 +40,7 @@ img.vimg{ width:100%; height:100%; object-fit:contain; border-radius:10px; displ
 .vimg-tools{ position:absolute; left:0; top:-38px; display:flex; gap:4px; opacity:0; transition:opacity .15s; z-index:3; white-space:nowrap; }
 .vocab-card:hover .vimg-tools, .card:hover .vimg-tools, .vimg-tools:focus-within{ opacity:1; }
 .vimg-tools button{ font:inherit; font-size:12px; font-weight:700; padding:2px 8px; border-radius:99px; border:1.5px solid var(--border, #ddd); background:var(--card, #fff); color:var(--ink); cursor:pointer; }
-.vimg-tools button:hover{ border-color:var(--brand, #B25F38); }
+.vimg-tools button:hover{ border-color:var(--brand, #E8825A); }
 @media (hover:none){ .vimg-tools{ opacity:1; } }
 /* 給學生看的英文說明 */
 .en{ font-size:.82em; font-weight:600; opacity:.8; }
@@ -48,22 +48,22 @@ img.vimg{ width:100%; height:100%; object-fit:contain; border-radius:10px; displ
 @font-face{font-family:"MM Latin";src:local("Times New Roman"),local("TimesNewRomanPSMT"),local("Times");unicode-range:U+0000-02AF,U+0300-036F,U+1E00-1EFF,U+2000-206F,U+20A0-20CF,U+2100-214F;}@font-face{font-family:"MM Latin";font-weight:700;src:local("Times New Roman Bold"),local("TimesNewRomanPS-BoldMT"),local("Times Bold"),local("Times-Bold");unicode-range:U+0000-02AF,U+0300-036F,U+1E00-1EFF,U+2000-206F,U+20A0-20CF,U+2100-214F;}
 
   :root{
-    --bg:#F7F0E1;
-    --card:#FFFCF6;
-    --card-alt:#FBF5E9;
-    --ink:#352C27;
-    --ink-soft:#66594F;
+    --bg:#FAF7F2;
+    --card:#FFFFFF;
+    --card-alt:#FBF7F1;
+    --ink:#2B2320;
+    --ink-soft:#574C44;
     --ink-faint:#9C8F80;
-    --brand:#B25F38;
-    --brand-dark:#8F4524;
-    --accent:#647E58;
-    --accent-soft:#E5EBDA;
-    --lesson1:#D9A05B;
-    --lesson2:#647E58;
-    --lesson3:#5A7590;
-    --lesson4:#A86478;
-    --lesson5:#A8895A;
-    --border:#E4D6BC;
+    --brand:#E8825A;
+    --brand-dark:#C4603A;
+    --accent:#4C8577;
+    --accent-soft:#E3F0EC;
+    --lesson1:#E0954B;
+    --lesson2:#4C8577;
+    --lesson3:#5F7BB0;
+    --lesson4:#B0608A;
+    --lesson5:#9C853E;
+    --border:#EDE3D6;
     --shadow: 0 2px 10px rgba(60,40,20,0.06), 0 1px 2px rgba(60,40,20,0.04);
     --radius:20px;
     --glow1: rgba(255,205,140,0.35);
@@ -75,9 +75,9 @@ img.vimg{ width:100%; height:100%; object-fit:contain; border-radius:10px; displ
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
-      --bg:#241E19;
-      --card:#2E2620;
-      --card-alt:#38302A;
+      --bg:#221C17;
+      --card:#2C2520;
+      --card-alt:#332A23;
       --ink:#F3ECE2;
       --ink-soft:#C6B9A8;
       --ink-faint:#8F8271;
@@ -101,9 +101,9 @@ img.vimg{ width:100%; height:100%; object-fit:contain; border-radius:10px; displ
     }
   }
   :root[data-theme="dark"]{
-    --bg:#241E19;
-    --card:#2E2620;
-    --card-alt:#38302A;
+    --bg:#221C17;
+    --card:#2C2520;
+    --card-alt:#332A23;
     --ink:#F3ECE2;
     --ink-soft:#C6B9A8;
     --ink-faint:#8F8271;
@@ -1091,8 +1091,6 @@ img.vimg{ width:100%; height:100%; object-fit:contain; border-radius:10px; displ
     .anim-target{ width:180px; height:180px; }
   }
 </style>
-<script src="icons/mm-icons.js?v=20261116"></script>
-<link rel="stylesheet" href="icons/mm-theme.css?v=20261123">
 </head>
 <body>
 
@@ -2509,7 +2507,7 @@ let showMistakePanel = false;
 const STUDENT_COLORS = [
   {key:'red',    label:'紅', hex:'#D9584C'},
   {key:'blue',   label:'藍', hex:'#4472B0'},
-  {key:'green',  label:'綠', hex:'#647E58'},
+  {key:'green',  label:'綠', hex:'#4C8577'},
   {key:'yellow', label:'黃', hex:'#C99A2E'},
   {key:'purple', label:'紫', hex:'#8B5FA0'},
   {key:'orange', label:'橘', hex:'#D9873F'},
@@ -3287,7 +3285,7 @@ function setupWritingDetail(item){
       drawCtx.lineCap = 'round';
       drawCtx.lineJoin = 'round';
       drawCtx.globalCompositeOperation = penTool === 'eraser' ? 'destination-out' : 'source-over';
-      drawCtx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--ink').trim() || '#352C27';
+      drawCtx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--ink').trim() || '#2B2320';
       drawCtx.lineTo(p.x, p.y);
       drawCtx.stroke();
       e.preventDefault();
@@ -7056,7 +7054,7 @@ window.mmTA = (function(){
     }
     function drawSegment(p1, p2){
       var rect = wrap.getBoundingClientRect();
-      ctx.strokeStyle = "#B25F38"; ctx.lineWidth = 4; ctx.lineCap = "round"; ctx.lineJoin = "round";
+      ctx.strokeStyle = "#E8825A"; ctx.lineWidth = 4; ctx.lineCap = "round"; ctx.lineJoin = "round";
       ctx.beginPath();
       ctx.moveTo(p1.x*rect.width, p1.y*rect.height);
       ctx.lineTo(p2.x*rect.width, p2.y*rect.height);
@@ -7217,7 +7215,7 @@ window.mmTA = (function(){
     var dpr = window.devicePixelRatio || 1;
     canvas.width = Math.round(rect.width*dpr); canvas.height = Math.round(rect.height*dpr);
     ctx.setTransform(dpr,0,0,dpr,0,0);
-    ctx.strokeStyle = mark.role === "parent" ? "#647E58" : "#B25F38";
+    ctx.strokeStyle = mark.role === "parent" ? "#4C8577" : "#E8825A";
     ctx.lineWidth = 4; ctx.lineCap = "round"; ctx.lineJoin = "round";
 
     var path = mark.path || [];
@@ -8375,7 +8373,7 @@ window.mmTA = (function(){
   document.head.appendChild(st);
   if(pp.get('manage')){
     var ms = document.createElement('style');
-    ms.textContent = 'body.manage > *:not([id^="cm"]):not(#contentManagerOverlay):not(script):not(style){display:none !important;} body.manage #cmCloseBtn{display:none !important;} body.manage #contentManagerOverlay{background:var(--bg,#F7F0E1) !important; align-items:flex-start !important; padding:0 !important;} body.manage #contentManagerOverlay .bell-card{max-width:none !important; width:100% !important; max-height:100vh !important; box-shadow:none !important; border-radius:0 !important; padding:20px 24px !important;}';
+    ms.textContent = 'body.manage > *:not([id^="cm"]):not(#contentManagerOverlay):not(script):not(style){display:none !important;} body.manage #cmCloseBtn{display:none !important;} body.manage #contentManagerOverlay{background:var(--bg,#faf7f2) !important; align-items:flex-start !important; padding:0 !important;} body.manage #contentManagerOverlay .bell-card{max-width:none !important; width:100% !important; max-height:100vh !important; box-shadow:none !important; border-radius:0 !important; padding:20px 24px !important;}';
     document.head.appendChild(ms); document.body.classList.add('manage');
     var tries = 0, tm = setInterval(function(){ tries++; if(window.__cmManage && window.__cmManage.ready()){ clearInterval(tm); Promise.resolve(window.__cmManage.open()).then(function(){ setTimeout(window.__embedReveal, 150); }, window.__embedReveal); } else if(tries > 80){ clearInterval(tm); } }, 250);
     return;

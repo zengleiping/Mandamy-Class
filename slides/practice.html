@@ -81,18 +81,18 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
 <style>
 
   :root{
-    --paper:#F7F0E1;
-    --surface:#FFFCF6;
-    --surface-2:#EFE3CC;
-    --ink:#352C27;
-    --ink-soft:#66594F;
-    --grid-line:rgba(73,66,61,0.08);
-    --seal:#B25F38;
-    --seal-soft:#F6E2D2;
-    --seal-ring:rgba(178,95,56,0.42);
-    --bamboo:#647E58;
-    --bamboo-soft:#E5EBDA;
-    --shadow: 0 10px 30px -10px rgba(73,66,61,0.06), 0 1px 3px rgba(73,66,61,0.02);
+    --paper:#FAF7F2;
+    --surface:#FFFFFF;
+    --surface-2:#F2EAE0;
+    --ink:#2B2320;
+    --ink-soft:#574C44;
+    --grid-line:rgba(43,35,32,0.08);
+    --seal:#E8825A;
+    --seal-soft:#FBE8DE;
+    --seal-ring:rgba(232,130,90,0.42);
+    --bamboo:#4C8577;
+    --bamboo-soft:#E3F0EC;
+    --shadow: 0 10px 30px -10px rgba(28,33,30,0.06), 0 1px 3px rgba(28,33,30,0.02);
     color-scheme: light dark;
   }
   *{box-sizing:border-box;}
@@ -212,9 +212,9 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .ta-row-main{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
   .ta-row-name{ font-weight:700; font-size:15.5px; color:var(--ink); }
   .ta-row-username{ font-size:13.5px; color:var(--ink-soft); }
-  .ta-badge{ font-size:12px; font-weight:700; padding:2px 8px; border-radius:99px; background:rgba(73,66,61,0.1); color:var(--ink-soft); }
+  .ta-badge{ font-size:12px; font-weight:700; padding:2px 8px; border-radius:99px; background:rgba(28,33,30,0.1); color:var(--ink-soft); }
   .ta-badge-admin{ background:var(--seal-soft); color:var(--seal); }
-  .ta-badge-disabled{ background:rgba(73,66,61,0.14); color:var(--ink-soft); }
+  .ta-badge-disabled{ background:rgba(28,33,30,0.14); color:var(--ink-soft); }
   .ta-row-actions{ display:flex; gap:6px; flex-wrap:wrap; }
   .teacher-admin-hint{ font-size:13px; color:var(--ink-soft); margin:6px 0 0; line-height:1.5; }
 
@@ -447,8 +447,8 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
 
   .q-item-left{ display:flex; align-items:center; gap:7px; min-width:0; flex:1; pointer-events:none; }
   .q-item-left *{ pointer-events:none; }
-  .q-pr{ flex:none; min-width:22px; height:20px; padding:0 5px; border-radius:99px; border:1.5px dashed rgba(73,66,61,.28); color:var(--ink-soft); font-size:12px; font-weight:800; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; line-height:1; }
-  .q-pr.on{ border-style:solid; border-color:#4F6844; background:#E4F2E8; color:#2f6a49; }
+  .q-pr{ flex:none; min-width:22px; height:20px; padding:0 5px; border-radius:99px; border:1.5px dashed rgba(28,33,30,.28); color:var(--ink-soft); font-size:12px; font-weight:800; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; line-height:1; }
+  .q-pr.on{ border-style:solid; border-color:#4C7A5E; background:#E4F2E8; color:#2f6a49; }
   .q-pr:hover{ filter:brightness(.95); }
   .q-index-badge{
     flex:none; width:19px; height:19px; border-radius:50%; background:var(--surface-2);
@@ -506,7 +506,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .fill-line .fill-input,.fill-input{font-family:inherit;font-size:24px;line-height:1.3;height:auto;min-height:1.7em;text-align:center;border:0;border-bottom:2.5px solid var(--seal);background:var(--seal-soft);border-radius:8px 8px 0 0;padding:4px 10px;margin:0 6px;min-width:4em;vertical-align:baseline;box-sizing:content-box;}
   .fill-line .fill-input:focus,.fill-input:focus{outline:none;background:#fff;}
   .fill-input.fill-ok{border-bottom-color:var(--bamboo);background:var(--bamboo-soft);}
-  .fill-input.fill-bad{border-bottom-color:#A63B42;background:rgba(230,57,70,.1);}
+  .fill-input.fill-bad{border-bottom-color:#E63946;background:rgba(230,57,70,.1);}
   .rec-box{display:flex;flex-direction:column;align-items:center;gap:12px;max-width:520px;margin:14px auto;padding:20px;border:2px dashed var(--grid-line);border-radius:16px;background:var(--surface);}
   .rec-btn{font-size:18px;padding:12px 28px;} .rec-status{color:var(--ink-soft);text-align:center;}
   .open-text{display:block;width:100%;max-width:840px;margin:10px auto;font-size:19px;line-height:1.7;padding:12px 14px;border:2px solid var(--grid-line);border-radius:12px;background:var(--surface);resize:vertical;}
@@ -529,7 +529,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .reorder-chip:hover{border-color:var(--seal); transform:translateY(-1px); color:var(--seal);}
   .reorder-chip.placed{background:var(--seal-soft); border-color:var(--seal); color:var(--seal);}
   .reorder-chip.correct-done{background:var(--bamboo-soft); border-color:var(--bamboo); color:var(--bamboo); cursor:default;}
-  .reorder-chip.wrong-shake{border-color:#A63B42 !important; background:rgba(230,57,70,0.12) !important; color:#A63B42 !important; animation:shakeWrong .45s ease;}
+  .reorder-chip.wrong-shake{border-color:#E63946 !important; background:rgba(230,57,70,0.12) !important; color:#E63946 !important; animation:shakeWrong .45s ease;}
   .reorder-chip.drag-over-insert{ border-color:var(--seal); box-shadow:-9px 0 0 -6px var(--seal), 0 2px 6px rgba(0,0,0,0.03); transform:translateX(4px); }
 
   /* 浮動畫面縮放調節控制器 */
@@ -580,7 +580,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .timer-ctrl-btn:disabled{opacity:0.35; cursor:not-allowed;}
   .timer-ctrl-btn:disabled:hover{background:var(--surface-2); color:var(--ink); border-color:var(--grid-line);}
   .timer-floating-widget.timer-warn{border-color:#E0793C; background:rgba(224,121,60,0.08);}
-  .timer-floating-widget.timer-warn .timer-display{color:#8F4524;}
+  .timer-floating-widget.timer-warn .timer-display{color:#C4602A;}
   .timer-floating-widget.timer-ended{border-color:var(--seal); background:var(--seal-soft);}
   .timer-floating-widget.timer-ended .timer-display{color:var(--seal);}
   .timer-settings-pop{
@@ -614,14 +614,14 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .teacher-note-block .tn-text{font-size:15.5px; color:var(--ink); white-space:pre-wrap; line-height:1.6; word-break:break-word;}
 
   .stage-media-wrap{display:flex;flex-direction:column;gap:10px;margin-bottom:18px;}
-  .media-block{background:var(--surface-2);border:1.5px solid rgba(73,66,61,0.1);border-radius:14px;padding:10px 14px;}
+  .media-block{background:var(--surface-2);border:1.5px solid rgba(28,33,30,0.1);border-radius:14px;padding:10px 14px;}
   .media-block-label{font-size:13.5px;font-weight:700;color:var(--ink-soft);margin-bottom:8px;}
   .media-items-row{display:flex;flex-wrap:wrap;gap:12px;}
   .media-item{display:flex;flex-direction:column;align-items:center;gap:4px;max-width:280px;}
   .media-item-name{font-size:12.5px;color:var(--ink-soft);max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-  .media-image{max-width:260px;max-height:200px;border-radius:10px;border:1.5px solid rgba(73,66,61,0.12);object-fit:contain;}
+  .media-image{max-width:260px;max-height:200px;border-radius:10px;border:1.5px solid rgba(28,33,30,0.12);object-fit:contain;}
   .media-audio{width:260px;height:36px;}
-  .media-video{max-width:320px;max-height:220px;border-radius:10px;border:1.5px solid rgba(73,66,61,0.12);}
+  .media-video{max-width:320px;max-height:220px;border-radius:10px;border:1.5px solid rgba(28,33,30,0.12);}
 
   .board-area{ position:relative; width:100%; margin:0 auto; }
 
@@ -659,7 +659,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
     display:flex; align-items:center; justify-content:center;
     position:absolute; top:14px; right:14px; z-index:9002;
     width:38px; height:38px; border-radius:50%;
-    border:1.5px solid rgba(73,66,61,0.16);
+    border:1.5px solid rgba(28,33,30,0.16);
     background:rgba(255,255,255,0.96); /* 2026-09-29：拿掉 backdrop-filter——跟上面「全螢幕工具列
        不用毛玻璃」是同一個道理，這裡背景本來就接近不透明，模糊看不太出來，卻會讓瀏覽器持續花成本
        合成，畫布正好又幾乎貼在旁邊、寫字時幾乎每一影格都在重繪，這是 iPad 上寫字感覺延遲的可能
@@ -687,7 +687,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
     border-color:var(--bamboo);background:var(--bamboo-soft);color:var(--bamboo); font-weight:700;cursor:default;animation:popSuccess .3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
   .match-item.wrong{
-    border-color: #A63B42 !important; background: rgba(230, 57, 70, 0.12) !important; color: #A63B42 !important; animation: shakeWrong .45s ease; box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.35) inset !important;
+    border-color: #E63946 !important; background: rgba(230, 57, 70, 0.12) !important; color: #E63946 !important; animation: shakeWrong .45s ease; box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.35) inset !important;
   }
 
   /* 選擇題與多選題 */
@@ -705,20 +705,20 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .mc-ink-col.on{box-shadow:0 0 0 3px var(--ink);}
   .mc-vote-panel{max-width:860px;margin:0 auto 10px;padding:8px 12px;border-radius:12px;background:var(--surface-2);border:1px solid var(--grid-line);font-size:15.5px;}
   .mc-vote-panel.student{text-align:center;color:var(--ink-soft);}
-  .mc-vote-panel.done{background:rgba(45,90,39,.12);border-color:#4F6844;}
+  .mc-vote-panel.done{background:rgba(45,90,39,.12);border-color:#2D5A27;}
   .mc-vp-line{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
-  .mc-vp-msg{color:#4F6844;font-weight:700;} .mc-vp-wait{color:var(--ink-soft);}
+  .mc-vp-msg{color:#2D5A27;font-weight:700;} .mc-vp-wait{color:var(--ink-soft);}
   .mc-pulse{animation:mcPulse 1.2s ease-in-out infinite;}
-  @keyframes mcPulse{0%,100%{box-shadow:0 0 0 0 rgba(178,95,56,.6);}50%{box-shadow:0 0 0 8px rgba(178,95,56,0);}}
+  @keyframes mcPulse{0%,100%{box-shadow:0 0 0 0 rgba(232,130,90,.6);}50%{box-shadow:0 0 0 8px rgba(232,130,90,0);}}
   .mc-opt-tally{display:flex;align-items:center;gap:6px;font-size:14.5px;color:var(--ink-soft);white-space:nowrap;}
   .mc-opt-tally b{font-size:17px;color:var(--ink);}
   .mc-tbar{display:inline-block;width:70px;height:8px;border-radius:4px;background:var(--grid-line);overflow:hidden;} .mc-tbar i{display:block;height:100%;background:var(--seal);}
-  .mc-option-btn.mc-ans{border-color:#4F6844;border-style:dashed;}
+  .mc-option-btn.mc-ans{border-color:#2D5A27;border-style:dashed;}
   .mc-vote-names{max-width:860px;margin:10px auto 0;display:flex;flex-direction:column;gap:6px;font-size:15.5px;}
-  .mc-vn-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;} .mc-vn-row.ok .mc-vn-l{background:#4F6844;color:#fff;}
+  .mc-vn-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;} .mc-vn-row.ok .mc-vn-l{background:#2D5A27;color:#fff;}
   .mc-vn-l{width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:700;background:var(--surface-2);border:1px solid var(--grid-line);}
   .mc-vn-n{padding:2px 10px;border-radius:999px;background:var(--surface-2);border:1px solid var(--grid-line);}
-  .mc-toast{position:fixed;left:50%;top:76px;transform:translateX(-50%);background:#4F6844;color:#fff;padding:12px 20px;border-radius:12px;font-size:16px;font-weight:700;z-index:99999;box-shadow:0 6px 20px rgba(0,0,0,.2);transition:opacity .5s;}
+  .mc-toast{position:fixed;left:50%;top:76px;transform:translateX(-50%);background:#2D5A27;color:#fff;padding:12px 20px;border-radius:12px;font-size:16px;font-weight:700;z-index:99999;box-shadow:0 6px 20px rgba(0,0,0,.2);transition:opacity .5s;}
   .mc-toast.out{opacity:0;}
   .mc-choices-container{display:flex;flex-direction:column;gap:14px;margin-top:12px;max-width:860px;margin-left:auto;margin-right:auto;}
   .mc-option-btn{
@@ -729,10 +729,10 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .mc-option-btn:hover:not(:disabled){border-color:var(--seal);background:var(--surface); transform:translateY(-1px);}
   .mc-option-btn.selected{border-color:var(--seal);background:var(--seal-soft);color:var(--seal);}
   .mc-option-btn.correct{
-    border-color: #4F6844 !important; background: rgba(45, 90, 39, 0.15) !important; color: #4F6844 !important; animation: popSuccess .3s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 0 0 3px rgba(45, 90, 39, 0.3) inset !important;
+    border-color: #2D5A27 !important; background: rgba(45, 90, 39, 0.15) !important; color: #2D5A27 !important; animation: popSuccess .3s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 0 0 3px rgba(45, 90, 39, 0.3) inset !important;
   }
   .mc-option-btn.wrong{
-    border-color: #A63B42 !important; background: rgba(230, 57, 70, 0.15) !important; color: #A63B42 !important; animation: shakeWrong .45s ease; box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.35) inset !important;
+    border-color: #E63946 !important; background: rgba(230, 57, 70, 0.15) !important; color: #E63946 !important; animation: shakeWrong .45s ease; box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.35) inset !important;
   }
   .mc-opt-prefix{
     width:32px;height:32px;border-radius:50%;background:var(--surface);
@@ -740,8 +740,8 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
     color:var(--ink);flex-shrink:0;border:1px solid var(--grid-line);
   }
   .mc-option-btn.selected .mc-opt-prefix{background:var(--seal);color:#fff;border-color:var(--seal);}
-  .mc-option-btn.correct .mc-opt-prefix{background: #4F6844 !important; color:#fff !important; border-color: #4F6844 !important;}
-  .mc-option-btn.wrong .mc-opt-prefix{background: #A63B42 !important; color:#fff !important; border-color: #A63B42 !important;}
+  .mc-option-btn.correct .mc-opt-prefix{background: #2D5A27 !important; color:#fff !important; border-color: #2D5A27 !important;}
+  .mc-option-btn.wrong .mc-opt-prefix{background: #E63946 !important; color:#fff !important; border-color: #E63946 !important;}
 
   @keyframes shakeWrong{
     10%, 90% { transform: translate3d(-3px, 0, 0); }
@@ -761,7 +761,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
      萬一遇到極小視窗還是放不下，才用 overflow-y 自己捲動，不會撐壞整個版面 */
   .draw-toolbar-vertical{
     display:flex; flex-direction:column; align-items:center; gap:6px; padding:10px 8px;
-    background:var(--surface-2); border:1.5px solid rgba(73,66,61,0.16);
+    background:var(--surface-2); border:1.5px solid rgba(28,33,30,0.16);
     border-radius:14px; box-shadow:var(--shadow); flex-shrink:0; width:76px;
   }
   /* 這裡故意不設 overflow-y/max-height：畫筆／打字的顏色選盤要用 position:absolute 浮出工具列外側，
@@ -771,7 +771,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   :root:not([data-theme="light"]) .draw-toolbar-vertical{ border-color:rgba(255,255,255,0.16); }
   .tool-btn-v-wrap{ position:relative; width:100%; flex-shrink:0; }
   .tool-btn-v{
-    width:100%; height:46px; border-radius:10px; border:1.5px solid rgba(73,66,61,0.14);
+    width:100%; height:46px; border-radius:10px; border:1.5px solid rgba(28,33,30,0.14);
     background:var(--surface); font-size:12.5px; font-weight:700; cursor:pointer; display:flex; flex-direction:column;
     align-items:center; justify-content:center; gap:2px; color:var(--ink); transition:all .12s ease; flex-shrink:0;
   }
@@ -789,7 +789,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .tool-btn-v-icon{ font-size:16.5px; line-height:1; }
   .tool-btn-v-icon-img{ width:19px; height:19px; object-fit:contain; display:block; }
   .tool-btn-v-label{ font-size:12px; font-weight:700; text-align:center; white-space:nowrap; line-height:1.25; }
-  .tool-v-sep{width:100%; height:1px; background:rgba(73,66,61,0.14); margin:1px 0; flex-shrink:0;}
+  .tool-v-sep{width:100%; height:1px; background:rgba(28,33,30,0.14); margin:1px 0; flex-shrink:0;}
   :root:not([data-theme="light"]) .tool-v-sep{ background:rgba(255,255,255,0.14); }
 
   /* 2026-09-29：老師「鎖定作答」時，學生端小白板整排工具列要變成「看起來不能點」——不是只擋畫圖，
@@ -807,7 +807,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .student-locked-badge{
     position:absolute; top:10px; left:50%; transform:translateX(-50%); z-index:5;
     display:flex; align-items:center; gap:6px; padding:6px 14px; border-radius:999px;
-    background:rgba(73,66,61,0.78); color:#fff; font-size:14px; font-weight:700;
+    background:rgba(28,33,30,0.78); color:#fff; font-size:14px; font-weight:700;
     box-shadow:var(--shadow); pointer-events:none; white-space:nowrap;
   }
   /* 學生端：試圖畫圖／按按鈕時跳出的提醒彈窗，蓋在畫布正中央，點一下或幾秒後自動消失 */
@@ -831,7 +831,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .slide-nav-row{ display:flex; gap:4px; width:100%; flex-shrink:0; }
   .slide-nav-btn{ flex:1; height:38px; padding:0; }
   .slide-nav-btn:disabled{ opacity:0.35; cursor:default; }
-  .slide-nav-btn:disabled:hover{ border-color:rgba(73,66,61,0.14); background:var(--surface); }
+  .slide-nav-btn:disabled:hover{ border-color:rgba(28,33,30,0.14); background:var(--surface); }
   .slide-nav-counter{
     width:100%; text-align:center; font-size:12px; font-weight:700; color:var(--ink-soft);
     font-variant-numeric:tabular-nums;
@@ -886,17 +886,17 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .rb-colors .my-color{ width:20px; height:20px; }
   .color-dot{
     width:26px; height:26px; border-radius:50%; cursor:pointer; border:2px solid var(--surface);
-    box-shadow:0 0 0 1.5px rgba(73,66,61,0.25); transition:all .12s ease;
+    box-shadow:0 0 0 1.5px rgba(28,33,30,0.25); transition:all .12s ease;
   }
   .color-dot:hover{ transform:scale(1.14); }
-  .color-dot.active{ box-shadow:0 0 0 1.5px rgba(73,66,61,0.25), 0 0 0 3px var(--seal); }
+  .color-dot.active{ box-shadow:0 0 0 1.5px rgba(28,33,30,0.25), 0 0 0 3px var(--seal); }
 
   /* 橡皮擦模式選單／「➕更多」加入工具選單：跟顏色選盤共用同一個 hover 彈出機制（.color-popover），
      裡面放的是直排的文字按鈕，不是色點，另外加寬、改直排 */
   .more-tools-popover{ min-width:150px; display:flex; flex-direction:column; gap:4px; }
   .eraser-mode-opt, .more-tool-opt, .trans-opt{
     width:100%; padding:8px 10px; font-size:13.5px; font-weight:600; text-align:left; white-space:nowrap;
-    border-radius:8px; border:1.5px solid rgba(73,66,61,0.14); background:var(--surface); color:var(--ink); cursor:pointer;
+    border-radius:8px; border:1.5px solid rgba(28,33,30,0.14); background:var(--surface); color:var(--ink); cursor:pointer;
     display:flex; align-items:center; gap:8px;
   }
   /* 圖示格固定 17px 寬、置中——不管裡面放的是自訂圖示（img）還是沒有自訂圖示時的備用 emoji
@@ -925,10 +925,10 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
        不用毛玻璃」是同一個道理，這裡背景本來就接近不透明，模糊看不太出來，卻會讓瀏覽器持續花成本
        合成，畫布正好又幾乎貼在旁邊、寫字時幾乎每一影格都在重繪，這是 iPad 上寫字感覺延遲的可能
        原因之一，拿掉後改把底色不透明度從 0.92 提高到 0.96 補一點視覺份量，避免看起來太透。 */
-    border:1.5px solid rgba(73,66,61,0.14); box-shadow:var(--shadow);
+    border:1.5px solid rgba(28,33,30,0.14); box-shadow:var(--shadow);
   }
   .canvas-zoom-ctrl button{
-    width:26px; height:26px; border-radius:50%; border:1.5px solid rgba(73,66,61,0.16);
+    width:26px; height:26px; border-radius:50%; border:1.5px solid rgba(28,33,30,0.16);
     background:var(--surface); color:var(--ink); font-size:17px; font-weight:800; cursor:pointer;
     display:flex; align-items:center; justify-content:center; line-height:1; padding:0;
   }
@@ -951,7 +951,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   }
   .popover-field-row select{
     width:100%; padding:6px 0; font-size:14px; font-weight:700; text-align:center;
-    background:var(--surface); color:var(--ink); border-radius:8px; border:1.5px solid rgba(73,66,61,0.14);
+    background:var(--surface); color:var(--ink); border-radius:8px; border:1.5px solid rgba(28,33,30,0.14);
   }
   :root:not([data-theme="light"]) .popover-field-row select{ border-color:rgba(255,255,255,0.14); }
 
@@ -960,13 +960,13 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .size-combo{ position:relative; display:flex; align-items:stretch; width:100%; }
   .size-combo-input{
     flex:1; min-width:0; width:100%; padding:6px 4px; font-size:14px; font-weight:700; text-align:center;
-    background:var(--surface); color:var(--ink); border:1.5px solid rgba(73,66,61,0.14);
+    background:var(--surface); color:var(--ink); border:1.5px solid rgba(28,33,30,0.14);
     border-right:none; border-radius:8px 0 0 8px; -moz-appearance:textfield; appearance:textfield;
   }
   .size-combo-input::-webkit-outer-spin-button, .size-combo-input::-webkit-inner-spin-button{ -webkit-appearance:none; margin:0; }
   .size-combo-toggle{
     width:26px; padding:0; cursor:pointer; font-size:12.5px; color:var(--ink-soft);
-    background:var(--surface); border:1.5px solid rgba(73,66,61,0.14); border-radius:0 8px 8px 0;
+    background:var(--surface); border:1.5px solid rgba(28,33,30,0.14); border-radius:0 8px 8px 0;
   }
   .size-combo-toggle:hover{ color:var(--seal); border-color:var(--seal); }
   .size-combo-list{
@@ -1005,20 +1005,20 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .anim-pulse{ animation:mmPulse .8s ease-in-out both var(--adl,0s); }
   .anim-spin{ animation:mmSpin .9s ease-out both var(--adl,0s); }
   .anim-row{ display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
-  .anim-row select{ font-size:13.5px; padding:3px 4px; border-radius:6px; border:1.5px solid rgba(73,66,61,.2); background:var(--surface); color:var(--ink); }
+  .anim-row select{ font-size:13.5px; padding:3px 4px; border-radius:6px; border:1.5px solid rgba(28,33,30,.2); background:var(--surface); color:var(--ink); }
   .anim-row button{ font-size:13.5px; padding:3px 8px; border-radius:6px; border:1.5px solid var(--seal); background:var(--seal-soft); color:var(--seal); cursor:pointer; font-weight:700; }
   .master-layer{ position:absolute; inset:0; pointer-events:none; z-index:0; overflow:hidden; user-select:none; }
-  .mm-timer{ position:fixed; top:16px; right:16px; z-index:30000; display:flex; align-items:center; gap:8px; padding:8px 14px; background:rgba(73,66,61,.92); color:#fff; border-radius:14px; box-shadow:0 8px 24px rgba(0,0,0,.35); font-variant-numeric:tabular-nums; cursor:grab; user-select:none; touch-action:none; }
+  .mm-timer{ position:fixed; top:16px; right:16px; z-index:30000; display:flex; align-items:center; gap:8px; padding:8px 14px; background:rgba(28,33,30,.92); color:#fff; border-radius:14px; box-shadow:0 8px 24px rgba(0,0,0,.35); font-variant-numeric:tabular-nums; cursor:grab; user-select:none; touch-action:none; }
   .mm-timer .mt-t{ font-size:34px; font-weight:800; letter-spacing:1px; }
   .mm-timer button{ border:none; background:rgba(255,255,255,.18); color:#fff; border-radius:8px; padding:4px 9px; cursor:pointer; font-size:15.5px; }
-  .mm-timer.mt-end{ background:#A63B42; animation:mtBlink .7s infinite alternate; }
+  .mm-timer.mt-end{ background:#B23B32; animation:mtBlink .7s infinite alternate; }
   @keyframes mtBlink{ to{ opacity:.55; } }
   .movable-text.has-link .text-content{ color:#1565C0 !important; text-decoration:underline; text-underline-offset:.12em; }
   .anim-panel{ right:274px; width:330px; }
   .ap-row{ flex-wrap:wrap; }
   .ap-row .lp-name{ flex:1; min-width:70px; }
   .ap-n{ min-width:20px; height:20px; border-radius:50%; background:var(--seal); color:#fff; font-size:12.5px; font-weight:800; display:flex; align-items:center; justify-content:center; }
-  .ap-row select{ font-size:13px; padding:2px 3px; border-radius:6px; border:1.5px solid rgba(73,66,61,.2); background:var(--surface); color:var(--ink); max-width:112px; }
+  .ap-row select{ font-size:13px; padding:2px 3px; border-radius:6px; border:1.5px solid rgba(28,33,30,.2); background:var(--surface); color:var(--ink); max-width:112px; }
   .ap-sub{ font-size:13px; font-weight:800; color:var(--ink-soft); margin:8px 2px 2px; }
   .ap-add{ font-size:13px; font-weight:700; padding:2px 8px; border-radius:7px; border:1.5px solid var(--seal); background:var(--seal-soft); color:var(--seal); cursor:pointer; }
   .ap-foot{ display:flex; gap:6px; padding:6px 8px; }
@@ -1035,15 +1035,15 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .table-obj.editing{ pointer-events:auto; }
   .table-obj td{ padding:.18em .35em; vertical-align:middle; white-space:pre-wrap; word-break:break-word; overflow:hidden; line-height:1.35; }
   .table-obj td[contenteditable]{ outline:2px solid var(--seal); outline-offset:-2px; background:#fff !important; user-select:text; cursor:text; }
-  .tbl-sel{ position:absolute; background:rgba(30,136,229,.22); border:2px solid #5A7590; pointer-events:none; box-sizing:border-box; }
+  .tbl-sel{ position:absolute; background:rgba(30,136,229,.22); border:2px solid #1E88E5; pointer-events:none; box-sizing:border-box; }
   .tbl-grip{ position:absolute; width:22px; height:22px; background:var(--seal); color:#fff; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:15.5px; cursor:move; pointer-events:auto; touch-action:none; z-index:46; }
   .tbl-scale{ position:absolute; width:12px; height:12px; background:#fff; border:2px solid var(--seal); border-radius:3px; cursor:nwse-resize; pointer-events:auto; touch-action:none; z-index:46; }
   .table-tools{ position:absolute; z-index:47; pointer-events:auto; display:flex; flex-wrap:wrap; gap:6px 10px; align-items:center; max-width:640px; padding:8px 10px; background:var(--surface); border:1.5px solid var(--seal); border-radius:10px; box-shadow:0 8px 22px rgba(0,0,0,.22); font-size:13.5px; }
   .table-tools .tt-title{ color:var(--seal); width:100%; font-size:14px; }
   .table-tools .tt-g{ display:flex; gap:4px; align-items:center; flex-wrap:wrap; }
-  .table-tools button{ font-size:13.5px; font-weight:700; padding:3px 8px; border-radius:7px; border:1.5px solid rgba(73,66,61,.18); background:var(--surface); color:var(--ink); cursor:pointer; }
+  .table-tools button{ font-size:13.5px; font-weight:700; padding:3px 8px; border-radius:7px; border:1.5px solid rgba(28,33,30,.18); background:var(--surface); color:var(--ink); cursor:pointer; }
   .table-tools button:hover{ border-color:var(--seal); color:var(--seal); }
-  .table-tools input[type=color]{ width:26px; height:22px; padding:0; border:1.5px solid rgba(73,66,61,.2); border-radius:5px; vertical-align:middle; }
+  .table-tools input[type=color]{ width:26px; height:22px; padding:0; border:1.5px solid rgba(28,33,30,.2); border-radius:5px; vertical-align:middle; }
   .table-tools input[type=number]{ width:42px; padding:2px 4px; }
   .table-tools .tt-hint{ width:100%; color:var(--ink-soft); font-size:12.5px; }
   .shape-table-btn{ width:100%; margin:2px 0 6px; padding:5px 8px; border-radius:8px; border:1.5px solid var(--seal); background:var(--seal-soft); color:var(--seal); font-weight:700; font-size:14px; cursor:pointer; }
@@ -1071,11 +1071,11 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .movable-text.list-number .tl:not(:empty){ counter-increment:tl; }
   .movable-text.list-number .tl:not(:empty)::before{ content:counter(tl) "."; display:inline-block; min-width:1.5em; margin-right:0.15em; }
   .text-fmt-row{ display:flex; gap:4px; align-items:stretch; }
-  .text-fmt-row .fmt-sep{ width:1px; background:rgba(73,66,61,0.14); margin:3px 2px; }
+  .text-fmt-row .fmt-sep{ width:1px; background:rgba(28,33,30,0.14); margin:3px 2px; }
   .text-fmt-btn{
     flex:1; height:28px; padding:0; cursor:pointer; display:flex; align-items:center; justify-content:center;
     font:700 12px/1 Times New Roman,Iansui,serif; color:var(--ink); background:var(--surface);
-    border:1.5px solid rgba(73,66,61,0.14); border-radius:7px;
+    border:1.5px solid rgba(28,33,30,0.14); border-radius:7px;
   }
   .text-fmt-btn:hover{ border-color:var(--seal); color:var(--seal); }
   /* 注音在字右側（直式，像生字本）：字＋右邊一排直的注音符號，聲調符號在注音右邊、輕聲點在注音上方 */
@@ -1089,7 +1089,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .zy-s.ph-overridden{ color:var(--seal); opacity:1; }
   .text-bg-toggle{ display:inline-flex; align-items:center; gap:4px; font-size:13px; font-weight:600; cursor:pointer; }
   .text-bg-controls{ display:flex; align-items:center; gap:8px; }
-  .text-bg-controls input[type=color]{ width:34px; height:26px; padding:0; border:1.5px solid rgba(73,66,61,0.2); border-radius:6px; background:none; cursor:pointer; flex:none; }
+  .text-bg-controls input[type=color]{ width:34px; height:26px; padding:0; border:1.5px solid rgba(28,33,30,0.2); border-radius:6px; background:none; cursor:pointer; flex:none; }
   .text-bg-controls input[type=range]{ flex:1; min-width:0; }
   .text-bg-controls b{ font-size:13px; min-width:34px; text-align:right; }
   .text-fmt-btn.active{ background:var(--seal); color:#fff; border-color:var(--seal); }
@@ -1128,7 +1128,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .media-box:fullscreen.media-yt .media-body, .media-box.media-pfs.media-yt .media-body{ position:relative; }
 
   /* 2026-10-01 上方工具列＋可自訂／可收合：老師自己決定每個工具放左側、上方或隱藏，順序也能調 */
-  .draw-toolbar-top{ display:flex; flex-direction:row; flex-wrap:wrap; align-items:center; gap:6px; padding:6px 10px; background:var(--surface-2); border:1.5px solid rgba(73,66,61,0.16); border-radius:14px; box-shadow:var(--shadow); margin-bottom:8px; width:100%; box-sizing:border-box; }
+  .draw-toolbar-top{ display:flex; flex-direction:row; flex-wrap:wrap; align-items:center; gap:6px; padding:6px 10px; background:var(--surface-2); border:1.5px solid rgba(28,33,30,0.16); border-radius:14px; box-shadow:var(--shadow); margin-bottom:8px; width:100%; box-sizing:border-box; }
   :root:not([data-theme="light"]) .draw-toolbar-top{ border-color:rgba(255,255,255,0.16); }
   .draw-toolbar-top .tool-btn-v{ width:54px; height:44px; }
   .draw-toolbar-top .tool-btn-v-wrap{ width:auto; }
@@ -1144,7 +1144,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .draw-toolbar-vertical.student-locked > .tb-head{ opacity:1; filter:none; cursor:pointer; }
   .tb-head{ display:flex; gap:4px; align-items:center; justify-content:center; width:100%; flex-shrink:0; }
   .draw-toolbar-top .tb-head{ width:auto; margin-right:4px; }
-  .tb-head button{ height:24px; min-width:28px; padding:0 6px; border-radius:8px; border:1.5px solid rgba(73,66,61,0.14); background:var(--surface); color:var(--ink); font-size:13.5px; font-weight:700; cursor:pointer; }
+  .tb-head button{ height:24px; min-width:28px; padding:0 6px; border-radius:8px; border:1.5px solid rgba(28,33,30,0.14); background:var(--surface); color:var(--ink); font-size:13.5px; font-weight:700; cursor:pointer; }
   .tb-head button:hover{ border-color:var(--seal); color:var(--seal); }
   /* 2026-10-01：收合＝只剩一個小三角形（約 24px），浮在舞台區左上角，完全不佔版面；
      「隱藏整條」（⚙ 自訂裡勾選）＝連三角形都沒有（兩條都隱藏時才會在角落留一個小三角形可以叫回來）。 */
@@ -1161,7 +1161,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .tb-collapsed .tb-head button{ width:24px; height:24px; min-width:0; padding:0; font-size:12.5px; opacity:.8; }
   .tb-collapsed .tb-head button:hover{ opacity:1; }
   .draw-toolbar-vertical.tb-hidden, .draw-toolbar-top.tb-hidden{ display:none !important; }
-  .tb-restore-tri{ display:none; position:absolute; top:6px; left:6px; z-index:30; width:24px; height:24px; align-items:center; justify-content:center; padding:0; border-radius:6px; border:1.5px solid rgba(73,66,61,0.14); background:var(--surface); color:var(--ink); font-size:12.5px; font-weight:700; cursor:pointer; opacity:.8; }
+  .tb-restore-tri{ display:none; position:absolute; top:6px; left:6px; z-index:30; width:24px; height:24px; align-items:center; justify-content:center; padding:0; border-radius:6px; border:1.5px solid rgba(28,33,30,0.14); background:var(--surface); color:var(--ink); font-size:12.5px; font-weight:700; cursor:pointer; opacity:.8; }
   .tb-restore-tri:hover{ opacity:1; border-color:var(--seal); color:var(--seal); }
   .board-area.canvas-fs-active .tb-restore-tri{ top:14px; left:14px; }
   .board-area.canvas-fs-active .draw-toolbar-vertical.tb-collapsed{ top:14px; left:14px; background:transparent; padding:0; overflow:visible; max-height:none; }
@@ -1189,14 +1189,14 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .tb-modal{ background:var(--surface); color:var(--ink); border-radius:16px; padding:18px 20px; width:min(460px,92vw); max-height:86vh; overflow:auto; box-shadow:0 20px 50px rgba(0,0,0,.35); }
   .tb-modal h3{ margin:0 0 4px; font-size:17px; } .tb-modal .tb-hint{ font-size:13.5px; color:var(--ink-soft); margin-bottom:10px; }
   .tb-sec-title{ font-size:13.5px; font-weight:800; color:var(--seal); margin:12px 0 4px; }
-  .tb-row{ display:flex; align-items:center; gap:6px; padding:5px 6px; border:1.5px solid rgba(73,66,61,0.12); border-radius:10px; margin-bottom:4px; background:var(--surface-2); }
+  .tb-row{ display:flex; align-items:center; gap:6px; padding:5px 6px; border:1.5px solid rgba(28,33,30,0.12); border-radius:10px; margin-bottom:4px; background:var(--surface-2); }
   .tb-row .tb-name{ flex:1; font-size:14.5px; font-weight:600; }
-  .tb-row button{ border:1.5px solid rgba(73,66,61,0.14); background:var(--surface); color:var(--ink); border-radius:7px; height:26px; min-width:28px; cursor:pointer; font-size:13.5px; font-weight:700; }
+  .tb-row button{ border:1.5px solid rgba(28,33,30,0.14); background:var(--surface); color:var(--ink); border-radius:7px; height:26px; min-width:28px; cursor:pointer; font-size:13.5px; font-weight:700; }
   .tb-row button.on{ background:var(--seal); color:#fff; border-color:var(--seal); }
   .tb-row button:disabled{ opacity:.35; cursor:default; }
   .tb-empty{ font-size:13.5px; color:var(--ink-soft); padding:4px 6px; }
   .tb-foot{ display:flex; justify-content:space-between; gap:8px; margin-top:14px; }
-  .tb-foot button{ padding:8px 16px; border-radius:10px; border:1.5px solid rgba(73,66,61,0.16); background:var(--surface); color:var(--ink); font-weight:700; cursor:pointer; }
+  .tb-foot button{ padding:8px 16px; border-radius:10px; border:1.5px solid rgba(28,33,30,0.16); background:var(--surface); color:var(--ink); font-weight:700; cursor:pointer; }
   .tb-foot button.primary{ background:var(--seal); color:#fff; border-color:var(--seal); }
   /* 圖形（矩形／圓／三角形／線／箭頭）：SVG 畫在圖片上面、筆跡下面，另外疊透明的 .shape-proxy 負責選取／拖曳／縮放 */
   .shape-layer{ display:none; }
@@ -1205,11 +1205,11 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .arrange-layers-btn{ width:100%; text-align:left; padding:6px 10px; border-radius:8px; border:1.5px solid var(--seal); background:var(--seal-soft); color:var(--seal); font-weight:700; font-size:14px; cursor:pointer; margin-bottom:4px; }
   /* 2026-10-01 選取工具（框選／群組）與層級面板 */
   .select-layer{ position:absolute; inset:0; z-index:40; pointer-events:none; }
-  .select-item-box{ position:absolute; border:1.5px dashed #5A7590; border-radius:3px; pointer-events:none; }
+  .select-item-box{ position:absolute; border:1.5px dashed #1E88E5; border-radius:3px; pointer-events:none; }
   .select-union-box{ position:absolute; border:2px solid var(--seal); border-radius:4px; pointer-events:none; box-shadow:0 0 0 1px rgba(255,255,255,.7); }
-  .select-marquee{ position:absolute; border:1.5px dashed var(--seal); background:rgba(178,95,56,.12); pointer-events:none; }
+  .select-marquee{ position:absolute; border:1.5px dashed var(--seal); background:rgba(232,130,90,.12); pointer-events:none; }
   .select-bar{ position:absolute; display:flex; align-items:center; gap:6px; padding:4px 8px; background:var(--surface); border:1.5px solid var(--seal-ring); border-radius:10px; box-shadow:0 6px 18px rgba(0,0,0,.18); pointer-events:auto; white-space:nowrap; z-index:45; }
-  .select-bar .sb-sep{ width:1px; height:18px; background:rgba(73,66,61,.2); }
+  .select-bar .sb-sep{ width:1px; height:18px; background:rgba(28,33,30,.2); }
   .select-bar .sb-al{ padding:4px 7px; min-width:26px; }
   .cp-dim{ background:rgba(0,0,0,.5); pointer-events:none; }
   .crop-ui .cp-frame{ border:2px solid #fff; box-shadow:0 0 0 1px #E0338A inset; pointer-events:none; }
@@ -1217,7 +1217,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .crop-ui .cp-h[data-h="n"], .crop-ui .cp-h[data-h="s"]{ cursor:ns-resize; } .crop-ui .cp-h[data-h="e"], .crop-ui .cp-h[data-h="w"]{ cursor:ew-resize; }
   .crop-ui .cp-h[data-h="nw"], .crop-ui .cp-h[data-h="se"]{ cursor:nwse-resize; } .crop-ui .cp-h[data-h="ne"], .crop-ui .cp-h[data-h="sw"]{ cursor:nesw-resize; }
   .crop-ui .cp-bar{ position:absolute; display:flex; gap:6px; align-items:center; background:#fff; border:1.5px solid #E0338A; border-radius:10px; padding:4px 8px; font-size:13.5px; z-index:3; white-space:nowrap; }
-  .crop-ui .cp-bar button{ border:1.5px solid rgba(73,66,61,.25); background:#fff; border-radius:8px; padding:3px 10px; cursor:pointer; font-weight:700; }
+  .crop-ui .cp-bar button{ border:1.5px solid rgba(28,33,30,.25); background:#fff; border-radius:8px; padding:3px 10px; cursor:pointer; font-weight:700; }
   .select-scale-h{ position:absolute; width:13px; height:13px; margin:-6.5px 0 0 -6.5px; background:#fff; border:2px solid var(--seal); border-radius:3px; pointer-events:auto; z-index:42; touch-action:none; }
   .select-scale-h:hover{ background:var(--seal-soft,#fde6dc); }
   .select-guide{ position:absolute; background:#E0338A; pointer-events:none; z-index:41; }
@@ -1228,7 +1228,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .select-gap.v{ width:10px; margin-left:-5px; border-top:1.5px solid; border-bottom:1.5px solid; }
   .select-gap.v::after{ content:""; position:absolute; top:0; bottom:0; left:50%; border-left:1.5px solid; }
   .select-bar .sb-count{ font-size:13.5px; font-weight:700; color:var(--ink-soft); }
-  .select-bar button{ font-size:13.5px; font-weight:700; padding:4px 9px; border-radius:8px; border:1.5px solid rgba(73,66,61,.16); background:var(--surface); color:var(--ink); cursor:pointer; }
+  .select-bar button{ font-size:13.5px; font-weight:700; padding:4px 9px; border-radius:8px; border:1.5px solid rgba(28,33,30,.16); background:var(--surface); color:var(--ink); cursor:pointer; }
   .select-bar button:hover{ border-color:var(--seal); color:var(--seal); }
   .layers-panel{ position:absolute; right:14px; top:70px; width:250px; max-height:min(68vh, 560px); display:flex; flex-direction:column; background:var(--surface); color:var(--ink); border:1.5px solid var(--seal-ring); border-radius:12px; box-shadow:0 10px 28px rgba(0,0,0,.22); z-index:60; overflow:hidden; }
   .board-area.canvas-fs-active .layers-panel{ z-index:9002; }
@@ -1250,7 +1250,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .lp-dot{ flex:none; width:16px; height:16px; border-radius:50%; border:1.5px solid rgba(0,0,0,.25); }
   .lp-g{ flex:none; font-size:12.5px; }
   .lp-btns{ display:flex; gap:2px; flex:none; }
-  .lp-btns button{ width:22px; height:22px; padding:0; border-radius:6px; border:1px solid rgba(73,66,61,.16); background:var(--surface); color:var(--ink); font-size:13.5px; cursor:pointer; }
+  .lp-btns button{ width:22px; height:22px; padding:0; border-radius:6px; border:1px solid rgba(28,33,30,.16); background:var(--surface); color:var(--ink); font-size:13.5px; cursor:pointer; }
   .lp-btns button:hover{ border-color:var(--seal); color:var(--seal); }
   .lp-foot{ padding:6px 10px; font-size:12.5px; color:var(--ink-soft); line-height:1.5; border-top:1px solid var(--grid-line); }
   .arrange-hint{ font-size:12.5px; color:var(--ink-soft); margin-top:6px; line-height:1.4; max-width:180px; white-space:normal; }
@@ -1285,9 +1285,9 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .tn-float-head button{ border:none; background:transparent; cursor:pointer; font-size:15.5px; color:var(--seal); }
   .tn-float textarea{ flex:1; min-height:0; border:none; outline:none; resize:none; padding:8px 10px; font-size:15.5px; line-height:1.6; background:transparent; color:inherit; font-family:inherit; }
   .shape-proxy{ position:absolute; pointer-events:auto; box-sizing:border-box; border:1.5px dashed transparent; cursor:grab; touch-action:none; }
-  .shape-proxy:hover{ border-color:#5A7590; }
+  .shape-proxy:hover{ border-color:#1E88E5; }
   .shape-proxy.active{ border-color:var(--seal); cursor:grabbing; }
-  .rh{ display:none; position:absolute; width:11px; height:11px; margin:-6px 0 0 -6px; background:#fff; border:2px solid #5A7590; border-radius:50%; box-shadow:0 1px 4px rgba(0,0,0,.35); z-index:10; touch-action:none; box-sizing:border-box; }
+  .rh{ display:none; position:absolute; width:11px; height:11px; margin:-6px 0 0 -6px; background:#fff; border:2px solid #1E88E5; border-radius:50%; box-shadow:0 1px 4px rgba(0,0,0,.35); z-index:10; touch-action:none; box-sizing:border-box; }
   .shape-proxy:hover .rh, .shape-proxy.active .rh, .image-proxy:hover .rh, .image-proxy.active .rh{ display:block; }
   .rh-nw{ left:0; top:0; cursor:nwse-resize; } .rh-n{ left:50%; top:0; cursor:ns-resize; } .rh-ne{ left:100%; top:0; cursor:nesw-resize; }
   .rh-e{ left:100%; top:50%; cursor:ew-resize; } .rh-se{ left:100%; top:100%; cursor:nwse-resize; } .rh-s{ left:50%; top:100%; cursor:ns-resize; }
@@ -1295,9 +1295,9 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .text-layer:not(.objs-interactive) .shape-proxy{ pointer-events:none; }
   .shape-popover{ min-width:214px; }
   .shape-type-row{ display:flex; gap:4px; flex-wrap:nowrap; }
-  .shape-type-btn{ width:34px; height:34px; border-radius:8px; border:1.5px solid rgba(73,66,61,0.14); background:var(--surface); cursor:pointer; font-size:17px; line-height:1; color:var(--ink); padding:0; display:flex; align-items:center; justify-content:center; }
+  .shape-type-btn{ width:34px; height:34px; border-radius:8px; border:1.5px solid rgba(28,33,30,0.14); background:var(--surface); cursor:pointer; font-size:17px; line-height:1; color:var(--ink); padding:0; display:flex; align-items:center; justify-content:center; }
   .shape-type-btn.active{ background:var(--seal); color:#fff; border-color:var(--seal); }
-  .shape-fill-btn{ width:100%; padding:6px 8px; font-size:13.5px; font-weight:600; border-radius:8px; border:1.5px solid rgba(73,66,61,0.14); background:var(--surface); color:var(--ink); cursor:pointer; }
+  .shape-fill-btn{ width:100%; padding:6px 8px; font-size:13.5px; font-weight:600; border-radius:8px; border:1.5px solid rgba(28,33,30,0.14); background:var(--surface); color:var(--ink); cursor:pointer; }
   .shape-fill-btn.active{ background:var(--seal); color:#fff; border-color:var(--seal); }
   .image-layer{ position:absolute; inset:0; z-index:1; pointer-events:none; overflow:hidden; }
   .board-image{ position:absolute; transform:translate(-50%,-50%); height:auto; max-width:none; user-select:none; -webkit-user-drag:none; }
@@ -1306,7 +1306,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
     position:absolute; transform:translate(-50%,-50%); pointer-events:auto; box-sizing:border-box;
     border:1.5px dashed transparent; cursor:grab; touch-action:none;
   }
-  .image-proxy:hover{ border-color:#5A7590; }
+  .image-proxy:hover{ border-color:#1E88E5; }
   .image-proxy.active{ border-color:var(--seal); cursor:grabbing; }
   /* 左側投影片縮圖／新增按鈕 */
   .q-thumb{ width:64px; height:auto; min-height:32px; max-height:48px; object-fit:contain; flex:none; border:1px solid var(--grid-line); border-radius:4px; background:#FFFCF7; }
@@ -1340,7 +1340,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .text-size-row{ display:flex; gap:6px; align-items:stretch; }
   .text-bold-btn{
     width:34px; flex:none; font-size:17px; font-weight:900; font-family:MM Latin,Iansui,serif; cursor:pointer;
-    background:var(--surface); color:var(--ink); border:1.5px solid rgba(73,66,61,0.14); border-radius:8px;
+    background:var(--surface); color:var(--ink); border:1.5px solid rgba(28,33,30,0.14); border-radius:8px;
   }
   .text-bold-btn.active{ background:var(--seal); color:#fff; border-color:var(--seal); }
 
@@ -1352,7 +1352,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .color-picker-row{ display:flex; align-items:center; gap:8px; margin-top:12px; width:100%; }
   .native-color-swatch-wrap{
     width:30px; height:30px; border-radius:8px; flex:none; cursor:pointer;
-    display:block; position:relative; border:1.5px solid rgba(73,66,61,0.18);
+    display:block; position:relative; border:1.5px solid rgba(28,33,30,0.18);
   }
   :root:not([data-theme="light"]) .native-color-swatch-wrap{ border-color:rgba(255,255,255,0.2); }
   .native-color-swatch-wrap img.color-picker-icon-img{
@@ -1363,12 +1363,12 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   }
   .native-color-swatch-dot{
     position:absolute; right:-3px; bottom:-3px; width:13px; height:13px; border-radius:50%;
-    border:2px solid var(--surface); box-shadow:0 0 0 1px rgba(73,66,61,0.2); pointer-events:none;
+    border:2px solid var(--surface); box-shadow:0 0 0 1px rgba(28,33,30,0.2); pointer-events:none;
   }
   .eyedropper-btn{
     flex:1; display:flex; align-items:center; justify-content:center; gap:5px; white-space:nowrap;
     padding:0 6px; height:30px; font-size:13px; font-weight:700; border-radius:8px;
-    border:1.5px solid rgba(73,66,61,0.14); background:var(--surface); color:var(--ink); cursor:pointer;
+    border:1.5px solid rgba(28,33,30,0.14); background:var(--surface); color:var(--ink); cursor:pointer;
   }
   .eyedropper-btn img.color-picker-icon-img{ width:16px; height:16px; display:block; flex:none; }
   :root:not([data-theme="light"]) .eyedropper-btn{ border-color:rgba(255,255,255,0.14); }
@@ -1376,7 +1376,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
 
   .grid-btn-group{ display:grid; grid-template-columns:repeat(3, 1fr); gap:4px; width:100%; flex-shrink:0; }
   .grid-btn-v{
-    width:100%; padding:7px 0; font-size:13px; font-weight:700; border-radius:7px; border:1.5px solid rgba(73,66,61,0.14); background:var(--surface); cursor:pointer; color:var(--ink);
+    width:100%; padding:7px 0; font-size:13px; font-weight:700; border-radius:7px; border:1.5px solid rgba(28,33,30,0.14); background:var(--surface); cursor:pointer; color:var(--ink);
   }
   :root:not([data-theme="light"]) .grid-btn-v{ border-color:rgba(255,255,255,0.14); }
   .grid-btn-v.active{background:var(--seal); color:#fff; border-color:var(--seal);}
@@ -1442,7 +1442,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   }
   .personal-trace-mini-btn{
     font-size:13.5px; font-weight:700; padding:5px 10px; border-radius:8px; cursor:pointer;
-    border:1.5px solid rgba(73,66,61,0.16); background:var(--surface); color:var(--ink);
+    border:1.5px solid rgba(28,33,30,0.16); background:var(--surface); color:var(--ink);
   }
   .personal-trace-mini-btn:hover{ border-color:var(--seal); background:var(--surface-2); }
   .personal-trace-canvas-wrap{ position:relative; flex-grow:1; min-height:0; }
@@ -1467,7 +1467,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
     position:absolute;pointer-events:auto;font-family:MM Latin,Iansui,serif; font-weight:700;line-height:1;color:var(--ink);user-select:none; padding:0 !important;border:1.5px dashed transparent;border-radius:4px;white-space:nowrap; cursor:grab;transform:translate(-50%, -50%); background: transparent !important; width: max-content; max-width: max-content; transition:border-color .15s ease;
     touch-action:none; /* 觸控拖曳文字方塊時，不要被瀏覽器當成捲動/縮放手勢 */
   }
-  .movable-text:hover, .movable-text.active{ border:1.5px dashed #5A7590 !important; background: transparent !important; box-shadow: none !important; cursor:move !important; }
+  .movable-text:hover, .movable-text.active{ border:1.5px dashed #1E88E5 !important; background: transparent !important; box-shadow: none !important; cursor:move !important; }
   .movable-text.active{ border-color:var(--seal) !important; cursor:grabbing !important; }
   /* 打字加註音（拼音／注音）：用瀏覽器原生的 <ruby>/<rt> 把註音字顯示在字的正上方，不用自己算位置。
      有 ruby 的時候文字方塊要多留一點高度給上面的註音，不然會跟畫布上其他內容擠在一起。 */
@@ -1601,7 +1601,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .board-area.ribbon-mode.fs-edit .canvas-fs-exit-btn{ display:none; }
   .board-area.ribbon-mode.fs-edit .draw-board-layout{ flex:1; min-height:0; height:auto; }
   .draw-toolbar-top.ribbon{ display:block; padding:0; overflow:visible; }
-  .rb-tabs{ display:flex; align-items:flex-end; gap:2px; padding:4px 10px 0; border-bottom:1.5px solid rgba(73,66,61,.12); flex-wrap:nowrap; overflow-x:auto; }
+  .rb-tabs{ display:flex; align-items:flex-end; gap:2px; padding:4px 10px 0; border-bottom:1.5px solid rgba(28,33,30,.12); flex-wrap:nowrap; overflow-x:auto; }
   /* 頁籤列右側：翻頁鈕固定小一點，跟頁籤排同一行 */
   .rb-nav .slide-nav-row{ gap:2px; }
   .rb-nav .slide-nav-row .tool-btn-v{ width:32px !important; min-width:0 !important; height:32px; padding:2px; justify-content:center; }
@@ -1639,20 +1639,20 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   /* 收合功能區（像 PowerPoint 的「摺疊功能區」）：只留頁籤列，畫布多出約 100px 高；點頁籤會暫時浮出面板，點別處就收回 */
   .draw-toolbar-top.rb-collapsed .rb-panels{ display:none; }
   .draw-toolbar-top.rb-collapsed.rb-peek{ position:relative; }
-  .draw-toolbar-top.rb-collapsed.rb-peek .rb-panels{ display:block; position:absolute; left:0; right:0; top:100%; z-index:9004; background:var(--surface,#fff); border:1.5px solid rgba(73,66,61,.15); border-radius:0 0 12px 12px; box-shadow:0 10px 24px rgba(0,0,0,.22); }
+  .draw-toolbar-top.rb-collapsed.rb-peek .rb-panels{ display:block; position:absolute; left:0; right:0; top:100%; z-index:9004; background:var(--surface,#fff); border:1.5px solid rgba(28,33,30,.15); border-radius:0 0 12px 12px; box-shadow:0 10px 24px rgba(0,0,0,.22); }
   /* 學生在投影片上自己打的字：存在各自的 stexts/{學生} 底下，不動老師的投影片文字；全班都看得到，只有自己能改 */
   .stext-layer{ position:absolute; inset:0; pointer-events:none; z-index:6; overflow:hidden; }
   .stext{ position:absolute; white-space:pre-wrap; font-weight:700; line-height:1.25; max-width:80%; text-shadow:0 0 3px rgba(255,255,255,.9); }
   .stext.mine{ outline:1.5px dashed rgba(224,112,77,.55); outline-offset:2px; border-radius:3px; }
-.passage-card{ max-width:980px; margin:4px auto 14px; padding:14px 22px 16px; background:#FFFCF5; border:1.5px solid rgba(73,66,61,.14); border-left:6px solid var(--seal); border-radius:14px; box-shadow:0 1px 6px rgba(0,0,0,.05); }
+.passage-card{ max-width:980px; margin:4px auto 14px; padding:14px 22px 16px; background:#FFFCF5; border:1.5px solid rgba(28,33,30,.14); border-left:6px solid var(--seal); border-radius:14px; box-shadow:0 1px 6px rgba(0,0,0,.05); }
   .passage-label{ font-size:14px; font-weight:800; color:var(--seal); letter-spacing:.04em; margin-bottom:8px; }
   .passage-text{ font-size:20px; line-height:2; color:var(--ink); max-height:42vh; overflow-y:auto; padding-right:6px; }
-  .rb-collapse-btn{ border:0; background:rgba(73,66,61,.07); border-radius:8px; padding:4px 9px; font-size:13.5px; font-weight:700; color:var(--ink-soft); cursor:pointer; white-space:nowrap; }
-  .rb-collapse-btn:hover{ background:rgba(73,66,61,.14); color:var(--ink); }
+  .rb-collapse-btn{ border:0; background:rgba(28,33,30,.07); border-radius:8px; padding:4px 9px; font-size:13.5px; font-weight:700; color:var(--ink-soft); cursor:pointer; white-space:nowrap; }
+  .rb-collapse-btn:hover{ background:rgba(28,33,30,.14); color:var(--ink); }
   .rb-panel{ display:none; padding:6px 8px 4px; align-items:stretch; flex-wrap:wrap; row-gap:6px; overflow:visible; }
   .draw-toolbar-top.ribbon .color-popover{ position:fixed; z-index:9003; margin:0; }
   .rb-panel.on{ display:flex; }
-  .rb-group{ display:flex; flex-direction:column; padding:0 10px; border-right:1px solid rgba(73,66,61,.13); flex:0 0 auto; }
+  .rb-group{ display:flex; flex-direction:column; padding:0 10px; border-right:1px solid rgba(28,33,30,.13); flex:0 0 auto; }
   .rb-group:last-child{ border-right:none; }
   .rb-group-body{ display:flex; align-items:flex-start; gap:4px; flex:1; }
   .rb-group-title{ font-size:12.5px; color:var(--ink-soft); text-align:center; margin-top:3px; white-space:nowrap; }
@@ -1660,16 +1660,16 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .rb-stack{ display:flex; flex-direction:column; gap:5px; justify-content:center; }
   .rb-row{ display:flex; align-items:center; gap:5px; flex-wrap:nowrap; }
   .rb-inl{ display:flex; align-items:center; gap:4px; font-size:13px; color:var(--ink-soft); white-space:nowrap; }
-  .rb-qat-sep{ width:1px; height:22px; background:rgba(73,66,61,.18); margin:0 4px; }
+  .rb-qat-sep{ width:1px; height:22px; background:rgba(28,33,30,.18); margin:0 4px; }
   .rb-qat .tool-btn-v-wrap{ position:relative; }
-  .rb-inl select{ font-size:13.5px; padding:3px 4px; border-radius:6px; border:1.5px solid rgba(73,66,61,.2); background:var(--surface); color:var(--ink); max-width:150px; }
+  .rb-inl select{ font-size:13.5px; padding:3px 4px; border-radius:6px; border:1.5px solid rgba(28,33,30,.2); background:var(--surface); color:var(--ink); max-width:150px; }
   .rb-colors{ display:flex; align-items:center; gap:8px; }
   .rb-colors .color-dot-grid{ display:flex; grid-template-columns:none; gap:5px; padding:0; }
   .rb-colors .color-dot{ width:20px; height:20px; }
   .rb-colors .color-picker-row{ display:flex; align-items:center; gap:4px; margin:0; }
   .rb-shapes{ display:flex; gap:3px; flex-wrap:wrap; max-width:130px; align-items:center; }
   .rb-trans{ display:flex; gap:6px; align-items:center; }
-  .rb-trans .trans-opt, .rb-stack .trans-opt{ width:auto; padding:6px 12px; border-radius:8px; border:1.5px solid rgba(73,66,61,.16); background:var(--surface); font-size:14px; font-weight:700; cursor:pointer; white-space:nowrap; }
+  .rb-trans .trans-opt, .rb-stack .trans-opt{ width:auto; padding:6px 12px; border-radius:8px; border:1.5px solid rgba(28,33,30,.16); background:var(--surface); font-size:14px; font-weight:700; cursor:pointer; white-space:nowrap; }
   .rb-trans .trans-opt.active{ border-color:var(--seal); color:var(--seal); background:var(--seal-soft); }
   .rb-row .text-fmt-row{ display:flex; gap:3px; align-items:center; }
   .rb-row .size-combo{ width:auto; }
@@ -1688,12 +1688,12 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .text-popover{ width:auto; max-width:340px; }
   .text-layer:not(.objs-interactive) .movable-text rt, .text-layer:not(.objs-interactive) .movable-text .zy-s{ pointer-events:auto; }
   .board-area.ribbon-mode:not(.canvas-fs-active) .layers-panel{ top:150px; }
-  .tb-edge{ display:none; position:absolute; width:11px; height:11px; background:#fff; border:2px solid #5A7590; border-radius:3px; z-index:10; touch-action:none; box-shadow:0 2px 6px rgba(0,0,0,.25); }
+  .tb-edge{ display:none; position:absolute; width:11px; height:11px; background:#fff; border:2px solid #1E88E5; border-radius:3px; z-index:10; touch-action:none; box-shadow:0 2px 6px rgba(0,0,0,.25); }
   .tb-e{ right:-7px; top:50%; margin-top:-6px; cursor:ew-resize !important; } .tb-w{ left:-7px; top:50%; margin-top:-6px; cursor:ew-resize !important; } .tb-s{ bottom:-7px; left:50%; margin-left:-6px; cursor:ns-resize !important; }
   .movable-text:hover .tb-edge, .movable-text.active .tb-edge{ display:block; }
   .movable-text.editing .rs.f-pinyin{ background:rgba(30,136,229,.16); } .movable-text.editing .rs.f-zhuyin{ background:rgba(251,140,0,.2); }
   .resize-handle{
-    display:none;position:absolute;right:-7px;bottom:-7px;width:13px;height:13px; background:#5A7590;border:2px solid #FFFFFF;border-radius:50%; cursor:nwse-resize !important;box-shadow:0 2px 6px rgba(0,0,0,0.3);z-index:10;
+    display:none;position:absolute;right:-7px;bottom:-7px;width:13px;height:13px; background:#1E88E5;border:2px solid #FFFFFF;border-radius:50%; cursor:nwse-resize !important;box-shadow:0 2px 6px rgba(0,0,0,0.3);z-index:10;
     touch-action:none;
   }
   .movable-text:hover .resize-handle, .movable-text.active .resize-handle{ display:block; }
@@ -1736,7 +1736,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   @keyframes chatBubblePulse{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.12); } }
   .chat-unread-badge{
     position:absolute; top:-4px; right:-4px; min-width:19px; height:19px; padding:0 4px; border-radius:999px;
-    background:#A63B42; color:#fff; font-size:12.5px; font-weight:800; display:flex; align-items:center; justify-content:center;
+    background:#E63946; color:#fff; font-size:12.5px; font-weight:800; display:flex; align-items:center; justify-content:center;
     box-shadow:0 0 0 2px var(--surface);
   }
   .chat-panel{
@@ -1759,7 +1759,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .chat-msg.me{ align-self:flex-end; }
   .chat-msg.me .chat-msg-bubble{ background:var(--seal-soft); color:var(--seal); }
   .chat-msg.system{ align-self:center; max-width:96%; }
-  .chat-msg.system .chat-msg-bubble{ background:transparent; border:1.5px dashed rgba(73,66,61,0.2); color:var(--ink-soft); font-size:13.5px; font-weight:600; text-align:center; }
+  .chat-msg.system .chat-msg-bubble{ background:transparent; border:1.5px dashed rgba(28,33,30,0.2); color:var(--ink-soft); font-size:13.5px; font-weight:600; text-align:center; }
   .chat-panel-empty{ margin:auto; text-align:center; font-size:14px; color:var(--ink-soft); padding:0 16px; }
   .chat-panel-compose{ flex-shrink:0; border-top:1px solid var(--grid-line); padding:8px 10px; }
   .chat-emoji-row{ display:flex; gap:4px; margin-bottom:6px; }
@@ -1800,7 +1800,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .hanzi-board-layout{ display:flex; align-items:stretch; justify-content:center; gap:16px; width:100%; height:100%; }
   .hanzi-side-panel{
     display:flex; flex-direction:column; align-items:center; gap:12px; padding:14px 12px;
-    background:var(--surface-2); border:1.5px solid rgba(73,66,61,0.16);
+    background:var(--surface-2); border:1.5px solid rgba(28,33,30,0.16);
     border-radius:14px; box-shadow:var(--shadow); flex-shrink:0; width:190px;
   }
   :root:not([data-theme="light"]) .hanzi-side-panel{ border-color:rgba(255,255,255,0.16); }
@@ -1809,21 +1809,21 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .bg5-wrap{ padding:10px 14px 24px; max-width:1100px; margin:0 auto; }
   .bg5-head{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; font-size:18px; }
   .bg5-note{ font-size:13.5px; color:var(--ink-soft); font-weight:400; }
-  .bg5-status{ margin:8px 0; padding:8px 12px; background:var(--seal-soft,#F6E2D2); border-radius:10px; font-size:15px; }
+  .bg5-status{ margin:8px 0; padding:8px 12px; background:var(--seal-soft,#FDECE6); border-radius:10px; font-size:15px; }
   .bg5-en{ display:block; font-size:13.5px; color:var(--ink-soft); font-weight:400; margin-top:2px; }
   .bg5-qbtn{ float:right; margin-left:8px; padding:5px 14px; border-radius:99px; border:1.5px solid var(--seal); background:var(--surface,#fff); font-weight:700; font-size:14px; cursor:pointer; color:var(--seal); }
   .bg5-demo{ position:relative; width:252px; height:150px; margin:10px auto 2px; background:#fff; border:1.5px solid var(--line,#c9b8a5); border-radius:12px; overflow:hidden; clear:both; }
   .bg5-demo .dc{ position:absolute; left:8px; width:56px; height:36px; border-radius:10px; background:#FFF3D6; border:1.5px solid #E2B96B; display:flex; align-items:center; justify-content:center; font-size:20px; }
-  .bg5-demo .dcell{ position:absolute; width:44px; height:44px; border-radius:8px; background:#F7F0E1; border:1.5px solid var(--line,#c9b8a5); display:flex; align-items:center; justify-content:center; font-size:22px; }
+  .bg5-demo .dcell{ position:absolute; width:44px; height:44px; border-radius:8px; background:#FAF4EC; border:1.5px solid var(--line,#c9b8a5); display:flex; align-items:center; justify-content:center; font-size:22px; }
   .bg5-demo .dcell.a0{ animation:bgdA0 10s infinite; } .bg5-demo .dcell.a1{ animation:bgdA1 10s infinite; } .bg5-demo .dcell.a2{ animation:bgdA2 10s infinite; }
   .bg5-demo .dcell.a0 i{ font-style:normal; animation:bgdFill 10s infinite; }
   .bg5-demo .dc.c1{ animation:bgdChip 10s infinite; }
   .bg5-demo .dhand{ position:absolute; left:0; top:0; font-size:30px; line-height:1; animation:bgdHand 10s infinite; pointer-events:none; opacity:0; }
   .bg5-demo .dwin{ position:absolute; left:104px; top:100px; width:140px; text-align:center; font-size:30px; animation:bgdWin 10s infinite; opacity:0; }
   @keyframes bgdHand{ 0%{transform:translate(170px,125px);opacity:0} 4%{transform:translate(170px,125px);opacity:1} 10%{transform:translate(112px,22px) scale(1)} 13%{transform:translate(112px,22px) scale(.82)} 16%{transform:translate(112px,22px) scale(1)} 24%{transform:translate(24px,16px) scale(1)} 27%{transform:translate(24px,16px) scale(.82)} 30%{transform:translate(24px,16px) scale(1)} 46%{transform:translate(170px,125px);opacity:1} 54%{transform:translate(112px,22px) scale(1)} 57%{transform:translate(112px,22px) scale(.82)} 60%{transform:translate(112px,22px) scale(1)} 63%{transform:translate(160px,22px) scale(1)} 65%{transform:translate(160px,22px) scale(.82)} 67%{transform:translate(160px,22px) scale(1)} 70%{transform:translate(208px,22px) scale(1)} 72%{transform:translate(208px,22px) scale(.82)} 74%{transform:translate(208px,22px) scale(1)} 90%{transform:translate(208px,22px);opacity:1} 96%,100%{transform:translate(208px,22px);opacity:0} }
-  @keyframes bgdA0{ 0%,8%{box-shadow:none} 9%,27%{box-shadow:0 0 0 3px var(--seal)} 28%,57%{box-shadow:none} 58%,98%{background:#BFD0AE;border-color:#647E58;box-shadow:none} 100%{background:#F7F0E1;border-color:var(--line,#c9b8a5)} }
-  @keyframes bgdA1{ 0%,64%{background:#F7F0E1} 65%,98%{background:#BFD0AE;border-color:#647E58} 100%{background:#F7F0E1;border-color:var(--line,#c9b8a5)} }
-  @keyframes bgdA2{ 0%,71%{background:#F7F0E1} 72%,98%{background:#BFD0AE;border-color:#647E58} 100%{background:#F7F0E1;border-color:var(--line,#c9b8a5)} }
+  @keyframes bgdA0{ 0%,8%{box-shadow:none} 9%,27%{box-shadow:0 0 0 3px var(--seal)} 28%,57%{box-shadow:none} 58%,98%{background:#9AD8A8;border-color:#4CAF6A;box-shadow:none} 100%{background:#FAF4EC;border-color:var(--line,#c9b8a5)} }
+  @keyframes bgdA1{ 0%,64%{background:#FAF4EC} 65%,98%{background:#9AD8A8;border-color:#4CAF6A} 100%{background:#FAF4EC;border-color:var(--line,#c9b8a5)} }
+  @keyframes bgdA2{ 0%,71%{background:#FAF4EC} 72%,98%{background:#9AD8A8;border-color:#4CAF6A} 100%{background:#FAF4EC;border-color:var(--line,#c9b8a5)} }
   @keyframes bgdFill{ 0%,27%{opacity:0;transform:scale(.4)} 31%{opacity:1;transform:scale(1.2)} 34%,100%{opacity:1;transform:scale(1)} }
   @keyframes bgdChip{ 0%,23%{transform:scale(1)} 27%{transform:scale(1.15);background:#FFD98A} 32%,100%{transform:scale(1)} }
   .bg5-demo .dn{ position:absolute; left:46px; top:-8px; min-width:20px; height:20px; border-radius:99px; background:var(--seal); color:#fff; font-size:12px; font-weight:800; display:flex; align-items:center; justify-content:center; opacity:0; }
@@ -1838,12 +1838,12 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   @keyframes bgtN1{ 0%,12%{opacity:0;transform:scale(.3)} 16%,98%{opacity:1;transform:scale(1)} 100%{opacity:0} }
   @keyframes bgtN2{ 0%,32%{opacity:0;transform:scale(.3)} 36%,98%{opacity:1;transform:scale(1)} 100%{opacity:0} }
   @keyframes bgtN3{ 0%,52%{opacity:0;transform:scale(.3)} 56%,98%{opacity:1;transform:scale(1)} 100%{opacity:0} }
-  @keyframes bgtA0{ 0%,16%{background:#F7F0E1} 18%,98%{background:#BFD0AE;border-color:#647E58} 100%{background:#F7F0E1;border-color:var(--line,#c9b8a5)} }
-  @keyframes bgtA1{ 0%,36%{background:#F7F0E1} 38%,98%{background:#BFD0AE;border-color:#647E58} 100%{background:#F7F0E1;border-color:var(--line,#c9b8a5)} }
-  @keyframes bgtA2{ 0%,56%{background:#F7F0E1} 58%,98%{background:#BFD0AE;border-color:#647E58} 100%{background:#F7F0E1;border-color:var(--line,#c9b8a5)} }
+  @keyframes bgtA0{ 0%,16%{background:#FAF4EC} 18%,98%{background:#9AD8A8;border-color:#4CAF6A} 100%{background:#FAF4EC;border-color:var(--line,#c9b8a5)} }
+  @keyframes bgtA1{ 0%,36%{background:#FAF4EC} 38%,98%{background:#9AD8A8;border-color:#4CAF6A} 100%{background:#FAF4EC;border-color:var(--line,#c9b8a5)} }
+  @keyframes bgtA2{ 0%,56%{background:#FAF4EC} 58%,98%{background:#9AD8A8;border-color:#4CAF6A} 100%{background:#FAF4EC;border-color:var(--line,#c9b8a5)} }
   .bg5-demo .dwin.tw{ animation:bgtWin 10s infinite; }
   @keyframes bgtWin{ 0%,60%{opacity:0;transform:scale(.4)} 65%{opacity:1;transform:scale(1.25)} 70%,94%{opacity:1;transform:scale(1)} 98%,100%{opacity:0} }
-  .bg5-demo.s2 .dcell{ background:#F7F0E1; }
+  .bg5-demo.s2 .dcell{ background:#FAF4EC; }
   .bg5-demo.s2 .dhand{ animation:bgsHand 12s infinite; }
   .bg5-demo.s2 .dcell.m0{ animation:bgsM0 12s infinite; } .bg5-demo.s2 .dcell.m1{ animation:bgsM1 12s infinite; } .bg5-demo.s2 .dcell.m2{ animation:bgsM2 12s infinite; }
   .bg5-demo.s2 .dcell i{ font-style:normal; opacity:0; }
@@ -1855,9 +1855,9 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .bg5-ghost{ position:fixed; z-index:99998; pointer-events:none; padding:6px 14px; border-radius:99px; background:#fff; border:2px solid var(--seal); font-size:20px; font-weight:700; box-shadow:0 6px 18px rgba(0,0,0,.3); transform:translate(-50%,-120%); }
   .bg5-cell.dropin{ outline:3px dashed var(--seal); }
   @keyframes bgsHand{ 0%{transform:translate(170px,125px);opacity:0} 3%{transform:translate(170px,125px);opacity:1} 8%{transform:translate(112px,22px) scale(1)} 10%{transform:translate(112px,22px) scale(.82)} 12%{transform:translate(112px,22px) scale(1)} 18%{transform:translate(24px,16px) scale(1)} 20%{transform:translate(24px,16px) scale(.82)} 22%{transform:translate(24px,16px) scale(1)} 28%{transform:translate(160px,22px) scale(1)} 30%{transform:translate(160px,22px) scale(.82)} 32%{transform:translate(160px,22px) scale(1)} 37%{transform:translate(24px,56px) scale(1)} 39%{transform:translate(24px,56px) scale(.82)} 41%{transform:translate(24px,56px) scale(1)} 47%{transform:translate(208px,22px) scale(1)} 49%{transform:translate(208px,22px) scale(.82)} 51%{transform:translate(208px,22px) scale(1)} 56%{transform:translate(24px,96px) scale(1)} 58%{transform:translate(24px,96px) scale(.82)} 60%{transform:translate(24px,96px) scale(1)} 66%{transform:translate(112px,22px) scale(1)} 68%{transform:translate(112px,22px) scale(.82)} 70%{transform:translate(112px,22px) scale(1)} 74%{transform:translate(160px,22px) scale(1)} 76%{transform:translate(160px,22px) scale(.82)} 78%{transform:translate(160px,22px) scale(1)} 82%{transform:translate(208px,22px) scale(1)} 84%{transform:translate(208px,22px) scale(.82)} 86%{transform:translate(208px,22px) scale(1)} 94%{transform:translate(208px,22px);opacity:1} 98%,100%{transform:translate(208px,22px);opacity:0} }
-  @keyframes bgsM0{ 0%,6%{box-shadow:none} 7%,19%{box-shadow:0 0 0 3px var(--seal)} 20%,67%{box-shadow:none} 68%,98%{background:#BFD0AE;border-color:#647E58} 100%{background:#F7F0E1;border-color:var(--line,#c9b8a5)} }
-  @keyframes bgsM1{ 0%,26%{box-shadow:none} 27%,38%{box-shadow:0 0 0 3px var(--seal)} 39%,75%{box-shadow:none} 76%,98%{background:#BFD0AE;border-color:#647E58} 100%{background:#F7F0E1;border-color:var(--line,#c9b8a5)} }
-  @keyframes bgsM2{ 0%,45%{box-shadow:none} 46%,57%{box-shadow:0 0 0 3px var(--seal)} 58%,83%{box-shadow:none} 84%,98%{background:#BFD0AE;border-color:#647E58} 100%{background:#F7F0E1;border-color:var(--line,#c9b8a5)} }
+  @keyframes bgsM0{ 0%,6%{box-shadow:none} 7%,19%{box-shadow:0 0 0 3px var(--seal)} 20%,67%{box-shadow:none} 68%,98%{background:#9AD8A8;border-color:#4CAF6A} 100%{background:#FAF4EC;border-color:var(--line,#c9b8a5)} }
+  @keyframes bgsM1{ 0%,26%{box-shadow:none} 27%,38%{box-shadow:0 0 0 3px var(--seal)} 39%,75%{box-shadow:none} 76%,98%{background:#9AD8A8;border-color:#4CAF6A} 100%{background:#FAF4EC;border-color:var(--line,#c9b8a5)} }
+  @keyframes bgsM2{ 0%,45%{box-shadow:none} 46%,57%{box-shadow:0 0 0 3px var(--seal)} 58%,83%{box-shadow:none} 84%,98%{background:#9AD8A8;border-color:#4CAF6A} 100%{background:#FAF4EC;border-color:var(--line,#c9b8a5)} }
   @keyframes bgsF0{ 0%,21%{opacity:0;transform:scale(.4)} 25%{opacity:1;transform:scale(1.2)} 28%,98%{opacity:1;transform:scale(1)} 100%{opacity:0} }
   @keyframes bgsF1{ 0%,40%{opacity:0;transform:scale(.4)} 44%{opacity:1;transform:scale(1.2)} 47%,98%{opacity:1;transform:scale(1)} 100%{opacity:0} }
   @keyframes bgsF2{ 0%,59%{opacity:0;transform:scale(.4)} 63%{opacity:1;transform:scale(1.2)} 66%,98%{opacity:1;transform:scale(1)} 100%{opacity:0} }
@@ -1878,11 +1878,11 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .th-chips{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px; }
   .th-chip{ padding:8px 16px; border-radius:99px; border:2px solid var(--line,#c9b8a5); background:var(--surface,#fff); font-size:20px; font-weight:700; cursor:pointer; }
   .th-chip small{ display:block; font-size:11.5px; font-weight:400; color:var(--ink-soft); }
-  .th-chip.on{ border-color:var(--seal); background:var(--seal-soft,#F6E2D2); }
+  .th-chip.on{ border-color:var(--seal); background:var(--seal-soft,#FDECE6); }
   .th-ctl{ display:flex; gap:6px; flex-wrap:wrap; margin:8px 0; }
-  .th-ok{ color:#2E8B57; font-weight:700; } .th-no{ color:#A63B42; font-weight:700; }
+  .th-ok{ color:#2E8B57; font-weight:700; } .th-no{ color:#B23B32; font-weight:700; }
   .th-tbl{ width:100%; border-collapse:collapse; font-size:15px; margin-top:8px; } .th-tbl td,.th-tbl th{ padding:5px 8px; border-bottom:1px solid var(--line,#e6d9c8); text-align:left; }
-  .bg5-warn{ color:#A63B42; margin-top:4px; font-weight:700; }
+  .bg5-warn{ color:#B23B32; margin-top:4px; font-weight:700; }
   .bg5-body{ display:grid; grid-template-columns:minmax(200px,300px) 1fr; gap:16px; align-items:start; }
   @media (max-width:760px){ .bg5-body{ grid-template-columns:1fr; } }
   .bg5-cap{ font-weight:700; font-size:14.5px; margin-bottom:6px; color:var(--ink-soft); }
@@ -1891,15 +1891,15 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .bg5-word.used{ opacity:.35; text-decoration:line-through; }
   .bg5-tw{ position:relative; text-align:center; }
   .bg5-tw small{ display:block; font-size:11px; color:var(--ink-soft); font-family:inherit; }
-  .bg5-tw.called{ background:var(--seal-soft,#F6E2D2); border-color:var(--seal,#B25F38); }
-  .bg5-n{ display:inline-block; min-width:1.3em; margin-right:4px; padding:0 4px; border-radius:99px; background:var(--seal,#B25F38); color:#fff; font-size:12.5px; font-family:system-ui; }
+  .bg5-tw.called{ background:var(--seal-soft,#FDECE6); border-color:var(--seal,#E8825A); }
+  .bg5-n{ display:inline-block; min-width:1.3em; margin-right:4px; padding:0 4px; border-radius:99px; background:var(--seal,#E8825A); color:#fff; font-size:12.5px; font-family:system-ui; }
   .bg5-who{ display:flex; gap:6px; align-items:center; flex-wrap:wrap; margin:0 0 8px; font-size:14px; }
   .bg5-who select, .bg5-who input{ padding:4px 8px; border-radius:8px; border:1.5px solid var(--line,#d8cbb8); background:var(--surface,#fff); font-size:14px; }
   .bg5-grid{ display:grid; grid-template-columns:repeat(5,1fr); gap:6px; width:min(100%,520px); }
   .bg5-cell{ aspect-ratio:1/1; display:flex; align-items:center; justify-content:center; text-align:center; padding:4px; font-family:MM Latin,Iansui,serif; font-size:clamp(15px,2.4vw,24px); font-weight:700; border-radius:12px; border:2px solid var(--line,#d8cbb8); background:var(--surface,#fff); cursor:pointer; line-height:1.15; word-break:break-all; }
   .bg5-cell.empty{ background:rgba(0,0,0,.03); border-style:dashed; }
-  .bg5-cell.sel{ border-color:var(--seal,#B25F38); box-shadow:0 0 0 3px var(--seal-soft,#F6E2D2); }
-  .bg5-cell.mark{ background:var(--seal,#B25F38); color:#fff; border-color:var(--seal,#B25F38); }
+  .bg5-cell.sel{ border-color:var(--seal,#E8825A); box-shadow:0 0 0 3px var(--seal-soft,#FDECE6); }
+  .bg5-cell.mark{ background:var(--seal,#E8825A); color:#fff; border-color:var(--seal,#E8825A); }
   .bg5-btns{ display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
   .bg5-tbl{ border-collapse:collapse; width:100%; font-size:14.5px; }
   .bg5-tbl th, .bg5-tbl td{ padding:4px 8px; border-bottom:1px solid var(--line,#e3d6c0); text-align:left; }
@@ -1908,7 +1908,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   #bingo5-ov{ position:fixed; inset:0; z-index:99999; background:rgba(0,0,0,.62); display:flex; align-items:center; justify-content:center; cursor:pointer; }
   .bg5-ov-box{ background:#fff; border-radius:24px; padding:30px 50px; text-align:center; animation:bg5Pop .6s cubic-bezier(.3,1.6,.5,1); box-shadow:0 12px 60px rgba(0,0,0,.4); max-width:90vw; }
   .bg5-ov-star{ font-size:clamp(50px,9vw,90px); }
-  .bg5-ov-name{ font-family:MM Latin,Iansui,serif; font-size:clamp(42px,9vw,96px); font-weight:800; color:var(--seal,#B25F38); line-height:1.15; word-break:break-all; }
+  .bg5-ov-name{ font-family:MM Latin,Iansui,serif; font-size:clamp(42px,9vw,96px); font-weight:800; color:var(--seal,#E8825A); line-height:1.15; word-break:break-all; }
   .bg5-ov-txt{ font-size:clamp(28px,5vw,56px); font-weight:800; }
   @keyframes bg5Pop{ from{ transform:scale(.3); opacity:0; } to{ transform:scale(1); opacity:1; } }
   .hanzi-ref-zy{ font-family:MM Latin,Iansui,serif; font-size:42px; font-weight:700; line-height:1.2; text-align:center; padding:6px 0; color:var(--seal); letter-spacing:.04em; }
@@ -1951,8 +1951,8 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .wp-thumb-img-wrap{ position:relative; width:100%; aspect-ratio:4/3; background:var(--surface); overflow:hidden; }
   .wp-thumb-img-wrap img{ position:absolute; inset:0; width:100%; height:100%; object-fit:contain; background:#fff; }
   .wp-thumb-updated{ font-size:11px; text-align:center; padding:0 4px 5px; color:var(--ink-soft); }
-  .wp-thumb-tile-stale{ border-color:#A63B42 !important; }
-  .wp-thumb-tile-stale .wp-thumb-updated{ color:#A63B42; font-weight:700; }
+  .wp-thumb-tile-stale{ border-color:#C0392B !important; }
+  .wp-thumb-tile-stale .wp-thumb-updated{ color:#C0392B; font-weight:700; }
   .wp-zoom-img-wrap{ position:relative; width:100%; max-width:560px; aspect-ratio:4/3; margin:0 auto; background:var(--surface-2); border-radius:12px; overflow:hidden; }
   .wp-zoom-img-wrap img{ position:absolute; inset:0; width:100%; height:100%; object-fit:contain; background:#fff; }
   /* 看全班畫面點開某位學生：放到幾乎整個螢幕 */
@@ -2080,10 +2080,8 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .offline-pill{ display:inline-block; font-size:13.5px; font-weight:700; padding:3px 9px; border-radius:999px; background:var(--surface-2); color:var(--ink-soft); white-space:nowrap; }
   .offline-pill.is-ready{ background:var(--bamboo-soft); color:var(--bamboo); }
   .offline-pill.is-notready{ background:#FFF3D6; color:#9A6A00; }
-  .offline-pill.is-offline{ background:#FFE4DE; color:#A63B42; }
+  .offline-pill.is-offline{ background:#FFE4DE; color:#B23B32; }
 </style>
-<script src="../icons/mm-icons.js?v=20261116"></script>
-<link rel="stylesheet" href="../icons/mm-theme.css?v=20261123">
 </head>
 <body>
 
@@ -2347,15 +2345,15 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
     <label style="margin-top:18px;">🎨 網站主視覺模式</label>
     <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:6px;">
       <button type="button" class="btn btn-sm btn-theme-bg" data-bg="light">☀️ 米白 Light</button>
-      <button type="button" class="btn btn-sm btn-theme-bg" data-bg="eyecare" style="background:#E8EDDD; color:#2E3A27; border-color:#68745C;">🌿 護眼 Eye Care</button>
+      <button type="button" class="btn btn-sm btn-theme-bg" data-bg="eyecare" style="background:#E8EFE6; color:#243328; border-color:#5C6B60;">🌿 護眼 Eye Care</button>
       <button type="button" class="btn btn-sm btn-theme-bg" data-bg="dark" style="background:#191C1B; color:#E5EAE6; border-color:#444;">🌙 深色 Dark</button>
     </div>
 
     <label style="margin-top:18px;">🖌️ 按鈕與標記重點色</label>
     <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:6px;">
-      <button type="button" class="btn btn-sm btn-theme-accent" data-accent="seal" style="background:#B25F38; color:#fff;">蜜桃橘 Peach</button>
-      <button type="button" class="btn btn-sm btn-theme-accent" data-accent="bamboo" style="background:#647E58; color:#fff;">竹葉綠 Green</button>
-      <button type="button" class="btn btn-sm btn-theme-accent" data-accent="blue" style="background:#5A7590; color:#fff;">青空藍 Blue</button>
+      <button type="button" class="btn btn-sm btn-theme-accent" data-accent="seal" style="background:#E8825A; color:#fff;">蜜桃橘 Peach</button>
+      <button type="button" class="btn btn-sm btn-theme-accent" data-accent="bamboo" style="background:#4C8577; color:#fff;">竹葉綠 Green</button>
+      <button type="button" class="btn btn-sm btn-theme-accent" data-accent="blue" style="background:#1E88E5; color:#fff;">青空藍 Blue</button>
       <button type="button" class="btn btn-sm btn-theme-accent" data-accent="amber" style="background:#E65100; color:#fff;">暖琥珀 Amber</button>
     </div>
 
@@ -3113,7 +3111,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
     if(shown++ > 2) return;
     try{
       var d = document.createElement("div");
-      d.style.cssText = "position:fixed;left:0;right:0;top:0;z-index:2147483647;background:#A63B42;color:#fff;font:13px/1.5 sans-serif;padding:6px 12px;";
+      d.style.cssText = "position:fixed;left:0;right:0;top:0;z-index:2147483647;background:#b23b32;color:#fff;font:13px/1.5 sans-serif;padding:6px 12px;";
       d.textContent = "簡報頁發生錯誤（請截圖給開發者）：" + msg;
       (document.body || document.documentElement).appendChild(d);
     }catch(e){}
@@ -3644,7 +3642,7 @@ window.mmTA = (function(){
             var txts = []; var ts = n.getElementsByTagName("a:t"); for(var ti = 0; ti < ts.length; ti++){ if(ts[ti].textContent) txts.push(ts[ti].textContent); }
             var gfx = kid(n, "p:xfrm"); var gb = gfx ? { x: num(kid(gfx, "a:off"), "x", 0), y: num(kid(gfx, "a:off"), "y", 0), cx: num(kid(gfx, "a:ext"), "cx", 0), cy: num(kid(gfx, "a:ext"), "cy", 0) } : null;
             out.warnings.push("有表格／圖表／SmartArt，只匯入了文字" );
-            if(txts.length && gb){ var bb = applyXf(gb, xf); out.texts.push({ text: txts.join("\n"), pt: 14, bold: false, color: "#352C27", align: "l", list: "none", cx: bb.x + bb.cx / 2, cy: bb.y + bb.cy / 2, estW: bb.cx, estH: bb.cy }); }
+            if(txts.length && gb){ var bb = applyXf(gb, xf); out.texts.push({ text: txts.join("\n"), pt: 14, bold: false, color: "#2B2320", align: "l", list: "none", cx: bb.x + bb.cx / 2, cy: bb.y + bb.cy / 2, estW: bb.cx, estH: bb.cy }); }
           }
         }catch(e){ out.warnings.push("有一個物件無法解析，已略過（" + (e && e.message ? e.message : e) + "）"); }
       }
@@ -4019,31 +4017,31 @@ window.mmTA = (function(){
     var root = document.documentElement;
 
     if(bgMode === "dark"){
-      root.style.setProperty("--paper", "#241E19"); root.style.setProperty("--surface", "#2E2620");
-      root.style.setProperty("--surface-2", "#38302A"); root.style.setProperty("--ink", "#F3ECE2");
+      root.style.setProperty("--paper", "#221C17"); root.style.setProperty("--surface", "#2C2520");
+      root.style.setProperty("--surface-2", "#332A23"); root.style.setProperty("--ink", "#F3ECE2");
       root.style.setProperty("--ink-soft", "#C6B9A8"); root.style.setProperty("--grid-line", "rgba(243,236,226,0.14)");
     } else if(bgMode === "eyecare"){
-      root.style.setProperty("--paper", "#E8EDDD"); root.style.setProperty("--surface", "#F3F6EA");
-      root.style.setProperty("--surface-2", "#DDE4CD"); root.style.setProperty("--ink", "#2E3A27");
-      root.style.setProperty("--ink-soft", "#68745C"); root.style.setProperty("--grid-line", "rgba(36,51,40,0.12)");
+      root.style.setProperty("--paper", "#E8EFE6"); root.style.setProperty("--surface", "#F3F7F1");
+      root.style.setProperty("--surface-2", "#DCE6D9"); root.style.setProperty("--ink", "#243328");
+      root.style.setProperty("--ink-soft", "#5C6B60"); root.style.setProperty("--grid-line", "rgba(36,51,40,0.12)");
     } else {
-      root.style.setProperty("--paper", "#F7F0E1"); root.style.setProperty("--surface", "#FFFFFF");
-      root.style.setProperty("--surface-2", "#EFE3CC"); root.style.setProperty("--ink", "#352C27");
-      root.style.setProperty("--ink-soft", "#6B5F55"); root.style.setProperty("--grid-line", "rgba(73,66,61,0.08)");
+      root.style.setProperty("--paper", "#FAF7F2"); root.style.setProperty("--surface", "#FFFFFF");
+      root.style.setProperty("--surface-2", "#F2EAE0"); root.style.setProperty("--ink", "#2B2320");
+      root.style.setProperty("--ink-soft", "#6B5F55"); root.style.setProperty("--grid-line", "rgba(43,35,32,0.08)");
     }
 
     if(accentColor === "bamboo"){
-      root.style.setProperty("--seal", "#647E58"); root.style.setProperty("--seal-soft", bgMode === "dark" ? "#243A34" : "#E5EBDA");
+      root.style.setProperty("--seal", "#4C8577"); root.style.setProperty("--seal-soft", bgMode === "dark" ? "#243A34" : "#E3F0EC");
       root.style.setProperty("--seal-ring", bgMode === "dark" ? "rgba(127,176,160,0.55)" : "rgba(76,133,119,0.42)");
     } else if(accentColor === "blue"){
-      root.style.setProperty("--seal", "#5A7590"); root.style.setProperty("--seal-soft", bgMode === "dark" ? "#202D3A" : "#E3EAF0");
+      root.style.setProperty("--seal", "#1E88E5"); root.style.setProperty("--seal-soft", bgMode === "dark" ? "#1A2E40" : "#E3F2FD");
       root.style.setProperty("--seal-ring", bgMode === "dark" ? "rgba(66,165,245,0.55)" : "rgba(30,136,229,0.42)");
     } else if(accentColor === "amber"){
       root.style.setProperty("--seal", "#E65100"); root.style.setProperty("--seal-soft", bgMode === "dark" ? "#382414" : "#FFE0B2");
       root.style.setProperty("--seal-ring", bgMode === "dark" ? "rgba(255,152,0,0.55)" : "rgba(230,81,0,0.42)");
     } else {
-      root.style.setProperty("--seal", "#B25F38"); root.style.setProperty("--seal-soft", bgMode === "dark" ? "#3A2A20" : "#F6E2D2");
-      root.style.setProperty("--seal-ring", bgMode === "dark" ? "rgba(240,153,106,0.55)" : "rgba(178,95,56,0.42)");
+      root.style.setProperty("--seal", "#E8825A"); root.style.setProperty("--seal-soft", bgMode === "dark" ? "#3A2A20" : "#FBE8DE");
+      root.style.setProperty("--seal-ring", bgMode === "dark" ? "rgba(240,153,106,0.55)" : "rgba(232,130,90,0.42)");
     }
 
     localStorage.setItem("hanyu_theme_bg", bgMode);
@@ -4493,9 +4491,9 @@ window.mmTA = (function(){
     document.querySelectorAll(".drag-indicator-top, .drag-indicator-bottom").forEach(function(el){ el.classList.remove("drag-indicator-top", "drag-indicator-bottom"); });
   }
 
-  var CURSOR_COLORS = ["#5A7590", "#4F6844", "#FB8C00", "#8E24AA", "#00897B", "#D81B60"];
+  var CURSOR_COLORS = ["#1E88E5", "#4C7A5E", "#FB8C00", "#8E24AA", "#00897B", "#D81B60"];
   function getColorForStudent(nameOrId, role){
-    if(role === "teacher" || nameOrId === "teacher" || nameOrId === "老師" || nameOrId === "👑 老師") return "#A63B42";
+    if(role === "teacher" || nameOrId === "teacher" || nameOrId === "老師" || nameOrId === "👑 老師") return "#B23B32";
     var sum = 0; for(var i=0; i<nameOrId.length; i++) sum += nameOrId.charCodeAt(i);
     return CURSOR_COLORS[sum % CURSOR_COLORS.length];
   }
@@ -5349,7 +5347,7 @@ window.mmTA = (function(){
         <div class="score-stats-grid">
           <div class="score-stat-cell"><span>計分題數 Scored</span><b>${report.totalScoreable}</b></div>
           <div class="score-stat-cell"><span>完全答對 Correct</span><b style="color:var(--bamboo);">${correctCount}</b></div>
-          <div class="score-stat-cell"><span>錯誤題數 Wrong</span><b style="color:#A63B42;">${wrongItems.length}</b></div>
+          <div class="score-stat-cell"><span>錯誤題數 Wrong</span><b style="color:#E63946;">${wrongItems.length}</b></div>
         </div>
       </div>
     `;
@@ -5359,7 +5357,7 @@ window.mmTA = (function(){
       html += '<div style="background:var(--surface); border:1.5px solid var(--grid-line); border-radius:12px; padding:14px; margin-bottom:16px;">' +
         '<div style="font-size:15.5px; font-weight:700; margin-bottom:8px;">📊 分項表現 Breakdown</div>' +
         '<table style="width:100%; border-collapse:collapse; font-size:15px;">' + an.rows.map(function(r){
-          var col = r.pct >= 90 ? "var(--bamboo)" : (r.pct >= 80 ? "#B8763D" : "#A63B42");
+          var col = r.pct >= 90 ? "var(--bamboo)" : (r.pct >= 80 ? "#B8763D" : "#E63946");
           return '<tr><td style="padding:4px 6px;">' + r.name + ' <span style="color:var(--ink-soft);font-size:13px;">' + r.en + '</span></td><td style="padding:4px 6px;white-space:nowrap;">' + r.earned + ' / ' + r.n + ' 題</td>' +
             '<td style="padding:4px 6px;width:38%;"><div style="height:9px;background:var(--surface-2);border-radius:99px;overflow:hidden;"><div style="height:100%;width:' + r.pct + '%;background:' + col + ';"></div></div></td><td style="padding:4px 6px;font-weight:700;color:' + col + ';text-align:right;">' + r.pct + '%</td></tr>';
         }).join("") + '</table>' +
@@ -5391,7 +5389,7 @@ window.mmTA = (function(){
     report.results.forEach(sec => {
       html += `<div class="score-sec-item"><div class="score-sec-title"><span>${sec.title}</span></div>`;
       sec.questions.forEach(q => {
-        var badge = q.score === 1 ? `<span style="color:var(--bamboo); font-weight:700;">✅ 正確 Correct</span>` : (q.score > 0 ? `<span style="color:#B8763D; font-weight:700;">△ 部分正確 ${Math.round(q.score * 100)}%</span>` : `<span style="color:#A63B42; font-weight:700;">❌ 錯誤 Wrong</span>`);
+        var badge = q.score === 1 ? `<span style="color:var(--bamboo); font-weight:700;">✅ 正確 Correct</span>` : (q.score > 0 ? `<span style="color:#B8763D; font-weight:700;">△ 部分正確 ${Math.round(q.score * 100)}%</span>` : `<span style="color:#E63946; font-weight:700;">❌ 錯誤 Wrong</span>`);
         if(q.pending) badge = `<span style="color:var(--ink-soft);">⏳ 等老師批改</span>`;
         else if(!q.isScoreable) badge = `<span style="color:var(--bamboo);">✍️ 書寫 Written</span>`;
         html += `
@@ -5634,12 +5632,12 @@ window.mmTA = (function(){
     if(document.getElementById("timeup-overlay")) return;
     var ov = document.createElement("div"); ov.id = "timeup-overlay";
     ov.style.cssText = "position:fixed;inset:0;z-index:2147483000;background:rgba(20,20,18,.82);display:flex;align-items:center;justify-content:center;padding:20px;";
-    ov.innerHTML = '<div style="background:#fff;color:#352C27;border-radius:24px;padding:36px 44px;max-width:520px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.4);">' +
+    ov.innerHTML = '<div style="background:#fff;color:#2b2622;border-radius:24px;padding:36px 44px;max-width:520px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.4);">' +
       '<div style="font-size:64px;line-height:1;">⏰</div>' +
-      '<div style="font-size:30px;font-weight:800;margin:14px 0 6px;color:#A63B42;">時間到！Time\'s up!</div>' +
+      '<div style="font-size:30px;font-weight:800;margin:14px 0 6px;color:#B23B32;">時間到！Time\'s up!</div>' +
       '<div style="font-size:18px;margin-bottom:6px;">請停止作答，等待老師指示。</div>' +
       '<div style="font-size:15.5px;color:#7a6f66;">Please stop answering and wait for your teacher.</div>' +
-      '<button type="button" id="alarm-stop-btn" style="margin-top:18px;padding:8px 18px;border-radius:12px;border:1px solid #c9b8a5;background:#F7F0E1;cursor:pointer;font-size:15.5px;">🔕 關閉鈴聲 Silence</button></div>';
+      '<button type="button" id="alarm-stop-btn" style="margin-top:18px;padding:8px 18px;border-radius:12px;border:1px solid #c9b8a5;background:#faf3ea;cursor:pointer;font-size:15.5px;">🔕 關閉鈴聲 Silence</button></div>';
     // 其餘畫面一律 inert：滑鼠、觸控、鍵盤（Tab／Enter）都無法再操作題目
     Array.prototype.forEach.call(document.body.children, function(el){ if(el.tagName !== "SCRIPT" && !el.hasAttribute("inert")){ el.setAttribute("inert", ""); el.setAttribute("data-timeup-inert", "1"); } });
     document.body.appendChild(ov);
@@ -5656,7 +5654,7 @@ window.mmTA = (function(){
       if(isStudent && inRoom()) showTimeUpOverlay();
       else if(!document.getElementById("timeup-teacher")){
         var tb = document.createElement("div"); tb.id = "timeup-teacher";
-        tb.style.cssText = "position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:2147483000;background:#A63B42;color:#fff;padding:10px 20px;border-radius:14px;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,.3);cursor:pointer;";
+        tb.style.cssText = "position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:2147483000;background:#B23B32;color:#fff;padding:10px 20px;border-radius:14px;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,.3);cursor:pointer;";
         tb.textContent = "⏰ 時間到！學生已被鎖住不能作答（點一下關閉提示）"; tb.onclick = function(){ tb.remove(); stopAlarm(); };
         if(inRoom()) document.body.appendChild(tb);
       }
@@ -6656,7 +6654,7 @@ window.mmTA = (function(){
   function shapeToSvg(sh, W, H, scale){
     var x = sh.x / 100 * W, y = sh.y / 100 * H, w = sh.w / 100 * W, h = sh.h / 100 * H;
     var x1 = sh.fx ? x + w : x, y1 = sh.fy ? y + h : y, x2 = sh.fx ? x : x + w, y2 = sh.fy ? y : y + h;
-    var sw = Math.max(1, (sh.sw || 3) * scale), col = sh.color || "#A63B42";
+    var sw = Math.max(1, (sh.sw || 3) * scale), col = sh.color || "#B23B32";
     var op = (sh.op === undefined || sh.op === null) ? 1 : sh.op;
     var isLine = sh.type === "line" || sh.type === "arrow";
     var common = 'stroke="' + col + '" stroke-width="' + sw + '" fill="' + ((sh.fill && !isLine) ? col : "none") + '" stroke-linejoin="round" stroke-linecap="round"';
@@ -6694,7 +6692,7 @@ window.mmTA = (function(){
     (pr.texts || []).forEach(function(t){
       var cls = "mt" + (t.list === "bullet" ? " list-bullet" : (t.list === "number" ? " list-number" : "")) + (t.indent === "first" ? " ind-first" : (t.indent === "hang" ? " ind-hang" : ""));
       var bold = (t.bold === undefined) ? true : !!t.bold;
-      h += '<div class="' + cls + '" style="left:' + t.x + '%;top:' + t.y + '%;font-size:' + Math.round((t.fontSize || 36) * scale) + 'px;font-weight:' + (bold ? 700 : 400) + ';color:' + escapeHtml(t.color || "#352C27") + ';text-align:' + (t.align || "left") + ';' + (t.bgOn ? 'background:' + exportRgba(t.bgColor, t.bgOp) + ';padding:.12em .45em;border-radius:.3em;' : '') + (t.w ? 'width:' + t.w + '%;max-width:' + t.w + '%;white-space:pre-wrap;word-break:break-word;' : '') + '">' + buildPhoneticHtml(t.text, t.phoneticOverride, t.ph, t.spans ? { map: mmSpanMap(t), base: t.fontSize || 36 } : null) + '</div>';
+      h += '<div class="' + cls + '" style="left:' + t.x + '%;top:' + t.y + '%;font-size:' + Math.round((t.fontSize || 36) * scale) + 'px;font-weight:' + (bold ? 700 : 400) + ';color:' + escapeHtml(t.color || "#2B2320") + ';text-align:' + (t.align || "left") + ';' + (t.bgOn ? 'background:' + exportRgba(t.bgColor, t.bgOp) + ';padding:.12em .45em;border-radius:.3em;' : '') + (t.w ? 'width:' + t.w + '%;max-width:' + t.w + '%;white-space:pre-wrap;word-break:break-word;' : '') + '">' + buildPhoneticHtml(t.text, t.phoneticOverride, t.ph, t.spans ? { map: mmSpanMap(t), base: t.fontSize || 36 } : null) + '</div>';
     });
     h += '</div>';
     var kPrint = Math.min(1000 / W, 690 / H);
@@ -6742,11 +6740,11 @@ window.mmTA = (function(){
           (kind === "board" ? '<div class="frame"><div class="scaler">' + body + '</div></div>' : body) + note + '</section>');
       }
     }
-    var css = 'html{background:#f4efe8}body{margin:0;padding:16px;font-family:MM Latin,Iansui,serif;color:#352C27}' +
+    var css = 'html{background:#f4efe8}body{margin:0;padding:16px;font-family:MM Latin,Iansui,serif;color:#2B2320}' +
       'h1{font-size:22px;margin:4px 0 2px}.meta{color:#6B5F55;font-size:14px;margin-bottom:16px}' +
       '.slide{background:#fff;border-radius:14px;box-shadow:0 4px 18px rgba(0,0,0,.08);padding:14px 16px 18px;margin:0 auto 18px;max-width:1240px;break-inside:avoid;page-break-inside:avoid;page-break-after:always}' +
-      '.cap{font-size:15.5px;font-weight:700;margin-bottom:8px}.cap .no{display:inline-block;min-width:22px;text-align:center;background:#B25F38;color:#fff;border-radius:999px;padding:0 6px;font-size:13.5px}.cap .sec{color:#6B5F55;font-weight:500}' +
-      '.frame{--k:1;width:calc(var(--W) * 1px * var(--k));height:calc(var(--H) * 1px * var(--k));border:2px solid rgba(178,95,56,.42);border-radius:14px;overflow:hidden;margin:0 auto;background:#fff}' +
+      '.cap{font-size:15.5px;font-weight:700;margin-bottom:8px}.cap .no{display:inline-block;min-width:22px;text-align:center;background:#E8825A;color:#fff;border-radius:999px;padding:0 6px;font-size:13.5px}.cap .sec{color:#6B5F55;font-weight:500}' +
+      '.frame{--k:1;width:calc(var(--W) * 1px * var(--k));height:calc(var(--H) * 1px * var(--k));border:2px solid rgba(232,130,90,.42);border-radius:14px;overflow:hidden;margin:0 auto;background:#fff}' +
       '.scaler{transform:scale(var(--k));transform-origin:0 0}' +
       '.canvas{position:relative;overflow:hidden;background:#fff}.canvas>img,.canvas>svg{position:absolute}' +
       '.canvas .bg{inset:0;width:100%;height:100%;object-fit:contain}.canvas .pic{transform:translate(-50%,-50%);max-width:none}.canvas .ink,.canvas .shp{inset:0;width:100%;height:100%}' +
@@ -7036,10 +7034,10 @@ window.mmTA = (function(){
     if(!ids.length && !typingNow){ if(SLT.box){ SLT.box.style.display = "none"; SLT.btn.style.display = "none"; } SLT.known = {}; SLT.teacherOpen = null; return; }
     if(!document.getElementById("slt-style")){
       var st = document.createElement("style"); st.id = "slt-style";
-      st.textContent = '#slt-btn{position:fixed;right:0;top:46%;z-index:99990;padding:12px 9px;border-radius:14px 0 0 14px;background:#B25F38;color:#fff;font-size:14.5px;font-weight:700;cursor:pointer;border:0;box-shadow:0 2px 10px rgba(0,0,0,.25);writing-mode:vertical-rl;letter-spacing:2px;font-family:inherit}' +
-        '#slt-btn b{background:#fff;color:#B25F38;border-radius:99px;padding:0 6px;margin-top:4px;writing-mode:horizontal-tb;letter-spacing:0}' +
-        '#slt-box{position:fixed;right:12px;bottom:12px;width:min(380px,calc(100vw - 24px));height:min(62vh,640px);z-index:99991;display:none;flex-direction:column;background:linear-gradient(160deg,#FCEFE4,#EBF1EA);border:1.5px solid #EFE3CC;border-radius:16px;box-shadow:0 10px 34px rgba(0,0,0,.28);color:#3a312b;--g:#4F6844}' +
-        '#slt-head{display:flex;align-items:center;gap:6px;padding:9px 12px;border-bottom:1px solid #EFE3CC}#slt-head b{flex:1;font-size:17px}#slt-head button{background:#fff;border:1px solid #EFE3CC;border-radius:99px;padding:4px 12px;font-size:14px;cursor:pointer;font-weight:700;font-family:inherit}' +
+      st.textContent = '#slt-btn{position:fixed;right:0;top:46%;z-index:99990;padding:12px 9px;border-radius:14px 0 0 14px;background:#E8805A;color:#fff;font-size:14.5px;font-weight:700;cursor:pointer;border:0;box-shadow:0 2px 10px rgba(0,0,0,.25);writing-mode:vertical-rl;letter-spacing:2px;font-family:inherit}' +
+        '#slt-btn b{background:#fff;color:#E8805A;border-radius:99px;padding:0 6px;margin-top:4px;writing-mode:horizontal-tb;letter-spacing:0}' +
+        '#slt-box{position:fixed;right:12px;bottom:12px;width:min(380px,calc(100vw - 24px));height:min(62vh,640px);z-index:99991;display:none;flex-direction:column;background:linear-gradient(160deg,#FCEFE4,#EBF1EA);border:1.5px solid #EBDDD0;border-radius:16px;box-shadow:0 10px 34px rgba(0,0,0,.28);color:#3a312b;--g:#4E7F6E}' +
+        '#slt-head{display:flex;align-items:center;gap:6px;padding:9px 12px;border-bottom:1px solid #EBDDD0}#slt-head b{flex:1;font-size:17px}#slt-head button{background:#fff;border:1px solid #EBDDD0;border-radius:99px;padding:4px 12px;font-size:14px;cursor:pointer;font-weight:700;font-family:inherit}' +
         '#slt-list{flex:1;overflow:auto;padding:10px 12px}.slt-row{background:#fff;border-radius:14px;padding:9px 12px;margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,.06)}.slt-t{font-size:17px;line-height:1.5;margin-top:2px}.slt-t i{font-style:normal;font-size:12.5px;font-weight:700;color:#7a6c60;margin-right:6px}' +
         '.slt-ch{display:inline-flex;align-items:flex-start;margin-right:8px}.slt-c{font-size:34px;line-height:1.15;font-weight:700;font-family:MM Latin,Iansui,serif}' +
         '.slt-zs{display:inline-flex;align-items:center;margin-left:3px;margin-top:2px;padding-right:11px;position:relative;color:var(--g);font-weight:600}.slt-zm{display:flex;flex-direction:column;font-size:17px;line-height:1.08;font-style:normal}.slt-zm i{font-style:normal}' +
@@ -7049,7 +7047,7 @@ window.mmTA = (function(){
     if(!SLT.box){
       SLT.btn = document.createElement("button"); SLT.btn.id = "slt-btn"; SLT.btn.type = "button"; SLT.btn.onclick = function(){ SLT.open = true; slTransDraw(); };
       SLT.box = document.createElement("div"); SLT.box.id = "slt-box";
-      SLT.box.innerHTML = '<div id="slt-head"><b>📝 中文翻譯 Translation</b><button type="button" id="slt-zo" title="縮小">A−</button><button type="button" id="slt-zi" title="放大">A＋</button><button type="button" id="slt-close">收起 ▾</button></div><div id="slt-typing" style="display:none;padding:6px 12px;font-size:15.5px;background:#FFF8F1;border-bottom:1px solid #EFE3CC;"></div><div id="slt-list"></div>';
+      SLT.box.innerHTML = '<div id="slt-head"><b>📝 中文翻譯 Translation</b><button type="button" id="slt-zo" title="縮小">A−</button><button type="button" id="slt-zi" title="放大">A＋</button><button type="button" id="slt-close">收起 ▾</button></div><div id="slt-typing" style="display:none;padding:6px 12px;font-size:15.5px;background:#FFF8F1;border-bottom:1px solid #EBDDD0;"></div><div id="slt-list"></div>';
       SLT.box.querySelector("#slt-zo").onclick = function(){ SLT.scale = Math.max(0.6, (SLT.scale || 1) - 0.2); slTransDraw(); };
       SLT.box.querySelector("#slt-zi").onclick = function(){ SLT.scale = Math.min(3, (SLT.scale || 1) + 0.2); slTransDraw(); };
       document.body.appendChild(SLT.btn); document.body.appendChild(SLT.box);
@@ -7120,7 +7118,7 @@ window.mmTA = (function(){
   /* ================== 線上考卷：交卷列 ================== */
   function attemptNetWatch(){
     if(document.getElementById("netbar")) return;
-    var bar = document.createElement("div"); bar.id = "netbar"; bar.style.cssText = "display:none;position:fixed;top:0;left:0;right:0;z-index:99998;background:#A63B42;color:#fff;text-align:center;padding:8px 12px;font-size:15.5px;font-weight:700;";
+    var bar = document.createElement("div"); bar.id = "netbar"; bar.style.cssText = "display:none;position:fixed;top:0;left:0;right:0;z-index:99998;background:#B23B32;color:#fff;text-align:center;padding:8px 12px;font-size:15.5px;font-weight:700;";
     bar.textContent = "⚠️ 網路中斷了：剛剛的答案還沒有存到雲端，連回網路後會自動同步，請不要關掉頁面。 / Offline — answers will sync when you reconnect."; document.body.appendChild(bar);
     var conn = true, online = navigator.onLine !== false;
     function upd(){ bar.style.display = (!online || !conn) ? "block" : "none"; }
@@ -7154,7 +7152,7 @@ window.mmTA = (function(){
     report.results.forEach(function(sec){ sec.questions.forEach(function(x){ if(x.id === q.id) qr = x; if(x.pending) pend++; }); });
     var g = (getProgress(q.id) || {}).grade || null, cur = g ? Math.round((g.score || 0) * 100) : null;
     var st = roomData.released ? "✅ 已公布成績" : (roomData.submitted ? "已交卷" : "學生還沒交卷");
-    bar.innerHTML = '<div class="gb-row"><b>' + escapeHtml(roomData.attempt && roomData.attempt.name || "") + '</b><span class="gb-st">' + st + '</span><span>目前總分 <b>' + report.finalScore + '</b> 分' + (pend ? '（還有 <b style="color:#A63B42;">' + pend + '</b> 題待批改）' : '') + '</span></div>' +
+    bar.innerHTML = '<div class="gb-row"><b>' + escapeHtml(roomData.attempt && roomData.attempt.name || "") + '</b><span class="gb-st">' + st + '</span><span>目前總分 <b>' + report.finalScore + '</b> 分' + (pend ? '（還有 <b style="color:#B23B32;">' + pend + '</b> 題待批改）' : '') + '</span></div>' +
       '<div class="gb-row"><span class="gb-q">本題：' + escapeHtml(qr ? qr.detail : "") + '</span></div>' +
       '<div class="gb-row"><span>給分：</span>' + [0, 25, 50, 75, 100].map(function(v){ return '<button type="button" class="btn btn-sm gb-pct' + (cur === v ? ' btn-primary' : '') + '" data-v="' + v + '">' + v + '%</button>'; }).join("") +
       '<input type="number" id="gb-num" min="0" max="100" step="5" placeholder="自訂%" value="' + (cur == null ? "" : cur) + '" style="width:80px;"><input type="text" id="gb-cmt" placeholder="這題的評語（學生看得到）" value="' + escapeHtml(g && g.comment || "") + '" style="flex:1;min-width:160px;"><button type="button" class="btn btn-sm btn-primary" id="gb-save">儲存本題</button></div>' +
@@ -7196,7 +7194,7 @@ window.mmTA = (function(){
     function tick(){
       var el = document.getElementById("attempt-timer"); if(roomData && roomData.submitted){ clearInterval(attemptTimerId); attemptTimerId = null; return; }
       var left = Math.max(0, endAt - Date.now()), m = Math.floor(left / 60000), sec = Math.floor(left % 60000 / 1000);
-      if(el){ el.textContent = "⏱ 剩 " + m + ":" + (sec < 10 ? "0" : "") + sec; el.style.color = left < 60000 ? "#A63B42" : ""; }
+      if(el){ el.textContent = "⏱ 剩 " + m + ":" + (sec < 10 ? "0" : "") + sec; el.style.color = left < 60000 ? "#B23B32" : ""; }
       if(left <= 0){ clearInterval(attemptTimerId); attemptTimerId = null; playAlarm(); alert("時間到！系統會自動幫你交卷。\nTime is up — your exam will be submitted automatically."); attemptSubmit("time"); }
     }
     attemptTimerId = setInterval(tick, 1000); tick();
@@ -7644,7 +7642,7 @@ window.mmTA = (function(){
       });
       (prog.shapes || []).forEach(function(sh){
         var gx = sh.x / 100 * W, gy = sh.y / 100 * H, gw = sh.w / 100 * W, gh = sh.h / 100 * H;
-        x.save(); x.globalAlpha = (sh.op === undefined || sh.op === null) ? 1 : sh.op; x.strokeStyle = sh.color || "#A63B42"; x.fillStyle = sh.color || "#A63B42"; x.lineWidth = Math.max(0.8, (sh.sw || 3) * W / 640); x.lineJoin = "round"; x.lineCap = "round"; x.beginPath();
+        x.save(); x.globalAlpha = (sh.op === undefined || sh.op === null) ? 1 : sh.op; x.strokeStyle = sh.color || "#B23B32"; x.fillStyle = sh.color || "#B23B32"; x.lineWidth = Math.max(0.8, (sh.sw || 3) * W / 640); x.lineJoin = "round"; x.lineCap = "round"; x.beginPath();
         if(sh.type === "ellipse") x.ellipse(gx + gw / 2, gy + gh / 2, Math.abs(gw / 2), Math.abs(gh / 2), 0, 0, Math.PI * 2);
         else if(sh.type === "triangle"){ x.moveTo(gx + gw / 2, gy); x.lineTo(gx + gw, gy + gh); x.lineTo(gx, gy + gh); x.closePath(); }
         else if(sh.type === "line" || sh.type === "arrow"){ x.moveTo(sh.fx ? gx + gw : gx, sh.fy ? gy + gh : gy); x.lineTo(sh.fx ? gx : gx + gw, sh.fy ? gy : gy + gh); }
@@ -7665,7 +7663,7 @@ window.mmTA = (function(){
             if(tb.bw !== 0){ x.strokeStyle = tb.bd || "#555"; x.lineWidth = Math.max(0.6, (tb.bw == null ? 2 : tb.bw) * sc); x.strokeRect(xx, yy, cw, rhh); }
             if(cell.t){
               var fsz = (cell.fs || tb.fs || 24) * sc, bold = cell.b != null ? cell.b : (tb.hdr && r === 0);
-              x.font = (bold ? "700 " : "400 ") + fsz + 'px "MM Latin",Iansui,serif'; x.fillStyle = cell.c || "#352C27"; x.textBaseline = "middle";
+              x.font = (bold ? "700 " : "400 ") + fsz + 'px "MM Latin",Iansui,serif'; x.fillStyle = cell.c || "#2B2320"; x.textBaseline = "middle";
               var lns = String(cell.t).split("\n"), ty = yy + rhh / 2 - (lns.length - 1) * fsz * 0.65;
               lns.forEach(function(ln, i){ var w2 = x.measureText(ln).width, al = cell.a || "center"; x.fillText(ln, al === "left" ? xx + fsz * 0.3 : al === "right" ? xx + cw - w2 - fsz * 0.3 : xx + (cw - w2) / 2, ty + i * fsz * 1.3); });
             }
@@ -7690,7 +7688,7 @@ window.mmTA = (function(){
       (prog.texts || []).forEach(function(t){
         var fs = (t.fontSize || 36) * sc;
         x.font = ((t.bold === undefined || t.bold) ? "700 " : "400 ") + fs + 'px "MM Latin",Iansui,serif';
-        x.fillStyle = (t.color && t.color.charAt(0) === "#") ? t.color : "#352C27";
+        x.fillStyle = (t.color && t.color.charAt(0) === "#") ? t.color : "#2B2320";
         x.textBaseline = "top";
         var lines = String(t.text || "").split("\n"), lh = fs * 1.25;
         if(t.w){ var maxPx = t.w / 100 * W, wl = []; lines.forEach(function(ln){ var cur = ""; Array.from(ln).forEach(function(chh){ if(cur && x.measureText(cur + chh).width > maxPx){ wl.push(cur); cur = chh; } else cur += chh; }); wl.push(cur); }); lines = wl; }
@@ -7808,7 +7806,7 @@ window.mmTA = (function(){
   function vtBookNum(b){ var m = /(\d+)/.exec(String(b == null ? "" : b)); return m ? parseInt(m[1], 10) : 999; }
   function vtLessonLabel(l){ return "第 " + l.lesson + " 課" + (l.title ? "：" + l.title : "") + "（" + (l.vocab || []).length + " 個生詞）"; }
   function vtDefaultTemplate(){
-    var W = 640, H = 360, ink = "#352C27", brown = "#8C5A2B";
+    var W = 640, H = 360, ink = "#2B2320", brown = "#8C5A2B";
     function px(x){ return Math.round(x / W * 1000) / 10; }
     function py(y){ return Math.round(y / H * 1000) / 10; }
     function T(tpl, x, y, fs, o){ return Object.assign({ tpl: tpl, x: px(x), y: py(y), fontSize: fs, color: ink, bold: true, align: "center" }, o || {}); }
@@ -7934,7 +7932,7 @@ window.mmTA = (function(){
     var langOpts = '<option value="">只放英文</option>' + Object.keys(langs).map(function(k){ return '<option value="' + escapeHtml(k) + '">英文＋' + escapeHtml(k) + '</option>'; }).join("");
     var lastLesson = 0, lastTpl = "default", hasKey = false; try{ lastLesson = parseInt(localStorage.getItem("mm_vt_lesson") || "0", 10) || 0; lastTpl = localStorage.getItem("mm_vt_tpl") || "default"; hasKey = !!localStorage.getItem("mm_gemini_key"); }catch(e){}
     function tplOpts(){ return tpls.map(function(t){ return '<option value="' + escapeHtml(t.id) + '">' + escapeHtml(t.name) + '</option>'; }).join(""); }
-    var saveBox = editing ? '<div style="border:1.5px solid var(--seal,#B25F38);border-radius:10px;padding:8px 10px;margin-bottom:10px;"><b>✏️ 你正在編輯範本「' + escapeHtml(editing.sec.vtTpl.name) + '」</b><div class="tb-hint" style="margin:4px 0;">在這一頁把版面調成想要的樣子（搬動、縮放、改字級顏色、加圖案都可以；每個欄位的內容會在產生時自動換成各個生詞）。調好後按下面存起來。</div><button type="button" class="primary vt-save">💾 把這一頁存成範本</button> <button type="button" class="vt-saveas">另存成新範本</button></div>' : '';
+    var saveBox = editing ? '<div style="border:1.5px solid var(--seal,#E8825A);border-radius:10px;padding:8px 10px;margin-bottom:10px;"><b>✏️ 你正在編輯範本「' + escapeHtml(editing.sec.vtTpl.name) + '」</b><div class="tb-hint" style="margin:4px 0;">在這一頁把版面調成想要的樣子（搬動、縮放、改字級顏色、加圖案都可以；每個欄位的內容會在產生時自動換成各個生詞）。調好後按下面存起來。</div><button type="button" class="primary vt-save">💾 把這一頁存成範本</button> <button type="button" class="vt-saveas">另存成新範本</button></div>' : '';
     $(".vt-body").innerHTML = saveBox +
       '<label style="display:block;margin:6px 0 2px;">範本（版面樣式）</label><div style="display:flex;gap:6px;"><select class="vt-tpl" style="flex:1;min-width:0;">' + tplOpts() + '</select><button type="button" class="vt-edit">✏️ 編輯範本</button><button type="button" class="vt-del">刪除</button></div>' +
       (cd.length ? '<label style="display:block;margin:10px 0 2px;">課次</label><select class="vt-lesson" style="width:100%;">' + lessonOpts + '</select>' +
@@ -8187,7 +8185,7 @@ window.mmTA = (function(){
           '<button type="button" class="btn btn-sm btn-ghost" data-s="up" data-sk="' + sk + '"' + (si === 0 ? ' disabled' : '') + '>▲</button><button type="button" class="btn btn-sm btn-ghost" data-s="down" data-sk="' + sk + '"' + (si === keys.length - 1 ? ' disabled' : '') + '>▼</button><button type="button" class="btn btn-sm btn-ghost" data-s="mv" data-sk="' + sk + '">移動 Move</button></div>';
         qk.forEach(function(qid, qi){
           var q = sec.questions[qid], hid = q.hidden || sec.hidden;
-          h += '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:5px 10px 5px 18px;border-top:1px solid var(--line,#eee);' + (qid === curId ? 'background:var(--seal-soft,#F6E2D2);' : '') + (hid ? 'opacity:.5;' : '') + '"><span style="flex:none;width:26px;color:var(--ink-soft);font-size:13px;">' + (qi + 1) + '</span><a href="#" data-go="' + qid + '" style="flex:1;min-width:140px;color:var(--ink);text-decoration:none;font-weight:600;">' + plain(dispTitle(sec, q)) + '</a>' +
+          h += '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:5px 10px 5px 18px;border-top:1px solid var(--line,#eee);' + (qid === curId ? 'background:var(--seal-soft,#FDECE6);' : '') + (hid ? 'opacity:.5;' : '') + '"><span style="flex:none;width:26px;color:var(--ink-soft);font-size:13px;">' + (qi + 1) + '</span><a href="#" data-go="' + qid + '" style="flex:1;min-width:140px;color:var(--ink);text-decoration:none;font-weight:600;">' + plain(dispTitle(sec, q)) + '</a>' +
             '<button type="button" class="btn btn-sm btn-ghost" data-q="up" data-sk="' + sk + '" data-qid="' + qid + '"' + (qi === 0 ? ' disabled' : '') + '>▲</button><button type="button" class="btn btn-sm btn-ghost" data-q="down" data-sk="' + sk + '" data-qid="' + qid + '"' + (qi === qk.length - 1 ? ' disabled' : '') + '>▼</button><button type="button" class="btn btn-sm btn-ghost" data-q="mv" data-sk="' + sk + '" data-qid="' + qid + '">移動 Move</button><button type="button" class="btn btn-sm btn-ghost" data-q="edit" data-sk="' + sk + '" data-qid="' + qid + '">編輯 Edit</button><button type="button" class="btn btn-sm btn-ghost" data-q="hide" data-sk="' + sk + '" data-qid="' + qid + '">' + (q.hidden ? '顯示 Show' : '隱藏 Hide') + '</button></div>';
         });
         h += '</div>';
@@ -8265,12 +8263,12 @@ window.mmTA = (function(){
           var q = sec.questions[qId];
           var cached = slideThumbCache[qId];
           var card = document.createElement("div"); card.setAttribute("draggable", "true"); card.dataset.ssq = qId;
-          card.style.cssText = "border:2px solid " + (qId === curId ? "var(--seal)" : "rgba(73,66,61,.15)") + ";border-radius:10px;padding:6px;background:var(--surface);cursor:grab;position:relative;";
+          card.style.cssText = "border:2px solid " + (qId === curId ? "var(--seal)" : "rgba(28,33,30,.15)") + ";border-radius:10px;padding:6px;background:var(--surface);cursor:grab;position:relative;";
           var isHid = qHidden(sec, q);
           card.innerHTML = '<div style="position:absolute;left:8px;top:8px;background:var(--ink);color:#fff;border-radius:6px;padding:0 6px;font-size:12.5px;font-weight:700;">' + (idx + 1) + '</div>' +
             '<label class="ss-pickwrap" style="position:absolute;right:8px;top:8px;z-index:2;background:rgba(255,255,255,.95);border-radius:6px;padding:2px 5px;cursor:pointer;display:flex;align-items:center;gap:3px;font-size:12px;" title="勾選（按住 Shift 可連續勾選）"><input type="checkbox" class="ss-chk"' + (picked[qId] ? ' checked' : '') + '>選</label>' +
             (isHid ? '<div style="position:absolute;left:8px;bottom:42px;z-index:2;background:var(--seal);color:#fff;border-radius:6px;padding:0 6px;font-size:12px;font-weight:700;">已隱藏</div>' : '') +
-            '<img class="ss-th" src="' + (cached ? cached.url : THUMB_BLANK) + '" data-thumb-qid="' + qId + '" style="width:100%;display:block;border-radius:6px;background:#fff;border:1px solid rgba(73,66,61,.1);aspect-ratio:3/2;object-fit:contain;" alt="">' +
+            '<img class="ss-th" src="' + (cached ? cached.url : THUMB_BLANK) + '" data-thumb-qid="' + qId + '" style="width:100%;display:block;border-radius:6px;background:#fff;border:1px solid rgba(28,33,30,.1);aspect-ratio:3/2;object-fit:contain;" alt="">' +
             '<div style="font-size:13.5px;font-weight:700;margin:5px 2px 3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + escapeHtml(q.title) + '</div>' +
             '<div style="display:flex;gap:4px;"><button type="button" class="tb-row ss-l" style="cursor:pointer;margin:0;padding:2px 8px;" title="往前移">◀</button><button type="button" class="tb-row ss-r" style="cursor:pointer;margin:0;padding:2px 8px;" title="往後移">▶</button><button type="button" class="tb-row ss-dup" style="cursor:pointer;margin:0;padding:2px 8px;font-size:13.5px;">複製</button><button type="button" class="tb-row ss-del" style="cursor:pointer;margin:0 0 0 auto;padding:2px 8px;font-size:13.5px;">刪除</button></div>';
           if(!cached) scheduleSlideThumb(qId);
@@ -8469,7 +8467,7 @@ window.mmTA = (function(){
         }
       };
     }
-    var css = 'body{margin:0;font-family:MM Latin,Iansui,serif;background:#1c211e;color:#f4efe6;display:flex;flex-direction:column;height:100vh;overflow:hidden}header{display:flex;gap:10px;align-items:center;padding:8px 14px;background:#2a312d;flex-wrap:wrap}header b{flex:1;font-size:17px;min-width:120px}#timer{font-size:24px;font-variant-numeric:tabular-nums;font-weight:800}button{font:inherit;font-weight:700;padding:7px 13px;border-radius:10px;border:1.5px solid #8a9a90;background:#3a443e;color:#fff;cursor:pointer}button:hover{border-color:#B25F38}#exit{background:#A63B42;border-color:#A63B42}.tools{display:flex;gap:6px;align-items:center;padding:6px 14px;background:#232a26;flex-wrap:wrap}.tl.on{background:#B25F38;border-color:#B25F38}#col{width:38px;height:32px;padding:0;border:none;background:none}.stage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;position:relative;padding:8px}.wrap{position:relative;max-width:100%;max-height:100%;display:flex}#big{max-width:100%;max-height:calc(100vh - 330px);min-height:120px;background:#fff;border-radius:6px;display:block;object-fit:contain}#ov{position:absolute;touch-action:none}.bottom{display:flex;gap:12px;padding:8px 14px;background:#232a26;align-items:stretch;max-height:150px}#note{flex:1;white-space:pre-wrap;font-size:17px;line-height:1.5;background:#fff8e6;color:#2b2b2b;border-radius:10px;padding:8px 12px;overflow:auto}.nx{display:flex;flex-direction:column;gap:2px;font-size:13.5px;color:#9fb0a5;max-width:210px}.nx img{width:180px;border-radius:6px;background:#fff}.nav{display:flex;gap:10px;padding:8px 14px;background:#2a312d}.nav button{flex:1;font-size:18px;padding:10px}';
+    var css = 'body{margin:0;font-family:MM Latin,Iansui,serif;background:#1c211e;color:#f4efe6;display:flex;flex-direction:column;height:100vh;overflow:hidden}header{display:flex;gap:10px;align-items:center;padding:8px 14px;background:#2a312d;flex-wrap:wrap}header b{flex:1;font-size:17px;min-width:120px}#timer{font-size:24px;font-variant-numeric:tabular-nums;font-weight:800}button{font:inherit;font-weight:700;padding:7px 13px;border-radius:10px;border:1.5px solid #8a9a90;background:#3a443e;color:#fff;cursor:pointer}button:hover{border-color:#e8825a}#exit{background:#B23B32;border-color:#B23B32}.tools{display:flex;gap:6px;align-items:center;padding:6px 14px;background:#232a26;flex-wrap:wrap}.tl.on{background:#e8825a;border-color:#e8825a}#col{width:38px;height:32px;padding:0;border:none;background:none}.stage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;position:relative;padding:8px}.wrap{position:relative;max-width:100%;max-height:100%;display:flex}#big{max-width:100%;max-height:calc(100vh - 330px);min-height:120px;background:#fff;border-radius:6px;display:block;object-fit:contain}#ov{position:absolute;touch-action:none}.bottom{display:flex;gap:12px;padding:8px 14px;background:#232a26;align-items:stretch;max-height:150px}#note{flex:1;white-space:pre-wrap;font-size:17px;line-height:1.5;background:#fff8e6;color:#2b2b2b;border-radius:10px;padding:8px 12px;overflow:auto}.nx{display:flex;flex-direction:column;gap:2px;font-size:13.5px;color:#9fb0a5;max-width:210px}.nx img{width:180px;border-radius:6px;background:#fff}.nav{display:flex;gap:10px;padding:8px 14px;background:#2a312d}.nav button{flex:1;font-size:18px;padding:10px}';
     var html = '<!doctype html><html lang="zh-Hant"><head><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Iansui&display=swap"><style>@font-face{font-family:"MM Latin";src:local("Times New Roman"),local("TimesNewRomanPSMT"),local("Times");unicode-range:U+0000-02AF,U+0300-036F,U+1E00-1EFF,U+2000-206F,U+20A0-20CF,U+2100-214F;}@font-face{font-family:"MM Latin";font-weight:700;src:local("Times New Roman Bold"),local("TimesNewRomanPS-BoldMT"),local("Times Bold"),local("Times-Bold");unicode-range:U+0000-02AF,U+0300-036F,U+1E00-1EFF,U+2000-206F,U+20A0-20CF,U+2100-214F;}</style><meta charset="utf-8"><title>簡報者檢視</title><meta name="viewport" content="width=device-width,initial-scale=1"><style>' + css + '</style></head><body>' +
       '<header><b id="t">簡報者檢視</b><span id="pos" style="font-size:14.5px;color:#c9d4cc"></span><span id="timer">00:00</span><button id="tp">暫停</button><button id="tr">歸零</button><button id="exit" title="關閉這個視窗，回到放映視窗">✕ 結束簡報者檢視</button></header>' +
       '<div class="tools"><button class="tl" data-t="none" title="指標（不畫）">🖱 指標</button><button class="tl" data-t="laser" title="雷射筆（L）：放映視窗會出現紅點">🔴 雷射筆</button><button class="tl" data-t="pen" title="筆：直接畫在投影片上">🖊 筆</button><input type="color" id="col" value="#E53935" title="筆的顏色"><button class="tl" data-t="hl" title="螢光筆">🖍 螢光筆</button><button class="tl" data-t="erase" title="橡皮擦：點到的筆跡整條擦掉">🧽 橡皮擦</button><span style="flex:1"></span><span style="font-size:13.5px;color:#9fb0a5">在下面的投影片上操作，放映視窗會同步看到</span></div>' +
@@ -8784,17 +8782,17 @@ window.mmTA = (function(){
       return cached ? cached.url : THUMB_BLANK;
     }
     SEC_TYPE_META = {
-      match:   { label: "連連看 Match",   color: "#4F6844" },
+      match:   { label: "連連看 Match",   color: "#4C7A5E" },
       choice:  { label: "選擇題 Choice",  color: "#B8763D" },
       reorder: { label: "句子重組 Reorder", color: "#6B5B95" },
       fill:    { label: "填空 Fill-in", color: "#2F7D8C" },
       open:    { label: "簡答／造句 Open", color: "#8C5A2F" },
       record:  { label: "錄音 Recording", color: "#B03A6B" },
       board:   { label: "投影片 Slides", color: "#A83232" },
-      whiteboard: { label: "小白板 Whiteboard", color: "#8F4524" },
+      whiteboard: { label: "小白板 Whiteboard", color: "#C0623A" },
       hanzi:   { label: "生字練習 Character", color: "#3A7CA5" },
       bingo:   { label: "賓果卡 Bingo", color: "#C98A00" },
-      thermo:  { label: "溫度計 Thermometer", color: "#A63B42" }
+      thermo:  { label: "溫度計 Thermometer", color: "#D9534F" }
     };
 
     secKeys.forEach(function(secId){
@@ -9704,7 +9702,7 @@ window.mmTA = (function(){
   function bingoCountSync(){
     var el = document.getElementById("bingo-count"), ta = document.getElementById("f-bingo-words"); if(!el || !ta) return;
     var n = bingoParseWords(ta.value).length; el.textContent = "目前 " + n + " 個詞" + (n >= 25 ? "（夠了，學生會從裡面挑 25 個填進卡片）" : n ? "（至少 25 個，學生才填得滿；不夠的話卡片上會有重複的詞）" : "");
-    el.style.color = n && n < 25 ? "#A63B42" : "var(--ink-soft)";
+    el.style.color = n && n < 25 ? "#B23B32" : "var(--ink-soft)";
   }
   var bingoBank = null;
   async function bingoFillLessons(){
@@ -11122,7 +11120,7 @@ window.mmTA = (function(){
   }
 
   // 老師手寫／打字：座標用題目區的比例（0～1）存，不同螢幕大小都對得上
-  var mcInkTool = null, mcInkColor = "#A63B42";
+  var mcInkTool = null, mcInkColor = "#E63946";
   function mcInkGet(qId){
     var ink = inRoom() ? (roomData && roomData.sharedProgress && roomData.sharedProgress[qId] && roomData.sharedProgress[qId].ink) : getProgress(qId).ink;
     function arr(x){ return Array.isArray(x) ? x.filter(Boolean) : (x && typeof x === "object" ? Object.keys(x).map(function(k){ return x[k]; }).filter(Boolean) : []); }
@@ -11142,7 +11140,7 @@ window.mmTA = (function(){
     function drawStroke(ctx, s, W, H){
       var pts = String(s.p || "").split(" ").map(function(x){ var a = x.split(","); return [Number(a[0]) * W, Number(a[1]) * H]; }).filter(function(a){ return !isNaN(a[0]) && !isNaN(a[1]); });
       if(!pts.length) return;
-      ctx.strokeStyle = s.c || "#A63B42"; ctx.lineWidth = (s.w || 3) * Math.min(W, 860) / 860; ctx.lineCap = "round"; ctx.lineJoin = "round";
+      ctx.strokeStyle = s.c || "#E63946"; ctx.lineWidth = (s.w || 3) * Math.min(W, 860) / 860; ctx.lineCap = "round"; ctx.lineJoin = "round";
       ctx.beginPath(); ctx.moveTo(pts[0][0], pts[0][1]);
       if(pts.length === 1) ctx.lineTo(pts[0][0] + 0.1, pts[0][1]); else pts.slice(1).forEach(function(a){ ctx.lineTo(a[0], a[1]); });
       ctx.stroke();
@@ -11157,7 +11155,7 @@ window.mmTA = (function(){
       Array.prototype.slice.call(layer.querySelectorAll(".mc-ink-note")).forEach(function(n){ n.parentNode.removeChild(n); });
       ink.t.forEach(function(t){
         var d = document.createElement("div"); d.className = "mc-ink-note zh"; d.textContent = t.v || ""; d.dataset.id = t.id;
-        d.style.left = (t.x * 100) + "%"; d.style.top = (t.y * 100) + "%"; d.style.color = t.c || "#A63B42"; d.style.fontSize = Math.max(14, Math.min(26, z.w * 0.028)) + "px";
+        d.style.left = (t.x * 100) + "%"; d.style.top = (t.y * 100) + "%"; d.style.color = t.c || "#E63946"; d.style.fontSize = Math.max(14, Math.min(26, z.w * 0.028)) + "px";
         if(editing && editing.dataset.id === t.id) d.style.visibility = "hidden";
         layer.appendChild(d);
       });
@@ -11203,7 +11201,7 @@ window.mmTA = (function(){
     return { redraw: redraw };
   }
   function mcInkToolbarHtml(){
-    var cols = [["#A63B42", "紅"], ["#1E66D0", "藍"], ["#2D7A36", "綠"], ["#222222", "黑"], ["rgba(255,214,0,0.45)", "螢光"]];
+    var cols = [["#E63946", "紅"], ["#1E66D0", "藍"], ["#2D7A36", "綠"], ["#222222", "黑"], ["rgba(255,214,0,0.45)", "螢光"]];
     return '<div class="mc-ink-bar">' +
       '<button type="button" class="btn btn-sm' + (mcInkTool === "pen" ? ' btn-primary' : '') + '" data-ink="pen" title="在題目上手寫、畫重點">手寫</button>' +
       '<button type="button" class="btn btn-sm' + (mcInkTool === "text" ? ' btn-primary' : '') + '" data-ink="text" title="點題目上任何位置打字；點已經打的字可以修改（清空就刪掉）">打字</button>' +
@@ -11310,8 +11308,8 @@ window.mmTA = (function(){
         bar.innerHTML = mcInkToolbarHtml();
         bar.onclick = function(e){
           var b = e.target.closest("[data-ink],[data-col]"); if(!b) return;
-          if(b.dataset.col){ mcInkColor = b.dataset.col; if(mcInkTool === "text" && /rgba/.test(mcInkColor)) mcInkColor = "#A63B42"; }
-          else if(b.dataset.ink === "pen" || b.dataset.ink === "text"){ mcInkTool = mcInkTool === b.dataset.ink ? null : b.dataset.ink; if(mcInkTool === "text" && /rgba/.test(mcInkColor)) mcInkColor = "#A63B42"; }
+          if(b.dataset.col){ mcInkColor = b.dataset.col; if(mcInkTool === "text" && /rgba/.test(mcInkColor)) mcInkColor = "#E63946"; }
+          else if(b.dataset.ink === "pen" || b.dataset.ink === "text"){ mcInkTool = mcInkTool === b.dataset.ink ? null : b.dataset.ink; if(mcInkTool === "text" && /rgba/.test(mcInkColor)) mcInkColor = "#E63946"; }
           else if(b.dataset.ink === "off") mcInkTool = null;
           else if(b.dataset.ink === "undo"){ var k = mcInkGet(q.id), ls = k.s[k.s.length - 1], lt = k.t.slice().sort(function(a, b2){ return (a.at || 0) - (b2.at || 0); }).pop(); if(lt && (!ls || (lt.at || 0) > (ls.at || 0))) k.t = k.t.filter(function(x){ return x !== lt; }); else k.s.pop(); mcInkSave(q.id, k); }
           else if(b.dataset.ink === "clear"){ var k2 = mcInkGet(q.id); if((k2.s.length || k2.t.length) && confirm("清掉這一題所有手寫和打字？")) mcInkSave(q.id, { s: [], t: [] }); }
@@ -11685,7 +11683,7 @@ window.mmTA = (function(){
   // opacity：畫筆濃淡（1 = 全不透明／最濃，數字越小越淡）——老師點重點時可以調淡一點，
   // 學生跟著描的時候才看得出來哪些是老師畫的、哪些是自己描上去的，兩者疊在一起也不會完全分不出來。
   // 2026-09-30：筆刷粗細預設改成 2（使用者要求）；文字新增 bold（加粗）開關，預設不加粗。
-  var boardState = { tool: "pen", color: "#A63B42", size: 2, opacity: 1, fontSize: 36, bold: false, step: 0, align: "left", list: "none", indent: "none", eraserMode: "stroke", shapeType: "rect", shapeSize: 3, shapeFill: false, shapeOpacity: 1, textBgOn: false, textBgColor: "#FFF3B0", textBgOp: 1, lineH: 1 };
+  var boardState = { tool: "pen", color: "#B23B32", size: 2, opacity: 1, fontSize: 36, bold: false, step: 0, align: "left", list: "none", indent: "none", eraserMode: "stroke", shapeType: "rect", shapeSize: 3, shapeFill: false, shapeOpacity: 1, textBgOn: false, textBgColor: "#FFF3B0", textBgOp: 1, lineH: 1 };
   var boardResizeHandler = null; // 記住上一次掛的 resize 監聽器，每次重繪寫字板前先移除，避免每畫一筆就累積一個監聽器
   // pinnedExtraTools：工具列精簡後，格線／底圖／移動畫面／錄示範這些非核心工具預設收合，
   // 使用者從「➕更多」點加入之後記在這裡（模組層級，換題目後還記得），下次換題目就自動接著顯示，
@@ -11915,10 +11913,10 @@ window.mmTA = (function(){
     vToolbar.addEventListener("click", function(e){ var b = e.target.closest && e.target.closest("#btn-prep-mode"); if(!b) return; e.preventDefault(); e.stopPropagation(); setTeachMode(false); });
     // 顏色選項共用內容：畫筆／打字兩個工具各自 hover 才浮現一份，選色會同步套用到 boardState.color
     var colorDotsHtml = `
-        <div class="color-dot ${boardState.color==='#A63B42'?'active':''}" data-color="#A63B42" style="background:#A63B42;" title="紅色 Red"></div>
+        <div class="color-dot ${boardState.color==='#B23B32'?'active':''}" data-color="#B23B32" style="background:#B23B32;" title="紅色 Red"></div>
         <div class="color-dot dark-color-dot ${(boardState.color==='#2A333C'||boardState.color==='#E5EAE6'||boardState.color==='#FFFFFF')?'active':''}" data-color="#2A333C" style="background:#2A333C;" title="黑/白 Black/White"></div>
-        <div class="color-dot ${boardState.color==='#5A7590'?'active':''}" data-color="#5A7590" style="background:#5A7590;" title="藍色 Blue"></div>
-        <div class="color-dot ${boardState.color==='#4F6844'?'active':''}" data-color="#4F6844" style="background:#4F6844;" title="綠色 Green"></div>
+        <div class="color-dot ${boardState.color==='#1E88E5'?'active':''}" data-color="#1E88E5" style="background:#1E88E5;" title="藍色 Blue"></div>
+        <div class="color-dot ${boardState.color==='#4C7A5E'?'active':''}" data-color="#4C7A5E" style="background:#4C7A5E;" title="綠色 Green"></div>
         <div class="color-dot ${boardState.color==='#FB8C00'?'active':''}" data-color="#FB8C00" style="background:#FB8C00;" title="橘色 Orange"></div>`;
     var myColorsHtml = isStudent ? "" : '<div class="my-colors"><span class="my-colors-label">我的顏色</span>' +
       myColorsGet().map(function(c, i){ return '<button type="button" class="my-color' + (c ? '' : ' empty') + (c && boardState.color === c ? ' active' : '') + '" data-slot="' + i + '"' + (c ? ' style="background:' + c + ';"' : '') + ' title="' + (c ? '按一下套用這個顏色' : '空格：按一下把目前的顏色存進來') + '"></button>'; }).join("") +
@@ -11931,8 +11929,8 @@ window.mmTA = (function(){
       <div class="color-picker-row">
         <label class="native-color-swatch-wrap" title="自訂顏色：點了選你要的任何顏色 Custom color">
           <img class="color-picker-icon-img" src="${TOOL_ICON_PALETTE}" alt="">
-          <input type="color" class="brush-color-native" value="${/^#[0-9A-Fa-f]{6}$/.test(boardState.color) ? boardState.color : '#A63B42'}">
-          <span class="native-color-swatch-dot" style="background:${/^#[0-9A-Fa-f]{6}$/.test(boardState.color) ? boardState.color : '#A63B42'};"></span>
+          <input type="color" class="brush-color-native" value="${/^#[0-9A-Fa-f]{6}$/.test(boardState.color) ? boardState.color : '#B23B32'}">
+          <span class="native-color-swatch-dot" style="background:${/^#[0-9A-Fa-f]{6}$/.test(boardState.color) ? boardState.color : '#B23B32'};"></span>
         </label>
         <button type="button" class="eyedropper-btn" title="滴管：從螢幕上任何地方（包括其他圖片）吸取顏色 Eyedropper — pick a color from anywhere on screen, e.g. a photo"><img class="color-picker-icon-img" src="${TOOL_ICON_EYEDROPPER}" alt="">滴管</button>
       </div>`;
@@ -12277,7 +12275,7 @@ window.mmTA = (function(){
       bgGroupEl.innerHTML = `
         <div class="tool-v-sep"></div>
         <button type="button" class="tool-btn-v" id="btn-upload-bg" title="背景圖片：上傳圖片當這一頁的背景 Background picture"><img class="tool-btn-v-icon tool-btn-v-icon-img" src="${TOOL_ICON_IMAGE}" alt=""><span class="tool-btn-v-label">背景<br>圖片</span></button>
-        <button type="button" class="tool-btn-v" id="btn-remove-bg" style="display:${currentBg ? 'flex' : 'none'}; color:#A63B42;" title="清除背景圖片 Remove background picture"><span class="tool-btn-v-icon">✕</span><span class="tool-btn-v-label">清除<br>背景</span></button>
+        <button type="button" class="tool-btn-v" id="btn-remove-bg" style="display:${currentBg ? 'flex' : 'none'}; color:#E63946;" title="清除背景圖片 Remove background picture"><span class="tool-btn-v-icon">✕</span><span class="tool-btn-v-label">清除<br>背景</span></button>
         <input type="file" id="board-bg-file" accept="image/*" style="display:none;">`;
       extraToolsPool.bg = { label: "背景圖片", icon: TOOL_ICON_IMAGE, el: bgGroupEl };
     }
@@ -12304,7 +12302,7 @@ window.mmTA = (function(){
       clearTraceBtn = document.createElement("button");
       clearTraceBtn.type = "button"; clearTraceBtn.className = "tool-btn-v"; clearTraceBtn.id = "btn-clear-trace";
       clearTraceBtn.style.display = masterTrace ? "flex" : "none";
-      clearTraceBtn.style.color = "#A63B42";
+      clearTraceBtn.style.color = "#E63946";
       clearTraceBtn.title = "清除已錄製的示範 Clear the recorded demo";
       clearTraceBtn.innerHTML = '<span class="tool-btn-v-icon">🗑️</span><span class="tool-btn-v-label">清示範</span>';
       demoGroupEl.appendChild(clearTraceBtn);
@@ -12852,7 +12850,7 @@ window.mmTA = (function(){
           var pr1 = getProgress(q.id), lab = rbFinal.querySelector(".tool-btn-v-label");
           var st = !pr1.finalAt ? "new" : (finalDirty() ? "dirty" : "ok");
           var txt = st === "ok" ? "✔ 已定稿" : (st === "dirty" ? "儲存定稿<br>（有更動）" : "儲存<br>定稿");
-          if(rbFinal.dataset.st !== st){ rbFinal.dataset.st = st; lab.innerHTML = txt; rbFinal.classList.toggle("active", st === "ok"); rbFinal.style.color = st === "dirty" ? "#8F4524" : ""; }
+          if(rbFinal.dataset.st !== st){ rbFinal.dataset.st = st; lab.innerHTML = txt; rbFinal.classList.toggle("active", st === "ok"); rbFinal.style.color = st === "dirty" ? "#C4602A" : ""; }
         }
         var finalTimer = setInterval(function(){ if(!rbFinal.isConnected){ clearInterval(finalTimer); return; } refreshFinalBtn(); }, 1200);
         refreshFinalBtn();
@@ -14231,7 +14229,7 @@ window.mmTA = (function(){
       }
       drawGuideStrokeSet(personalGuideCtx, personalGuideCanvas, masterTrace.strokes, getPersonalScaleRatio());
     }
-    var STROKE_VERDICT_COLOR = { good: "#4F6844", close: "#F9A825", bad: "#A63B42", extra: "#A63B42" };
+    var STROKE_VERDICT_COLOR = { good: "#2E7D32", close: "#F9A825", bad: "#C62828", extra: "#C62828" };
     function redrawPersonalStrokes(){
       personalCtx.clearRect(0, 0, personalPaintCanvas.width, personalPaintCanvas.height);
       var scale = getPersonalScaleRatio();
@@ -14323,7 +14321,7 @@ window.mmTA = (function(){
       el.className = "stroke-check-fx";
       el.style.left = pt.x + "%";
       el.style.top = pt.y + "%";
-      el.style.color = STROKE_VERDICT_COLOR[verdict] || "#A63B42";
+      el.style.color = STROKE_VERDICT_COLOR[verdict] || "#C62828";
       el.textContent = icon;
       personalFxLayer.appendChild(el);
       setTimeout(function(){ if(el.parentNode) el.parentNode.removeChild(el); }, 1150);
@@ -15067,7 +15065,7 @@ window.mmTA = (function(){
       if(opV < 1) g.setAttribute("opacity", String(opV));
       var gm = shapeGeom(sh, W, H);
       var sw = Math.max(1, (sh.sw || 3) * getScaleRatio());
-      var col = sh.color || "#A63B42";
+      var col = sh.color || "#B23B32";
       function mk(tag, attrs){ var el = document.createElementNS(SHAPE_NS, tag); Object.keys(attrs).forEach(function(k){ el.setAttribute(k, attrs[k]); }); return el; }
       var common = { stroke: col, "stroke-width": sw, fill: (sh.fill && sh.type !== "line" && sh.type !== "arrow") ? col : "none", "stroke-linejoin": "round", "stroke-linecap": "round" };
       if(sh.shd) g.style.filter = "drop-shadow(0 " + Math.round(4 * getScaleRatio()) + "px " + Math.round(6 * getScaleRatio()) + "px rgba(0,0,0,.4))";
@@ -16175,7 +16173,7 @@ window.mmTA = (function(){
           var sep0 = document.createElement("span"); sep0.className = "sb-sep"; tc.appendChild(sep0);
           if(eFont){
             var fsb = document.createElement("select"); fsb.title = "字型：一般／拼音／注音";
-            fsb.style.cssText = "font-size:13.5px;padding:3px 4px;border-radius:7px;border:1.5px solid rgba(73,66,61,.2);max-width:120px;";
+            fsb.style.cssText = "font-size:13.5px;padding:3px 4px;border-radius:7px;border:1.5px solid rgba(28,33,30,.2);max-width:120px;";
             Array.prototype.forEach.call(eFont.options, function(o){ var op = document.createElement("option"); op.value = o.value; op.textContent = o.textContent.replace(/（.*）/, ""); fsb.appendChild(op); });
             fsb.value = curFontVal();
             fsb.onchange = function(){ eFont.value = fsb.value; eFont.dispatchEvent(new Event("change", { bubbles: true })); if(eFont.onchange) { /* onchange 屬性已由 dispatchEvent 觸發 */ } };
@@ -16184,7 +16182,7 @@ window.mmTA = (function(){
           }
           if(eSize){
             var szb = document.createElement("input"); szb.type = "number"; szb.min = "8"; szb.max = "200"; szb.value = String(tObj.fontSize || boardState.fontSize || 36); szb.title = "字型大小";
-            szb.style.cssText = "width:54px;font-size:13.5px;padding:3px 4px;border-radius:7px;border:1.5px solid rgba(73,66,61,.2);";
+            szb.style.cssText = "width:54px;font-size:13.5px;padding:3px 4px;border-radius:7px;border:1.5px solid rgba(28,33,30,.2);";
             szb.onchange = function(){ eSize.value = szb.value; eSize.dispatchEvent(new Event("change", { bubbles: true })); };
             szb.addEventListener("keydown", function(ev){ ev.stopPropagation(); if(ev.key === "Enter"){ ev.preventDefault(); szb.blur(); } });
             tc.appendChild(szb);
@@ -16203,15 +16201,15 @@ window.mmTA = (function(){
             tc.appendChild(ab);
           });
           var sep1 = document.createElement("span"); sep1.className = "sb-sep"; tc.appendChild(sep1);
-          ["#A63B42", "#2A333C", "#5A7590", "#4F6844", "#FB8C00"].forEach(function(col){
+          ["#B23B32", "#2A333C", "#1E88E5", "#4C7A5E", "#FB8C00"].forEach(function(col){
             var d = document.createElement("span"); d.title = "顏色";
-            d.style.cssText = "width:18px;height:18px;border-radius:50%;cursor:pointer;border:2px solid #fff;box-shadow:0 0 0 1.5px rgba(73,66,61,.3);background:" + col + ";";
+            d.style.cssText = "width:18px;height:18px;border-radius:50%;cursor:pointer;border:2px solid #fff;box-shadow:0 0 0 1.5px rgba(28,33,30,.3);background:" + col + ";";
             d.onclick = function(ev){ ev.stopPropagation(); var ed = tbq.one('.color-dot[data-color="' + col + '"]') || tbq.one(".color-dot.dark-color-dot"); if(ed) ed.click(); };
             tc.appendChild(d);
           });
           var nat = tbq.one(".brush-color-native");
           if(nat){
-            var ci = document.createElement("input"); ci.type = "color"; ci.title = "自訂顏色"; ci.value = /^#[0-9a-fA-F]{6}$/.test(tObj.color || "") ? tObj.color : "#A63B42";
+            var ci = document.createElement("input"); ci.type = "color"; ci.title = "自訂顏色"; ci.value = /^#[0-9a-fA-F]{6}$/.test(tObj.color || "") ? tObj.color : "#B23B32";
             ci.style.cssText = "width:26px;height:22px;padding:0;border:none;background:none;cursor:pointer;";
             ci.oninput = function(){ nat.value = ci.value; nat.dispatchEvent(new Event("input", { bubbles: true })); };
             tc.appendChild(ci);
@@ -16506,7 +16504,7 @@ window.mmTA = (function(){
           row.forEach(function(cell, c){
             if(cell.m) return;
             var bg = cell.bg || ((t.hdr && r === 0) ? TBL_HDR_BG : ""), bold = cell.b != null ? cell.b : (t.hdr && r === 0);
-            html += '<td data-r="' + r + '" data-c="' + c + '"' + (cell.rs > 1 ? ' rowspan="' + cell.rs + '"' : "") + (cell.cs > 1 ? ' colspan="' + cell.cs + '"' : "") + ' style="border:' + (bw ? bw * scale + "px solid " + bc : "none") + ";" + (bg ? "background:" + bg + ";" : "") + "color:" + (cell.c || "#352C27") + ";font-weight:" + (bold ? 700 : 400) + ";text-align:" + (cell.a || "center") + ";font-size:" + Math.max(6, (cell.fs || fs0) * scale) + 'px;">' + buildPhoneticHtml(cell.t || "", cell.po, t.ph) + '</td>';
+            html += '<td data-r="' + r + '" data-c="' + c + '"' + (cell.rs > 1 ? ' rowspan="' + cell.rs + '"' : "") + (cell.cs > 1 ? ' colspan="' + cell.cs + '"' : "") + ' style="border:' + (bw ? bw * scale + "px solid " + bc : "none") + ";" + (bg ? "background:" + bg + ";" : "") + "color:" + (cell.c || "#2B2320") + ";font-weight:" + (bold ? 700 : 400) + ";text-align:" + (cell.a || "center") + ";font-size:" + Math.max(6, (cell.fs || fs0) * scale) + 'px;">' + buildPhoneticHtml(cell.t || "", cell.po, t.ph) + '</td>';
           });
           html += '</tr>';
         });
@@ -16681,7 +16679,7 @@ window.mmTA = (function(){
       bar.innerHTML = '<b class="tt-title">表格工具 Table Tools</b>' +
         '<span class="tt-g">' + btn("rowup", "↑列", "在上方插入一列") + btn("rowdn", "↓列", "在下方插入一列") + btn("colL", "←欄", "在左邊插入一欄") + btn("colR", "→欄", "在右邊插入一欄") + btn("delrow", "刪列", "刪除選取的列") + btn("delcol", "刪欄", "刪除選取的欄") + btn("merge", "⊞ 合併", "合併選取的儲存格（先拖曳選取多格）") + btn("split", "⊟ 分割", "把合併過的儲存格拆開") + '</span>' +
         '<span class="tt-g"><label title="儲存格填色">填色 <input type="color" class="tt-bg" value="' + (cell0.bg || "#FFFFFF") + '"></label>' + btn("nobg", "無色", "清除填色") +
-        '<label title="文字顏色">字色 <input type="color" class="tt-fc" value="' + (cell0.c || "#352C27") + '"></label>' + btn("bold", "<b>B</b>", "粗體") + btn("fs-", "A−", "字小一點") + btn("fs+", "A＋", "字大一點") + btn("al-l", "⇤", "靠左") + btn("al-c", "↔", "置中") + btn("al-r", "⇥", "靠右") + '</span>' +
+        '<label title="文字顏色">字色 <input type="color" class="tt-fc" value="' + (cell0.c || "#2B2320") + '"></label>' + btn("bold", "<b>B</b>", "粗體") + btn("fs-", "A−", "字小一點") + btn("fs+", "A＋", "字大一點") + btn("al-l", "⇤", "靠左") + btn("al-c", "↔", "置中") + btn("al-r", "⇥", "靠右") + '</span>' +
         '<span class="tt-g"><label title="框線顏色">框線 <input type="color" class="tt-bd" value="' + (t.bd || "#555555") + '"></label><input type="number" class="tt-bw" min="0" max="8" step="1" value="' + (t.bw == null ? 2 : t.bw) + '" title="框線粗細（0＝無框線）">' +
         '<label title="這張表格的注音／拼音">注音 <select class="tt-ph"><option value="">跟隨簡報</option><option value="off">不加</option><option value="pinyin">拼音</option><option value="zhuyin">注音</option><option value="both">注音＋拼音</option></select></label><label title="第一列當標題列"><input type="checkbox" class="tt-hdr" ' + (t.hdr ? "checked" : "") + '> 標題列</label>' + btn("eq", "平均", "平均分配欄寬與列高") + btn("del", "🗑 刪除表格", "刪除整張表格") + '</span>' +
         '<span class="tt-hint">點一下格子選取（拖曳可選多格）；點兩下輸入文字；Tab 跳下一格；拖曳格線調整欄寬列高</span>';
@@ -16945,7 +16943,7 @@ window.mmTA = (function(){
       if(it.k === "image") return '<img class="lp-th" src="' + it.o.src + '" alt=""><span class="lp-tx">圖片</span>';
       if(it.k === "table") return '<span class="lp-ic">▦</span><span class="lp-tx">表格 ' + it.o.rh.length + "×" + it.o.cw.length + '</span>';
       var nm = { rect: "矩形", ellipse: "橢圓", triangle: "三角形", line: "直線", arrow: "箭頭" }[it.o.type] || "圖形";
-      return '<span class="lp-dot" style="background:' + escapeHtml(it.o.color || "#A63B42") + '"></span><span class="lp-tx">' + nm + '</span>';
+      return '<span class="lp-dot" style="background:' + escapeHtml(it.o.color || "#B23B32") + '"></span><span class="lp-tx">' + nm + '</span>';
     }
     function selectFromLayers(it, ev){
       var item = { k: it.k, id: it.o.id };
@@ -17176,7 +17174,7 @@ window.mmTA = (function(){
           var sh = Object.assign({ id: uid("sh"), fx: false, fy: false, fill: false, op: 1, step: 0 }, o.shape);
           assignNewZ("shape", sh); shapes.push(sh);
         } else {
-          var t = { id: uid("t"), text: o.t, x: o.x, y: o.y, color: o.c || "#352C27", fontSize: o.fs, bold: !!o.b, step: 0, align: o.a || "left", list: o.list || "none" };
+          var t = { id: uid("t"), text: o.t, x: o.x, y: o.y, color: o.c || "#2B2320", fontSize: o.fs, bold: !!o.b, step: 0, align: o.a || "left", list: o.list || "none" };
           if(boardState.lineH && Math.abs(boardState.lineH - 1) > 0.001) t.lh = boardState.lineH;
           assignNewZ("text", t); texts.push(t);
         }
@@ -17256,7 +17254,7 @@ window.mmTA = (function(){
         var bgRow = document.createElement("div"); bgRow.style.cssText = "display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:14.5px;margin-top:8px;";
         var hasBg = /^#[0-9a-fA-F]{6}$/.test(pageBgColor);
         bgRow.innerHTML = '<label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" class="bg-on" ' + (hasBg ? "checked" : "") + '> 純色背景</label>' +
-          '<input type="color" class="bg-color" value="' + (hasBg ? pageBgColor : "#FFF8E6") + '" style="width:40px;height:30px;padding:0;border:1.5px solid rgba(73,66,61,.2);border-radius:6px;cursor:pointer;">' +
+          '<input type="color" class="bg-color" value="' + (hasBg ? pageBgColor : "#FFF8E6") + '" style="width:40px;height:30px;padding:0;border:1.5px solid rgba(28,33,30,.2);border-radius:6px;cursor:pointer;">' +
           '<span>透明度</span><input type="range" class="bg-op" min="5" max="100" step="5" value="' + Math.round(pageBgOp * 100) + '" style="width:130px;"><b class="bg-opv">' + Math.round(pageBgOp * 100) + '%</b>';
         var bgOn = bgRow.querySelector(".bg-on"), bgCol = bgRow.querySelector(".bg-color"), bgOp = bgRow.querySelector(".bg-op"), bgOpv = bgRow.querySelector(".bg-opv");
         function commitBg(){ bgOpv.textContent = bgOp.value + "%"; setPageBackground(bgOn.checked ? bgCol.value : "", Number(bgOp.value) / 100); }
@@ -17265,7 +17263,7 @@ window.mmTA = (function(){
         bgOp.oninput = function(){ if(!bgOn.checked) bgOn.checked = true; commitBg(); };
         modal.appendChild(bgRow);
         var sw = document.createElement("div"); sw.style.cssText = "display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;";
-        ["#FFFFFF", "#FFF8E6", "#EAF4FF", "#EAF8EE", "#FFEFF3", "#F3EEFF", "#352C27", "#1E3A5F"].forEach(function(c){
+        ["#FFFFFF", "#FFF8E6", "#EAF4FF", "#EAF8EE", "#FFEFF3", "#F3EEFF", "#2B2320", "#1E3A5F"].forEach(function(c){
           var b2 = document.createElement("button"); b2.type = "button"; b2.title = c; b2.style.cssText = "width:26px;height:26px;border-radius:50%;border:1.5px solid rgba(0,0,0,.3);cursor:pointer;padding:0;background:" + c;
           b2.onclick = function(){ bgOn.checked = true; bgCol.value = c; commitBg(); };
           sw.appendChild(b2);
@@ -17445,7 +17443,7 @@ window.mmTA = (function(){
       var back = document.createElement("div"); back.className = "tb-modal-back";
       var modal = document.createElement("div"); modal.className = "tb-modal"; modal.style.width = "min(680px,95vw)"; back.appendChild(modal);
       var KIND = { audio: "🎵 音樂", video: "🎬 影片", youtube: "▶ YouTube" };
-      modal.innerHTML = '<h3>🗂 媒體管理</h3><div class="tb-hint mm-sum"></div>' + (canEdit ? '<div class="mm-bar" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:6px 0;font-size:14px;"><b class="mm-cnt">已選 0 個</b><button type="button" class="btn btn-sm mm-all">全選</button><button type="button" class="btn btn-sm mm-bad">選取有問題的</button><button type="button" class="btn btn-sm mm-none">取消選取</button><button type="button" class="btn btn-sm mm-delsel" disabled style="color:#A63B42;">刪除選取</button></div>' : '') + '<div class="mm-list" style="max-height:58vh;overflow:auto;margin:8px 0;"></div><div class="tb-foot"><button type="button" class="mm-recheck">重新檢查全部</button><button type="button" class="primary mm-close">關閉</button></div>';
+      modal.innerHTML = '<h3>🗂 媒體管理</h3><div class="tb-hint mm-sum"></div>' + (canEdit ? '<div class="mm-bar" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:6px 0;font-size:14px;"><b class="mm-cnt">已選 0 個</b><button type="button" class="btn btn-sm mm-all">全選</button><button type="button" class="btn btn-sm mm-bad">選取有問題的</button><button type="button" class="btn btn-sm mm-none">取消選取</button><button type="button" class="btn btn-sm mm-delsel" disabled style="color:#c62828;">刪除選取</button></div>' : '') + '<div class="mm-list" style="max-height:58vh;overflow:auto;margin:8px 0;"></div><div class="tb-foot"><button type="button" class="mm-recheck">重新檢查全部</button><button type="button" class="primary mm-close">關閉</button></div>';
       var list = modal.querySelector(".mm-list"), sum = modal.querySelector(".mm-sum");
       var rowsOk = 0, rowsBad = 0, total = 0, picked = {}, rowInfo = {};
       function pickSync(){
@@ -17482,8 +17480,8 @@ window.mmTA = (function(){
             var st = row.querySelector(".mm-st"), box = row.querySelector(".mm-box"), info = null;
             probe(m, qid, function(r){
               info = r; rowInfo[rkey].ok = r.ok;
-              if(r.ok === true){ rowsOk++; st.textContent = "✓ " + r.msg; st.style.color = "#4F6844"; }
-              else if(r.ok === false){ rowsBad++; st.textContent = "⚠ " + r.msg; st.style.color = "#A63B42"; }
+              if(r.ok === true){ rowsOk++; st.textContent = "✓ " + r.msg; st.style.color = "#2e7d32"; }
+              else if(r.ok === false){ rowsBad++; st.textContent = "⚠ " + r.msg; st.style.color = "#c62828"; }
               else { st.textContent = r.msg; }
               refreshSum();
             });
@@ -17709,7 +17707,7 @@ window.mmTA = (function(){
         var a = myColorsGet(), i = +b.dataset.slot;
         if(myEdit){
           mySlot = i; myColorsPaint();
-          inp.value = a[i] || (/^#[0-9A-Fa-f]{6}$/.test(boardState.color) ? boardState.color : "#B25F38");
+          inp.value = a[i] || (/^#[0-9A-Fa-f]{6}$/.test(boardState.color) ? boardState.color : "#E8825A");
           try{ if(inp.showPicker) inp.showPicker(); else inp.click(); }catch(er){ inp.click(); }
           return;
         }
@@ -18027,7 +18025,7 @@ window.mmTA = (function(){
       var pts = st && st.points;
       if(!pts || !pts.length) return;
       ctx.save();
-      ctx.strokeStyle = "#352C27";
+      ctx.strokeStyle = "#2B2320";
       ctx.lineWidth = Math.max(2, st.size || 8);
       ctx.lineCap = "round"; ctx.lineJoin = "round";
       if(pts.length === 1){
@@ -18574,7 +18572,7 @@ window.mmTA = (function(){
       var p = getHanziPos(e);
       currentPath.push(p);
       ctx.save();
-      ctx.strokeStyle = "#352C27"; ctx.lineWidth = 8; ctx.lineCap = "round"; ctx.lineJoin = "round";
+      ctx.strokeStyle = "#2B2320"; ctx.lineWidth = 8; ctx.lineCap = "round"; ctx.lineJoin = "round";
       ctx.beginPath();
       var pts = currentPath;
       if(pts.length >= 2){

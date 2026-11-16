@@ -8,7 +8,7 @@
  *
  * 更新這個檔案或 vendor/ 內容時，把 CACHE_VERSION 加一號，舊快取會在新版啟用時自動清掉。
  */
-var CACHE_VERSION = "v5";   // v5：icons/ 改成網路優先（圖示、mm-icons.js 會更新），並清掉舊快取
+var CACHE_VERSION = "v4";
 var PRECACHE = "mandamy-precache-" + CACHE_VERSION;
 var RUNTIME = "mandamy-runtime-" + CACHE_VERSION;
 
@@ -81,16 +81,6 @@ function networkFirstPage(request){
   });
 }
 
-// 圖示與 mm-icons.js：有網路就拿最新的（換圖示、改程式馬上生效），斷線才用快取
-function networkFirstAsset(request){
-  return fetchWithTimeout(request, 4000).then(function(res){
-    if(res && res.ok){ var copy = res.clone(); caches.open(PRECACHE).then(function(c){ c.put(request, copy); }); }
-    return res;
-  }).catch(function(){
-    return caches.match(request).then(function(hit){ return hit || Response.error(); });
-  });
-}
-
 function cacheFirst(request, cacheName){
   return caches.match(request).then(function(hit){
     if(hit) return hit;
@@ -130,11 +120,7 @@ self.addEventListener("fetch", function(event){
       event.respondWith(networkFirstPage(request));
       return;
     }
-    if(/\/icons\//.test(path)){
-      event.respondWith(networkFirstAsset(request));
-      return;
-    }
-    if(/\/vendor\//.test(path) || /\/manifest\.webmanifest$/.test(path)){
+    if(/\/vendor\//.test(path) || /\/icons\//.test(path) || /\/manifest\.webmanifest$/.test(path)){
       event.respondWith(cacheFirst(request, PRECACHE));
       return;
     }

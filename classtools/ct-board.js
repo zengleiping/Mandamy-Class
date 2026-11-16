@@ -8,7 +8,7 @@
     var color = "#222222", size = 4, tool = "pen", bg = "#ffffff", undo = [], drawing = false, last = null;
     var cv = h("canvas", { style: "flex:1;min-height:0;width:100%;border:1.5px solid #d9c9b5;border-radius:10px;touch-action:none;background:#fff;cursor:crosshair;" }), ctx2 = null;
     var bar = h("div", { class: "ct-row", style: "margin:0 0 6px;" });
-    ["#222222", "#A63B42", "#2F86C1", "#647E58", "#D09A3A", "#8E5BB5", "#ffffff"].forEach(function(c){ bar.appendChild(h("button", { style: "width:1.8em;height:1.8em;border-radius:50%;border:2px solid #999;cursor:pointer;background:" + c + ";", title: c, onclick: function(){ color = c; tool = "pen"; mark(); } })); });
+    ["#222222", "#E0524A", "#2F86C1", "#4CAF6A", "#E0A82E", "#8E5BB5", "#ffffff"].forEach(function(c){ bar.appendChild(h("button", { style: "width:1.8em;height:1.8em;border-radius:50%;border:2px solid #999;cursor:pointer;background:" + c + ";", title: c, onclick: function(){ color = c; tool = "pen"; mark(); } })); });
     var sz = h("input", { type: "range", min: "1", max: "40", value: String(size), style: "width:90px;" }); sz.oninput = function(){ size = Number(sz.value); };
     var bPen = h("button", { class: "ct-btn on", text: "✏️ 畫筆", onclick: function(){ tool = "pen"; mark(); } }), bEr = h("button", { class: "ct-btn", text: "🧽 橡皮擦", onclick: function(){ tool = "eraser"; mark(); } });
     var bgs = h("select", { class: "ct-inp" }, [h("option", { value: "#ffffff", text: "白底" }), h("option", { value: "#1f3a2f", text: "黑板" }), h("option", { value: "#fff9d6", text: "米黃" }), h("option", { value: "grid", text: "方格" })]);
@@ -47,7 +47,7 @@
   // ---- 跑馬燈廣播 ----
   var marq = null;
   CT.add({ id: "marquee", cat: "board", icon: "📣", name: "跑馬燈廣播", w: 420, h: 300, build: function(bd, win){
-    var d = CT.load("marq", { text: "同學們請坐好，準備上課！", speed: 12, color: "#A63B42", bg: "#FFF3D6", pos: "top" });
+    var d = CT.load("marq", { text: "同學們請坐好，準備上課！", speed: 12, color: "#C0392B", bg: "#FFF3D6", pos: "top" });
     var ti = h("input", { class: "ct-inp", style: "width:100%;box-sizing:border-box;", value: d.text }), sp = h("input", { type: "range", min: "5", max: "30", value: String(31 - d.speed), style: "flex:1;" });
     var col = h("input", { type: "color", value: d.color }), bgc = h("input", { type: "color", value: d.bg }), ps = h("select", { class: "ct-inp" }, [h("option", { value: "top", text: "顯示在上方" }), h("option", { value: "bottom", text: "顯示在下方" })]); ps.value = d.pos;
     bd.appendChild(ti); bd.appendChild(h("div", { class: "ct-row" }, [h("span", { text: "速度" }), sp])); bd.appendChild(h("div", { class: "ct-row" }, [h("span", { text: "字色" }), col, h("span", { text: "底色" }), bgc, ps]));

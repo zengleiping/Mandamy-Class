@@ -332,7 +332,7 @@
     app.innerHTML = '<div class="solo-card"><div class="brand-line"><img src="../icons/logo.svg" alt="">曼米中文</div><h2>加入遊戲<span class="en">Join the game</span></h2>' +
       '<label>房間代碼 Room code</label><input class="mg-in" id="cd" inputmode="numeric" maxlength="6" value="' + MG.esc(code || "") + '" placeholder="6 位數字 6 digits">' +
       '<label>你的名字 Your name</label><input class="mg-in" id="nm" maxlength="20" value="' + MG.esc(name) + '" placeholder="例如：小明">' +
-      '<button class="mg-btn big primary" id="go">加入 Join</button><p class="note" id="st" style="text-align:center;margin-top:8px;color:#A63B42;">' + MG.esc(msg || "") + '</p></div>';
+      '<button class="mg-btn big primary" id="go">加入 Join</button><p class="note" id="st" style="text-align:center;margin-top:8px;color:#B23B32;">' + MG.esc(msg || "") + '</p></div>';
     var go = async function(){
       var cd = MG.$("#cd").value.replace(/\D/g, ""), nm = MG.$("#nm").value.trim().slice(0, 20);
       if(cd.length !== 6){ MG.$("#st").textContent = "請輸入 6 位數的房間代碼 Please enter the 6-digit room code"; return; }
