@@ -1694,7 +1694,27 @@ async function syncLessonIndex(){
 
 // ---------- 網址記憶 ----------
 function restoreFromHash(){
-  var h = new URLSearchParams(location.hash.replace(/^#/, ""));
+  var hs = location.hash.replace(/^#/, "");
+  restoreFromParams(new URLSearchParams(hs));
+  // 網址上沒有記到位置（例如在教材庫、課堂活動、記錄、設定）：重新整理後回到上次使用的畫面（存在這台電腦，可以在 localStorage 設 mm_restore_nav=0 關掉）
+  try{
+    if(!S.teacher || localStorage.getItem("mm_restore_nav") === "0") return;
+    var sv = JSON.parse(localStorage.getItem("mm_lastnav_" + S.teacher.id) || "null"); if(!sv || sv.k !== "t") return;
+    var hasHash = !!(new URLSearchParams(hs).get("c") || new URLSearchParams(hs).get("l") || new URLSearchParams(hs).get("tab"));
+    if(!hasHash){
+      var hp = new URLSearchParams(); if(sv.sel) hp.set("c", sv.sel.s + "." + (sv.sel.t || "") + "." + (sv.sel.c || "")); if(sv.lesson) hp.set("l", sv.lesson); if(sv.tab) hp.set("tab", sv.tab); if(sv.sub) hp.set("sub", sv.sub);
+      restoreFromParams(hp);
+      // 存下來的班級已經不存在了：只回到首頁，不要硬回到壞掉的畫面
+      if(sv.sel && !S.sel) return;
+    } else if(!(JSON.stringify(sv.sel || null) === JSON.stringify(S.sel ? { s: S.sel.s, t: S.sel.t || null, c: S.sel.c || null } : null) && (sv.lesson || null) === (S.lesson || null))) return;
+    if(sv.hw && S.sel && S.sel.c) S.hw = sv.hw;
+    if(sv.rec){ S.rec = Object.assign({}, sv.rec); if(!S.rec.view) delete S.rec.view; }
+    if(sv.lib) S.lib = sv.lib;
+    if(sv.day) S.day = sv.day;
+    S.settings = !!sv.settings; S.grades = sv.grades ? {} : null; if(sv.ctab) S.ctab = sv.ctab; if(sv.act) S.act = sv.act; S.classes = sv.classes ? {} : null;
+  }catch(e){ console.warn("restore nav", e); }
+}
+function restoreFromParams(h){
   var c = h.get("c"); if(c){ var p = c.split("."); if(p.length === 3 && p[1] && p[2] && getCls({ s: p[0], t: p[1], c: p[2] })) S.sel = { s: p[0], t: p[1], c: p[2] }; else if(p.length >= 2 && p[1] && !p[2] && getSchool(p[0], p[1])) S.sel = { s: p[0], t: p[1], c: null }; else if(p[0] && !p[1] && schoolsOf()[p[0]]) S.sel = { s: p[0], t: null, c: null }; }
   S.lesson = h.get("l") || null; S.tab = h.get("tab") || null; S.sub = h.get("sub") || null;
 }
@@ -1721,6 +1741,7 @@ function navPush(url){
   try{
     if(NAV.last === null || key === NAV.last) history.replaceState(snap, "", url); else history.pushState(snap, "", url);
   }catch(e){}
+  try{ if(S.teacher && snap.k === "t") localStorage.setItem("mm_lastnav_" + S.teacher.id, key); }catch(e){}
   NAV.last = key;
 }
 window.addEventListener("popstate", function(e){
