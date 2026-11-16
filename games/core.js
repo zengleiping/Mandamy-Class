@@ -386,10 +386,11 @@
     if(fromPy && (!han || fromPy.split(" ").length === han || !/^[㐀-䶿一-鿿]+$/.test(w.w || ""))) return fromPy;
     return zyFromChars(w.w) || fromPy;
   };
-  MG.phonName = function(phon){ return phon === "zy" ? "注音" : "拼音"; };
-  MG.ph = function(text, phon){ return phon === "zy" ? String(text).replace(/拼音/g, "注音").replace(/pinyin/g, "zhuyin").replace(/Pinyin/g, "Zhuyin") : text; };
+  MG.phonName = function(phon){ return phon === "zy" ? "注音" : phon === "both" ? "注音＋拼音" : "拼音"; };
+  MG.ph = function(text, phon){ if(phon === "both") return String(text).replace(/拼音/g, "注音＋拼音").replace(/pinyin/g, "zhuyin + pinyin").replace(/Pinyin/g, "Zhuyin + pinyin"); return phon === "zy" ? String(text).replace(/拼音/g, "注音").replace(/pinyin/g, "zhuyin").replace(/Pinyin/g, "Zhuyin") : text; };
   // 用注音玩：把每個詞的「讀音」換成注音（原本的拼音留在 py），遊戲裡出現拼音的地方就都變成注音
   MG.withPhon = function(words, phon){
+    if(phon === "both") return (words || []).map(function(w){ if(w.py !== undefined) return w; var z = MG.zyOf(w), p = w.p || ""; return Object.assign({}, w, { py: w.p, p: z && p ? z + " · " + p : (z || p) }); });
     if(phon !== "zy") return words || [];
     return (words || []).map(function(w){ return Object.assign({}, w, { py: w.p, p: MG.zyOf(w) }); });
   };

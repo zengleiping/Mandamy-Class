@@ -162,7 +162,7 @@
       '<label>配對方式</label>' + seg("match.pair", m.pair, [["p", "詞語 ↔ 拼音"], ["t", "詞語 ↔ 翻譯"], ["pt", "詞語 ↔ 拼音＋翻譯"], ["i", "詞語 ↔ 圖片"]]) +
       '<label>一次幾組</label>' + seg("match.batch", m.batch, [[4, "4"], [5, "5"], [6, "6"], [8, "8"]]) + '</div>' :
       '<div class="mg-opt"><label>題目</label>' + seg("blast.q", b.q, [["w2p", "看詞語選拼音"], ["w2t", "看詞語選翻譯"], ["p2w", "看拼音選詞語"], ["t2w", "看翻譯選詞語"], ["w2i", "看詞語選圖片"], ["i2w", "看圖片選詞語"]]) +
-      '<label>作答方式</label>' + seg("blast.input", c.phon === "zy" ? "tap" : b.input, [["tap", "點選"]].concat(c.phon === "zy" ? [] : [["type", "打拼音（數字標調）"]])) +
+      '<label>作答方式</label>' + seg("blast.input", c.phon === "zy" || c.phon === "both" ? "tap" : b.input, [["tap", "點選"]].concat(c.phon === "zy" || c.phon === "both" ? [] : [["type", "打拼音（數字標調）"]])) +
       '<label>生命</label><span><input type="number" class="mg-num" min="0" max="10" data-num="blast.lives" value="' + b.lives + '"> 條 <span class="note">（0＝不限，要搭配時間）</span></span>' +
       '<label>速度</label>' + seg("blast.speed", b.speed, [[1, "1 很慢"], [2, "2"], [3, "3"], [4, "4"], [5, "5 很快"]]) +
       '<label>時間</label>' + seg("blast.seconds", b.seconds, [[0, "不限（命用完就結束）"], [60, "60 秒"], [90, "90 秒"], [120, "2 分鐘"], [180, "3 分鐘"]]) +
@@ -188,7 +188,7 @@
       '<div class="mg-row" style="margin-bottom:10px;"><span class="note">從最近一課往前：100%、80%、60%、40%、20%</span><select class="mg-sel" id="sc-rec" style="max-width:280px;">' + recOpts + '</select><button class="mg-btn sm" id="sc-preset">套用</button><button class="mg-btn sm ghost" id="sc-clear">全部不用</button><button class="mg-btn sm" id="sc-custom" title="不用教材的生詞，自己輸入想考的詞語">✏️ 自己輸入生詞</button></div>' +
       (rows ? '<div class="sc-list"><div class="sc-row head"><span></span><span>課次</span><span class="n">生詞</span><span>抽幾成</span><span></span></div>' + rows + '</div>' : '<p class="note">這個班的教材還沒有生詞。</p>') +
       '<div class="mg-row" style="margin-top:10px;"><span>抽題方式</span>' + seg("sample", c.sample, [["fixed", "固定（照課本順序取前面的）"], ["random", "隨機（每次不一樣）"]]) + '</div><div class="mg-row" style="margin-top:8px;"><span>一局最多</span>' + seg("cap", c.cap, [[10, "10 個"], [20, "20 個"], [30, "30 個"], [50, "50 個"], [0, "不限"]]) + '<span class="note">超過時每一課照比例一起減少</span><span class="grow" style="flex:1"></span><span class="sc-sum">共 ' + sum + ' 個生詞</span></div></div>' +
-      '<div class="mg-panel"><h3>讀音 <span class="note">遊戲裡顯示注音還是拼音</span></h3>' + seg("phon", c.phon || "zy", [["zy", "注音"], ["py", "拼音"]]) + '</div>' +
+      '<div class="mg-panel"><h3>讀音 <span class="note">遊戲裡顯示注音、拼音，或兩個一起（班上有人學注音、有人學拼音時用）</span></h3>' + seg("phon", c.phon || "zy", [["zy", "注音"], ["py", "拼音"], ["both", "注音＋拼音（同時顯示）"]]) + '</div>' +
       '<div class="mg-panel"><h3>翻譯語言 <span class="note">配對的翻譯、Blast 的意思都用這個語言</span></h3><div class="mg-row"><select class="mg-sel" id="lang">' + langOpts + '</select><button class="mg-btn sm" id="tr-edit">檢查／修改翻譯、拼音、圖片</button><span class="note" id="tr-miss"></span></div></div>' +
       '<div class="mg-panel"><h3>' + (c.game === "match" ? "配對設定" : c.game === "blast" ? "Blast 設定" : MG.gameTitle(c.game).split(" ")[0] + "設定") + '</h3>' + gameOpts + '</div>' +
       '<div class="mg-panel"><h3>開始</h3><div class="mg-row">' +
@@ -214,7 +214,7 @@
     app.onclick = function(e){
       var t;
       if((t = e.target.closest("[data-game]"))){ G.cfg.game = t.dataset.game; saveCfg(); viewSetup(); return; }
-      if((t = e.target.closest("[data-seg] button"))){ var seg = t.closest("[data-seg]").dataset.seg, v = t.dataset.v; setPath(seg, /^\d+$/.test(v) ? Number(v) : v); if(seg === "phon" && v === "zy") G.cfg.blast.input = "tap"; saveCfg(); viewSetup(); return; }
+      if((t = e.target.closest("[data-seg] button"))){ var seg = t.closest("[data-seg]").dataset.seg, v = t.dataset.v; setPath(seg, /^\d+$/.test(v) ? Number(v) : v); if(seg === "phon" && (v === "zy" || v === "both")) G.cfg.blast.input = "tap"; saveCfg(); viewSetup(); return; }
       if((t = e.target.closest("[data-theme]"))){ var gc = G.cfg[G.cfg.game], th = MG.THEMES[t.dataset.theme]; gc.theme = t.dataset.theme; if(gc.music && th && th.music) gc.music = th.music; saveCfg(); viewSetup(); return; }
       if(e.target.id === "sc-preset"){ presetFrom(MG.$("#sc-rec").value); saveCfg(); viewSetup(); return; }
       if(e.target.id === "sc-custom"){ customEditor(); return; }

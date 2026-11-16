@@ -12,7 +12,7 @@
   function create(root, o){
     var now = o.now || function(){ return Date.now(); };
     var T = MG.THEMES[o.theme] || MG.THEMES.space, rnd = MG.rng(o.seed || 1);
-    var typeMode = o.input === "type" && o.phon !== "zy", q = typeMode ? "w2p" : (o.q || "w2p");
+    var typeMode = o.input === "type" && o.phon !== "zy" && o.phon !== "both", q = typeMode ? "w2p" : (o.q || "w2p");
     var ansKind = q === "w2p" ? "p" : q === "w2t" ? "t" : q === "w2i" ? "i" : "w", picQ = q === "i2w";
     var zyM = o.phon === "zy";
     var words = MG.withPhon(o.words, o.phon).filter(function(w){ return w && w.w && MG.sideText(w, ansKind, o.lang) && (q !== "p2w" || w.p) && (q !== "t2w" || MG.trOf(w, o.lang)) && (!picQ || MG.picOf(w)); });

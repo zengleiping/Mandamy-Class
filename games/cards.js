@@ -13,7 +13,7 @@
   function backList(cc){ return cc.back === "fruit" ? FRUITS : cc.back === "animal" ? ANIMALS : null; }
   function maxCards(cc, nWords){ var l = backList(cc); return Math.min(nWords, l ? l.length : 40); }
   function pyOfZh(zh, phon){
-    try{ if(phon === "zy") return MG.zyOf({ w: zh }); var pp = window.pinyinPro; return pp && pp.pinyin ? pp.pinyin(zh, { toneType: "symbol" }) : ""; }catch(e){ return ""; }
+    try{ if(phon === "zy") return MG.zyOf({ w: zh }); if(phon === "both"){ var pq = window.pinyinPro, pz = MG.zyOf({ w: zh }), pk = pq && pq.pinyin ? pq.pinyin(zh, { toneType: "symbol" }) : ""; return pz && pk ? pz + " · " + pk : (pz || pk); } var pp = window.pinyinPro; return pp && pp.pinyin ? pp.pinyin(zh, { toneType: "symbol" }) : ""; }catch(e){ return ""; }
   }
   // 這一局的卡：每張卡一個卡背、一個生詞（全班用同一個種子，所以每台裝置排出來的卡都一樣）
   function layout(c, round){
