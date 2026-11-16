@@ -1211,6 +1211,8 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .select-bar{ position:absolute; display:flex; align-items:center; gap:6px; padding:4px 8px; background:var(--surface); border:1.5px solid var(--seal-ring); border-radius:10px; box-shadow:0 6px 18px rgba(0,0,0,.18); pointer-events:auto; white-space:nowrap; z-index:45; }
   .select-bar .sb-sep{ width:1px; height:18px; background:rgba(28,33,30,.2); }
   .select-bar .sb-al{ padding:4px 7px; min-width:26px; }
+  .select-scale-h{ position:absolute; width:13px; height:13px; margin:-6.5px 0 0 -6.5px; background:#fff; border:2px solid var(--seal); border-radius:3px; pointer-events:auto; z-index:42; touch-action:none; }
+  .select-scale-h:hover{ background:var(--seal-soft,#fde6dc); }
   .select-guide{ position:absolute; background:#E0338A; pointer-events:none; z-index:41; }
   /* 等距標線：兩個物件之間的間距，兩端有小短線（像 PowerPoint 的智慧參考線） */
   .select-gap{ position:absolute; pointer-events:none; z-index:41; color:#E0338A; }
@@ -15973,6 +15975,15 @@ window.mmTA = (function(){
       var frame = document.createElement("div"); frame.className = "select-union-box";
       frame.style.cssText = "left:" + u.l + "%;top:" + u.t + "%;width:" + (u.r - u.l) + "%;height:" + (u.b - u.t) + "%;";
       selectLayer.appendChild(frame);
+      // 多個物件（或群組）一起選取：四個角有縮放把手，拖曳＝整組等比例縮放（文字框的字級、框寬，圖片、圖形、筆跡都一起縮放）
+      if(expandGroups(selSet).length >= 2 && !presentLock()){
+        [["nw", u.l, u.t, "nwse"], ["ne", u.r, u.t, "nesw"], ["sw", u.l, u.b, "nesw"], ["se", u.r, u.b, "nwse"]].forEach(function(c){
+          var hd = document.createElement("div"); hd.className = "select-scale-h"; hd.dataset.corner = c[0]; hd.title = "拖曳：整組一起等比例縮放（文字框的字級也會跟著變）";
+          hd.style.cssText = "left:" + c[1] + "%;top:" + c[2] + "%;cursor:" + c[3] + "-resize;";
+          hd.addEventListener("pointerdown", function(ev){ ev.stopPropagation(); ev.preventDefault(); beginScaleSelection(c[0], u, ev); });
+          selectLayer.appendChild(hd);
+        });
+      }
       var items = expandGroups(selSet), inGroup = selSet.some(function(it){ return !!findGroupOf(it.k, it.id); });
       var oneWholeGroup = inGroup && groups.some(function(g){ return g.members.length === items.length && items.every(function(x){ return g.members.some(function(m){ return sameItem(m, x); }); }); });
       var bar = document.createElement("div"); bar.className = "select-bar";
@@ -16092,6 +16103,52 @@ window.mmTA = (function(){
         renderSelection();
         beginMarquee(p, additive);
       }
+    }
+    // 整組等比例縮放：以對角為不動點，文字框（字級、框寬）、圖片、圖形、筆跡一起縮放；表格目前不跟著縮放
+    function beginScaleSelection(corner, u0b, ev0){
+      var W = cWrap.clientWidth || 600, H = cWrap.clientHeight || 400, items = expandGroups(selSet), orig = [];
+      var ax = (corner.charAt(1) === "w" ? u0b.r : u0b.l), ay = (corner.charAt(0) === "n" ? u0b.b : u0b.t), cx0 = (corner.charAt(1) === "w" ? u0b.l : u0b.r), cy0 = (corner.charAt(0) === "n" ? u0b.t : u0b.b);
+      items.forEach(function(it){
+        var o = null;
+        if(it.k === "text"){ var t = texts.find(function(x){ return x.id === it.id; }); if(t) o = { it: it, o: t, x: t.x, y: t.y, fs: t.fontSize || boardState.fontSize || 36, w: t.w, h: t.h, spans: t.spans ? t.spans.map(function(sp){ return Object.assign({}, sp); }) : null }; }
+        else if(it.k === "image"){ var im = images.find(function(x){ return x.id === it.id; }); if(im) o = { it: it, o: im, x: im.x, y: im.y, w: im.w, h: im.h }; }
+        else if(it.k === "shape"){ var sh = shapes.find(function(x){ return x.id === it.id; }); if(sh) o = { it: it, o: sh, x: sh.x, y: sh.y, w: sh.w, h: sh.h, lw: sh.lw }; }
+        else if(it.k === "stroke"){ var st = strokes.find(function(x){ return x.id === it.id; }); if(st) o = { it: it, o: st, pts: st.points.map(function(pt){ return { x: pt.x, y: pt.y }; }) }; }
+        if(o) orig.push(o);
+      });
+      if(!orig.length) return;
+      var dx0 = (cx0 - ax) / 100 * W, dy0 = (cy0 - ay) / 100 * H, den = dx0 * dx0 + dy0 * dy0, moved = false, raf = 0, last = null, hasStroke = false;
+      if(!den) return;
+      function kOf(p){ var px = (p.x - ax) / 100 * W, py = (p.y - ay) / 100 * H; return Math.max(0.1, Math.min(8, (px * dx0 + py * dy0) / den)); }
+      function apply(){
+        raf = 0; if(!last) return; var k = kOf(last); hasStroke = false;
+        orig.forEach(function(g){
+          var o = g.o;
+          if(g.it.k === "stroke"){ hasStroke = true; o.points.forEach(function(pt, i){ pt.x = ax + (g.pts[i].x - ax) * k; pt.y = ay + (g.pts[i].y - ay) * k; }); return; }
+          o.x = Math.round((ax + (g.x - ax) * k) * 100) / 100; o.y = Math.round((ay + (g.y - ay) * k) * 100) / 100;
+          if(g.it.k === "text"){
+            o.fontSize = Math.max(6, Math.round(g.fs * k * 10) / 10);
+            if(g.w) o.w = Math.round(g.w * k * 100) / 100; if(g.h) o.h = Math.round(g.h * k * 100) / 100;
+            if(g.spans){ o.spans = g.spans.map(function(sp){ var n = Object.assign({}, sp); if(sp.fs) n.fs = Math.max(6, Math.round(sp.fs * k * 10) / 10); return n; }); }
+          } else {
+            if(g.w != null) o.w = Math.round(g.w * k * 100) / 100; if(g.h != null) o.h = Math.round(g.h * k * 100) / 100;
+            if(g.it.k === "shape" && typeof g.lw === "number") o.lw = Math.max(0.5, Math.round(g.lw * k * 10) / 10);
+          }
+        });
+        if(hasStroke) redrawStrokes();
+        renderTexts(); try{ renderImages && renderImages(); }catch(er){} renderSelection();
+      }
+      function mv(e){ var p = getPos(e); if(!moved){ moved = true; snapshotForUndo(); } last = p; if(!raf) raf = requestAnimationFrame(apply); }
+      function up(){
+        window.removeEventListener("pointermove", mv); window.removeEventListener("pointerup", up); window.removeEventListener("pointercancel", up);
+        if(raf){ cancelAnimationFrame(raf); apply(); }
+        if(!moved) return;
+        var patch = {}, kinds = {}; orig.forEach(function(g){ kinds[g.it.k] = true; });
+        if(kinds.text) patch.texts = texts; if(kinds.image) patch.images = images; if(kinds.shape) patch.shapes = shapes;
+        if(kinds.stroke){ localSelfSeq++; patch.strokes = strokes; patch.strokesRevSeq = localSelfSeq; patch.strokesRevBy = deviceInstanceId; }
+        writeProgress(q.id, patch);
+      }
+      window.addEventListener("pointermove", mv); window.addEventListener("pointerup", up); window.addEventListener("pointercancel", up);
     }
     function beginMoveSelection(p0, onTap){
       var orig = selSet.map(function(it){
