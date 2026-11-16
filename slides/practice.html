@@ -13520,6 +13520,24 @@ window.mmTA = (function(){
       renderTexts();
       selectImageObj(obj.id);
     }
+    function mcToast2(msg){ try{ var t = document.createElement("div"); t.textContent = msg; t.style.cssText = "position:fixed;left:50%;bottom:90px;transform:translateX(-50%);max-width:86vw;background:rgba(40,34,30,.94);color:#fff;padding:10px 18px;border-radius:12px;font-size:15.5px;z-index:100000;pointer-events:none;"; document.body.appendChild(t); setTimeout(function(){ t.remove(); }, 4200); }catch(e){} }
+    // 貼上時 paste 事件裡沒有圖片檔：改用非同步剪貼簿（navigator.clipboard.read）找圖片；再不行就試網頁複製來的 <img> 網址
+    function clipImageFallback(imgUrl){
+      function fromUrl(){
+        if(!imgUrl) return Promise.resolve(null);
+        return fetch(imgUrl).then(function(r){ return r.blob(); }).then(function(bl){ return /^image\//.test(bl.type) ? new File([bl], "paste", { type: bl.type }) : null; }).catch(function(){ return null; });
+      }
+      if(!(navigator.clipboard && navigator.clipboard.read)) return fromUrl();
+      return navigator.clipboard.read().then(function(items){
+        var p = Promise.resolve(null);
+        items.forEach(function(it){ p = p.then(function(found){
+          if(found) return found;
+          var ty = (it.types || []).filter(function(x){ return /^image\//.test(x); })[0];
+          return ty ? it.getType(ty).then(function(bl){ return new File([bl], "paste", { type: bl.type }); }) : null;
+        }); });
+        return p.then(function(f){ return f || fromUrl(); });
+      }).catch(function(){ return fromUrl(); });
+    }
     function pasteImageFiles(files){
       if(deckStudent || presentLock()) return;
       files.forEach(function(f){
@@ -13597,8 +13615,17 @@ window.mmTA = (function(){
         else if(cd.items){ for(var i = 0; i < cd.items.length; i++){ if(cd.items[i].kind === "file"){ var f = cd.items[i].getAsFile(); if(f) files.push(f); } } }
         files = files.filter(function(f){ return /^image\//.test(f.type); });
         if(files.length){ e.preventDefault(); pasteImageFiles(files); return; }
-        var txt = cd.getData("text/plain");
-        if(txt && txt.trim()){ e.preventDefault(); pasteTextBox(txt); }
+        var txt = cd.getData("text/plain"), html = cd.getData("text/html") || "";
+        var htmlImg = /<img[^>]+src=["']([^"']+)["']/i.exec(html);
+        if((txt && txt.trim()) || htmlImg){
+          e.preventDefault();
+          // 有些來源（從 PDF 或別的 App 複製圖片）會同時帶文字，或只有非同步剪貼簿拿得到圖片：先找圖片，找不到才貼文字
+          clipImageFallback(htmlImg ? htmlImg[1] : "").then(function(f){
+            if(f){ pasteImageFiles([f]); return; }
+            if(txt && txt.trim()) pasteTextBox(txt);
+            else mcToast2("剪貼簿裡的圖片貼不進來：請先把圖片另存成檔案，再拖進簡報");
+          });
+        }
       },
       key: function(e){
         if(!document.body.contains(cWrap) || editableTarget(e.target) || liveLocked() || slideListArmed) return;
