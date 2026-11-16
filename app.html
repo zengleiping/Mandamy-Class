@@ -1580,6 +1580,10 @@ async function autoAddContentPacks(t, bank){
   if(!S.teacher || S.teacher.role === "ta") return bank;
   var list = null; try{ var r = await fetch("content/packs.json?v=" + MM_V, { cache: "no-store" }); if(r.ok) list = await r.json(); }catch(e){}
   if(!list || !Array.isArray(list.packs) || !list.packs.length) return bank;
+  // 指定給特定老師的教材包（onlyName：老師顯示名稱包含這段文字才會加）：不會自動加給其他老師
+  var tnm = String((S.teacher && S.teacher.name) || "");
+  list.packs = list.packs.filter(function(x){ return !x || !x.onlyName || tnm.indexOf(x.onlyName) >= 0; });
+  if(!list.packs.length) return bank;
   // 還沒有自己教材的新老師：先問要不要加入《學華語向前走》的現成教材，不直接塞
   var optIn = (S.plat.meta || {}).packsOptIn, hasOwn = !!(bank && Array.isArray(bank.courseData) && bank.courseData.length);
   if(optIn === false) return bank;
@@ -6057,12 +6061,32 @@ function markPart(){
 }
 // 簡報頁回報目前頁數：上課中（或今天這個班已經用這份簡報開過房間）才記，在家備課、編輯不會算進去
 var POS_T = null;
+// ----- 題目練習紀錄：這個班有哪些題目練習過（跳著上也看得出來）。老師上課中停在某一題超過 6 秒就記一次（次數、最近日期），
+//        簡報頁左邊的題目清單會顯示 ✓／○，老師也可以點一下手動標記或取消 -----
+var PR_T = null;
+function prMap(){ var cls = S.sel && S.sel.c ? getCls(S.sel) : null; return (cls && cls.progress && cls.progress.practiced) || {}; }
+function prPush(win){ try{ if(win) win.postMessage({ mm: "practiced", map: prMap() }, "*"); }catch(er){} }
+function prSet(qid, on){
+  var cls = getCls(S.sel); if(!cls || !qid) return; cls.progress = cls.progress || {}; var pr = cls.progress.practiced = cls.progress.practiced || {}, old = pr[qid] || {};
+  var path = clsPath(S.sel) + "/progress/practiced/" + String(qid).replace(/[.#$\[\]\/]/g, "_");
+  if(on === false){ delete pr[qid]; fbSet(path, null).catch(function(){}); return; }
+  pr[qid] = { n: (on === "visit" ? (old.n || 0) + 1 : Math.max(1, old.n || 0)), at: Date.now(), d: todayStr(), m: on === "visit" ? 0 : 1 };
+  fbSet(path, pr[qid]).catch(function(){});
+}
+window.addEventListener("message", function(e){
+  if(!S.teacher || !e.data || (e.data.mm !== "practicedToggle")) return;
+  var fr = document.getElementById("fr"); if(!fr || fr.contentWindow !== e.source) return;
+  if(!S.sel || !S.sel.c) return;
+  prSet(e.data.qid, !!e.data.on); prPush(e.source);
+});
 window.addEventListener("message", function(e){
   if(!S.teacher || !e.data || e.data.mm !== "slidePos") return;
   var fr = document.getElementById("fr"); if(!fr || fr.contentWindow !== e.source) return;
+  prPush(e.source);   // 簡報頁載入／換題時，把這個班的練習紀錄傳給它顯示
   if(!S.sel || !S.sel.c || !S.lesson || !S.sub || (S.tab !== "slides" && S.tab !== "quiz")) return;
   if(!(S.live && S.live.on)) return;
   var cls = getCls(S.sel); if(!cls) return;
+  if(e.data.kind === "quiz" && e.data.qid){ clearTimeout(PR_T); var prq = String(e.data.qid), prw = e.source; PR_T = setTimeout(function(){ if(S.live && S.live.on){ prSet(prq, "visit"); prPush(prw); } }, 6000); }
   var d = e.data, day = todayStr(), ps = (((S.plat.lessons || {})[S.lesson] || {}).projects || {})[S.sub] || {};
   var pos = { d: day, l: String(S.lesson), pid: String(S.sub), pt: String(ps.title || d.projTitle || "").slice(0, 80), k: d.kind === "quiz" ? "quiz" : "slides", i: Math.max(1, Number(d.idx) || 1), n: Number(d.total) || 0, q: String(d.qid || ""), qt: String(d.qTitle || "").slice(0, 60), at: Date.now() };
   cls.progress = cls.progress || {}; cls.progress.pos = pos;

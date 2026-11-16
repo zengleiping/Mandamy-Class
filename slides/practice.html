@@ -447,6 +447,9 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
 
   .q-item-left{ display:flex; align-items:center; gap:7px; min-width:0; flex:1; pointer-events:none; }
   .q-item-left *{ pointer-events:none; }
+  .q-pr{ flex:none; min-width:22px; height:20px; padding:0 5px; border-radius:99px; border:1.5px dashed rgba(28,33,30,.28); color:var(--ink-soft); font-size:12px; font-weight:800; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; line-height:1; }
+  .q-pr.on{ border-style:solid; border-color:#4C7A5E; background:#E4F2E8; color:#2f6a49; }
+  .q-pr:hover{ filter:brightness(.95); }
   .q-index-badge{
     flex:none; width:19px; height:19px; border-radius:50%; background:var(--surface-2);
     border:1px solid var(--grid-line); display:flex; align-items:center; justify-content:center;
@@ -8734,6 +8737,15 @@ window.mmTA = (function(){
     }catch(err){ console.error(err); alert("匯出 PowerPoint 失敗：" + (err && err.message ? err.message : err)); }
     bar.remove();
   }
+  /* ===== 題目練習紀錄（平台傳來）：每題 ✓×次數／○；點一下手動標記或取消 ===== */
+  window.__practiced = {};
+  window.addEventListener("message", function(e){
+    if(!e.data || e.data.mm !== "practiced" || e.source !== window.parent) return;
+    window.__practiced = e.data.map || {};
+    try{ renderSidebar(); }catch(er){}
+  });
+  function prSummary(sec, qKeys){ if(sec.type === "board" || !window.__embedKind || window.__solo) return ""; var n = 0; qKeys.forEach(function(k){ if((window.__practiced || {})[k]) n++; }); return ' ・已練習 ' + n + '/' + qKeys.length; }
+  function prFmt(r){ var d = new Date(r.at || 0); return (d.getMonth() + 1) + "/" + d.getDate(); }
   function renderSidebar(){
     if(isStudent) return;
     sectionTreeListEl.innerHTML = "";
@@ -8820,7 +8832,7 @@ window.mmTA = (function(){
         </div>
         <div class="section-head-meta">
           <span class="badge">${typeMeta.label}</span>
-          <span class="section-q-count">${sec.type === "board" ? '共 ' + qKeys.length + ' 頁 ' + qKeys.length + ' ' + (qKeys.length === 1 ? 'Slide' : 'Slides') : '共 ' + qKeys.length + ' 小題 ' + qKeys.length + ' ' + (qKeys.length === 1 ? 'Question' : 'Questions')}</span>
+          <span class="section-q-count">${sec.type === "board" ? '共 ' + qKeys.length + ' 頁 ' + qKeys.length + ' ' + (qKeys.length === 1 ? 'Slide' : 'Slides') : '共 ' + qKeys.length + ' 小題 ' + qKeys.length + ' ' + (qKeys.length === 1 ? 'Question' : 'Questions') + prSummary(sec, qKeys)}</span>
         </div>
         <div class="section-head-actions">
           <button type="button" class="btn btn-sm btn-ghost btn-edit-sec" title="編輯大題（標題／說明／媒體）Edit Section" style="color:var(--ink-soft);">編輯</button>
@@ -8869,6 +8881,7 @@ window.mmTA = (function(){
               <span class="q-item-left">
                 <span class="drag-handle-icon" title="按住拖曳小題重排 Drag to reorder">⋮⋮</span>
                 <span class="q-index-badge">${idx + 1}</span>
+                ${(sec.type !== "board" && window.__embedKind && !window.__solo) ? (function(){ var pr = (window.__practiced || {})[qId]; return pr ? '<span class="q-pr on" data-pr="' + qId + '" title="練習過 ' + (pr.n || 1) + ' 次，最近 ' + prFmt(pr) + '（點一下取消標記）">✓' + ((pr.n || 1) > 1 ? '×' + pr.n : '') + '</span>' : '<span class="q-pr" data-pr="' + qId + '" title="還沒練習過（點一下標記為練習過）">○</span>'; })() : ""}
                 ${sec.type === "board" ? `<img class="q-thumb" data-thumb-qid="${qId}" src="${thumbSrcFor(q)}" alt="">` : ""}
                 <span class="q-item-title">${escapeHtml(dispTitle(sec, q))}</span>
                 ${(!isCanvasSec(sec) && sec.type !== "hanzi" && sec.type !== "bingo" && sec.type !== "thermo" && q.weight && q.weight !== 1) ? `<span class="q-weight-tag" title="配分權重 Weight ×${q.weight}">×${q.weight}</span>` : ""}
@@ -8922,6 +8935,8 @@ window.mmTA = (function(){
             };
 
             qBtn.onclick = function(e){
+              var prb = e.target.closest(".q-pr");
+              if(prb){ e.stopPropagation(); var onNow = prb.classList.contains("on"); try{ window.parent.postMessage({ mm: "practicedToggle", qid: qId, on: !onNow }, "*"); }catch(er){} return; }
               if(e.target.closest(".q-action-btns")) return;
               setCurrentQ(qId);
             };
