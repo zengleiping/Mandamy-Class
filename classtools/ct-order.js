@@ -6,7 +6,7 @@
   CT.add({ id: "db", cat: "order", icon: "📢", name: "課堂分貝儀", w: 380, h: 440, build: function(bd, win){
     var stream = null, an = null, raf = 0, warn = CT.load("db_warn", 70), off = CT.load("db_off", 0), lastBeep = 0, peak = 0;
     var face = h("div", { class: "ct-c", style: "font-size:4em;" , text: "🎤" }), val = h("div", { class: "ct-big ct-c", text: "-- dB" }), bar = h("div", { style: "height:1.4em;background:#eee;border-radius:99px;overflow:hidden;margin:8px 0;position:relative;" }), fill = h("div", { style: "height:100%;width:0;background:#5a9a5a;transition:width .1s;" });
-    var mark = h("div", { style: "position:absolute;top:0;bottom:0;width:3px;background:#B23B32;" }); bar.appendChild(fill); bar.appendChild(mark);
+    var mark = h("div", { style: "position:absolute;top:0;bottom:0;width:3px;background:#A63B42;" }); bar.appendChild(fill); bar.appendChild(mark);
     var msg = h("div", { class: "ct-c", style: "min-height:1.6em;font-weight:800;font-size:1.2em;" }), pk = h("div", { class: "ct-muted ct-c" });
     var go = h("button", { class: "ct-btn pri", text: "🎤 開始偵測", onclick: toggle });
     var wr = h("input", { type: "range", min: "40", max: "100", step: "1", value: String(warn), style: "width:55%;" }), wl = h("span");
@@ -27,7 +27,7 @@
       if(!an) return; var buf = new Float32Array(an.fftSize); an.getFloatTimeDomainData(buf); var s = 0; for(var i = 0; i < buf.length; i++) s += buf[i] * buf[i];
       var rms = Math.sqrt(s / buf.length), db = Math.max(20, Math.min(100, Math.round(20 * Math.log10(Math.max(rms, 1e-5)) + 94 + off)));
       val.textContent = db + " dB"; fill.style.width = (db - 20) / 80 * 100 + "%"; peak = Math.max(peak, db); pk.textContent = "最高 " + peak + " dB";
-      var cls = db < warn - 15 ? 0 : db < warn ? 1 : 2; fill.style.background = ["#5a9a5a", "#E0A82E", "#B23B32"][cls]; face.textContent = ["😊", "😐", "😫"][cls]; msg.textContent = ["很安靜，很棒！", "有點吵了，小聲一點", "太吵了！請安靜"][cls]; msg.style.color = ["#5a9a5a", "#B8860B", "#B23B32"][cls];
+      var cls = db < warn - 15 ? 0 : db < warn ? 1 : 2; fill.style.background = ["#5a9a5a", "#D09A3A", "#A63B42"][cls]; face.textContent = ["😊", "😐", "😫"][cls]; msg.textContent = ["很安靜，很棒！", "有點吵了，小聲一點", "太吵了！請安靜"][cls]; msg.style.color = ["#5a9a5a", "#B8860B", "#A63B42"][cls];
       if(cls === 2 && Date.now() - lastBeep > 4000){ lastBeep = Date.now(); CT.beep(1, 520); }
       raf = requestAnimationFrame(loop);
     }
@@ -36,7 +36,7 @@
 
   // ---- 課堂紅綠燈 ----
   CT.add({ id: "light", cat: "order", icon: "🚦", name: "課堂紅綠燈", w: 300, h: 470, build: function(bd, win){
-    var cur = CT.load("light", 2), labels = [["停！安靜", "#E0524A"], ["準備", "#F2B632"], ["可以開始", "#4CAF6A"]], box = h("div", { class: "ct-c" });
+    var cur = CT.load("light", 2), labels = [["停！安靜", "#A63B42"], ["準備", "#F2B632"], ["可以開始", "#647E58"]], box = h("div", { class: "ct-c" });
     bd.appendChild(box);
     function draw(){
       box.innerHTML = ""; var body = h("div", { style: "display:inline-flex;flex-direction:column;gap:.5em;background:#333;padding:.7em;border-radius:1.2em;" });
@@ -50,7 +50,7 @@
   // ---- 工作符號指引 ----
   CT.add({ id: "symbols", cat: "order", icon: "🧭", name: "工作符號指引", w: 460, h: 460, build: function(bd, win){
     var S = [["🤫", "安靜"], ["🗣️", "小聲討論"], ["🙋", "舉手發言"], ["✍️", "書寫"], ["📖", "閱讀"], ["👂", "專心聽"], ["🎤", "輪流說話"], ["🤝", "小組合作"], ["🧍", "回座位"], ["🚶", "排隊"], ["📦", "收拾整理"], ["👀", "看老師"]];
-    var show = h("div", { class: "ct-c", style: "min-height:8.5em;padding:.4em;border-radius:14px;background:#FDECE6;margin-bottom:8px;" }), grid = h("div", { style: "display:grid;grid-template-columns:repeat(4,1fr);gap:6px;" });
+    var show = h("div", { class: "ct-c", style: "min-height:8.5em;padding:.4em;border-radius:14px;background:#F6E2D2;margin-bottom:8px;" }), grid = h("div", { style: "display:grid;grid-template-columns:repeat(4,1fr);gap:6px;" });
     var cur = CT.load("sym", 0);
     function paint(){ show.innerHTML = '<div style="font-size:5.5em;line-height:1.15;">' + S[cur][0] + '</div><div style="font-size:2em;font-weight:800;">' + S[cur][1] + '</div>'; }
     S.forEach(function(s, i){ grid.appendChild(h("button", { class: "ct-btn", style: "font-size:1.7em;padding:.2em;", title: s[1], text: s[0], onclick: function(){ cur = i; CT.save("sym", cur); paint(); } })); });

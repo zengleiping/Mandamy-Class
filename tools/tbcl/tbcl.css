@@ -4,7 +4,7 @@
 :root{
   --bg:#F7F4EE; --panel:#FFFFFF; --ink:#27211C; --ink-2:#5C5249; --ink-3:#8A8076;
   --line:#DDD6C9; --line-2:#C9BFAE;
-  --red:#B23B32; --red-deep:#932E27; --red-soft:#F5E2DE;
+  --red:#A63B42; --red-deep:#932E27; --red-soft:#F5E2DE;
   --green:#2E7A58; --green-soft:#DDEEE4; --yellow-soft:#FBEFC4; --blue-soft:#DDE7F5;
   --r:6px;
   --sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;

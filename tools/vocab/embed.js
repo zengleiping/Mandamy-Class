@@ -26,7 +26,7 @@
     frame.src = src;
     frame.title = "生詞表製作";
     frame.setAttribute("allow", "clipboard-write");
-    frame.style.cssText = "display:block;width:100%;border:0;border-radius:18px;background:#FAF7F2;min-height:" + (opts.minHeight || 640) + "px;";
+    frame.style.cssText = "display:block;width:100%;border:0;border-radius:18px;background:#F7F0E1;min-height:" + (opts.minHeight || 640) + "px;";
     if(opts.height) frame.style.height = typeof opts.height === "number" ? opts.height + "px" : opts.height;
     el.appendChild(frame);
 

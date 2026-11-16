@@ -6,7 +6,7 @@
   // ---- 計時器（數字／圓餅兩種樣式；可以縮小成一行時間、全螢幕大字、也可以叫出學生也看得到的下課鬧鐘）----
   CT.add({ id: "timer", cat: "time", icon: "⏱️", name: "計時器", w: 420, h: 580, build: function(bd, win){
     var total = CT.load("timer_total", 5 * 60000), left = total, end = 0, run = false, tm = null, style = CT.load("timer_style", "num"), big = null;
-    var disp = h("div", { class: "ct-big ct-c", style: "font-size:4.4em;margin:2px 0;" }), pie = h("div", { class: "ct-c" }), msg = h("div", { class: "ct-c", style: "min-height:1.4em;font-weight:700;color:#C0623A;" });
+    var disp = h("div", { class: "ct-big ct-c", style: "font-size:4.4em;margin:2px 0;" }), pie = h("div", { class: "ct-c" }), msg = h("div", { class: "ct-c", style: "min-height:1.4em;font-weight:700;color:#8F4524;" });
     var presets = h("div", { class: "ct-row", style: "justify-content:center;" });
     [1, 3, 5, 10, 15, 30].forEach(function(m){ presets.appendChild(h("button", { class: "ct-btn", text: m + " 分", onclick: function(){ set(m * 60000); } })); });
     var adj = h("div", { class: "ct-row", style: "justify-content:center;" });
@@ -18,15 +18,15 @@
     if(CT.ctx().openBreak) bd.appendChild(h("div", { class: "ct-row", style: "justify-content:center;" }, [h("button", { class: "ct-btn", text: "🔔 下課鬧鐘（學生畫面也會一起倒數）", onclick: function(){ CT.ctx().openBreak(); } })]));
     function pieSvg(){
       var f = Math.max(0, Math.min(1, left / total)), a = f * 2 * Math.PI, R = 100, x = 110 + R * Math.sin(a), y = 110 - R * Math.cos(a), bg = f > 0.5 ? 1 : 0;
-      var path = f >= 0.9999 ? '<circle cx="110" cy="110" r="100" fill="#E0524A"/>' : f <= 0 ? "" : '<path d="M110 110 L110 10 A100 100 0 ' + bg + ' 1 ' + x.toFixed(2) + ' ' + y.toFixed(2) + ' Z" fill="#E0524A"/>';
+      var path = f >= 0.9999 ? '<circle cx="110" cy="110" r="100" fill="#A63B42"/>' : f <= 0 ? "" : '<path d="M110 110 L110 10 A100 100 0 ' + bg + ' 1 ' + x.toFixed(2) + ' ' + y.toFixed(2) + ' Z" fill="#A63B42"/>';
       var ticks = ""; for(var i = 0; i < 12; i++){ var t = i * Math.PI / 6; ticks += '<line x1="' + (110 + 100 * Math.sin(t)) + '" y1="' + (110 - 100 * Math.cos(t)) + '" x2="' + (110 + 90 * Math.sin(t)) + '" y2="' + (110 - 90 * Math.cos(t)) + '" stroke="#6b5b4b" stroke-width="2"/>'; }
       return '<svg viewBox="0 0 220 220" style="width:min(100%,240px);"><circle cx="110" cy="110" r="104" fill="#fff" stroke="#6b5b4b" stroke-width="4"/>' + path + ticks + '<circle cx="110" cy="110" r="5" fill="#6b5b4b"/></svg>';
     }
     function paint(){
-      var t = left <= 0 ? "00:00" : mmss(left); disp.textContent = t; disp.style.color = left <= 0 ? "#B23B32" : left <= 10000 && run ? "#C0623A" : "";
+      var t = left <= 0 ? "00:00" : mmss(left); disp.textContent = t; disp.style.color = left <= 0 ? "#A63B42" : left <= 10000 && run ? "#8F4524" : "";
       disp.style.fontSize = style === "pie" ? "2.2em" : "4.4em"; pie.innerHTML = style === "pie" ? pieSvg() : ""; sty.textContent = style === "pie" ? "🔢 數字" : "🥧 圓餅";
       go.textContent = run ? "⏸ 暫停" : "▶ 開始"; win.setMini(left <= 0 ? "⏰ 時間到" : t);
-      if(big){ big.firstChild.textContent = t; big.firstChild.style.color = left <= 0 ? "#B23B32" : left <= 10000 && run ? "#C0623A" : "#2a2018"; }
+      if(big){ big.firstChild.textContent = t; big.firstChild.style.color = left <= 0 ? "#A63B42" : left <= 10000 && run ? "#8F4524" : "#352C27"; }
     }
     function set(ms){ stop(); total = ms; left = ms; CT.save("timer_total", ms); msg.textContent = ""; paint(); }
     function stop(){ run = false; if(tm){ clearInterval(tm); tm = null; } }
@@ -38,7 +38,7 @@
     function closeBig(){ if(big){ big.remove(); big = null; document.removeEventListener("keydown", esc, true); } }
     function esc(e){ if(e.key === "Escape") closeBig(); }
     function openBig(){
-      closeBig(); big = h("div", { class: "ct-keep", style: "position:fixed;inset:0;z-index:9990;background:#FAF7F2;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;", onclick: closeBig }, [h("div", { style: "font-size:min(30vw,48vh);font-weight:800;font-variant-numeric:tabular-nums;line-height:1;" }), h("div", { class: "ct-muted", style: "margin-top:1em;", text: "點一下或按 Esc 回到原本畫面" })]);
+      closeBig(); big = h("div", { class: "ct-keep", style: "position:fixed;inset:0;z-index:9990;background:#F7F0E1;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;", onclick: closeBig }, [h("div", { style: "font-size:min(30vw,48vh);font-weight:800;font-variant-numeric:tabular-nums;line-height:1;" }), h("div", { class: "ct-muted", style: "margin-top:1em;", text: "點一下或按 Esc 回到原本畫面" })]);
       document.body.appendChild(big); document.addEventListener("keydown", esc, true); paint();
     }
     win.onClose(function(){ stop(); closeBig(); }); paint();
@@ -84,12 +84,12 @@
       head.appendChild(h("b", { style: "font-size:1.3em;", text: cur.getFullYear() + " 年 " + (cur.getMonth() + 1) + " 月" }));
       head.appendChild(h("button", { class: "ct-btn", text: "今天", onclick: function(){ cur = new Date(); cur.setDate(1); draw(); } }));
       head.appendChild(h("button", { class: "ct-btn", text: "▶", onclick: function(){ cur.setMonth(cur.getMonth() + 1); draw(); } }));
-      grid.innerHTML = ""; ["日", "一", "二", "三", "四", "五", "六"].forEach(function(w, i){ grid.appendChild(h("div", { style: "font-weight:700;color:" + (i === 0 || i === 6 ? "#B23B32" : "#6b5b4b") + ";", text: w })); });
+      grid.innerHTML = ""; ["日", "一", "二", "三", "四", "五", "六"].forEach(function(w, i){ grid.appendChild(h("div", { style: "font-weight:700;color:" + (i === 0 || i === 6 ? "#A63B42" : "#6b5b4b") + ";", text: w })); });
       var first = cur.getDay(), days = new Date(cur.getFullYear(), cur.getMonth() + 1, 0).getDate(), today = new Date();
       for(var i = 0; i < first; i++) grid.appendChild(h("div"));
       for(var d = 1; d <= days; d++){ (function(d){
         var isT = today.getFullYear() === cur.getFullYear() && today.getMonth() === cur.getMonth() && today.getDate() === d, key = cur.getFullYear() + "-" + cur.getMonth() + "-" + d;
-        var wk = (first + d - 1) % 7, c = h("div", { style: "padding:.55em 0;border-radius:10px;cursor:pointer;font-size:1.15em;" + (isT ? "background:#C0623A;color:#fff;font-weight:800;" : sel === key ? "background:#FDECE6;border:2px solid #C0623A;" : "background:#faf5ee;") + (!isT && (wk === 0 || wk === 6) ? "color:#B23B32;" : ""), text: String(d), onclick: function(){ sel = key; draw(); } }); grid.appendChild(c); })(d);
+        var wk = (first + d - 1) % 7, c = h("div", { style: "padding:.55em 0;border-radius:10px;cursor:pointer;font-size:1.15em;" + (isT ? "background:#8F4524;color:#fff;font-weight:800;" : sel === key ? "background:#F6E2D2;border:2px solid #8F4524;" : "background:#faf5ee;") + (!isT && (wk === 0 || wk === 6) ? "color:#A63B42;" : ""), text: String(d), onclick: function(){ sel = key; draw(); } }); grid.appendChild(c); })(d);
       }
     }
     draw();
@@ -123,8 +123,8 @@
         return;
       }
       steps.forEach(function(s, i){
-        box.appendChild(h("div", { style: "display:flex;align-items:center;gap:.6em;padding:.7em .8em;margin:6px 0;border-radius:12px;cursor:pointer;font-size:1.25em;border:2px solid " + (i === act ? "#C0623A" : "#e3d6c5") + ";background:" + (i === act ? "#FDECE6" : i < act ? "#eef6ea" : "#fff") + ";" + (i < act ? "opacity:.7;" : ""), onclick: function(){ act = i; CT.save("flow_act", act, true); draw(); } },
-          [h("b", { style: "display:inline-flex;width:1.7em;height:1.7em;border-radius:50%;align-items:center;justify-content:center;color:#fff;background:" + (i === act ? "#C0623A" : i < act ? "#5a9a5a" : "#b9a68f") + ";", text: i < act ? "✓" : String(i + 1) }), h("span", { style: i === act ? "font-weight:800;" : "", text: s })]));
+        box.appendChild(h("div", { style: "display:flex;align-items:center;gap:.6em;padding:.7em .8em;margin:6px 0;border-radius:12px;cursor:pointer;font-size:1.25em;border:2px solid " + (i === act ? "#8F4524" : "#e3d6c5") + ";background:" + (i === act ? "#F6E2D2" : i < act ? "#eef6ea" : "#fff") + ";" + (i < act ? "opacity:.7;" : ""), onclick: function(){ act = i; CT.save("flow_act", act, true); draw(); } },
+          [h("b", { style: "display:inline-flex;width:1.7em;height:1.7em;border-radius:50%;align-items:center;justify-content:center;color:#fff;background:" + (i === act ? "#8F4524" : i < act ? "#5a9a5a" : "#b9a68f") + ";", text: i < act ? "✓" : String(i + 1) }), h("span", { style: i === act ? "font-weight:800;" : "", text: s })]));
       });
       box.appendChild(h("div", { class: "ct-row" }, [h("button", { class: "ct-btn", text: "▶ 下一步", onclick: function(){ act = Math.min(steps.length - 1, act + 1); CT.save("flow_act", act, true); draw(); } }), h("button", { class: "ct-btn", text: "↺ 從頭", onclick: function(){ act = 0; CT.save("flow_act", act, true); draw(); } }), h("button", { class: "ct-btn", text: "✎ 編輯步驟", onclick: function(){ edit = true; draw(); } })]));
     }
@@ -144,8 +144,8 @@
         if(!s.length) box.appendChild(h("div", { class: "ct-muted ct-c", style: "padding:2em 0;", text: "還沒有資料，上面輸入名稱和日期後按「新增」。" }));
         s.forEach(function(o){
           var n = o.n, big = n === 0 ? "今天！" : n > 0 ? "還有 " + n + " 天" : "已過 " + (-n) + " 天";
-          box.appendChild(h("div", { style: "display:flex;align-items:center;gap:.6em;padding:.6em .8em;margin:6px 0;border-radius:12px;background:" + (n === 0 ? "#FDECE6" : n > 0 && n <= 7 ? "#FFF3D6" : "#faf5ee") + ";" + (n < 0 ? "opacity:.55;" : "") },
-            [h("div", { style: "flex:1;" }, [h("b", { style: "font-size:1.15em;", text: o.x.t }), h("div", { class: "ct-muted", text: o.x.d })]), h("b", { style: "font-size:1.5em;color:" + (n >= 0 ? "#C0623A" : "#8a7a6a") + ";", text: big }), h("button", { class: "ct-btn", text: "✕", title: "刪除", onclick: function(){ list.splice(o.i, 1); CT.save(key, list, true); draw(); } })]));
+          box.appendChild(h("div", { style: "display:flex;align-items:center;gap:.6em;padding:.6em .8em;margin:6px 0;border-radius:12px;background:" + (n === 0 ? "#F6E2D2" : n > 0 && n <= 7 ? "#FFF3D6" : "#faf5ee") + ";" + (n < 0 ? "opacity:.55;" : "") },
+            [h("div", { style: "flex:1;" }, [h("b", { style: "font-size:1.15em;", text: o.x.t }), h("div", { class: "ct-muted", text: o.x.d })]), h("b", { style: "font-size:1.5em;color:" + (n >= 0 ? "#8F4524" : "#8a7a6a") + ";", text: big }), h("button", { class: "ct-btn", text: "✕", title: "刪除", onclick: function(){ list.splice(o.i, 1); CT.save(key, list, true); draw(); } })]));
         });
       }
       draw();

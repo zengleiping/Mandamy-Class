@@ -3,7 +3,7 @@
    每個班存一份（teacherPlatform/{老師}/gameGroups/{班級}）。 */
 (function(){
   var MG = window.MG;
-  var COLORS = ["#E8825A", "#5B9BD5", "#4C8577", "#C8607A", "#F2C14E", "#9B7BD4", "#3FA7A0", "#B0703C", "#7A8B99", "#D46A9F"];
+  var COLORS = ["#B25F38", "#5B9BD5", "#647E58", "#C8607A", "#DCAC62", "#9B7BD4", "#3FA7A0", "#B0703C", "#7A8B99", "#D46A9F"];
   function color(i){ return COLORS[i % COLORS.length]; }
   function blank(n){ var g = []; for(var i = 0; i < n; i++) g.push({ id: "g" + (i + 1), name: "第 " + (i + 1) + " 組", members: [] }); return { groups: g, locked: {} }; }
   function norm(d){ d = d || {}; var gs = Array.isArray(d.groups) ? d.groups : Object.keys(d.groups || {}).map(function(k){ return d.groups[k]; }); gs = gs.filter(Boolean).map(function(g, i){ return { id: g.id || "g" + (i + 1), name: g.name || "第 " + (i + 1) + " 組", members: Array.isArray(g.members) ? g.members.filter(Boolean) : Object.keys(g.members || {}).map(function(k){ return g.members[k]; }) }; }); return { groups: gs, locked: d.locked || {} }; }

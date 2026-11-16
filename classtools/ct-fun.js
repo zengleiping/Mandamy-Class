@@ -20,7 +20,7 @@
       pool.forEach(function(n, i){ result[i % k].push(n); }); show();
     }
     function show(){
-      out.innerHTML = ""; (result || []).forEach(function(g, i){ out.appendChild(h("div", { style: "border:2px solid #d9c9b5;border-radius:12px;padding:.5em .7em;background:#fffaf2;" }, [h("b", { style: "color:#C0623A;", text: "第 " + (i + 1) + " 組" })].concat(g.map(function(n){ return h("div", { text: n }); })))); });
+      out.innerHTML = ""; (result || []).forEach(function(g, i){ out.appendChild(h("div", { style: "border:2px solid #d9c9b5;border-radius:12px;padding:.5em .7em;background:#fffaf2;" }, [h("b", { style: "color:#8F4524;", text: "第 " + (i + 1) + " 組" })].concat(g.map(function(n){ return h("div", { text: n }); })))); });
     }
     function copy(){ if(!result) return; var t = result.map(function(g, i){ return "第" + (i + 1) + "組：" + g.join("、"); }).join("\n"); try{ navigator.clipboard.writeText(t); CT.toast("已複製分組結果"); }catch(e){} }
   }});
@@ -28,7 +28,7 @@
   // ---- 小組記分板 ----
   CT.add({ id: "teamscore", cat: "fun", icon: "🏆", name: "小組記分板", w: 560, h: 400, build: function(bd, win){
     var d = CT.load("team", { n: 4, names: [], pts: [], step: 1 }, true), box = h("div", { style: "display:grid;grid-template-columns:repeat(auto-fill,minmax(8.5em,1fr));gap:10px;" });
-    var colors = ["#E0524A", "#2F86C1", "#4CAF6A", "#E0A82E", "#8E5BB5", "#E07B39", "#2AA8A8", "#C94F8A"];
+    var colors = ["#A63B42", "#2F86C1", "#647E58", "#D09A3A", "#8E5BB5", "#E07B39", "#2AA8A8", "#C94F8A"];
     var ni = h("input", { class: "ct-inp", type: "number", min: "2", max: "12", value: String(d.n), style: "width:4em;" }), step = h("select", { class: "ct-inp" }); [1, 2, 5, 10].forEach(function(s){ step.appendChild(h("option", { value: String(s), text: "每次 ±" + s })); }); step.value = String(d.step);
     ni.onchange = function(){ d.n = Math.max(2, Math.min(12, Number(ni.value) || 4)); save(); draw(); }; step.onchange = function(){ d.step = Number(step.value); save(); };
     bd.appendChild(h("div", { class: "ct-row" }, [h("span", { text: "組數" }), ni, step, h("button", { class: "ct-btn", text: "分數歸零", onclick: function(){ if(confirm("全部歸零？")){ d.pts = []; save(); draw(); } } })]));
@@ -59,7 +59,7 @@
       var medals = ["🥇", "🥈", "🥉"];
       list.forEach(function(n, i){ var p = pts[n] || 0;
         box.appendChild(h("div", { style: "display:flex;align-items:center;gap:.5em;padding:.35em .6em;margin:4px 0;border-radius:10px;background:" + (sortOn && i < 3 && p > 0 ? "#FFF3D6" : "#faf5ee") + ";" }, [
-          h("span", { style: "width:1.8em;text-align:center;", text: sortOn && i < 3 && p > 0 ? medals[i] : "" }), h("b", { style: "flex:1;", text: n }), h("span", { style: "min-width:5em;text-align:right;color:#E0A82E;font-size:1.1em;", text: p > 0 ? (p <= 8 ? "⭐".repeat(p) : "⭐×" + p) : "" }),
+          h("span", { style: "width:1.8em;text-align:center;", text: sortOn && i < 3 && p > 0 ? medals[i] : "" }), h("b", { style: "flex:1;", text: n }), h("span", { style: "min-width:5em;text-align:right;color:#D09A3A;font-size:1.1em;", text: p > 0 ? (p <= 8 ? "⭐".repeat(p) : "⭐×" + p) : "" }),
           h("button", { class: "ct-btn", text: "−", onclick: function(){ pts[n] = Math.max(0, (pts[n] || 0) - 1); save(); draw(); } }), h("button", { class: "ct-btn pri", text: "＋", onclick: function(){ pts[n] = (pts[n] || 0) + 1; save(); draw(); } })]));
       });
     }
@@ -72,7 +72,7 @@
     var S = 5.2, FACES = [[1, "rotateY(0)"], [6, "rotateY(180deg)"], [2, "rotateY(90deg)"], [5, "rotateY(-90deg)"], [3, "rotateX(90deg)"], [4, "rotateX(-90deg)"]];
     function mk(){ var cube = h("div", { style: "width:" + S + "em;height:" + S + "em;position:relative;transform-style:preserve-3d;transition:transform 1.2s cubic-bezier(.2,.8,.3,1);" });
       FACES.forEach(function(f){ var face = h("div", { style: "position:absolute;inset:0;background:#fff;border:2px solid #444;border-radius:.6em;display:grid;grid-template:repeat(3,1fr)/repeat(3,1fr);padding:.5em;box-sizing:border-box;transform:" + f[1] + " translateZ(" + (S / 2) + "em);backface-visibility:hidden;" });
-        for(var i = 0; i < 9; i++) face.appendChild(h("i", { style: "place-self:center;width:.95em;height:.95em;border-radius:50%;background:" + (PIPS[f[0]].indexOf(i) >= 0 ? (f[0] === 1 ? "#C0392B" : "#222") : "transparent") + ";" }));
+        for(var i = 0; i < 9; i++) face.appendChild(h("i", { style: "place-self:center;width:.95em;height:.95em;border-radius:50%;background:" + (PIPS[f[0]].indexOf(i) >= 0 ? (f[0] === 1 ? "#A63B42" : "#222") : "transparent") + ";" }));
         cube.appendChild(face); });
       cube.style.transform = TR[1]; return cube; }
     var cnt = h("select", { class: "ct-inp" }); for(var i = 1; i <= 6; i++) cnt.appendChild(h("option", { value: String(i), text: i + " 顆" })); cnt.value = String(count);
@@ -88,7 +88,7 @@
   CT.add({ id: "coin", cat: "fun", icon: "🪙", name: "3D 金幣翻轉", w: 380, h: 400, build: function(bd, win){
     var turns = 0, face = 0, res = h("div", { class: "ct-big ct-c", style: "font-size:2.4em;min-height:1.3em;" });
     var coin = h("div", { style: "width:8em;height:8em;position:relative;transform-style:preserve-3d;transition:transform 1.4s cubic-bezier(.2,.8,.3,1);" });
-    function side(txt, rot, bg){ return h("div", { style: "position:absolute;inset:0;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:3.6em;font-weight:800;color:#8a5a00;border:.25em solid #E0A82E;box-sizing:border-box;background:" + bg + ";backface-visibility:hidden;transform:" + rot + ";", text: txt }); }
+    function side(txt, rot, bg){ return h("div", { style: "position:absolute;inset:0;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:3.6em;font-weight:800;color:#8a5a00;border:.25em solid #D09A3A;box-sizing:border-box;background:" + bg + ";backface-visibility:hidden;transform:" + rot + ";", text: txt }); }
     coin.appendChild(side("正", "rotateY(0)", "radial-gradient(circle at 35% 30%,#FFF1A8,#F2C94C 60%,#D9A21E)")); coin.appendChild(side("反", "rotateY(180deg)", "radial-gradient(circle at 35% 30%,#FFF1A8,#F2C94C 60%,#D9A21E)"));
     var stage = h("div", { style: "display:flex;justify-content:center;perspective:900px;padding:1.4em 0;" }, [coin]);
     bd.appendChild(stage); bd.appendChild(res); bd.appendChild(h("div", { class: "ct-row", style: "justify-content:center;" }, [h("button", { class: "ct-btn pri", style: "font-size:1.2em;", text: "🪙 擲硬幣", onclick: flip })]));
@@ -97,7 +97,7 @@
 
   // ---- 剪刀石頭布 ----
   CT.add({ id: "rps", cat: "fun", icon: "✊", name: "剪刀石頭布", w: 460, h: 360, build: function(bd, win){
-    var E = ["✌️", "✊", "🖐️"], L = h("div", { class: "ct-c", style: "font-size:5em;flex:1;", text: "❓" }), R = h("div", { class: "ct-c", style: "font-size:5em;flex:1;", text: "❓" }), msg = h("div", { class: "ct-c", style: "font-size:1.6em;font-weight:800;min-height:1.4em;color:#C0623A;" }), busy = false;
+    var E = ["✌️", "✊", "🖐️"], L = h("div", { class: "ct-c", style: "font-size:5em;flex:1;", text: "❓" }), R = h("div", { class: "ct-c", style: "font-size:5em;flex:1;", text: "❓" }), msg = h("div", { class: "ct-c", style: "font-size:1.6em;font-weight:800;min-height:1.4em;color:#8F4524;" }), busy = false;
     bd.appendChild(h("div", { style: "display:flex;" }, [h("div", { class: "ct-c", style: "flex:1;font-weight:700;", text: "左邊" }), h("div", { class: "ct-c", style: "flex:1;font-weight:700;", text: "右邊" })])); bd.appendChild(h("div", { style: "display:flex;" }, [L, R])); bd.appendChild(msg);
     bd.appendChild(h("div", { class: "ct-row", style: "justify-content:center;" }, [h("button", { class: "ct-btn pri", style: "font-size:1.2em;", text: "✊ 開始！", onclick: go })]));
     function go(){ if(busy) return; busy = true; msg.textContent = "剪刀…石頭…布！"; var n = 0, iv = setInterval(function(){ L.textContent = E[Math.floor(Math.random() * 3)]; R.textContent = E[Math.floor(Math.random() * 3)]; if(++n > 14){ clearInterval(iv); var a = Math.floor(Math.random() * 3), b = Math.floor(Math.random() * 3); L.textContent = E[a]; R.textContent = E[b]; msg.textContent = a === b ? "平手！再一次" : ((a - b + 3) % 3 === 2 ? "左邊贏！" : "右邊贏！"); busy = false; } }, 90); }

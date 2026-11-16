@@ -8,7 +8,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
  * 第二部分（檔案最後）：曼米視覺層＋分頁、格式設定、嵌入模式（html.mm-embed）
  */
 *{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:6rem}body{margin:0;background:var(--paper);color:var(--text);font-family:var(--sans);font-size:1rem;line-height:1.8}body:has(dialog[open]){overflow:hidden}button,input,select,textarea{font:inherit}button,a{-webkit-tap-highlight-color:transparent}button{cursor:pointer}button,a,input,select,textarea,summary{touch-action:manipulation}a{color:inherit;text-decoration:none}p{margin:0 0 1rem}img{display:block;max-width:100%;height:auto}button{color:inherit}button:disabled{cursor:default}h1,h2,h3{color:var(--ink);margin:0;font-family:var(--serif);font-weight:700;line-height:1.45}h2{font-size:clamp(1.8rem,2.8vw,2.6rem)}h3{font-size:1.45rem}::selection{background:#F6CDB8;color:var(--ink)}:focus-visible{outline:3px solid var(--accent);outline-offset:5px}[hidden]{display:none!important}.wrap{width:min(1180px,calc(100% - 5rem));margin-inline:auto}.section{padding-block:6rem}.section-no{font-size:.875rem;color:var(--accent);letter-spacing:.07em;margin-bottom:1.1rem}.eyebrow{font-size:.8125rem;letter-spacing:.14em;color:var(--muted)}.eyebrow span{letter-spacing:.04em;display:block;margin-top:.65rem}.accent{color:var(--accent)}.actions{display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap}.button{display:inline-flex;align-items:center;justify-content:center;min-height:3rem;padding:.65rem 1.2rem;border:1px solid var(--ink);border-radius:3px;font-size:.9375rem;font-weight:600;line-height:1.65;transition:background .2s,color .2s,box-shadow .2s;text-align:center}.primary{color:var(--white);background:var(--ink)}.primary:hover{background:var(--brand-hover)}.secondary{background:transparent;color:var(--ink)}.secondary:hover{background:var(--ink);color:var(--white)}.text-link{border:0;border-bottom:1px solid currentColor;padding:.15rem 0;background:none;color:var(--ink);font-size:.9375rem;line-height:1.65;display:inline-block}.text-link:hover{color:var(--accent)}.small-note{font-size:.875rem;color:var(--muted);line-height:1.8}.skip-link{position:fixed;top:.5rem;left:.5rem;transform:translateY(-200%);background:var(--ink);color:white;padding:.5rem;z-index:20}.skip-link:focus{transform:none}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-dialog{border:0;border-radius:4px;background:var(--white);color:var(--text);padding:0;width:min(850px,calc(100% - 2rem));max-width:none;max-height:90dvh;box-shadow:0 15px 70px rgba(43,35,32,.2)}dialog::backdrop{background:rgba(43,35,32,.45);backdrop-filter:blur(3px)}
+dialog{border:0;border-radius:4px;background:var(--white);color:var(--text);padding:0;width:min(850px,calc(100% - 2rem));max-width:none;max-height:90dvh;box-shadow:0 15px 70px rgba(73,66,61,.2)}dialog::backdrop{background:rgba(73,66,61,.45);backdrop-filter:blur(3px)}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{transition:none!important;animation:none!important}}
 .reading-warning{display:block;color:var(--accent-hover);font-size:.8125rem;line-height:1.5}.export-actions button:disabled{opacity:.55;cursor:wait}
 /* Match the annotation tool footer: centered stats; brand left and notes right; actions centered. */
@@ -320,7 +320,7 @@ footer .footer-end-actions .return-home{justify-self:center}
  
  
  dialog,#dictionary-example-dialog{background:var(--white);color:var(--text);border-color:var(--line);border-radius:var(--panel-radius)}
- dialog::backdrop{background:rgba(43,35,32,.35)}
+ dialog::backdrop{background:rgba(73,66,61,.35)}
  [hidden]{display:none!important}
 }
 @media screen{.tool-header{background:var(--white)}}
@@ -379,11 +379,11 @@ footer .footer-end-actions .return-home{justify-self:center}
    色彩、字型、圓角與平台一致（app.html）；放在最後，覆蓋原工具主題
    ===================================================================== */
 :root{
- --ink:#2B2320;--text:#2B2320;--muted:#574C44;
- --paper:#FAF7F2;--white:#FFFFFF;--soft:#F2EAE0;--line:#E6DDD2;
- --seal:#E8825A;--seal-soft:#FBE8DE;--accent:#C4623A;--accent-hover:#A9502C;--warm:#FBE8DE;
- --bamboo:#4C8577;--bamboo-soft:#E3F0EC;--blue:#2B2320;--brand-hover:#4A3D37;
- --control-radius:10px;--panel-radius:18px;--shadow:0 8px 24px -10px rgba(28,33,30,.18);
+ --ink:#352C27;--text:#352C27;--muted:#66594F;
+ --paper:#F7F0E1;--white:#FFFFFF;--soft:#EFE3CC;--line:#E6DDD2;
+ --seal:#B25F38;--seal-soft:#F6E2D2;--accent:#C4623A;--accent-hover:#A9502C;--warm:#F6E2D2;
+ --bamboo:#647E58;--bamboo-soft:#E5EBDA;--blue:#352C27;--brand-hover:#4A3D37;
+ --control-radius:10px;--panel-radius:18px;--shadow:0 8px 24px -10px rgba(73,66,61,.18);
  --serif:MM Latin,Iansui,serif;
  --kai:MM Latin,Iansui,serif;
  --sans:MM Latin,Iansui,serif;
@@ -456,7 +456,7 @@ textarea:focus,select:focus,input[type=text]:focus{border-color:var(--seal)!impo
 
 .footer-end-actions .return-home,.brand-home-button.brand-home-button{background:var(--seal)!important;color:#fff!important;border:1.5px solid var(--seal)!important;border-radius:var(--control-radius)!important}
 dialog{border-radius:var(--panel-radius)!important;border:1.5px solid var(--line)!important;box-shadow:var(--shadow)}
-dialog::backdrop{background:rgba(43,35,32,.35)!important}
+dialog::backdrop{background:rgba(73,66,61,.35)!important}
 
 /* 響應式：窄螢幕（含嵌入在教材頁側欄）時的留白 */
 .vocab-app.wrap{width:min(1180px,calc(100% - 2.5rem))}
