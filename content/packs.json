@@ -217,12 +217,14 @@
    "file": "content/exam-zh-102-quiz.json"
   },
   {
-   "id": "gz-b1-7-quiz",
+   "id": "gz-b1-7-quiz-2",
    "type": "project",
    "bookTitle": "高中國文 第一冊",
    "lesson": 7,
    "onlyName": "莉評",
-   "file": "content/gz-b1-lesson7-quiz.json"
+   "file": "content/gz-b1-lesson7-quiz.json",
+   "bookLike": "高中國文",
+   "relocate": true
   }
  ]
 }

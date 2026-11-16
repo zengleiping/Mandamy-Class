@@ -1592,6 +1592,8 @@ async function autoAddContentPacks(t, bank){
   bank = bank || {}; var cd = Array.isArray(bank.courseData) ? bank.courseData.slice() : [], done = Object.assign({}, bank.autoAdded || {}), added = [], changed = false;
   for(var i = 0; i < list.packs.length; i++){
     var pk = list.packs[i]; if(!pk || !pk.id || done[pk.id]) continue;
+    // bookLike：老師已經有名稱含這段文字的教材（例如「高中國文」）就放進那一本，不另外開新的
+    if(pk.bookLike && !pk.book){ var tgtB = bookIds(true).filter(function(b){ return bookTitle(b).indexOf(pk.bookLike) >= 0 && bookTitle(b) !== pk.bookTitle; })[0]; if(tgtB) pk = Object.assign({}, pk, { book: tgtB }); }
     // 指定「教材名稱」的包（例如第三冊）：找老師同一本教材（同系列同冊別），沒有就幫忙建一本
     if(pk.bookTitle && !pk.book){
       // 書名比對不管有沒有《》、空白：系列名稱一樣、冊數一樣就是同一本（例如「學華語向前走 第九冊」＝「《學華語向前走》第九冊」）
@@ -1613,6 +1615,17 @@ async function autoAddContentPacks(t, bank){
           var lk = lkey(pk.book || DEFAULT_BOOK, pk.lesson); S.plat.lessonMap = S.plat.lessonMap || {}; S.plat.lessonMap[proj.id] = lk;
           await fbSet("teacherPlatform/" + t + "/lessonMap/" + proj.id, lk);
           added.push({ lesson: pk.lesson, title: proj.title, isProj: true });
+        } else if(pk.relocate && pk.book){
+          // 先前放錯本的（自動新開了一本）：搬到老師原本的那一本；原本自動開的那本如果空了就收掉
+          var lk3 = lkey(pk.book, pk.lesson), lm3 = S.plat.lessonMap = S.plat.lessonMap || {}, oldK = lm3[proj.id];
+          if(oldK !== lk3){
+            lm3[proj.id] = lk3; await fbSet("teacherPlatform/" + t + "/lessonMap/" + proj.id, lk3);
+            var ob2 = oldK ? (parseKey(oldK) || {}).book : null, bks = S.plat.books || {};
+            if(ob2 && ob2 !== pk.book && ob2 !== DEFAULT_BOOK && bks[ob2] && bks[ob2].title === pk.bookTitle){
+              var still = Object.keys(lm3).some(function(pid){ var pp = parseKey(lm3[pid]); return pid !== proj.id && pp && pp.book === ob2; }) || cd.some(function(l){ return l.book === ob2; });
+              if(!still){ delete bks[ob2]; try{ await fbSet("teacherPlatform/" + t + "/books/" + ob2, null); }catch(er){} var cl2 = S.plat.customLessons || {}; for(var ck in cl2){ if(cl2[ck].book === ob2){ delete cl2[ck]; try{ await fbSet("teacherPlatform/" + t + "/customLessons/" + ck, null); }catch(er2){} } } }
+            }
+          }
         }
         done[pk.id] = Date.now(); changed = true;
       }catch(e){ console.warn("pack", pk.id, e); }
@@ -1904,7 +1917,7 @@ function libProjRow(pid, p, key, isDup){
   var use = key ? lessonClassUsage(key) : [];
   return '<div class="slot"><div class="slot-main"><div><b>' + esc(p.title || "（未命名）") + '</b>' + (isDup ? ' <span class="chip" style="background:#FBEBC8;" title="同一課有標題很像的另一份，到「整理建議」比對">⚠ 可能重複</span>' : '') + '　<span class="note">投影片 ' + (p.slides || 0) + '・測驗 ' + (p.quiz || 0) + '</span></div>' +
     '<div class="note" style="margin-top:3px;">' + (key ? (use.length ? '正在使用：' + use.map(esc).join("、") : '還沒有班級開放這一課') : '不屬於任何一課，學生看不到') + '</div></div>' +
-    '<div class="slot-actions" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;"><select data-assign="' + esc(pid) + '" title="這份簡報屬於哪一課">' + libAssignOptions(key) + '</select><button class="btn sm primary" data-pe="' + esc(pid) + '">編輯</button><button class="btn sm danger" data-pdel="' + esc(pid) + '">刪除</button></div></div>';
+    '<div class="slot-actions" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;"><span class="note" style="font-weight:700;">📦 移到：</span><select data-assign="' + esc(pid) + '" title="選別的課（或別本教材的課）就會把這一份搬過去；選「還沒歸課」就先收到「未分類」">' + libAssignOptions(key) + '</select><button class="btn sm primary" data-pe="' + esc(pid) + '">編輯</button><button class="btn sm danger" data-pdel="' + esc(pid) + '">刪除</button></div></div>';
 }
 // ---------- 教材：一課一頁（左邊課次清單，右邊這一課的生詞・語法・課文、簡報與練習、哪些班在用）----------
 function normTitle(t){ return String(t || "").replace(/[\s（）()【】\[\]「」、，。：:・·\-—_~～]/g, "").replace(/(的)?(副本|複製|copy)\d*$/i, "").toLowerCase(); }
@@ -2166,7 +2179,7 @@ function libLessonHtml(key){
   h += '<div class="panel"><div class="lh" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><h3 style="margin:0;flex:1;">📖 生詞・語法・課文</h3>' + (l.unit ? '' : '' + stdSelectHtml() + '<button class="btn sm" data-vtool="1" title="把這一課的生詞整理成生詞表：自動補拼音／注音、英文、TOCFL／HSK 級別，加例句、挖空練習，匯出 Word、PPT、字卡">生詞表製作</button> <button class="btn sm primary" data-bank="1">編輯生詞・語法・課文</button>') + '</div>' +
     '<div class="tools" style="margin-top:8px;"><span class="chip">生詞 ' + c.vocab + '</span><span class="chip">語法 ' + c.grammar + '</span><span class="chip">課文 ' + c.text + '</span></div>' + (l.unit ? '<p class="note" style="margin:6px 0 0;">複習單元的生詞・語法・課文是 ' + esc(memberRange(l.members)) + ' 的合計，請到各課編輯。</p>' : (c.vocab + c.grammar + c.text ? '' : '<p class="note" style="margin:6px 0 0;">這一課還沒有生詞・語法・課文。按右上角開始編輯，或用 Excel 匯入。</p>')) + '</div>';
   h += '<div class="panel"><div class="lh" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><h3 style="margin:0;flex:1;">🖥️ 簡報與練習（' + pids.length + '）</h3><button class="btn sm" data-pnew="' + esc(key) + '">＋ 新增簡報／測驗</button></div>' +
-    (pids.length ? pids.map(function(pid){ return libProjRow(pid, ps[pid], key, dup[pid]); }).join("") : '<p class="note" style="margin:6px 0 0;">這一課還沒有簡報或測驗。</p>') + '</div>';
+    (pids.length ? '<p class="note" style="margin:0 0 8px;">每一份右邊的「📦 移到」選單，可以把簡報或練習題搬到別的課、別本教材（選「＋ 新增一課…」可以直接開新的一課）。</p>' + pids.map(function(pid){ return libProjRow(pid, ps[pid], key, dup[pid]); }).join("") : '<p class="note" style="margin:6px 0 0;">這一課還沒有簡報或測驗。</p>') + '</div>';
   var use = lessonProgressLine(key);
   h += '<div class="panel"><h3>🏫 哪些班在用</h3>' + (use.length ? use.map(function(u){ return '<div class="slot"><div class="slot-main"><b>' + esc(u.name) + '</b>　<span class="note">' + esc(u.lab) + '　｜　' + (u.opened ? '已開放給學生' : '還沒開放給學生') + '</span></div><div class="slot-act"><button class="btn sm" data-goclass="' + esc(u.sel.s + "|" + u.sel.t + "|" + u.sel.c) + '">到班級設定 ›</button></div></div>'; }).join("") : '<p class="note" style="margin:0;">還沒有班級上過或開放這一課。到班級頁的「進度」就可以開放。</p>') + '</div>';
   return h;
