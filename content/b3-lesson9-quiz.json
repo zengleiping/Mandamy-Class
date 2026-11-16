@@ -1,0 +1,1238 @@
+{
+ "id": "proj_b3l9quiz",
+ "title": "第三冊 第九課 我的鄰居 練習題",
+ "desc": "依第三冊第九課簡報（課文、生詞、句型、習寫漢字、認讀漢字、練習、綜合活動、任務活動）整理；題目說明附英文",
+ "sections": {
+  "s39_1": {
+   "id": "s39_1",
+   "title": "第 1 大題：連連看（生詞和注音） Match the words with zhuyin",
+   "type": "match",
+   "order": 0,
+   "questions": {
+    "q39_01_01": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "聽說",
+       "right": "ㄊㄧㄥ ㄕㄨㄛ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "搬家",
+       "right": "ㄅㄢ ㄐㄧㄚ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "離",
+       "right": "ㄌㄧˊ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "路",
+       "right": "ㄌㄨˋ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "號",
+       "right": "ㄏㄠˋ"
+      }
+     },
+     "id": "q39_01_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_01_02": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "附近",
+       "right": "ㄈㄨˋ ㄐㄧㄣˋ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "公園",
+       "right": "ㄍㄨㄥ ㄩㄢˊ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "前面",
+       "right": "ㄑㄧㄢˊ ㄇㄧㄢˋ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "旁邊",
+       "right": "ㄆㄤˊ ㄅㄧㄢ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "房子",
+       "right": "ㄈㄤˊ ˙ㄗ"
+      }
+     },
+     "id": "q39_01_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_01_03": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "鄰居",
+       "right": "ㄌㄧㄣˊ ㄐㄩ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "小朋友",
+       "right": "ㄒㄧㄠˇ ㄆㄥˊ ㄧㄡˇ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "鳥",
+       "right": "ㄋㄧㄠˇ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "棟",
+       "right": "ㄉㄨㄥˋ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "舊",
+       "right": "ㄐㄧㄡˋ"
+      }
+     },
+     "id": "q39_01_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s39_2": {
+   "id": "s39_2",
+   "title": "第 2 大題：連連看（生詞和意思） Match the words with their meanings",
+   "type": "match",
+   "order": 1,
+   "questions": {
+    "q39_02_01": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "聽說",
+       "right": "I heard that"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "搬家",
+       "right": "to move house"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "離",
+       "right": "(away) from"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "路",
+       "right": "road"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "號",
+       "right": "number (address)"
+      }
+     },
+     "id": "q39_02_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_02_02": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "附近",
+       "right": "nearby"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "公園",
+       "right": "park"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "前面",
+       "right": "in front"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "旁邊",
+       "right": "beside"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "房子",
+       "right": "house"
+      }
+     },
+     "id": "q39_02_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_02_03": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "鄰居",
+       "right": "neighbor"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "小朋友",
+       "right": "child"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "鳥",
+       "right": "bird"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "棟",
+       "right": "M.W. for buildings"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "舊",
+       "right": "old"
+      }
+     },
+     "id": "q39_02_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s39_3": {
+   "id": "s39_3",
+   "title": "第 3 大題：我會寫（寫出正確的漢字） Write the characters",
+   "type": "fill",
+   "order": 2,
+   "questions": {
+    "q39_03_01": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "聽說心美{搬}{家}了，新家{離}學校有一點遠。",
+     "id": "q39_03_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_03_02": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "心美搬到公園路100{號}。",
+     "id": "q39_03_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_03_03": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "心美家{附}近有一個大公園，就在她家前面。",
+     "id": "q39_03_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_03_04": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "心美家{旁}{邊}都是{房}子。",
+     "id": "q39_03_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_03_05": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "心美右邊的鄰居有兩個小朋友，還有一隻{鳥}。",
+     "id": "q39_03_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_03_06": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "心美家左邊是一棟很{舊}的房子，現在沒有人住。",
+     "id": "q39_03_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s39_4": {
+   "id": "s39_4",
+   "title": "第 4 大題：綜合活動（左邊、右邊） Left or right?",
+   "type": "fill",
+   "order": 3,
+   "questions": {
+    "q39_04_01": {
+     "prompt": "看圖回答問題，填入「左邊」或者「右邊」。 Fill in 左邊 or 右邊.",
+     "template": "心美家{右}{邊}的鄰居，他家有兩個小朋友，還有一隻小鳥。",
+     "id": "q39_04_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_04_02": {
+     "prompt": "看圖回答問題，填入「左邊」或者「右邊」。 Fill in 左邊 or 右邊.",
+     "template": "心美家{左}{邊}是一棟很舊的房子，現在沒有人住。",
+     "id": "q39_04_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s39_5": {
+   "id": "s39_5",
+   "title": "第 5 大題：句型填空 Fill in the sentence patterns",
+   "type": "fill",
+   "order": 4,
+   "questions": {
+    "q39_05_01": {
+     "prompt": "用「聽說」完成句子。 Use 聽說.",
+     "template": "{聽說}新鄰居是臺灣人。",
+     "id": "q39_05_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_05_02": {
+     "prompt": "用「聽說」回答問題。 Use 聽說 to answer.",
+     "template": "臺灣的夏天熱不熱？聽說臺灣的夏天{非常}熱。",
+     "id": "q39_05_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_05_03": {
+     "prompt": "用「離」完成句子。 Use 離.",
+     "template": "她家{離}超市非常近。",
+     "id": "q39_05_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_05_04": {
+     "prompt": "用「離」完成句子。 Use 離.",
+     "template": "張莉，你的新家{離}這裡遠不遠？",
+     "id": "q39_05_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_05_05": {
+     "prompt": "用「搬家」完成句子。 Use 搬家.",
+     "template": "叔叔不想{搬家}，他喜歡住在公司附近。",
+     "id": "q39_05_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_05_06": {
+     "prompt": "用「搬到」完成句子。 Use 搬到.",
+     "template": "舅舅本來住在臺南，下個月要{搬到}臺北。",
+     "id": "q39_05_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_05_07": {
+     "prompt": "用「就在」完成句子。 Use 就在.",
+     "template": "姐姐的書{就在}桌子上面。",
+     "id": "q39_05_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_05_08": {
+     "prompt": "用「就在」完成句子。 Use 就在.",
+     "template": "爸爸的公司{就在}公園旁邊。",
+     "id": "q39_05_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_05_09": {
+     "prompt": "用反義詞完成句子。 Fill in the opposite.",
+     "template": "黃色的背包是新的，藍色的背包是{舊}的。",
+     "id": "q39_05_09",
+     "order": 8,
+     "title": "第 9 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_05_10": {
+     "prompt": "用反義詞完成句子。 Fill in the opposite.",
+     "template": "長頸鹿的脖子很長，企鵝的很{短}。",
+     "id": "q39_05_10",
+     "order": 9,
+     "title": "第 10 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s39_6": {
+   "id": "s39_6",
+   "title": "第 6 大題：選擇題（句型） Choose the correct answer",
+   "type": "choice",
+   "order": 5,
+   "questions": {
+    "q39_06_01": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n＿＿新鄰居是臺灣人。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "聽說"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "搬家"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "附近"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q39_06_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_06_02": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n她家＿＿超市非常近。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "離"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "在"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "從"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q39_06_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_06_03": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n舅舅下個月要＿＿臺北。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "搬到"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "聽說"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "就在"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q39_06_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_06_04": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n我的鉛筆＿＿桌子上面。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "就在"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "離"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "聽說"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q39_06_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_06_05": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n新的、舊的；大的、＿＿的",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "小"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "長"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "冷"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q39_06_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_06_06": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n冷、＿＿；胖、瘦",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "熱"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "舊"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "短"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q39_06_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_06_07": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n他家有兩個小朋友，還有一＿＿鳥。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "隻"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "棟"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "號"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q39_06_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s39_7": {
+   "id": "s39_7",
+   "title": "第 7 大題：閱讀理解（課文） Reading comprehension",
+   "type": "choice",
+   "order": 6,
+   "questions": {
+    "q39_07_01": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n心美搬到哪裡？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "公園路100號"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "學校旁邊"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "臺北"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "張莉：聽說你搬家了？新家離學校遠不遠？\n心美：離學校有一點遠，我搬到公園路100號。\n東明：你家附近有公園嗎？\n心美：有一個大公園，就在我家前面。我家旁邊都是房子。\n張莉：你認識你的鄰居嗎？\n心美：我認識右邊的鄰居，他家有兩個小朋友，還有一隻鳥。\n東明：那麼，你認識左邊的鄰居嗎？\n心美：我家左邊是一棟很舊的房子，現在沒有人住。",
+     "id": "q39_07_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_07_02": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n心美的新家離學校遠不遠？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "有一點遠"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "非常近"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "就在學校旁邊"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "張莉：聽說你搬家了？新家離學校遠不遠？\n心美：離學校有一點遠，我搬到公園路100號。\n東明：你家附近有公園嗎？\n心美：有一個大公園，就在我家前面。我家旁邊都是房子。\n張莉：你認識你的鄰居嗎？\n心美：我認識右邊的鄰居，他家有兩個小朋友，還有一隻鳥。\n東明：那麼，你認識左邊的鄰居嗎？\n心美：我家左邊是一棟很舊的房子，現在沒有人住。",
+     "id": "q39_07_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_07_03": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n心美家前面有什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "一個大公園"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "一棟舊房子"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "一個足球場"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "張莉：聽說你搬家了？新家離學校遠不遠？\n心美：離學校有一點遠，我搬到公園路100號。\n東明：你家附近有公園嗎？\n心美：有一個大公園，就在我家前面。我家旁邊都是房子。\n張莉：你認識你的鄰居嗎？\n心美：我認識右邊的鄰居，他家有兩個小朋友，還有一隻鳥。\n東明：那麼，你認識左邊的鄰居嗎？\n心美：我家左邊是一棟很舊的房子，現在沒有人住。",
+     "id": "q39_07_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_07_04": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n心美家旁邊都是什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "房子"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "公園"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "學校"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "張莉：聽說你搬家了？新家離學校遠不遠？\n心美：離學校有一點遠，我搬到公園路100號。\n東明：你家附近有公園嗎？\n心美：有一個大公園，就在我家前面。我家旁邊都是房子。\n張莉：你認識你的鄰居嗎？\n心美：我認識右邊的鄰居，他家有兩個小朋友，還有一隻鳥。\n東明：那麼，你認識左邊的鄰居嗎？\n心美：我家左邊是一棟很舊的房子，現在沒有人住。",
+     "id": "q39_07_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_07_05": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n心美認識哪一邊的鄰居？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "右邊"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "左邊"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "前面"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "張莉：聽說你搬家了？新家離學校遠不遠？\n心美：離學校有一點遠，我搬到公園路100號。\n東明：你家附近有公園嗎？\n心美：有一個大公園，就在我家前面。我家旁邊都是房子。\n張莉：你認識你的鄰居嗎？\n心美：我認識右邊的鄰居，他家有兩個小朋友，還有一隻鳥。\n東明：那麼，你認識左邊的鄰居嗎？\n心美：我家左邊是一棟很舊的房子，現在沒有人住。",
+     "id": "q39_07_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_07_06": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n右邊的鄰居家有什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "兩個小朋友和一隻鳥"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "一隻狗"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "一個公園"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "張莉：聽說你搬家了？新家離學校遠不遠？\n心美：離學校有一點遠，我搬到公園路100號。\n東明：你家附近有公園嗎？\n心美：有一個大公園，就在我家前面。我家旁邊都是房子。\n張莉：你認識你的鄰居嗎？\n心美：我認識右邊的鄰居，他家有兩個小朋友，還有一隻鳥。\n東明：那麼，你認識左邊的鄰居嗎？\n心美：我家左邊是一棟很舊的房子，現在沒有人住。",
+     "id": "q39_07_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_07_07": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n心美家左邊是什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "一棟很舊的房子"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "一個大公園"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "學校"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "張莉：聽說你搬家了？新家離學校遠不遠？\n心美：離學校有一點遠，我搬到公園路100號。\n東明：你家附近有公園嗎？\n心美：有一個大公園，就在我家前面。我家旁邊都是房子。\n張莉：你認識你的鄰居嗎？\n心美：我認識右邊的鄰居，他家有兩個小朋友，還有一隻鳥。\n東明：那麼，你認識左邊的鄰居嗎？\n心美：我家左邊是一棟很舊的房子，現在沒有人住。",
+     "id": "q39_07_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_07_08": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n左邊的房子現在怎麼樣？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "沒有人住"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "很多人住"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "是新的"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "張莉：聽說你搬家了？新家離學校遠不遠？\n心美：離學校有一點遠，我搬到公園路100號。\n東明：你家附近有公園嗎？\n心美：有一個大公園，就在我家前面。我家旁邊都是房子。\n張莉：你認識你的鄰居嗎？\n心美：我認識右邊的鄰居，他家有兩個小朋友，還有一隻鳥。\n東明：那麼，你認識左邊的鄰居嗎？\n心美：我家左邊是一棟很舊的房子，現在沒有人住。",
+     "id": "q39_07_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s39_8": {
+   "id": "s39_8",
+   "title": "第 8 大題：是非題（課文） True or false",
+   "type": "choice",
+   "order": 7,
+   "questions": {
+    "q39_08_01": {
+     "prompt": "判斷對錯。 True or false?\n\n心美搬家了。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "張莉：聽說你搬家了？新家離學校遠不遠？\n心美：離學校有一點遠，我搬到公園路100號。\n東明：你家附近有公園嗎？\n心美：有一個大公園，就在我家前面。我家旁邊都是房子。\n張莉：你認識你的鄰居嗎？\n心美：我認識右邊的鄰居，他家有兩個小朋友，還有一隻鳥。\n東明：那麼，你認識左邊的鄰居嗎？\n心美：我家左邊是一棟很舊的房子，現在沒有人住。",
+     "id": "q39_08_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_08_02": {
+     "prompt": "判斷對錯。 True or false?\n\n心美的新家離學校很近。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c2"
+     ],
+     "passage": "張莉：聽說你搬家了？新家離學校遠不遠？\n心美：離學校有一點遠，我搬到公園路100號。\n東明：你家附近有公園嗎？\n心美：有一個大公園，就在我家前面。我家旁邊都是房子。\n張莉：你認識你的鄰居嗎？\n心美：我認識右邊的鄰居，他家有兩個小朋友，還有一隻鳥。\n東明：那麼，你認識左邊的鄰居嗎？\n心美：我家左邊是一棟很舊的房子，現在沒有人住。",
+     "id": "q39_08_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_08_03": {
+     "prompt": "判斷對錯。 True or false?\n\n心美家前面有一個大公園。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "張莉：聽說你搬家了？新家離學校遠不遠？\n心美：離學校有一點遠，我搬到公園路100號。\n東明：你家附近有公園嗎？\n心美：有一個大公園，就在我家前面。我家旁邊都是房子。\n張莉：你認識你的鄰居嗎？\n心美：我認識右邊的鄰居，他家有兩個小朋友，還有一隻鳥。\n東明：那麼，你認識左邊的鄰居嗎？\n心美：我家左邊是一棟很舊的房子，現在沒有人住。",
+     "id": "q39_08_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_08_04": {
+     "prompt": "判斷對錯。 True or false?\n\n心美認識左邊的鄰居。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c2"
+     ],
+     "passage": "張莉：聽說你搬家了？新家離學校遠不遠？\n心美：離學校有一點遠，我搬到公園路100號。\n東明：你家附近有公園嗎？\n心美：有一個大公園，就在我家前面。我家旁邊都是房子。\n張莉：你認識你的鄰居嗎？\n心美：我認識右邊的鄰居，他家有兩個小朋友，還有一隻鳥。\n東明：那麼，你認識左邊的鄰居嗎？\n心美：我家左邊是一棟很舊的房子，現在沒有人住。",
+     "id": "q39_08_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_08_05": {
+     "prompt": "判斷對錯。 True or false?\n\n心美家右邊的鄰居有一隻鳥。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "張莉：聽說你搬家了？新家離學校遠不遠？\n心美：離學校有一點遠，我搬到公園路100號。\n東明：你家附近有公園嗎？\n心美：有一個大公園，就在我家前面。我家旁邊都是房子。\n張莉：你認識你的鄰居嗎？\n心美：我認識右邊的鄰居，他家有兩個小朋友，還有一隻鳥。\n東明：那麼，你認識左邊的鄰居嗎？\n心美：我家左邊是一棟很舊的房子，現在沒有人住。",
+     "id": "q39_08_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s39_9": {
+   "id": "s39_9",
+   "title": "第 9 大題：讀讀看，寫上漢字 Read the zhuyin and write the characters",
+   "type": "fill",
+   "order": 8,
+   "questions": {
+    "q39_09_01": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄊㄧㄥ ㄕㄨㄛ → {聽說}",
+     "id": "q39_09_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_09_02": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄅㄢ ㄐㄧㄚ → {搬家}",
+     "id": "q39_09_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_09_03": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄈㄨˋ ㄐㄧㄣˋ → {附近}",
+     "id": "q39_09_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_09_04": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄍㄨㄥ ㄩㄢˊ → {公園}",
+     "id": "q39_09_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_09_05": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄑㄧㄢˊ ㄇㄧㄢˋ → {前面}",
+     "id": "q39_09_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_09_06": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄆㄤˊ ㄅㄧㄢ → {旁邊}",
+     "id": "q39_09_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_09_07": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄈㄤˊ ˙ㄗ → {房子}",
+     "id": "q39_09_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_09_08": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄌㄧㄣˊ ㄐㄩ → {鄰居}",
+     "id": "q39_09_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_09_09": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄒㄧㄠˇ ㄆㄥˊ ㄧㄡˇ → {小朋友}",
+     "id": "q39_09_09",
+     "order": 8,
+     "title": "第 9 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s39_10": {
+   "id": "s39_10",
+   "title": "第 10 大題：任務活動（分享你家附近） Share about your neighborhood",
+   "type": "record",
+   "order": 9,
+   "questions": {
+    "q39_10_01": {
+     "prompt": "你家左邊有什麼？右邊有什麼？ What is on the left and right of your home?",
+     "reference": "我家左邊是一棟房子，右邊是一個公園。",
+     "maxSec": 30,
+     "id": "q39_10_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_10_02": {
+     "prompt": "你家旁邊的房子新不新？你認識你的鄰居嗎？他們家有沒有小朋友？ Do you know your neighbors?",
+     "reference": "我家旁邊的房子很新。我認識我的鄰居，他們家有兩個小朋友。",
+     "maxSec": 45,
+     "id": "q39_10_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_10_03": {
+     "prompt": "你家附近有什麼？有沒有公園呢？下課以後你常常去哪裡玩？ What is near your home?",
+     "reference": "我家附近有一個公園。下課以後我常常去公園玩。",
+     "maxSec": 45,
+     "id": "q39_10_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_10_04": {
+     "prompt": "你家離學校遠不遠？你怎麼去學校？ Is your home far from school?",
+     "reference": "我家離學校有一點遠，我坐公車去學校。",
+     "maxSec": 45,
+     "id": "q39_10_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_10_05": {
+     "prompt": "請用「聽說」說一個句子。 Make a sentence with 聽說.",
+     "reference": "聽說臺灣的夏天非常熱。",
+     "maxSec": 30,
+     "id": "q39_10_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_10_06": {
+     "prompt": "請用「就在」說一個句子。 Make a sentence with 就在.",
+     "reference": "我的鉛筆就在桌子上面。",
+     "maxSec": 30,
+     "id": "q39_10_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s39_11": {
+   "id": "s39_11",
+   "title": "第 11 大題：習寫漢字 Write the characters",
+   "type": "hanzi",
+   "order": 10,
+   "questions": {
+    "q39_11_01": {
+     "char": "搬",
+     "desc": "13畫，部首：手",
+     "id": "q39_11_01",
+     "order": 0,
+     "title": "第 1 題：搬",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_11_02": {
+     "char": "家",
+     "desc": "10畫，部首：宀",
+     "id": "q39_11_02",
+     "order": 1,
+     "title": "第 2 題：家",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_11_03": {
+     "char": "離",
+     "desc": "19畫，部首：隹",
+     "id": "q39_11_03",
+     "order": 2,
+     "title": "第 3 題：離",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_11_04": {
+     "char": "號",
+     "desc": "13畫，部首：虍",
+     "id": "q39_11_04",
+     "order": 3,
+     "title": "第 4 題：號",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_11_05": {
+     "char": "附",
+     "desc": "8畫，部首：阜",
+     "id": "q39_11_05",
+     "order": 4,
+     "title": "第 5 題：附",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_11_06": {
+     "char": "旁",
+     "desc": "10畫，部首：方",
+     "id": "q39_11_06",
+     "order": 5,
+     "title": "第 6 題：旁",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_11_07": {
+     "char": "邊",
+     "desc": "19畫，部首：辵",
+     "id": "q39_11_07",
+     "order": 6,
+     "title": "第 7 題：邊",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_11_08": {
+     "char": "房",
+     "desc": "8畫，部首：戶",
+     "id": "q39_11_08",
+     "order": 7,
+     "title": "第 8 題：房",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_11_09": {
+     "char": "鳥",
+     "desc": "11畫，部首：鳥",
+     "id": "q39_11_09",
+     "order": 8,
+     "title": "第 9 題：鳥",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_11_10": {
+     "char": "舊",
+     "desc": "18畫，部首：臼",
+     "id": "q39_11_10",
+     "order": 9,
+     "title": "第 10 題：舊",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s39_12": {
+   "id": "s39_12",
+   "title": "第 12 大題：我會念（課文、認讀漢字） Read aloud",
+   "type": "record",
+   "order": 11,
+   "questions": {
+    "q39_12_01": {
+     "prompt": "請念出課文第一段。 Read the first part of the text.",
+     "reference": "張莉：聽說你搬家了？新家離學校遠不遠？\n心美：離學校有一點遠，我搬到公園路100號。\n東明：你家附近有公園嗎？\n心美：有一個大公園，就在我家前面。我家旁邊都是房子。",
+     "maxSec": 60,
+     "passage": "張莉：聽說你搬家了？新家離學校遠不遠？\n心美：離學校有一點遠，我搬到公園路100號。\n東明：你家附近有公園嗎？\n心美：有一個大公園，就在我家前面。我家旁邊都是房子。",
+     "id": "q39_12_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_12_02": {
+     "prompt": "請念出課文第二段。 Read the second part of the text.",
+     "reference": "張莉：你認識你的鄰居嗎？\n心美：我認識右邊的鄰居，他家有兩個小朋友，還有一隻鳥。\n東明：那麼，你認識左邊的鄰居嗎？\n心美：我家左邊是一棟很舊的房子，現在沒有人住。",
+     "maxSec": 60,
+     "passage": "張莉：你認識你的鄰居嗎？\n心美：我認識右邊的鄰居，他家有兩個小朋友，還有一隻鳥。\n東明：那麼，你認識左邊的鄰居嗎？\n心美：我家左邊是一棟很舊的房子，現在沒有人住。",
+     "id": "q39_12_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q39_12_03": {
+     "prompt": "請念出這些認讀漢字。 Read these characters aloud.",
+     "reference": "鄰　居　棟",
+     "maxSec": 30,
+     "id": "q39_12_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  }
+ },
+ "currentQId": "q39_01_01"
+}
