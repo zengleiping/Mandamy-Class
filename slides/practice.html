@@ -13517,8 +13517,8 @@ window.mmTA = (function(){
       var cw = r.width || 600, ch = r.height || 400;
       var w = Math.min(50, 60 * ch / (Math.max(0.05, res.ar) * cw)); // 寬最多佔 50%、高最多佔 60%
       w = Math.max(5, Math.round(w * 10) / 10);
-      var off = (pasteOffsetN++ % 6) * 3;
-      var obj = { id: uid("im"), src: res.src, ar: res.ar, x: Math.min(95, 50 + off), y: Math.min(95, 50 + off), w: w, step: 0 };
+      var off = (pasteOffsetN++ % 6) * 3, pp = window.__mmPastePos; window.__mmPastePos = null;   // 右鍵貼上：放在滑鼠點的位置
+      var obj = { id: uid("im"), src: res.src, ar: res.ar, x: pp ? Math.max(5, Math.min(95, pp.x)) : Math.min(95, 50 + off), y: pp ? Math.max(5, Math.min(95, pp.y)) : Math.min(95, 50 + off), w: w, step: 0 };
       snapshotForUndo();
       assignNewZ("image", obj);
       images.push(obj);
@@ -13578,7 +13578,7 @@ window.mmTA = (function(){
     function pasteTextBox(txt){
       if(deckStudent || presentLock()) return;
       var t = {
-        id: uid("t"), ph: newTextPh(), text: txt.replace(/\r\n?/g, "\n").trim(), x: 50, y: 50,
+        id: uid("t"), ph: newTextPh(), text: txt.replace(/\r\n?/g, "\n").trim(), x: window.__mmPastePos ? window.__mmPastePos.x : 50, y: window.__mmPastePos ? window.__mmPastePos.y : 50,
         color: boardState.color, fontSize: boardState.fontSize || 36, bold: !!boardState.bold, step: 0,
         align: boardState.align || "left", list: boardState.list || "none", indent: boardState.indent || "none"
       };
@@ -16781,6 +16781,53 @@ window.mmTA = (function(){
       return true;
     }
     function duplicateSelection(){ if(copySelection()) pasteSelClip(3); }
+    // ===== 右鍵選單：剪下／複製／貼上／貼上圖片／刪除（圖片還有裁剪、去背） =====
+    var ctxMenuEl = null;
+    function closeObjCtx(){ if(ctxMenuEl){ ctxMenuEl.remove(); ctxMenuEl = null; document.removeEventListener("pointerdown", ctxOutside, true); document.removeEventListener("keydown", ctxKey, true); } }
+    function ctxOutside(e){ if(ctxMenuEl && !ctxMenuEl.contains(e.target)) closeObjCtx(); }
+    function ctxKey(e){ if(e.key === "Escape") closeObjCtx(); }
+    function pasteFromSystem(onlyImage, pos){
+      window.__mmPastePos = pos;
+      clipImageFallback("").then(function(f){
+        if(f){ pasteImageFiles([f]); return; }
+        if(onlyImage){ window.__mmPastePos = null; mcToast2("剪貼簿裡沒有圖片：請先複製一張圖片（網頁上按右鍵「拷貝圖片」、或截圖 Cmd+Shift+Ctrl+4），再回來貼上"); return; }
+        if(navigator.clipboard && navigator.clipboard.readText) navigator.clipboard.readText().then(function(t){ if(t && t.trim()) pasteTextBox(t); else { window.__mmPastePos = null; mcToast2("剪貼簿是空的"); } }).catch(function(){ window.__mmPastePos = null; mcToast2("瀏覽器不讓我讀剪貼簿：請改按 Cmd/Ctrl + V"); });
+        else { window.__mmPastePos = null; mcToast2("請改按 Cmd/Ctrl + V 貼上"); }
+      });
+    }
+    cWrap.addEventListener("contextmenu", function(e){
+      if(isStudent || deckStudent || presentLock() || inPlaceEdit) return;
+      if(e.target.closest && e.target.closest("input, textarea, select, .crop-ui, .select-bar")) return;
+      e.preventDefault(); e.stopPropagation(); closeObjCtx();
+      var p = getPos(e), hit = null; try{ hit = hitTestItem(p); }catch(er){}
+      if(hit && !inSel(hit)){ selSet = expandGroups([hit]); renderSelection(); }
+      var items = expandGroups(selSet), hasSel = items.length > 0, one = items.length === 1 ? items[0] : null;
+      var hasClip = !!(window.__mmSelClip && window.__mmSelClip.items && window.__mmSelClip.items.length);
+      var rows = [];
+      if(hasSel){
+        rows.push({ t: "✂ 剪下", k: "Ctrl/⌘ X", f: function(){ if(copySelection()) deleteSelection(); } });
+        rows.push({ t: "⧉ 複製", k: "Ctrl/⌘ C", f: function(){ copySelection(); mcToast2("已複製"); } });
+      }
+      rows.push({ t: "📋 貼上", k: "Ctrl/⌘ V", f: function(){ if(hasClip){ window.__mmPastePos = null; pasteSelClip(); } else pasteFromSystem(false, { x: p.x, y: p.y }); } });
+      rows.push({ t: "🖼 貼上圖片（來自剪貼簿）", f: function(){ pasteFromSystem(true, { x: p.x, y: p.y }); }, em: true });
+      if(hasSel){
+        rows.push({ sep: 1 });
+        if(one && one.k === "image"){ var im = images.find(function(x){ return x.id === one.id; }); if(im){ rows.push({ t: "✂ 裁剪圖片", f: function(){ startCropEdit(im); } }); rows.push({ t: "🪄 去背", f: function(){ openRemoveBg(im); } }); } }
+        rows.push({ t: "⧉⧉ 重複製作", f: function(){ duplicateSelection(); } });
+        rows.push({ t: "🗑 刪除", k: "Delete", f: function(){ deleteSelection(); } });
+      }
+      var m = document.createElement("div"); m.className = "slide-ctx obj-ctx";
+      rows.forEach(function(r){
+        if(r.sep){ var sp = document.createElement("div"); sp.style.cssText = "height:1px;background:var(--line,#eee);margin:4px 0;"; m.appendChild(sp); return; }
+        var b = document.createElement("button"); b.type = "button"; b.style.cssText = "display:flex;justify-content:space-between;gap:18px;" + (r.em ? "font-weight:800;color:var(--seal);" : "");
+        b.innerHTML = '<span>' + r.t + '</span>' + (r.k ? '<span style="color:var(--ink-soft,#999);font-size:12px;">' + r.k + '</span>' : "");
+        b.onclick = function(ev){ ev.stopPropagation(); closeObjCtx(); r.f(); }; m.appendChild(b);
+      });
+      document.body.appendChild(m); ctxMenuEl = m;
+      var W = m.offsetWidth, H = m.offsetHeight;
+      m.style.left = Math.max(4, Math.min(e.clientX, window.innerWidth - W - 6)) + "px"; m.style.top = Math.max(4, Math.min(e.clientY, window.innerHeight - H - 6)) + "px";
+      document.addEventListener("pointerdown", ctxOutside, true); document.addEventListener("keydown", ctxKey, true);
+    }, true);
     // 對齊：以「單位」（整個群組算一個）為單位，對齊到選取範圍的邊或中線；均分：中間的單位等距
     function selUnits(){
       var items = expandGroups(selSet), used = {}, units = [];
