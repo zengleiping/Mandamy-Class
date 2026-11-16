@@ -1,0 +1,1408 @@
+{
+ "id": "proj_b3l11quiz",
+ "title": "第三冊 第十一課 去遊樂園玩 練習題",
+ "desc": "依第三冊第十一課簡報（課文、生詞、句型、習寫漢字、認讀漢字、練習、綜合活動、任務活動）整理；題目說明附英文",
+ "sections": {
+  "s311_1": {
+   "id": "s311_1",
+   "title": "第 1 大題：連連看（生詞和注音） Match the words with zhuyin",
+   "type": "match",
+   "order": 0,
+   "questions": {
+    "q311_01_01": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "遊樂園",
+       "right": "ㄧㄡˊ ㄌㄜˋ ㄩㄢˊ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "又",
+       "right": "ㄧㄡˋ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "旋轉木馬",
+       "right": "ㄒㄩㄢˊ ㄓㄨㄢˇ ㄇㄨˋ ㄇㄚˇ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "一會兒",
+       "right": "ㄧˊ ㄏㄨㄟˋ ˙ㄦ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "上",
+       "right": "ㄕㄤˋ"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "下",
+       "right": "ㄒㄧㄚˋ"
+      }
+     },
+     "id": "q311_01_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_01_02": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "碰碰車",
+       "right": "ㄆㄥˋ ㄆㄥˋ ㄔㄜ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "撞",
+       "right": "ㄓㄨㄤˋ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "有趣",
+       "right": "ㄧㄡˇ ㄑㄩˋ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "摩天輪",
+       "right": "ㄇㄛˊ ㄊㄧㄢ ㄌㄨㄣˊ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "可怕",
+       "right": "ㄎㄜˇ ㄆㄚˋ"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "雲霄飛車",
+       "right": "ㄩㄣˊ ㄒㄧㄠ ㄈㄟ ㄔㄜ"
+      }
+     },
+     "id": "q311_01_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_01_03": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "緊張",
+       "right": "ㄐㄧㄣˇ ㄓㄤ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "聽到",
+       "right": "ㄊㄧㄥ ㄉㄠˋ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "別人",
+       "right": "ㄅㄧㄝˊ ㄖㄣˊ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "叫",
+       "right": "ㄐㄧㄠˋ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "更",
+       "right": "ㄍㄥˋ"
+      }
+     },
+     "id": "q311_01_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s311_2": {
+   "id": "s311_2",
+   "title": "第 2 大題：連連看（生詞和意思） Match the words with their meanings",
+   "type": "match",
+   "order": 1,
+   "questions": {
+    "q311_02_01": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "遊樂園",
+       "right": "amusement park"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "又",
+       "right": "again"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "旋轉木馬",
+       "right": "merry-go-round"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "一會兒",
+       "right": "for a little while"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "上",
+       "right": "up"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "下",
+       "right": "down"
+      }
+     },
+     "id": "q311_02_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_02_02": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "碰碰車",
+       "right": "bumper car"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "撞",
+       "right": "to bump into"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "有趣",
+       "right": "interesting; fun"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "摩天輪",
+       "right": "Ferris wheel"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "可怕",
+       "right": "scary"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "雲霄飛車",
+       "right": "roller coaster"
+      }
+     },
+     "id": "q311_02_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_02_03": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "緊張",
+       "right": "nervous"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "聽到",
+       "right": "to hear"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "別人",
+       "right": "other people"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "叫",
+       "right": "to shout"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "更",
+       "right": "even more"
+      }
+     },
+     "id": "q311_02_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s311_3": {
+   "id": "s311_3",
+   "title": "第 3 大題：我會寫（寫出正確的漢字） Write the characters",
+   "type": "fill",
+   "order": 2,
+   "questions": {
+    "q311_03_01": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "心美上星期去{遊}樂園玩。",
+     "id": "q311_03_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_03_02": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "友朋最喜歡旋轉{木}{馬}，一會兒上，一會兒下，很好玩。",
+     "id": "q311_03_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_03_03": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "東明最喜歡{碰}碰{車}，撞來撞去很有{趣}。",
+     "id": "q311_03_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_03_04": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "心美覺得摩天輪有點可{怕}，東明覺得雲霄{飛}{車}更可怕。",
+     "id": "q311_03_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_03_05": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "心美聽到別人大叫，就{更}{緊}張。",
+     "id": "q311_03_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s311_4": {
+   "id": "s311_4",
+   "title": "第 4 大題：心美的日記 Xinmei's diary",
+   "type": "fill",
+   "order": 3,
+   "questions": {
+    "q311_04_01": {
+     "prompt": "下面是心美的日記（三月十六號），請根據內容寫上正確的拼音或漢字。 This is Xinmei's diary. Fill in the correct pinyin or characters.",
+     "template": "我上星期去{遊}樂園玩，友朋也去過很多次，今年又去了一次。友朋最喜歡旋轉{木}{馬}，一會兒上，一會兒下，很好玩。",
+     "id": "q311_04_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_04_02": {
+     "prompt": "下面是心美的日記（三月十六號），請根據內容寫上正確的拼音或漢字。 This is Xinmei's diary. Fill in the correct pinyin or characters.",
+     "template": "東明最喜歡{碰}碰車，他覺得撞來撞去很有{趣}。我覺得摩天輪最好玩，可是到了最高的地方，有點{可}{怕}。",
+     "id": "q311_04_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_04_03": {
+     "prompt": "下面是心美的日記（三月十六號），請根據內容寫上正確的拼音或漢字。 This is Xinmei's diary. Fill in the correct pinyin or characters.",
+     "template": "東明問大家敢不敢坐雲霄{飛}{車}？我不敢坐雲霄飛車，它太快了，聽到別人大叫，我就{更}{緊}{張}。",
+     "id": "q311_04_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s311_5": {
+   "id": "s311_5",
+   "title": "第 5 大題：綜合活動（又V了一次） Fill in the blanks",
+   "type": "fill",
+   "order": 4,
+   "questions": {
+    "q311_05_01": {
+     "prompt": "請在空格中填上適當的字。 Fill in the correct word.",
+     "template": "我很喜歡去遊樂園，我去過很多次，上禮拜又{去}了一次。",
+     "id": "q311_05_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_05_02": {
+     "prompt": "請在空格中填上適當的字。 Fill in the correct word.",
+     "template": "這本書很有趣，我看過很多次，今天又{看}了{一}{次}。",
+     "id": "q311_05_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_05_03": {
+     "prompt": "請在空格中填上適當的字。 Fill in the correct word.",
+     "template": "哥哥很喜歡{吃}漢堡，昨天吃了漢堡，今天又{吃}了{一}{次}。",
+     "id": "q311_05_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_05_04": {
+     "prompt": "請在空格中填上適當的字。 Fill in the correct word.",
+     "template": "爸爸很喜歡{坐}雲霄飛車，上次坐了一次，這次又{坐}了{一}{次}。",
+     "id": "q311_05_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_05_05": {
+     "prompt": "請在空格中填上適當的字。 Fill in the correct word.",
+     "template": "我很喜歡{坐}旋轉木馬，坐過很多次了，今天又{坐}了{一}{次}。",
+     "id": "q311_05_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_05_06": {
+     "prompt": "請在空格中填上適當的字。 Fill in the correct word.",
+     "template": "因為大家都很喜歡{玩}遊戲，所以老師又{玩}了{一}{次}。",
+     "id": "q311_05_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s311_6": {
+   "id": "s311_6",
+   "title": "第 6 大題：友朋的日記 Youpeng's diary",
+   "type": "fill",
+   "order": 5,
+   "questions": {
+    "q311_06_01": {
+     "prompt": "下面是友朋的日記（三月十七號），請根據內容寫上正確的拼音或漢字。 This is Youpeng's diary. Fill in the blanks.",
+     "template": "我很喜歡去遊樂園玩，我{去}過很多次，上個月又{去}了一次。",
+     "id": "q311_06_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_06_02": {
+     "prompt": "下面是友朋的日記（三月十七號），請根據內容寫上正確的拼音或漢字。 This is Youpeng's diary. Fill in the blanks.",
+     "template": "我最喜歡做旋轉木馬，上次{坐}過一次，這次又{坐}了一次。一會兒上，一會兒下，很好玩。",
+     "id": "q311_06_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_06_03": {
+     "prompt": "下面是友朋的日記（三月十七號），請根據內容寫上正確的拼音或漢字。 This is Youpeng's diary. Fill in the blanks.",
+     "template": "中午我們在遊樂園裡吃午飯，遊樂園裡的漢堡很好吃，上次我們吃過一次，這次又{吃}了一次。",
+     "id": "q311_06_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_06_04": {
+     "prompt": "下面是友朋的日記（三月十七號），請根據內容寫上正確的拼音或漢字。 This is Youpeng's diary. Fill in the blanks.",
+     "template": "吃過午飯，爸爸去做了雲霄飛車，他上次{坐}過一次，這次又{坐}了一次。我不敢坐雲霄飛車，聽到別人大叫，我就更緊張。",
+     "id": "q311_06_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s311_7": {
+   "id": "s311_7",
+   "title": "第 7 大題：綜合活動（連連看，動詞） Match the verbs",
+   "type": "match",
+   "order": 6,
+   "questions": {
+    "q311_07_01": {
+     "leftLabel": "動詞",
+     "rightLabel": "東西",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "坐",
+       "right": "雲霄飛車"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "吃",
+       "right": "漢堡"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "去",
+       "right": "遊樂園"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "玩",
+       "right": "碰碰車"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "看",
+       "right": "有趣的書"
+      }
+     },
+     "id": "q311_07_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s311_8": {
+   "id": "s311_8",
+   "title": "第 8 大題：句型填空 Fill in the sentence patterns",
+   "type": "fill",
+   "order": 7,
+   "questions": {
+    "q311_08_01": {
+     "prompt": "用「又」完成句子。 Use 又.",
+     "template": "我跟爸爸、媽媽今年{又}去了一次臺灣。",
+     "id": "q311_08_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_08_02": {
+     "prompt": "用「又」完成句子。 Use 又.",
+     "template": "因為大家都喜歡玩遊戲，所以老師{又}玩了一次。",
+     "id": "q311_08_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_08_03": {
+     "prompt": "用「一會兒」完成句子。 Use 一會兒.",
+     "template": "我們一會兒跳繩，一會兒{扯鈴}。",
+     "id": "q311_08_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_08_04": {
+     "prompt": "用「一會兒」完成句子。 Use 一會兒.",
+     "template": "春天的天氣一會兒冷，一會兒{熱}。",
+     "id": "q311_08_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_08_05": {
+     "prompt": "用「V來V去」完成句子。 Use V來V去.",
+     "template": "兔子在院子裡跳{來}跳{去}。",
+     "id": "q311_08_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_08_06": {
+     "prompt": "用「V來V去」完成句子。 Use V來V去.",
+     "template": "學生在公園裡跑{來}跑{去}。",
+     "id": "q311_08_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_08_07": {
+     "prompt": "用「更」完成句子。 Use 更.",
+     "template": "臺中很熱，臺南{更}熱。",
+     "id": "q311_08_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_08_08": {
+     "prompt": "用「更」完成句子。 Use 更.",
+     "template": "我畫的熊貓很可愛，他畫的熊貓{更}可愛。",
+     "id": "q311_08_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s311_9": {
+   "id": "s311_9",
+   "title": "第 9 大題：選擇題（句型） Choose the correct answer",
+   "type": "choice",
+   "order": 8,
+   "questions": {
+    "q311_09_01": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n我去過很多次，今年＿＿去了一次。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "又"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "更"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "才"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q311_09_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_09_02": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n旋轉木馬＿＿上，＿＿下，很好玩。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "一會兒…一會兒"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "又…又"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "更…更"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q311_09_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_09_03": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n碰碰車撞＿＿撞＿＿，很有趣。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "來…去"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "上…下"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "又…了"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q311_09_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_09_04": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n臺中很熱，臺南＿＿熱。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "更"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "又"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "一會兒"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q311_09_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_09_05": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n聽到別人大叫，我就＿＿緊張。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "更"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "又"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "來"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q311_09_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_09_06": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n摩天輪到了最高的地方，有點＿＿。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "可怕"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "有趣"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "好吃"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q311_09_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_09_07": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n你們敢不敢坐＿＿？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "雲霄飛車"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "碰碰車"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "漢堡"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q311_09_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s311_10": {
+   "id": "s311_10",
+   "title": "第 10 大題：閱讀理解（課文） Reading comprehension",
+   "type": "choice",
+   "order": 9,
+   "questions": {
+    "q311_10_01": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n心美上星期去哪裡玩？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "遊樂園"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "動物園"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "公園"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：上星期我去遊樂園玩，你們去過嗎？\n友朋：我去過很多次，今年又去了一次。\n心美：你們覺得什麼最好玩？\n友朋：我喜歡旋轉木馬，一會兒上，一會兒下，很好玩。\n東明：我最喜歡碰碰車，撞來撞去很有趣。\n心美：我覺得摩天輪最好玩，可是到了最高的地方，有點可怕。\n東明：你們敢不敢坐雲霄飛車？我敢坐，可是有一點緊張！\n心美：我不敢，它太快了，聽到別人大叫，我就更緊張。",
+     "id": "q311_10_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_10_02": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n友朋去過幾次遊樂園？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "很多次"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "一次"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "沒去過"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：上星期我去遊樂園玩，你們去過嗎？\n友朋：我去過很多次，今年又去了一次。\n心美：你們覺得什麼最好玩？\n友朋：我喜歡旋轉木馬，一會兒上，一會兒下，很好玩。\n東明：我最喜歡碰碰車，撞來撞去很有趣。\n心美：我覺得摩天輪最好玩，可是到了最高的地方，有點可怕。\n東明：你們敢不敢坐雲霄飛車？我敢坐，可是有一點緊張！\n心美：我不敢，它太快了，聽到別人大叫，我就更緊張。",
+     "id": "q311_10_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_10_03": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n友朋最喜歡什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "旋轉木馬"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "碰碰車"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "摩天輪"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：上星期我去遊樂園玩，你們去過嗎？\n友朋：我去過很多次，今年又去了一次。\n心美：你們覺得什麼最好玩？\n友朋：我喜歡旋轉木馬，一會兒上，一會兒下，很好玩。\n東明：我最喜歡碰碰車，撞來撞去很有趣。\n心美：我覺得摩天輪最好玩，可是到了最高的地方，有點可怕。\n東明：你們敢不敢坐雲霄飛車？我敢坐，可是有一點緊張！\n心美：我不敢，它太快了，聽到別人大叫，我就更緊張。",
+     "id": "q311_10_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_10_04": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n東明最喜歡什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "碰碰車"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "雲霄飛車"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "摩天輪"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：上星期我去遊樂園玩，你們去過嗎？\n友朋：我去過很多次，今年又去了一次。\n心美：你們覺得什麼最好玩？\n友朋：我喜歡旋轉木馬，一會兒上，一會兒下，很好玩。\n東明：我最喜歡碰碰車，撞來撞去很有趣。\n心美：我覺得摩天輪最好玩，可是到了最高的地方，有點可怕。\n東明：你們敢不敢坐雲霄飛車？我敢坐，可是有一點緊張！\n心美：我不敢，它太快了，聽到別人大叫，我就更緊張。",
+     "id": "q311_10_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_10_05": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n心美覺得什麼最好玩？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "摩天輪"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "旋轉木馬"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "碰碰車"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：上星期我去遊樂園玩，你們去過嗎？\n友朋：我去過很多次，今年又去了一次。\n心美：你們覺得什麼最好玩？\n友朋：我喜歡旋轉木馬，一會兒上，一會兒下，很好玩。\n東明：我最喜歡碰碰車，撞來撞去很有趣。\n心美：我覺得摩天輪最好玩，可是到了最高的地方，有點可怕。\n東明：你們敢不敢坐雲霄飛車？我敢坐，可是有一點緊張！\n心美：我不敢，它太快了，聽到別人大叫，我就更緊張。",
+     "id": "q311_10_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_10_06": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n心美為什麼覺得摩天輪有點可怕？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "到了最高的地方"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "它太快了"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "撞來撞去"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：上星期我去遊樂園玩，你們去過嗎？\n友朋：我去過很多次，今年又去了一次。\n心美：你們覺得什麼最好玩？\n友朋：我喜歡旋轉木馬，一會兒上，一會兒下，很好玩。\n東明：我最喜歡碰碰車，撞來撞去很有趣。\n心美：我覺得摩天輪最好玩，可是到了最高的地方，有點可怕。\n東明：你們敢不敢坐雲霄飛車？我敢坐，可是有一點緊張！\n心美：我不敢，它太快了，聽到別人大叫，我就更緊張。",
+     "id": "q311_10_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_10_07": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n誰敢坐雲霄飛車？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "東明"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "心美"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "友朋"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：上星期我去遊樂園玩，你們去過嗎？\n友朋：我去過很多次，今年又去了一次。\n心美：你們覺得什麼最好玩？\n友朋：我喜歡旋轉木馬，一會兒上，一會兒下，很好玩。\n東明：我最喜歡碰碰車，撞來撞去很有趣。\n心美：我覺得摩天輪最好玩，可是到了最高的地方，有點可怕。\n東明：你們敢不敢坐雲霄飛車？我敢坐，可是有一點緊張！\n心美：我不敢，它太快了，聽到別人大叫，我就更緊張。",
+     "id": "q311_10_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_10_08": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n心美為什麼更緊張？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "聽到別人大叫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "她很累"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "她不喜歡玩"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：上星期我去遊樂園玩，你們去過嗎？\n友朋：我去過很多次，今年又去了一次。\n心美：你們覺得什麼最好玩？\n友朋：我喜歡旋轉木馬，一會兒上，一會兒下，很好玩。\n東明：我最喜歡碰碰車，撞來撞去很有趣。\n心美：我覺得摩天輪最好玩，可是到了最高的地方，有點可怕。\n東明：你們敢不敢坐雲霄飛車？我敢坐，可是有一點緊張！\n心美：我不敢，它太快了，聽到別人大叫，我就更緊張。",
+     "id": "q311_10_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s311_11": {
+   "id": "s311_11",
+   "title": "第 11 大題：是非題（課文） True or false",
+   "type": "choice",
+   "order": 10,
+   "questions": {
+    "q311_11_01": {
+     "prompt": "判斷對錯。 True or false?\n\n友朋今年又去了一次遊樂園。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：上星期我去遊樂園玩，你們去過嗎？\n友朋：我去過很多次，今年又去了一次。\n心美：你們覺得什麼最好玩？\n友朋：我喜歡旋轉木馬，一會兒上，一會兒下，很好玩。\n東明：我最喜歡碰碰車，撞來撞去很有趣。\n心美：我覺得摩天輪最好玩，可是到了最高的地方，有點可怕。\n東明：你們敢不敢坐雲霄飛車？我敢坐，可是有一點緊張！\n心美：我不敢，它太快了，聽到別人大叫，我就更緊張。",
+     "id": "q311_11_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_11_02": {
+     "prompt": "判斷對錯。 True or false?\n\n心美最喜歡碰碰車。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c2"
+     ],
+     "passage": "心美：上星期我去遊樂園玩，你們去過嗎？\n友朋：我去過很多次，今年又去了一次。\n心美：你們覺得什麼最好玩？\n友朋：我喜歡旋轉木馬，一會兒上，一會兒下，很好玩。\n東明：我最喜歡碰碰車，撞來撞去很有趣。\n心美：我覺得摩天輪最好玩，可是到了最高的地方，有點可怕。\n東明：你們敢不敢坐雲霄飛車？我敢坐，可是有一點緊張！\n心美：我不敢，它太快了，聽到別人大叫，我就更緊張。",
+     "id": "q311_11_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_11_03": {
+     "prompt": "判斷對錯。 True or false?\n\n東明敢坐雲霄飛車，可是有一點緊張。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：上星期我去遊樂園玩，你們去過嗎？\n友朋：我去過很多次，今年又去了一次。\n心美：你們覺得什麼最好玩？\n友朋：我喜歡旋轉木馬，一會兒上，一會兒下，很好玩。\n東明：我最喜歡碰碰車，撞來撞去很有趣。\n心美：我覺得摩天輪最好玩，可是到了最高的地方，有點可怕。\n東明：你們敢不敢坐雲霄飛車？我敢坐，可是有一點緊張！\n心美：我不敢，它太快了，聽到別人大叫，我就更緊張。",
+     "id": "q311_11_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_11_04": {
+     "prompt": "判斷對錯。 True or false?\n\n心美不敢坐雲霄飛車，因為它太慢了。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c2"
+     ],
+     "passage": "心美：上星期我去遊樂園玩，你們去過嗎？\n友朋：我去過很多次，今年又去了一次。\n心美：你們覺得什麼最好玩？\n友朋：我喜歡旋轉木馬，一會兒上，一會兒下，很好玩。\n東明：我最喜歡碰碰車，撞來撞去很有趣。\n心美：我覺得摩天輪最好玩，可是到了最高的地方，有點可怕。\n東明：你們敢不敢坐雲霄飛車？我敢坐，可是有一點緊張！\n心美：我不敢，它太快了，聽到別人大叫，我就更緊張。",
+     "id": "q311_11_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_11_05": {
+     "prompt": "判斷對錯。 True or false?\n\n旋轉木馬是一會兒上，一會兒下。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：上星期我去遊樂園玩，你們去過嗎？\n友朋：我去過很多次，今年又去了一次。\n心美：你們覺得什麼最好玩？\n友朋：我喜歡旋轉木馬，一會兒上，一會兒下，很好玩。\n東明：我最喜歡碰碰車，撞來撞去很有趣。\n心美：我覺得摩天輪最好玩，可是到了最高的地方，有點可怕。\n東明：你們敢不敢坐雲霄飛車？我敢坐，可是有一點緊張！\n心美：我不敢，它太快了，聽到別人大叫，我就更緊張。",
+     "id": "q311_11_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s311_12": {
+   "id": "s311_12",
+   "title": "第 12 大題：讀讀看，寫上漢字 Read the zhuyin and write the characters",
+   "type": "fill",
+   "order": 11,
+   "questions": {
+    "q311_12_01": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄧㄡˊ ㄌㄜˋ ㄩㄢˊ → {遊樂園}",
+     "id": "q311_12_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_12_02": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄒㄩㄢˊ ㄓㄨㄢˇ ㄇㄨˋ ㄇㄚˇ → {旋轉木馬}",
+     "id": "q311_12_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_12_03": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄧˊ ㄏㄨㄟˋ ˙ㄦ → {一會兒}",
+     "id": "q311_12_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_12_04": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄆㄥˋ ㄆㄥˋ ㄔㄜ → {碰碰車}",
+     "id": "q311_12_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_12_05": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄧㄡˇ ㄑㄩˋ → {有趣}",
+     "id": "q311_12_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_12_06": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄇㄛˊ ㄊㄧㄢ ㄌㄨㄣˊ → {摩天輪}",
+     "id": "q311_12_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_12_07": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄎㄜˇ ㄆㄚˋ → {可怕}",
+     "id": "q311_12_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_12_08": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄩㄣˊ ㄒㄧㄠ ㄈㄟ ㄔㄜ → {雲霄飛車}",
+     "id": "q311_12_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_12_09": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄐㄧㄣˇ ㄓㄤ → {緊張}",
+     "id": "q311_12_09",
+     "order": 8,
+     "title": "第 9 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_12_10": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄊㄧㄥ ㄉㄠˋ → {聽到}",
+     "id": "q311_12_10",
+     "order": 9,
+     "title": "第 10 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_12_11": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄅㄧㄝˊ ㄖㄣˊ → {別人}",
+     "id": "q311_12_11",
+     "order": 10,
+     "title": "第 11 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s311_13": {
+   "id": "s311_13",
+   "title": "第 13 大題：任務活動（訪問同學） Interview your classmates",
+   "type": "record",
+   "order": 12,
+   "questions": {
+    "q311_13_01": {
+     "prompt": "你會因為什麼就很高興？請說：我會因為＿＿，就很高興。 Say what makes you happy.",
+     "reference": "我會因為朋友送我禮物，就很高興。",
+     "maxSec": 30,
+     "id": "q311_13_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_13_02": {
+     "prompt": "你會因為什麼就很緊張？請說：我會因為＿＿，就很緊張。 Say what makes you nervous.",
+     "reference": "我會因為考試，就很緊張。",
+     "maxSec": 30,
+     "id": "q311_13_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_13_03": {
+     "prompt": "訪問你的同學：他會因為什麼就很高興／緊張？為什麼？ Interview a classmate.",
+     "reference": "你會因為什麼就很緊張？為什麼？",
+     "maxSec": 30,
+     "id": "q311_13_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_13_04": {
+     "prompt": "請用「又V了一次」說一個句子。 Make a sentence with 又V了一次.",
+     "reference": "哥哥昨天吃了漢堡，今天又吃了一次。",
+     "maxSec": 30,
+     "id": "q311_13_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_13_05": {
+     "prompt": "請用「一會兒…，一會兒…」說一個句子。 Make a sentence with 一會兒…一會兒….",
+     "reference": "我們一會兒跳繩，一會兒扯鈴。",
+     "maxSec": 30,
+     "id": "q311_13_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_13_06": {
+     "prompt": "請用「V來V去」說一個句子。 Make a sentence with V來V去.",
+     "reference": "兔子在院子裡跳來跳去。",
+     "maxSec": 30,
+     "id": "q311_13_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s311_14": {
+   "id": "s311_14",
+   "title": "第 14 大題：習寫漢字 Write the characters",
+   "type": "hanzi",
+   "order": 13,
+   "questions": {
+    "q311_14_01": {
+     "char": "遊",
+     "desc": "13畫，部首：辵",
+     "id": "q311_14_01",
+     "order": 0,
+     "title": "第 1 題：遊",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_14_02": {
+     "char": "木",
+     "desc": "4畫，部首：木",
+     "id": "q311_14_02",
+     "order": 1,
+     "title": "第 2 題：木",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_14_03": {
+     "char": "馬",
+     "desc": "10畫，部首：馬",
+     "id": "q311_14_03",
+     "order": 2,
+     "title": "第 3 題：馬",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_14_04": {
+     "char": "碰",
+     "desc": "13畫，部首：石",
+     "id": "q311_14_04",
+     "order": 3,
+     "title": "第 4 題：碰",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_14_05": {
+     "char": "車",
+     "desc": "7畫，部首：車",
+     "id": "q311_14_05",
+     "order": 4,
+     "title": "第 5 題：車",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_14_06": {
+     "char": "趣",
+     "desc": "15畫，部首：走",
+     "id": "q311_14_06",
+     "order": 5,
+     "title": "第 6 題：趣",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_14_07": {
+     "char": "怕",
+     "desc": "8畫，部首：心",
+     "id": "q311_14_07",
+     "order": 6,
+     "title": "第 7 題：怕",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_14_08": {
+     "char": "飛",
+     "desc": "9畫，部首：飛",
+     "id": "q311_14_08",
+     "order": 7,
+     "title": "第 8 題：飛",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_14_09": {
+     "char": "更",
+     "desc": "7畫，部首：曰",
+     "id": "q311_14_09",
+     "order": 8,
+     "title": "第 9 題：更",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_14_10": {
+     "char": "緊",
+     "desc": "14畫，部首：糸",
+     "id": "q311_14_10",
+     "order": 9,
+     "title": "第 10 題：緊",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s311_15": {
+   "id": "s311_15",
+   "title": "第 15 大題：我會念（課文、認讀漢字） Read aloud",
+   "type": "record",
+   "order": 14,
+   "questions": {
+    "q311_15_01": {
+     "prompt": "請念出課文第一段。 Read the first part of the text.",
+     "reference": "心美：上星期我去遊樂園玩，你們去過嗎？\n友朋：我去過很多次，今年又去了一次。\n心美：你們覺得什麼最好玩？\n友朋：我喜歡旋轉木馬，一會兒上，一會兒下，很好玩。",
+     "maxSec": 60,
+     "passage": "心美：上星期我去遊樂園玩，你們去過嗎？\n友朋：我去過很多次，今年又去了一次。\n心美：你們覺得什麼最好玩？\n友朋：我喜歡旋轉木馬，一會兒上，一會兒下，很好玩。",
+     "id": "q311_15_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_15_02": {
+     "prompt": "請念出課文第二段。 Read the second part of the text.",
+     "reference": "東明：我最喜歡碰碰車，撞來撞去很有趣。\n心美：我覺得摩天輪最好玩，可是到了最高的地方，有點可怕。\n東明：你們敢不敢坐雲霄飛車？我敢坐，可是有一點緊張！\n心美：我不敢，它太快了，聽到別人大叫，我就更緊張。",
+     "maxSec": 60,
+     "passage": "東明：我最喜歡碰碰車，撞來撞去很有趣。\n心美：我覺得摩天輪最好玩，可是到了最高的地方，有點可怕。\n東明：你們敢不敢坐雲霄飛車？我敢坐，可是有一點緊張！\n心美：我不敢，它太快了，聽到別人大叫，我就更緊張。",
+     "id": "q311_15_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q311_15_03": {
+     "prompt": "請念出這些認讀漢字。 Read these characters aloud.",
+     "reference": "旋　轉　兒　撞　摩　輪　雲　霄",
+     "maxSec": 45,
+     "id": "q311_15_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  }
+ },
+ "currentQId": "q311_01_01"
+}

@@ -245,6 +245,45 @@
    "file": "content/gz-b1-lesson7-quiz.json",
    "bookLike": "高中國文",
    "relocate": true
+  },
+  {
+   "id": "b3-8",
+   "bookTitle": "《學華語向前走》第三冊",
+   "lesson": 8,
+   "file": "content/b3-lesson8.json"
+  },
+  {
+   "id": "b3-8-quiz",
+   "type": "project",
+   "bookTitle": "《學華語向前走》第三冊",
+   "lesson": 8,
+   "file": "content/b3-lesson8-quiz.json"
+  },
+  {
+   "id": "b3-11",
+   "bookTitle": "《學華語向前走》第三冊",
+   "lesson": 11,
+   "file": "content/b3-lesson11.json"
+  },
+  {
+   "id": "b3-11-quiz",
+   "type": "project",
+   "bookTitle": "《學華語向前走》第三冊",
+   "lesson": 11,
+   "file": "content/b3-lesson11-quiz.json"
+  },
+  {
+   "id": "b3-12",
+   "bookTitle": "《學華語向前走》第三冊",
+   "lesson": 12,
+   "file": "content/b3-lesson12.json"
+  },
+  {
+   "id": "b3-12-quiz",
+   "type": "project",
+   "bookTitle": "《學華語向前走》第三冊",
+   "lesson": 12,
+   "file": "content/b3-lesson12-quiz.json"
   }
  ]
 }

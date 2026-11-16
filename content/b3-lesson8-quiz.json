@@ -1,0 +1,1466 @@
+{
+ "id": "proj_b3l8quiz",
+ "title": "第三冊 第八課 我們來玩吧 練習題",
+ "desc": "依第三冊第八課簡報（課文、生詞、句型、習寫漢字、認讀漢字、練習、綜合活動、任務活動）整理；題目說明附英文",
+ "sections": {
+  "s38_1": {
+   "id": "s38_1",
+   "title": "第 1 大題：連連看（生詞和注音） Match the words with zhuyin",
+   "type": "match",
+   "order": 0,
+   "questions": {
+    "q38_01_01": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "外面",
+       "right": "ㄨㄞˋ ㄇㄧㄢˋ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "捉迷藏",
+       "right": "ㄓㄨㄛ ㄇㄧˊ ㄘㄤˊ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "總是",
+       "right": "ㄗㄨㄥˇ ㄕˋ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "找不到",
+       "right": "ㄓㄠˇ ˙ㄅㄨ ㄉㄠˋ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "好玩",
+       "right": "ㄏㄠˇ ㄨㄢˊ"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "溜滑梯",
+       "right": "ㄌㄧㄡ ㄏㄨㄚˊ ㄊㄧ"
+      }
+     },
+     "id": "q38_01_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_01_02": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "敢",
+       "right": "ㄍㄢˇ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "高",
+       "right": "ㄍㄠ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "才",
+       "right": "ㄘㄞˊ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "扯鈴",
+       "right": "ㄔㄜˇ ㄌㄧㄥˊ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "跳繩",
+       "right": "ㄊㄧㄠˋ ㄕㄥˊ"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "猜拳",
+       "right": "ㄘㄞ ㄑㄩㄢˊ"
+      }
+     },
+     "id": "q38_01_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_01_03": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "決定",
+       "right": "ㄐㄩㄝˊ ㄉㄧㄥˋ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "剪刀",
+       "right": "ㄐㄧㄢˇ ㄉㄠ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "石頭",
+       "right": "ㄕˊ ˙ㄊㄡ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "布",
+       "right": "ㄅㄨˋ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "哈",
+       "right": "ㄏㄚ"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "贏",
+       "right": "ㄧㄥˊ"
+      }
+     },
+     "id": "q38_01_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s38_2": {
+   "id": "s38_2",
+   "title": "第 2 大題：連連看（生詞和意思） Match the words with their meanings",
+   "type": "match",
+   "order": 1,
+   "questions": {
+    "q38_02_01": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "外面",
+       "right": "outside"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "捉迷藏",
+       "right": "hide-and-seek"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "總是",
+       "right": "always"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "找不到",
+       "right": "cannot find"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "好玩",
+       "right": "fun"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "溜滑梯",
+       "right": "to go down a slide"
+      }
+     },
+     "id": "q38_02_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_02_02": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "敢",
+       "right": "to dare"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "高",
+       "right": "tall; high"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "才",
+       "right": "just (only just)"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "扯鈴",
+       "right": "diabolo"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "跳繩",
+       "right": "to jump rope"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "猜拳",
+       "right": "rock-paper-scissors"
+      }
+     },
+     "id": "q38_02_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_02_03": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "決定",
+       "right": "to decide"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "剪刀",
+       "right": "scissors"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "石頭",
+       "right": "rock"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "布",
+       "right": "paper; cloth"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "哈",
+       "right": "ha (laughter)"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "贏",
+       "right": "to win"
+      }
+     },
+     "id": "q38_02_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s38_3": {
+   "id": "s38_3",
+   "title": "第 3 大題：我會寫（寫出正確的漢字） Write the characters",
+   "type": "fill",
+   "order": 2,
+   "questions": {
+    "q38_03_01": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "東明{總}是找不到大家，他覺得不好玩。他想去{教}室外面玩溜滑梯。",
+     "id": "q38_03_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_03_02": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "張莉不{敢}溜滑梯，因為太高了。",
+     "id": "q38_03_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_03_03": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "心美上個星期{才}學了扯鈴，她想練習一下。",
+     "id": "q38_03_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_03_04": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "友朋不想扯鈴，他想{跳}繩，看看{誰}跳得久。",
+     "id": "q38_03_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_03_05": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "心美想用{剪}{刀}、石頭、布猜拳來{決}定玩什麼。",
+     "id": "q38_03_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s38_4": {
+   "id": "s38_4",
+   "title": "第 4 大題：心美的日記 Xinmei's diary",
+   "type": "fill",
+   "order": 3,
+   "questions": {
+    "q38_04_01": {
+     "prompt": "下面是心美的日記（三月二十二號），請根據內容寫上正確的注音或漢字。 This is Xinmei's diary. Fill in the correct zhuyin or characters.",
+     "template": "今天下課以後，我們去{教}{室}外面玩。大文想玩捉迷藏。可是東明說他{總}{是}找不到人，覺得不好玩。",
+     "id": "q38_04_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_04_02": {
+     "prompt": "下面是心美的日記（三月二十二號），請根據內容寫上正確的注音或漢字。 This is Xinmei's diary. Fill in the correct zhuyin or characters.",
+     "template": "所以他想去溜滑梯。張莉說她不{敢}溜滑梯，因為太高了。我說我們上個星期{才}學了扯鈴，今天可以練習一下。可是友朋不想玩扯鈴，他想玩{跳}繩。",
+     "id": "q38_04_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_04_03": {
+     "prompt": "下面是心美的日記（三月二十二號），請根據內容寫上正確的注音或漢字。 This is Xinmei's diary. Fill in the correct zhuyin or characters.",
+     "template": "看看{誰}跳得久。大家想玩的東西都不一樣，我說我們用{猜}{拳}、石頭、布猜拳來{決}{定}，大文贏了，所以我們玩了捉迷藏，捉迷藏真好玩。",
+     "id": "q38_04_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s38_5": {
+   "id": "s38_5",
+   "title": "第 5 大題：綜合活動（連連看，活動） Match the activities",
+   "type": "match",
+   "order": 4,
+   "questions": {
+    "q38_05_01": {
+     "leftLabel": "活動",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "溜滑梯",
+       "right": "to go down a slide"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "跳繩",
+       "right": "to jump rope"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "捉迷藏",
+       "right": "hide-and-seek"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "猜拳",
+       "right": "rock-paper-scissors"
+      }
+     },
+     "id": "q38_05_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_05_02": {
+     "leftLabel": "活動",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "放鞭炮",
+       "right": "to set off firecrackers"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "游泳",
+       "right": "to swim"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "騎自行車",
+       "right": "to ride a bicycle"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "扯鈴",
+       "right": "diabolo"
+      }
+     },
+     "id": "q38_05_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s38_6": {
+   "id": "s38_6",
+   "title": "第 6 大題：句型填空 Fill in the sentence patterns",
+   "type": "fill",
+   "order": 5,
+   "questions": {
+    "q38_06_01": {
+     "prompt": "用「找不到」完成句子。 Use 找不到.",
+     "template": "東明想畫圖，可是{找不到}蠟筆。",
+     "id": "q38_06_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_06_02": {
+     "prompt": "用「找得到」完成句子。 Use 找得到.",
+     "template": "玩捉迷藏時，你{找得到}別人嗎？",
+     "id": "q38_06_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_06_03": {
+     "prompt": "用「不敢」完成句子。 Use 不敢.",
+     "template": "妹妹{不敢}去游泳。",
+     "id": "q38_06_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_06_04": {
+     "prompt": "用「敢」完成句子。 Use 敢.",
+     "template": "你{敢}不敢騎自行車到學校去？",
+     "id": "q38_06_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_06_05": {
+     "prompt": "用「看看誰」完成句子。 Use 看看誰.",
+     "template": "我們來游泳，看看{誰}游得快。",
+     "id": "q38_06_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_06_06": {
+     "prompt": "用「看看誰V得…」完成句子。 Complete the sentence.",
+     "template": "老師請大家好好寫字，看看誰寫得{漂亮}。",
+     "id": "q38_06_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_06_07": {
+     "prompt": "用「才」完成句子。 Use 才.",
+     "template": "我們昨天{才}學了扯鈴。",
+     "id": "q38_06_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_06_08": {
+     "prompt": "用「才」完成句子。 Use 才.",
+     "template": "媽媽早上{才}去超市買了冰淇淋。",
+     "id": "q38_06_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s38_7": {
+   "id": "s38_7",
+   "title": "第 7 大題：選擇題（句型） Choose the correct answer",
+   "type": "choice",
+   "order": 6,
+   "questions": {
+    "q38_07_01": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n我＿＿找不到你們，不好玩。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "總是"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "才"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "敢"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q38_07_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_07_02": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n妹妹＿＿溜滑梯，因為太高了。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "不敢"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "找不到"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "決定"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q38_07_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_07_03": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n我們來跳繩，看看＿＿跳得久。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "誰"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "什麼"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "哪裡"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q38_07_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_07_04": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n我們上個星期＿＿學了扯鈴。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "才"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "總是"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "敢"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q38_07_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_07_05": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n我們猜拳＿＿吧！",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "決定"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "贏"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "找到"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q38_07_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_07_06": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n東明想畫圖，可是＿＿蠟筆。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "找不到"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "不敢"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "才"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q38_07_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_07_07": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n猜拳的時候，＿＿贏石頭。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "布"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "剪刀"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "哈"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q38_07_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s38_8": {
+   "id": "s38_8",
+   "title": "第 8 大題：閱讀理解（課文） Reading comprehension",
+   "type": "choice",
+   "order": 7,
+   "questions": {
+    "q38_08_01": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n下課以後，他們要去哪裡玩？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "教室外面"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "家裡"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "超市"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：下課了，我們去教室外面玩吧！\n大文：我們來玩捉迷藏，好不好？\n東明：我總是找不到你們，不好玩。我們去溜滑梯。\n張莉：我不敢溜滑梯，因為太高了。\n心美：我們上個星期才學了扯鈴，今天練習一下吧！\n友朋：我不想扯鈴，我們來跳繩，看看誰跳得久。\n心美：那麼，我們猜拳決定吧！來！剪刀、石頭、布。\n大文：哈哈！我贏了，今天玩捉迷藏吧！",
+     "id": "q38_08_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_08_02": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n東明為什麼覺得捉迷藏不好玩？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "他總是找不到人"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "他不會玩"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "他太高"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：下課了，我們去教室外面玩吧！\n大文：我們來玩捉迷藏，好不好？\n東明：我總是找不到你們，不好玩。我們去溜滑梯。\n張莉：我不敢溜滑梯，因為太高了。\n心美：我們上個星期才學了扯鈴，今天練習一下吧！\n友朋：我不想扯鈴，我們來跳繩，看看誰跳得久。\n心美：那麼，我們猜拳決定吧！來！剪刀、石頭、布。\n大文：哈哈！我贏了，今天玩捉迷藏吧！",
+     "id": "q38_08_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_08_03": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n張莉為什麼不敢溜滑梯？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "因為太高了"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "因為太矮了"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "因為太慢了"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：下課了，我們去教室外面玩吧！\n大文：我們來玩捉迷藏，好不好？\n東明：我總是找不到你們，不好玩。我們去溜滑梯。\n張莉：我不敢溜滑梯，因為太高了。\n心美：我們上個星期才學了扯鈴，今天練習一下吧！\n友朋：我不想扯鈴，我們來跳繩，看看誰跳得久。\n心美：那麼，我們猜拳決定吧！來！剪刀、石頭、布。\n大文：哈哈！我贏了，今天玩捉迷藏吧！",
+     "id": "q38_08_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_08_04": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n他們上個星期學了什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "扯鈴"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "跳繩"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "捉迷藏"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：下課了，我們去教室外面玩吧！\n大文：我們來玩捉迷藏，好不好？\n東明：我總是找不到你們，不好玩。我們去溜滑梯。\n張莉：我不敢溜滑梯，因為太高了。\n心美：我們上個星期才學了扯鈴，今天練習一下吧！\n友朋：我不想扯鈴，我們來跳繩，看看誰跳得久。\n心美：那麼，我們猜拳決定吧！來！剪刀、石頭、布。\n大文：哈哈！我贏了，今天玩捉迷藏吧！",
+     "id": "q38_08_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_08_05": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n友朋想玩什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "跳繩"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "溜滑梯"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "扯鈴"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：下課了，我們去教室外面玩吧！\n大文：我們來玩捉迷藏，好不好？\n東明：我總是找不到你們，不好玩。我們去溜滑梯。\n張莉：我不敢溜滑梯，因為太高了。\n心美：我們上個星期才學了扯鈴，今天練習一下吧！\n友朋：我不想扯鈴，我們來跳繩，看看誰跳得久。\n心美：那麼，我們猜拳決定吧！來！剪刀、石頭、布。\n大文：哈哈！我贏了，今天玩捉迷藏吧！",
+     "id": "q38_08_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_08_06": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n他們怎麼決定玩什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "猜拳"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "抽籤"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "問老師"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：下課了，我們去教室外面玩吧！\n大文：我們來玩捉迷藏，好不好？\n東明：我總是找不到你們，不好玩。我們去溜滑梯。\n張莉：我不敢溜滑梯，因為太高了。\n心美：我們上個星期才學了扯鈴，今天練習一下吧！\n友朋：我不想扯鈴，我們來跳繩，看看誰跳得久。\n心美：那麼，我們猜拳決定吧！來！剪刀、石頭、布。\n大文：哈哈！我贏了，今天玩捉迷藏吧！",
+     "id": "q38_08_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_08_07": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n最後誰贏了？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "大文"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "心美"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "東明"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：下課了，我們去教室外面玩吧！\n大文：我們來玩捉迷藏，好不好？\n東明：我總是找不到你們，不好玩。我們去溜滑梯。\n張莉：我不敢溜滑梯，因為太高了。\n心美：我們上個星期才學了扯鈴，今天練習一下吧！\n友朋：我不想扯鈴，我們來跳繩，看看誰跳得久。\n心美：那麼，我們猜拳決定吧！來！剪刀、石頭、布。\n大文：哈哈！我贏了，今天玩捉迷藏吧！",
+     "id": "q38_08_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_08_08": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n最後他們要玩什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "捉迷藏"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "跳繩"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "溜滑梯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：下課了，我們去教室外面玩吧！\n大文：我們來玩捉迷藏，好不好？\n東明：我總是找不到你們，不好玩。我們去溜滑梯。\n張莉：我不敢溜滑梯，因為太高了。\n心美：我們上個星期才學了扯鈴，今天練習一下吧！\n友朋：我不想扯鈴，我們來跳繩，看看誰跳得久。\n心美：那麼，我們猜拳決定吧！來！剪刀、石頭、布。\n大文：哈哈！我贏了，今天玩捉迷藏吧！",
+     "id": "q38_08_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s38_9": {
+   "id": "s38_9",
+   "title": "第 9 大題：是非題（課文） True or false",
+   "type": "choice",
+   "order": 8,
+   "questions": {
+    "q38_09_01": {
+     "prompt": "判斷對錯。 True or false?\n\n東明覺得捉迷藏很好玩。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c2"
+     ],
+     "passage": "心美：下課了，我們去教室外面玩吧！\n大文：我們來玩捉迷藏，好不好？\n東明：我總是找不到你們，不好玩。我們去溜滑梯。\n張莉：我不敢溜滑梯，因為太高了。\n心美：我們上個星期才學了扯鈴，今天練習一下吧！\n友朋：我不想扯鈴，我們來跳繩，看看誰跳得久。\n心美：那麼，我們猜拳決定吧！來！剪刀、石頭、布。\n大文：哈哈！我贏了，今天玩捉迷藏吧！",
+     "id": "q38_09_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_09_02": {
+     "prompt": "判斷對錯。 True or false?\n\n張莉敢溜滑梯。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c2"
+     ],
+     "passage": "心美：下課了，我們去教室外面玩吧！\n大文：我們來玩捉迷藏，好不好？\n東明：我總是找不到你們，不好玩。我們去溜滑梯。\n張莉：我不敢溜滑梯，因為太高了。\n心美：我們上個星期才學了扯鈴，今天練習一下吧！\n友朋：我不想扯鈴，我們來跳繩，看看誰跳得久。\n心美：那麼，我們猜拳決定吧！來！剪刀、石頭、布。\n大文：哈哈！我贏了，今天玩捉迷藏吧！",
+     "id": "q38_09_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_09_03": {
+     "prompt": "判斷對錯。 True or false?\n\n心美上個星期才學了扯鈴。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：下課了，我們去教室外面玩吧！\n大文：我們來玩捉迷藏，好不好？\n東明：我總是找不到你們，不好玩。我們去溜滑梯。\n張莉：我不敢溜滑梯，因為太高了。\n心美：我們上個星期才學了扯鈴，今天練習一下吧！\n友朋：我不想扯鈴，我們來跳繩，看看誰跳得久。\n心美：那麼，我們猜拳決定吧！來！剪刀、石頭、布。\n大文：哈哈！我贏了，今天玩捉迷藏吧！",
+     "id": "q38_09_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_09_04": {
+     "prompt": "判斷對錯。 True or false?\n\n他們用猜拳決定玩什麼。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：下課了，我們去教室外面玩吧！\n大文：我們來玩捉迷藏，好不好？\n東明：我總是找不到你們，不好玩。我們去溜滑梯。\n張莉：我不敢溜滑梯，因為太高了。\n心美：我們上個星期才學了扯鈴，今天練習一下吧！\n友朋：我不想扯鈴，我們來跳繩，看看誰跳得久。\n心美：那麼，我們猜拳決定吧！來！剪刀、石頭、布。\n大文：哈哈！我贏了，今天玩捉迷藏吧！",
+     "id": "q38_09_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_09_05": {
+     "prompt": "判斷對錯。 True or false?\n\n心美贏了猜拳。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c2"
+     ],
+     "passage": "心美：下課了，我們去教室外面玩吧！\n大文：我們來玩捉迷藏，好不好？\n東明：我總是找不到你們，不好玩。我們去溜滑梯。\n張莉：我不敢溜滑梯，因為太高了。\n心美：我們上個星期才學了扯鈴，今天練習一下吧！\n友朋：我不想扯鈴，我們來跳繩，看看誰跳得久。\n心美：那麼，我們猜拳決定吧！來！剪刀、石頭、布。\n大文：哈哈！我贏了，今天玩捉迷藏吧！",
+     "id": "q38_09_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s38_10": {
+   "id": "s38_10",
+   "title": "第 10 大題：任務活動（張莉最喜歡玩什麼？） What does Zhang Li like to play?",
+   "type": "choice",
+   "order": 9,
+   "questions": {
+    "q38_10_01": {
+     "prompt": "讀文章，回答問題。 Read the passage and answer.\n\n張莉最喜歡玩什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "跳繩"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "捉迷藏"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "溜滑梯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "我最喜歡跳繩了！下課以後，我常常跟同學一起在教室外面跳繩，我總是可以跳得很久。\n我不喜歡玩捉迷藏，因為我總是找不到人，覺得不好玩。\n我敢騎自行車，可是我不敢玩溜滑梯，因為太高了。",
+     "id": "q38_10_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_10_02": {
+     "prompt": "讀文章，回答問題。 Read the passage and answer.\n\n張莉常常跟誰一起跳繩？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "同學"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "爸爸"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "老師"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "我最喜歡跳繩了！下課以後，我常常跟同學一起在教室外面跳繩，我總是可以跳得很久。\n我不喜歡玩捉迷藏，因為我總是找不到人，覺得不好玩。\n我敢騎自行車，可是我不敢玩溜滑梯，因為太高了。",
+     "id": "q38_10_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_10_03": {
+     "prompt": "讀文章，回答問題。 Read the passage and answer.\n\n張莉常常在哪裡跳繩？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "教室外面"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "家裡"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "公園"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "我最喜歡跳繩了！下課以後，我常常跟同學一起在教室外面跳繩，我總是可以跳得很久。\n我不喜歡玩捉迷藏，因為我總是找不到人，覺得不好玩。\n我敢騎自行車，可是我不敢玩溜滑梯，因為太高了。",
+     "id": "q38_10_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_10_04": {
+     "prompt": "讀文章，回答問題。 Read the passage and answer.\n\n張莉為什麼不喜歡玩捉迷藏？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "因為她總是找不到人"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "因為太高了"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "因為太累了"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "我最喜歡跳繩了！下課以後，我常常跟同學一起在教室外面跳繩，我總是可以跳得很久。\n我不喜歡玩捉迷藏，因為我總是找不到人，覺得不好玩。\n我敢騎自行車，可是我不敢玩溜滑梯，因為太高了。",
+     "id": "q38_10_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_10_05": {
+     "prompt": "讀文章，回答問題。 Read the passage and answer.\n\n張莉不敢做什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "玩溜滑梯"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "騎自行車"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "跳繩"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "我最喜歡跳繩了！下課以後，我常常跟同學一起在教室外面跳繩，我總是可以跳得很久。\n我不喜歡玩捉迷藏，因為我總是找不到人，覺得不好玩。\n我敢騎自行車，可是我不敢玩溜滑梯，因為太高了。",
+     "id": "q38_10_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s38_11": {
+   "id": "s38_11",
+   "title": "第 11 大題：讀讀看，寫上漢字 Read the zhuyin and write the characters",
+   "type": "fill",
+   "order": 10,
+   "questions": {
+    "q38_11_01": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄨㄞˋ ㄇㄧㄢˋ → {外面}",
+     "id": "q38_11_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_11_02": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄓㄨㄛ ㄇㄧˊ ㄘㄤˊ → {捉迷藏}",
+     "id": "q38_11_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_11_03": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄗㄨㄥˇ ㄕˋ → {總是}",
+     "id": "q38_11_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_11_04": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄓㄠˇ ˙ㄅㄨ ㄉㄠˋ → {找不到}",
+     "id": "q38_11_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_11_05": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄏㄠˇ ㄨㄢˊ → {好玩}",
+     "id": "q38_11_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_11_06": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄌㄧㄡ ㄏㄨㄚˊ ㄊㄧ → {溜滑梯}",
+     "id": "q38_11_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_11_07": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄊㄧㄠˋ ㄕㄥˊ → {跳繩}",
+     "id": "q38_11_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_11_08": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄘㄞ ㄑㄩㄢˊ → {猜拳}",
+     "id": "q38_11_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_11_09": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄐㄩㄝˊ ㄉㄧㄥˋ → {決定}",
+     "id": "q38_11_09",
+     "order": 8,
+     "title": "第 9 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_11_10": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄐㄧㄢˇ ㄉㄠ → {剪刀}",
+     "id": "q38_11_10",
+     "order": 9,
+     "title": "第 10 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_11_11": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄕˊ ˙ㄊㄡ → {石頭}",
+     "id": "q38_11_11",
+     "order": 10,
+     "title": "第 11 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s38_12": {
+   "id": "s38_12",
+   "title": "第 12 大題：說說看（句型、口頭報告） Speaking",
+   "type": "record",
+   "order": 11,
+   "questions": {
+    "q38_12_01": {
+     "prompt": "你玩捉迷藏的時候，找得到找不到別人？ Can you find the others when playing hide-and-seek?",
+     "reference": "我總是找不到別人。",
+     "maxSec": 30,
+     "id": "q38_12_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_12_02": {
+     "prompt": "請用「敢／不敢」說一個句子。 Make a sentence with 敢／不敢.",
+     "reference": "我不敢溜滑梯，因為太高了。",
+     "maxSec": 30,
+     "id": "q38_12_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_12_03": {
+     "prompt": "請用「看看誰V得……」說一個句子。 Make a sentence with 看看誰.",
+     "reference": "我們來跳繩，看看誰跳得久。",
+     "maxSec": 30,
+     "id": "q38_12_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_12_04": {
+     "prompt": "請用「時間＋才」說一個句子。 Make a sentence with 才.",
+     "reference": "我們上個星期才學了扯鈴。",
+     "maxSec": 30,
+     "id": "q38_12_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_12_05": {
+     "prompt": "口頭報告：你最喜歡玩什麼？最不喜歡玩什麼？為什麼？你敢做什麼？不敢做什麼？ Talk about what you like, dislike, dare and don't dare to do.",
+     "reference": "我最喜歡玩跳繩，因為可以跳得很久。我不喜歡玩捉迷藏，因為我總是找不到人。",
+     "maxSec": 60,
+     "id": "q38_12_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s38_13": {
+   "id": "s38_13",
+   "title": "第 13 大題：習寫漢字 Write the characters",
+   "type": "hanzi",
+   "order": 12,
+   "questions": {
+    "q38_13_01": {
+     "char": "教",
+     "desc": "11畫，部首：攴",
+     "id": "q38_13_01",
+     "order": 0,
+     "title": "第 1 題：教",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_13_02": {
+     "char": "室",
+     "desc": "9畫，部首：宀",
+     "id": "q38_13_02",
+     "order": 1,
+     "title": "第 2 題：室",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_13_03": {
+     "char": "總",
+     "desc": "17畫，部首：糸",
+     "id": "q38_13_03",
+     "order": 2,
+     "title": "第 3 題：總",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_13_04": {
+     "char": "敢",
+     "desc": "12畫，部首：攴",
+     "id": "q38_13_04",
+     "order": 3,
+     "title": "第 4 題：敢",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_13_05": {
+     "char": "才",
+     "desc": "3畫，部首：手",
+     "id": "q38_13_05",
+     "order": 4,
+     "title": "第 5 題：才",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_13_06": {
+     "char": "跳",
+     "desc": "13畫，部首：足",
+     "id": "q38_13_06",
+     "order": 5,
+     "title": "第 6 題：跳",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_13_07": {
+     "char": "誰",
+     "desc": "15畫，部首：言",
+     "id": "q38_13_07",
+     "order": 6,
+     "title": "第 7 題：誰",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_13_08": {
+     "char": "決",
+     "desc": "7畫，部首：水",
+     "id": "q38_13_08",
+     "order": 7,
+     "title": "第 8 題：決",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_13_09": {
+     "char": "剪",
+     "desc": "11畫，部首：刀",
+     "id": "q38_13_09",
+     "order": 8,
+     "title": "第 9 題：剪",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_13_10": {
+     "char": "刀",
+     "desc": "2畫，部首：刀",
+     "id": "q38_13_10",
+     "order": 9,
+     "title": "第 10 題：刀",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s38_14": {
+   "id": "s38_14",
+   "title": "第 14 大題：我會念（課文、認讀漢字） Read aloud",
+   "type": "record",
+   "order": 13,
+   "questions": {
+    "q38_14_01": {
+     "prompt": "請念出課文第一段。 Read the first part of the text.",
+     "reference": "心美：下課了，我們去教室外面玩吧！\n大文：我們來玩捉迷藏，好不好？\n東明：我總是找不到你們，不好玩。我們去溜滑梯。\n張莉：我不敢溜滑梯，因為太高了。",
+     "maxSec": 60,
+     "passage": "心美：下課了，我們去教室外面玩吧！\n大文：我們來玩捉迷藏，好不好？\n東明：我總是找不到你們，不好玩。我們去溜滑梯。\n張莉：我不敢溜滑梯，因為太高了。",
+     "id": "q38_14_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_14_02": {
+     "prompt": "請念出課文第二段。 Read the second part of the text.",
+     "reference": "心美：我們上個星期才學了扯鈴，今天練習一下吧！\n友朋：我不想扯鈴，我們來跳繩，看看誰跳得久。\n心美：那麼，我們猜拳決定吧！來！剪刀、石頭、布。\n大文：哈哈！我贏了，今天玩捉迷藏吧！",
+     "maxSec": 60,
+     "passage": "心美：我們上個星期才學了扯鈴，今天練習一下吧！\n友朋：我不想扯鈴，我們來跳繩，看看誰跳得久。\n心美：那麼，我們猜拳決定吧！來！剪刀、石頭、布。\n大文：哈哈！我贏了，今天玩捉迷藏吧！",
+     "id": "q38_14_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q38_14_03": {
+     "prompt": "請念出這些認讀漢字。 Read these characters aloud.",
+     "reference": "捉　迷　藏　溜　滑　扯　鈴　繩　梯　猜　石　拳　布　哈　贏",
+     "maxSec": 45,
+     "id": "q38_14_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  }
+ },
+ "currentQId": "q38_01_01"
+}

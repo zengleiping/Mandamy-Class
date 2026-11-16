@@ -1,0 +1,1379 @@
+{
+ "id": "proj_b3l12quiz",
+ "title": "第三冊 第十二課 特別的生日卡片 練習題",
+ "desc": "依第三冊第十二課簡報（課文、生詞、句型、習寫漢字、認讀漢字、練習、綜合活動、任務活動）整理；題目說明附英文",
+ "sections": {
+  "s312_1": {
+   "id": "s312_1",
+   "title": "第 1 大題：連連看（生詞和注音） Match the words with zhuyin",
+   "type": "match",
+   "order": 0,
+   "questions": {
+    "q312_01_01": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "特別",
+       "right": "ㄊㄜˋ ㄅㄧㄝˊ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "圖案",
+       "right": "ㄊㄨˊ ㄢˋ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "蠟燭",
+       "right": "ㄌㄚˋ ㄓㄨˊ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "氣球",
+       "right": "ㄑㄧˋ ㄑㄧㄡˊ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "幾",
+       "right": "ㄐㄧˇ"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "句",
+       "right": "ㄐㄩˋ"
+      }
+     },
+     "id": "q312_01_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_01_02": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "祝福",
+       "right": "ㄓㄨˋ ㄈㄨˊ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "祝",
+       "right": "ㄓㄨˋ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "生日快樂",
+       "right": "ㄕㄥ ㄖˋ ㄎㄨㄞˋ ㄌㄜˋ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "打字",
+       "right": "ㄉㄚˇ ㄗˋ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "收到",
+       "right": "ㄕㄡ ㄉㄠˋ"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "應該",
+       "right": "ㄧㄥ ㄍㄞ"
+      }
+     },
+     "id": "q312_01_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s312_2": {
+   "id": "s312_2",
+   "title": "第 2 大題：連連看（生詞和意思） Match the words with their meanings",
+   "type": "match",
+   "order": 1,
+   "questions": {
+    "q312_02_01": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "特別",
+       "right": "special"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "圖案",
+       "right": "pattern; design"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "蠟燭",
+       "right": "candle"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "氣球",
+       "right": "balloon"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "幾",
+       "right": "how many; a few"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "句",
+       "right": "M.W. for sentences"
+      }
+     },
+     "id": "q312_02_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_02_02": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "祝福",
+       "right": "blessing"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "祝",
+       "right": "to wish"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "生日快樂",
+       "right": "happy birthday"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "打字",
+       "right": "to type"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "收到",
+       "right": "to receive"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "應該",
+       "right": "should"
+      }
+     },
+     "id": "q312_02_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s312_3": {
+   "id": "s312_3",
+   "title": "第 3 大題：我會寫（寫出正確的漢字） Write the characters",
+   "type": "fill",
+   "order": 2,
+   "questions": {
+    "q312_03_01": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "張莉的生日快到了，我想送一張{特}別的卡片給她。",
+     "id": "q312_03_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_03_02": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "爸爸問我要自己{畫}一張卡片嗎？",
+     "id": "q312_03_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_03_03": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "爸爸說他可以幫我在網路上{選}一張卡片。",
+     "id": "q312_03_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_03_04": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "我想要有蛋糕、蠟燭和{氣}球的{圖}案。",
+     "id": "q312_03_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_03_05": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "爸爸問我要不要在卡片上寫幾{句}祝福的話？",
+     "id": "q312_03_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_03_06": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "張莉{收}到這張卡片{應}{該}很高興。",
+     "id": "q312_03_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s312_4": {
+   "id": "s312_4",
+   "title": "第 4 大題：大文的日記 Da Wen's diary",
+   "type": "fill",
+   "order": 3,
+   "questions": {
+    "q312_04_01": {
+     "prompt": "下面是大文的日記（三月十六號），請根據內容寫上正確的注音或漢字。 This is Da Wen's diary. Fill in the correct zhuyin or characters.",
+     "template": "張莉的生日快到了，我想送一張{特}{別}的卡片給她。爸爸問我要自己{畫}一張卡片嗎？爸爸說他可以幫我在網路上{選}一張卡片。",
+     "id": "q312_04_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_04_02": {
+     "prompt": "下面是大文的日記（三月十六號），請根據內容寫上正確的注音或漢字。 This is Da Wen's diary. Fill in the correct zhuyin or characters.",
+     "template": "我說我想要有蛋糕、蠟燭和{氣}{球}的{圖}案。爸爸問我要不要在卡片上寫幾{句}{祝}{福}的話？",
+     "id": "q312_04_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_04_03": {
+     "prompt": "下面是大文的日記（三月十六號），請根據內容寫上正確的注音或漢字。 This is Da Wen's diary. Fill in the correct zhuyin or characters.",
+     "template": "我說我要寫「祝你生日快樂、天天開心」。張莉{收}{到}這張卡片{應}{該}很高興，謝謝爸爸。",
+     "id": "q312_04_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s312_5": {
+   "id": "s312_5",
+   "title": "第 5 大題：綜合活動（連連看，詞彙） Match the words",
+   "type": "match",
+   "order": 4,
+   "questions": {
+    "q312_05_01": {
+     "leftLabel": "東西",
+     "rightLabel": "動作（V好）",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "生日禮物",
+       "right": "準備好"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "功課",
+       "right": "寫好"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "晚飯",
+       "right": "做好"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "卡片圖案",
+       "right": "選好"
+      }
+     },
+     "id": "q312_05_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s312_6": {
+   "id": "s312_6",
+   "title": "第 6 大題：綜合活動（V好了） Fill in the blanks",
+   "type": "fill",
+   "order": 5,
+   "questions": {
+    "q312_06_01": {
+     "prompt": "請在空格中填上適當的字。 Fill in the correct word.",
+     "template": "卡片的圖案，大文已經{選}好了。",
+     "id": "q312_06_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_06_02": {
+     "prompt": "請在空格中填上適當的字。 Fill in the correct word.",
+     "template": "晚飯，媽媽已經{做}好了。",
+     "id": "q312_06_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_06_03": {
+     "prompt": "請在空格中填上適當的字。 Fill in the correct word.",
+     "template": "妹妹的生日禮物，爸爸已經{準}{備}好了。",
+     "id": "q312_06_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_06_04": {
+     "prompt": "請在空格中填上適當的字。 Fill in the correct word.",
+     "template": "今天的功課，大文已經{寫}好了。",
+     "id": "q312_06_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s312_7": {
+   "id": "s312_7",
+   "title": "第 7 大題：句型填空 Fill in the sentence patterns",
+   "type": "fill",
+   "order": 6,
+   "questions": {
+    "q312_07_01": {
+     "prompt": "用「在…上」完成句子。 Use 在…上.",
+     "template": "我{在}桌子上放了書和鉛筆。",
+     "id": "q312_07_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_07_02": {
+     "prompt": "用「在…上」完成句子。 Use 在…上.",
+     "template": "大文要在生日卡片{上}寫祝福的話。",
+     "id": "q312_07_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_07_03": {
+     "prompt": "用「V好了」完成句子。 Use V好了.",
+     "template": "媽媽已經做{好}了晚飯。",
+     "id": "q312_07_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_07_04": {
+     "prompt": "用「V好了」完成句子。 Use V好了.",
+     "template": "你們的圖畫{好}了嗎？",
+     "id": "q312_07_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_07_05": {
+     "prompt": "用「收到」完成句子。 Use 收到.",
+     "template": "外公和外婆{收到}我寄的聖誕卡片。",
+     "id": "q312_07_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_07_06": {
+     "prompt": "用「收到」完成句子。 Use 收到.",
+     "template": "今年生日的時候，你{收到}什麼禮物？",
+     "id": "q312_07_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_07_07": {
+     "prompt": "用「應該」完成句子。 Use 應該.",
+     "template": "跟同學去遊樂園{應該}很好玩。",
+     "id": "q312_07_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_07_08": {
+     "prompt": "用「應該」完成句子。 Use 應該.",
+     "template": "臺灣的秋天，樹葉{應該}不會變黃。",
+     "id": "q312_07_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s312_8": {
+   "id": "s312_8",
+   "title": "第 8 大題：選擇題（句型） Choose the correct answer",
+   "type": "choice",
+   "order": 7,
+   "questions": {
+    "q312_08_01": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n我＿＿桌子上放了書和鉛筆。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "在"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "從"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "把"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q312_08_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_08_02": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n媽媽已經做＿＿晚飯了。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "好"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "到"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "在"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q312_08_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_08_03": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n我生日的時候＿＿一個很特別的卡片。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "收到"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "送到"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "看到"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q312_08_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_08_04": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n張莉收到這張卡片＿＿很高興。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "應該"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "特別"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "已經"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q312_08_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_08_05": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n你要在卡片＿＿寫祝福的話嗎？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "上"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "下"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "外"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q312_08_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_08_06": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n你要在卡片上寫＿＿祝福的話？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "幾句"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "幾個人"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "幾張"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q312_08_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_08_07": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n祝你生日＿＿，天天開心。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "快樂"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "特別"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "應該"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q312_08_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s312_9": {
+   "id": "s312_9",
+   "title": "第 9 大題：閱讀理解（課文） Reading comprehension",
+   "type": "choice",
+   "order": 8,
+   "questions": {
+    "q312_09_01": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n大文想送給誰卡片？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "張莉"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "爸爸"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "同學"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：張莉的生日快到了，我想送一張特別的卡片給她。\n爸爸：你要自己畫一張卡片嗎？\n大文：我同學說可以用電腦做卡片。你可以教我怎麼做嗎？\n爸爸：你可以在網路上選一張卡片。你要什麼圖案？\n大文：我想要有蛋糕、蠟燭、氣球的圖案。\n爸爸：選好了。你要在卡片上寫幾句祝福的話嗎？\n大文：我要寫「祝你生日快樂、天天開心」。\n爸爸：好，我幫你打字，張莉收到這張卡片應該很高興。",
+     "id": "q312_09_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_09_02": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n大文想送什麼樣的卡片？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "特別的卡片"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "很貴的卡片"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "舊的卡片"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：張莉的生日快到了，我想送一張特別的卡片給她。\n爸爸：你要自己畫一張卡片嗎？\n大文：我同學說可以用電腦做卡片。你可以教我怎麼做嗎？\n爸爸：你可以在網路上選一張卡片。你要什麼圖案？\n大文：我想要有蛋糕、蠟燭、氣球的圖案。\n爸爸：選好了。你要在卡片上寫幾句祝福的話嗎？\n大文：我要寫「祝你生日快樂、天天開心」。\n爸爸：好，我幫你打字，張莉收到這張卡片應該很高興。",
+     "id": "q312_09_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_09_03": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n大文的同學說可以怎麼做卡片？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "用電腦做"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "用手畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "去買"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：張莉的生日快到了，我想送一張特別的卡片給她。\n爸爸：你要自己畫一張卡片嗎？\n大文：我同學說可以用電腦做卡片。你可以教我怎麼做嗎？\n爸爸：你可以在網路上選一張卡片。你要什麼圖案？\n大文：我想要有蛋糕、蠟燭、氣球的圖案。\n爸爸：選好了。你要在卡片上寫幾句祝福的話嗎？\n大文：我要寫「祝你生日快樂、天天開心」。\n爸爸：好，我幫你打字，張莉收到這張卡片應該很高興。",
+     "id": "q312_09_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_09_04": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n爸爸說可以在哪裡選卡片？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "網路上"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "書店"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "學校"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：張莉的生日快到了，我想送一張特別的卡片給她。\n爸爸：你要自己畫一張卡片嗎？\n大文：我同學說可以用電腦做卡片。你可以教我怎麼做嗎？\n爸爸：你可以在網路上選一張卡片。你要什麼圖案？\n大文：我想要有蛋糕、蠟燭、氣球的圖案。\n爸爸：選好了。你要在卡片上寫幾句祝福的話嗎？\n大文：我要寫「祝你生日快樂、天天開心」。\n爸爸：好，我幫你打字，張莉收到這張卡片應該很高興。",
+     "id": "q312_09_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_09_05": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n大文想要什麼圖案？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "蛋糕、蠟燭、氣球"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "花、鳥、樹"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "汽車、飛機"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：張莉的生日快到了，我想送一張特別的卡片給她。\n爸爸：你要自己畫一張卡片嗎？\n大文：我同學說可以用電腦做卡片。你可以教我怎麼做嗎？\n爸爸：你可以在網路上選一張卡片。你要什麼圖案？\n大文：我想要有蛋糕、蠟燭、氣球的圖案。\n爸爸：選好了。你要在卡片上寫幾句祝福的話嗎？\n大文：我要寫「祝你生日快樂、天天開心」。\n爸爸：好，我幫你打字，張莉收到這張卡片應該很高興。",
+     "id": "q312_09_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_09_06": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n大文要寫什麼祝福的話？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "祝你生日快樂、天天開心"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "新年快樂"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "謝謝你"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：張莉的生日快到了，我想送一張特別的卡片給她。\n爸爸：你要自己畫一張卡片嗎？\n大文：我同學說可以用電腦做卡片。你可以教我怎麼做嗎？\n爸爸：你可以在網路上選一張卡片。你要什麼圖案？\n大文：我想要有蛋糕、蠟燭、氣球的圖案。\n爸爸：選好了。你要在卡片上寫幾句祝福的話嗎？\n大文：我要寫「祝你生日快樂、天天開心」。\n爸爸：好，我幫你打字，張莉收到這張卡片應該很高興。",
+     "id": "q312_09_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_09_07": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n誰幫大文打字？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "爸爸"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "媽媽"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "老師"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：張莉的生日快到了，我想送一張特別的卡片給她。\n爸爸：你要自己畫一張卡片嗎？\n大文：我同學說可以用電腦做卡片。你可以教我怎麼做嗎？\n爸爸：你可以在網路上選一張卡片。你要什麼圖案？\n大文：我想要有蛋糕、蠟燭、氣球的圖案。\n爸爸：選好了。你要在卡片上寫幾句祝福的話嗎？\n大文：我要寫「祝你生日快樂、天天開心」。\n爸爸：好，我幫你打字，張莉收到這張卡片應該很高興。",
+     "id": "q312_09_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s312_10": {
+   "id": "s312_10",
+   "title": "第 10 大題：是非題（課文） True or false",
+   "type": "choice",
+   "order": 9,
+   "questions": {
+    "q312_10_01": {
+     "prompt": "判斷對錯。 True or false?\n\n張莉的生日快到了。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：張莉的生日快到了，我想送一張特別的卡片給她。\n爸爸：你要自己畫一張卡片嗎？\n大文：我同學說可以用電腦做卡片。你可以教我怎麼做嗎？\n爸爸：你可以在網路上選一張卡片。你要什麼圖案？\n大文：我想要有蛋糕、蠟燭、氣球的圖案。\n爸爸：選好了。你要在卡片上寫幾句祝福的話嗎？\n大文：我要寫「祝你生日快樂、天天開心」。\n爸爸：好，我幫你打字，張莉收到這張卡片應該很高興。",
+     "id": "q312_10_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_10_02": {
+     "prompt": "判斷對錯。 True or false?\n\n大文要自己畫一張卡片。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c2"
+     ],
+     "passage": "大文：張莉的生日快到了，我想送一張特別的卡片給她。\n爸爸：你要自己畫一張卡片嗎？\n大文：我同學說可以用電腦做卡片。你可以教我怎麼做嗎？\n爸爸：你可以在網路上選一張卡片。你要什麼圖案？\n大文：我想要有蛋糕、蠟燭、氣球的圖案。\n爸爸：選好了。你要在卡片上寫幾句祝福的話嗎？\n大文：我要寫「祝你生日快樂、天天開心」。\n爸爸：好，我幫你打字，張莉收到這張卡片應該很高興。",
+     "id": "q312_10_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_10_03": {
+     "prompt": "判斷對錯。 True or false?\n\n爸爸可以幫大文在網路上選卡片。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：張莉的生日快到了，我想送一張特別的卡片給她。\n爸爸：你要自己畫一張卡片嗎？\n大文：我同學說可以用電腦做卡片。你可以教我怎麼做嗎？\n爸爸：你可以在網路上選一張卡片。你要什麼圖案？\n大文：我想要有蛋糕、蠟燭、氣球的圖案。\n爸爸：選好了。你要在卡片上寫幾句祝福的話嗎？\n大文：我要寫「祝你生日快樂、天天開心」。\n爸爸：好，我幫你打字，張莉收到這張卡片應該很高興。",
+     "id": "q312_10_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_10_04": {
+     "prompt": "判斷對錯。 True or false?\n\n大文想要有汽車的圖案。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c2"
+     ],
+     "passage": "大文：張莉的生日快到了，我想送一張特別的卡片給她。\n爸爸：你要自己畫一張卡片嗎？\n大文：我同學說可以用電腦做卡片。你可以教我怎麼做嗎？\n爸爸：你可以在網路上選一張卡片。你要什麼圖案？\n大文：我想要有蛋糕、蠟燭、氣球的圖案。\n爸爸：選好了。你要在卡片上寫幾句祝福的話嗎？\n大文：我要寫「祝你生日快樂、天天開心」。\n爸爸：好，我幫你打字，張莉收到這張卡片應該很高興。",
+     "id": "q312_10_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_10_05": {
+     "prompt": "判斷對錯。 True or false?\n\n爸爸覺得張莉收到卡片應該很高興。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：張莉的生日快到了，我想送一張特別的卡片給她。\n爸爸：你要自己畫一張卡片嗎？\n大文：我同學說可以用電腦做卡片。你可以教我怎麼做嗎？\n爸爸：你可以在網路上選一張卡片。你要什麼圖案？\n大文：我想要有蛋糕、蠟燭、氣球的圖案。\n爸爸：選好了。你要在卡片上寫幾句祝福的話嗎？\n大文：我要寫「祝你生日快樂、天天開心」。\n爸爸：好，我幫你打字，張莉收到這張卡片應該很高興。",
+     "id": "q312_10_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s312_11": {
+   "id": "s312_11",
+   "title": "第 11 大題：讀張莉的信 Read Zhang Li's letter",
+   "type": "choice",
+   "order": 10,
+   "questions": {
+    "q312_11_01": {
+     "prompt": "讀張莉的信，回答問題。 Read Zhang Li's letter and answer.\n\n張莉最喜歡什麼圖案？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "蛋糕、蠟燭和氣球"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "花和樹"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "汽車和飛機"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "張莉：你好！謝謝你的生日卡片，你是用電腦做的嗎？好特別！你選了我最喜歡的蛋糕、蠟燭和氣球的圖案，我好高興！\n生日那天，媽媽買了一個草莓蛋糕，還幫我做了炒米粉和珍珠奶茶。爸爸買了一個很好看的紅色背包給我，還陪我一起去遊樂園玩。我坐了我最喜歡的旋轉木馬，一會兒上，一會兒下，很有趣。\n下禮拜的文化週你想介紹什麼臺灣文化呢？你想不想跟我一起表演扯鈴呢？我們可以在學校附近的大公園一起練習。\n最近的天氣變涼了，你得多穿一點衣服，別感冒了。祝你天天開心。　張莉　三月二十號",
+     "id": "q312_11_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_11_02": {
+     "prompt": "讀張莉的信，回答問題。 Read Zhang Li's letter and answer.\n\n生日那天，媽媽幫張莉做了什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "炒米粉和珍珠奶茶"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "草莓蛋糕和卡片"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "漢堡和冰淇淋"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "張莉：你好！謝謝你的生日卡片，你是用電腦做的嗎？好特別！你選了我最喜歡的蛋糕、蠟燭和氣球的圖案，我好高興！\n生日那天，媽媽買了一個草莓蛋糕，還幫我做了炒米粉和珍珠奶茶。爸爸買了一個很好看的紅色背包給我，還陪我一起去遊樂園玩。我坐了我最喜歡的旋轉木馬，一會兒上，一會兒下，很有趣。\n下禮拜的文化週你想介紹什麼臺灣文化呢？你想不想跟我一起表演扯鈴呢？我們可以在學校附近的大公園一起練習。\n最近的天氣變涼了，你得多穿一點衣服，別感冒了。祝你天天開心。　張莉　三月二十號",
+     "id": "q312_11_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_11_03": {
+     "prompt": "讀張莉的信，回答問題。 Read Zhang Li's letter and answer.\n\n爸爸買了什麼禮物給張莉？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "紅色背包"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "玩具車"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "洋娃娃"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "張莉：你好！謝謝你的生日卡片，你是用電腦做的嗎？好特別！你選了我最喜歡的蛋糕、蠟燭和氣球的圖案，我好高興！\n生日那天，媽媽買了一個草莓蛋糕，還幫我做了炒米粉和珍珠奶茶。爸爸買了一個很好看的紅色背包給我，還陪我一起去遊樂園玩。我坐了我最喜歡的旋轉木馬，一會兒上，一會兒下，很有趣。\n下禮拜的文化週你想介紹什麼臺灣文化呢？你想不想跟我一起表演扯鈴呢？我們可以在學校附近的大公園一起練習。\n最近的天氣變涼了，你得多穿一點衣服，別感冒了。祝你天天開心。　張莉　三月二十號",
+     "id": "q312_11_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_11_04": {
+     "prompt": "讀張莉的信，回答問題。 Read Zhang Li's letter and answer.\n\n爸爸還陪張莉去哪裡玩？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "遊樂園"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "公園"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "動物園"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "張莉：你好！謝謝你的生日卡片，你是用電腦做的嗎？好特別！你選了我最喜歡的蛋糕、蠟燭和氣球的圖案，我好高興！\n生日那天，媽媽買了一個草莓蛋糕，還幫我做了炒米粉和珍珠奶茶。爸爸買了一個很好看的紅色背包給我，還陪我一起去遊樂園玩。我坐了我最喜歡的旋轉木馬，一會兒上，一會兒下，很有趣。\n下禮拜的文化週你想介紹什麼臺灣文化呢？你想不想跟我一起表演扯鈴呢？我們可以在學校附近的大公園一起練習。\n最近的天氣變涼了，你得多穿一點衣服，別感冒了。祝你天天開心。　張莉　三月二十號",
+     "id": "q312_11_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_11_05": {
+     "prompt": "讀張莉的信，回答問題。 Read Zhang Li's letter and answer.\n\n下禮拜的文化週，張莉想跟大文一起做什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "表演扯鈴"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "放鞭炮"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "畫卡片"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "張莉：你好！謝謝你的生日卡片，你是用電腦做的嗎？好特別！你選了我最喜歡的蛋糕、蠟燭和氣球的圖案，我好高興！\n生日那天，媽媽買了一個草莓蛋糕，還幫我做了炒米粉和珍珠奶茶。爸爸買了一個很好看的紅色背包給我，還陪我一起去遊樂園玩。我坐了我最喜歡的旋轉木馬，一會兒上，一會兒下，很有趣。\n下禮拜的文化週你想介紹什麼臺灣文化呢？你想不想跟我一起表演扯鈴呢？我們可以在學校附近的大公園一起練習。\n最近的天氣變涼了，你得多穿一點衣服，別感冒了。祝你天天開心。　張莉　三月二十號",
+     "id": "q312_11_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s312_12": {
+   "id": "s312_12",
+   "title": "第 12 大題：讀讀看，寫上漢字 Read the zhuyin and write the characters",
+   "type": "fill",
+   "order": 11,
+   "questions": {
+    "q312_12_01": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄊㄜˋ ㄅㄧㄝˊ → {特別}",
+     "id": "q312_12_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_12_02": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄊㄨˊ ㄢˋ → {圖案}",
+     "id": "q312_12_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_12_03": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄌㄚˋ ㄓㄨˊ → {蠟燭}",
+     "id": "q312_12_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_12_04": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄑㄧˋ ㄑㄧㄡˊ → {氣球}",
+     "id": "q312_12_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_12_05": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄐㄧˇ → {幾}",
+     "id": "q312_12_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_12_06": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄐㄩˋ → {句}",
+     "id": "q312_12_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_12_07": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄓㄨˋ ㄈㄨˊ → {祝福}",
+     "id": "q312_12_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_12_08": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄓㄨˋ → {祝}",
+     "id": "q312_12_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_12_09": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄕㄥ ㄖˋ ㄎㄨㄞˋ ㄌㄜˋ → {生日快樂}",
+     "id": "q312_12_09",
+     "order": 8,
+     "title": "第 9 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_12_10": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄉㄚˇ ㄗˋ → {打字}",
+     "id": "q312_12_10",
+     "order": 9,
+     "title": "第 10 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_12_11": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄕㄡ ㄉㄠˋ → {收到}",
+     "id": "q312_12_11",
+     "order": 10,
+     "title": "第 11 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_12_12": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄧㄥ ㄍㄞ → {應該}",
+     "id": "q312_12_12",
+     "order": 11,
+     "title": "第 12 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s312_13": {
+   "id": "s312_13",
+   "title": "第 13 大題：任務活動（畫生日卡片） Draw a birthday card",
+   "type": "record",
+   "order": 12,
+   "questions": {
+    "q312_13_01": {
+     "prompt": "請介紹你畫的生日卡片：圖案有什麼？你要寫什麼祝福的話？ Describe your birthday card.",
+     "reference": "我畫了蛋糕、蠟燭和氣球。我要寫「祝你生日快樂」。",
+     "maxSec": 60,
+     "id": "q312_13_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_13_02": {
+     "prompt": "請用「收到」說一個句子。 Make a sentence with 收到.",
+     "reference": "我收到一個很特別的禮物。",
+     "maxSec": 30,
+     "id": "q312_13_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_13_03": {
+     "prompt": "請用「應該」說一個句子。 Make a sentence with 應該.",
+     "reference": "他收到卡片應該很高興。",
+     "maxSec": 30,
+     "id": "q312_13_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_13_04": {
+     "prompt": "請用「V好了」說一個句子。 Make a sentence with V好了.",
+     "reference": "我的功課已經寫好了。",
+     "maxSec": 30,
+     "id": "q312_13_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s312_14": {
+   "id": "s312_14",
+   "title": "第 14 大題：習寫漢字 Write the characters",
+   "type": "hanzi",
+   "order": 13,
+   "questions": {
+    "q312_14_01": {
+     "char": "特",
+     "desc": "10畫，部首：牛",
+     "id": "q312_14_01",
+     "order": 0,
+     "title": "第 1 題：特",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_14_02": {
+     "char": "選",
+     "desc": "16畫，部首：辵",
+     "id": "q312_14_02",
+     "order": 1,
+     "title": "第 2 題：選",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_14_03": {
+     "char": "氣",
+     "desc": "10畫，部首：气",
+     "id": "q312_14_03",
+     "order": 2,
+     "title": "第 3 題：氣",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_14_04": {
+     "char": "句",
+     "desc": "5畫，部首：口",
+     "id": "q312_14_04",
+     "order": 3,
+     "title": "第 4 題：句",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_14_05": {
+     "char": "祝",
+     "desc": "9畫，部首：示",
+     "id": "q312_14_05",
+     "order": 4,
+     "title": "第 5 題：祝",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_14_06": {
+     "char": "畫",
+     "desc": "12畫，部首：田",
+     "id": "q312_14_06",
+     "order": 5,
+     "title": "第 6 題：畫",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_14_07": {
+     "char": "圖",
+     "desc": "14畫，部首：囗",
+     "id": "q312_14_07",
+     "order": 6,
+     "title": "第 7 題：圖",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_14_08": {
+     "char": "收",
+     "desc": "6畫，部首：攴",
+     "id": "q312_14_08",
+     "order": 7,
+     "title": "第 8 題：收",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_14_09": {
+     "char": "應",
+     "desc": "17畫，部首：心",
+     "id": "q312_14_09",
+     "order": 8,
+     "title": "第 9 題：應",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_14_10": {
+     "char": "該",
+     "desc": "13畫，部首：言",
+     "id": "q312_14_10",
+     "order": 9,
+     "title": "第 10 題：該",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s312_15": {
+   "id": "s312_15",
+   "title": "第 15 大題：我會念（課文、認讀漢字） Read aloud",
+   "type": "record",
+   "order": 14,
+   "questions": {
+    "q312_15_01": {
+     "prompt": "請念出課文第一段。 Read the first part of the text.",
+     "reference": "大文：張莉的生日快到了，我想送一張特別的卡片給她。\n爸爸：你要自己畫一張卡片嗎？\n大文：我同學說可以用電腦做卡片。你可以教我怎麼做嗎？\n爸爸：你可以在網路上選一張卡片。你要什麼圖案？",
+     "maxSec": 60,
+     "passage": "大文：張莉的生日快到了，我想送一張特別的卡片給她。\n爸爸：你要自己畫一張卡片嗎？\n大文：我同學說可以用電腦做卡片。你可以教我怎麼做嗎？\n爸爸：你可以在網路上選一張卡片。你要什麼圖案？",
+     "id": "q312_15_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_15_02": {
+     "prompt": "請念出課文第二段。 Read the second part of the text.",
+     "reference": "大文：我想要有蛋糕、蠟燭、氣球的圖案。\n爸爸：選好了。你要在卡片上寫幾句祝福的話嗎？\n大文：我要寫「祝你生日快樂、天天開心」。\n爸爸：好，我幫你打字，張莉收到這張卡片應該很高興。",
+     "maxSec": 60,
+     "passage": "大文：我想要有蛋糕、蠟燭、氣球的圖案。\n爸爸：選好了。你要在卡片上寫幾句祝福的話嗎？\n大文：我要寫「祝你生日快樂、天天開心」。\n爸爸：好，我幫你打字，張莉收到這張卡片應該很高興。",
+     "id": "q312_15_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q312_15_03": {
+     "prompt": "請念出這些認讀漢字。 Read these characters aloud.",
+     "reference": "案　燭　福",
+     "maxSec": 30,
+     "id": "q312_15_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  }
+ },
+ "currentQId": "q312_01_01"
+}
