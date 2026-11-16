@@ -16806,6 +16806,31 @@ window.mmTA = (function(){
         else { window.__mmPastePos = null; mcToast2("請改按 Cmd/Ctrl + V 貼上"); }
       });
     }
+    // 從別的視窗／桌面拖曳截圖或圖片檔進來：直接放到滑鼠放開的位置（也支援從網頁拖曳圖片）
+    (function(){
+      var dzEl = stageArea || cWrap;
+      function hasImg(e){ var dt = e.dataTransfer; if(!dt) return false; if(dt.files && dt.files.length) return Array.prototype.some.call(dt.files, function(f){ return /^image\//.test(f.type); }); return Array.prototype.some.call(dt.types || [], function(t){ return t === "Files" || t === "text/uri-list" || t === "text/html"; }); }
+      dzEl.addEventListener("dragover", function(e){ if(deckStudent || presentLock() || !hasImg(e)) return; e.preventDefault(); try{ e.dataTransfer.dropEffect = "copy"; }catch(er){} dzEl.classList.add("img-drop-over"); });
+      dzEl.addEventListener("dragleave", function(e){ if(e.target === dzEl) dzEl.classList.remove("img-drop-over"); });
+      dzEl.addEventListener("drop", function(e){
+        dzEl.classList.remove("img-drop-over");
+        if(deckStudent || presentLock() || !hasImg(e)) return;
+        e.preventDefault(); e.stopPropagation();
+        var dt = e.dataTransfer, r = cWrap.getBoundingClientRect(), cx0 = e.clientX, cy0 = e.clientY;
+        var files = Array.prototype.filter.call(dt.files || [], function(f){ return /^image\//.test(f.type); });
+        function place(list){
+          list.forEach(function(f, i){
+            window.__mmPastePos = r.width && r.height ? { x: (cx0 - r.left) / r.width * 100 + i * 3, y: (cy0 - r.top) / r.height * 100 + i * 3 } : null;
+            pasteImageFiles([f]);
+          });
+        }
+        if(files.length){ place(files); return; }
+        var url = (dt.getData("text/uri-list") || "").split("\n")[0].trim();
+        if(!url){ var m = /<img[^>]+src=["']([^"']+)/i.exec(dt.getData("text/html") || ""); url = m ? m[1] : ""; }
+        if(!url){ mcToast2("沒有抓到圖片，請改用複製＋貼上（Cmd/Ctrl+V）"); return; }
+        clipImageFallback(url).then(function(f){ if(f) place([f]); else mcToast2("這張圖片讀不進來，請改用複製＋貼上或先存成檔案再拖進來"); });
+      });
+    })();
     cWrap.addEventListener("contextmenu", function(e){
       if(isStudent || deckStudent || presentLock() || inPlaceEdit) return;
       if(e.target.closest && e.target.closest("input, textarea, select, .crop-ui, .select-bar")) return;
