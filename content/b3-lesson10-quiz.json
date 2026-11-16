@@ -1,0 +1,1479 @@
+{
+ "id": "proj_b3l10quiz",
+ "title": "第三冊 第十課 文化週 練習題",
+ "desc": "依第三冊第十課簡報（課文、生詞、句型、習寫漢字、認讀漢字、練習、綜合活動、任務活動）整理；題目說明附英文",
+ "sections": {
+  "s310_1": {
+   "id": "s310_1",
+   "title": "第 1 大題：連連看（生詞和注音） Match the words with zhuyin",
+   "type": "match",
+   "order": 0,
+   "questions": {
+    "q310_01_01": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "禮拜",
+       "right": "ㄌㄧˇ ㄅㄞˋ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "文化週",
+       "right": "ㄨㄣˊ ㄏㄨㄚˋ ㄓㄡ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "毛筆",
+       "right": "ㄇㄠˊ ㄅㄧˇ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "教",
+       "right": "ㄐㄧㄠˋ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "小吃",
+       "right": "ㄒㄧㄠˇ ㄔ"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "炒米粉",
+       "right": "ㄔㄠˇ ㄇㄧˇ ㄈㄣˇ"
+      }
+     },
+     "id": "q310_01_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_01_02": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "表演",
+       "right": "ㄅㄧㄠˇ ㄧㄢˇ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "筷子",
+       "right": "ㄎㄨㄞˋ ˙ㄗ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "夾",
+       "right": "ㄐㄧㄚ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "豆子",
+       "right": "ㄉㄡˋ ˙ㄗ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "除了",
+       "right": "ㄔㄨˊ ˙ㄌㄜ"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "踢",
+       "right": "ㄊㄧ"
+      }
+     },
+     "id": "q310_01_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_01_03": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "毽子",
+       "right": "ㄐㄧㄢˋ ˙ㄗ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "厲害",
+       "right": "ㄌㄧˋ ㄏㄞˋ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "怎麼辦",
+       "right": "ㄗㄣˇ ˙ㄇㄜ ㄅㄢˋ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "沒關係",
+       "right": "ㄇㄟˊ ㄍㄨㄢ ˙ㄒㄧ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "就好了",
+       "right": "ㄐㄧㄡˋ ㄏㄠˇ ˙ㄌㄜ"
+      }
+     },
+     "id": "q310_01_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s310_2": {
+   "id": "s310_2",
+   "title": "第 2 大題：連連看（生詞和意思） Match the words with their meanings",
+   "type": "match",
+   "order": 1,
+   "questions": {
+    "q310_02_01": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "禮拜",
+       "right": "week"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "文化週",
+       "right": "Culture Week"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "毛筆",
+       "right": "calligraphy brush"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "教",
+       "right": "to teach"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "小吃",
+       "right": "snack"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "炒米粉",
+       "right": "fried rice noodles"
+      }
+     },
+     "id": "q310_02_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_02_02": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "表演",
+       "right": "to perform"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "筷子",
+       "right": "chopsticks"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "夾",
+       "right": "to pick up (with chopsticks)"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "豆子",
+       "right": "bean"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "除了",
+       "right": "besides"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "踢",
+       "right": "to kick"
+      }
+     },
+     "id": "q310_02_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_02_03": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "毽子",
+       "right": "shuttlecock"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "厲害",
+       "right": "amazing; skilled"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "怎麼辦",
+       "right": "what should (one) do?"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "沒關係",
+       "right": "no problem"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "就好了",
+       "right": "that will do"
+      }
+     },
+     "id": "q310_02_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s310_3": {
+   "id": "s310_3",
+   "title": "第 3 大題：我會寫（寫出正確的漢字） Write the characters",
+   "type": "fill",
+   "order": 2,
+   "questions": {
+    "q310_03_01": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "下個禮{拜}是{文}{化}週，張莉想帶{毛}筆來，教大家寫書法。",
+     "id": "q310_03_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_03_02": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "東明想介紹臺灣小吃，他請媽媽幫他做{炒}米粉。",
+     "id": "q310_03_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_03_03": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "心美想教大家怎麼用{筷}子夾豆子。",
+     "id": "q310_03_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_03_04": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "大文{除}了扯鈴，還可以踢毽子，他踢毽子也很{厲}{害}。",
+     "id": "q310_03_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_03_05": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "友朋說他什麼都不會，怎麼{辦}。",
+     "id": "q310_03_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s310_4": {
+   "id": "s310_4",
+   "title": "第 4 大題：綜合活動（連連看，活動） Match the activities",
+   "type": "match",
+   "order": 3,
+   "questions": {
+    "q310_04_01": {
+     "leftLabel": "活動",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "寫書法",
+       "right": "to do calligraphy"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "炒米粉",
+       "right": "fried rice noodles"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "扯鈴",
+       "right": "diabolo"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "用筷子夾豆子",
+       "right": "to pick up beans with chopsticks"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "踢毽子",
+       "right": "to kick the shuttlecock"
+      }
+     },
+     "id": "q310_04_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s310_5": {
+   "id": "s310_5",
+   "title": "第 5 大題：綜合活動（除了…還會） Use 除了…還會",
+   "type": "fill",
+   "order": 4,
+   "questions": {
+    "q310_05_01": {
+     "prompt": "請使用「除了……還會」告訴大家他們會什麼。 Use 除了…還會 to say what they can do.",
+     "template": "大文除了會{扯鈴}，還會{踢毽子}。",
+     "id": "q310_05_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_05_02": {
+     "prompt": "請使用「除了……還會」告訴大家他們會什麼。 Use 除了…還會 to say what they can do.",
+     "template": "張莉除了會{寫書法}，還會{扯鈴}。",
+     "id": "q310_05_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_05_03": {
+     "prompt": "請使用「除了……還會」告訴大家他們會什麼。 Use 除了…還會 to say what they can do.",
+     "template": "心美除了會{用筷子夾豆子}，還會{寫書法}。",
+     "id": "q310_05_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s310_6": {
+   "id": "s310_6",
+   "title": "第 6 大題：句型填空 Fill in the sentence patterns",
+   "type": "fill",
+   "order": 5,
+   "questions": {
+    "q310_06_01": {
+     "prompt": "用「除了…還…」完成句子。 Use 除了…還….",
+     "template": "妹妹{除了}喜歡吃蛋糕，還喜歡喝可樂。",
+     "id": "q310_06_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_06_02": {
+     "prompt": "用「除了…還…」完成句子。 Use 除了…還….",
+     "template": "心美除了想買筆，{還}想買筆記本。",
+     "id": "q310_06_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_06_03": {
+     "prompt": "用「怎麼辦」完成句子。 Use 怎麼辦.",
+     "template": "心美不想學踢足球，{怎麼辦}？",
+     "id": "q310_06_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_06_04": {
+     "prompt": "用「怎麼辦」完成句子。 Use 怎麼辦.",
+     "template": "媽媽，我找不到功課，{怎麼辦}？",
+     "id": "q310_06_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_06_05": {
+     "prompt": "用「就好了」完成句子。 Use 就好了.",
+     "template": "生病的時候，在家休息{就好了}。",
+     "id": "q310_06_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_06_06": {
+     "prompt": "用「就好了」完成句子。 Use 就好了.",
+     "template": "你要買什麼？買兩枝鉛筆{就好了}。",
+     "id": "q310_06_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_06_07": {
+     "prompt": "用「什麼…都」完成句子。 Use 什麼…都.",
+     "template": "妹妹什麼字{都}不會寫。",
+     "id": "q310_06_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_06_08": {
+     "prompt": "用「什麼…都」完成句子。 Use 什麼…都.",
+     "template": "你想玩什麼遊戲？我{什麼}都想玩。",
+     "id": "q310_06_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s310_7": {
+   "id": "s310_7",
+   "title": "第 7 大題：選擇題（句型） Choose the correct answer",
+   "type": "choice",
+   "order": 6,
+   "questions": {
+    "q310_07_01": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n大文＿＿會扯鈴，還會踢毽子。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "除了"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "因為"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "如果"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q310_07_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_07_02": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n我找不到功課，＿＿？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "怎麼辦"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "為什麼"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "什麼"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q310_07_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_07_03": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n生病的時候，在家休息＿＿。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "就好了"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "怎麼辦"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "除了"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q310_07_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_07_04": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n你想玩什麼遊戲？我什麼＿＿想玩。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "都"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "還"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "就"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q310_07_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_07_05": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n我踢毽子也很＿＿。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "厲害"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "好像"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "特別"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q310_07_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_07_06": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n友朋說：「我什麼都不會，怎麼辦？」心美說：「＿＿，你跟我一起夾豆子就好了。」",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "沒關係"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "謝謝"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "對不起"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q310_07_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_07_07": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n心美要教大家用＿＿夾豆子。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "筷子"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "毛筆"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "毽子"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q310_07_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s310_8": {
+   "id": "s310_8",
+   "title": "第 8 大題：閱讀理解（課文） Reading comprehension",
+   "type": "choice",
+   "order": 7,
+   "questions": {
+    "q310_08_01": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n下個禮拜是什麼週？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "文化週"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "運動週"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "語言週"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "老師：下個禮拜是文化週，你們要介紹什麼？\n張莉：我可以帶毛筆來，教大家寫書法。\n東明：我想介紹臺灣小吃，請媽媽幫我做炒米粉。\n大文：我很會扯鈴，我要表演扯鈴。\n心美：我要教大家怎麼用筷子夾豆子。\n大文：除了扯鈴，我還可以踢毽子，我踢毽子也很厲害。\n老師：非常好！大家回去好好準備吧！\n友朋：我什麼都不會，怎麼辦？\n心美：沒關係，你跟我一起夾豆子就好了。",
+     "id": "q310_08_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_08_02": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n張莉要帶什麼來？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "毛筆"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "筷子"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "毽子"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "老師：下個禮拜是文化週，你們要介紹什麼？\n張莉：我可以帶毛筆來，教大家寫書法。\n東明：我想介紹臺灣小吃，請媽媽幫我做炒米粉。\n大文：我很會扯鈴，我要表演扯鈴。\n心美：我要教大家怎麼用筷子夾豆子。\n大文：除了扯鈴，我還可以踢毽子，我踢毽子也很厲害。\n老師：非常好！大家回去好好準備吧！\n友朋：我什麼都不會，怎麼辦？\n心美：沒關係，你跟我一起夾豆子就好了。",
+     "id": "q310_08_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_08_03": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n東明想介紹什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "臺灣小吃"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "臺灣歷史"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "臺灣音樂"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "老師：下個禮拜是文化週，你們要介紹什麼？\n張莉：我可以帶毛筆來，教大家寫書法。\n東明：我想介紹臺灣小吃，請媽媽幫我做炒米粉。\n大文：我很會扯鈴，我要表演扯鈴。\n心美：我要教大家怎麼用筷子夾豆子。\n大文：除了扯鈴，我還可以踢毽子，我踢毽子也很厲害。\n老師：非常好！大家回去好好準備吧！\n友朋：我什麼都不會，怎麼辦？\n心美：沒關係，你跟我一起夾豆子就好了。",
+     "id": "q310_08_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_08_04": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n誰幫東明做炒米粉？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "媽媽"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "爸爸"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "老師"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "老師：下個禮拜是文化週，你們要介紹什麼？\n張莉：我可以帶毛筆來，教大家寫書法。\n東明：我想介紹臺灣小吃，請媽媽幫我做炒米粉。\n大文：我很會扯鈴，我要表演扯鈴。\n心美：我要教大家怎麼用筷子夾豆子。\n大文：除了扯鈴，我還可以踢毽子，我踢毽子也很厲害。\n老師：非常好！大家回去好好準備吧！\n友朋：我什麼都不會，怎麼辦？\n心美：沒關係，你跟我一起夾豆子就好了。",
+     "id": "q310_08_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_08_05": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n大文除了扯鈴，還會什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "踢毽子"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "寫書法"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "夾豆子"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "老師：下個禮拜是文化週，你們要介紹什麼？\n張莉：我可以帶毛筆來，教大家寫書法。\n東明：我想介紹臺灣小吃，請媽媽幫我做炒米粉。\n大文：我很會扯鈴，我要表演扯鈴。\n心美：我要教大家怎麼用筷子夾豆子。\n大文：除了扯鈴，我還可以踢毽子，我踢毽子也很厲害。\n老師：非常好！大家回去好好準備吧！\n友朋：我什麼都不會，怎麼辦？\n心美：沒關係，你跟我一起夾豆子就好了。",
+     "id": "q310_08_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_08_06": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n心美要教大家怎麼做？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "用筷子夾豆子"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "踢毽子"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "扯鈴"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "老師：下個禮拜是文化週，你們要介紹什麼？\n張莉：我可以帶毛筆來，教大家寫書法。\n東明：我想介紹臺灣小吃，請媽媽幫我做炒米粉。\n大文：我很會扯鈴，我要表演扯鈴。\n心美：我要教大家怎麼用筷子夾豆子。\n大文：除了扯鈴，我還可以踢毽子，我踢毽子也很厲害。\n老師：非常好！大家回去好好準備吧！\n友朋：我什麼都不會，怎麼辦？\n心美：沒關係，你跟我一起夾豆子就好了。",
+     "id": "q310_08_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_08_07": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n友朋為什麼說「怎麼辦」？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "他什麼都不會"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "他生病了"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "他找不到功課"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "老師：下個禮拜是文化週，你們要介紹什麼？\n張莉：我可以帶毛筆來，教大家寫書法。\n東明：我想介紹臺灣小吃，請媽媽幫我做炒米粉。\n大文：我很會扯鈴，我要表演扯鈴。\n心美：我要教大家怎麼用筷子夾豆子。\n大文：除了扯鈴，我還可以踢毽子，我踢毽子也很厲害。\n老師：非常好！大家回去好好準備吧！\n友朋：我什麼都不會，怎麼辦？\n心美：沒關係，你跟我一起夾豆子就好了。",
+     "id": "q310_08_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_08_08": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n心美叫友朋做什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "跟她一起夾豆子"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "去表演扯鈴"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "寫書法"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "老師：下個禮拜是文化週，你們要介紹什麼？\n張莉：我可以帶毛筆來，教大家寫書法。\n東明：我想介紹臺灣小吃，請媽媽幫我做炒米粉。\n大文：我很會扯鈴，我要表演扯鈴。\n心美：我要教大家怎麼用筷子夾豆子。\n大文：除了扯鈴，我還可以踢毽子，我踢毽子也很厲害。\n老師：非常好！大家回去好好準備吧！\n友朋：我什麼都不會，怎麼辦？\n心美：沒關係，你跟我一起夾豆子就好了。",
+     "id": "q310_08_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s310_9": {
+   "id": "s310_9",
+   "title": "第 9 大題：是非題（課文） True or false",
+   "type": "choice",
+   "order": 8,
+   "questions": {
+    "q310_09_01": {
+     "prompt": "判斷對錯。 True or false?\n\n張莉要教大家寫書法。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "老師：下個禮拜是文化週，你們要介紹什麼？\n張莉：我可以帶毛筆來，教大家寫書法。\n東明：我想介紹臺灣小吃，請媽媽幫我做炒米粉。\n大文：我很會扯鈴，我要表演扯鈴。\n心美：我要教大家怎麼用筷子夾豆子。\n大文：除了扯鈴，我還可以踢毽子，我踢毽子也很厲害。\n老師：非常好！大家回去好好準備吧！\n友朋：我什麼都不會，怎麼辦？\n心美：沒關係，你跟我一起夾豆子就好了。",
+     "id": "q310_09_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_09_02": {
+     "prompt": "判斷對錯。 True or false?\n\n東明要表演扯鈴。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c2"
+     ],
+     "passage": "老師：下個禮拜是文化週，你們要介紹什麼？\n張莉：我可以帶毛筆來，教大家寫書法。\n東明：我想介紹臺灣小吃，請媽媽幫我做炒米粉。\n大文：我很會扯鈴，我要表演扯鈴。\n心美：我要教大家怎麼用筷子夾豆子。\n大文：除了扯鈴，我還可以踢毽子，我踢毽子也很厲害。\n老師：非常好！大家回去好好準備吧！\n友朋：我什麼都不會，怎麼辦？\n心美：沒關係，你跟我一起夾豆子就好了。",
+     "id": "q310_09_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_09_03": {
+     "prompt": "判斷對錯。 True or false?\n\n大文很會扯鈴，也會踢毽子。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "老師：下個禮拜是文化週，你們要介紹什麼？\n張莉：我可以帶毛筆來，教大家寫書法。\n東明：我想介紹臺灣小吃，請媽媽幫我做炒米粉。\n大文：我很會扯鈴，我要表演扯鈴。\n心美：我要教大家怎麼用筷子夾豆子。\n大文：除了扯鈴，我還可以踢毽子，我踢毽子也很厲害。\n老師：非常好！大家回去好好準備吧！\n友朋：我什麼都不會，怎麼辦？\n心美：沒關係，你跟我一起夾豆子就好了。",
+     "id": "q310_09_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_09_04": {
+     "prompt": "判斷對錯。 True or false?\n\n友朋什麼都會。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c2"
+     ],
+     "passage": "老師：下個禮拜是文化週，你們要介紹什麼？\n張莉：我可以帶毛筆來，教大家寫書法。\n東明：我想介紹臺灣小吃，請媽媽幫我做炒米粉。\n大文：我很會扯鈴，我要表演扯鈴。\n心美：我要教大家怎麼用筷子夾豆子。\n大文：除了扯鈴，我還可以踢毽子，我踢毽子也很厲害。\n老師：非常好！大家回去好好準備吧！\n友朋：我什麼都不會，怎麼辦？\n心美：沒關係，你跟我一起夾豆子就好了。",
+     "id": "q310_09_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_09_05": {
+     "prompt": "判斷對錯。 True or false?\n\n老師覺得大家的想法很好。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "老師：下個禮拜是文化週，你們要介紹什麼？\n張莉：我可以帶毛筆來，教大家寫書法。\n東明：我想介紹臺灣小吃，請媽媽幫我做炒米粉。\n大文：我很會扯鈴，我要表演扯鈴。\n心美：我要教大家怎麼用筷子夾豆子。\n大文：除了扯鈴，我還可以踢毽子，我踢毽子也很厲害。\n老師：非常好！大家回去好好準備吧！\n友朋：我什麼都不會，怎麼辦？\n心美：沒關係，你跟我一起夾豆子就好了。",
+     "id": "q310_09_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s310_10": {
+   "id": "s310_10",
+   "title": "第 10 大題：任務活動（猜猜他們是誰） Guess who",
+   "type": "choice",
+   "order": 9,
+   "questions": {
+    "q310_10_01": {
+     "prompt": "請猜猜他們是誰。 Guess who they are.\n\nA 是誰？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "張莉"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "東明"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "大文"
+      },
+      "c4": {
+       "id": "c4",
+       "text": "心美"
+      },
+      "c5": {
+       "id": "c5",
+       "text": "友朋"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "Q：下個禮拜是文化週，你們想介紹什麼？\nA：我可以帶毛筆來教大家寫書法。\nB：我想介紹臺灣小吃，請媽媽幫我做炒米粉。\nC：我很會扯鈴，我要表演扯鈴。除了扯鈴我還要表演踢毽子，我踢毽子也很厲害。\nD：我要教大家怎麼用筷子夾豆子。\nE：我什麼都不會怎麼辦？",
+     "id": "q310_10_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_10_02": {
+     "prompt": "請猜猜他們是誰。 Guess who they are.\n\nB 是誰？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "張莉"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "東明"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "大文"
+      },
+      "c4": {
+       "id": "c4",
+       "text": "心美"
+      },
+      "c5": {
+       "id": "c5",
+       "text": "友朋"
+      }
+     },
+     "answerIds": [
+      "c2"
+     ],
+     "passage": "Q：下個禮拜是文化週，你們想介紹什麼？\nA：我可以帶毛筆來教大家寫書法。\nB：我想介紹臺灣小吃，請媽媽幫我做炒米粉。\nC：我很會扯鈴，我要表演扯鈴。除了扯鈴我還要表演踢毽子，我踢毽子也很厲害。\nD：我要教大家怎麼用筷子夾豆子。\nE：我什麼都不會怎麼辦？",
+     "id": "q310_10_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_10_03": {
+     "prompt": "請猜猜他們是誰。 Guess who they are.\n\nC 是誰？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "張莉"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "東明"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "大文"
+      },
+      "c4": {
+       "id": "c4",
+       "text": "心美"
+      },
+      "c5": {
+       "id": "c5",
+       "text": "友朋"
+      }
+     },
+     "answerIds": [
+      "c3"
+     ],
+     "passage": "Q：下個禮拜是文化週，你們想介紹什麼？\nA：我可以帶毛筆來教大家寫書法。\nB：我想介紹臺灣小吃，請媽媽幫我做炒米粉。\nC：我很會扯鈴，我要表演扯鈴。除了扯鈴我還要表演踢毽子，我踢毽子也很厲害。\nD：我要教大家怎麼用筷子夾豆子。\nE：我什麼都不會怎麼辦？",
+     "id": "q310_10_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_10_04": {
+     "prompt": "請猜猜他們是誰。 Guess who they are.\n\nD 是誰？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "張莉"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "東明"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "大文"
+      },
+      "c4": {
+       "id": "c4",
+       "text": "心美"
+      },
+      "c5": {
+       "id": "c5",
+       "text": "友朋"
+      }
+     },
+     "answerIds": [
+      "c4"
+     ],
+     "passage": "Q：下個禮拜是文化週，你們想介紹什麼？\nA：我可以帶毛筆來教大家寫書法。\nB：我想介紹臺灣小吃，請媽媽幫我做炒米粉。\nC：我很會扯鈴，我要表演扯鈴。除了扯鈴我還要表演踢毽子，我踢毽子也很厲害。\nD：我要教大家怎麼用筷子夾豆子。\nE：我什麼都不會怎麼辦？",
+     "id": "q310_10_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_10_05": {
+     "prompt": "請猜猜他們是誰。 Guess who they are.\n\nE 是誰？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "張莉"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "東明"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "大文"
+      },
+      "c4": {
+       "id": "c4",
+       "text": "心美"
+      },
+      "c5": {
+       "id": "c5",
+       "text": "友朋"
+      }
+     },
+     "answerIds": [
+      "c5"
+     ],
+     "passage": "Q：下個禮拜是文化週，你們想介紹什麼？\nA：我可以帶毛筆來教大家寫書法。\nB：我想介紹臺灣小吃，請媽媽幫我做炒米粉。\nC：我很會扯鈴，我要表演扯鈴。除了扯鈴我還要表演踢毽子，我踢毽子也很厲害。\nD：我要教大家怎麼用筷子夾豆子。\nE：我什麼都不會怎麼辦？",
+     "id": "q310_10_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s310_11": {
+   "id": "s310_11",
+   "title": "第 11 大題：讀讀看，寫上漢字 Read the zhuyin and write the characters",
+   "type": "fill",
+   "order": 10,
+   "questions": {
+    "q310_11_01": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄌㄧˇ ㄅㄞˋ → {禮拜}",
+     "id": "q310_11_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_11_02": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄨㄣˊ ㄏㄨㄚˋ ㄓㄡ → {文化週}",
+     "id": "q310_11_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_11_03": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄇㄠˊ ㄅㄧˇ → {毛筆}",
+     "id": "q310_11_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_11_04": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄒㄧㄠˇ ㄔ → {小吃}",
+     "id": "q310_11_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_11_05": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄔㄠˇ ㄇㄧˇ ㄈㄣˇ → {炒米粉}",
+     "id": "q310_11_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_11_06": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄅㄧㄠˇ ㄧㄢˇ → {表演}",
+     "id": "q310_11_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_11_07": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄎㄨㄞˋ ˙ㄗ → {筷子}",
+     "id": "q310_11_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_11_08": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄉㄡˋ ˙ㄗ → {豆子}",
+     "id": "q310_11_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_11_09": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄔㄨˊ ˙ㄌㄜ → {除了}",
+     "id": "q310_11_09",
+     "order": 8,
+     "title": "第 9 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_11_10": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄐㄧㄢˋ ˙ㄗ → {毽子}",
+     "id": "q310_11_10",
+     "order": 9,
+     "title": "第 10 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_11_11": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄌㄧˋ ㄏㄞˋ → {厲害}",
+     "id": "q310_11_11",
+     "order": 10,
+     "title": "第 11 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_11_12": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄗㄣˇ ˙ㄇㄜ ㄅㄢˋ → {怎麼辦}",
+     "id": "q310_11_12",
+     "order": 11,
+     "title": "第 12 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s310_12": {
+   "id": "s310_12",
+   "title": "第 12 大題：說說看（句型） Speaking",
+   "type": "record",
+   "order": 11,
+   "questions": {
+    "q310_12_01": {
+     "prompt": "下個禮拜是文化週，你想介紹什麼？ Next week is Culture Week. What would you introduce?",
+     "reference": "我想介紹臺灣小吃，請媽媽幫我做炒米粉。",
+     "maxSec": 45,
+     "id": "q310_12_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_12_02": {
+     "prompt": "請用「除了…，還…」說一個句子。 Make a sentence with 除了…還….",
+     "reference": "我除了會說中文，還會說英文。",
+     "maxSec": 30,
+     "id": "q310_12_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_12_03": {
+     "prompt": "請用「怎麼辦？」問一個問題。 Ask a question with 怎麼辦.",
+     "reference": "我找不到功課，怎麼辦？",
+     "maxSec": 30,
+     "id": "q310_12_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_12_04": {
+     "prompt": "請用「…就好了」說一個句子。 Make a sentence with …就好了.",
+     "reference": "生病的時候，在家休息就好了。",
+     "maxSec": 30,
+     "id": "q310_12_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_12_05": {
+     "prompt": "請用「什麼…都」說一個句子。 Make a sentence with 什麼…都.",
+     "reference": "我什麼都想吃。",
+     "maxSec": 30,
+     "id": "q310_12_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s310_13": {
+   "id": "s310_13",
+   "title": "第 13 大題：習寫漢字 Write the characters",
+   "type": "hanzi",
+   "order": 12,
+   "questions": {
+    "q310_13_01": {
+     "char": "拜",
+     "desc": "9畫，部首：手",
+     "id": "q310_13_01",
+     "order": 0,
+     "title": "第 1 題：拜",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_13_02": {
+     "char": "文",
+     "desc": "4畫，部首：文",
+     "id": "q310_13_02",
+     "order": 1,
+     "title": "第 2 題：文",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_13_03": {
+     "char": "化",
+     "desc": "4畫，部首：匕",
+     "id": "q310_13_03",
+     "order": 2,
+     "title": "第 3 題：化",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_13_04": {
+     "char": "毛",
+     "desc": "4畫，部首：毛",
+     "id": "q310_13_04",
+     "order": 3,
+     "title": "第 4 題：毛",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_13_05": {
+     "char": "炒",
+     "desc": "8畫，部首：火",
+     "id": "q310_13_05",
+     "order": 4,
+     "title": "第 5 題：炒",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_13_06": {
+     "char": "筷",
+     "desc": "13畫，部首：竹",
+     "id": "q310_13_06",
+     "order": 5,
+     "title": "第 6 題：筷",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_13_07": {
+     "char": "除",
+     "desc": "10畫，部首：阜",
+     "id": "q310_13_07",
+     "order": 6,
+     "title": "第 7 題：除",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_13_08": {
+     "char": "厲",
+     "desc": "15畫，部首：厂",
+     "id": "q310_13_08",
+     "order": 7,
+     "title": "第 8 題：厲",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_13_09": {
+     "char": "害",
+     "desc": "10畫，部首：宀",
+     "id": "q310_13_09",
+     "order": 8,
+     "title": "第 9 題：害",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_13_10": {
+     "char": "辦",
+     "desc": "16畫，部首：辛",
+     "id": "q310_13_10",
+     "order": 9,
+     "title": "第 10 題：辦",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s310_14": {
+   "id": "s310_14",
+   "title": "第 14 大題：我會念（課文、認讀漢字） Read aloud",
+   "type": "record",
+   "order": 13,
+   "questions": {
+    "q310_14_01": {
+     "prompt": "請念出課文第一段。 Read the first part of the text.",
+     "reference": "老師：下個禮拜是文化週，你們要介紹什麼？\n張莉：我可以帶毛筆來，教大家寫書法。\n東明：我想介紹臺灣小吃，請媽媽幫我做炒米粉。\n大文：我很會扯鈴，我要表演扯鈴。\n心美：我要教大家怎麼用筷子夾豆子。",
+     "maxSec": 60,
+     "passage": "老師：下個禮拜是文化週，你們要介紹什麼？\n張莉：我可以帶毛筆來，教大家寫書法。\n東明：我想介紹臺灣小吃，請媽媽幫我做炒米粉。\n大文：我很會扯鈴，我要表演扯鈴。\n心美：我要教大家怎麼用筷子夾豆子。",
+     "id": "q310_14_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_14_02": {
+     "prompt": "請念出課文第二段。 Read the second part of the text.",
+     "reference": "大文：除了扯鈴，我還可以踢毽子，我踢毽子也很厲害。\n老師：非常好！大家回去好好準備吧！\n友朋：我什麼都不會，怎麼辦？\n心美：沒關係，你跟我一起夾豆子就好了。",
+     "maxSec": 60,
+     "passage": "大文：除了扯鈴，我還可以踢毽子，我踢毽子也很厲害。\n老師：非常好！大家回去好好準備吧！\n友朋：我什麼都不會，怎麼辦？\n心美：沒關係，你跟我一起夾豆子就好了。",
+     "id": "q310_14_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q310_14_03": {
+     "prompt": "請念出這些認讀漢字。 Read these characters aloud.",
+     "reference": "粉　表　演　夾　豆　毽　教",
+     "maxSec": 30,
+     "id": "q310_14_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  }
+ },
+ "currentQId": "q310_01_01"
+}
