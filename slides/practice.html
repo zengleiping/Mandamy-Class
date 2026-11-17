@@ -4690,7 +4690,9 @@ window.mmTA = (function(){
     if(!ref0) return Promise.resolve(typeof val === "string" ? val : null); // 舊格式：資料網址／一般網址
     if(mediaObjUrlCache[ref0.key]) return Promise.resolve(mediaObjUrlCache[ref0.key]);
     if(!MO || !MO.ok) return Promise.resolve(ref0.url || null);
-    return MO.getMedia(ref0.key).then(function(rec){
+    // IndexedDB 偶爾會卡住不回應（被別的分頁佔著、瀏覽器的儲存限制…）：等太久就直接用雲端網址，不然圖片永遠出不來
+    var gm = Promise.race([MO.getMedia(ref0.key), new Promise(function(res){ setTimeout(function(){ res(undefined); }, 2500); })]);
+    return gm.then(function(rec){
       if(rec && rec.blob){ var u = URL.createObjectURL(rec.blob); mediaObjUrlCache[ref0.key] = u; return u; }
       if(ref0.url){
         if(!isStudent && !mediaFetching[ref0.key]){ mediaFetching[ref0.key] = true;
@@ -13200,8 +13202,8 @@ window.mmTA = (function(){
       gridOverlay.style.height = side + "px";
     }
     var lastFitW = 0, lastFitH = 0, lastStageW = 0, lastStageH = 0;
-    function fitCanvasToViewport(){
-      if(!document.body.contains(cWrap)) return; // 題目已經切換掉了，這份畫布不在畫面上，略過
+    // 舞台區「應該有」的可用寬高（fitCanvasToViewport 與下面的每秒檢查共用同一個算法）
+    function computeAvail(){
       var availableHeight, availableWidth;
       if(container.classList.contains("canvas-fs-active")){
         // 全螢幕模式：整個瀏覽器視窗都是作答區，工具列改成浮在畫布上、不佔版面寬度，
@@ -13214,6 +13216,11 @@ window.mmTA = (function(){
         availableHeight = Math.max(220, bottomLimit - wrapRect.top - 6);
         availableWidth = Math.max(220, layout.clientWidth - (vToolbar.classList.contains("tb-collapsed") || vToolbar.classList.contains("tb-hidden") ? 0 : vToolbar.offsetWidth + 16));
       }
+      return [availableWidth, availableHeight];
+    }
+    function fitCanvasToViewport(){
+      if(!document.body.contains(cWrap)) return; // 題目已經切換掉了，這份畫布不在畫面上，略過
+      var av = computeAvail(), availableWidth = av[0], availableHeight = av[1];
       stageArea.style.width = Math.floor(availableWidth) + "px";
       stageArea.style.height = Math.floor(availableHeight) + "px";
 
@@ -13251,6 +13258,33 @@ window.mmTA = (function(){
       }
       [150, 600, 1500].forEach(function(ms){ setTimeout(again, ms); });
       document.addEventListener("visibilitychange", again);
+      ["focus", "pageshow", "orientationchange", "fullscreenchange"].forEach(function(ev){ window.addEventListener(ev, again); });
+      if(window.ResizeObserver){ try{ roFit.observe(document.documentElement); }catch(er){} }
+      // 保險：上面的監聽都沒有觸發的情況（例如 Chrome 的分頁分享、Meet 的浮動視窗、電腦睡眠喚醒、側欄切換造成尺寸量錯）
+      // 畫布就會縮在最左邊或整片空白，只剩「放映」能救。這裡每秒對一次「應有的尺寸」，差太多就自動重算；
+      // 並且把當時的狀態記在 localStorage.mm_layout_diag（最近 3 次），下次再發生時可以查原因。
+      (function(){
+        var heals = 0, healWindowStart = Date.now();
+        var wd = setInterval(function(){
+          if(!document.body.contains(cWrap)){ clearInterval(wd); return; }
+          if(document.hidden) return;
+          var lr = layout.getBoundingClientRect(); if(!lr.width || !lr.height) return;   // 整個被藏起來：等顯示了再算
+          var av = computeAvail(), w = av[0], h = w / BOARD_ASPECT_RATIO;
+          if(h > av[1]){ h = av[1]; w = h * BOARD_ASPECT_RATIO; }
+          var aw = cWrap.offsetWidth, ah = cWrap.offsetHeight;
+          // 版面剛變動的幾毫秒、或算法差個幾像素都是正常的；只有「差很多」（像縮成一條細縫、整片空白）才修
+          if(Math.abs(aw - Math.floor(w)) <= Math.max(24, w * 0.06) && Math.abs(ah - Math.floor(h)) <= Math.max(24, h * 0.06)) return;
+          if(Date.now() - healWindowStart > 30000){ heals = 0; healWindowStart = Date.now(); }
+          if(heals >= 5) return;   // 一直修不好（例如被別的樣式限制住）就不要每秒重算
+          heals++;
+          try{
+            var rec = { t: new Date().toISOString(), expected: [Math.floor(w), Math.floor(h)], actual: [aw, ah], layout: [Math.round(lr.width), Math.round(lr.height)], stageStyle: [stageArea.style.width, stageArea.style.height], inner: [window.innerWidth, window.innerHeight], vis: document.visibilityState, fs: container.classList.contains("canvas-fs-active"), toolbar: vToolbar.className, dpr: window.devicePixelRatio };
+            console.warn("[mm] 畫布尺寸跟應有的不符，自動重算", rec);
+            var old = JSON.parse(localStorage.getItem("mm_layout_diag") || "[]"); old.push(rec); localStorage.setItem("mm_layout_diag", JSON.stringify(old.slice(-3)));
+          }catch(er){}
+          fitCanvasToViewport();
+        }, 1000);
+      })();
     })();
 
     // 全螢幕作答區右上角的浮動退出鈕（跟工具列裡那顆「全螢幕／退出全螢幕」按鈕互為備援，
