@@ -4062,6 +4062,33 @@ async function hwLoadRoster(){ var r = await fbGet(hwBase(S.teacher.id, S.sel.c)
 // ---------- 線上考卷（聯絡簿裡的一種內容：學生各自作答，交卷後老師批改）----------
 function examRoomId(itemId, name){ var h = 5381, k = hwSkey(name); for(var i = 0; i < k.length; i++) h = ((h * 33) ^ k.charCodeAt(i)) >>> 0; return "ex_" + itemId + "_" + h.toString(36); }
 function examForMe(it, name){ if((it.kind || "hw") !== "exam") return true; var a = it.exam && it.exam.assignees; return !a || !a.length || a.indexOf(name) !== -1; }
+// ---------- 線上考卷：選題（全部／全班同一組／每位學生各自不同）----------
+// exam.qsel = { mode:"all"|"same"|"each", def:[題目id], per:{ 學生key:[題目id] } }；空的清單＝全部題目
+function examQList(proj){
+  var out = [], secs = (proj && proj.sections) || {}, n = 0;
+  Object.keys(secs).sort(function(a, b){ return (secs[a].order || 0) - (secs[b].order || 0); }).forEach(function(sk){
+    var qs = secs[sk].questions || {};
+    Object.keys(qs).sort(function(a, b){ return (qs[a].order || 0) - (qs[b].order || 0); }).forEach(function(k){
+      n++; var q = qs[k]; out.push({ id: k, n: Number(q.no) || n, t: String(q.prompt || q.title || "").replace(/\s+/g, " ").slice(0, 48) });
+    });
+  });
+  return out.sort(function(a, b){ return a.n - b.n; });
+}
+function examQSet(ex, name){
+  var s = ex && ex.qsel; if(!s || !s.mode || s.mode === "all") return null;
+  var a = s.mode === "each" ? (s.per || {})[hwSkey(name)] : s.def;
+  return (a && a.length) ? a : null;
+}
+function examFilterProject(proj, qs){
+  if(!qs || !qs.length) return proj;
+  var keep = {}; qs.forEach(function(k){ keep[k] = 1; });
+  Object.keys(proj.sections || {}).forEach(function(sk){
+    var sec = proj.sections[sk], qq = sec.questions; if(!qq) return;
+    Object.keys(qq).forEach(function(k){ if(!keep[k]) delete qq[k]; });
+    if(!Object.keys(qq).length) delete proj.sections[sk];
+  });
+  return proj;
+}
 function examAttPath(tid, cid, itemId, name){ return "teacherPlatform/" + tid + "/examAttempts/" + cid + "/" + itemId + (name != null ? "/" + hwSkey(name) : ""); }
 function examStatusLabel(a){
   if(!a) return "未開始"; if(a.status === "graded") return "已批改"; if(a.status === "submitted") return "已交卷"; if(a.status === "retake") return "可重考（還沒開始）"; return "作答中";
@@ -4070,17 +4097,29 @@ function bAHist(h){ return !h ? [] : (Array.isArray(h) ? h.slice() : Object.keys
 // 為這位學生建立（或沿用）他自己的作答房間：把老師題庫裡那份測驗複製一份進去，學生答的東西只存在這個房間
 async function examEnsureRoom(tid, it, name, ridOverride){
   var rid = ridOverride || examRoomId(it.id, name), ex = await fbGet("rooms/" + rid);
-  if(ex && ex.project) return rid;
+  var qs = examQSet(it.exam, name), sig = qs ? qs.slice().sort().join(",") : "", cid0 = S.student ? S.student.idx.c : S.sel.c;
+  if(ex && ex.project){
+    // 老師後來改了這位學生要檢討的題目：還沒交卷就換成新的題目（已作答的內容保留）
+    if(((ex.attempt && ex.attempt.qsig) || "") !== sig){
+      var att0 = await fbGet(examAttPath(tid, cid0, it.id, name));
+      if(!att0 || (att0.status !== "submitted" && att0.status !== "graded")){
+        var src0 = await fbGet("teacherLibraries/" + tid + "/projects/" + it.exam.pid);
+        if(src0){ var pj0 = JSON.parse(JSON.stringify(src0)); delete pj0.progress; await fbSet("rooms/" + rid + "/project", examFilterProject(pj0, qs)); await fbSet("rooms/" + rid + "/attempt/qsig", sig); }
+      }
+    }
+    return rid;
+  }
   var src = await fbGet("teacherLibraries/" + tid + "/projects/" + it.exam.pid);
   if(!src) throw new Error("找不到這份考卷內容，可能已被老師刪除。");
   var seeded = {}, srcProg = src.progress || {};
   Object.keys(srcProg).forEach(function(qid){
+    if(qs && qs.length && qs.indexOf(qid) === -1) return;
     var pp = srcProg[qid] || {}, one = {};
     ["texts", "images", "shapes", "tables", "groups", "medias", "mediaData", "gridType", "canvasRatio", "bgColor", "bgOp", "bgImage"].forEach(function(k){ if(pp[k] !== undefined && pp[k] !== null && !(Array.isArray(pp[k]) && !pp[k].length)) one[k] = pp[k]; });
     if(Object.keys(one).length) seeded[qid] = JSON.parse(JSON.stringify(one));
   });
-  var proj = JSON.parse(JSON.stringify(src)); delete proj.progress;
-  await fbSet("rooms/" + rid, { project: proj, sharedProgress: seeded, isOpen: true, classMode: (it.exam.mode === "practice" ? "practice" : "test"), theme: { bgMode: "light", accent: "seal" }, attempt: { item: it.id, name: name, tid: tid, cid: S.student ? S.student.idx.c : S.sel.c, s: S.student ? S.student.idx.s : null, tm: S.student ? S.student.idx.tm : null, cname: S.student ? S.student.cls.name : "", title: it.title } });
+  var proj = JSON.parse(JSON.stringify(src)); delete proj.progress; examFilterProject(proj, qs);
+  await fbSet("rooms/" + rid, { project: proj, sharedProgress: seeded, isOpen: true, classMode: (it.exam.mode === "practice" ? "practice" : "test"), theme: { bgMode: "light", accent: "seal" }, attempt: { item: it.id, qsig: sig, name: name, tid: tid, cid: S.student ? S.student.idx.c : S.sel.c, s: S.student ? S.student.idx.s : null, tm: S.student ? S.student.idx.tm : null, cname: S.student ? S.student.cls.name : "", title: it.title } });
   return rid;
 }
 async function renderStudentExam(){
@@ -5432,7 +5471,7 @@ async function renderBoard(cls){
     var att = (B.att || {})[it.id] || {}, ex = it.exam || {}, names = (ex.assignees && ex.assignees.length) ? ex.assignees : B.roster.slice();
     Object.keys(att).forEach(function(k){ var n = att[k].name || decodeURIComponent(k); if(names.indexOf(n) === -1) names.push(n); });
     var done = names.filter(function(n){ var a = att[hwSkey(n)]; return a && (a.status === "submitted" || a.status === "graded"); }).length;
-    var h = '<div class="note" style="margin-top:6px;">考卷：<b>' + esc(ex.ptitle || "") + '</b>　' + (ex.mode === "practice" ? "練習模式（作答時顯示對錯）" : "測驗模式（交卷後才知道對錯）") + (ex.minutes ? '　限時 ' + ex.minutes + ' 分鐘' : '') + '　對象：' + ((ex.assignees && ex.assignees.length) ? esc(ex.assignees.join("、")) : "全班") + '　截止 ' + esc(it.due ? hwFmt(hwDueTs(it)) : "未設") + '　<b>已交卷 ' + done + ' / ' + names.length + '</b>　<button class="btn sm" data-b="subs" data-id="' + it.id + '">' + (B.open[it.id] ? "收起名單" : "看名單與成績") + '</button></div>';
+    var h = '<div class="note" style="margin-top:6px;">考卷：<b>' + esc(ex.ptitle || "") + '</b>　' + (ex.mode === "practice" ? "練習模式（作答時顯示對錯）" : "測驗模式（交卷後才知道對錯）") + (ex.minutes ? '　限時 ' + ex.minutes + ' 分鐘' : '') + '　對象：' + ((ex.assignees && ex.assignees.length) ? esc(ex.assignees.join("、")) : "全班") + ((ex.qsel && ex.qsel.mode === "same") ? '　題目：自選 ' + (ex.qsel.def || []).length + ' 題' : (ex.qsel && ex.qsel.mode === "each") ? '　題目：每位學生各自不同' : '') + '　截止 ' + esc(it.due ? hwFmt(hwDueTs(it)) : "未設") + '　<b>已交卷 ' + done + ' / ' + names.length + '</b>　<button class="btn sm" data-b="subs" data-id="' + it.id + '">' + (B.open[it.id] ? "收起名單" : "看名單與成績") + '</button></div>';
     if(!B.open[it.id]) return h;
     names.sort(function(a, b){ return a.localeCompare(b, "zh-Hant"); });
     var wc = {}, gradedN = 0; Object.keys(att).forEach(function(k){ var a = att[k]; if(a.status !== "graded") return; gradedN++; (a.wrong || []).forEach(function(w){ var r = wc[w.t] = wc[w.t] || { t: w.t, n: 0, who: [] }; r.n++; r.who.push(a.name || decodeURIComponent(k)); }); });
@@ -5470,7 +5509,7 @@ async function renderBoard(cls){
         else if(a === "new"){ if(!needOwner()) return; openItemEditor(null, S.hwv.day, async function(){ items = await hwLoadItems(); B.items = items; draw(); }); }
         else if(a === "tpl-save"){
           if(!needOwner()) return; var tn = await askText("範本名稱", it.title); if(!tn) return;
-          var tp = { name: tn, kind: it.kind || "hw", title: it.title, body: it.body || "", progress: it.progress || "", links: it.links || [], files: it.files || [], exam: it.exam ? { pid: it.exam.pid, ptitle: it.exam.ptitle, mode: it.exam.mode, minutes: it.exam.minutes || 0, assignees: null } : null, dueTime: it.due ? it.due.slice(11, 16) : "23:59", createdAt: Date.now() };
+          var tp = { name: tn, kind: it.kind || "hw", title: it.title, body: it.body || "", progress: it.progress || "", links: it.links || [], files: it.files || [], exam: it.exam ? { pid: it.exam.pid, ptitle: it.exam.ptitle, mode: it.exam.mode, minutes: it.exam.minutes || 0, assignees: null, qsel: (it.exam.qsel && it.exam.qsel.mode === "same") ? it.exam.qsel : null } : null, dueTime: it.due ? it.due.slice(11, 16) : "23:59", createdAt: Date.now() };
           await fbSet("teacherPlatform/" + tid + "/templates/" + uid("tp_"), tp); toast("已存成範本「" + tn + "」，之後用「從範本新增」");
         }
         else if(a === "tpl-use"){
@@ -5538,7 +5577,47 @@ function pickTemplate(tid){
     };
   });
 }
-var EXAM_ROSTER = [];
+var EXAM_ROSTER = [], EXAM_Q = {};
+function examQLoad(pid, cb){
+  if(!pid || EXAM_Q[pid]) return; EXAM_Q[pid] = "loading";
+  fbGet("teacherLibraries/" + S.teacher.id + "/projects/" + pid).then(function(pr){ EXAM_Q[pid] = examQList(pr); if(cb) cb(); }).catch(function(){ delete EXAM_Q[pid]; });
+}
+function qNumParse(txt, list){
+  var set = {}; String(txt || "").replace(/[，、；;\s]+/g, ",").split(",").forEach(function(p){
+    var m = /^(\d+)(?:[-~－—–](\d+))?$/.exec(p); if(!m) return; var a = +m[1], b = m[2] ? +m[2] : a; if(a > b){ var t = a; a = b; b = t; }
+    list.forEach(function(q){ if(q.n >= a && q.n <= b) set[q.id] = 1; });
+  });
+  return list.filter(function(q){ return set[q.id]; }).map(function(q){ return q.id; });
+}
+function qNumFmt(ids, list){
+  var s = {}; (ids || []).forEach(function(i){ s[i] = 1; });
+  var ns = list.filter(function(q){ return s[q.id]; }).map(function(q){ return q.n; }), out = [], i = 0;
+  while(i < ns.length){ var j = i; while(j + 1 < ns.length && ns[j + 1] === ns[j] + 1) j++; out.push(j > i ? ns[i] + "-" + ns[j] : String(ns[i])); i = j + 1; }
+  return out.join(",");
+}
+function qselGet(qs, tg){ return tg === "def" ? (qs.def || []) : ((qs.per || {})[hwSkey(tg)] || []); }
+function qselPut(qs, tg, ids){ if(tg === "def") qs.def = ids; else { qs.per = qs.per || {}; qs.per[hwSkey(tg)] = ids; } }
+function examQselHtml(st, ex){
+  var q = ex.qsel || { mode: "all" }, mode = q.mode || "all", list = ex.pid ? EXAM_Q[ex.pid] : null;
+  var h = '<label>要出哪些題目（同一份考卷，每位學生要檢討的題目可以不同）</label><div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:4px;">' + [["all", "全部題目"], ["same", "全班同一組題目"], ["each", "每位學生各自不同"]].map(function(m){ return '<label style="display:inline-flex;gap:5px;align-items:center;margin:0;font-weight:600;"><input type="radio" name="ed-qmode" value="' + m[0] + '"' + (mode === m[0] ? " checked" : "") + '> ' + m[1] + '</label>'; }).join("") + '</div>';
+  if(mode === "all") return h;
+  if(!Array.isArray(list)) return h + '<p class="note">讀取題目中…</p>';
+  if(!list.length) return h + '<p class="note">這份考卷沒有題目。</p>';
+  function chips(tg){
+    var on = {}; qselGet(q, tg).forEach(function(i){ on[i] = 1; });
+    return '<div style="display:flex;flex-wrap:wrap;gap:4px;margin:6px 0;">' + list.map(function(x){ return '<button type="button" data-e="qchip" data-t="' + esc(tg) + '" data-id="' + esc(x.id) + '" title="' + esc(x.n + '. ' + x.t) + '" style="min-width:34px;padding:3px 6px;border-radius:8px;border:1px solid var(--line,#d8cfc2);cursor:pointer;font-size:14px;' + (on[x.id] ? 'background:var(--accent,#E8825A);color:#fff;border-color:transparent;font-weight:700;' : 'background:#fff;') + '">' + x.n + '</button>'; }).join("") + '</div>' +
+      '<div style="display:flex;gap:6px;flex-wrap:wrap;"><button type="button" class="btn sm" data-e="qall" data-t="' + esc(tg) + '">全選</button><button type="button" class="btn sm" data-e="qnone" data-t="' + esc(tg) + '">清空</button>' + (tg !== "def" ? '<button type="button" class="btn sm" data-e="qcopy" data-t="' + esc(tg) + '" title="把這位的題目套用給名單上所有學生">套用給所有學生</button>' : '') + '</div>';
+  }
+  if(mode === "same"){
+    return h + '<div style="margin:6px 0;"><input type="text" id="ed-qdef" value="' + esc(qNumFmt(q.def, list)) + '" placeholder="輸入題號，例如 1,3,5-8（點下面的號碼也可以）" style="width:100%;"><div class="note">共 ' + list.length + ' 題；已選 ' + (q.def || []).length + ' 題（沒選＝全部題目）</div>' + chips("def") + '</div>';
+  }
+  var names = (ex.assignees && ex.assignees.length) ? ex.assignees : EXAM_ROSTER;
+  if(!names.length) return h + '<p class="note">班級名單是空的，先到「名單與帳號」貼上名單。</p>';
+  return h + '<div class="note" style="margin-bottom:4px;">每位學生輸入要檢討的題號（例如 1,3,5-8），或按「勾選」點號碼；沒填＝這位學生做全部 ' + list.length + ' 題。</div>' + names.map(function(n){
+    var cur = qselGet(q, n), open = st._qpick === n;
+    return '<div style="border-top:1px solid var(--line,#eee);padding:5px 0;"><div style="display:flex;gap:6px;align-items:center;"><b style="min-width:70px;">' + esc(n) + '</b><input type="text" class="ed-qper" data-n="' + esc(n) + '" value="' + esc(qNumFmt(cur, list)) + '" placeholder="全部" style="flex:1;"><span class="note" style="min-width:48px;">' + (cur.length ? cur.length + ' 題' : '全部') + '</span><button type="button" class="btn sm" data-e="qpick" data-t="' + esc(n) + '">' + (open ? "收起" : "勾選") + '</button></div>' + (open ? chips(n) : '') + '</div>';
+  }).join("");
+}
 function examProjectOptions(selected){
   var all = S.allProjects || {}, lm = S.plat.lessonMap || {};
   return Object.keys(all).filter(function(pid){ return (all[pid].quiz || 0) > 0; }).map(function(pid){
@@ -5554,7 +5633,7 @@ function examEditorHtml(st){
     '<label>限時作答（分鐘，0＝不限時）</label><input type="number" id="ed-exmin" min="0" max="300" value="' + (ex.minutes || 0) + '" style="width:100px;"><span class="note">　學生按「開始作答」才開始倒數，時間到自動交卷</span>' +
     '<label>作答模式</label><select id="ed-exmode"><option value="test"' + (ex.mode !== "practice" ? " selected" : "") + '>測驗模式（交卷後才知道對錯）</option><option value="practice"' + (ex.mode === "practice" ? " selected" : "") + '>練習模式（填完立刻顯示對錯）</option></select>' +
     '<label>出給誰</label><label style="display:flex;align-items:center;gap:6px;margin:0 0 6px;font-weight:600;"><input type="checkbox" id="ed-exall"' + (all ? " checked" : "") + '> 全班</label>' +
-    '<div id="ed-exwho" style="' + (all ? "display:none;" : "") + '">' + (EXAM_ROSTER.length ? EXAM_ROSTER.map(function(n){ return '<label style="display:inline-flex;align-items:center;gap:4px;margin:2px 10px 2px 0;font-weight:400;"><input type="checkbox" class="ed-exn" value="' + esc(n) + '"' + (ex.assignees && ex.assignees.indexOf(n) !== -1 ? " checked" : "") + '> ' + esc(n) + '</label>'; }).join("") : '<span class="note">班級名單是空的，先到「名單與帳號」貼上名單。</span>') + '</div></div>';
+    '<div id="ed-exwho" style="' + (all ? "display:none;" : "") + '">' + (EXAM_ROSTER.length ? EXAM_ROSTER.map(function(n){ return '<label style="display:inline-flex;align-items:center;gap:4px;margin:2px 10px 2px 0;font-weight:400;"><input type="checkbox" class="ed-exn" value="' + esc(n) + '"' + (ex.assignees && ex.assignees.indexOf(n) !== -1 ? " checked" : "") + '> ' + esc(n) + '</label>'; }).join("") : '<span class="note">班級名單是空的，先到「名單與帳號」貼上名單。</span>') + '</div>' + examQselHtml(st, ex) + '</div>';
 }
 function openItemEditor(it, day, done, preset){
   var d = document.getElementById("hwed"), st = it ? JSON.parse(JSON.stringify(it)) : Object.assign({ kind: "hw", day: day, title: "", body: "", progress: "", links: [], files: [], due: day + "T23:59", publishAt: null }, preset ? JSON.parse(JSON.stringify(preset)) : {});
@@ -5580,11 +5659,29 @@ function openItemEditor(it, day, done, preset){
     var g = function(i){ return document.getElementById(i); }; if(!g("ed-kind")) return;
     st.kind = g("ed-kind").value; st.day = g("ed-day").value || st.day; st.title = g("ed-title").value; st.body = g("ed-body").value; st.progress = g("ed-plan").value;
     st.links = Array.prototype.map.call(document.querySelectorAll(".lk-u"), function(u, i){ return { name: document.querySelectorAll(".lk-n")[i].value.trim(), url: u.value.trim() }; });
-    if(st.kind === "exam" && g("ed-proj")){ var pj = g("ed-proj"); st.exam = { pid: pj.value, ptitle: pj.options[pj.selectedIndex] ? pj.options[pj.selectedIndex].dataset.t || pj.options[pj.selectedIndex].textContent : "", mode: g("ed-exmode").value, minutes: Math.max(0, Math.min(300, Number(g("ed-exmin").value) || 0)), assignees: g("ed-exall").checked ? null : Array.prototype.map.call(document.querySelectorAll(".ed-exn:checked"), function(x){ return x.value; }) }; }
+    if(st.kind === "exam" && g("ed-proj")){ var pj = g("ed-proj"), prevEx = st.exam || {}, prevQ = prevEx.qsel || null; st.exam = { pid: pj.value, ptitle: pj.options[pj.selectedIndex] ? pj.options[pj.selectedIndex].dataset.t || pj.options[pj.selectedIndex].textContent : "", mode: g("ed-exmode").value, minutes: Math.max(0, Math.min(300, Number(g("ed-exmin").value) || 0)), assignees: g("ed-exall").checked ? null : Array.prototype.map.call(document.querySelectorAll(".ed-exn:checked"), function(x){ return x.value; }) };
+      // 選題：換了考卷就重選；其餘讀目前畫面上輸入的題號
+      var qmEl = document.querySelector('input[name="ed-qmode"]:checked'), qm = qmEl ? qmEl.value : (prevQ && prevQ.mode) || "all", ql = EXAM_Q[pj.value];
+      if(prevEx.pid && prevEx.pid !== pj.value){ st.exam.qsel = null; }
+      else if(qm === "all"){ st.exam.qsel = null; }
+      else{
+        var nq = { mode: qm, def: (prevQ && prevQ.def) || [], per: Object.assign({}, (prevQ && prevQ.per) || {}) };
+        if(Array.isArray(ql)){
+          var de = g("ed-qdef"); if(qm === "same" && de) nq.def = qNumParse(de.value, ql);
+          Array.prototype.forEach.call(document.querySelectorAll(".ed-qper"), function(inp){ nq.per[hwSkey(inp.dataset.n)] = qNumParse(inp.value, ql); });
+        }
+        st.exam.qsel = nq;
+      }
+    }
     st.due = (st.kind === "hw" || st.kind === "exam") ? ((g("ed-dd").value || st.day) + "T" + (g("ed-dt").value || "23:59")) : "";
     var later = document.querySelector('input[name="ed-pub"]:checked').value === "later"; st.publishAt = later && g("ed-pd").value ? new Date(g("ed-pd").value + "T" + (g("ed-pt").value || "07:00") + ":00").getTime() : null;
     st._later = later;
   }
+  var draw0 = draw; draw = function(){
+    draw0();
+    var pe = document.getElementById("ed-proj");
+    if(st.kind === "exam" && pe && pe.value && !EXAM_Q[pe.value]) examQLoad(pe.value, function(){ if(document.getElementById("ed-kind")){ sync(); draw(); } });
+  };
   draw(); d.style.width = "min(640px,96vw)";
   hwLoadRoster().then(function(r){ EXAM_ROSTER = r; if(st.kind === "exam" && document.getElementById("ed-kind")){ sync(); draw(); } }).catch(function(){});
   d.onclick = async function(e){
@@ -5594,6 +5691,15 @@ function openItemEditor(it, day, done, preset){
     else if(a === "lk-del"){ st.links.splice(Number(b.dataset.i), 1); draw(); }
     else if(a === "f-del"){ st.files.splice(Number(b.dataset.i), 1); draw(); }
     else if(a === "f-add"){ document.getElementById("ed-file").click(); }
+    else if(a === "qchip" || a === "qall" || a === "qnone" || a === "qpick" || a === "qcopy"){
+      var qsx = st.exam && st.exam.qsel, lx = st.exam && EXAM_Q[st.exam.pid], tg = b.dataset.t; if(!qsx || !Array.isArray(lx)) return;
+      if(a === "qpick"){ st._qpick = st._qpick === tg ? null : tg; }
+      else if(a === "qchip"){ var curx = qselGet(qsx, tg).slice(), ix = curx.indexOf(b.dataset.id); if(ix >= 0) curx.splice(ix, 1); else curx.push(b.dataset.id); qselPut(qsx, tg, lx.filter(function(x){ return curx.indexOf(x.id) >= 0; }).map(function(x){ return x.id; })); }
+      else if(a === "qall"){ qselPut(qsx, tg, lx.map(function(x){ return x.id; })); }
+      else if(a === "qnone"){ qselPut(qsx, tg, []); }
+      else if(a === "qcopy"){ var srcx = qselGet(qsx, tg).slice(), nmx = (st.exam.assignees && st.exam.assignees.length) ? st.exam.assignees : EXAM_ROSTER; nmx.forEach(function(n){ qselPut(qsx, n, srcx.slice()); }); toast("已套用給 " + nmx.length + " 位學生"); }
+      draw();
+    }
     else if(a === "save"){
       if(busy) return; if(!st.title.trim()){ alert("請填標題。"); return; }
       if(st._later && !st.publishAt){ alert("請選排程的日期。"); return; }
@@ -5620,7 +5726,8 @@ function openItemEditor(it, day, done, preset){
     }
   };
   d.onchange = async function(e){
-    if(e.target.id === "ed-kind"){ sync(); draw(); return; }
+    if(e.target.id === "ed-kind" || e.target.id === "ed-proj" || e.target.name === "ed-qmode"){ sync(); draw(); return; }
+    if(e.target.id === "ed-qdef" || (e.target.classList && e.target.classList.contains("ed-qper"))){ sync(); draw(); return; }
     if(e.target.id === "ed-exall"){ var w = document.getElementById("ed-exwho"); if(w) w.style.display = e.target.checked ? "none" : ""; return; }
     if(e.target.id !== "ed-file") return;
     var fs = Array.prototype.slice.call(e.target.files); e.target.value = ""; sync();

@@ -310,6 +310,15 @@
    "bookTitle": "《學華語向前走》第三冊",
    "lesson": 10,
    "file": "content/b3-lesson10-quiz.json"
+  },
+  {
+   "id": "gz-115-exam-quiz",
+   "type": "project",
+   "bookTitle": "高中國文 第一冊",
+   "lesson": 20,
+   "onlyName": "莉評",
+   "file": "content/gz-115-exam-quiz.json",
+   "bookLike": "高中國文"
   }
  ]
 }
