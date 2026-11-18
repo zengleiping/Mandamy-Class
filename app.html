@@ -5731,7 +5731,7 @@ function openItemEditor(it, day, done, preset){
   };
   d.onchange = async function(e){
     if(e.target.id === "ed-kind" || e.target.id === "ed-proj" || e.target.name === "ed-qmode"){ sync(); draw(); return; }
-    if(e.target.id === "ed-qdef" || (e.target.classList && e.target.classList.contains("ed-qper"))){ sync(); draw(); return; }
+    if(e.target.id === "ed-qdef" || (e.target.classList && e.target.classList.contains("ed-qper"))){ setTimeout(function(){ if(document.getElementById("ed-kind")){ sync(); draw(); } }, 0); return; }
     if(e.target.id === "ed-exall"){ var w = document.getElementById("ed-exwho"); if(w) w.style.display = e.target.checked ? "none" : ""; return; }
     if(e.target.id !== "ed-file") return;
     var fs = Array.prototype.slice.call(e.target.files); e.target.value = ""; sync();
@@ -6796,7 +6796,8 @@ function lessonDeckMenu(no, kind, btn){
   var fit = pids.filter(function(p){ return (ps[p][kind] || 0) > 0 || p === S.sub; }); if(fit.length) pids = fit;   // 投影片只列有投影片的、測驗只列有題目的
   var curPid = S.tab === kind ? (S.sub && pids.indexOf(S.sub) >= 0 ? S.sub : pids[0]) : null;
   var items = pids.map(function(p){ var on = p === curPid; return '<button type="button" class="tab-dd-item' + (on ? ' on' : '') + '" data-ddtab="' + kind + '" data-ddsub="' + esc(p) + '">' + (on ? '✓ ' : '') + esc(ps[p].title || "（未命名）") + '</button>'; }).join("");
-  var acts = curPid ? '<div class="tab-dd-sep"></div><button type="button" class="tab-dd-item sm" data-ddact="resync" data-ddpid="' + esc(curPid) + '" title="通用教材改過之後，想讓這個班用最新版時按這個。這個班目前的筆記和自己改過的內容會收起來（不會刪掉）">↻ 用最新的通用教材重建這個班的存檔</button><button type="button" class="tab-dd-item sm" data-ddact="editmaster" data-ddpid="' + esc(curPid) + '" title="通用教材只能在教材區編輯">✎ 到教材區編輯通用版</button>' : '';
+  var qst = (curPid && kind === "quiz") ? (((((getCls(S.sel) || {}).lessonOpen || {})[no] || {}).qsel || {})[curPid] || {}).mode : null;
+  var acts = curPid ? (kind === "quiz" ? '<div class="tab-dd-sep"></div><button type="button" class="tab-dd-item sm" data-ddact="qsel" data-kind="quiz" data-ddpid="' + esc(curPid) + '" title="這份練習題只出部分題目；也可以讓每位學生各自檢討不同的題目（學生自習時只會看到自己的題目）">🎯 選題（' + (qst === "same" ? "全班同一組" : qst === "each" ? "每位學生不同" : "目前：全部題目") + '）</button>' : '') + '<div class="tab-dd-sep"></div><button type="button" class="tab-dd-item sm" data-ddact="resync" data-ddpid="' + esc(curPid) + '" title="通用教材改過之後，想讓這個班用最新版時按這個。這個班目前的筆記和自己改過的內容會收起來（不會刪掉）">↻ 用最新的通用教材重建這個班的存檔</button><button type="button" class="tab-dd-item sm" data-ddact="editmaster" data-ddpid="' + esc(curPid) + '" title="通用教材只能在教材區編輯">✎ 到教材區編輯通用版</button>' : '';
   return '<span class="tab-dd">' + btn.replace('</button>', ' <span class="tab-dd-arrow">▾</span></button>') + '<div class="tab-dd-menu">' + items + acts + '</div></span>';
 }
 // 班級存檔／通用教材的動作（從分頁下拉選單或「這一課還沒有簡報」按鈕）
@@ -6808,6 +6809,7 @@ async function classDeckAction(act, pid, kind){
     var key = S.lesson; S.lib = pk ? (act === "editmaster" ? { book: pk.book, key: key, pid: pid } : { book: pk.book, key: key, creating: key }) : { book: DEFAULT_BOOK };
     S.lesson = null; S.tab = null; S.sub = null; render(); return;
   }
+  if(act === "qsel"){ openClassQsel(pid); return; }
   if(act === "resync"){
     if(S.live && S.live.on){ alert("上課中不能重建存檔，請先結束上課。"); return; }
     var cur = S.sel && S.sel.c && S.classRooms && S.classRooms[S.sel.c] && S.classRooms[S.sel.c][pid];
@@ -6819,6 +6821,52 @@ async function classDeckAction(act, pid, kind){
     try{ await fbSet("teacherPlatform/" + S.teacher.id + "/classRooms/" + S.sel.c + "/" + pid, rec); }catch(e){ alert("重建失敗，請檢查網路。"); return; }
     toast("已重建，會用最新的通用教材開新的存檔"); renderLesson(getCls(S.sel)); return;
   }
+}
+// 班級的練習題選題：這份練習題要出哪些題（全部／全班同一組／每位學生各自不同），存在這個班這一課的開放設定裡
+function qselRead(prevQ, list, root){
+  var qmEl = root.querySelector('input[name="ed-qmode"]:checked'), qm = qmEl ? qmEl.value : (prevQ && prevQ.mode) || "all";
+  if(qm === "all") return null;
+  var nq = { mode: qm, def: (prevQ && prevQ.def) || [], per: Object.assign({}, (prevQ && prevQ.per) || {}) };
+  var de = root.querySelector("#ed-qdef"); if(qm === "same" && de) nq.def = qNumParse(de.value, list);
+  Array.prototype.forEach.call(root.querySelectorAll(".ed-qper"), function(inp){ nq.per[hwSkey(inp.dataset.n)] = qNumParse(inp.value, list); });
+  return nq;
+}
+async function openClassQsel(pid){
+  var cls = getCls(S.sel), key = S.lesson; if(!cls || !key) return;
+  var d = document.getElementById("qseldlg"); if(!d){ d = document.createElement("dialog"); d.id = "qseldlg"; document.body.appendChild(d); }
+  d.style.width = "min(640px,96vw)"; d.innerHTML = '<div class="rec-form"><p class="note">讀取題目中…</p></div>'; d.showModal();
+  var list; try{ list = examQList(await fbGet("teacherLibraries/" + S.teacher.id + "/projects/" + pid)); EXAM_Q[pid] = list; }catch(e){ d.close(); toast("讀取題目失敗，請檢查網路"); return; }
+  try{ EXAM_ROSTER = await hwLoadRoster(); }catch(e){ EXAM_ROSTER = []; }
+  var title = ((((S.plat.lessons || {})[key] || {}).projects || {})[pid] || {}).title || "練習題";
+  var cur = ((((cls.lessonOpen || {})[key] || {}).qsel || {})[pid]) || null;
+  var st = { _qpick: null }, ex = { pid: pid, assignees: null, qsel: cur ? JSON.parse(JSON.stringify(cur)) : null };
+  function sync(){ ex.qsel = qselRead(ex.qsel, list, d); }
+  function draw(){
+    d.innerHTML = '<form method="dialog" onsubmit="return false;" class="rec-form"><h3>🎯 選題：' + esc(title) + '</h3><p class="note" style="margin:0 0 6px;">學生自己練習這份題目時，只會看到分配給他的題目。上課中全班一起做的內容不受影響。</p>' + examQselHtml(st, ex) + '<div class="row"><button type="button" class="btn" data-e="cancel">取消</button><button type="button" class="btn primary" data-e="save">儲存</button></div></form>';
+  }
+  draw();
+  d.onchange = function(e){
+    if(e.target.name === "ed-qmode" || e.target.id === "ed-qdef" || (e.target.classList && e.target.classList.contains("ed-qper"))){ setTimeout(function(){ if(!d.open) return; sync(); draw(); }, 0); }
+  };
+  d.onclick = async function(e){
+    var b = e.target.closest("[data-e]"); if(!b) return; var a = b.dataset.e; sync();
+    if(a === "cancel"){ d.close(); return; }
+    if(a === "save"){
+      var q = ex.qsel; if(q && q.mode === "same" && !(q.def || []).length){ if(!confirm("全班同一組題目還沒有勾任何題目，會變成出全部題目。要繼續嗎？")) return; }
+      var o = cls.lessonOpen = cls.lessonOpen || {}, ko = o[key] = o[key] || {}; ko.qsel = ko.qsel || {};
+      try{ await fbSet(clsPath(S.sel) + "/lessonOpen/" + key + "/qsel/" + pid, q || null); }catch(er){ alert("儲存失敗，請檢查網路或 Firebase 規則。"); return; }
+      if(q) ko.qsel[pid] = q; else delete ko.qsel[pid];
+      d.close(); toast(q ? "已儲存選題（" + (q.mode === "each" ? "每位學生各自不同" : "全班同一組 " + (q.def || []).length + " 題") + "）" : "已改回出全部題目"); renderLesson(getCls(S.sel)); return;
+    }
+    var qsx = ex.qsel, tg = b.dataset.t; if(!qsx) return;
+    if(a === "qpick"){ st._qpick = st._qpick === tg ? null : tg; }
+    else if(a === "qchip"){ var curx = qselGet(qsx, tg).slice(), ix = curx.indexOf(b.dataset.id); if(ix >= 0) curx.splice(ix, 1); else curx.push(b.dataset.id); qselPut(qsx, tg, list.filter(function(x){ return curx.indexOf(x.id) >= 0; }).map(function(x){ return x.id; })); }
+    else if(a === "qall"){ qselPut(qsx, tg, list.map(function(x){ return x.id; })); }
+    else if(a === "qnone"){ qselPut(qsx, tg, []); }
+    else if(a === "qcopy"){ var srcx = qselGet(qsx, tg).slice(); EXAM_ROSTER.forEach(function(n){ qselPut(qsx, n, srcx.slice()); }); toast("已套用給 " + EXAM_ROSTER.length + " 位學生"); }
+    draw();
+  };
+  d.oncancel = function(e){ e.preventDefault(); d.close(); };
 }
 function lessonHtmlFrame(src){ return '<iframe class="frame" id="fr" src="' + esc(src + (S.focus ? "&nochrome=1" : "")) + '" allow="microphone; camera; autoplay; clipboard-write"></iframe>'; }
 function renderLessonCommon(no, open, teacher, liveStudent){
@@ -6885,7 +6933,8 @@ function renderLessonCommon(no, open, teacher, liveStudent){
       if(!S.sub || pids.indexOf(S.sub) === -1) S.sub = pids[0];
       sub = '<div class="subbar">' + (pids.length > 1 ? pids.map(function(p){ return '<button class="tab' + (p === S.sub ? ' on' : '') + '" data-sub="' + p + '" style="padding:5px 14px;font-size:15px;">' + esc(ps[p].title) + '</button>'; }).join("") : '') +
         '<span style="margin-left:auto;display:flex;gap:6px;align-items:center;"><span class="note">上課中？</span><input type="text" id="roomno" placeholder="房間號碼" inputmode="numeric" style="width:110px;padding:5px 8px;border-radius:8px;border:1.5px solid var(--line);"><button class="btn sm primary" id="roomgo">加入</button></span></div>';
-      frame = lessonHtmlFrame("slides/practice.html?v=" + MM_V + "&embed=1&solo=" + encodeURIComponent(S.sub) + "&tid=" + encodeURIComponent(S.student.idx.t) + "&focus=" + kind);
+      var myQs = kind === "quiz" ? examQSet((open.qsel || {})[S.sub], S.student.name) : null;   // 老師替這位學生選了哪些題（沒選＝全部）
+      frame = lessonHtmlFrame("slides/practice.html?v=" + MM_V + "&embed=1&solo=" + encodeURIComponent(S.sub) + "&tid=" + encodeURIComponent(S.student.idx.t) + "&focus=" + kind + (myQs ? "&qs=" + encodeURIComponent(myQs.join(",")) : ""));
     } else {
       frame = '<div class="empty"><h3 style="margin-bottom:8px;">' + (kind === "slides" ? "投影片" : "測驗與練習") + '</h3><p class="note">上課時，老師會給你一組房間號碼。<br>輸入後就能和老師一起看投影片、作答。</p><div class="join" style="justify-content:center;"><input type="text" id="roomno" placeholder="房間號碼" inputmode="numeric" style="width:160px;"><button class="btn primary" id="roomgo">加入</button></div></div>';
     }
