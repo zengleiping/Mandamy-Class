@@ -7673,16 +7673,19 @@ window.mmTA = (function(){
       if(!src){ resolve(null); return; }
       if(thumbImgCache[src]){ resolve(thumbImgCache[src]); return; }
       // mm: 參照先換成可以載入的網址（本機 IndexedDB 的 blob 網址，或雲端網址）
+      // 某一張圖一直載不下來（網路卡住、檔案太大）時，不能讓整排縮圖跟著卡死：最多等 7 秒，逾時就當作沒有這張圖
+      var settled = false, tmo = setTimeout(function(){ if(!settled){ settled = true; resolve(null); } }, 7000);
+      function done(v){ if(settled) return; settled = true; clearTimeout(tmo); resolve(v); }
       resolveMediaSrc(src, "").then(function(realSrc){
-        if(!realSrc){ resolve(null); return; }
+        if(!realSrc){ done(null); return; }
         var im = new Image();
         im.onload = function(){
           if(Object.keys(thumbImgCache).length > 60) thumbImgCache = {};
-          thumbImgCache[src] = im; resolve(im);
+          thumbImgCache[src] = im; done(im);
         };
-        im.onerror = function(){ resolve(null); };
+        im.onerror = function(){ done(null); };
         im.src = realSrc;
-      });
+      }, function(){ done(null); });
     });
   }
   function drawSlideThumb(q, cb, W0, asCanvas, live){
@@ -7808,12 +7811,16 @@ window.mmTA = (function(){
     var cached = slideThumbCache[qId];
     if(cached && cached.sig === sig){ applySlideThumb(qId, cached.url); pumpSlideThumbQueue(); return; }
     slideThumbBusy = true;
-    drawSlideThumb(item.question, function(url){
-      slideThumbCache[qId] = { sig: sig, url: url };
-      applySlideThumb(qId, url);
+    var jobDone = false;
+    function finishJob(url){
+      if(jobDone) return; jobDone = true; clearTimeout(guard);
+      if(url){ slideThumbCache[qId] = { sig: sig, url: url }; applySlideThumb(qId, url); }
       slideThumbBusy = false;
       pumpSlideThumbQueue();
-    });
+    }
+    // 保險：畫一張縮圖最多 12 秒，卡住就放掉換下一張，不讓後面所有縮圖都空白
+    var guard = setTimeout(function(){ finishJob(null); }, 12000);
+    try{ drawSlideThumb(item.question, finishJob); }catch(er){ console.warn("thumb", er); finishJob(null); }
   }
   function scheduleSlideThumb(qId){
     clearTimeout(slideThumbTimers[qId]);
