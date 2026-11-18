@@ -4751,17 +4751,18 @@ window.mmTA = (function(){
   var mediaSyncing = false;
   // 把還沒上傳的媒體（音檔、圖片）傳到 Firebase Storage（登入且有網路、Storage 可用時）。成功的參照會加上 @網址，再存回課程庫。
   // 上傳前把太大的圖片縮小（最長邊 1920px；沒有透明的改存 JPEG），學生端載入會快很多；本機保留原檔
-  async function shrinkImageBlob(blob){
+  async function shrinkImageBlob(blob, opt){
     try{
+      opt = opt || {};
       if(!blob || !/^image\/(png|jpeg|webp)$/.test(blob.type || "")) return blob;
       var url = URL.createObjectURL(blob), im = new Image(); im.src = url; await im.decode();
-      var W = im.naturalWidth, H = im.naturalHeight, k = Math.min(1, 1920 / Math.max(W, H));
-      if(k === 1 && blob.size < 600000){ URL.revokeObjectURL(url); return blob; }
+      var W = im.naturalWidth, H = im.naturalHeight, k = Math.min(1, (opt.edge || 1920) / Math.max(W, H));
+      if(k === 1 && blob.size < 600000 && !opt.always){ URL.revokeObjectURL(url); return blob; }
       var cv = document.createElement("canvas"); cv.width = Math.round(W * k); cv.height = Math.round(H * k);
       var cx = cv.getContext("2d"); cx.drawImage(im, 0, 0, cv.width, cv.height); URL.revokeObjectURL(url);
       var opaque = true;
       if(blob.type !== "image/jpeg"){ var d = cx.getImageData(0, 0, cv.width, cv.height).data; for(var i = 3; i < d.length; i += 40){ if(d[i] < 250){ opaque = false; break; } } }
-      var out = await new Promise(function(res){ if(opaque) cv.toBlob(res, "image/jpeg", 0.86); else cv.toBlob(res, "image/png"); });
+      var out = await new Promise(function(res){ if(opaque) cv.toBlob(res, "image/jpeg", opt.q || 0.86); else cv.toBlob(res, "image/png"); });
       return (out && out.size < blob.size) ? out : blob;
     }catch(e){ return blob; }
   }
@@ -4819,6 +4820,75 @@ window.mmTA = (function(){
       toast("影片已傳給學生，可以同步播放了");
     }catch(e){ console.warn("影片上傳失敗", e); toast("影片傳不到雲端，學生端看不到。目前雲端檔案儲存無法使用（Firebase 免費方案不支援），請改用「▶ YouTube」：把影片傳到 YouTube（設成不公開）後貼網址，全班可同步播放。"); mediaShareBusy[bk] = false; }
   }
+  // ---- 房間裡的圖片／音檔：確保學生拿得到 ----
+  // 問題：在上課的房間裡匯入簡報（或在房間裡插入本機檔案）時，圖片、背景圖、音檔只存在老師這台電腦的 IndexedDB，
+  // 房間的資料裡只有 mm:<key> 參照、沒有雲端網址；學生的電腦沒有這些檔案，就只看得到畫布。
+  // 以前只有「開房間的那一刻」會補傳，房間裡才匯入的內容完全沒人補。
+  // 做法：掃描房間裡所有「只有本機參照」的圖片／背景／音檔 → 傳到雲端換成 mm:key@網址；雲端不能用（Firebase 方案不支援、離線…）時，
+  // 圖片縮小後直接放進房間資料（有總量上限）；每批寫回房間，學生那邊會即時出現。
+  var mediaRepairBusy = false, mediaRepairFailAt = 0, mediaShareMemo = {}, mediaInlineBudget = 12000000, mediaLastErr = "";
+  function isLocalRef(v){ var r = parseMediaRef(v); return !!(r && !r.url); }
+  function noteMediaErr(e){
+    mediaLastErr = (e && (e.code || e.message)) || String(e);
+    try{ console.warn("[mm] 媒體上傳失敗", e); localStorage.setItem("mm_media_diag", JSON.stringify({ t: new Date().toISOString(), err: mediaLastErr, teacher: !!currentTeacher, storage: !!window.storageApi, online: navigator.onLine })); }catch(er){}
+  }
+  async function makeRefShareable(val, kind){
+    var r = parseMediaRef(val); if(!r || r.url) return val;
+    if(mediaShareMemo[r.key]) return mediaShareMemo[r.key];
+    var out = null;
+    try{
+      var rec = (MO && MO.ok) ? await MO.getMedia(r.key) : null;
+      if(!rec || !rec.blob) return val;                       // 這台電腦沒有這個檔案（在別台電腦匯入的）
+      if(window.storageApi && currentTeacher && navigator.onLine !== false){
+        try{
+          var upBlob = kind === "img" ? await shrinkImageBlob(rec.blob) : rec.blob;
+          if(upBlob.size < 29 * 1024 * 1024){
+            var sr = window.storageApi.ref(window.storageApi.storage, "teacherMedia/" + currentTeacher.id + "/" + r.key);
+            await window.storageApi.uploadBytes(sr, upBlob, { contentType: upBlob.type || rec.type || "application/octet-stream", cacheControl: "public, max-age=31536000" });
+            out = "mm:" + r.key + "@" + await window.storageApi.getDownloadURL(sr);
+          }
+        }catch(e){ noteMediaErr(e); }
+      }
+      if(!out && kind === "img"){
+        var sm = await shrinkImageBlob(rec.blob, { edge: 900, q: 0.72, always: true }), du = await blobToDataUrl(sm);
+        if(du.length <= 350000 && du.length <= mediaInlineBudget){ mediaInlineBudget -= du.length; out = du; }
+      }
+    }catch(e){ noteMediaErr(e); }
+    if(out) mediaShareMemo[r.key] = out;
+    return out || val;
+  }
+  async function repairRoomMedia(force){
+    if(!inRoom() || isStudent || !roomData || mediaRepairBusy) return;
+    if(!force && Date.now() - mediaRepairFailAt < 60000) return;
+    var base = "rooms/" + activeRoomId + "/", jobs = [];
+    var secs = (roomData.project && roomData.project.sections) || {};
+    Object.keys(secs).forEach(function(sid){ var qs = (secs[sid] && secs[sid].questions) || {}; Object.keys(qs).forEach(function(qid){ if(qs[qid] && isLocalRef(qs[qid].bgImage)) jobs.push({ path: base + "project/sections/" + sid + "/questions/" + qid + "/bgImage", val: qs[qid].bgImage, kind: "img" }); }); });
+    var sp = roomData.sharedProgress || {};
+    Object.keys(sp).forEach(function(qid){
+      var pp = sp[qid]; if(!pp) return; var bp = base + "sharedProgress/" + qid + "/";
+      if(isLocalRef(pp.bgImage)) jobs.push({ path: bp + "bgImage", val: pp.bgImage, kind: "img" });
+      if(pp.images) Object.keys(pp.images).forEach(function(i){ var im = pp.images[i]; if(im && isLocalRef(im.src)) jobs.push({ path: bp + "images/" + i + "/src", val: im.src, kind: "img" }); });
+      if(pp.mediaData) Object.keys(pp.mediaData).forEach(function(mid){ if(isLocalRef(pp.mediaData[mid])) jobs.push({ path: bp + "mediaData/" + mid, val: pp.mediaData[mid], kind: "audio" }); });
+    });
+    if(!jobs.length) return;
+    mediaRepairBusy = true;
+    var ok = 0, missing = 0, failed = 0, batch = {}, nb = 0;
+    try{
+      toast("正在把 " + jobs.length + " 個圖片／音檔傳給學生…（學生會陸續看到）");
+      for(var i = 0; i < jobs.length; i++){
+        var nv = await makeRefShareable(jobs[i].val, jobs[i].kind);
+        if(nv !== jobs[i].val){ batch[jobs[i].path] = nv; nb++; ok++; }
+        else { var rf = parseMediaRef(jobs[i].val), rec0 = null; try{ rec0 = (MO && MO.ok) ? await MO.getMedia(rf.key) : null; }catch(e){} if(!rec0 || !rec0.blob) missing++; else failed++; }
+        if(nb >= 8){ var b1 = batch; batch = {}; nb = 0; await update(ref(db), b1); }
+      }
+      if(nb) await update(ref(db), batch);
+    }catch(e){ console.error("[mm] 補傳圖片到房間失敗", e); failed++; }
+    mediaRepairBusy = false;
+    if(failed || missing) mediaRepairFailAt = Date.now();
+    if(!failed && !missing) toast("✅ " + ok + " 個圖片／音檔都傳給學生了");
+    else toast((ok ? "已傳 " + ok + " 個。" : "") + (missing ? missing + " 個檔案這台電腦找不到（可能是在別台電腦匯入的），學生看不到；請在匯入的那台電腦開課，或重新匯入。" : "") + (failed ? failed + " 個上傳失敗" + (mediaLastErr ? "（" + mediaLastErr + "）" : "") + "，學生可能看不到，稍後會再試一次。" : ""));
+  }
+  window.addEventListener("firebase-storage-ready", function(){ setTimeout(function(){ repairRoomMedia(true); }, 4000); });
   function countUnsyncedMedia(lib){ var n = 0; collectMediaSlots(lib).forEach(function(sl){ var r = parseMediaRef(sl.get()); if(r && !r.url) n++; }); return n; }
   window.addEventListener("firebase-storage-ready", function(){ setTimeout(function(){ syncMediaToCloud(); }, 3000); });
 
@@ -5010,7 +5080,7 @@ window.mmTA = (function(){
         var qids = Object.keys(extraProgress);
         var chain = update(ref(db, "rooms/" + activeRoomId), patch);
         qids.forEach(function(qid){ chain = chain.then(function(){ return update(ref(db, "rooms/" + activeRoomId + "/sharedProgress/" + qid), extraProgress[qid]); }); });
-        chain.catch(function(err){ console.error("同步匯入的投影片到房間失敗", err); alert("同步失敗，匯入的內容可能沒有完整存到雲端，請檢查網路連線後再試一次。\nSync failed — please check your connection and try again."); });
+        chain.then(function(){ setTimeout(function(){ repairRoomMedia(true); }, 400); }).catch(function(err){ console.error("同步匯入的投影片到房間失敗", err); alert("同步失敗，匯入的內容可能沒有完整存到雲端，請檢查網路連線後再試一次。\nSync failed — please check your connection and try again."); });
         return;
       }
       // update() 可能同步丟出例外（例如資料被 SDK 判定為無效），也可能非同步被雲端服務拒絕
@@ -7073,6 +7143,7 @@ window.mmTA = (function(){
 
   function startRoom(rId, role){
     activeRoomId = rId; roomRole = role;
+    if(role === "teacher"){ setTimeout(function(){ repairRoomMedia(true); }, 5000); }   // 進房間後檢查有沒有學生拿不到的圖片
     if(role === "teacher" && window.parent !== window){ try{ window.parent.postMessage({ mm: "room", id: rId }, "*"); }catch(e){} } // 平台嵌入：通知外殼，學生會自動進房
     if(window.__attempt){ /* 個別作答：不需要老師即時監看學生畫面 */ }
     else if(role === "student") startStudentSnapshotLoop(); else startTeacherSnapshotListener(rId);
