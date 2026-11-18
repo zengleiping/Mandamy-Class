@@ -151,6 +151,11 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .rb-st{ display:flex; gap:6px; align-items:center; flex-wrap:wrap; padding:4px 0; } .rb-st b{ min-width:70px; }
   .lib-grp{ display:inline-flex; align-items:flex-end; gap:0; margin-right:10px; padding-left:8px; border-left:1px solid var(--line); }
   .lib-grp:first-of-type{ border-left:none; }
+  .lib-it[draggable="true"], .lib-tabs .tab[draggable="true"]{ cursor:grab; }
+  .dnd-dragging{ opacity:.45; }
+  .lib-it.dnd-over{ box-shadow:inset 0 3px 0 #E8825A; }
+  .lib-tabs .tab.dnd-over{ box-shadow:inset 3px 0 0 #E8825A; background:#FFF1E8; }
+  .lib-grp.dnd-over-grp{ outline:2px dashed #E8825A; outline-offset:2px; border-radius:8px; }
   .lib-grp-t{ font-size:13px; font-weight:700; color:var(--ink-soft); align-self:center; margin-right:2px; white-space:nowrap; }
   .mainnav{ display:flex; gap:2px; margin-right:6px; }
   .mn{ border:none; background:none; padding:6px 10px; border-radius:10px; font:inherit; font-size:15.5px; font-weight:700; color:var(--ink-soft); cursor:pointer; display:inline-flex; gap:4px; align-items:center; white-space:nowrap; }
@@ -596,7 +601,7 @@ function bookIds(all){
     var sx = bookSeries(x), sy = bookSeries(y);
     if(!!sx !== !!sy) return sx ? -1 : 1;
     if(sx !== sy) return (so[sx] - so[sy]) || sx.localeCompare(sy);
-    if(sx){ var d = bookVol(x) - bookVol(y); if(d) return d; }
+    if(sx && !(b[x].man && b[y].man)){ var d = bookVol(x) - bookVol(y); if(d) return d; }
     return (b[x].order || 0) - (b[y].order || 0);
   });
 }
@@ -606,7 +611,7 @@ function multiBooks(){ return bookIds().length > 1; }
 function isUnit(no){ var l = (S.plat.lessons || {})[no]; return !!(l && l.unit); }
 function lessonsOfBook(bid){
   var L = S.plat.lessons || {};
-  return Object.keys(L).filter(function(k){ return !L[k].unit && (L[k].book || DEFAULT_BOOK) === bid; }).sort(function(a, b){ return L[a].no - L[b].no; });
+  return Object.keys(L).filter(function(k){ return !L[k].unit && (L[k].book || DEFAULT_BOOK) === bid; }).sort(function(a, b){ var oa = L[a].ord != null ? L[a].ord : L[a].no * 10, ob = L[b].ord != null ? L[b].ord : L[b].no * 10; return (oa - ob) || (L[a].no - L[b].no); });
 }
 function unitKeys(){ var L = S.plat.lessons || {}; return Object.keys(L).filter(function(k){ return L[k].unit; }).sort(function(a, b){ return (L[a].order || 0) - (L[b].order || 0); }); }
 function lessonKeys(cls){
@@ -1465,10 +1470,10 @@ async function startTeacher(acc, owner){
     S.teacher = { id: owner, name: (acc.displayName || acc.username) + "（助教）", role: "ta", me: acc.id };
   }
   root.innerHTML = '<div class="center-wrap"><div class="note">載入中…</div></div>';
-  var plat = {}, pbase = "teacherPlatform/" + S.teacher.id, pkeys = ["schools", "lessonMap", "lessons", "units", "books", "customLessons", "hier", "schedule", "classRecords", "meta", "assistants"];
+  var plat = {}, pbase = "teacherPlatform/" + S.teacher.id, pkeys = ["schools", "lessonMap", "lessons", "units", "books", "customLessons", "hier", "schedule", "classRecords", "meta", "assistants", "lessonOrder"];
   var pvals = await Promise.all(pkeys.map(function(k){ return fbGet(pbase + "/" + k).catch(function(){ return null; }); }));
   pkeys.forEach(function(k, i){ if(pvals[i] != null) plat[k] = pvals[i]; });
-  plat.schools = plat.schools || {}; plat.lessonMap = plat.lessonMap || {}; plat.lessons = plat.lessons || {}; plat.units = plat.units || {}; plat.books = plat.books || {}; plat.customLessons = plat.customLessons || {};
+  plat.schools = plat.schools || {}; plat.lessonMap = plat.lessonMap || {}; plat.lessons = plat.lessons || {}; plat.units = plat.units || {}; plat.books = plat.books || {}; plat.customLessons = plat.customLessons || {}; plat.lessonOrder = plat.lessonOrder || {};
   S.plat = plat;
   await migrateHier();
   S.plat.schedule = S.plat.schedule || {};
@@ -1692,6 +1697,7 @@ async function syncLessonIndex(){
     }
     lessons[key].projects[pid] = { title: p.title, slides: slides, quiz: quiz };
   });
+  var lo = S.plat.lessonOrder || {}; Object.keys(lessons).forEach(function(k){ if(!lessons[k].unit && lo[k] != null && lo[k] !== "") lessons[k].ord = Number(lo[k]); });   // 老師拖曳排過的課次順序（學生端也依這個順序）
   S.plat.lessons = lessons; S.plat.lessonMap = lm; S.unassigned = unassigned; S.allProjects = allProjects;
   var base = "teacherPlatform/" + t;
   try{ await fbUpdate(base, { lessons: lessons, lessonMap: lm, books: booksObj() }); }catch(e){ console.error("寫入課次索引失敗（可能是 Firebase 規則還沒開放 teacherPlatform）", e); S.ruleErr = true; }
@@ -2006,20 +2012,75 @@ function renderLibrary(){
         '<button class="lib-it' + (key === "_un" ? ' on' : '') + '" data-lk="_un"><b>📂 未分類</b>' + (unk.length ? ' <span class="chip" style="background:#FBEBC8;">' + unk.length + '</span>' : '') + '<span class="note">還沒歸到任何一課的簡報／測驗</span></button>' +
         '<button class="lib-it' + (key === "_trash" ? ' on' : '') + '" data-lk="_trash"><b>🗑️ 最近刪除</b>' + (trashN ? ' <span class="chip">' + trashN + '</span>' : '') + '<span class="note">30 天內可以還原</span></button></div>';
     } else {
-      nav = '<div class="lib-nav">' + ks.map(function(k){ var c = lessonCounts(k); return '<button class="lib-it' + (k === key ? ' on' : '') + '" data-lk="' + esc(k) + '"><b>第 ' + L[k].no + ' 課</b> ' + esc(L[k].title || "") + '<span class="note">生詞 ' + c.vocab + '・簡報／練習 ' + Object.keys(L[k].projects || {}).length + '</span></button>'; }).join("") +
+      nav = '<div class="lib-nav"><div class="note" style="margin:0 0 6px;font-size:13px;">⠿ 按住拖曳：重新排序；拖到上方的教材分頁＝移到那一本</div>' + ks.map(function(k){ var c = lessonCounts(k); return '<button class="lib-it' + (k === key ? ' on' : '') + '" data-lk="' + esc(k) + '" data-dlesson="' + esc(k) + '" draggable="true">' + (L[k].noNum ? '<b>' + esc(L[k].title || "（未命名）") + '</b>' : '<b>第 ' + L[k].no + ' 課</b> ' + esc(L[k].title || "")) + '<span class="note">生詞 ' + c.vocab + '・簡報／練習 ' + Object.keys(L[k].projects || {}).length + '</span></button>'; }).join("") +
         (us.length ? '<div class="lib-sep">複習單元</div>' + us.map(function(k){ return '<button class="lib-it' + (k === key ? ' on' : '') + '" data-lk="' + esc(k) + '"><b>📚 ' + esc(L[k].title || "") + '</b><span class="note">' + esc(memberRange(L[k].members)) + '</span></button>'; }).join("") : '') +
         '<button class="btn sm" data-newlesson="' + esc(cur) + '" style="margin-top:8px;width:100%;">＋ 新增課次</button></div>';
     }
     var pane = key === "_trash" ? libTrashHtml() : key === "_un" ? libUnassignedHtml() : key === "_sug" ? libSugHtml(sug) : key === "_none" ? '<div class="panel"><p class="note">這本教材還沒有課次。按左邊「＋ 新增課次」開始。</p></div>' : libLessonHtml(key);
     var grp = [], gi = {};
     bids.forEach(function(bk){ var sr = bookSeries(bk) || "__own"; if(gi[sr] == null){ gi[sr] = grp.length; grp.push({ sr: sr, ids: [] }); } grp[gi[sr]].ids.push(bk); });
-    var tabsHtml = grp.map(function(g){ return '<span class="lib-grp"><span class="lib-grp-t">' + (g.sr === "__own" ? '自編教材' : esc(g.sr)) + '</span>' + g.ids.map(function(bk){ return '<button class="tab' + (!tidy && bk === cur ? ' on' : '') + '" data-libbook="' + esc(bk) + '">' + esc(g.sr === "__own" ? bookTitle(bk) : bookShort(bk)) + '</button>'; }).join("") + '</span>'; }).join("");
+    var tabsHtml = grp.map(function(g){ return '<span class="lib-grp" data-dgrp="' + esc(g.sr) + '"><span class="lib-grp-t">' + (g.sr === "__own" ? '自編教材' : esc(g.sr)) + '</span>' + g.ids.map(function(bk){ return '<button class="tab' + (!tidy && bk === cur ? ' on' : '') + '" data-libbook="' + esc(bk) + '" data-dbook="' + esc(bk) + '" draggable="true" title="按住拖曳：調整順序、移到別的系列">' + esc(g.sr === "__own" ? bookTitle(bk) : bookShort(bk)) + '</button>'; }).join("") + '</span>'; }).join("");
     html = '<div class="tabs lib-tabs"><button class="tab" data-libback="1">‹ 返回</button>' + tabsHtml +
       '<span style="margin-left:auto;display:flex;gap:2px;flex-wrap:wrap;"><button class="tab" data-libimp="1" title="匯入別的老師分享的課次檔案">⬆ 匯入課次</button><button class="tab' + (tidy ? ' on' : '') + '" data-libtidy="1">🧹 整理' + (tidyN ? ' <span class="chip" style="background:#FBEBC8;">' + tidyN + '</span>' : '') + '</button><button class="tab" data-libadd="1">＋ 新增教材</button>' + (tidy ? '' : '<button class="tab" data-libren="1">⚙️ 教材設定</button>' + (cur === DEFAULT_BOOK ? '<button class="tab" data-libhide="1">隱藏這本</button>' : '<button class="tab" data-libdel="1" style="color:#B23B32;">刪除教材</button>')) + (hiddenN ? '<button class="tab" data-libunhide="1">已隱藏（' + hiddenN + '）</button>' : '') + '</span></div>' +
       '<div class="lib-wrap">' + nav + '<div class="lib-pane">' + pane + '</div></div>';
   }
   shell(html, { flush: true }); setCrumb([]);
   var main = document.getElementById("main");
+  // ---- 拖曳整理：課次（左側清單）重新排序／拖到上方教材分頁＝換一本；教材分頁重新排序／拖到別的系列 ----
+  var dnd = null;
+  function dndClear(){ main.querySelectorAll(".dnd-over,.dnd-over-grp,.dnd-dragging").forEach(function(n){ n.classList.remove("dnd-over", "dnd-over-grp", "dnd-dragging"); }); }
+  main.ondragstart = function(e){
+    var l = e.target.closest && e.target.closest("[data-dlesson]"), bk = e.target.closest && e.target.closest("[data-dbook]");
+    if(!S.teacher || S.teacher.role === "ta"){ e.preventDefault(); return; }
+    var el = l || bk; if(!el){ return; }
+    dnd = l ? { kind: "lesson", id: l.dataset.dlesson } : { kind: "book", id: bk.dataset.dbook };
+    try{ e.dataTransfer.setData("text/plain", dnd.id); e.dataTransfer.effectAllowed = "move"; }catch(er){}
+    setTimeout(function(){ el.classList.add("dnd-dragging"); }, 0);
+  };
+  main.ondragover = function(e){
+    if(!dnd) return;
+    var l = e.target.closest("[data-dlesson]"), bk = e.target.closest("[data-dbook]"), g = e.target.closest("[data-dgrp]"), ok = false;
+    main.querySelectorAll(".dnd-over,.dnd-over-grp").forEach(function(n){ n.classList.remove("dnd-over", "dnd-over-grp"); });
+    if(dnd.kind === "lesson"){
+      if(l && l.dataset.dlesson !== dnd.id){ l.classList.add("dnd-over"); ok = true; }
+      else if(bk && bk.dataset.dbook !== cur){ bk.classList.add("dnd-over"); ok = true; }
+    } else {
+      if(bk && bk.dataset.dbook !== dnd.id){ bk.classList.add("dnd-over"); ok = true; }
+      else if(g){ g.classList.add("dnd-over-grp"); ok = true; }
+    }
+    if(ok){ e.preventDefault(); try{ e.dataTransfer.dropEffect = "move"; }catch(er){} }
+  };
+  main.ondragend = function(){ dnd = null; dndClear(); };
+  main.ondrop = async function(e){
+    if(!dnd) return; var d = dnd; dnd = null;
+    var l = e.target.closest("[data-dlesson]"), bk = e.target.closest("[data-dbook]"), g = e.target.closest("[data-dgrp]");
+    dndClear(); e.preventDefault();
+    if(!needOwner()) return;
+    try{
+      if(d.kind === "lesson"){
+        if(l && l.dataset.dlesson !== d.id){
+          var order = lessonsOfBook(cur).filter(function(k){ return k !== d.id; }), at = order.indexOf(l.dataset.dlesson);
+          order.splice(at < 0 ? order.length : at, 0, d.id);
+          var lo = S.plat.lessonOrder = S.plat.lessonOrder || {}, patch = {};
+          order.forEach(function(k, i){ lo[k] = (i + 1) * 10; patch[k] = lo[k]; });
+          await fbUpdate("teacherPlatform/" + S.teacher.id + "/lessonOrder", patch);
+          await syncLessonIndex(); renderLibrary(); toast("已調整課次順序");
+        } else if(bk && bk.dataset.dbook !== cur){
+          var nk = await moveLessonToBook(d.id, bk.dataset.dbook);
+          if(nk){ S.lib = { book: bk.dataset.dbook, key: nk }; renderLibrary(); }
+        }
+      } else {
+        var ids = bookIds(true).filter(function(k){ return k !== d.id; }), tgtSr = null;
+        if(bk && bk.dataset.dbook !== d.id){ var ti = ids.indexOf(bk.dataset.dbook); tgtSr = bookSeries(bk.dataset.dbook); ids.splice(ti < 0 ? ids.length : ti, 0, d.id); }
+        else if(g){ var gsr = g.dataset.dgrp === "__own" ? "" : g.dataset.dgrp; tgtSr = gsr; var lastIn = -1; ids.forEach(function(k, i){ if(bookSeries(k) === gsr) lastIn = i; }); ids.splice(lastIn < 0 ? ids.length : lastIn + 1, 0, d.id); }
+        else return;
+        var bo = S.plat.books = S.plat.books || {}, bpatch = {}, all = booksObj();
+        ids.forEach(function(k, i){ var nb = Object.assign({}, all[k] || {}, { order: (i + 1) * 10, man: 1 }); if(k === d.id && tgtSr != null && tgtSr !== bookSeries(k)) nb.series = tgtSr; bo[k] = nb; bpatch[k] = nb; });
+        await fbUpdate("teacherPlatform/" + S.teacher.id + "/books", bpatch);
+        await syncLessonIndex(); renderLibrary(); toast("已調整教材順序");
+      }
+    }catch(er){ console.error(er); toast("調整失敗，請檢查網路後再試"); }
+  };
   main.onchange = async function(e){
     var sel = e.target.closest("select[data-assign]"); if(!sel) return;
     var pid = sel.dataset.assign, v = sel.value;
@@ -2156,25 +2217,26 @@ async function renameLesson(key, title){
 }
 // 改課次：把一課整個換成別的編號（同一本教材內）。生詞・語法・課文、簡報／練習題、單元、各班的開放與進度都跟著搬；
 // 目標那一課如果已經有內容就不動（避免蓋掉），是空的才會被取代。
-async function renumberLesson(key, newNo){
+async function renumberLesson(key, newNo, newBook, noConfirm){
   var pk = parseKey(key); if(!pk) return null;
-  var t = S.teacher.id, base = "teacherPlatform/" + t, nkey = lkey(pk.book, newNo), Lm = S.plat.lessons || {};
+  var nbook = newBook || pk.book;
+  var t = S.teacher.id, base = "teacherPlatform/" + t, nkey = lkey(nbook, newNo), Lm = S.plat.lessons || {};
   var tgt = Lm[nkey];
   if(tgt){
     var tc = lessonCounts(nkey);
     if(tc.vocab + tc.grammar + tc.text > 0 || Object.keys(tgt.projects || {}).length){ alert("第 " + newNo + " 課已經有內容了（" + lessonTitle(nkey) + "）。\n請先把那一課的內容移走或刪掉，或改成別的課次。"); return null; }
   }
-  if(!confirm("把「" + lessonTitle(key) + "」改成第 " + newNo + " 課？\n這一課的生詞・語法・課文、簡報、練習題，還有各班的開放設定與進度都會一起搬過去。")) return null;
+  if(!noConfirm && !confirm("把「" + lessonTitle(key) + "」改成第 " + newNo + " 課？\n這一課的生詞・語法・課文、簡報、練習題，還有各班的開放設定與進度都會一起搬過去。")) return null;
   try{
     // 自己新增的課次記錄
     var cl = S.plat.customLessons = S.plat.customLessons || {};
     if(cl[nkey] && !cl[key]){ delete cl[nkey]; await fbSet(base + "/customLessons/" + nkey, null); }
-    if(cl[key]){ var ce = Object.assign({}, cl[key], { no: newNo }); delete cl[key]; cl[nkey] = ce; await fbSet(base + "/customLessons/" + key, null); await fbSet(base + "/customLessons/" + nkey, ce); }
+    if(cl[key]){ var ce = Object.assign({}, cl[key], { no: newNo, book: nbook }); delete cl[key]; cl[nkey] = ce; await fbSet(base + "/customLessons/" + key, null); await fbSet(base + "/customLessons/" + nkey, ce); }
     // 教材庫（生詞・語法・課文）
     var bank = await fbGet("teacherVocabBanks/" + t), cd = arrOf(bank && bank.courseData);
     var changed = false;
-    cd = cd.filter(function(x){ var hit = x && (x.book || DEFAULT_BOOK) === pk.book && Number(x.lesson) === newNo; if(hit && !(x.vocab || []).length && !(x.grammar || []).length && !(x.texts || []).length){ changed = true; return false; } return true; });
-    cd.forEach(function(x){ if(x && (x.book || DEFAULT_BOOK) === pk.book && Number(x.lesson) === pk.no){ x.lesson = newNo; changed = true; } });
+    cd = cd.filter(function(x){ var hit = x && (x.book || DEFAULT_BOOK) === nbook && Number(x.lesson) === newNo; if(hit && !(x.vocab || []).length && !(x.grammar || []).length && !(x.texts || []).length){ changed = true; return false; } return true; });
+    cd.forEach(function(x){ if(x && (x.book || DEFAULT_BOOK) === pk.book && Number(x.lesson) === pk.no){ x.lesson = newNo; if(nbook !== pk.book){ if(nbook === DEFAULT_BOOK) delete x.book; else x.book = nbook; } changed = true; } });
     if(changed){ cd.sort(function(a, b){ return (Number(a.lesson) || 0) - (Number(b.lesson) || 0); }); await fbUpdate("teacherVocabBanks/" + t, { courseData: cd, updatedAt: Date.now(), updatedBy: S.teacher.name || t }); }
     // 簡報／練習題歸課
     var lm = S.plat.lessonMap = S.plat.lessonMap || {};
@@ -2192,8 +2254,20 @@ async function renumberLesson(key, newNo){
       }
     } } }
   }catch(e){ console.error(e); toast("改課次失敗，請檢查網路後再試"); return null; }
-  await syncLessonIndex(); toast("已改成第 " + newNo + " 課");
+  // 順序記錄：舊的課次 key 不用了，新的排在那一本最後面
+  try{ var lo2 = S.plat.lessonOrder = S.plat.lessonOrder || {}; if(lo2[key] != null && nkey !== key){ delete lo2[key]; await fbSet(base + "/lessonOrder/" + key, null); } }catch(e){}
+  await syncLessonIndex(); if(!noConfirm) toast("已改成第 " + newNo + " 課");
   return nkey;
+}
+// 把一課整個移到另一本教材（拖曳到上方的教材分頁）：課次數字排在那一本最後；沒有課次數字的（複習卷）維持原樣
+async function moveLessonToBook(key, nbook){
+  var pk = parseKey(key); if(!pk || pk.book === nbook) return null;
+  var L = (S.plat.lessons || {})[key] || {}, maxNo = 0; lessonsOfBook(nbook).forEach(function(k){ var q = parseKey(k); if(q && q.no > maxNo) maxNo = q.no; });
+  var no = L.noNum ? Math.max(901, maxNo + 1) : maxNo + 1;
+  if(!confirm("把「" + lessonTitle(key) + "」移到「" + bookTitle(nbook) + "」？\n這一課的生詞・語法・課文、簡報、練習題，還有各班的開放設定與進度都會一起搬過去。")) return null;
+  var nk = await renumberLesson(key, no, nbook, true);
+  if(nk) toast("已移到「" + bookTitle(nbook) + "」" + (L.noNum ? "" : "，成為第 " + no + " 課（可再用「改課次」調整）"));
+  return nk;
 }
 // 刪除一課：只有沒有內容（生詞・語法・課文都是 0、也沒有簡報／測驗）時才能刪，避免誤刪教材
 async function libDeleteLesson(key){
