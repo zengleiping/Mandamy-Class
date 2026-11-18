@@ -8635,15 +8635,57 @@ window.mmTA = (function(){
   }
   function mmSafeName(s){ return String(s || "簡報").replace(/[\\/:*?"<>|]+/g, "_").slice(0, 60); }
   function dataUrlToBytes(u){ var b = atob(u.split(",")[1]), a = new Uint8Array(b.length); for(var i = 0; i < b.length; i++) a[i] = b.charCodeAt(i); return a; }
+  // 把每一頁在編輯區實際畫出來的畫面拍成圖（只在這台本機切換顯示的頁面，不會動到房間或學生看到的頁面）
+  async function captureDeckLive(info, onPage){
+    var proj = getActiveProject();
+    if(!proj || typeof html2canvas === "undefined" || window.__grade) return null;
+    var origQ = proj.currentQId, res = [];
+    var st = document.createElement("style");
+    st.textContent = ".text-step-badge,.resize-handle,.tb-edge,.select-marquee,.crop-handle,.sel-handle{display:none !important;}";
+    document.head.appendChild(st);
+    try{
+      try{ if(document.fonts && document.fonts.ready) await document.fonts.ready; }catch(e){}
+      for(var i = 0; i < info.slides.length; i++){
+        if(onPage) onPage(i);
+        var q = info.slides[i], cv = null;
+        try{
+          proj.currentQId = q.id; renderStage();
+          var wrap = null, t0 = Date.now();
+          while(Date.now() - t0 < 6000){
+            await new Promise(function(r){ setTimeout(r, 120); });
+            var ci = getCurrentQInfo(); if(!ci || ci.question.id !== q.id){ proj.currentQId = q.id; renderStage(); continue; }
+            wrap = document.querySelector(".canvas-stage-wrap");
+            if(wrap && Array.prototype.every.call(wrap.querySelectorAll("img"), function(im){ return im.complete; }) && Date.now() - t0 > 250) break;
+          }
+          if(wrap){
+            var rect = wrap.getBoundingClientRect(), cs = getComputedStyle(wrap), bw = parseFloat(cs.borderTopWidth) || 0;
+            var k = Math.max(1, Math.min(3, 1600 / Math.max(1, rect.width)));
+            var raw = await html2canvas(wrap, { logging: false, backgroundColor: "#FFFFFF", useCORS: true, scale: k });
+            var cut = Math.round(bw * k);   // 去掉畫布外框與圓角（那只是編輯畫面的外框）
+            cv = document.createElement("canvas"); cv.width = Math.max(1, raw.width - cut * 2); cv.height = Math.max(1, raw.height - cut * 2);
+            var cx = cv.getContext("2d"); cx.fillStyle = "#FFFFFF"; cx.fillRect(0, 0, cv.width, cv.height); cx.drawImage(raw, cut, cut, cv.width, cv.height, 0, 0, cv.width, cv.height);
+          }
+        }catch(e){ console.warn("匯出拍攝失敗，改用簡易重畫", i, e); cv = null; }
+        res.push(cv);
+      }
+    } finally {
+      proj.currentQId = origQ; try{ renderStage(); }catch(e){}
+      st.remove();
+    }
+    return res;
+  }
   async function exportDeckPdf(){
     var info = exportDeckInfo(); if(!info) return;
     var bar = document.createElement("div"); bar.className = "import-slides-toast"; bar.textContent = "正在產生 PDF…"; document.body.appendChild(bar);
     try{
       var pages = [];
+      // 先用「編輯畫面實際畫出來的樣子」逐頁拍下來（文字注音、字色字級、圖片、圖案、表格…跟編輯區完全一樣）；
+      // 某一頁拍不起來才退回簡易版重畫
+      var live = await captureDeckLive(info, function(i){ bar.textContent = "正在產生 PDF… " + (i + 1) + " / " + info.slides.length; });
       for(var i = 0; i < info.slides.length; i++){
         bar.textContent = "正在產生 PDF… " + (i + 1) + " / " + info.slides.length;
-        var cv = await new Promise(function(res){ drawSlideThumb(info.slides[i], res, 1600, true); });
-        pages.push({ w: cv.width, h: cv.height, jpg: dataUrlToBytes(cv.toDataURL("image/jpeg", 0.88)) });
+        var cv = live && live[i] ? live[i] : await new Promise(function(res){ drawSlideThumb(info.slides[i], res, 1600, true); });
+        pages.push({ w: cv.width, h: cv.height, jpg: dataUrlToBytes(cv.toDataURL("image/jpeg", 0.9)) });
       }
       var enc = new TextEncoder(), parts = [], offsets = [], len = 0;
       function put(x){ var b = typeof x === "string" ? enc.encode(x) : x; parts.push(b); len += b.length; }
