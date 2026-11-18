@@ -4690,7 +4690,9 @@ window.mmTA = (function(){
     if(!ref0) return Promise.resolve(typeof val === "string" ? val : null); // 舊格式：資料網址／一般網址
     if(mediaObjUrlCache[ref0.key]) return Promise.resolve(mediaObjUrlCache[ref0.key]);
     if(!MO || !MO.ok) return Promise.resolve(ref0.url || null);
-    return MO.getMedia(ref0.key).then(function(rec){
+    // IndexedDB 偶爾會卡住不回應（被別的分頁佔著、瀏覽器的儲存限制…）：等太久就直接用雲端網址，不然圖片永遠出不來
+    var gm = Promise.race([MO.getMedia(ref0.key), new Promise(function(res){ setTimeout(function(){ res(undefined); }, 2500); })]);
+    return gm.then(function(rec){
       if(rec && rec.blob){ var u = URL.createObjectURL(rec.blob); mediaObjUrlCache[ref0.key] = u; return u; }
       if(ref0.url){
         if(!isStudent && !mediaFetching[ref0.key]){ mediaFetching[ref0.key] = true;
@@ -4749,17 +4751,18 @@ window.mmTA = (function(){
   var mediaSyncing = false;
   // 把還沒上傳的媒體（音檔、圖片）傳到 Firebase Storage（登入且有網路、Storage 可用時）。成功的參照會加上 @網址，再存回課程庫。
   // 上傳前把太大的圖片縮小（最長邊 1920px；沒有透明的改存 JPEG），學生端載入會快很多；本機保留原檔
-  async function shrinkImageBlob(blob){
+  async function shrinkImageBlob(blob, opt){
     try{
+      opt = opt || {};
       if(!blob || !/^image\/(png|jpeg|webp)$/.test(blob.type || "")) return blob;
       var url = URL.createObjectURL(blob), im = new Image(); im.src = url; await im.decode();
-      var W = im.naturalWidth, H = im.naturalHeight, k = Math.min(1, 1920 / Math.max(W, H));
-      if(k === 1 && blob.size < 600000){ URL.revokeObjectURL(url); return blob; }
+      var W = im.naturalWidth, H = im.naturalHeight, k = Math.min(1, (opt.edge || 1920) / Math.max(W, H));
+      if(k === 1 && blob.size < 600000 && !opt.always){ URL.revokeObjectURL(url); return blob; }
       var cv = document.createElement("canvas"); cv.width = Math.round(W * k); cv.height = Math.round(H * k);
       var cx = cv.getContext("2d"); cx.drawImage(im, 0, 0, cv.width, cv.height); URL.revokeObjectURL(url);
       var opaque = true;
       if(blob.type !== "image/jpeg"){ var d = cx.getImageData(0, 0, cv.width, cv.height).data; for(var i = 3; i < d.length; i += 40){ if(d[i] < 250){ opaque = false; break; } } }
-      var out = await new Promise(function(res){ if(opaque) cv.toBlob(res, "image/jpeg", 0.86); else cv.toBlob(res, "image/png"); });
+      var out = await new Promise(function(res){ if(opaque) cv.toBlob(res, "image/jpeg", opt.q || 0.86); else cv.toBlob(res, "image/png"); });
       return (out && out.size < blob.size) ? out : blob;
     }catch(e){ return blob; }
   }
@@ -4817,6 +4820,75 @@ window.mmTA = (function(){
       toast("影片已傳給學生，可以同步播放了");
     }catch(e){ console.warn("影片上傳失敗", e); toast("影片傳不到雲端，學生端看不到。目前雲端檔案儲存無法使用（Firebase 免費方案不支援），請改用「▶ YouTube」：把影片傳到 YouTube（設成不公開）後貼網址，全班可同步播放。"); mediaShareBusy[bk] = false; }
   }
+  // ---- 房間裡的圖片／音檔：確保學生拿得到 ----
+  // 問題：在上課的房間裡匯入簡報（或在房間裡插入本機檔案）時，圖片、背景圖、音檔只存在老師這台電腦的 IndexedDB，
+  // 房間的資料裡只有 mm:<key> 參照、沒有雲端網址；學生的電腦沒有這些檔案，就只看得到畫布。
+  // 以前只有「開房間的那一刻」會補傳，房間裡才匯入的內容完全沒人補。
+  // 做法：掃描房間裡所有「只有本機參照」的圖片／背景／音檔 → 傳到雲端換成 mm:key@網址；雲端不能用（Firebase 方案不支援、離線…）時，
+  // 圖片縮小後直接放進房間資料（有總量上限）；每批寫回房間，學生那邊會即時出現。
+  var mediaRepairBusy = false, mediaRepairFailAt = 0, mediaShareMemo = {}, mediaInlineBudget = 12000000, mediaLastErr = "";
+  function isLocalRef(v){ var r = parseMediaRef(v); return !!(r && !r.url); }
+  function noteMediaErr(e){
+    mediaLastErr = (e && (e.code || e.message)) || String(e);
+    try{ console.warn("[mm] 媒體上傳失敗", e); localStorage.setItem("mm_media_diag", JSON.stringify({ t: new Date().toISOString(), err: mediaLastErr, teacher: !!currentTeacher, storage: !!window.storageApi, online: navigator.onLine })); }catch(er){}
+  }
+  async function makeRefShareable(val, kind){
+    var r = parseMediaRef(val); if(!r || r.url) return val;
+    if(mediaShareMemo[r.key]) return mediaShareMemo[r.key];
+    var out = null;
+    try{
+      var rec = (MO && MO.ok) ? await MO.getMedia(r.key) : null;
+      if(!rec || !rec.blob) return val;                       // 這台電腦沒有這個檔案（在別台電腦匯入的）
+      if(window.storageApi && currentTeacher && navigator.onLine !== false){
+        try{
+          var upBlob = kind === "img" ? await shrinkImageBlob(rec.blob) : rec.blob;
+          if(upBlob.size < 29 * 1024 * 1024){
+            var sr = window.storageApi.ref(window.storageApi.storage, "teacherMedia/" + currentTeacher.id + "/" + r.key);
+            await window.storageApi.uploadBytes(sr, upBlob, { contentType: upBlob.type || rec.type || "application/octet-stream", cacheControl: "public, max-age=31536000" });
+            out = "mm:" + r.key + "@" + await window.storageApi.getDownloadURL(sr);
+          }
+        }catch(e){ noteMediaErr(e); }
+      }
+      if(!out && kind === "img"){
+        var sm = await shrinkImageBlob(rec.blob, { edge: 900, q: 0.72, always: true }), du = await blobToDataUrl(sm);
+        if(du.length <= 350000 && du.length <= mediaInlineBudget){ mediaInlineBudget -= du.length; out = du; }
+      }
+    }catch(e){ noteMediaErr(e); }
+    if(out) mediaShareMemo[r.key] = out;
+    return out || val;
+  }
+  async function repairRoomMedia(force){
+    if(!inRoom() || isStudent || !roomData || mediaRepairBusy) return;
+    if(!force && Date.now() - mediaRepairFailAt < 60000) return;
+    var base = "rooms/" + activeRoomId + "/", jobs = [];
+    var secs = (roomData.project && roomData.project.sections) || {};
+    Object.keys(secs).forEach(function(sid){ var qs = (secs[sid] && secs[sid].questions) || {}; Object.keys(qs).forEach(function(qid){ if(qs[qid] && isLocalRef(qs[qid].bgImage)) jobs.push({ path: base + "project/sections/" + sid + "/questions/" + qid + "/bgImage", val: qs[qid].bgImage, kind: "img" }); }); });
+    var sp = roomData.sharedProgress || {};
+    Object.keys(sp).forEach(function(qid){
+      var pp = sp[qid]; if(!pp) return; var bp = base + "sharedProgress/" + qid + "/";
+      if(isLocalRef(pp.bgImage)) jobs.push({ path: bp + "bgImage", val: pp.bgImage, kind: "img" });
+      if(pp.images) Object.keys(pp.images).forEach(function(i){ var im = pp.images[i]; if(im && isLocalRef(im.src)) jobs.push({ path: bp + "images/" + i + "/src", val: im.src, kind: "img" }); });
+      if(pp.mediaData) Object.keys(pp.mediaData).forEach(function(mid){ if(isLocalRef(pp.mediaData[mid])) jobs.push({ path: bp + "mediaData/" + mid, val: pp.mediaData[mid], kind: "audio" }); });
+    });
+    if(!jobs.length) return;
+    mediaRepairBusy = true;
+    var ok = 0, missing = 0, failed = 0, batch = {}, nb = 0;
+    try{
+      toast("正在把 " + jobs.length + " 個圖片／音檔傳給學生…（學生會陸續看到）");
+      for(var i = 0; i < jobs.length; i++){
+        var nv = await makeRefShareable(jobs[i].val, jobs[i].kind);
+        if(nv !== jobs[i].val){ batch[jobs[i].path] = nv; nb++; ok++; }
+        else { var rf = parseMediaRef(jobs[i].val), rec0 = null; try{ rec0 = (MO && MO.ok) ? await MO.getMedia(rf.key) : null; }catch(e){} if(!rec0 || !rec0.blob) missing++; else failed++; }
+        if(nb >= 8){ var b1 = batch; batch = {}; nb = 0; await update(ref(db), b1); }
+      }
+      if(nb) await update(ref(db), batch);
+    }catch(e){ console.error("[mm] 補傳圖片到房間失敗", e); failed++; }
+    mediaRepairBusy = false;
+    if(failed || missing) mediaRepairFailAt = Date.now();
+    if(!failed && !missing) toast("✅ " + ok + " 個圖片／音檔都傳給學生了");
+    else toast((ok ? "已傳 " + ok + " 個。" : "") + (missing ? missing + " 個檔案這台電腦找不到（可能是在別台電腦匯入的），學生看不到；請在匯入的那台電腦開課，或重新匯入。" : "") + (failed ? failed + " 個上傳失敗" + (mediaLastErr ? "（" + mediaLastErr + "）" : "") + "，學生可能看不到，稍後會再試一次。" : ""));
+  }
+  window.addEventListener("firebase-storage-ready", function(){ setTimeout(function(){ repairRoomMedia(true); }, 4000); });
   function countUnsyncedMedia(lib){ var n = 0; collectMediaSlots(lib).forEach(function(sl){ var r = parseMediaRef(sl.get()); if(r && !r.url) n++; }); return n; }
   window.addEventListener("firebase-storage-ready", function(){ setTimeout(function(){ syncMediaToCloud(); }, 3000); });
 
@@ -5008,7 +5080,7 @@ window.mmTA = (function(){
         var qids = Object.keys(extraProgress);
         var chain = update(ref(db, "rooms/" + activeRoomId), patch);
         qids.forEach(function(qid){ chain = chain.then(function(){ return update(ref(db, "rooms/" + activeRoomId + "/sharedProgress/" + qid), extraProgress[qid]); }); });
-        chain.catch(function(err){ console.error("同步匯入的投影片到房間失敗", err); alert("同步失敗，匯入的內容可能沒有完整存到雲端，請檢查網路連線後再試一次。\nSync failed — please check your connection and try again."); });
+        chain.then(function(){ setTimeout(function(){ repairRoomMedia(true); }, 400); }).catch(function(err){ console.error("同步匯入的投影片到房間失敗", err); alert("同步失敗，匯入的內容可能沒有完整存到雲端，請檢查網路連線後再試一次。\nSync failed — please check your connection and try again."); });
         return;
       }
       // update() 可能同步丟出例外（例如資料被 SDK 判定為無效），也可能非同步被雲端服務拒絕
@@ -7071,6 +7143,7 @@ window.mmTA = (function(){
 
   function startRoom(rId, role){
     activeRoomId = rId; roomRole = role;
+    if(role === "teacher"){ setTimeout(function(){ repairRoomMedia(true); }, 5000); }   // 進房間後檢查有沒有學生拿不到的圖片
     if(role === "teacher" && window.parent !== window){ try{ window.parent.postMessage({ mm: "room", id: rId }, "*"); }catch(e){} } // 平台嵌入：通知外殼，學生會自動進房
     if(window.__attempt){ /* 個別作答：不需要老師即時監看學生畫面 */ }
     else if(role === "student") startStudentSnapshotLoop(); else startTeacherSnapshotListener(rId);
@@ -13200,8 +13273,8 @@ window.mmTA = (function(){
       gridOverlay.style.height = side + "px";
     }
     var lastFitW = 0, lastFitH = 0, lastStageW = 0, lastStageH = 0;
-    function fitCanvasToViewport(){
-      if(!document.body.contains(cWrap)) return; // 題目已經切換掉了，這份畫布不在畫面上，略過
+    // 舞台區「應該有」的可用寬高（fitCanvasToViewport 與下面的每秒檢查共用同一個算法）
+    function computeAvail(){
       var availableHeight, availableWidth;
       if(container.classList.contains("canvas-fs-active")){
         // 全螢幕模式：整個瀏覽器視窗都是作答區，工具列改成浮在畫布上、不佔版面寬度，
@@ -13214,6 +13287,11 @@ window.mmTA = (function(){
         availableHeight = Math.max(220, bottomLimit - wrapRect.top - 6);
         availableWidth = Math.max(220, layout.clientWidth - (vToolbar.classList.contains("tb-collapsed") || vToolbar.classList.contains("tb-hidden") ? 0 : vToolbar.offsetWidth + 16));
       }
+      return [availableWidth, availableHeight];
+    }
+    function fitCanvasToViewport(){
+      if(!document.body.contains(cWrap)) return; // 題目已經切換掉了，這份畫布不在畫面上，略過
+      var av = computeAvail(), availableWidth = av[0], availableHeight = av[1];
       stageArea.style.width = Math.floor(availableWidth) + "px";
       stageArea.style.height = Math.floor(availableHeight) + "px";
 
@@ -13251,6 +13329,33 @@ window.mmTA = (function(){
       }
       [150, 600, 1500].forEach(function(ms){ setTimeout(again, ms); });
       document.addEventListener("visibilitychange", again);
+      ["focus", "pageshow", "orientationchange", "fullscreenchange"].forEach(function(ev){ window.addEventListener(ev, again); });
+      if(window.ResizeObserver){ try{ roFit.observe(document.documentElement); }catch(er){} }
+      // 保險：上面的監聽都沒有觸發的情況（例如 Chrome 的分頁分享、Meet 的浮動視窗、電腦睡眠喚醒、側欄切換造成尺寸量錯）
+      // 畫布就會縮在最左邊或整片空白，只剩「放映」能救。這裡每秒對一次「應有的尺寸」，差太多就自動重算；
+      // 並且把當時的狀態記在 localStorage.mm_layout_diag（最近 3 次），下次再發生時可以查原因。
+      (function(){
+        var heals = 0, healWindowStart = Date.now();
+        var wd = setInterval(function(){
+          if(!document.body.contains(cWrap)){ clearInterval(wd); return; }
+          if(document.hidden) return;
+          var lr = layout.getBoundingClientRect(); if(!lr.width || !lr.height) return;   // 整個被藏起來：等顯示了再算
+          var av = computeAvail(), w = av[0], h = w / BOARD_ASPECT_RATIO;
+          if(h > av[1]){ h = av[1]; w = h * BOARD_ASPECT_RATIO; }
+          var aw = cWrap.offsetWidth, ah = cWrap.offsetHeight;
+          // 版面剛變動的幾毫秒、或算法差個幾像素都是正常的；只有「差很多」（像縮成一條細縫、整片空白）才修
+          if(Math.abs(aw - Math.floor(w)) <= Math.max(24, w * 0.06) && Math.abs(ah - Math.floor(h)) <= Math.max(24, h * 0.06)) return;
+          if(Date.now() - healWindowStart > 30000){ heals = 0; healWindowStart = Date.now(); }
+          if(heals >= 5) return;   // 一直修不好（例如被別的樣式限制住）就不要每秒重算
+          heals++;
+          try{
+            var rec = { t: new Date().toISOString(), expected: [Math.floor(w), Math.floor(h)], actual: [aw, ah], layout: [Math.round(lr.width), Math.round(lr.height)], stageStyle: [stageArea.style.width, stageArea.style.height], inner: [window.innerWidth, window.innerHeight], vis: document.visibilityState, fs: container.classList.contains("canvas-fs-active"), toolbar: vToolbar.className, dpr: window.devicePixelRatio };
+            console.warn("[mm] 畫布尺寸跟應有的不符，自動重算", rec);
+            var old = JSON.parse(localStorage.getItem("mm_layout_diag") || "[]"); old.push(rec); localStorage.setItem("mm_layout_diag", JSON.stringify(old.slice(-3)));
+          }catch(er){}
+          fitCanvasToViewport();
+        }, 1000);
+      })();
     })();
 
     // 全螢幕作答區右上角的浮動退出鈕（跟工具列裡那顆「全螢幕／退出全螢幕」按鈕互為備援，
@@ -13500,27 +13605,31 @@ window.mmTA = (function(){
       return true;
     }
     function downscaleImageFile(file, cb){
-      var fr = new FileReader();
-      fr.onerror = function(){ cb(null); };
-      fr.onload = function(){
-        var im = new Image();
-        im.onerror = function(){ cb(null); };
-        im.onload = function(){
-          if(!im.naturalWidth || !im.naturalHeight){ cb(null); return; }
-          var sc = Math.min(1, 900 / Math.max(im.naturalWidth, im.naturalHeight));
-          var w = Math.max(1, Math.round(im.naturalWidth * sc)), h = Math.max(1, Math.round(im.naturalHeight * sc));
-          var c = document.createElement("canvas"); c.width = w; c.height = h;
-          var cx = c.getContext("2d"); cx.drawImage(im, 0, 0, w, h);
-          var url = c.toDataURL("image/png");
-          if(url.length > 300000){ // 太大：改存 JPEG（透明處補白底）
-            cx.globalCompositeOperation = "destination-over"; cx.fillStyle = "#FFFFFF"; cx.fillRect(0, 0, w, h);
-            url = c.toDataURL("image/jpeg", 0.82);
-          }
-          cb({ src: url, ar: h / w });
-        };
-        im.src = fr.result;
-      };
-      fr.readAsDataURL(file);
+      function draw(im){
+        if(!im.naturalWidth || !im.naturalHeight){ cb(null); return; }
+        var sc = Math.min(1, 900 / Math.max(im.naturalWidth, im.naturalHeight));
+        var w = Math.max(1, Math.round(im.naturalWidth * sc)), h = Math.max(1, Math.round(im.naturalHeight * sc));
+        var c = document.createElement("canvas"); c.width = w; c.height = h;
+        var cx = c.getContext("2d"); cx.drawImage(im, 0, 0, w, h);
+        var url = c.toDataURL("image/png");
+        if(url.length > 300000){ // 太大：改存 JPEG（透明處補白底）
+          cx.globalCompositeOperation = "destination-over"; cx.fillStyle = "#FFFFFF"; cx.fillRect(0, 0, w, h);
+          url = c.toDataURL("image/jpeg", 0.82);
+        }
+        cb({ src: url, ar: h / w });
+      }
+      function viaReader(){
+        var fr = new FileReader();
+        fr.onerror = function(){ cb(null); };
+        fr.onload = function(){ var im = new Image(); im.onerror = function(){ cb(null); }; im.onload = function(){ draw(im); }; im.src = fr.result; };
+        fr.readAsDataURL(file);
+      }
+      var objUrl = null; try{ objUrl = URL.createObjectURL(file); }catch(e){}
+      if(!objUrl){ viaReader(); return; }
+      var im0 = new Image();
+      im0.onload = function(){ try{ URL.revokeObjectURL(objUrl); }catch(e){} draw(im0); };
+      im0.onerror = function(){ try{ URL.revokeObjectURL(objUrl); }catch(e){} viaReader(); };
+      im0.src = objUrl;
     }
     var pasteOffsetN = 0;
     function addImageObj(res){
@@ -13539,13 +13648,23 @@ window.mmTA = (function(){
       selectImageObj(obj.id);
     }
     function mcToast2(msg){ try{ var t = document.createElement("div"); t.textContent = msg; t.style.cssText = "position:fixed;left:50%;bottom:90px;transform:translateX(-50%);max-width:86vw;background:rgba(40,34,30,.94);color:#fff;padding:10px 18px;border-radius:12px;font-size:15.5px;z-index:100000;pointer-events:none;"; document.body.appendChild(t); setTimeout(function(){ t.remove(); }, 4200); }catch(e){} }
+    // 從網址取得圖片：先下載成檔案（之後可以縮小、裁剪、匯出）；來源網站不給下載（CORS）時，
+    // 退而求其次改成「連結圖片」——網頁上的 <img> 不受 CORS 限制，至少畫面上看得到（學生也看得到），但來源網站隨時可能換掉或擋掉。
+    // 回傳 File，或 { link, ar }，或 null。
+    function imageFromUrl(url){
+      if(!url) return Promise.resolve(null);
+      var p = Promise.resolve(null);
+      if(/^(data:|blob:|https?:)/i.test(url)){
+        p = fetch(url, { referrerPolicy: "no-referrer" }).then(function(r){ if(!r.ok) throw 0; return r.blob(); }).then(function(bl){ return /^image\//.test(bl.type) ? new File([bl], "paste", { type: bl.type }) : null; }).catch(function(){ return null; });
+      }
+      return p.then(function(f){
+        if(f || !/^https?:/i.test(url)) return f;
+        return new Promise(function(res){ var im = new Image(); im.referrerPolicy = "no-referrer"; im.onload = function(){ res(im.naturalWidth ? { link: url, ar: im.naturalHeight / im.naturalWidth } : null); }; im.onerror = function(){ res(null); }; im.src = url; });
+      });
+    }
     // 貼上時 paste 事件裡沒有圖片檔：改用非同步剪貼簿（navigator.clipboard.read）找圖片；再不行就試網頁複製來的 <img> 網址
     function clipImageFallback(imgUrl){
-      function fromUrl(){
-        if(!imgUrl) return Promise.resolve(null);
-        return fetch(imgUrl).then(function(r){ return r.blob(); }).then(function(bl){ return /^image\//.test(bl.type) ? new File([bl], "paste", { type: bl.type }) : null; }).catch(function(){ return null; });
-      }
-      if(!(navigator.clipboard && navigator.clipboard.read)) return fromUrl();
+      if(!(navigator.clipboard && navigator.clipboard.read)) return imageFromUrl(imgUrl);
       return navigator.clipboard.read().then(function(items){
         var p = Promise.resolve(null);
         items.forEach(function(it){ p = p.then(function(found){
@@ -13553,14 +13672,20 @@ window.mmTA = (function(){
           var ty = (it.types || []).filter(function(x){ return /^image\//.test(x); })[0];
           return ty ? it.getType(ty).then(function(bl){ return new File([bl], "paste", { type: bl.type }); }) : null;
         }); });
-        return p.then(function(f){ return f || fromUrl(); });
-      }).catch(function(){ return fromUrl(); });
+        return p.then(function(f){ return f || imageFromUrl(imgUrl); });
+      }).catch(function(){ return imageFromUrl(imgUrl); });
+    }
+    // 把 clipImageFallback／imageFromUrl 的結果放進畫布（檔案走縮圖流程；連結圖片直接放）
+    function placeClipImage(f){
+      if(!f) return false;
+      if(f.link){ addImageObj({ src: f.link, ar: f.ar }); mcToast2("這張圖片是用「連結」放進來的：來源網站可能哪天換掉或擋掉，建議之後存成檔案再拖進來。"); return true; }
+      pasteImageFiles([f]); return true;
     }
     function pasteImageFiles(files){
       if(deckStudent || presentLock()) return;
       files.forEach(function(f){
         downscaleImageFile(f, function(res){
-          if(!res){ alert("這張圖片讀不進來（格式不支援或檔案壞掉）。\nCouldn't read this image."); return; }
+          if(!res){ mcToast2("這張圖片讀不進來（" + ((f && f.type) ? f.type : "格式不明") + "；可能是不支援的格式，例如 HEIC）。請另存成 PNG 或 JPG 再試一次。"); return; }
           if(!document.body.contains(cWrap)) return;
           addImageObj(res);
         });
@@ -13624,8 +13749,11 @@ window.mmTA = (function(){
       copy: onCopyOrCut(false),
       cut: onCopyOrCut(true),
       paste: function(e){
-        if(!document.body.contains(cWrap) || editableTarget(e.target) || liveLocked() || slideListArmed) return;
-        var cd = e.clipboardData; if(!cd) return;
+        var cd = e.clipboardData;
+        // 左側投影片列表是最後點擊的地方時，Ctrl+V 預設是「貼上投影片」；但剪貼簿裡如果不是投影片（是圖片或文字），還是要貼到畫布上，不然老師點了一下左邊換頁、再貼圖片就完全沒反應
+        var armedForSlide = slideListArmed && !!(cd && cd.getData("application/x-mandamy-slide"));
+        if(!document.body.contains(cWrap) || editableTarget(e.target) || liveLocked() || armedForSlide) return;
+        if(!cd) return;
         var tok = cd.getData("application/x-mandamy-obj");
         if(tok && objClipboard && objClipboard.token === tok){ e.preventDefault(); pasteInternalObj(); return; }
         var files = [];
@@ -13639,7 +13767,7 @@ window.mmTA = (function(){
           e.preventDefault();
           // 有些來源（從 PDF 或別的 App 複製圖片）會同時帶文字，或只有非同步剪貼簿拿得到圖片：先找圖片，找不到才貼文字
           clipImageFallback(htmlImg ? htmlImg[1] : "").then(function(f){
-            if(f){ pasteImageFiles([f]); return; }
+            if(placeClipImage(f)) return;
             if(txt && txt.trim()) pasteTextBox(txt);
             else mcToast2("剪貼簿裡的圖片貼不進來：請先把圖片另存成檔案，再拖進簡報");
           });
@@ -16800,7 +16928,7 @@ window.mmTA = (function(){
     function pasteFromSystem(onlyImage, pos){
       window.__mmPastePos = pos;
       clipImageFallback("").then(function(f){
-        if(f){ pasteImageFiles([f]); return; }
+        if(placeClipImage(f)) return;
         if(onlyImage){ window.__mmPastePos = null; mcToast2("剪貼簿裡沒有圖片：請先複製一張圖片（網頁上按右鍵「拷貝圖片」、或截圖 Cmd+Shift+Ctrl+4），再回來貼上"); return; }
         if(navigator.clipboard && navigator.clipboard.readText) navigator.clipboard.readText().then(function(t){ if(t && t.trim()) pasteTextBox(t); else { window.__mmPastePos = null; mcToast2("剪貼簿是空的"); } }).catch(function(){ window.__mmPastePos = null; mcToast2("瀏覽器不讓我讀剪貼簿：請改按 Cmd/Ctrl + V"); });
         else { window.__mmPastePos = null; mcToast2("請改按 Cmd/Ctrl + V 貼上"); }
@@ -16828,7 +16956,12 @@ window.mmTA = (function(){
         var url = (dt.getData("text/uri-list") || "").split("\n")[0].trim();
         if(!url){ var m = /<img[^>]+src=["']([^"']+)/i.exec(dt.getData("text/html") || ""); url = m ? m[1] : ""; }
         if(!url){ mcToast2("沒有抓到圖片，請改用複製＋貼上（Cmd/Ctrl+V）"); return; }
-        clipImageFallback(url).then(function(f){ if(f) place([f]); else mcToast2("這張圖片讀不進來，請改用複製＋貼上或先存成檔案再拖進來"); });
+        // 拖曳進來的網址：只用網址去抓（不要去讀剪貼簿，不然可能貼成之前複製的別張圖）
+        imageFromUrl(url).then(function(f){
+          if(!f){ mcToast2("這張圖片抓不到（來源網站不讓下載）。請在圖片上按右鍵「拷貝圖片」再貼上（Cmd/Ctrl+V），或先存成檔案再拖進來。"); return; }
+          if(f.link){ window.__mmPastePos = r.width && r.height ? { x: (cx0 - r.left) / r.width * 100, y: (cy0 - r.top) / r.height * 100 } : null; placeClipImage(f); }
+          else place([f]);
+        });
       });
     })();
     cWrap.addEventListener("contextmenu", function(e){
