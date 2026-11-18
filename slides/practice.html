@@ -4748,6 +4748,61 @@ window.mmTA = (function(){
     if(!u) return "";
     try{ var resp = await fetch(u); var bl = await resp.blob(); return await blobToDataUrl(bl); }catch(e){ return ""; }
   }
+  // ---- 圖片／音檔上傳狀態：「已定稿」只代表排版內容存好了；圖片是另外上傳到雲端的，沒上傳的換一台電腦或學生就看不到 ----
+  function mediaRefsNow(){
+    var out = [];
+    function add(v){ var r = parseMediaRef(v); if(r) out.push(r); }
+    if(inRoom()){
+      var secs = (roomData && roomData.project && roomData.project.sections) || {};
+      Object.keys(secs).forEach(function(sid){ var qs = (secs[sid] && secs[sid].questions) || {}; Object.keys(qs).forEach(function(qid){ if(qs[qid]) add(qs[qid].bgImage); }); });
+      var sp = (roomData && roomData.sharedProgress) || {};
+      Object.keys(sp).forEach(function(qid){ var pp = sp[qid]; if(!pp) return; add(pp.bgImage); if(pp.images) Object.keys(pp.images).forEach(function(i){ if(pp.images[i]) add(pp.images[i].src); }); if(pp.mediaData) Object.keys(pp.mediaData).forEach(function(m){ add(pp.mediaData[m]); }); });
+    } else {
+      var pid = activeProjectId || window.__embedProject, pr = pid && fsData && fsData.projects && fsData.projects[pid];
+      if(pr) collectMediaSlots({ projects: { x: pr } }).forEach(function(sl){ add(sl.get()); });
+    }
+    return out;
+  }
+  function mediaCountsNow(){
+    var seen = {}, c = { total: 0, cloud: 0, local: 0, localKeys: [] };
+    mediaRefsNow().forEach(function(r){ if(seen[r.key]) return; seen[r.key] = 1; c.total++; if(r.url) c.cloud++; else { c.local++; c.localKeys.push(r.key); } });
+    return c;
+  }
+  async function mediaStatusDialog(){
+    if(document.getElementById("mm-mediastat")) return;
+    var back = document.createElement("div"); back.className = "tb-modal-back"; back.id = "mm-mediastat";
+    var modal = document.createElement("div"); modal.className = "tb-modal"; modal.style.width = "min(540px,94vw)"; back.appendChild(modal);
+    modal.innerHTML = '<h3>☁ 圖片與音檔上傳狀態</h3><div class="ms-body" style="font-size:15px;line-height:1.7;">檢查中…</div><div class="tb-foot"><button type="button" class="ms-close">關閉</button></div>';
+    modal.querySelector(".ms-close").onclick = function(){ back.remove(); };
+    back.addEventListener("pointerdown", function(e){ if(e.target === back) back.remove(); });
+    document.body.appendChild(back);
+    var body = modal.querySelector(".ms-body");
+    try{
+      var c0 = mediaCountsNow();
+      if(c0.local){
+        body.textContent = "正在上傳 " + c0.local + " 個檔案…";
+        try{ if(inRoom()){ if(!isStudent) await repairRoomMedia(true); } else await syncMediaToCloud(); }catch(e){}
+        await new Promise(function(r){ setTimeout(r, 1200); });
+      }
+      var c = mediaCountsNow(), miss = 0;
+      for(var i = 0; i < c.localKeys.length; i++){ var rec = null; try{ rec = (MO && MO.ok) ? await MO.getMedia(c.localKeys[i]) : null; }catch(e){} if(!rec || !rec.blob) miss++; }
+      var why = [];
+      if(c.local){
+        if(navigator.onLine === false) why.push("目前沒有網路");
+        if(!currentTeacher && !inRoom()) why.push("沒有用老師帳號登入");
+        if(!window.storageApi) why.push("雲端檔案儲存（Firebase Storage）沒有載入或尚未開通");
+        if(mediaLastErr) why.push("上次上傳的錯誤：" + escapeHtml(String(mediaLastErr).slice(0, 120)));
+      }
+      var h = '<div>這份簡報共有 <b>' + c.total + '</b> 個圖片／音檔：</div><div>✅ 已上傳到雲端：<b>' + c.cloud + '</b></div><div>' + (c.local ? '⚠️' : '✅') + ' 還沒上傳（只存在匯入的那台電腦）：<b>' + c.local + '</b></div>';
+      if(c.local){
+        if(miss) h += '<div style="color:#B23B32;margin-top:6px;">其中 <b>' + miss + '</b> 個檔案連這台電腦也找不到（是在別台電腦匯入的）。<b>請回到當初匯入簡報的那台電腦、用同一個瀏覽器（不要用無痕視窗）打開這份簡報</b>，系統會自動上傳；上傳完成這裡就會顯示全部已上傳。</div>';
+        if(c.local - miss > 0) h += '<div style="margin-top:6px;">這台電腦找得到的 ' + (c.local - miss) + ' 個，已經嘗試上傳' + (why.length ? '，但沒成功：' : '，請稍等一下再按一次檢查。') + '</div>';
+        if(why.length) h += '<ul style="margin:6px 0 0 18px;">' + why.map(function(w){ return '<li>' + w + '</li>'; }).join("") + '</ul>';
+      } else if(c.total){ h += '<div style="margin-top:6px;color:#2E7D32;">全部都在雲端了，換一台電腦或學生端都看得到。</div>'; }
+      else h += '<div style="margin-top:6px;">這份簡報沒有需要上傳的圖片或音檔。</div>';
+      body.innerHTML = h;
+    }catch(e){ body.textContent = "檢查失敗：" + (e && e.message ? e.message : e); }
+  }
   var mediaSyncing = false;
   // 把還沒上傳的媒體（音檔、圖片）傳到 Firebase Storage（登入且有網路、Storage 可用時）。成功的參照會加上 @網址，再存回課程庫。
   // 上傳前把太大的圖片縮小（最長邊 1920px；沒有透明的改存 JPEG），學生端載入會快很多；本機保留原檔
@@ -12967,6 +13022,17 @@ window.mmTA = (function(){
           rbFinal.title = "已儲存定稿（共 " + n + " 個內容）：放映時這些內容不能更動，上課中仍可新增文字方塊與寫字";
         }, "儲存定稿：做好最終版本時按。放映後這些內容就不能更動，上課中仍可新增文字方塊與寫字");
         rbFinal.id = "btn-save-final"; rbNavSlot.appendChild(rbFinal);
+        // 圖片上傳狀態：已定稿＝排版內容存好了；圖片要另外確認有沒有上傳到雲端
+        var rbCloud = rbBtn("☁", "圖片<br>檢查中", function(){ mediaStatusDialog(); }, "檢查這份簡報的圖片、音檔有沒有上傳到雲端（沒上傳的，換一台電腦或學生就看不到）");
+        rbCloud.id = "btn-media-status"; rbNavSlot.appendChild(rbCloud);
+        function refreshCloudBtn(){
+          if(!rbCloud.isConnected) return; var c = mediaCountsNow(), lab = rbCloud.querySelector(".tool-btn-v-label");
+          var st = !c.total ? "none" : (c.local ? "warn" : "ok");
+          var txt = st === "none" ? "圖片<br>無需上傳" : (st === "ok" ? "✔ 圖片<br>已上傳" : "⚠ " + c.local + " 張<br>未上傳");
+          if(rbCloud.dataset.st !== st + c.local){ rbCloud.dataset.st = st + c.local; lab.innerHTML = txt; rbCloud.classList.toggle("active", st === "ok"); rbCloud.style.color = st === "warn" ? "#B23B32" : ""; }
+        }
+        var cloudTimer = setInterval(function(){ if(!rbCloud.isConnected){ clearInterval(cloudTimer); return; } refreshCloudBtn(); }, 4000);
+        refreshCloudBtn();
         function refreshFinalBtn(){
           if(!document.body.contains(container) && !rbFinal.isConnected) return;
           var pr1 = getProgress(q.id), lab = rbFinal.querySelector(".tool-btn-v-label");
