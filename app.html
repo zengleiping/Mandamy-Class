@@ -2035,6 +2035,16 @@ function renderLibrary(){
       if(await renameLesson(rk, nt)){ toast("已改成「" + lessonTitle(rk) + "」"); renderLibrary(); }
       return;
     }
+    if(b.dataset.lesnum){
+      if(!needOwner()) return;
+      var nk0 = b.dataset.lesnum, pk0 = parseKey(nk0); if(!pk0) return;
+      var nn = await askText("把「" + lessonTitle(nk0) + "」改成第幾課？（輸入數字，例如 9）", String(pk0.no), "改課次"); if(!nn) return;
+      var no1 = cnNum(String(nn).replace(/[第課\s]/g, "")); if(!no1 || no1 < 1 || no1 > 999){ toast("請輸入課次數字"); return; }
+      if(no1 === pk0.no) return;
+      var nk1 = await renumberLesson(nk0, no1);
+      if(nk1){ S.lib = { book: cur, key: nk1 }; renderLibrary(); }
+      return;
+    }
     if(b.dataset.vtool){ S.lib = { book: cur, key: key, vtool: true }; renderLibrary(); return; }
     if(b.dataset.bankback){ S.lib = { book: cur, key: key }; await syncLessonIndex(); renderLibrary(); return; }
     if(b.dataset.pe){ S.lib = { book: cur, key: key, pid: b.dataset.pe, tidy: tidy }; renderLibrary(); return; }
@@ -2125,6 +2135,47 @@ async function renameLesson(key, title){
   await syncLessonIndex();
   return true;
 }
+// 改課次：把一課整個換成別的編號（同一本教材內）。生詞・語法・課文、簡報／練習題、單元、各班的開放與進度都跟著搬；
+// 目標那一課如果已經有內容就不動（避免蓋掉），是空的才會被取代。
+async function renumberLesson(key, newNo){
+  var pk = parseKey(key); if(!pk) return null;
+  var t = S.teacher.id, base = "teacherPlatform/" + t, nkey = lkey(pk.book, newNo), Lm = S.plat.lessons || {};
+  var tgt = Lm[nkey];
+  if(tgt){
+    var tc = lessonCounts(nkey);
+    if(tc.vocab + tc.grammar + tc.text > 0 || Object.keys(tgt.projects || {}).length){ alert("第 " + newNo + " 課已經有內容了（" + lessonTitle(nkey) + "）。\n請先把那一課的內容移走或刪掉，或改成別的課次。"); return null; }
+  }
+  if(!confirm("把「" + lessonTitle(key) + "」改成第 " + newNo + " 課？\n這一課的生詞・語法・課文、簡報、練習題，還有各班的開放設定與進度都會一起搬過去。")) return null;
+  try{
+    // 自己新增的課次記錄
+    var cl = S.plat.customLessons = S.plat.customLessons || {};
+    if(cl[nkey] && !cl[key]){ delete cl[nkey]; await fbSet(base + "/customLessons/" + nkey, null); }
+    if(cl[key]){ var ce = Object.assign({}, cl[key], { no: newNo }); delete cl[key]; cl[nkey] = ce; await fbSet(base + "/customLessons/" + key, null); await fbSet(base + "/customLessons/" + nkey, ce); }
+    // 教材庫（生詞・語法・課文）
+    var bank = await fbGet("teacherVocabBanks/" + t), cd = arrOf(bank && bank.courseData);
+    var changed = false;
+    cd = cd.filter(function(x){ var hit = x && (x.book || DEFAULT_BOOK) === pk.book && Number(x.lesson) === newNo; if(hit && !(x.vocab || []).length && !(x.grammar || []).length && !(x.texts || []).length){ changed = true; return false; } return true; });
+    cd.forEach(function(x){ if(x && (x.book || DEFAULT_BOOK) === pk.book && Number(x.lesson) === pk.no){ x.lesson = newNo; changed = true; } });
+    if(changed){ cd.sort(function(a, b){ return (Number(a.lesson) || 0) - (Number(b.lesson) || 0); }); await fbUpdate("teacherVocabBanks/" + t, { courseData: cd, updatedAt: Date.now(), updatedBy: S.teacher.name || t }); }
+    // 簡報／練習題歸課
+    var lm = S.plat.lessonMap = S.plat.lessonMap || {};
+    for(var pid in lm){ if(String(lm[pid]) === String(key)){ lm[pid] = nkey; await fbSet(base + "/lessonMap/" + pid, nkey); } }
+    // 單元
+    var units = S.plat.units || {};
+    for(var uk in units){ var mem = (units[uk].lessons || []).map(String); if(mem.indexOf(key) >= 0){ units[uk].lessons = mem.map(function(x){ return x === key ? nkey : x; }); await fbSet(base + "/units/" + uk + "/lessons", units[uk].lessons); } }
+    // 各班：開放設定、已教過、目前進度
+    var sch = S.plat.schools || {};
+    for(var y in sch){ var terms = sch[y].terms || {}; for(var tt in terms){ var cls = terms[tt].classes || {}; for(var ci in cls){ var cp = base + "/schools/" + y + "/terms/" + tt + "/classes/" + ci, o = cls[ci];
+      if(o.lessonOpen && o.lessonOpen[key] !== undefined){ var ov = o.lessonOpen[key]; delete o.lessonOpen[key]; o.lessonOpen[nkey] = ov; await fbSet(cp + "/lessonOpen/" + key, null); await fbSet(cp + "/lessonOpen/" + nkey, ov); }
+      if(o.progress){
+        if(o.progress.taught && o.progress.taught[key] !== undefined){ var tv = o.progress.taught[key]; delete o.progress.taught[key]; o.progress.taught[nkey] = tv; await fbSet(cp + "/progress/taught/" + key, null); await fbSet(cp + "/progress/taught/" + nkey, tv); }
+        if(o.progress.cur === key){ o.progress.cur = nkey; await fbSet(cp + "/progress/cur", nkey); }
+      }
+    } } }
+  }catch(e){ console.error(e); toast("改課次失敗，請檢查網路後再試"); return null; }
+  await syncLessonIndex(); toast("已改成第 " + newNo + " 課");
+  return nkey;
+}
 // 刪除一課：只有沒有內容（生詞・語法・課文都是 0、也沒有簡報／測驗）時才能刪，避免誤刪教材
 async function libDeleteLesson(key){
   var L = S.plat.lessons || {}, l = L[key]; if(!l || l.unit) return false;
@@ -2196,7 +2247,7 @@ async function libImportLesson(file, cur){
 }
 function libLessonHtml(key){
   var L = S.plat.lessons || {}, l = L[key] || {}, c = lessonCounts(key), ps = l.projects || {}, pids = Object.keys(ps), dup = libDupSet();
-  var h = '<div class="head-row" style="margin-bottom:10px;"><div style="flex:1;"><h2>' + esc(lessonTitle(key)) + '</h2></div>' + (l.unit ? '' : '<button class="btn sm" data-lesren="' + esc(key) + '">改課名</button> <button class="btn sm" data-lesexp="' + esc(key) + '" title="把這一課的生詞・語法・課文和簡報、練習打包成一個檔案，可以傳給別的老師">⬇ 匯出這一課</button> <button class="btn sm danger" data-lesdel="' + esc(key) + '" title="沒有內容的課才能刪">刪除這一課</button>') + '</div>';
+  var h = '<div class="head-row" style="margin-bottom:10px;"><div style="flex:1;"><h2>' + esc(lessonTitle(key)) + '</h2></div>' + (l.unit ? '' : '<button class="btn sm" data-lesren="' + esc(key) + '">改課名</button> <button class="btn sm" data-lesnum="' + esc(key) + '" title="把這一課換成別的課次編號（生詞・語法・課文、簡報、練習題、班級進度都會跟著搬過去）">改課次</button> <button class="btn sm" data-lesexp="' + esc(key) + '" title="把這一課的生詞・語法・課文和簡報、練習打包成一個檔案，可以傳給別的老師">⬇ 匯出這一課</button> <button class="btn sm danger" data-lesdel="' + esc(key) + '" title="沒有內容的課才能刪">刪除這一課</button>') + '</div>';
   h += '<div class="panel"><div class="lh" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><h3 style="margin:0;flex:1;">📖 生詞・語法・課文</h3>' + (l.unit ? '' : '' + stdSelectHtml() + '<button class="btn sm" data-vtool="1" title="把這一課的生詞整理成生詞表：自動補拼音／注音、英文、TOCFL／HSK 級別，加例句、挖空練習，匯出 Word、PPT、字卡">生詞表製作</button> <button class="btn sm primary" data-bank="1">編輯生詞・語法・課文</button>') + '</div>' +
     '<div class="tools" style="margin-top:8px;"><span class="chip">生詞 ' + c.vocab + '</span><span class="chip">語法 ' + c.grammar + '</span><span class="chip">課文 ' + c.text + '</span></div>' + (l.unit ? '<p class="note" style="margin:6px 0 0;">複習單元的生詞・語法・課文是 ' + esc(memberRange(l.members)) + ' 的合計，請到各課編輯。</p>' : (c.vocab + c.grammar + c.text ? '' : '<p class="note" style="margin:6px 0 0;">這一課還沒有生詞・語法・課文。按右上角開始編輯，或用 Excel 匯入。</p>')) + '</div>';
   h += '<div class="panel"><div class="lh" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><h3 style="margin:0;flex:1;">🖥️ 簡報與練習（' + pids.length + '）</h3><button class="btn sm" data-pnew="' + esc(key) + '">＋ 新增簡報／測驗</button></div>' +
