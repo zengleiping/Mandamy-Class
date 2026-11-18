@@ -19614,6 +19614,11 @@ window.mmTA = (function(){
       var snap = await get(ref(db, "teacherLibraries/" + tid + "/projects/" + pid));
       var proj = snap.val();
       if(!proj){ if(window.__embedReveal) window.__embedReveal(); document.body.innerHTML = '<p style="padding:30px;font-family:MM Latin,Iansui,serif;">找不到這份內容，請請老師確認。</p>'; return; }
+      // 老師替這位學生選了要練習的題目（&qs=題目id,題目id…）：只留下這些題
+      var qsParam = q.get("qs"); if(qsParam){
+        var keepQ = {}; qsParam.split(",").forEach(function(k){ if(k) keepQ[k] = 1; });
+        Object.keys(proj.sections || {}).forEach(function(sk){ var qq = proj.sections[sk].questions; if(!qq) return; Object.keys(qq).forEach(function(k){ if(!keepQ[k]) delete qq[k]; }); if(!Object.keys(qq).length) delete proj.sections[sk]; });
+      }
       fsData = { projects: {}, folders: {} }; fsData.projects[pid] = proj;
       window.__embedProject = pid; openProject(pid); jumpToKind(focus);
     }catch(e){ if(window.__embedReveal) window.__embedReveal(); document.body.innerHTML = '<p style="padding:30px;font-family:MM Latin,Iansui,serif;">讀取失敗，可能是老師的雲端設定還沒開放學生讀取（Firebase 規則）。</p>'; console.warn(e); }
