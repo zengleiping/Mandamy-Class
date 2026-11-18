@@ -1,0 +1,1269 @@
+{
+ "id": "proj_b1l10quiz",
+ "title": "第一冊 第10課 他們是誰？ 練習題",
+ "desc": "依第一冊第10課簡報（課文、生詞、句型、習寫漢字、認讀漢字、練習、任務活動）整理；題目說明附英文",
+ "sections": {
+  "s110_1": {
+   "id": "s110_1",
+   "title": "第 1 大題：連連看（生詞和注音） Match the words with zhuyin",
+   "type": "match",
+   "order": 0,
+   "questions": {
+    "q110_01_01": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "小孩",
+       "right": "ㄒㄧㄠˇ ㄏㄞˊ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "姑姑",
+       "right": "ㄍㄨ ˙ㄍㄨ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "叔叔",
+       "right": "ㄕㄨˊ ˙ㄕㄨ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "爺爺",
+       "right": "ㄧㄝˊ ˙ㄧㄝ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "奶奶",
+       "right": "ㄋㄞˇ ˙ㄋㄞ"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "照片",
+       "right": "ㄓㄠˋ ㄆㄧㄢˋ"
+      }
+     },
+     "id": "q110_01_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_01_02": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "左邊",
+       "right": "ㄗㄨㄛˇ ˙ㄅㄧㄢ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "右邊",
+       "right": "ㄧㄡˋ ˙ㄅㄧㄢ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "中間",
+       "right": "ㄓㄨㄥ ㄐㄧㄢ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "他們",
+       "right": "ㄊㄚ ˙ㄇㄣ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "那時候",
+       "right": "ㄋㄚˋ ㄕˊ ˙ㄏㄡ"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "歲",
+       "right": "ㄙㄨㄟˋ"
+      }
+     },
+     "id": "q110_01_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_01_03": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "張",
+       "right": "ㄓㄤ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "誰",
+       "right": "ㄕㄨㄟˊ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "這",
+       "right": "ㄓㄜˋ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "對不對",
+       "right": "ㄉㄨㄟˋ ㄅㄨˊ ㄉㄨㄟˋ"
+      }
+     },
+     "id": "q110_01_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s110_2": {
+   "id": "s110_2",
+   "title": "第 2 大題：連連看（生詞和意思） Match the words with their meanings",
+   "type": "match",
+   "order": 1,
+   "questions": {
+    "q110_02_01": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "小孩",
+       "right": "child"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "姑姑",
+       "right": "paternal aunt"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "叔叔",
+       "right": "uncle"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "爺爺",
+       "right": "grandfather"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "奶奶",
+       "right": "grandmother"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "照片",
+       "right": "photo"
+      }
+     },
+     "id": "q110_02_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_02_02": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "左邊",
+       "right": "left"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "右邊",
+       "right": "right"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "中間",
+       "right": "middle"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "他們",
+       "right": "they"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "那時候",
+       "right": "at that time"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "歲",
+       "right": "years old"
+      }
+     },
+     "id": "q110_02_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_02_03": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "張",
+       "right": "M.W. for photos"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "誰",
+       "right": "who"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "這",
+       "right": "this"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "對不對",
+       "right": "right?"
+      }
+     },
+     "id": "q110_02_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s110_3": {
+   "id": "s110_3",
+   "title": "第 3 大題：我會寫（寫出正確的漢字） Write the characters",
+   "type": "fill",
+   "order": 2,
+   "questions": {
+    "q110_03_01": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "{這}張照片有四個人。",
+     "id": "q110_03_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_03_02": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "{中}間這個人是我和哥哥。",
+     "id": "q110_03_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_03_03": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "{左}邊這個人是我的媽媽。",
+     "id": "q110_03_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_03_04": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "{右}邊這個人是我的爸爸。",
+     "id": "q110_03_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_03_05": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "那{時}候我五歲。",
+     "id": "q110_03_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_03_06": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "這兩{張}照片，我都喜歡。",
+     "id": "q110_03_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_03_07": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "中間是{爺}{爺}和{奶}{奶}。",
+     "id": "q110_03_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_03_08": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "是你的{姑}{姑}和{叔}{叔}。",
+     "id": "q110_03_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_03_09": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "左邊這個{小}{孩}是你，{對}不對？",
+     "id": "q110_03_09",
+     "order": 8,
+     "title": "第 9 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_03_10": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "心美，來看看這張{照}{片}。",
+     "id": "q110_03_10",
+     "order": 9,
+     "title": "第 10 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s110_4": {
+   "id": "s110_4",
+   "title": "第 4 大題：句型填空 Fill in the sentence patterns",
+   "type": "fill",
+   "order": 3,
+   "questions": {
+    "q110_04_01": {
+     "prompt": "用「誰」完成句子。 Use 誰.",
+     "template": "他是我爸爸。他是{誰}？",
+     "id": "q110_04_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_04_02": {
+     "prompt": "用「誰」完成句子。 Use 誰.",
+     "template": "她是{誰}？她是我妹妹。",
+     "id": "q110_04_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_04_03": {
+     "prompt": "用「這」完成句子。 Use 這.",
+     "template": "{這}兩張照片。",
+     "id": "q110_04_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_04_04": {
+     "prompt": "用「這」完成句子。 Use 這.",
+     "template": "我很喜歡{這}三張照片。",
+     "id": "q110_04_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_04_05": {
+     "prompt": "用方位詞完成句子。 Fill in the position word.",
+     "template": "{左邊}這個小孩是我。",
+     "id": "q110_04_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_04_06": {
+     "prompt": "用方位詞完成句子。 Fill in the position word.",
+     "template": "{右邊}這個人是我姑姑。",
+     "id": "q110_04_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_04_07": {
+     "prompt": "用方位詞完成句子。 Fill in the position word.",
+     "template": "{中間}這個人是誰？",
+     "id": "q110_04_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_04_08": {
+     "prompt": "用「歲」完成句子。 Use 歲.",
+     "template": "我今年三{歲}。",
+     "id": "q110_04_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s110_5": {
+   "id": "s110_5",
+   "title": "第 5 大題：選擇題（句型） Choose the correct answer",
+   "type": "choice",
+   "order": 4,
+   "questions": {
+    "q110_05_01": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n他是我爸爸。他＿＿誰？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "是"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "去"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "在"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q110_05_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_05_02": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n這＿＿人是誰？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "個"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "張"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "歲"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q110_05_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_05_03": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n兩＿＿照片。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "張"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "個"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "歲"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q110_05_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_05_04": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n我今年三＿＿。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "歲"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "張"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "邊"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q110_05_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_05_05": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n＿＿這個人是我姑姑。（照片的右邊）",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "右邊"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "左邊"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "中間"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q110_05_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_05_06": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n左邊這個小孩是你，＿＿？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對不對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "是誰"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "哪裡"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q110_05_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_05_07": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n＿＿我五歲。（小時候）",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "那時候"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "現在"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "今天"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q110_05_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s110_6": {
+   "id": "s110_6",
+   "title": "第 6 大題：閱讀理解（課文） Reading comprehension",
+   "type": "choice",
+   "order": 5,
+   "questions": {
+    "q110_06_01": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n爸爸給心美看什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "照片"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "書"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "手機"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "爸爸：心美，來看看這張照片。\n心美：爸爸，他們是誰？\n爸爸：中間是爺爺和奶奶。\n心美：右邊這兩個人呢？\n爸爸：是你的姑姑和叔叔。\n心美：左邊這個小孩是你，對不對？\n爸爸：是，那時候我五歲。",
+     "id": "q110_06_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_06_02": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n中間是誰？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "爺爺和奶奶"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "姑姑和叔叔"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "爸爸和媽媽"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "爸爸：心美，來看看這張照片。\n心美：爸爸，他們是誰？\n爸爸：中間是爺爺和奶奶。\n心美：右邊這兩個人呢？\n爸爸：是你的姑姑和叔叔。\n心美：左邊這個小孩是你，對不對？\n爸爸：是，那時候我五歲。",
+     "id": "q110_06_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_06_03": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n右邊這兩個人是誰？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "姑姑和叔叔"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "爺爺和奶奶"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "哥哥和姐姐"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "爸爸：心美，來看看這張照片。\n心美：爸爸，他們是誰？\n爸爸：中間是爺爺和奶奶。\n心美：右邊這兩個人呢？\n爸爸：是你的姑姑和叔叔。\n心美：左邊這個小孩是你，對不對？\n爸爸：是，那時候我五歲。",
+     "id": "q110_06_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_06_04": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n左邊這個小孩是誰？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "爸爸"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "叔叔"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "心美"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "爸爸：心美，來看看這張照片。\n心美：爸爸，他們是誰？\n爸爸：中間是爺爺和奶奶。\n心美：右邊這兩個人呢？\n爸爸：是你的姑姑和叔叔。\n心美：左邊這個小孩是你，對不對？\n爸爸：是，那時候我五歲。",
+     "id": "q110_06_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_06_05": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n那時候爸爸幾歲？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "五歲"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "三歲"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "十歲"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "爸爸：心美，來看看這張照片。\n心美：爸爸，他們是誰？\n爸爸：中間是爺爺和奶奶。\n心美：右邊這兩個人呢？\n爸爸：是你的姑姑和叔叔。\n心美：左邊這個小孩是你，對不對？\n爸爸：是，那時候我五歲。",
+     "id": "q110_06_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s110_7": {
+   "id": "s110_7",
+   "title": "第 7 大題：是非題（課文） True or false",
+   "type": "choice",
+   "order": 6,
+   "questions": {
+    "q110_07_01": {
+     "prompt": "判斷對錯。 True or false?\n\n照片中間是爺爺和奶奶。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "爸爸：心美，來看看這張照片。\n心美：爸爸，他們是誰？\n爸爸：中間是爺爺和奶奶。\n心美：右邊這兩個人呢？\n爸爸：是你的姑姑和叔叔。\n心美：左邊這個小孩是你，對不對？\n爸爸：是，那時候我五歲。",
+     "id": "q110_07_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_07_02": {
+     "prompt": "判斷對錯。 True or false?\n\n右邊這兩個人是爸爸的哥哥。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c2"
+     ],
+     "passage": "爸爸：心美，來看看這張照片。\n心美：爸爸，他們是誰？\n爸爸：中間是爺爺和奶奶。\n心美：右邊這兩個人呢？\n爸爸：是你的姑姑和叔叔。\n心美：左邊這個小孩是你，對不對？\n爸爸：是，那時候我五歲。",
+     "id": "q110_07_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_07_03": {
+     "prompt": "判斷對錯。 True or false?\n\n左邊這個小孩是爸爸。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "爸爸：心美，來看看這張照片。\n心美：爸爸，他們是誰？\n爸爸：中間是爺爺和奶奶。\n心美：右邊這兩個人呢？\n爸爸：是你的姑姑和叔叔。\n心美：左邊這個小孩是你，對不對？\n爸爸：是，那時候我五歲。",
+     "id": "q110_07_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_07_04": {
+     "prompt": "判斷對錯。 True or false?\n\n那時候爸爸三歲。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c2"
+     ],
+     "passage": "爸爸：心美，來看看這張照片。\n心美：爸爸，他們是誰？\n爸爸：中間是爺爺和奶奶。\n心美：右邊這兩個人呢？\n爸爸：是你的姑姑和叔叔。\n心美：左邊這個小孩是你，對不對？\n爸爸：是，那時候我五歲。",
+     "id": "q110_07_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s110_8": {
+   "id": "s110_8",
+   "title": "第 8 大題：讀讀看，寫上漢字 Read the zhuyin and write the characters",
+   "type": "fill",
+   "order": 7,
+   "questions": {
+    "q110_08_01": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄒㄧㄠˇ ㄏㄞˊ → {小孩}",
+     "id": "q110_08_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_08_02": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄍㄨ ˙ㄍㄨ → {姑姑}",
+     "id": "q110_08_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_08_03": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄕㄨˊ ˙ㄕㄨ → {叔叔}",
+     "id": "q110_08_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_08_04": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄧㄝˊ ˙ㄧㄝ → {爺爺}",
+     "id": "q110_08_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_08_05": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄋㄞˇ ˙ㄋㄞ → {奶奶}",
+     "id": "q110_08_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_08_06": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄓㄠˋ ㄆㄧㄢˋ → {照片}",
+     "id": "q110_08_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_08_07": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄗㄨㄛˇ ˙ㄅㄧㄢ → {左邊}",
+     "id": "q110_08_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_08_08": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄧㄡˋ ˙ㄅㄧㄢ → {右邊}",
+     "id": "q110_08_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_08_09": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄓㄨㄥ ㄐㄧㄢ → {中間}",
+     "id": "q110_08_09",
+     "order": 8,
+     "title": "第 9 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_08_10": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄊㄚ ˙ㄇㄣ → {他們}",
+     "id": "q110_08_10",
+     "order": 9,
+     "title": "第 10 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_08_11": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄋㄚˋ ㄕˊ ˙ㄏㄡ → {那時候}",
+     "id": "q110_08_11",
+     "order": 10,
+     "title": "第 11 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_08_12": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄙㄨㄟˋ → {歲}",
+     "id": "q110_08_12",
+     "order": 11,
+     "title": "第 12 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s110_9": {
+   "id": "s110_9",
+   "title": "第 9 大題：漢字（筆畫） Strokes",
+   "type": "choice",
+   "order": 8,
+   "questions": {
+    "q110_09_01": {
+     "prompt": "「這」有幾畫？ How many strokes does 這 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "11 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "10 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "12 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q110_09_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_09_02": {
+     "prompt": "「那」有幾畫？ How many strokes does 那 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "7 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "6 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "8 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q110_09_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_09_03": {
+     "prompt": "「張」有幾畫？ How many strokes does 張 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "11 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "10 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "12 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q110_09_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_09_04": {
+     "prompt": "「中」有幾畫？ How many strokes does 中 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "4 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "3 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "5 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q110_09_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_09_05": {
+     "prompt": "「兩」有幾畫？ How many strokes does 兩 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "8 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "7 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "9 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q110_09_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_09_06": {
+     "prompt": "「右」有幾畫？ How many strokes does 右 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "5 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "4 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "6 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q110_09_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s110_10": {
+   "id": "s110_10",
+   "title": "第 10 大題：說說看（句型） Speaking",
+   "type": "record",
+   "order": 9,
+   "questions": {
+    "q110_10_01": {
+     "prompt": "找一張你和家人的照片，說說：中間是誰？左邊是誰？右邊是誰？ Describe your family photo.",
+     "reference": "中間是我爺爺和奶奶。左邊是我爸爸。右邊是我姑姑。",
+     "maxSec": 30,
+     "id": "q110_10_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_10_02": {
+     "prompt": "請用「那時候我＿＿歲」說一個句子。 Make a sentence with 那時候…歲.",
+     "reference": "那時候我五歲。",
+     "maxSec": 30,
+     "id": "q110_10_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_10_03": {
+     "prompt": "請用「誰」問一個問題。 Ask a question with 誰.",
+     "reference": "他是誰？",
+     "maxSec": 30,
+     "id": "q110_10_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_10_04": {
+     "prompt": "請用「這」說一個句子。 Make a sentence with 這.",
+     "reference": "這個人是我的姑姑。",
+     "maxSec": 30,
+     "id": "q110_10_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s110_11": {
+   "id": "s110_11",
+   "title": "第 11 大題：習寫漢字 Write the characters",
+   "type": "hanzi",
+   "order": 10,
+   "questions": {
+    "q110_11_01": {
+     "char": "這",
+     "desc": "11畫，部首：辵",
+     "id": "q110_11_01",
+     "order": 0,
+     "title": "第 1 題：這",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_11_02": {
+     "char": "那",
+     "desc": "7畫，部首：邑",
+     "id": "q110_11_02",
+     "order": 1,
+     "title": "第 2 題：那",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_11_03": {
+     "char": "張",
+     "desc": "11畫，部首：弓",
+     "id": "q110_11_03",
+     "order": 2,
+     "title": "第 3 題：張",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_11_04": {
+     "char": "中",
+     "desc": "4畫，部首：丨",
+     "id": "q110_11_04",
+     "order": 3,
+     "title": "第 4 題：中",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_11_05": {
+     "char": "兩",
+     "desc": "8畫，部首：入",
+     "id": "q110_11_05",
+     "order": 4,
+     "title": "第 5 題：兩",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_11_06": {
+     "char": "右",
+     "desc": "5畫，部首：口",
+     "id": "q110_11_06",
+     "order": 5,
+     "title": "第 6 題：右",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s110_12": {
+   "id": "s110_12",
+   "title": "第 12 大題：我會唸（課文、認讀漢字） Read aloud",
+   "type": "record",
+   "order": 11,
+   "questions": {
+    "q110_12_01": {
+     "prompt": "請唸出課文第一段。 Read the first part of the text.",
+     "reference": "爸爸：心美，來看看這張照片。\n心美：爸爸，他們是誰？\n爸爸：中間是爺爺和奶奶。\n心美：右邊這兩個人呢？",
+     "maxSec": 45,
+     "passage": "爸爸：心美，來看看這張照片。\n心美：爸爸，他們是誰？\n爸爸：中間是爺爺和奶奶。\n心美：右邊這兩個人呢？",
+     "id": "q110_12_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_12_02": {
+     "prompt": "請唸出課文第二段。 Read the second part of the text.",
+     "reference": "爸爸：是你的姑姑和叔叔。\n心美：左邊這個小孩是你，對不對？\n爸爸：是，那時候我五歲。",
+     "maxSec": 45,
+     "passage": "爸爸：是你的姑姑和叔叔。\n心美：左邊這個小孩是你，對不對？\n爸爸：是，那時候我五歲。",
+     "id": "q110_12_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q110_12_03": {
+     "prompt": "請唸出這些認讀漢字。 Read these characters aloud.",
+     "reference": "姑　叔　孩　邊　對　片　誰　爺　照　奶　候　歲　時",
+     "maxSec": 30,
+     "id": "q110_12_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  }
+ },
+ "currentQId": "q110_01_01"
+}
