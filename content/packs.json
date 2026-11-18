@@ -310,6 +310,58 @@
    "bookTitle": "《學華語向前走》第三冊",
    "lesson": 10,
    "file": "content/b3-lesson10-quiz.json"
+  },
+  {
+   "id": "b1-9",
+   "book": "b1",
+   "lesson": 9,
+   "file": "content/b1-lesson9.json"
+  },
+  {
+   "id": "b1-9-quiz",
+   "type": "project",
+   "book": "b1",
+   "lesson": 9,
+   "file": "content/b1-lesson9-quiz.json"
+  },
+  {
+   "id": "b1-10",
+   "book": "b1",
+   "lesson": 10,
+   "file": "content/b1-lesson10.json"
+  },
+  {
+   "id": "b1-10-quiz",
+   "type": "project",
+   "book": "b1",
+   "lesson": 10,
+   "file": "content/b1-lesson10-quiz.json"
+  },
+  {
+   "id": "b1-11",
+   "book": "b1",
+   "lesson": 11,
+   "file": "content/b1-lesson11.json"
+  },
+  {
+   "id": "b1-11-quiz",
+   "type": "project",
+   "book": "b1",
+   "lesson": 11,
+   "file": "content/b1-lesson11-quiz.json"
+  },
+  {
+   "id": "b1-12",
+   "book": "b1",
+   "lesson": 12,
+   "file": "content/b1-lesson12.json"
+  },
+  {
+   "id": "b1-12-quiz",
+   "type": "project",
+   "book": "b1",
+   "lesson": 12,
+   "file": "content/b1-lesson12-quiz.json"
   }
  ]
 }

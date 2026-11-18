@@ -1,0 +1,1245 @@
+{
+ "id": "proj_b1l11quiz",
+ "title": "第一冊 第11課 你們怎麼去學校？ 練習題",
+ "desc": "依第一冊第11課簡報（課文、生詞、句型、習寫漢字、認讀漢字、練習、任務活動）整理；題目說明附英文",
+ "sections": {
+  "s111_1": {
+   "id": "s111_1",
+   "title": "第 1 大題：連連看（生詞和注音） Match the words with zhuyin",
+   "type": "match",
+   "order": 0,
+   "questions": {
+    "q111_01_01": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "校車",
+       "right": "ㄒㄧㄠˋ ㄔㄜ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "自行車",
+       "right": "ㄗˋ ㄒㄧㄥˊ ㄔㄜ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "開車",
+       "right": "ㄎㄞ ㄔㄜ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "走路",
+       "right": "ㄗㄡˇ ㄌㄨˋ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "學校",
+       "right": "ㄒㄩㄝˊ ㄒㄧㄠˋ"
+      }
+     },
+     "id": "q111_01_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_01_02": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "騎",
+       "right": "ㄑㄧˊ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "送",
+       "right": "ㄙㄨㄥˋ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "坐",
+       "right": "ㄗㄨㄛˋ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "近",
+       "right": "ㄐㄧㄣˋ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "遠",
+       "right": "ㄩㄢˇ"
+      }
+     },
+     "id": "q111_01_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_01_03": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "平常",
+       "right": "ㄆㄧㄥˊ ㄔㄤˊ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "怎麼",
+       "right": "ㄗㄣˇ ˙ㄇㄜ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "想",
+       "right": "ㄒㄧㄤˇ"
+      }
+     },
+     "id": "q111_01_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s111_2": {
+   "id": "s111_2",
+   "title": "第 2 大題：連連看（生詞和意思） Match the words with their meanings",
+   "type": "match",
+   "order": 1,
+   "questions": {
+    "q111_02_01": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "校車",
+       "right": "school bus"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "自行車",
+       "right": "bicycle"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "開車",
+       "right": "to drive"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "走路",
+       "right": "to walk"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "學校",
+       "right": "school"
+      }
+     },
+     "id": "q111_02_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_02_02": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "騎",
+       "right": "to ride"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "送",
+       "right": "to take (someone)"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "坐",
+       "right": "to sit; to ride"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "近",
+       "right": "near"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "遠",
+       "right": "far"
+      }
+     },
+     "id": "q111_02_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_02_03": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "平常",
+       "right": "usually"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "怎麼",
+       "right": "how"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "想",
+       "right": "to want to"
+      }
+     },
+     "id": "q111_02_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s111_3": {
+   "id": "s111_3",
+   "title": "第 3 大題：我會寫（寫出正確的漢字） Write the characters",
+   "type": "fill",
+   "order": 2,
+   "questions": {
+    "q111_03_01": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "東明{坐}校車去學校。",
+     "id": "q111_03_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_03_02": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "心美的媽媽{開}車{送}她去學校。",
+     "id": "q111_03_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_03_03": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "大文{走}{路}去學校，可是他{想}騎自行車去。",
+     "id": "q111_03_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_03_04": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "你{怎}麼去學校？",
+     "id": "q111_03_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_03_05": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "我家很{近}，我走路去。",
+     "id": "q111_03_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_03_06": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "我家很{遠}，媽媽開車送我去。",
+     "id": "q111_03_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_03_07": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "我坐{校}車去{學}校。",
+     "id": "q111_03_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_03_08": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "大文想{騎}自行車去學校。",
+     "id": "q111_03_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_03_09": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "我家很{遠}，媽媽開車{送}我去。",
+     "id": "q111_03_09",
+     "order": 8,
+     "title": "第 9 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_03_10": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "你{平}常{怎}麼去學校？",
+     "id": "q111_03_10",
+     "order": 9,
+     "title": "第 10 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s111_4": {
+   "id": "s111_4",
+   "title": "第 4 大題：句型填空 Fill in the sentence patterns",
+   "type": "fill",
+   "order": 3,
+   "questions": {
+    "q111_04_01": {
+     "prompt": "用「平常」完成句子。 Use 平常.",
+     "template": "你{平常}怎麼去學校？",
+     "id": "q111_04_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_04_02": {
+     "prompt": "用「平常」完成句子。 Use 平常.",
+     "template": "我{平常}騎自行車去學校。",
+     "id": "q111_04_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_04_03": {
+     "prompt": "用「怎麼」完成句子。 Use 怎麼.",
+     "template": "我們{怎麼}去？我們開車去。",
+     "id": "q111_04_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_04_04": {
+     "prompt": "用「怎麼」完成句子。 Use 怎麼.",
+     "template": "他們騎自行車去學校。他們{怎麼}去學校？",
+     "id": "q111_04_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_04_05": {
+     "prompt": "用「想」完成句子。 Use 想.",
+     "template": "我今天{想}坐校車。",
+     "id": "q111_04_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_04_06": {
+     "prompt": "用「想」完成句子。 Use 想.",
+     "template": "我{想}騎自行車去學校。",
+     "id": "q111_04_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s111_5": {
+   "id": "s111_5",
+   "title": "第 5 大題：選擇題（句型） Choose the correct answer",
+   "type": "choice",
+   "order": 4,
+   "questions": {
+    "q111_05_01": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n你＿＿怎麼去學校？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "平常"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "一下"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "都"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q111_05_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_05_02": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n你＿＿去學校？我騎自行車去。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "怎麼"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "哪裡"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "誰"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q111_05_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_05_03": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n我今天＿＿坐校車。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "想"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "是"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "在"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q111_05_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_05_04": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n媽媽開車＿＿我去學校。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "送"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "騎"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "走"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q111_05_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_05_05": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n我家很近，我＿＿路去。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "走"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "坐"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "騎"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q111_05_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_05_06": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n我坐＿＿去學校。（黃色的大車）",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "校車"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "自行車"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "開車"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q111_05_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_05_07": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n我家很＿＿，媽媽開車送我去。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "遠"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "近"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "高"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q111_05_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s111_6": {
+   "id": "s111_6",
+   "title": "第 6 大題：閱讀理解（課文） Reading comprehension",
+   "type": "choice",
+   "order": 5,
+   "questions": {
+    "q111_06_01": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n東明怎麼去學校？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "坐校車"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "走路"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "騎自行車"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：東明，你平常怎麼去學校？\n東明：我坐校車，你呢？\n心美：我家很遠，媽媽開車送我去。\n東明：大文呢？\n大文：我家很近，我走路去，可是我想騎自行車去。",
+     "id": "q111_06_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_06_02": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n心美怎麼去學校？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "媽媽開車送她去"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "走路"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "坐校車"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：東明，你平常怎麼去學校？\n東明：我坐校車，你呢？\n心美：我家很遠，媽媽開車送我去。\n東明：大文呢？\n大文：我家很近，我走路去，可是我想騎自行車去。",
+     "id": "q111_06_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_06_03": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n心美家近不近？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "很遠"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "很近"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "不知道"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：東明，你平常怎麼去學校？\n東明：我坐校車，你呢？\n心美：我家很遠，媽媽開車送我去。\n東明：大文呢？\n大文：我家很近，我走路去，可是我想騎自行車去。",
+     "id": "q111_06_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_06_04": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n大文怎麼去學校？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "走路"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "開車"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "坐校車"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：東明，你平常怎麼去學校？\n東明：我坐校車，你呢？\n心美：我家很遠，媽媽開車送我去。\n東明：大文呢？\n大文：我家很近，我走路去，可是我想騎自行車去。",
+     "id": "q111_06_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_06_05": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n大文想怎麼去學校？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "騎自行車"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "坐校車"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "開車"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：東明，你平常怎麼去學校？\n東明：我坐校車，你呢？\n心美：我家很遠，媽媽開車送我去。\n東明：大文呢？\n大文：我家很近，我走路去，可是我想騎自行車去。",
+     "id": "q111_06_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s111_7": {
+   "id": "s111_7",
+   "title": "第 7 大題：是非題（課文） True or false",
+   "type": "choice",
+   "order": 6,
+   "questions": {
+    "q111_07_01": {
+     "prompt": "判斷對錯。 True or false?\n\n東明坐校車去學校。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：東明，你平常怎麼去學校？\n東明：我坐校車，你呢？\n心美：我家很遠，媽媽開車送我去。\n東明：大文呢？\n大文：我家很近，我走路去，可是我想騎自行車去。",
+     "id": "q111_07_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_07_02": {
+     "prompt": "判斷對錯。 True or false?\n\n心美的家很近。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c2"
+     ],
+     "passage": "心美：東明，你平常怎麼去學校？\n東明：我坐校車，你呢？\n心美：我家很遠，媽媽開車送我去。\n東明：大文呢？\n大文：我家很近，我走路去，可是我想騎自行車去。",
+     "id": "q111_07_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_07_03": {
+     "prompt": "判斷對錯。 True or false?\n\n大文的家很近。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：東明，你平常怎麼去學校？\n東明：我坐校車，你呢？\n心美：我家很遠，媽媽開車送我去。\n東明：大文呢？\n大文：我家很近，我走路去，可是我想騎自行車去。",
+     "id": "q111_07_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_07_04": {
+     "prompt": "判斷對錯。 True or false?\n\n大文想騎自行車去學校。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：東明，你平常怎麼去學校？\n東明：我坐校車，你呢？\n心美：我家很遠，媽媽開車送我去。\n東明：大文呢？\n大文：我家很近，我走路去，可是我想騎自行車去。",
+     "id": "q111_07_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s111_8": {
+   "id": "s111_8",
+   "title": "第 8 大題：讀讀看，寫上漢字 Read the zhuyin and write the characters",
+   "type": "fill",
+   "order": 7,
+   "questions": {
+    "q111_08_01": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄒㄧㄠˋ ㄔㄜ → {校車}",
+     "id": "q111_08_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_08_02": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄗˋ ㄒㄧㄥˊ ㄔㄜ → {自行車}",
+     "id": "q111_08_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_08_03": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄎㄞ ㄔㄜ → {開車}",
+     "id": "q111_08_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_08_04": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄗㄡˇ ㄌㄨˋ → {走路}",
+     "id": "q111_08_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_08_05": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄒㄩㄝˊ ㄒㄧㄠˋ → {學校}",
+     "id": "q111_08_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_08_06": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄑㄧˊ → {騎}",
+     "id": "q111_08_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_08_07": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄙㄨㄥˋ → {送}",
+     "id": "q111_08_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_08_08": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄗㄨㄛˋ → {坐}",
+     "id": "q111_08_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_08_09": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄐㄧㄣˋ → {近}",
+     "id": "q111_08_09",
+     "order": 8,
+     "title": "第 9 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_08_10": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄩㄢˇ → {遠}",
+     "id": "q111_08_10",
+     "order": 9,
+     "title": "第 10 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_08_11": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄆㄧㄥˊ ㄔㄤˊ → {平常}",
+     "id": "q111_08_11",
+     "order": 10,
+     "title": "第 11 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_08_12": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄗㄣˇ ˙ㄇㄜ → {怎麼}",
+     "id": "q111_08_12",
+     "order": 11,
+     "title": "第 12 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s111_9": {
+   "id": "s111_9",
+   "title": "第 9 大題：漢字（筆畫） Strokes",
+   "type": "choice",
+   "order": 8,
+   "questions": {
+    "q111_09_01": {
+     "prompt": "「怎」有幾畫？ How many strokes does 怎 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "9 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "8 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "10 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q111_09_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_09_02": {
+     "prompt": "「想」有幾畫？ How many strokes does 想 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "13 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "12 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "14 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q111_09_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_09_03": {
+     "prompt": "「開」有幾畫？ How many strokes does 開 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "12 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "11 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "13 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q111_09_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_09_04": {
+     "prompt": "「走」有幾畫？ How many strokes does 走 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "7 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "6 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "8 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q111_09_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_09_05": {
+     "prompt": "「路」有幾畫？ How many strokes does 路 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "13 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "12 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "14 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q111_09_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_09_06": {
+     "prompt": "「坐」有幾畫？ How many strokes does 坐 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "7 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "6 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "8 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q111_09_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s111_10": {
+   "id": "s111_10",
+   "title": "第 10 大題：句子重組 Reorder",
+   "type": "reorder",
+   "order": 9,
+   "questions": {
+    "q111_10_01": {
+     "prompt": "請將下列詞語重組為正確句子 Rearrange the words into a correct sentence",
+     "words": [
+      "我家很近，",
+      "我走路去，",
+      "可是我想騎自行車去。"
+     ],
+     "alts": [
+      "我家很近， 我走路去， 可是我想騎自行車去。"
+     ],
+     "id": "q111_10_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s111_11": {
+   "id": "s111_11",
+   "title": "第 11 大題：說說看（句型） Speaking",
+   "type": "record",
+   "order": 10,
+   "questions": {
+    "q111_11_01": {
+     "prompt": "請問你的同學：「你平常怎麼去學校？」並回答。 Ask and answer: how do you usually go to school?",
+     "reference": "你平常怎麼去學校？我坐校車去。",
+     "maxSec": 30,
+     "id": "q111_11_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_11_02": {
+     "prompt": "請用「想」說一個句子。 Make a sentence with 想.",
+     "reference": "我今天想騎自行車去學校。",
+     "maxSec": 30,
+     "id": "q111_11_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_11_03": {
+     "prompt": "請說說你家近不近、遠不遠。 Say whether your home is near or far.",
+     "reference": "我家很近，我走路去學校。",
+     "maxSec": 30,
+     "id": "q111_11_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_11_04": {
+     "prompt": "請用「平常」說一個句子。 Make a sentence with 平常.",
+     "reference": "我平常都在打球。",
+     "maxSec": 30,
+     "id": "q111_11_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s111_12": {
+   "id": "s111_12",
+   "title": "第 12 大題：習寫漢字 Write the characters",
+   "type": "hanzi",
+   "order": 11,
+   "questions": {
+    "q111_12_01": {
+     "char": "怎",
+     "desc": "9畫，部首：心",
+     "id": "q111_12_01",
+     "order": 0,
+     "title": "第 1 題：怎",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_12_02": {
+     "char": "想",
+     "desc": "13畫，部首：心",
+     "id": "q111_12_02",
+     "order": 1,
+     "title": "第 2 題：想",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_12_03": {
+     "char": "開",
+     "desc": "12畫，部首：門",
+     "id": "q111_12_03",
+     "order": 2,
+     "title": "第 3 題：開",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_12_04": {
+     "char": "走",
+     "desc": "7畫，部首：走",
+     "id": "q111_12_04",
+     "order": 3,
+     "title": "第 4 題：走",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_12_05": {
+     "char": "路",
+     "desc": "13畫，部首：足",
+     "id": "q111_12_05",
+     "order": 4,
+     "title": "第 5 題：路",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_12_06": {
+     "char": "坐",
+     "desc": "7畫，部首：土",
+     "id": "q111_12_06",
+     "order": 5,
+     "title": "第 6 題：坐",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s111_13": {
+   "id": "s111_13",
+   "title": "第 13 大題：我會唸（課文、認讀漢字） Read aloud",
+   "type": "record",
+   "order": 12,
+   "questions": {
+    "q111_13_01": {
+     "prompt": "請唸出課文第一段。 Read the first part of the text.",
+     "reference": "心美：東明，你平常怎麼去學校？\n東明：我坐校車，你呢？\n心美：我家很遠，媽媽開車送我去。",
+     "maxSec": 45,
+     "passage": "心美：東明，你平常怎麼去學校？\n東明：我坐校車，你呢？\n心美：我家很遠，媽媽開車送我去。",
+     "id": "q111_13_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_13_02": {
+     "prompt": "請唸出課文第二段。 Read the second part of the text.",
+     "reference": "東明：大文呢？\n大文：我家很近，我走路去，可是我想騎自行車去。",
+     "maxSec": 45,
+     "passage": "東明：大文呢？\n大文：我家很近，我走路去，可是我想騎自行車去。",
+     "id": "q111_13_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q111_13_03": {
+     "prompt": "請唸出這些認讀漢字。 Read these characters aloud.",
+     "reference": "車　遠　送　坐　騎　行　學　校　平　近　自",
+     "maxSec": 30,
+     "id": "q111_13_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  }
+ },
+ "currentQId": "q111_01_01"
+}

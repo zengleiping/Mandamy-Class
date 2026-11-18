@@ -1,0 +1,1220 @@
+{
+ "id": "proj_b1l12quiz",
+ "title": "第一冊 第12課 陳太太在家嗎？ 練習題",
+ "desc": "依第一冊第12課簡報（課文、生詞、句型、習寫漢字、認讀漢字、練習、任務活動）整理；題目說明附英文",
+ "sections": {
+  "s112_1": {
+   "id": "s112_1",
+   "title": "第 1 大題：連連看（生詞和注音） Match the words with zhuyin",
+   "type": "match",
+   "order": 0,
+   "questions": {
+    "q112_01_01": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "手機",
+       "right": "ㄕㄡˇ ㄐㄧ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "朋友",
+       "right": "ㄆㄥˊ ˙ㄧㄡ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "喂",
+       "right": "ㄨㄟˋ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "再見",
+       "right": "ㄗㄞˋ ㄐㄧㄢˋ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "謝謝",
+       "right": "ㄒㄧㄝˋ ˙ㄒㄧㄝ"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "太太",
+       "right": "ㄊㄞˋ ˙ㄊㄞ"
+      }
+     },
+     "id": "q112_01_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_01_02": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "阿姨",
+       "right": "ㄚ ㄧˊ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "您",
+       "right": "ㄋㄧㄣˊ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "請問",
+       "right": "ㄑㄧㄥˇ ㄨㄣˋ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "在",
+       "right": "ㄗㄞˋ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "姓",
+       "right": "ㄒㄧㄥˋ"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "打",
+       "right": "ㄉㄚˇ"
+      }
+     },
+     "id": "q112_01_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s112_2": {
+   "id": "s112_2",
+   "title": "第 2 大題：連連看（生詞和意思） Match the words with their meanings",
+   "type": "match",
+   "order": 1,
+   "questions": {
+    "q112_02_01": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "手機",
+       "right": "cell phone"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "朋友",
+       "right": "friend"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "喂",
+       "right": "hello (phone)"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "再見",
+       "right": "goodbye"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "謝謝",
+       "right": "thank you"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "太太",
+       "right": "Mrs."
+      }
+     },
+     "id": "q112_02_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_02_02": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "阿姨",
+       "right": "aunt"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "您",
+       "right": "you (polite)"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "請問",
+       "right": "excuse me"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "在",
+       "right": "to be at"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "姓",
+       "right": "surname"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "打",
+       "right": "to make (a call)"
+      }
+     },
+     "id": "q112_02_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s112_3": {
+   "id": "s112_3",
+   "title": "第 3 大題：我會寫（寫出正確的漢字） Write the characters",
+   "type": "fill",
+   "order": 2,
+   "questions": {
+    "q112_03_01": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "陳太太：她不在家，請問你是誰？大文：我是她的{朋}{友}，我姓李，我叫大文。",
+     "id": "q112_03_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_03_02": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "陳太太：你好，請你打她的{手}{機}。大文：好，{謝}謝，{再}{見}。",
+     "id": "q112_03_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_03_03": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "陳太太：{再}見。",
+     "id": "q112_03_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_03_04": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "{請}{問}王老師在家嗎？",
+     "id": "q112_03_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_03_05": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "我媽媽不在家，{請}{問}您是誰？",
+     "id": "q112_03_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_03_06": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "林阿姨：我是你媽媽的{朋}{友}，我姓林。",
+     "id": "q112_03_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_03_07": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "心美：林阿姨好，請您打她的{手}{機}。",
+     "id": "q112_03_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s112_4": {
+   "id": "s112_4",
+   "title": "第 4 大題：句型填空 Fill in the sentence patterns",
+   "type": "fill",
+   "order": 3,
+   "questions": {
+    "q112_04_01": {
+     "prompt": "用「請問」完成句子。 Use 請問.",
+     "template": "{請問}王老師在嗎？",
+     "id": "q112_04_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_04_02": {
+     "prompt": "用「請問」完成句子。 Use 請問.",
+     "template": "{請問}你是誰？",
+     "id": "q112_04_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_04_03": {
+     "prompt": "用「在」完成句子。 Use 在.",
+     "template": "王老師不{在}家。",
+     "id": "q112_04_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_04_04": {
+     "prompt": "用「在」完成句子。 Use 在.",
+     "template": "東明，你媽媽{在}家嗎？",
+     "id": "q112_04_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_04_05": {
+     "prompt": "用「姓」完成句子。 Use 姓.",
+     "template": "他{姓}王。",
+     "id": "q112_04_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_04_06": {
+     "prompt": "用「姓」、「叫」完成句子。 Use 姓 and 叫.",
+     "template": "我{姓}李，我{叫}李大文。",
+     "id": "q112_04_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s112_5": {
+   "id": "s112_5",
+   "title": "第 5 大題：選擇題（句型） Choose the correct answer",
+   "type": "choice",
+   "order": 4,
+   "questions": {
+    "q112_05_01": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n＿＿王老師在家嗎？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "請問"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "謝謝"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "再見"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q112_05_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_05_02": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n我媽媽不＿＿家。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "在"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "是"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "姓"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q112_05_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_05_03": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n我＿＿李，我叫李大文。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "姓"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "在"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "打"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q112_05_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_05_04": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n請你＿＿她的手機。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "打"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "姓"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "在"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q112_05_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_05_05": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n好，＿＿，再見。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "謝謝"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "請問"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "喂"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q112_05_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_05_06": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n接電話的時候說：＿＿，你好。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "喂"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "姓"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "打"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q112_05_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_05_07": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n請問＿＿是誰？（有禮貌地問）",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "您"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "我"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "他"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q112_05_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s112_6": {
+   "id": "s112_6",
+   "title": "第 6 大題：閱讀理解（課文） Reading comprehension",
+   "type": "choice",
+   "order": 5,
+   "questions": {
+    "q112_06_01": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n誰打電話來？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "林阿姨"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "心美的媽媽"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "老師"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：喂，你好。\n林阿姨：你好，請問陳太太在家嗎？\n心美：我媽媽不在家，請問您是誰？\n林阿姨：我是你媽媽的朋友，我姓林。\n心美：林阿姨好，請您打她的手機。\n林阿姨：好，謝謝，再見。\n心美：林阿姨，再見。",
+     "id": "q112_06_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_06_02": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n林阿姨想找誰？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "陳太太"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "心美"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "大文"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：喂，你好。\n林阿姨：你好，請問陳太太在家嗎？\n心美：我媽媽不在家，請問您是誰？\n林阿姨：我是你媽媽的朋友，我姓林。\n心美：林阿姨好，請您打她的手機。\n林阿姨：好，謝謝，再見。\n心美：林阿姨，再見。",
+     "id": "q112_06_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_06_03": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n陳太太在家嗎？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "不在家"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "在家"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "在學校"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：喂，你好。\n林阿姨：你好，請問陳太太在家嗎？\n心美：我媽媽不在家，請問您是誰？\n林阿姨：我是你媽媽的朋友，我姓林。\n心美：林阿姨好，請您打她的手機。\n林阿姨：好，謝謝，再見。\n心美：林阿姨，再見。",
+     "id": "q112_06_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_06_04": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n林阿姨是誰？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "心美媽媽的朋友"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "心美的老師"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "心美的姐姐"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：喂，你好。\n林阿姨：你好，請問陳太太在家嗎？\n心美：我媽媽不在家，請問您是誰？\n林阿姨：我是你媽媽的朋友，我姓林。\n心美：林阿姨好，請您打她的手機。\n林阿姨：好，謝謝，再見。\n心美：林阿姨，再見。",
+     "id": "q112_06_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_06_05": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n心美請林阿姨做什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "打她媽媽的手機"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "明天再來"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "等一下"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：喂，你好。\n林阿姨：你好，請問陳太太在家嗎？\n心美：我媽媽不在家，請問您是誰？\n林阿姨：我是你媽媽的朋友，我姓林。\n心美：林阿姨好，請您打她的手機。\n林阿姨：好，謝謝，再見。\n心美：林阿姨，再見。",
+     "id": "q112_06_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s112_7": {
+   "id": "s112_7",
+   "title": "第 7 大題：是非題（課文） True or false",
+   "type": "choice",
+   "order": 6,
+   "questions": {
+    "q112_07_01": {
+     "prompt": "判斷對錯。 True or false?\n\n林阿姨姓陳。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c2"
+     ],
+     "passage": "心美：喂，你好。\n林阿姨：你好，請問陳太太在家嗎？\n心美：我媽媽不在家，請問您是誰？\n林阿姨：我是你媽媽的朋友，我姓林。\n心美：林阿姨好，請您打她的手機。\n林阿姨：好，謝謝，再見。\n心美：林阿姨，再見。",
+     "id": "q112_07_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_07_02": {
+     "prompt": "判斷對錯。 True or false?\n\n心美的媽媽不在家。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：喂，你好。\n林阿姨：你好，請問陳太太在家嗎？\n心美：我媽媽不在家，請問您是誰？\n林阿姨：我是你媽媽的朋友，我姓林。\n心美：林阿姨好，請您打她的手機。\n林阿姨：好，謝謝，再見。\n心美：林阿姨，再見。",
+     "id": "q112_07_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_07_03": {
+     "prompt": "判斷對錯。 True or false?\n\n林阿姨是心美媽媽的朋友。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：喂，你好。\n林阿姨：你好，請問陳太太在家嗎？\n心美：我媽媽不在家，請問您是誰？\n林阿姨：我是你媽媽的朋友，我姓林。\n心美：林阿姨好，請您打她的手機。\n林阿姨：好，謝謝，再見。\n心美：林阿姨，再見。",
+     "id": "q112_07_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_07_04": {
+     "prompt": "判斷對錯。 True or false?\n\n心美請林阿姨打她媽媽的手機。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：喂，你好。\n林阿姨：你好，請問陳太太在家嗎？\n心美：我媽媽不在家，請問您是誰？\n林阿姨：我是你媽媽的朋友，我姓林。\n心美：林阿姨好，請您打她的手機。\n林阿姨：好，謝謝，再見。\n心美：林阿姨，再見。",
+     "id": "q112_07_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s112_8": {
+   "id": "s112_8",
+   "title": "第 8 大題：讀讀看，寫上漢字 Read the zhuyin and write the characters",
+   "type": "fill",
+   "order": 7,
+   "questions": {
+    "q112_08_01": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄕㄡˇ ㄐㄧ → {手機}",
+     "id": "q112_08_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_08_02": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄆㄥˊ ˙ㄧㄡ → {朋友}",
+     "id": "q112_08_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_08_03": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄨㄟˋ → {喂}",
+     "id": "q112_08_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_08_04": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄗㄞˋ ㄐㄧㄢˋ → {再見}",
+     "id": "q112_08_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_08_05": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄒㄧㄝˋ ˙ㄒㄧㄝ → {謝謝}",
+     "id": "q112_08_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_08_06": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄊㄞˋ ˙ㄊㄞ → {太太}",
+     "id": "q112_08_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_08_07": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄚ ㄧˊ → {阿姨}",
+     "id": "q112_08_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_08_08": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄋㄧㄣˊ → {您}",
+     "id": "q112_08_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_08_09": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄑㄧㄥˇ ㄨㄣˋ → {請問}",
+     "id": "q112_08_09",
+     "order": 8,
+     "title": "第 9 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_08_10": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄗㄞˋ → {在}",
+     "id": "q112_08_10",
+     "order": 9,
+     "title": "第 10 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_08_11": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄒㄧㄥˋ → {姓}",
+     "id": "q112_08_11",
+     "order": 10,
+     "title": "第 11 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_08_12": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄉㄚˇ → {打}",
+     "id": "q112_08_12",
+     "order": 11,
+     "title": "第 12 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s112_9": {
+   "id": "s112_9",
+   "title": "第 9 大題：漢字（筆畫） Strokes",
+   "type": "choice",
+   "order": 8,
+   "questions": {
+    "q112_09_01": {
+     "prompt": "「請」有幾畫？ How many strokes does 請 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "15 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "14 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "16 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q112_09_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_09_02": {
+     "prompt": "「問」有幾畫？ How many strokes does 問 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "11 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "10 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "12 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q112_09_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_09_03": {
+     "prompt": "「朋」有幾畫？ How many strokes does 朋 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "8 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "7 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "9 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q112_09_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_09_04": {
+     "prompt": "「友」有幾畫？ How many strokes does 友 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "4 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "3 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "5 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q112_09_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_09_05": {
+     "prompt": "「機」有幾畫？ How many strokes does 機 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "16 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "15 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "17 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q112_09_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_09_06": {
+     "prompt": "「再」有幾畫？ How many strokes does 再 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "6 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "5 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "7 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q112_09_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_09_07": {
+     "prompt": "「見」有幾畫？ How many strokes does 見 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "7 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "6 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "8 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q112_09_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s112_10": {
+   "id": "s112_10",
+   "title": "第 10 大題：句子重組 Reorder",
+   "type": "reorder",
+   "order": 9,
+   "questions": {
+    "q112_10_01": {
+     "prompt": "請將下列詞語重組為正確句子 Rearrange the words into a correct sentence",
+     "words": [
+      "好，",
+      "謝謝，",
+      "再見。"
+     ],
+     "alts": [
+      "好， 謝謝， 再見。"
+     ],
+     "id": "q112_10_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s112_11": {
+   "id": "s112_11",
+   "title": "第 11 大題：說說看（句型） Speaking",
+   "type": "record",
+   "order": 10,
+   "questions": {
+    "q112_11_01": {
+     "prompt": "兩人一組，打電話：A 打給 B 的家人，問：請問心美在家嗎？ Make a phone call with a partner.",
+     "reference": "喂，你好。請問心美在家嗎？她不在家。好，謝謝，再見。",
+     "maxSec": 45,
+     "id": "q112_11_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_11_02": {
+     "prompt": "請用「我姓＿＿，我叫＿＿」介紹你自己。 Introduce yourself.",
+     "reference": "我姓李，我叫李大文。",
+     "maxSec": 30,
+     "id": "q112_11_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_11_03": {
+     "prompt": "請用「請問」問一個問題。 Ask a question with 請問.",
+     "reference": "請問你是誰？",
+     "maxSec": 30,
+     "id": "q112_11_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_11_04": {
+     "prompt": "請說說：你媽媽在家嗎？ Is your mom at home?",
+     "reference": "我媽媽不在家，她在學校。",
+     "maxSec": 30,
+     "id": "q112_11_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s112_12": {
+   "id": "s112_12",
+   "title": "第 12 大題：習寫漢字 Write the characters",
+   "type": "hanzi",
+   "order": 11,
+   "questions": {
+    "q112_12_01": {
+     "char": "請",
+     "desc": "15畫，部首：言",
+     "id": "q112_12_01",
+     "order": 0,
+     "title": "第 1 題：請",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_12_02": {
+     "char": "問",
+     "desc": "11畫，部首：口",
+     "id": "q112_12_02",
+     "order": 1,
+     "title": "第 2 題：問",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_12_03": {
+     "char": "朋",
+     "desc": "8畫，部首：月",
+     "id": "q112_12_03",
+     "order": 2,
+     "title": "第 3 題：朋",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_12_04": {
+     "char": "友",
+     "desc": "4畫，部首：又",
+     "id": "q112_12_04",
+     "order": 3,
+     "title": "第 4 題：友",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_12_05": {
+     "char": "機",
+     "desc": "16畫，部首：木",
+     "id": "q112_12_05",
+     "order": 4,
+     "title": "第 5 題：機",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_12_06": {
+     "char": "再",
+     "desc": "6畫，部首：冂",
+     "id": "q112_12_06",
+     "order": 5,
+     "title": "第 6 題：再",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_12_07": {
+     "char": "見",
+     "desc": "7畫，部首：見",
+     "id": "q112_12_07",
+     "order": 6,
+     "title": "第 7 題：見",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s112_13": {
+   "id": "s112_13",
+   "title": "第 13 大題：我會唸（課文、認讀漢字） Read aloud",
+   "type": "record",
+   "order": 12,
+   "questions": {
+    "q112_13_01": {
+     "prompt": "請唸出課文第一段。 Read the first part of the text.",
+     "reference": "心美：喂，你好。\n林阿姨：你好，請問陳太太在家嗎？\n心美：我媽媽不在家，請問您是誰？\n林阿姨：我是你媽媽的朋友，我姓林。",
+     "maxSec": 45,
+     "passage": "心美：喂，你好。\n林阿姨：你好，請問陳太太在家嗎？\n心美：我媽媽不在家，請問您是誰？\n林阿姨：我是你媽媽的朋友，我姓林。",
+     "id": "q112_13_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_13_02": {
+     "prompt": "請唸出課文第二段。 Read the second part of the text.",
+     "reference": "心美：林阿姨好，請您打她的手機。\n林阿姨：好，謝謝，再見。\n心美：林阿姨，再見。",
+     "maxSec": 45,
+     "passage": "心美：林阿姨好，請您打她的手機。\n林阿姨：好，謝謝，再見。\n心美：林阿姨，再見。",
+     "id": "q112_13_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q112_13_03": {
+     "prompt": "請唸出這些認讀漢字。 Read these characters aloud.",
+     "reference": "謝　阿　姨　太　姓　您　喂",
+     "maxSec": 30,
+     "id": "q112_13_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  }
+ },
+ "currentQId": "q112_01_01"
+}
