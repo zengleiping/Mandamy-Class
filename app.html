@@ -1615,6 +1615,10 @@ async function autoAddContentPacks(t, bank){
           var lk = lkey(pk.book || DEFAULT_BOOK, pk.lesson); S.plat.lessonMap = S.plat.lessonMap || {}; S.plat.lessonMap[proj.id] = lk;
           await fbSet("teacherPlatform/" + t + "/lessonMap/" + proj.id, lk);
           added.push({ lesson: pk.lesson, title: proj.title, isProj: true });
+        } else if(pk.refresh){
+          // 官方更正過的題庫：用新版內容覆蓋同一份（保留原本的資料夾與歸課），之後老師自己改過的不會再被動到（每個包只執行一次）
+          proj.folderId = have.folderId || proj.folderId || null; await fbSet("teacherLibraries/" + t + "/projects/" + proj.id, proj);
+          added.push({ lesson: pk.lesson, title: proj.title + "（已更新為正式答案）", isProj: true });
         } else if(pk.relocate && pk.book){
           // 先前放錯本的（自動新開了一本）：搬到老師原本的那一本；原本自動開的那本如果空了就收掉
           var lk3 = lkey(pk.book, pk.lesson), lm3 = S.plat.lessonMap = S.plat.lessonMap || {}, oldK = lm3[proj.id];
