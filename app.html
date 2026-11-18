@@ -516,7 +516,7 @@ function toast(msg){ var t = document.createElement("div"); t.className = "toast
   document.addEventListener("click", releasePw, true);
   document.addEventListener("submit", releasePw, true);
 })();
-function askText(title, value, okLabel, type){
+function askText(title, value, okLabel, type, allowEmpty){
   return new Promise(function(resolve){
     var d = document.getElementById("ask"), i = document.getElementById("ask-i"); i.type = type || "text";
     document.getElementById("ask-t").textContent = title; i.value = value || "";
@@ -525,7 +525,7 @@ function askText(title, value, okLabel, type){
     function fin(v){ if(done) return; done = true; try{ i.blur(); }catch(e){} i.type = "text"; try{ d.close(); }catch(e){} resolve(v); }
     document.getElementById("ask-no").onclick = function(){ fin(null); };
     d.oncancel = function(e){ e.preventDefault(); fin(null); };
-    d.querySelector("form").onsubmit = function(e){ e.preventDefault(); var v = i.value.trim(); fin(v || null); };
+    d.querySelector("form").onsubmit = function(e){ e.preventDefault(); var v = i.value.trim(); fin(v || (allowEmpty ? "" : null)); };
     d.showModal(); setTimeout(function(){ i.focus(); i.select(); }, 30);
   });
 }
@@ -629,6 +629,7 @@ function lessonTitle(key){
   var l = (S.plat.lessons || {})[key];
   if(l && l.unit) return "📚 複習：" + (l.title || "") + "（" + memberRange(l.members) + "）";
   var pk = parseKey(key) || { book: DEFAULT_BOOK, no: key };
+  if(l && l.noNum) return (multiBooks() ? bookTitle(pk.book) + "　" : "") + (l.title || "（未命名）");   // 沒有課次的教材（例如複習卷）：只顯示名稱
   return (multiBooks() ? bookTitle(pk.book) + "　" : "") + "第 " + pk.no + " 課" + (l && l.title ? " " + l.title : "");
 }
 // 嵌入教材頁用的課次參數；目前只有預設教材（第一冊）有雲端生詞庫，其他教材回傳 null
@@ -1664,7 +1665,7 @@ async function syncLessonIndex(){
   });
   // 老師自己新增的課次（例如其他教材、還沒有生詞也想先建好的課）
   var cl = S.plat.customLessons || {};
-  Object.keys(cl).forEach(function(k){ if(!booksObj()[cl[k].book]) return; if(!lessons[k]) lessons[k] = { book: cl[k].book, no: Number(cl[k].no), title: cl[k].title || "", counts: {}, projects: {} }; else if(!lessons[k].title && cl[k].title) lessons[k].title = cl[k].title; });
+  Object.keys(cl).forEach(function(k){ if(!booksObj()[cl[k].book]) return; if(!lessons[k]) lessons[k] = { book: cl[k].book, no: Number(cl[k].no), title: cl[k].title || "", counts: {}, projects: {} }; else if(!lessons[k].title && cl[k].title) lessons[k].title = cl[k].title; if(cl[k].noNum && lessons[k]){ lessons[k].noNum = true; if(cl[k].title) lessons[k].title = cl[k].title; } });
   // 複習單元：成員是課次的 key；生詞／語法／課文數量是成員的總和
   var units = S.plat.units || {};
   Object.keys(units).forEach(function(uk){
@@ -2039,6 +2040,20 @@ function renderLibrary(){
       if(await renameLesson(rk, nt)){ toast("已改成「" + lessonTitle(rk) + "」"); renderLibrary(); }
       return;
     }
+    if(b.dataset.lesnonum){
+      if(!needOwner()) return;
+      var nk2 = b.dataset.lesnonum, pk2 = parseKey(nk2), l2 = (S.plat.lessons || {})[nk2]; if(!pk2 || !l2) return;
+      var willHide = !l2.noNum, ttl = l2.title || "";
+      if(willHide && !ttl){ ttl = await askText("沒有課次時只顯示名稱，請先幫這份教材取個名稱（例如：期中考複習卷）", ""); if(!ttl) return; }
+      var cl2 = S.plat.customLessons = S.plat.customLessons || {}, ent = Object.assign({}, cl2[nk2] || { book: pk2.book, no: pk2.no }, { title: ttl });
+      if(willHide) ent.noNum = true; else delete ent.noNum;
+      cl2[nk2] = ent;
+      try{ await fbSet("teacherPlatform/" + S.teacher.id + "/customLessons/" + nk2, ent); }catch(er){ toast("儲存失敗，請檢查網路後再試"); return; }
+      // 教材庫裡這一課如果有名稱欄位，一併同步
+      if(willHide && ttl !== (l2.title || "")){ try{ await renameLesson(nk2, ttl); }catch(er){} }
+      await syncLessonIndex(); renderLibrary(); toast(willHide ? "已隱藏課次數字，只顯示名稱" : "已恢復顯示課次數字");
+      return;
+    }
     if(b.dataset.lesnum){
       if(!needOwner()) return;
       var nk0 = b.dataset.lesnum, pk0 = parseKey(nk0); if(!pk0) return;
@@ -2251,7 +2266,7 @@ async function libImportLesson(file, cur){
 }
 function libLessonHtml(key){
   var L = S.plat.lessons || {}, l = L[key] || {}, c = lessonCounts(key), ps = l.projects || {}, pids = Object.keys(ps), dup = libDupSet();
-  var h = '<div class="head-row" style="margin-bottom:10px;"><div style="flex:1;"><h2>' + esc(lessonTitle(key)) + '</h2></div>' + (l.unit ? '' : '<button class="btn sm" data-lesren="' + esc(key) + '">改課名</button> <button class="btn sm" data-lesnum="' + esc(key) + '" title="把這一課換成別的課次編號（生詞・語法・課文、簡報、練習題、班級進度都會跟著搬過去）">改課次</button> <button class="btn sm" data-lesexp="' + esc(key) + '" title="把這一課的生詞・語法・課文和簡報、練習打包成一個檔案，可以傳給別的老師">⬇ 匯出這一課</button> <button class="btn sm danger" data-lesdel="' + esc(key) + '" title="沒有內容的課才能刪">刪除這一課</button>') + '</div>';
+  var h = '<div class="head-row" style="margin-bottom:10px;"><div style="flex:1;"><h2>' + esc(lessonTitle(key)) + '</h2></div>' + (l.unit ? '' : '<button class="btn sm" data-lesren="' + esc(key) + '">改課名</button> <button class="btn sm" data-lesnonum="' + esc(key) + '" title="複習卷、考卷這類沒有課次的內容：不顯示「第 N 課」，只顯示名稱">' + (l.noNum ? "顯示課次數字" : "不顯示課次數字") + '</button> <button class="btn sm" data-lesnum="' + esc(key) + '" title="把這一課換成別的課次編號（生詞・語法・課文、簡報、練習題、班級進度都會跟著搬過去）">改課次</button> <button class="btn sm" data-lesexp="' + esc(key) + '" title="把這一課的生詞・語法・課文和簡報、練習打包成一個檔案，可以傳給別的老師">⬇ 匯出這一課</button> <button class="btn sm danger" data-lesdel="' + esc(key) + '" title="沒有內容的課才能刪">刪除這一課</button>') + '</div>';
   h += '<div class="panel"><div class="lh" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><h3 style="margin:0;flex:1;">📖 生詞・語法・課文</h3>' + (l.unit ? '' : '' + stdSelectHtml() + '<button class="btn sm" data-vtool="1" title="把這一課的生詞整理成生詞表：自動補拼音／注音、英文、TOCFL／HSK 級別，加例句、挖空練習，匯出 Word、PPT、字卡">生詞表製作</button> <button class="btn sm primary" data-bank="1">編輯生詞・語法・課文</button>') + '</div>' +
     '<div class="tools" style="margin-top:8px;"><span class="chip">生詞 ' + c.vocab + '</span><span class="chip">語法 ' + c.grammar + '</span><span class="chip">課文 ' + c.text + '</span></div>' + (l.unit ? '<p class="note" style="margin:6px 0 0;">複習單元的生詞・語法・課文是 ' + esc(memberRange(l.members)) + ' 的合計，請到各課編輯。</p>' : (c.vocab + c.grammar + c.text ? '' : '<p class="note" style="margin:6px 0 0;">這一課還沒有生詞・語法・課文。按右上角開始編輯，或用 Excel 匯入。</p>')) + '</div>';
   h += '<div class="panel"><div class="lh" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><h3 style="margin:0;flex:1;">🖥️ 簡報與練習（' + pids.length + '）</h3><button class="btn sm" data-pnew="' + esc(key) + '">＋ 新增簡報／測驗</button></div>' +
@@ -6581,13 +6596,19 @@ function bindClassTools(cls, tm){
 
 // ---------- 新增課次／刪除教材 ----------
 async function newLessonFlow(bid){
-  var ns = await askText("第幾課？（數字，例如 7）", ""); if(!ns) return null;
-  var no = cnNum(ns.replace(/[第課\s]/g, "")); if(!no || no < 1 || no > 999){ toast("請輸入課次數字"); return null; }
+  var ns = await askText("第幾課？（數字，例如 7）\n沒有課次的複習卷、考卷：不用填，直接按「確定」", "", "確定", "text", true); if(ns === null) return null;
+  var noNum = (ns === ""), no, title;
+  if(noNum){
+    title = await askText("這份教材的名稱（例如：期中考複習卷）", ""); if(!title) return null;
+    var maxNo = 900; lessonsOfBook(bid).forEach(function(k){ var q = parseKey(k); if(q && q.no > maxNo) maxNo = q.no; }); no = maxNo + 1;   // 課次數字不顯示，只在內部用來排序（排在最後）
+  } else {
+    no = cnNum(ns.replace(/[第課\s]/g, "")); if(!no || no < 1 || no > 999){ toast("請輸入課次數字"); return null; }
+  }
   var key = lkey(bid, no);
-  if((S.plat.lessons || {})[key]){ toast("這本教材已經有第 " + no + " 課了"); return key; }
-  var title = await askText("這一課的名稱（可以留空，之後再補）", "") || "";
+  if(!noNum && (S.plat.lessons || {})[key]){ toast("這本教材已經有第 " + no + " 課了"); return key; }
+  if(!noNum) title = await askText("這一課的名稱（可以留空，之後再補）", "") || "";
   S.plat.customLessons = S.plat.customLessons || {};
-  S.plat.customLessons[key] = { book: bid, no: no, title: title };
+  S.plat.customLessons[key] = noNum ? { book: bid, no: no, title: title, noNum: true } : { book: bid, no: no, title: title };
   try{ await fbSet("teacherPlatform/" + S.teacher.id + "/customLessons/" + key, S.plat.customLessons[key]); }catch(e){ toast("儲存失敗，請檢查網路或 Firebase 規則"); return null; }
   await syncLessonIndex();
   return key;
