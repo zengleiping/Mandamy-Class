@@ -13605,27 +13605,31 @@ window.mmTA = (function(){
       return true;
     }
     function downscaleImageFile(file, cb){
-      var fr = new FileReader();
-      fr.onerror = function(){ cb(null); };
-      fr.onload = function(){
-        var im = new Image();
-        im.onerror = function(){ cb(null); };
-        im.onload = function(){
-          if(!im.naturalWidth || !im.naturalHeight){ cb(null); return; }
-          var sc = Math.min(1, 900 / Math.max(im.naturalWidth, im.naturalHeight));
-          var w = Math.max(1, Math.round(im.naturalWidth * sc)), h = Math.max(1, Math.round(im.naturalHeight * sc));
-          var c = document.createElement("canvas"); c.width = w; c.height = h;
-          var cx = c.getContext("2d"); cx.drawImage(im, 0, 0, w, h);
-          var url = c.toDataURL("image/png");
-          if(url.length > 300000){ // 太大：改存 JPEG（透明處補白底）
-            cx.globalCompositeOperation = "destination-over"; cx.fillStyle = "#FFFFFF"; cx.fillRect(0, 0, w, h);
-            url = c.toDataURL("image/jpeg", 0.82);
-          }
-          cb({ src: url, ar: h / w });
-        };
-        im.src = fr.result;
-      };
-      fr.readAsDataURL(file);
+      function draw(im){
+        if(!im.naturalWidth || !im.naturalHeight){ cb(null); return; }
+        var sc = Math.min(1, 900 / Math.max(im.naturalWidth, im.naturalHeight));
+        var w = Math.max(1, Math.round(im.naturalWidth * sc)), h = Math.max(1, Math.round(im.naturalHeight * sc));
+        var c = document.createElement("canvas"); c.width = w; c.height = h;
+        var cx = c.getContext("2d"); cx.drawImage(im, 0, 0, w, h);
+        var url = c.toDataURL("image/png");
+        if(url.length > 300000){ // 太大：改存 JPEG（透明處補白底）
+          cx.globalCompositeOperation = "destination-over"; cx.fillStyle = "#FFFFFF"; cx.fillRect(0, 0, w, h);
+          url = c.toDataURL("image/jpeg", 0.82);
+        }
+        cb({ src: url, ar: h / w });
+      }
+      function viaReader(){
+        var fr = new FileReader();
+        fr.onerror = function(){ cb(null); };
+        fr.onload = function(){ var im = new Image(); im.onerror = function(){ cb(null); }; im.onload = function(){ draw(im); }; im.src = fr.result; };
+        fr.readAsDataURL(file);
+      }
+      var objUrl = null; try{ objUrl = URL.createObjectURL(file); }catch(e){}
+      if(!objUrl){ viaReader(); return; }
+      var im0 = new Image();
+      im0.onload = function(){ try{ URL.revokeObjectURL(objUrl); }catch(e){} draw(im0); };
+      im0.onerror = function(){ try{ URL.revokeObjectURL(objUrl); }catch(e){} viaReader(); };
+      im0.src = objUrl;
     }
     var pasteOffsetN = 0;
     function addImageObj(res){
@@ -13644,13 +13648,23 @@ window.mmTA = (function(){
       selectImageObj(obj.id);
     }
     function mcToast2(msg){ try{ var t = document.createElement("div"); t.textContent = msg; t.style.cssText = "position:fixed;left:50%;bottom:90px;transform:translateX(-50%);max-width:86vw;background:rgba(40,34,30,.94);color:#fff;padding:10px 18px;border-radius:12px;font-size:15.5px;z-index:100000;pointer-events:none;"; document.body.appendChild(t); setTimeout(function(){ t.remove(); }, 4200); }catch(e){} }
+    // 從網址取得圖片：先下載成檔案（之後可以縮小、裁剪、匯出）；來源網站不給下載（CORS）時，
+    // 退而求其次改成「連結圖片」——網頁上的 <img> 不受 CORS 限制，至少畫面上看得到（學生也看得到），但來源網站隨時可能換掉或擋掉。
+    // 回傳 File，或 { link, ar }，或 null。
+    function imageFromUrl(url){
+      if(!url) return Promise.resolve(null);
+      var p = Promise.resolve(null);
+      if(/^(data:|blob:|https?:)/i.test(url)){
+        p = fetch(url, { referrerPolicy: "no-referrer" }).then(function(r){ if(!r.ok) throw 0; return r.blob(); }).then(function(bl){ return /^image\//.test(bl.type) ? new File([bl], "paste", { type: bl.type }) : null; }).catch(function(){ return null; });
+      }
+      return p.then(function(f){
+        if(f || !/^https?:/i.test(url)) return f;
+        return new Promise(function(res){ var im = new Image(); im.referrerPolicy = "no-referrer"; im.onload = function(){ res(im.naturalWidth ? { link: url, ar: im.naturalHeight / im.naturalWidth } : null); }; im.onerror = function(){ res(null); }; im.src = url; });
+      });
+    }
     // 貼上時 paste 事件裡沒有圖片檔：改用非同步剪貼簿（navigator.clipboard.read）找圖片；再不行就試網頁複製來的 <img> 網址
     function clipImageFallback(imgUrl){
-      function fromUrl(){
-        if(!imgUrl) return Promise.resolve(null);
-        return fetch(imgUrl).then(function(r){ return r.blob(); }).then(function(bl){ return /^image\//.test(bl.type) ? new File([bl], "paste", { type: bl.type }) : null; }).catch(function(){ return null; });
-      }
-      if(!(navigator.clipboard && navigator.clipboard.read)) return fromUrl();
+      if(!(navigator.clipboard && navigator.clipboard.read)) return imageFromUrl(imgUrl);
       return navigator.clipboard.read().then(function(items){
         var p = Promise.resolve(null);
         items.forEach(function(it){ p = p.then(function(found){
@@ -13658,14 +13672,20 @@ window.mmTA = (function(){
           var ty = (it.types || []).filter(function(x){ return /^image\//.test(x); })[0];
           return ty ? it.getType(ty).then(function(bl){ return new File([bl], "paste", { type: bl.type }); }) : null;
         }); });
-        return p.then(function(f){ return f || fromUrl(); });
-      }).catch(function(){ return fromUrl(); });
+        return p.then(function(f){ return f || imageFromUrl(imgUrl); });
+      }).catch(function(){ return imageFromUrl(imgUrl); });
+    }
+    // 把 clipImageFallback／imageFromUrl 的結果放進畫布（檔案走縮圖流程；連結圖片直接放）
+    function placeClipImage(f){
+      if(!f) return false;
+      if(f.link){ addImageObj({ src: f.link, ar: f.ar }); mcToast2("這張圖片是用「連結」放進來的：來源網站可能哪天換掉或擋掉，建議之後存成檔案再拖進來。"); return true; }
+      pasteImageFiles([f]); return true;
     }
     function pasteImageFiles(files){
       if(deckStudent || presentLock()) return;
       files.forEach(function(f){
         downscaleImageFile(f, function(res){
-          if(!res){ alert("這張圖片讀不進來（格式不支援或檔案壞掉）。\nCouldn't read this image."); return; }
+          if(!res){ mcToast2("這張圖片讀不進來（" + ((f && f.type) ? f.type : "格式不明") + "；可能是不支援的格式，例如 HEIC）。請另存成 PNG 或 JPG 再試一次。"); return; }
           if(!document.body.contains(cWrap)) return;
           addImageObj(res);
         });
@@ -13729,8 +13749,11 @@ window.mmTA = (function(){
       copy: onCopyOrCut(false),
       cut: onCopyOrCut(true),
       paste: function(e){
-        if(!document.body.contains(cWrap) || editableTarget(e.target) || liveLocked() || slideListArmed) return;
-        var cd = e.clipboardData; if(!cd) return;
+        var cd = e.clipboardData;
+        // 左側投影片列表是最後點擊的地方時，Ctrl+V 預設是「貼上投影片」；但剪貼簿裡如果不是投影片（是圖片或文字），還是要貼到畫布上，不然老師點了一下左邊換頁、再貼圖片就完全沒反應
+        var armedForSlide = slideListArmed && !!(cd && cd.getData("application/x-mandamy-slide"));
+        if(!document.body.contains(cWrap) || editableTarget(e.target) || liveLocked() || armedForSlide) return;
+        if(!cd) return;
         var tok = cd.getData("application/x-mandamy-obj");
         if(tok && objClipboard && objClipboard.token === tok){ e.preventDefault(); pasteInternalObj(); return; }
         var files = [];
@@ -13744,7 +13767,7 @@ window.mmTA = (function(){
           e.preventDefault();
           // 有些來源（從 PDF 或別的 App 複製圖片）會同時帶文字，或只有非同步剪貼簿拿得到圖片：先找圖片，找不到才貼文字
           clipImageFallback(htmlImg ? htmlImg[1] : "").then(function(f){
-            if(f){ pasteImageFiles([f]); return; }
+            if(placeClipImage(f)) return;
             if(txt && txt.trim()) pasteTextBox(txt);
             else mcToast2("剪貼簿裡的圖片貼不進來：請先把圖片另存成檔案，再拖進簡報");
           });
@@ -16905,7 +16928,7 @@ window.mmTA = (function(){
     function pasteFromSystem(onlyImage, pos){
       window.__mmPastePos = pos;
       clipImageFallback("").then(function(f){
-        if(f){ pasteImageFiles([f]); return; }
+        if(placeClipImage(f)) return;
         if(onlyImage){ window.__mmPastePos = null; mcToast2("剪貼簿裡沒有圖片：請先複製一張圖片（網頁上按右鍵「拷貝圖片」、或截圖 Cmd+Shift+Ctrl+4），再回來貼上"); return; }
         if(navigator.clipboard && navigator.clipboard.readText) navigator.clipboard.readText().then(function(t){ if(t && t.trim()) pasteTextBox(t); else { window.__mmPastePos = null; mcToast2("剪貼簿是空的"); } }).catch(function(){ window.__mmPastePos = null; mcToast2("瀏覽器不讓我讀剪貼簿：請改按 Cmd/Ctrl + V"); });
         else { window.__mmPastePos = null; mcToast2("請改按 Cmd/Ctrl + V 貼上"); }
@@ -16933,7 +16956,12 @@ window.mmTA = (function(){
         var url = (dt.getData("text/uri-list") || "").split("\n")[0].trim();
         if(!url){ var m = /<img[^>]+src=["']([^"']+)/i.exec(dt.getData("text/html") || ""); url = m ? m[1] : ""; }
         if(!url){ mcToast2("沒有抓到圖片，請改用複製＋貼上（Cmd/Ctrl+V）"); return; }
-        clipImageFallback(url).then(function(f){ if(f) place([f]); else mcToast2("這張圖片讀不進來，請改用複製＋貼上或先存成檔案再拖進來"); });
+        // 拖曳進來的網址：只用網址去抓（不要去讀剪貼簿，不然可能貼成之前複製的別張圖）
+        imageFromUrl(url).then(function(f){
+          if(!f){ mcToast2("這張圖片抓不到（來源網站不讓下載）。請在圖片上按右鍵「拷貝圖片」再貼上（Cmd/Ctrl+V），或先存成檔案再拖進來。"); return; }
+          if(f.link){ window.__mmPastePos = r.width && r.height ? { x: (cx0 - r.left) / r.width * 100, y: (cy0 - r.top) / r.height * 100 } : null; placeClipImage(f); }
+          else place([f]);
+        });
       });
     })();
     cWrap.addEventListener("contextmenu", function(e){
