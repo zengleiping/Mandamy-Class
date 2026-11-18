@@ -312,13 +312,14 @@
    "file": "content/b3-lesson10-quiz.json"
   },
   {
-   "id": "gz-115-exam-quiz",
+   "id": "gz-115-exam-quiz-r2",
    "type": "project",
    "bookTitle": "高中國文 第一冊",
    "lesson": 20,
    "onlyName": "莉評",
    "file": "content/gz-115-exam-quiz.json",
-   "bookLike": "高中國文"
+   "bookLike": "高中國文",
+   "refresh": true
   }
  ]
 }
