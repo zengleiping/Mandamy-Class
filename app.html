@@ -6840,16 +6840,27 @@ function tabsFor(open, teacher){
   var all = [["material","教材", ["vocab","grammar","text"]], ["slides","投影片",["slides"]], ["quiz","測驗與練習",["quiz"]], ["bingo","🎯 賓果",["quiz"]], ["activities","🎲 活動",["activities"]]];
   return all.filter(function(t){ if(t[0] === "bingo" && !teacher && !(S.live && S.live.on)) return false; return teacher || t[2].some(function(k){ return open[k]; }); });
 }
+// 上課中直接換課次：在分頁下拉選單最上面選另一課，停留在同一個分頁（投影片／測驗與練習）
+function lessonSwitchHtml(no){
+  var cls = S.sel ? getCls(S.sel) : null; if(!cls) return '';
+  var opts = classBookIds(cls).map(function(b){
+    var ks = lessonsOfBook(b); if(!ks.length) return '';
+    return '<optgroup label="' + esc(bookTitle(b)) + '">' + ks.map(function(k){ return '<option value="' + esc(k) + '"' + (String(k) === String(no) ? " selected" : "") + '>' + esc(lessonTitle(k)) + '</option>'; }).join("") + '</optgroup>';
+  }).join("");
+  var us = unitKeys(); if(us.length) opts += '<optgroup label="複習單元">' + us.map(function(k){ return '<option value="' + esc(k) + '"' + (String(k) === String(no) ? " selected" : "") + '>' + esc(lessonTitle(k)) + '</option>'; }).join("") + '</optgroup>';
+  if(!opts) return '';
+  return '<div style="padding:4px 6px 8px;border-bottom:1px solid var(--line);margin-bottom:4px;"><div class="note" style="font-weight:700;margin-bottom:3px;">📖 換課次（停在這個分頁）</div><select data-ddlesson="1" style="width:100%;padding:5px 8px;border-radius:8px;border:1.5px solid var(--line);font-size:14.5px;">' + opts + '</select></div>';
+}
 // 投影片／測驗與練習分頁：滑鼠移到分頁上，下拉選單列出這一課的每一份簡報（測驗），點一下就換（取代原本分頁下面那一整列）
 function lessonDeckMenu(no, kind, btn){
   var ps = ((S.plat.lessons || {})[no] || {}).projects || {}, pids = Object.keys(ps);
-  if(!pids.length) return btn;
+  if(!pids.length){ var swOnly = lessonSwitchHtml(no); return swOnly ? '<span class="tab-dd">' + btn.replace('</button>', ' <span class="tab-dd-arrow">▾</span></button>') + '<div class="tab-dd-menu">' + swOnly + '</div></span>' : btn; }
   var fit = pids.filter(function(p){ return (ps[p][kind] || 0) > 0 || p === S.sub; }); if(fit.length) pids = fit;   // 投影片只列有投影片的、測驗只列有題目的
   var curPid = S.tab === kind ? (S.sub && pids.indexOf(S.sub) >= 0 ? S.sub : pids[0]) : null;
   var items = pids.map(function(p){ var on = p === curPid; return '<button type="button" class="tab-dd-item' + (on ? ' on' : '') + '" data-ddtab="' + kind + '" data-ddsub="' + esc(p) + '">' + (on ? '✓ ' : '') + esc(ps[p].title || "（未命名）") + '</button>'; }).join("");
   var qst = (curPid && kind === "quiz") ? (((((getCls(S.sel) || {}).lessonOpen || {})[no] || {}).qsel || {})[curPid] || {}).mode : null;
   var acts = curPid ? (kind === "quiz" ? '<div class="tab-dd-sep"></div><button type="button" class="tab-dd-item sm" data-ddact="qsel" data-kind="quiz" data-ddpid="' + esc(curPid) + '" title="這份練習題只出部分題目；也可以讓每位學生各自檢討不同的題目（學生自習時只會看到自己的題目）">🎯 選題（' + (qst === "same" ? "全班同一組" : qst === "each" ? "每位學生不同" : "目前：全部題目") + '）</button>' : '') + '<div class="tab-dd-sep"></div><button type="button" class="tab-dd-item sm" data-ddact="resync" data-ddpid="' + esc(curPid) + '" title="通用教材改過之後，想讓這個班用最新版時按這個。這個班目前的筆記和自己改過的內容會收起來（不會刪掉）">↻ 用最新的通用教材重建這個班的存檔</button><button type="button" class="tab-dd-item sm" data-ddact="editmaster" data-ddpid="' + esc(curPid) + '" title="通用教材只能在教材區編輯">✎ 到教材區編輯通用版</button>' : '';
-  return '<span class="tab-dd">' + btn.replace('</button>', ' <span class="tab-dd-arrow">▾</span></button>') + '<div class="tab-dd-menu">' + items + acts + '</div></span>';
+  return '<span class="tab-dd">' + btn.replace('</button>', ' <span class="tab-dd-arrow">▾</span></button>') + '<div class="tab-dd-menu">' + lessonSwitchHtml(no) + items + acts + '</div></span>';
 }
 // 班級存檔／通用教材的動作（從分頁下拉選單或「這一課還沒有簡報」按鈕）
 async function classDeckAction(act, pid, kind){
@@ -7396,6 +7407,11 @@ function toggleBrowserFullscreen(){
 }
 function bindLessonNav(cls, backFn, renderFn){
   var m = document.getElementById("main");
+  m.onchange = function(e){
+    var sel = e.target && e.target.closest && e.target.closest("select[data-ddlesson]"); if(!sel) return;
+    var k = String(sel.value || ""); if(!k || k === String(S.lesson)) return;
+    S.lesson = k; S.sub = null; S.jumpQ = null; renderFn(); pushLive();
+  };
   m.onclick = function(e){
     var b = e.target.closest("button"); if(!b) return;
     if(b.dataset.back){ if(S.focus) setFocus(false); backFn(); if(S.teacher) pushLive(true); return; }
