@@ -5205,6 +5205,29 @@ window.mmTA = (function(){
   }
   window.addEventListener("pointerup", objDragEnd, true); window.addEventListener("pointercancel", objDragEnd, true); window.addEventListener("blur", objDragEnd);
 
+  // 省流量：新增一筆筆跡時，不再把這一頁「全部筆跡」整個陣列重傳（會傳給房間裡每一個人），只傳新增的那幾筆（strokes/<序號>）。
+  // 房間裡目前的筆跡是這次寫入的前綴時才這樣做；擦除、清除、復原這類會改到舊筆跡的操作，照舊整個寫入。
+  function strokeDeltaPatch(qId, patch){
+    if(!Array.isArray(patch.strokes)) return patch;
+    var cur = roomData && roomData.sharedProgress && roomData.sharedProgress[qId] && roomData.sharedProgress[qId].strokes;
+    if(cur == null) cur = [];
+    if(!Array.isArray(cur)) return patch;
+    var ns = patch.strokes; if(ns.length <= cur.length) return patch;
+    for(var i = 0; i < cur.length; i++){ if(!cur[i] || !ns[i] || cur[i].id !== ns[i].id) return patch; }
+    var out = {}; Object.keys(patch).forEach(function(k){ if(k !== "strokes") out[k] = patch[k]; });
+    for(var j = cur.length; j < ns.length; j++) out["strokes/" + j] = ns[j];
+    return out;
+  }
+  // 筆跡座標存檔前先精簡：座標取到小數兩位、距離不到畫布 0.08% 的點省略（肉眼看不出來，資料量少好幾倍）
+  function compactPts(pts){
+    var out = [], last = null, n = pts.length;
+    pts.forEach(function(pt, i){
+      var x = Math.round(pt.x * 100) / 100, y = Math.round(pt.y * 100) / 100;
+      if(last && i < n - 1 && Math.abs(x - last.x) + Math.abs(y - last.y) < 0.08) return;
+      var o = Object.assign({}, pt, { x: x, y: y }); out.push(o); last = o;
+    });
+    return out.length >= 2 ? out : pts;
+  }
   function writeProgress(qId, patch){
     var pk = inRoom() ? examPrivateFor(qId) : null;
     if(pk && pk !== "__none__"){ update(ref(db, "rooms/" + activeRoomId + "/examProg/" + pk + "/" + qId), isWhiteboardQ(qId) ? wbPrivatePatch(qId, patch) : patch); return; }
@@ -5214,7 +5237,7 @@ window.mmTA = (function(){
         if(cans.length && cpk.length === cans.length && cpk.every(function(k){ return cans.indexOf(k) >= 0; })) window.parent.postMessage({ mm: "petEarn", kind: "choice", room: activeRoomId, id: qId }, "*");
       }catch(e){}
       return; }
-    if(inRoom()){ protectTeacherInk(qId, patch); update(ref(db, "rooms/" + activeRoomId + "/sharedProgress/" + qId), patch); }
+    if(inRoom()){ protectTeacherInk(qId, patch); update(ref(db, "rooms/" + activeRoomId + "/sharedProgress/" + qId), strokeDeltaPatch(qId, patch)); }
     else { Object.assign(getProgress(qId), patch); saveFS(); renderStage(); }
   }
 
@@ -15926,7 +15949,7 @@ window.mmTA = (function(){
         snapshotForUndo();
         var newStroke = {
           id: uid("st"),
-          points: currentPath,
+          points: compactPts(currentPath),
           color: boardState.color,
           // 局部橡皮擦大小固定不低於原本預設（6），不跟著筆刷粗細（預設現在是 2）變得太小擦不乾淨
           size: boardState.tool === "pixel-eraser" ? Math.max(boardState.size, 6) : boardState.size,
