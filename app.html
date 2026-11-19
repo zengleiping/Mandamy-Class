@@ -1654,6 +1654,16 @@ async function autoAddContentPacks(t, bank){
   return Object.assign({}, bank, { courseData: cd, autoAdded: done });
 }
 // 把「雲端生詞庫」跟「測驗庫」整理成一份輕量的課次索引（學生端只讀這一份，不必下載整個測驗庫）
+// 生詞庫（所有課的生詞・語法・課文，資料量很大）：先只讀一個很小的 updatedAt，跟這台電腦上次存的一樣就直接用本機的，不用每次登入都整份重新下載。
+// 每次有人改生詞庫都會更新 updatedAt（平台與教材編輯器都是），所以內容改了一定會重新下載。
+async function bankCached(tid){
+  var key = "mm_bank_" + tid, stamp = null;
+  try{ stamp = await fbGet("teacherVocabBanks/" + tid + "/updatedAt"); }catch(e){}
+  if(stamp != null){ try{ var c = JSON.parse(localStorage.getItem(key) || "null"); if(c && c.stamp === stamp && c.bank) return c.bank; }catch(e){} }
+  var bank = await fbGet("teacherVocabBanks/" + tid);
+  try{ if(bank && bank.updatedAt != null) localStorage.setItem(key, JSON.stringify({ stamp: bank.updatedAt, bank: bank })); else localStorage.removeItem(key); }catch(e){ try{ localStorage.removeItem(key); }catch(e2){} }
+  return bank;
+}
 // 重新整理課次索引。登入時、從編輯器回來時要完整讀取（讀整個測驗庫與生詞庫，資料量很大）；
 // 只是改排序、隱藏教材、新增空課次這類「不動到內容」的操作，傳 { cached: true } 沿用這次登入已經讀過的內容，不要每次都重新下載（Firebase 下載量就是這樣被耗掉的）
 async function syncLessonIndex(opts){
@@ -1661,7 +1671,7 @@ async function syncLessonIndex(opts){
   var light = !!(opts && opts.light) && !!S.plat.projIndex && Object.keys(S.plat.projIndex).length > 0 && Date.now() - (Number(S.plat.projIndexAt) || 0) < 86400000, packsBefore = 0;   // 簡短索引超過一天沒更新就完整讀一次
   if(useMemo){ bank = S._memoBank; lib = S._memoLib; }
   else {
-    try{ bank = await fbGet("teacherVocabBanks/" + t); }catch(e){}
+    try{ bank = await bankCached(t); }catch(e){}
     packsBefore = Object.keys((bank && bank.autoAdded) || {}).length;
     try{ bank = await autoAddContentPacks(t, bank); }catch(e){ console.warn("autoAddContentPacks", e); }
     if(light && Object.keys((bank && bank.autoAdded) || {}).length !== packsBefore) light = false;   // 剛自動加入新教材：要完整讀一次
@@ -7691,7 +7701,7 @@ async function startStudent(code, name, pw, opts){
     var base = "teacherPlatform/" + idx.t;
     var res = await Promise.all([fbGet(base + "/schools/" + idx.s + "/name"), fbGet(base + "/schools/" + idx.s + "/terms/" + idx.tm + "/name"), fbGet(base + "/schools/" + idx.s + "/terms/" + idx.tm + "/classes/" + idx.c), fbGet(base + "/lessons"), fbGet(base + "/books")]);
     if(!res[2]){ viewStudentEntry("這個班級已不存在。", code); return; }
-    try{ var sb = await fbGet("teacherVocabBanks/" + idx.t); S.bank = (sb && Array.isArray(sb.courseData)) ? sb.courseData : []; }catch(e){ S.bank = []; }
+    try{ var sb = await bankCached(idx.t); S.bank = (sb && Array.isArray(sb.courseData)) ? sb.courseData : []; }catch(e){ S.bank = []; }
     var needAcct = !!(await fbGet(base + "/accountsOn/" + idx.c));
     if(needAcct && !(opts && opts.google)){ var au = await studentAuth(idx, name, pw); if(au !== true){ viewStudentEntry(au, code); return; } }
     S.student = { name: name, code: code, idx: idx, school: res[0], term: res[1], cls: res[2], acct: needAcct };
