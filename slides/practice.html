@@ -3134,7 +3134,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
     var fbApp = appMod.initializeApp(window.FIREBASE_CONFIG);
     window.db = dbMod.getDatabase(fbApp);
     window.ref = dbMod.ref; window.onValue = dbMod.onValue; window.set = dbMod.set;
-    window.update = dbMod.update; window.onDisconnect = dbMod.onDisconnect;
+    window.update = dbMod.update; window.onDisconnect = dbMod.onDisconnect; window.goOffline = dbMod.goOffline; window.goOnline = dbMod.goOnline;
     window.serverTimestamp = dbMod.serverTimestamp; window.get = dbMod.get;
     window.push = dbMod.push; window.remove = dbMod.remove;
     window.auth = authMod.getAuth(fbApp);
@@ -4489,7 +4489,7 @@ window.mmTA = (function(){
   // 不同裝置的編號本來就不會相等，也就不會被拿來互相比大小，不會再受時鐘誤差影響。
   var deviceInstanceId = uid("dev");
 
-  var roomData = null; var cursorOn = false;   // 低流量：老師的指標預設不分享給學生（需要時在房間上方打開「指標分享」） var currentFolderId = null; var activeProjectId = null;
+  var roomData = null; var cursorOn = false; var currentFolderId = null; var activeProjectId = null;   // cursorOn 預設關閉＝低流量：老師的指標不分享給學生（需要時在房間上方打開「指標分享」）
   var editingFolderId = null; var editingProjectId = null; var activeSectionForAdd = null; var editingSectionId = null;
   var editingQuestionId = null;
   var draggedSecId = null; var draggedQ = null;
@@ -7230,6 +7230,35 @@ window.mmTA = (function(){
     SLT.box.style.display = SLT.open ? "flex" : "none"; SLT.btn.style.display = SLT.open ? "none" : "block";
     SLT.btn.innerHTML = '📝 翻譯<br><b>' + ids.length + '</b>';
   }
+
+  /* 學生閒置保護：在房間裡超過 10 分鐘沒有動作（滑鼠、觸控、鍵盤都沒動，老師也沒有換頁）就暫停連線，不再接收房間資料，
+     省 Firebase 流量（學生常常忘記關頁面）。點一下畫面就恢復。考卷作答中、自習模式不套用。 */
+  (function(){
+    var IDLE_MS = 10 * 60 * 1000, last = Date.now(), off = false, ov = null, lastQ = null;
+    function act(){ last = Date.now(); }
+    ["pointerdown", "pointermove", "keydown", "touchstart", "wheel"].forEach(function(ev){ window.addEventListener(ev, function(){ if(!off) act(); }, { capture: true, passive: true }); });
+    function resume(){
+      off = false; if(ov){ ov.remove(); ov = null; }
+      try{ if(window.goOnline && window.db) window.goOnline(window.db); }catch(e){}
+      act();
+    }
+    function goIdle(){
+      off = true;
+      try{ if(window.goOffline && window.db) window.goOffline(window.db); }catch(e){}
+      ov = document.createElement("div");
+      ov.style.cssText = "position:fixed;inset:0;z-index:2147483000;background:rgba(40,34,30,.88);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;font-size:22px;text-align:center;cursor:pointer;padding:20px;";
+      ov.innerHTML = '<div style="font-size:44px;">💤</div><div>你已經閒置超過 10 分鐘，連線已暫停。</div><div style="font-size:18px;opacity:.85;">點一下畫面繼續上課<br>You have been idle for 10 minutes. Tap anywhere to continue.</div>';
+      ov.addEventListener("pointerdown", function(e){ e.preventDefault(); resume(); });
+      ov.addEventListener("keydown", resume);
+      document.body.appendChild(ov);
+    }
+    setInterval(function(){
+      if(off || !isStudent || !inRoom() || window.__attempt || window.__solo || window.__grade) return;
+      var q = roomData && roomData.project && roomData.project.currentQId;
+      if(q !== lastQ){ lastQ = q; act(); }   // 老師換頁也算有動作（學生只是在看老師講課）
+      if(Date.now() - last > IDLE_MS) goIdle();
+    }, 15000);
+  })();
 
   function startRoom(rId, role){
     activeRoomId = rId; roomRole = role;
