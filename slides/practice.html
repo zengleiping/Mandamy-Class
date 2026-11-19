@@ -4891,7 +4891,7 @@ window.mmTA = (function(){
   // 以前只有「開房間的那一刻」會補傳，房間裡才匯入的內容完全沒人補。
   // 做法：掃描房間裡所有「只有本機參照」的圖片／背景／音檔 → 傳到雲端換成 mm:key@網址；雲端不能用（Firebase 方案不支援、離線…）時，
   // 圖片縮小後直接放進房間資料（有總量上限）；每批寫回房間，學生那邊會即時出現。
-  var mediaRepairBusy = false, mediaRepairFailAt = 0, mediaShareMemo = {}, mediaInlineBudget = 12000000, mediaLastErr = "";
+  var mediaRepairBusy = false, mediaRepairFailAt = 0, mediaShareMemo = {}, mediaInlineBudget = 4000000, mediaLastErr = "";
   function isLocalRef(v){ var r = parseMediaRef(v); return !!(r && !r.url); }
   function noteMediaErr(e){
     mediaLastErr = e ? ((e.code && e.message && e.code !== "timeout" ? e.code + "：" : "") + (e.message || e.code || String(e))) : "";
@@ -4916,7 +4916,7 @@ window.mmTA = (function(){
       }
       if(!out && kind === "img"){
         var sm = await shrinkImageBlob(rec.blob, { edge: 900, q: 0.72, always: true }), du = await blobToDataUrl(sm);
-        if(du.length <= 350000 && du.length <= mediaInlineBudget){ mediaInlineBudget -= du.length; out = du; }
+        if(du.length <= 250000 && du.length <= mediaInlineBudget){ mediaInlineBudget -= du.length; out = du; }
       }
     }catch(e){ noteMediaErr(e); }
     if(out) mediaShareMemo[r.key] = out;
@@ -19005,6 +19005,7 @@ window.mmTA = (function(){
     if(!inRoom() || roomRole !== "student") return;
     if(isCapturingSnapshot) return; // 上一張還沒擷取完（例如裝置比較慢）就跳過這一輪，不要疊起來
     if(typeof html2canvas === "undefined") return; // CDN 沒載入成功就安靜跳過，不影響其他功能
+    if(!(roomData && roomData.monitorOn === true)) return;   // 老師沒開「看全班畫面」就不上傳，省 Firebase 流量
     isCapturingSnapshot = true;
     try{
       var target = getSnapshotCaptureTarget();
@@ -19044,16 +19045,29 @@ window.mmTA = (function(){
     if(studentSnapshotTimer){ clearInterval(studentSnapshotTimer); studentSnapshotTimer = null; }
   }
 
-  function startTeacherSnapshotListener(rId){
-    onValue(ref(db, "roomStudentSnapshots/" + rId), function(snap){
-      liveStudentSnapshots = snap.val() || {};
-      if(studentMonitorDialogOpen) renderStudentMonitorThumbnails();
-      if(studentMonitorZoomPeerId) renderStudentMonitorZoom();
-    });
+  // 「看全班畫面」只在老師打開監看視窗時才收學生畫面、學生端也才上傳（原本一進房間就持續上傳／下載，
+  // 全班每 4 秒一張圖，會把 Realtime Database 的每月下載量很快用光）
+  var snapRoomId = null, snapUnsub = null;
+  function startTeacherSnapshotListener(rId){ snapRoomId = rId; }
+  function snapAttach(){
+    if(!snapRoomId || snapUnsub) return;
+    try{
+      snapUnsub = onValue(ref(db, "roomStudentSnapshots/" + snapRoomId), function(snap){
+        liveStudentSnapshots = snap.val() || {};
+        if(studentMonitorDialogOpen) renderStudentMonitorThumbnails();
+        if(studentMonitorZoomPeerId) renderStudentMonitorZoom();
+      });
+      var mref = ref(db, "rooms/" + snapRoomId + "/monitorOn");
+      set(mref, true).catch(function(){}); try{ onDisconnect(mref).set(false); }catch(e){}
+    }catch(e){ console.warn("snapAttach", e); }
+  }
+  function snapDetach(){
+    if(snapUnsub){ try{ snapUnsub(); }catch(e){} snapUnsub = null; }
+    if(snapRoomId){ try{ set(ref(db, "rooms/" + snapRoomId + "/monitorOn"), false).catch(function(){}); }catch(e){} }
   }
 
   function openStudentMonitorDialog(){
-    studentMonitorDialogOpen = true;
+    studentMonitorDialogOpen = true; snapAttach();
     renderStudentMonitorThumbnails();
     safeShowModal(document.getElementById("student-monitor-dialog"));
     // 就算學生端沒有送新畫面過來，「幾秒前更新」的文字本身也要跟著時間繼續跳動，
@@ -19065,7 +19079,7 @@ window.mmTA = (function(){
     }, 2000);
   }
   function closeStudentMonitorDialog(){
-    studentMonitorDialogOpen = false;
+    studentMonitorDialogOpen = false; snapDetach();
     if(studentMonitorTickTimer){ clearInterval(studentMonitorTickTimer); studentMonitorTickTimer = null; }
     closeModalDialog(document.getElementById("student-monitor-dialog"));
   }
