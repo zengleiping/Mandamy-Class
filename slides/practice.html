@@ -5116,6 +5116,42 @@ window.mmTA = (function(){
   document.addEventListener("change", function(e){
     if(e.target && e.target.id === "exam-view-sel"){ examViewId = e.target.value || null; renderStage(); }
   });
+  /* ---- 學生在投影片上的畫記：預設只有老師看得到（省流量） ----
+     全班共用同一份筆跡時，每個人的每一筆都要傳給房間裡每一個人（人數的平方）。預設改成：學生的畫記只存在 roomStudentSnapshots/{房間}/__ink/{學生}/{題}，
+     只有老師訂閱；學生自己的畫面照常看得到自己畫的＋老師畫的。老師按房間上方「學生畫記互相可見」打開後，新的畫記才會共用（舊的仍維持只有老師看得到）。 */
+  var privInk = {};          // 學生端：自己寫過的筆跡 { 題號: { strokes: [...] } }
+  var inkAll = {};           // 老師端：所有學生的畫記 { 學生id: { 題號: { strokes: [...] } } }
+  var inkLastMerged = {};    // 老師端：上次顯示時併進畫面的學生筆跡 id（用來判斷哪些是老師擦掉的）
+  function isBoardQ(qId){ var info = findSectionForQuestion(qId); return !!(info && info.sec.type === "board"); }
+  function privateInkOn(){ return inRoom() && !(roomData && roomData.shareInk === true) && currentClassMode !== "exam" && !window.__attempt && !window.__grade && !window.__solo; }
+  function inkAllFor(qId){
+    var out = [], ids = {};
+    Object.keys(inkAll || {}).forEach(function(sid){ var e = inkAll[sid] && inkAll[sid][qId]; wbList(e && e.strokes).forEach(function(st){ out.push(st); ids[st.id] = sid; }); });
+    inkLastMerged[qId] = ids; return out;
+  }
+  function writePrivateInk(qId, ownStrokes){
+    var prev = wbList((privInk[qId] || {}).strokes), base = "roomStudentSnapshots/" + activeRoomId + "/__ink/" + myId + "/" + qId, same = ownStrokes.length >= prev.length;
+    for(var i = 0; same && i < prev.length; i++){ if(!ownStrokes[i] || ownStrokes[i].id !== prev[i].id) same = false; }
+    privInk[qId] = { strokes: ownStrokes };
+    if(same){
+      if(ownStrokes.length === prev.length) return;
+      var upd = {}; for(var j = prev.length; j < ownStrokes.length; j++) upd["strokes/" + j] = ownStrokes[j];
+      update(ref(db, base), upd).catch(function(e){ console.warn("ink", e); });
+    } else set(ref(db, base + "/strokes"), ownStrokes.length ? ownStrokes : null).catch(function(e){ console.warn("ink", e); });
+  }
+  // 老師寫入筆跡時：只存在學生私人位置的筆跡不要寫進共用資料；老師擦掉的學生筆跡要從學生的私人位置刪掉
+  function teacherSplitInk(qId, patch){
+    var sharedNow = wbList(roomData && roomData.sharedProgress && roomData.sharedProgress[qId] && roomData.sharedProgress[qId].strokes), sharedIds = {}, present = {};
+    sharedNow.forEach(function(st){ sharedIds[st.id] = 1; });
+    patch.strokes.forEach(function(st){ if(st && st.id) present[st.id] = 1; });
+    var privIds = inkLastMerged[qId] || {}, keep = patch.strokes.filter(function(st){ return !(st && st.by && !sharedIds[st.id] && privIds[st.id]); });
+    Object.keys(inkAll || {}).forEach(function(sid){
+      var e = inkAll[sid] && inkAll[sid][qId]; if(!e) return;
+      var arr = wbList(e.strokes), rest = arr.filter(function(st){ return !privIds[st.id] || present[st.id]; });
+      if(rest.length !== arr.length){ e.strokes = rest; set(ref(db, "roomStudentSnapshots/" + activeRoomId + "/__ink/" + sid + "/" + qId + "/strokes"), rest.length ? rest : null).catch(function(){}); }
+    });
+    var out = Object.assign({}, patch); out.strokes = keep; return out;
+  }
   function getProgress(qId){
     if(inRoom()){
       var pk = examPrivateFor(qId);
@@ -5125,6 +5161,10 @@ window.mmTA = (function(){
         return priv;
       }
       var shp = (roomData && roomData.sharedProgress && roomData.sharedProgress[qId]) || {};
+      if(currentClassMode !== "exam" && !window.__attempt && !window.__grade && !window.__solo && isBoardQ(qId)){
+        if(isStudent){ var mine = wbList((privInk[qId] || {}).strokes); if(mine.length) shp = Object.assign({}, shp, { strokes: wbList(shp.strokes).concat(mine) }); }
+        else { var all = inkAllFor(qId); if(all.length) shp = Object.assign({}, shp, { strokes: wbList(shp.strokes).concat(all) }); }
+      }
       // 測驗模式的選擇題：每位學生各自作答（記在 votes），自己畫面只看到自己的選擇
       if(isStudent && choiceVoteOn() && isChoiceQ(qId)){ var mv = choiceVotes(qId)[myId]; return Object.assign({}, shp, { multiPicks: Object.assign({}, (mv && mv.picks) || {}) }); }
       return shp;
@@ -5239,6 +5279,17 @@ window.mmTA = (function(){
         if(cans.length && cpk.length === cans.length && cpk.every(function(k){ return cans.indexOf(k) >= 0; })) window.parent.postMessage({ mm: "petEarn", kind: "choice", room: activeRoomId, id: qId }, "*");
       }catch(e){}
       return; }
+    if(inRoom() && isBoardQ(qId) && Array.isArray(patch.strokes) && currentClassMode !== "exam" && !window.__attempt){
+      if(isStudent && privateInkOn()){
+        writePrivateInk(qId, patch.strokes.filter(function(st){ return st && st.by === myId; }));
+        patch = Object.assign({}, patch); delete patch.strokes; delete patch.strokesRevSeq; delete patch.strokesRevBy;
+        if(!Object.keys(patch).length) return;
+      } else if(!isStudent){ patch = teacherSplitInk(qId, patch); }
+      else {   // 學生、畫記已改成互相可見：先前只存在私人位置的筆跡不要再重複寫進共用資料
+        var pids = {}; wbList((privInk[qId] || {}).strokes).forEach(function(st){ pids[st.id] = 1; });
+        patch = Object.assign({}, patch); patch.strokes = patch.strokes.filter(function(st){ return !(st && pids[st.id]); });
+      }
+    }
     if(inRoom()){ protectTeacherInk(qId, patch); update(ref(db, "rooms/" + activeRoomId + "/sharedProgress/" + qId), strokeDeltaPatch(qId, patch)); }
     else { Object.assign(getProgress(qId), patch); saveFS(); renderStage(); }
   }
@@ -6482,6 +6533,11 @@ window.mmTA = (function(){
           renderTopbar();
         };
         c2.appendChild(toggleCursor);
+        var toggleInk = document.createElement("label"); var inkShared = !!(roomData && roomData.shareInk === true); toggleInk.className = "toggle" + (inkShared ? " on" : "");
+        toggleInk.title = "預設：學生在投影片上的畫記只有老師看得到（省流量）。打開後，之後的畫記全班都看得到。";
+        toggleInk.innerHTML = '<span class="toggle-track"></span><span>' + (inkShared ? "學生畫記互相可見 Shared" : "學生畫記僅老師可見 Private") + '</span>';
+        toggleInk.onclick = function(){ update(ref(db, "rooms/" + activeRoomId), { shareInk: !inkShared }); };
+        c2.appendChild(toggleInk);
       }
       topbarActions.appendChild(c2);
       if(!isStudent){
@@ -7265,7 +7321,13 @@ window.mmTA = (function(){
     if(role === "teacher"){ setTimeout(function(){ repairRoomMedia(true); }, 5000); }   // 進房間後檢查有沒有學生拿不到的圖片
     if(role === "teacher" && window.parent !== window){ try{ window.parent.postMessage({ mm: "room", id: rId }, "*"); }catch(e){} } // 平台嵌入：通知外殼，學生會自動進房
     if(window.__attempt){ /* 個別作答：不需要老師即時監看學生畫面 */ }
-    else if(role === "student") startStudentSnapshotLoop(); else startTeacherSnapshotListener(rId);
+    else if(role === "student"){
+      startStudentSnapshotLoop();
+      try{ get(ref(db, "roomStudentSnapshots/" + rId + "/__ink/" + myId)).then(function(sn){ var v = sn.val(); if(v){ privInk = v; try{ renderStage(); }catch(e){} } }).catch(function(){}); }catch(e){}
+    } else {
+      startTeacherSnapshotListener(rId);
+      try{ onValue(ref(db, "roomStudentSnapshots/" + rId + "/__ink"), function(sn){ inkAll = sn.val() || {}; var f = function(){ try{ renderStage(); }catch(e){} }; if(typeof objDragActive === "function" && objDragActive()) objDragDefer(f); else f(); }); }catch(e){}
+    }
     onValue(ref(db, "rooms/" + rId), function(snap){
       roomData = snap.val() || {};
       try{ slTransDraw(); }catch(erT){ console.warn("slTransDraw", erT); }
