@@ -7680,8 +7680,12 @@ window.mmTA = (function(){
     if(inRoom()) remove(ref(db, "roomCursors/" + activeRoomId + "/" + myId));
   }
   var lastCursorSendAt = 0;
+  var lastCursorX = -99, lastCursorY = -99;
   document.addEventListener("mousemove", function(e){
     if(!inRoom() || !cursorOn){ wasCursorOnBoard = false; return; }
+    // 只有老師送出游標位置：學生的游標原本也每 50 毫秒送一次、再轉發給全班每個人，
+    // 20 位學生同時動滑鼠一堂課就會下載好幾 GB（Firebase 每月下載量就是這樣用光的）
+    if(isStudent) return;
     var boardArea = document.getElementById("board-area");
     if(!boardArea){ clearMyRoomCursor(); return; }
     var refEl = getCursorRefEl(boardArea);
@@ -7700,12 +7704,14 @@ window.mmTA = (function(){
     // 2026-09-29：節流間隔從 80ms 調到 50ms——游標位置的廣播頻率跟「殘留一點點跟手指/滑鼠位置對不上」
     // 的落差直接相關（對方看到的永遠是「幾十毫秒前」送出的那個位置），縮短間隔能直接減少這個落差，
     // 副作用（多送一點點資料量）在這種輕量的百分比座標上可以忽略。
-    if(now - lastCursorSendAt < 50) return;
+    if(now - lastCursorSendAt < 120) return;
     lastCursorSendAt = now;
     var qInfo = getCurrentQInfo(); if(!qInfo) return;
     wasCursorOnBoard = true;
     var x = (e.clientX - rect.left) / rect.width * 100;
     var y = (e.clientY - rect.top) / rect.height * 100;
+    if(Math.abs(x - lastCursorX) + Math.abs(y - lastCursorY) < 0.5) return;   // 幾乎沒動就不送
+    lastCursorX = x; lastCursorY = y;
     var curRef = ref(db, "roomCursors/" + activeRoomId + "/" + myId);
     set(curRef, { x: x, y: y, name: myName, role: roomRole, qId: qInfo.question.id, t: Date.now() });
     if(!window.__curDiscRef || window.__curDiscRef !== activeRoomId + "|" + myId){ window.__curDiscRef = activeRoomId + "|" + myId; try{ onDisconnect(curRef).remove(); }catch(e){} }   // 關掉頁面／斷線就自動移除
