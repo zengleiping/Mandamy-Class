@@ -15489,6 +15489,24 @@ window.mmTA = (function(){
       window.addEventListener("pointermove", mv); window.addEventListener("pointerup", up); window.addEventListener("pointercancel", up);
     }
     var imgElCache = {}; // 同一張圖片重畫時沿用同一個 <img>，不要每次都重新載入（不然每次同步都會閃一下、慢一下）
+    // 圖片有裁剪時，點選／拖曳／縮放用的透明框（image-proxy）只框住「看得到的那一塊」，不是整張原圖的大小
+    function imgCropFr(im){
+      var c = (im && im.crop && !(cropEdit && cropEdit.id === im.id)) ? im.crop : null; if(!c) return null;
+      var f = { l: (c.l || 0) / 100, r: (c.r || 0) / 100, t: (c.t || 0) / 100, b: (c.b || 0) / 100 };
+      return (1 - f.l - f.r > 0.05 && 1 - f.t - f.b > 0.05) ? f : null;
+    }
+    function imgFullHeightPct(im){ var cW = cWrap.clientWidth || 1, cH = cWrap.clientHeight || 1; return im.h || im.w * (cW / cH) * (im.ar || 1); }
+    function placeImgProxy(px, im){
+      var f = imgCropFr(im);
+      if(!f){
+        px.style.left = im.x + "%"; px.style.top = im.y + "%"; px.style.width = im.w + "%";
+        if(im.h){ px.style.height = im.h + "%"; px.style.aspectRatio = "auto"; } else { px.style.height = ""; px.style.aspectRatio = "1 / " + (im.ar || 1); }
+        return;
+      }
+      var vw = 1 - f.l - f.r, vh = 1 - f.t - f.b, hh = imgFullHeightPct(im);
+      px.style.left = (im.x + im.w * (f.l - f.r) / 2) + "%"; px.style.top = (im.y + hh * (f.t - f.b) / 2) + "%"; px.style.width = (im.w * vw) + "%";
+      if(im.h){ px.style.height = (im.h * vh) + "%"; px.style.aspectRatio = "auto"; } else { px.style.height = ""; px.style.aspectRatio = "1 / " + ((im.ar || 1) * vh / vw); }
+    }
     function renderImages(){
       imageLayer.innerHTML = "";
       var zrI = zRanks();
@@ -15511,21 +15529,26 @@ window.mmTA = (function(){
         var px = document.createElement("div");
         px.className = "image-proxy" + (im.id === activeSelectedImageId ? " active" : "");
         px.dataset.imgId = im.id;
-        px.style.left = im.x + "%"; px.style.top = im.y + "%"; px.style.width = im.w + "%";
-        if(im.h) px.style.height = im.h + "%"; else px.style.aspectRatio = "1 / " + (im.ar || 1);
+        placeImgProxy(px, im);
         px.style.zIndex = String(rI + 1);
         px.innerHTML = ((!isStudent && (im.step || 0) > 0) ? '<span class="text-step-badge" title="第 ' + im.step + ' 次點擊出現">' + im.step + '</span>' : '') + '';
         addEdgeHandles(px, {
           clamp: false, prop: true, minW: 3, minH: 3,
           select: function(){ selectImageObj(im.id); }, snapshot: snapshotForUndo,
           getBox: function(){
+            var f = imgCropFr(im);
+            if(f){ var pr = px.getBoundingClientRect(), cr0 = cWrap.getBoundingClientRect(); return { l: (pr.left - cr0.left) / cr0.width * 100, r: (pr.right - cr0.left) / cr0.width * 100, t: (pr.top - cr0.top) / cr0.height * 100, b: (pr.bottom - cr0.top) / cr0.height * 100 }; }
             var hh = im.h || (px.getBoundingClientRect().height / (cWrap.getBoundingClientRect().height || 1) * 100);
             return { l: im.x - im.w / 2, r: im.x + im.w / 2, t: im.y - hh / 2, b: im.y + hh / 2 };
           },
           setBox: function(b){
-            im.w = b.r - b.l; im.h = b.b - b.t; im.x = (b.l + b.r) / 2; im.y = (b.t + b.b) / 2;
-            [px, el].forEach(function(n){ n.style.left = im.x + "%"; n.style.top = im.y + "%"; n.style.width = im.w + "%"; n.style.height = im.h + "%"; });
-            px.style.aspectRatio = "auto"; el.style.objectFit = "fill";
+            var f = imgCropFr(im);
+            if(f){
+              var vw = 1 - f.l - f.r, vh = 1 - f.t - f.b, w2 = (b.r - b.l) / vw, h2 = (b.b - b.t) / vh, left = b.l - w2 * f.l, top = b.t - h2 * f.t;
+              im.w = w2; im.h = h2; im.x = left + w2 / 2; im.y = top + h2 / 2;
+            } else { im.w = b.r - b.l; im.h = b.b - b.t; im.x = (b.l + b.r) / 2; im.y = (b.t + b.b) / 2; }
+            el.style.left = im.x + "%"; el.style.top = im.y + "%"; el.style.width = im.w + "%"; el.style.height = im.h + "%";
+            placeImgProxy(px, im); el.style.objectFit = "fill";
           },
           commit: function(){ ["x","y","w","h"].forEach(function(k){ im[k] = Math.round(im[k] * 10) / 10; }); writeProgress(q.id, { images: images }); }
         });
@@ -15547,7 +15570,7 @@ window.mmTA = (function(){
           function onMove(ev){
             im.x = Math.max(0, Math.min(100, origX + (ev.clientX - startX) / rect.width * 100));
             im.y = Math.max(0, Math.min(100, origY + (ev.clientY - startY) / rect.height * 100));
-            px.style.left = im.x + "%"; px.style.top = im.y + "%";
+            placeImgProxy(px, im);
             el.style.left = im.x + "%"; el.style.top = im.y + "%";
           }
           function onUp(){
@@ -16061,7 +16084,11 @@ window.mmTA = (function(){
     }
     function itemBox(it){
       if(it.k === "text") return elBox(textLayer.querySelector('.movable-text[data-text-id="' + it.id + '"]'));
-      if(it.k === "image") return elBox(cWrap.querySelector('.board-image[data-img-id="' + it.id + '"]'));
+      if(it.k === "image"){
+        var imo = images.find(function(x){ return x.id === it.id; });
+        if(imo && imgCropFr(imo)){ var pxe = cWrap.querySelector('.image-proxy[data-img-id="' + it.id + '"]'); if(pxe) return elBox(pxe); }
+        return elBox(cWrap.querySelector('.board-image[data-img-id="' + it.id + '"]'));
+      }
       if(it.k === "table") return elBox(cWrap.querySelector('.table-obj[data-table-id="' + it.id + '"]'));
       if(it.k === "shape"){
         var sh = shapes.find(function(x){ return x.id === it.id; }); if(!sh) return null;
@@ -16256,13 +16283,40 @@ window.mmTA = (function(){
       };
       function close(){ back.remove(); }
       modal.querySelector(".rb-no").onclick = close; back.addEventListener("click", function(e){ if(e.target === back) close(); });
-      modal.querySelector(".rb-orig").onclick = function(){ if(im.srcOrig){ snapshotForUndo(); im.src = im.srcOrig; delete im.srcOrig; writeProgress(q.id, { images: images }); renderImages(); renderSelection(); } close(); };
+      modal.querySelector(".rb-orig").onclick = function(){ if(im.srcOrig){ snapshotForUndo(); im.src = im.srcOrig; delete im.srcOrig;
+        if(im.trimF){ var tf2 = im.trimF, cW2 = cWrap.clientWidth || 1, cH2 = cWrap.clientHeight || 1, hh2 = im.h || im.w * (cW2 / cH2) * (im.ar || 1), fw2 = im.w / (tf2.fx1 - tf2.fx0), fh2 = hh2 / (tf2.fy1 - tf2.fy0), fl2 = (im.x - im.w / 2) - fw2 * tf2.fx0, ft2 = (im.y - hh2 / 2) - fh2 * tf2.fy0; im.x = fl2 + fw2 / 2; im.y = ft2 + fh2 / 2; im.w = fw2; if(im.h) im.h = fh2; else im.ar = (fh2 * cH2) / (fw2 * cW2); delete im.trimF; } writeProgress(q.id, { images: images }); renderImages(); renderSelection(); } close(); };
       modal.querySelector(".rb-ok").onclick = async function(e){
         if(!seeds.length){ close(); return; }
         var btn = e.target; btn.disabled = true; btn.textContent = "處理中…";
         var blob = await new Promise(function(r){ dcv.toBlob(r, "image/png"); });
         var ref = blob ? await storeMediaBlob(blob) : ""; if(!ref){ alert("存圖失敗，請再試一次。"); btn.disabled = false; btn.textContent = "✓ 套用"; return; }
-        snapshotForUndo(); if(!im.srcOrig) im.srcOrig = im.src; im.src = ref;
+        // 去背後把四周的透明空白切掉，框只留在看得到的圖上（不會是一大塊透明的空框）；位置維持原樣
+        var trim = null;
+        try{
+          var idat = dcx.getImageData(0, 0, W, H).data, cf = (!im.trimF && im.crop) ? { l: (im.crop.l || 0) / 100, r: (im.crop.r || 0) / 100, t: (im.crop.t || 0) / 100, b: (im.crop.b || 0) / 100 } : { l: 0, r: 0, t: 0, b: 0 };
+          var xa = Math.floor(cf.l * W), xb = Math.min(W - 1, Math.ceil((1 - cf.r) * W) - 1), ya = Math.floor(cf.t * H), yb = Math.min(H - 1, Math.ceil((1 - cf.b) * H) - 1), x0 = W, y0 = H, x1 = -1, y1 = -1;
+          for(var yy = ya; yy <= yb; yy++){ for(var xx = xa; xx <= xb; xx++){ if(idat[(yy * W + xx) * 4 + 3] > 12){ if(xx < x0) x0 = xx; if(xx > x1) x1 = xx; if(yy < y0) y0 = yy; if(yy > y1) y1 = yy; } } }
+          if(x1 >= 0){
+            var pad = Math.round(Math.max(W, H) * 0.004) + 1; x0 = Math.max(0, x0 - pad); y0 = Math.max(0, y0 - pad); x1 = Math.min(W - 1, x1 + pad); y1 = Math.min(H - 1, y1 + pad);
+            if((x1 - x0 + 1) * (y1 - y0 + 1) < 0.97 * W * H) trim = { x0: x0, y0: y0, x1: x1, y1: y1 };
+          }
+        }catch(_){ trim = null; }
+        var cWp = cWrap.clientWidth || 1, cHp = cWrap.clientHeight || 1, cur = { x: im.x, y: im.y, w: im.w, hh: im.h || im.w * (cWp / cHp) * (im.ar || 1) }, full = cur;
+        if(im.trimF){ var tf = im.trimF, fw0 = cur.w / (tf.fx1 - tf.fx0), fh0 = cur.hh / (tf.fy1 - tf.fy0), fl0 = (cur.x - cur.w / 2) - fw0 * tf.fx0, ft0 = (cur.y - cur.hh / 2) - fh0 * tf.fy0; full = { x: fl0 + fw0 / 2, y: ft0 + fh0 / 2, w: fw0, hh: fh0 }; }
+        var useRef = ref;
+        if(trim){
+          var tc = document.createElement("canvas"); tc.width = trim.x1 - trim.x0 + 1; tc.height = trim.y1 - trim.y0 + 1; tc.getContext("2d").drawImage(dcv, trim.x0, trim.y0, tc.width, tc.height, 0, 0, tc.width, tc.height);
+          var tb = await new Promise(function(r){ tc.toBlob(r, "image/png"); }); var tr = tb ? await storeMediaBlob(tb) : ""; if(tr) useRef = tr; else trim = null;
+        }
+        snapshotForUndo(); if(!im.srcOrig) im.srcOrig = im.src; im.src = useRef;
+        if(trim){
+          var fx0 = trim.x0 / W, fx1 = (trim.x1 + 1) / W, fy0 = trim.y0 / H, fy1 = (trim.y1 + 1) / H, nw = full.w * (fx1 - fx0), nh = full.hh * (fy1 - fy0);
+          im.x = Math.round((full.x - full.w / 2 + full.w * (fx0 + fx1) / 2) * 100) / 100; im.y = Math.round((full.y - full.hh / 2 + full.hh * (fy0 + fy1) / 2) * 100) / 100; im.w = Math.round(nw * 100) / 100;
+          if(im.h) im.h = Math.round(nh * 100) / 100; else im.ar = (nh * cHp) / (nw * cWp);
+          im.trimF = { fx0: fx0, fx1: fx1, fy0: fy0, fy1: fy1 }; delete im.crop;
+        } else if(im.trimF){
+          im.x = full.x; im.y = full.y; im.w = full.w; if(im.h) im.h = full.hh; else im.ar = (full.hh * cHp) / (full.w * cWp); delete im.trimF;
+        }
         writeProgress(q.id, { images: images }); renderImages(); renderTexts(); renderSelection(); close();
       };
     }
