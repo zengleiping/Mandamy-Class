@@ -3151,7 +3151,12 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
     // 就只是「音檔只存在這台裝置」，不會讓整個 Firebase 連線失敗。
     try{
       import("https://www.gstatic.com/firebasejs/12.18.0/firebase-storage.js").then(function(sm){
-        window.storageApi = { storage: sm.getStorage(fbApp), ref: sm.ref, uploadBytes: sm.uploadBytes, getDownloadURL: sm.getDownloadURL };
+        // Firebase Storage 沒有回應時（例如專案沒開通、被擋住），官方 SDK 會在背景重試長達 10 分鐘才放棄，畫面看起來就是「一直卡住不動」。
+        // 這裡加上逾時：小檔案 30 秒（大檔案依大小加長）沒完成就當作失敗，馬上回報原因。
+        var tmo = function(pr, ms, what){ return new Promise(function(res, rej){ var t = setTimeout(function(){ var e = new Error(what + "逾時：雲端檔案儲存沒有回應（可能尚未開通、被網路擋住或網路太慢）"); e.code = "timeout"; rej(e); }, ms); pr.then(function(v){ clearTimeout(t); res(v); }, function(e){ clearTimeout(t); rej(e); }); }); };
+        window.storageApi = { storage: sm.getStorage(fbApp), ref: sm.ref,
+          uploadBytes: function(r, b, o){ return tmo(sm.uploadBytes(r, b, o), 30000 + Math.round(((b && b.size) || 0) / 20), "上傳"); },
+          getDownloadURL: function(r){ return tmo(sm.getDownloadURL(r), 20000, "取得網址"); } };
         window.dispatchEvent(new Event("firebase-storage-ready"));
       }).catch(function(e){ console.warn("Firebase Storage 載入失敗（音檔只會存在這台裝置）", e); });
     }catch(e){}
@@ -4781,8 +4786,10 @@ window.mmTA = (function(){
       var c0 = mediaCountsNow();
       if(c0.local){
         body.textContent = "正在上傳 " + c0.local + " 個檔案…";
-        try{ if(inRoom()){ if(!isStudent) await repairRoomMedia(true); } else await syncMediaToCloud(); }catch(e){}
-        await new Promise(function(r){ setTimeout(r, 1200); });
+        var runP = (inRoom() ? (isStudent ? Promise.resolve() : repairRoomMedia(true)) : syncMediaToCloud()).catch(function(){});
+        var tick = setInterval(function(){ var cn = mediaCountsNow(); body.textContent = "正在上傳… 已完成 " + (c0.local - cn.local) + " / " + c0.local + " 個" + (mediaSyncProg.fail ? "（失敗 " + mediaSyncProg.fail + " 次，若一直失敗會自動停止並說明原因）" : ""); }, 700);
+        await runP; clearInterval(tick);
+        await new Promise(function(r){ setTimeout(r, 600); });
       }
       var c = mediaCountsNow(), miss = 0;
       for(var i = 0; i < c.localKeys.length; i++){ var rec = null; try{ rec = (MO && MO.ok) ? await MO.getMedia(c.localKeys[i]) : null; }catch(e){} if(!rec || !rec.blob) miss++; }
@@ -4791,7 +4798,8 @@ window.mmTA = (function(){
         if(navigator.onLine === false) why.push("目前沒有網路");
         if(!currentTeacher && !inRoom()) why.push("沒有用老師帳號登入");
         if(!window.storageApi) why.push("雲端檔案儲存（Firebase Storage）沒有載入或尚未開通");
-        if(mediaLastErr) why.push("上次上傳的錯誤：" + escapeHtml(String(mediaLastErr).slice(0, 120)));
+        if(mediaLastErr) why.push("上傳失敗的原因：" + escapeHtml(String(mediaLastErr).slice(0, 160)));
+        if(mediaSyncProg.stopped) why.push("連續上傳失敗，已自動停止（避免一直等下去）。請把這個畫面拍給維護的人，通常是 Firebase 的「Storage」還沒開通，或規則不允許上傳");
       }
       var h = '<div>這份簡報共有 <b>' + c.total + '</b> 個圖片／音檔：</div><div>✅ 已上傳到雲端：<b>' + c.cloud + '</b></div><div>' + (c.local ? '⚠️' : '✅') + ' 還沒上傳（只存在匯入的那台電腦）：<b>' + c.local + '</b></div>';
       if(c.local){
@@ -4803,7 +4811,7 @@ window.mmTA = (function(){
       body.innerHTML = h;
     }catch(e){ body.textContent = "檢查失敗：" + (e && e.message ? e.message : e); }
   }
-  var mediaSyncing = false;
+  var mediaSyncing = false, mediaSyncProg = { fail: 0, stopped: false };
   // 把還沒上傳的媒體（音檔、圖片）傳到 Firebase Storage（登入且有網路、Storage 可用時）。成功的參照會加上 @網址，再存回課程庫。
   // 上傳前把太大的圖片縮小（最長邊 1920px；沒有透明的改存 JPEG），學生端載入會快很多；本機保留原檔
   async function shrinkImageBlob(blob, opt){
@@ -4824,12 +4832,14 @@ window.mmTA = (function(){
   async function syncMediaToCloud(){
     if(mediaSyncing || !currentTeacher || !MO || !MO.ok || !window.storageApi || navigator.onLine === false) return { uploaded: 0, pending: 0 };
     mediaSyncing = true;
-    var uploaded = 0, pending = 0, changed = false, done = {};
+    var uploaded = 0, pending = 0, changed = false, done = {}, consecFail = 0;
+    mediaSyncProg = { fail: 0, stopped: false };
     try{
       var jobs = [];
       collectMediaSlots(fsData).forEach(function(sl){ var r = parseMediaRef(sl.get()); if(r && !r.url) jobs.push({ sl: sl, key: r.key }); });
       for(var i = 0; i < jobs.length; i++){
         var j = jobs[i];
+        if(consecFail >= 2){ pending++; mediaSyncProg.stopped = true; continue; }   // 連續失敗：雲端檔案儲存多半有問題，不要再一個一個等，直接停下來回報原因
         try{
           if(done[j.key] === undefined){
             var rec = await MO.getMedia(j.key);
@@ -4841,8 +4851,8 @@ window.mmTA = (function(){
               done[j.key] = await window.storageApi.getDownloadURL(sr);
             }
           }
-          if(done[j.key]){ j.sl.set("mm:" + j.key + "@" + done[j.key]); uploaded++; changed = true; } else pending++;
-        }catch(e){ console.warn("媒體上傳失敗（先保留在這台裝置）", e); pending++; }
+          if(done[j.key]){ j.sl.set("mm:" + j.key + "@" + done[j.key]); uploaded++; changed = true; consecFail = 0; } else pending++;
+        }catch(e){ console.warn("媒體上傳失敗（先保留在這台裝置）", e); noteMediaErr(e); consecFail++; mediaSyncProg.fail++; pending++; }
       }
       if(changed) saveFS();
     } finally { mediaSyncing = false; }
@@ -4884,7 +4894,7 @@ window.mmTA = (function(){
   var mediaRepairBusy = false, mediaRepairFailAt = 0, mediaShareMemo = {}, mediaInlineBudget = 12000000, mediaLastErr = "";
   function isLocalRef(v){ var r = parseMediaRef(v); return !!(r && !r.url); }
   function noteMediaErr(e){
-    mediaLastErr = (e && (e.code || e.message)) || String(e);
+    mediaLastErr = e ? ((e.code && e.message && e.code !== "timeout" ? e.code + "：" : "") + (e.message || e.code || String(e))) : "";
     try{ console.warn("[mm] 媒體上傳失敗", e); localStorage.setItem("mm_media_diag", JSON.stringify({ t: new Date().toISOString(), err: mediaLastErr, teacher: !!currentTeacher, storage: !!window.storageApi, online: navigator.onLine })); }catch(er){}
   }
   async function makeRefShareable(val, kind){
