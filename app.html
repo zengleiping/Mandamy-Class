@@ -1470,14 +1470,14 @@ async function startTeacher(acc, owner){
     S.teacher = { id: owner, name: (acc.displayName || acc.username) + "（助教）", role: "ta", me: acc.id };
   }
   root.innerHTML = '<div class="center-wrap"><div class="note">載入中…</div></div>';
-  var plat = {}, pbase = "teacherPlatform/" + S.teacher.id, pkeys = ["schools", "lessonMap", "lessons", "units", "books", "customLessons", "hier", "schedule", "classRecords", "meta", "assistants", "lessonOrder"];
+  var plat = {}, pbase = "teacherPlatform/" + S.teacher.id, pkeys = ["schools", "lessonMap", "lessons", "units", "books", "customLessons", "hier", "schedule", "classRecords", "meta", "assistants", "lessonOrder", "projIndex", "projIndexAt"];
   var pvals = await Promise.all(pkeys.map(function(k){ return fbGet(pbase + "/" + k).catch(function(){ return null; }); }));
   pkeys.forEach(function(k, i){ if(pvals[i] != null) plat[k] = pvals[i]; });
   plat.schools = plat.schools || {}; plat.lessonMap = plat.lessonMap || {}; plat.lessons = plat.lessons || {}; plat.units = plat.units || {}; plat.books = plat.books || {}; plat.customLessons = plat.customLessons || {}; plat.lessonOrder = plat.lessonOrder || {};
   S.plat = plat;
   await migrateHier();
   S.plat.schedule = S.plat.schedule || {};
-  await syncLessonIndex();
+  await syncLessonIndex({ light: true });   // 登入時不讀整個測驗庫，用上次存的簡短索引（省 Firebase 下載量）
   try{ S.classRooms = (await fbGet(pbase + "/classRooms")) || {}; }catch(e){ S.classRooms = {}; }   // 先讀好今天用過的房間，重新整理後才能回到同一個房間
   startReminders(); startNotify(); trStart(); classRoomsStart();
   restoreFromHash();
@@ -1654,14 +1654,26 @@ async function autoAddContentPacks(t, bank){
   return Object.assign({}, bank, { courseData: cd, autoAdded: done });
 }
 // 把「雲端生詞庫」跟「測驗庫」整理成一份輕量的課次索引（學生端只讀這一份，不必下載整個測驗庫）
-async function syncLessonIndex(){
-  var t = S.teacher.id, bank = null, lib = null;
-  try{ bank = await fbGet("teacherVocabBanks/" + t); }catch(e){}
-  try{ bank = await autoAddContentPacks(t, bank); }catch(e){ console.warn("autoAddContentPacks", e); }
+// 重新整理課次索引。登入時、從編輯器回來時要完整讀取（讀整個測驗庫與生詞庫，資料量很大）；
+// 只是改排序、隱藏教材、新增空課次這類「不動到內容」的操作，傳 { cached: true } 沿用這次登入已經讀過的內容，不要每次都重新下載（Firebase 下載量就是這樣被耗掉的）
+async function syncLessonIndex(opts){
+  var t = S.teacher.id, bank = null, lib = null, useMemo = !!(opts && opts.cached && S._memoLib && S._memoBank && Date.now() - (S._memoAt || 0) < 300000);   // 5 分鐘內讀過的才沿用
+  var light = !!(opts && opts.light) && !!S.plat.projIndex && Object.keys(S.plat.projIndex).length > 0 && Date.now() - (Number(S.plat.projIndexAt) || 0) < 86400000, packsBefore = 0;   // 簡短索引超過一天沒更新就完整讀一次
+  if(useMemo){ bank = S._memoBank; lib = S._memoLib; }
+  else {
+    try{ bank = await fbGet("teacherVocabBanks/" + t); }catch(e){}
+    packsBefore = Object.keys((bank && bank.autoAdded) || {}).length;
+    try{ bank = await autoAddContentPacks(t, bank); }catch(e){ console.warn("autoAddContentPacks", e); }
+    if(light && Object.keys((bank && bank.autoAdded) || {}).length !== packsBefore) light = false;   // 剛自動加入新教材：要完整讀一次
+  }
   if(!S.vocabPub && S.teacher.role !== "ta"){ S.vocabPub = true; setTimeout(function(){ allClassesList().forEach(function(x){ var ls = recLabelsOfClass(x.sel); publishClassVocab(ls[0] || "", x.sel.s + "|" + x.sel.t + "|" + x.sel.c); }); }, 4000); }
   if(!S.fixesRun){ S.fixesRun = true; setTimeout(function(){ applyContentFixes().catch(function(e){ console.warn("fixes", e); }); }, 1500); }
   S.bank = (bank && Array.isArray(bank.courseData)) ? bank.courseData : [];
-  try{ lib = await fbGet("teacherLibraries/" + t); }catch(e){}
+  if(!useMemo){
+    if(light){ var pj = {}; Object.keys(S.plat.projIndex).forEach(function(pid){ var x = S.plat.projIndex[pid] || {}; pj[pid] = { __idx: 1, title: x.title || "", slides: x.slides || 0, quiz: x.quiz || 0 }; }); lib = { projects: pj }; }
+    else { try{ lib = await fbGet("teacherLibraries/" + t); }catch(e){} }
+    S._memoBank = bank; S._memoLib = lib; S._memoAt = Date.now();
+  }
   var lessons = {}, lm = S.plat.lessonMap || {};
   // 雲端生詞庫：沒有標「book」的課次都算預設教材（第一冊）
   if(bank && Array.isArray(bank.courseData)) bank.courseData.forEach(function(l){
@@ -1686,7 +1698,8 @@ async function syncLessonIndex(){
       if(guess != null){ var gb = bookFromTitle(p.title) || DEFAULT_BOOK; key = lkey(gb, guess); lm[pid] = key; }
     }
     var slides = 0, quiz = 0;
-    Object.keys(p.sections || {}).forEach(function(sid){ var sc = p.sections[sid], n = Object.keys(sc.questions || {}).length; if(sc.type === "board") slides += n; else quiz += n; });
+    if(p.__idx){ slides = p.slides || 0; quiz = p.quiz || 0; }
+    else Object.keys(p.sections || {}).forEach(function(sid){ var sc = p.sections[sid], n = Object.keys(sc.questions || {}).length; if(sc.type === "board") slides += n; else quiz += n; });
     allProjects[pid] = { title: p.title, slides: slides, quiz: quiz };
     if(key == null){ unassigned[pid] = { title: p.title, slides: slides, quiz: quiz }; return; }
     if(key.indexOf("u_") === 0 && !lessons[key]){ unassigned[pid] = { title: p.title, slides: slides, quiz: quiz }; return; } // 歸去的複習單元已被刪除
@@ -1700,7 +1713,9 @@ async function syncLessonIndex(){
   var lo = S.plat.lessonOrder || {}; Object.keys(lessons).forEach(function(k){ if(!lessons[k].unit && lo[k] != null && lo[k] !== "") lessons[k].ord = Number(lo[k]); });   // 老師拖曳排過的課次順序（學生端也依這個順序）
   S.plat.lessons = lessons; S.plat.lessonMap = lm; S.unassigned = unassigned; S.allProjects = allProjects;
   var base = "teacherPlatform/" + t;
-  try{ await fbUpdate(base, { lessons: lessons, lessonMap: lm, books: booksObj() }); }catch(e){ console.error("寫入課次索引失敗（可能是 Firebase 規則還沒開放 teacherPlatform）", e); S.ruleErr = true; }
+  var wr = { lessons: lessons, lessonMap: lm, books: booksObj() };
+  if(!useMemo && !light){ wr.projIndex = allProjects; wr.projIndexAt = Date.now(); S.plat.projIndex = allProjects; S.plat.projIndexAt = wr.projIndexAt; }   // 完整讀取時順便更新簡短索引，下次登入就不用再讀整個測驗庫
+  try{ await fbUpdate(base, wr); }catch(e){ console.error("寫入課次索引失敗（可能是 Firebase 規則還沒開放 teacherPlatform）", e); S.ruleErr = true; }
 }
 
 // ---------- 網址記憶 ----------
@@ -2064,7 +2079,7 @@ function renderLibrary(){
           var lo = S.plat.lessonOrder = S.plat.lessonOrder || {}, patch = {};
           order.forEach(function(k, i){ lo[k] = (i + 1) * 10; patch[k] = lo[k]; });
           await fbUpdate("teacherPlatform/" + S.teacher.id + "/lessonOrder", patch);
-          await syncLessonIndex(); renderLibrary(); toast("已調整課次順序");
+          await syncLessonIndex({ cached: true }); renderLibrary(); toast("已調整課次順序");
         } else if(bk && bk.dataset.dbook !== cur){
           var nk = await moveLessonToBook(d.id, bk.dataset.dbook);
           if(nk){ S.lib = { book: bk.dataset.dbook, key: nk }; renderLibrary(); }
@@ -2077,7 +2092,7 @@ function renderLibrary(){
         var bo = S.plat.books = S.plat.books || {}, bpatch = {}, all = booksObj();
         ids.forEach(function(k, i){ var nb = Object.assign({}, all[k] || {}, { order: (i + 1) * 10, man: 1 }); if(k === d.id && tgtSr != null && tgtSr !== bookSeries(k)) nb.series = tgtSr; bo[k] = nb; bpatch[k] = nb; });
         await fbUpdate("teacherPlatform/" + S.teacher.id + "/books", bpatch);
-        await syncLessonIndex(); renderLibrary(); toast("已調整教材順序");
+        await syncLessonIndex({ cached: true }); renderLibrary(); toast("已調整教材順序");
       }
     }catch(er){ console.error(er); toast("調整失敗，請檢查網路後再試"); }
   };
@@ -2112,7 +2127,7 @@ function renderLibrary(){
       try{ await fbSet("teacherPlatform/" + S.teacher.id + "/customLessons/" + nk2, ent); }catch(er){ toast("儲存失敗，請檢查網路後再試"); return; }
       // 教材庫裡這一課如果有名稱欄位，一併同步
       if(willHide && ttl !== (l2.title || "")){ try{ await renameLesson(nk2, ttl); }catch(er){} }
-      await syncLessonIndex(); renderLibrary(); toast(willHide ? "已隱藏課次數字，只顯示名稱" : "已恢復顯示課次數字");
+      await syncLessonIndex({ cached: true }); renderLibrary(); toast(willHide ? "已隱藏課次數字，只顯示名稱" : "已恢復顯示課次數字");
       return;
     }
     if(b.dataset.lesnum){
@@ -2151,11 +2166,11 @@ function renderLibrary(){
       var autoS = (/《([^》]+)》/.exec(nn) || [])[1], curS = booksObj()[cur].series != null ? booksObj()[cur].series : (autoS ? "《" + autoS + "》" : "");
       var sr = await askText("這本屬於哪一套教材？同一套的各冊會排在一起（例如《學華語向前走》）。\n留空＝放在「自編教材」。", curS, "儲存"); if(sr == null) return;
       S.plat.books = S.plat.books || {}; S.plat.books[cur] = Object.assign({}, booksObj()[cur], { title: nn, series: sr.trim() });
-      await fbSet("teacherPlatform/" + S.teacher.id + "/books/" + cur, S.plat.books[cur]); await syncLessonIndex(); renderLibrary(); return;
+      await fbSet("teacherPlatform/" + S.teacher.id + "/books/" + cur, S.plat.books[cur]); await syncLessonIndex({ cached: true }); renderLibrary(); return;
     }
     if(b.dataset.libdel){ await deleteBook(cur); S.lib = { book: DEFAULT_BOOK }; renderLibrary(); return; }
-    if(b.dataset.libhide){ if(!confirm("隱藏「" + bookTitle(cur) + "」？\n隱藏後教材頁、班級和學生都不會再看到它（內容不會刪除），之後可以在「已隱藏」裡顯示回來。")) return; S.plat.books = S.plat.books || {}; S.plat.books[cur] = Object.assign({}, booksObj()[cur], { hidden: true }); await fbSet("teacherPlatform/" + S.teacher.id + "/books/" + cur, S.plat.books[cur]); S.lib = { book: bookIds()[0] }; await syncLessonIndex(); renderLibrary(); return; }
-    if(b.dataset.libunhide){ var hid = bookIds(true).filter(function(k){ return booksObj()[k].hidden; }); var pick = await askChoice("要顯示回來的教材：", [{ label: "已隱藏", items: hid.map(function(k){ return { v: k, t: bookTitle(k) }; }) }], "顯示"); if(!pick) return; S.plat.books = S.plat.books || {}; S.plat.books[pick] = Object.assign({}, booksObj()[pick]); delete S.plat.books[pick].hidden; await fbSet("teacherPlatform/" + S.teacher.id + "/books/" + pick, S.plat.books[pick]); S.lib = { book: pick }; await syncLessonIndex(); renderLibrary(); return; }
+    if(b.dataset.libhide){ if(!confirm("隱藏「" + bookTitle(cur) + "」？\n隱藏後教材頁、班級和學生都不會再看到它（內容不會刪除），之後可以在「已隱藏」裡顯示回來。")) return; S.plat.books = S.plat.books || {}; S.plat.books[cur] = Object.assign({}, booksObj()[cur], { hidden: true }); await fbSet("teacherPlatform/" + S.teacher.id + "/books/" + cur, S.plat.books[cur]); S.lib = { book: bookIds()[0] }; await syncLessonIndex({ cached: true }); renderLibrary(); return; }
+    if(b.dataset.libunhide){ var hid = bookIds(true).filter(function(k){ return booksObj()[k].hidden; }); var pick = await askChoice("要顯示回來的教材：", [{ label: "已隱藏", items: hid.map(function(k){ return { v: k, t: bookTitle(k) }; }) }], "顯示"); if(!pick) return; S.plat.books = S.plat.books || {}; S.plat.books[pick] = Object.assign({}, booksObj()[pick]); delete S.plat.books[pick].hidden; await fbSet("teacherPlatform/" + S.teacher.id + "/books/" + pick, S.plat.books[pick]); S.lib = { book: pick }; await syncLessonIndex({ cached: true }); renderLibrary(); return; }
   };
 }
 async function libAssign(pid, v){
@@ -6684,7 +6699,7 @@ async function newLessonFlow(bid){
   S.plat.customLessons = S.plat.customLessons || {};
   S.plat.customLessons[key] = noNum ? { book: bid, no: no, title: title, noNum: true } : { book: bid, no: no, title: title };
   try{ await fbSet("teacherPlatform/" + S.teacher.id + "/customLessons/" + key, S.plat.customLessons[key]); }catch(e){ toast("儲存失敗，請檢查網路或 Firebase 規則"); return null; }
-  await syncLessonIndex();
+  await syncLessonIndex({ cached: true });
   return key;
 }
 async function deleteBook(bid){
@@ -6706,7 +6721,7 @@ async function deleteBook(bid){
       ks.forEach(function(k){ if(cls[cid].lessonOpen && cls[cid].lessonOpen[k]){ delete cls[cid].lessonOpen[k]; fbSet(cp + "/lessonOpen/" + k, null); } });
     } } }
   }catch(e){}
-  await syncLessonIndex(); render();
+  await syncLessonIndex({ cached: true }); render();
 }
 // ---------- 複習單元 ----------
 function openUnitDialog(key){
@@ -6736,7 +6751,7 @@ function openUnitDialog(key){
     S.plat.units = S.plat.units || {}; S.plat.units[id] = rec;
     d.close();
     try{ await fbSet("teacherPlatform/" + S.teacher.id + "/units/" + id, rec); }catch(er){ toast("儲存失敗，請檢查網路或 Firebase 規則"); return; }
-    await syncLessonIndex(); render();
+    await syncLessonIndex({ cached: true }); render();
   };
   d.showModal();
   setTimeout(function(){ document.getElementById("unit-name").focus(); }, 30);
@@ -6754,7 +6769,7 @@ async function deleteUnit(key){
     var schools = S.plat.schools || {};
     for(var sid in schools){ var terms = schools[sid].terms || {}; for(var tid in terms){ var cl = terms[tid].classes || {}; for(var cid in cl){ if(cl[cid].lessonOpen && cl[cid].lessonOpen[key]){ delete cl[cid].lessonOpen[key]; await fbSet("teacherPlatform/" + S.teacher.id + "/schools/" + sid + "/terms/" + tid + "/classes/" + cid + "/lessonOpen/" + key, null); } } } }
   }catch(er){}
-  await syncLessonIndex(); render();
+  await syncLessonIndex({ cached: true }); render();
 }
 // ---------- 🎲 課堂活動：全部活動集中一頁（常用、最近用過），選課次／班級就開始 ----------
 var ACTS = [
