@@ -694,6 +694,8 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .circle-prompt{font-family:MM Latin,Iansui,serif;font-size:21px;margin:0 0 20px;line-height:1.6;color:var(--ink);}
   .mc-ink-host{position:relative;max-width:860px;margin:0 auto;}
   .mc-ink-wrap{position:relative;padding-bottom:140px;}
+  /* 手寫／打字是畫在整塊作答區上的：閱讀文本不能在區塊裡面另外捲動，否則文字捲走了、筆記還留在原地（看起來像懸浮）。整段攤開，跟著頁面一起捲動 */
+  .mc-ink-wrap .passage-text{ max-height:none; overflow:visible; padding-right:0; }
   .mc-ink-host .mc-choices-container{max-width:none;}
   .mc-ink-canvas{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:3;touch-action:none;}
   .mc-ink-texts{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:4;}
@@ -4487,7 +4489,7 @@ window.mmTA = (function(){
   // 不同裝置的編號本來就不會相等，也就不會被拿來互相比大小，不會再受時鐘誤差影響。
   var deviceInstanceId = uid("dev");
 
-  var roomData = null; var cursorOn = true; var currentFolderId = null; var activeProjectId = null;
+  var roomData = null; var cursorOn = false;   // 低流量：老師的指標預設不分享給學生（需要時在房間上方打開「指標分享」） var currentFolderId = null; var activeProjectId = null;
   var editingFolderId = null; var editingProjectId = null; var activeSectionForAdd = null; var editingSectionId = null;
   var editingQuestionId = null;
   var draggedSecId = null; var draggedQ = null;
