@@ -4489,7 +4489,7 @@ window.mmTA = (function(){
   // 不同裝置的編號本來就不會相等，也就不會被拿來互相比大小，不會再受時鐘誤差影響。
   var deviceInstanceId = uid("dev");
 
-  var roomData = null; var cursorOn = false;   // 低流量：老師的指標預設不分享給學生（需要時在房間上方打開「指標分享」） var currentFolderId = null; var activeProjectId = null;
+  var roomData = null; var cursorOn = false; var currentFolderId = null; var activeProjectId = null;   // cursorOn 預設關閉＝低流量：老師的指標不分享給學生（需要時在房間上方打開「指標分享」）
   var editingFolderId = null; var editingProjectId = null; var activeSectionForAdd = null; var editingSectionId = null;
   var editingQuestionId = null;
   var draggedSecId = null; var draggedQ = null;
