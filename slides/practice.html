@@ -4692,22 +4692,32 @@ window.mmTA = (function(){
     var keys = getSortedQuestionKeys(found.sec), idx = keys.indexOf(qId);
     [1, 2, 3, 4, -1].forEach(function(d, i){ var k = keys[idx + d]; if(k) setTimeout(function(){ prefetchSlideImages(k); }, 250 + i * 250); });
   }
+  // 雲端檔案儲存不能用時，老師端把圖片放在 roomStudentSnapshots/{房間}/__media/{key}（資料庫裡），房間資料裡只留很短的參照 mm:key@rtdb:房間；
+  // 學生看到那一頁才去讀那一張（以前是整個塞進房間資料，每位學生一進房間就全部下載，重新整理一次又全部下載一次）
+  var rtdbMediaMem = {};
+  function rtdbMedia(r){
+    var rid = r.url.slice(5), k = rid + "/" + r.key;
+    if(rtdbMediaMem[k]) return rtdbMediaMem[k];
+    return (rtdbMediaMem[k] = get(ref(db, "roomStudentSnapshots/" + rid + "/__media/" + r.key)).then(function(sn){ var v = sn.val(); if(!v) delete rtdbMediaMem[k]; return v || null; }).catch(function(){ delete rtdbMediaMem[k]; return null; }));
+  }
   function resolveMediaSrc(val, name){
     var ref0 = parseMediaRef(val);
     if(!ref0) return Promise.resolve(typeof val === "string" ? val : null); // 舊格式：資料網址／一般網址
     if(mediaObjUrlCache[ref0.key]) return Promise.resolve(mediaObjUrlCache[ref0.key]);
-    if(!MO || !MO.ok) return Promise.resolve(ref0.url || null);
+    var isRtdb = ref0.url.indexOf("rtdb:") === 0;
+    if(!MO || !MO.ok) return Promise.resolve(isRtdb ? rtdbMedia(ref0) : (ref0.url || null));
     // IndexedDB 偶爾會卡住不回應（被別的分頁佔著、瀏覽器的儲存限制…）：等太久就直接用雲端網址，不然圖片永遠出不來
     var gm = Promise.race([MO.getMedia(ref0.key), new Promise(function(res){ setTimeout(function(){ res(undefined); }, 2500); })]);
     return gm.then(function(rec){
       if(rec && rec.blob){ var u = URL.createObjectURL(rec.blob); mediaObjUrlCache[ref0.key] = u; return u; }
+      if(isRtdb) return rtdbMedia(ref0);
       if(ref0.url){
         if(!isStudent && !mediaFetching[ref0.key]){ mediaFetching[ref0.key] = true;
         fetch(ref0.url).then(function(r){ if(!r.ok) throw new Error("HTTP " + r.status); return r.blob(); }).then(function(bl){ return MO.putMediaWithKey(ref0.key, bl, name || ""); }).catch(function(){ delete mediaFetching[ref0.key]; }); }
         return ref0.url;
       }
       return null;
-    }).catch(function(){ return ref0.url || null; });
+    }).catch(function(){ return isRtdb ? rtdbMedia(ref0) : (ref0.url || null); });
   }
   // 課程庫裡所有「大型媒體欄位」：題目底圖（q.bgImage）、progress.bgImage、progress.images[].src（圖片）、progress.mediaData[id]（音檔）。
   // 每個欄位 { kind:'img'|'audio', get(), set(v) }——同步雲端、備份匯出入、自動瘦身都走這一份清單。
@@ -4893,7 +4903,7 @@ window.mmTA = (function(){
   // 以前只有「開房間的那一刻」會補傳，房間裡才匯入的內容完全沒人補。
   // 做法：掃描房間裡所有「只有本機參照」的圖片／背景／音檔 → 傳到雲端換成 mm:key@網址；雲端不能用（Firebase 方案不支援、離線…）時，
   // 圖片縮小後直接放進房間資料（有總量上限）；每批寫回房間，學生那邊會即時出現。
-  var mediaRepairBusy = false, mediaRepairFailAt = 0, mediaShareMemo = {}, mediaInlineBudget = 4000000, mediaLastErr = "";
+  var mediaRepairBusy = false, mediaRepairFailAt = 0, mediaShareMemo = {}, mediaInlineBudget = 24000000, mediaLastErr = "";
   function isLocalRef(v){ var r = parseMediaRef(v); return !!(r && !r.url); }
   function noteMediaErr(e){
     mediaLastErr = e ? ((e.code && e.message && e.code !== "timeout" ? e.code + "：" : "") + (e.message || e.code || String(e))) : "";
@@ -4918,11 +4928,20 @@ window.mmTA = (function(){
       }
       if(!out && kind === "img"){
         var sm = await shrinkImageBlob(rec.blob, { edge: 900, q: 0.72, always: true }), du = await blobToDataUrl(sm);
-        if(du.length <= 250000 && du.length <= mediaInlineBudget){ mediaInlineBudget -= du.length; out = du; }
+        if(du.length <= 450000 && du.length <= mediaInlineBudget && activeRoomId){
+          try{ await set(ref(db, "roomStudentSnapshots/" + activeRoomId + "/__media/" + r.key), du); mediaInlineBudget -= du.length; out = "mm:" + r.key + "@rtdb:" + activeRoomId; }catch(e){ noteMediaErr(e); }
+        }
       }
     }catch(e){ noteMediaErr(e); }
     if(out) mediaShareMemo[r.key] = out;
     return out || val;
+  }
+  // 以前塞進房間資料裡的大張圖片（資料網址）：搬到資料庫的獨立位置，房間資料只留短參照（學生用到才讀）
+  function isHeavyInline(v){ return typeof v === "string" && v.indexOf("data:image") === 0 && v.length > 20000; }
+  async function lazifyInline(du){
+    var h = 5381; for(var i = 0; i < du.length; i += 97){ h = ((h * 33) ^ du.charCodeAt(i)) >>> 0; } var key = "inl" + h.toString(36) + du.length.toString(36);
+    await set(ref(db, "roomStudentSnapshots/" + activeRoomId + "/__media/" + key), du);
+    return "mm:" + key + "@rtdb:" + activeRoomId;
   }
   async function repairRoomMedia(force){
     if(!inRoom() || isStudent || !roomData || mediaRepairBusy) return;
@@ -4934,7 +4953,8 @@ window.mmTA = (function(){
     Object.keys(sp).forEach(function(qid){
       var pp = sp[qid]; if(!pp) return; var bp = base + "sharedProgress/" + qid + "/";
       if(isLocalRef(pp.bgImage)) jobs.push({ path: bp + "bgImage", val: pp.bgImage, kind: "img" });
-      if(pp.images) Object.keys(pp.images).forEach(function(i){ var im = pp.images[i]; if(im && isLocalRef(im.src)) jobs.push({ path: bp + "images/" + i + "/src", val: im.src, kind: "img" }); });
+      else if(isHeavyInline(pp.bgImage)) jobs.push({ path: bp + "bgImage", val: pp.bgImage, kind: "inline" });
+      if(pp.images) Object.keys(pp.images).forEach(function(i){ var im = pp.images[i]; if(im && isLocalRef(im.src)) jobs.push({ path: bp + "images/" + i + "/src", val: im.src, kind: "img" }); else if(im && isHeavyInline(im.src)) jobs.push({ path: bp + "images/" + i + "/src", val: im.src, kind: "inline" }); });
       if(pp.mediaData) Object.keys(pp.mediaData).forEach(function(mid){ if(isLocalRef(pp.mediaData[mid])) jobs.push({ path: bp + "mediaData/" + mid, val: pp.mediaData[mid], kind: "audio" }); });
     });
     if(!jobs.length) return;
@@ -4943,7 +4963,7 @@ window.mmTA = (function(){
     try{
       toast("正在把 " + jobs.length + " 個圖片／音檔傳給學生…（學生會陸續看到）");
       for(var i = 0; i < jobs.length; i++){
-        var nv = await makeRefShareable(jobs[i].val, jobs[i].kind);
+        var nv = jobs[i].kind === "inline" ? await lazifyInline(jobs[i].val).catch(function(){ return jobs[i].val; }) : await makeRefShareable(jobs[i].val, jobs[i].kind);
         if(nv !== jobs[i].val){ batch[jobs[i].path] = nv; nb++; ok++; }
         else { var rf = parseMediaRef(jobs[i].val), rec0 = null; try{ rec0 = (MO && MO.ok) ? await MO.getMedia(rf.key) : null; }catch(e){} if(!rec0 || !rec0.blob) missing++; else failed++; }
         if(nb >= 8){ var b1 = batch; batch = {}; nb = 0; await update(ref(db), b1); }
