@@ -3882,6 +3882,7 @@ async function recAutoFill(d, slot){
     var plain = slot && slot.lesson && (S.plat.lessons || {})[slot.lesson] ? lessonTitle(slot.lesson) : "", auto = recProgressText(cls, day, ks);
     if(auto && (!d.material || d.material === plain)){ d.material = auto; info.push("進度"); }
     // 下次從這裡開始：今天的記錄（或上次停的那天就是這堂）才自動帶，補填很久以前的記錄不帶
+    try{ var scn = await recSlideContent(cls, sel, day); if(scn) recApplySlideContent(d, scn, info); }catch(e){ console.warn("slide content", e); }
     var nf = classNextFrom(cls, sel);
     if(d.nextFrom == null && nf && (day === ymd(new Date()) || nf.d === day)){ d.nextFrom = nf.text; d._nextAuto = nf.text; info.push("下次進度"); }
   }
@@ -4038,6 +4039,59 @@ async function captureClassDay(sel, day, silent){
   } else if(!silent) toast("今天沒有找到上過的簡報頁可以截圖");
   return all;
 }
+// ---------- 依簡報內容整理「今天上了什麼」：讀今天停留過的簡報頁上的文字，對照這幾課的生詞／語法，列出上到的生詞、語法和教學環節 ----------
+async function recSlideContent(cls, sel, day){
+  var vis = (cls.progress && cls.progress.visited && cls.progress.visited[day]) || {}, rooms = (S.classRooms && S.classRooms[sel.c]) || {}, texts = [], pages = 0, textPages = 0;
+  var pids = Object.keys(vis);
+  for(var i = 0; i < pids.length; i++){
+    var room = rooms[pids[i]] && rooms[pids[i]].room; if(!room) continue;
+    var idxs = Object.keys(vis[pids[i]]).map(Number).sort(function(a, b){ return a - b; }), seen = {}, n = 0;
+    for(var j = 0; j < idxs.length && n < 40; j++){
+      var qid = vis[pids[i]][idxs[j]]; if(!qid || seen[qid]) continue; seen[qid] = 1; n++; pages++;
+      var got = [];
+      try{
+        arrOf(await fbGet("rooms/" + room + "/sharedProgress/" + qid + "/texts")).forEach(function(t){ if(t && t.text) got.push(String(t.text)); });
+        arrOf(await fbGet("rooms/" + room + "/sharedProgress/" + qid + "/tables")).forEach(function(tb){ (tb && tb.cells ? arrOf(tb.cells) : []).forEach(function(row){ arrOf(row).forEach(function(c){ if(c && c.t) got.push(String(c.t)); }); }); });
+      }catch(e){}
+      if(got.length){ textPages++; texts = texts.concat(got); }
+    }
+  }
+  if(!pages) return null;
+  var norm = function(t){ return String(t || "").replace(/[\s\u3000，。、；：:！？!?「」『』（）()\-—…~～,.·]/g, ""); };
+  var nj = norm(texts.join("\n")), exact = {}; texts.forEach(function(t){ exact[norm(t)] = 1; });
+  var tg = (cls.progress || {}).taught || {}, keys = Object.keys(tg).filter(function(k){ return tg[k] && tg[k][day]; });
+  var bank = Array.isArray(S.bank) ? S.bank : [], pool = bank.filter(function(x){ return keys.indexOf(lkey(x.book || DEFAULT_BOOK, x.lesson)) >= 0; }); if(!pool.length) pool = bank;
+  var vocab = [], seenW = {}, grammar = [], seenG = {}, parts = [];
+  pool.forEach(function(L){
+    (L.vocab || []).forEach(function(v){
+      var w = v && (v["生詞"] || v.word); if(!w) return; var nw = norm(w); if(!nw || seenW[nw]) return;
+      var at = nw.length >= 2 ? nj.indexOf(nw) : (exact[nw] ? nj.indexOf(nw) : -1); if(at < 0) return;
+      seenW[nw] = 1; vocab.push({ word: String(w), sub: [v["拼音"], v["英文翻譯"]].filter(Boolean).join(" · "), at: at });
+    });
+    (L.grammar || []).forEach(function(g){
+      var gp = g && g["語法點"]; if(!gp || seenG[gp]) return;
+      var variants = String(gp).split(/[／\/、，,]|\s+/).map(norm).filter(function(x){ return x.length >= 2; });
+      if(variants.some(function(x){ return nj.indexOf(x) >= 0; })){ seenG[gp] = 1; grammar.push(String(gp)); }
+    });
+  });
+  vocab.sort(function(a, b){ return a.at - b.at; });
+  [["生詞", "生詞"], ["語法", "語法"], ["課文", "課文"], ["對話", "對話"], ["練習", "練習"], ["遊戲", "遊戲"], ["活動", "課堂活動"], ["複習", "複習"], ["作業", "作業"]].forEach(function(k){
+    if(texts.some(function(t){ var nt = norm(t); return nt.length <= 10 && nt.indexOf(k[0]) >= 0; }) && parts.indexOf(k[1]) < 0) parts.push(k[1]);
+  });
+  return { vocab: vocab, grammar: grammar, parts: parts, pages: pages, textPages: textPages };
+}
+function recApplySlideContent(d, sc, info){
+  var have = {}; d.vocab = d.vocab || []; d.vocab.forEach(function(v){ have[v.word] = 1; }); var nv = 0;
+  sc.vocab.forEach(function(v){ if(!have[v.word]){ d.vocab.push({ word: v.word, sub: v.sub }); have[v.word] = 1; nv++; } });
+  var lines = [];
+  if(sc.parts.length) lines.push("上到的內容：" + sc.parts.join("、"));
+  if(sc.vocab.length) lines.push("上到的生詞：" + sc.vocab.map(function(v){ return v.word; }).join("、"));
+  if(sc.grammar.length) lines.push("上到的語法：" + sc.grammar.join("、"));
+  var cur = d.material || ""; lines = lines.filter(function(l){ return cur.indexOf(l.split("：")[0] + "：") < 0; });
+  if(lines.length) d.material = (cur ? cur + "\n" : "") + lines.join("\n");
+  if(info){ if(nv) info.push(nv + " 個生詞（依簡報內容）"); if(sc.grammar.length) info.push("語法 " + sc.grammar.length + " 項"); if(sc.pages && !sc.textPages) info.push("簡報頁都是圖片，讀不到文字"); }
+  return nv + lines.length;
+}
 function recDraftKey(){ var d = S.rec && S.rec.draft; if(!d) return null; var sl = d.slotId && schedMap()[d.slotId]; var c = (sl && sl.c) || (d.classKey && String(d.classKey).split("|")[2]) || null, day = (sl && sl.date) || d.date || null; return c && day ? { c: c, day: day } : null; }
 async function recLoadClassShots(key){
   if(!key) return [];
@@ -4132,7 +4186,7 @@ function renderRecEditorBase(){
     }).join("") + (d.mode === "group" ? '<button class="btn sm" data-r="addstu">新增學生</button>' : '') + '</div>' +
     '<label>新生詞　<span class="note" style="font-weight:400;">' + d.vocab.length + ' 個</span></label>' + recVocabListHtml(d.vocab, !!S.rec.edit) +
     '<div class="rv-add"><input type="text" id="rf-vw" placeholder="生詞"><input type="text" id="rf-vs" placeholder="拼音／注音／翻譯（選填，用 · 分開）"><button class="btn sm" data-r="addvoc">加入</button></div>' +
-    '<label>課程截圖</label><div class="tools" style="margin-bottom:6px;">' + shots.map(function(u, i){ return '<span style="position:relative;"><img src="' + u + '" data-r="showshot" data-i="' + i + '" style="width:84px;height:84px;object-fit:cover;border-radius:8px;cursor:zoom-in;border:1px solid var(--line);"><button class="btn sm" data-r="rmshot" data-i="' + i + '" style="position:absolute;top:2px;right:2px;padding:1px 6px;">✕</button></span>'; }).join("") + '<button class="btn sm" data-r="addshot">加入截圖</button><button class="btn sm" data-r="autoshots" title="把這堂課那天你在簡報上停留過的頁面自動截圖加進來（需要是在這台電腦上課、這個班的簡報存檔還在）">📸 自動截今天的簡報</button><input type="file" id="rf-shot" accept="image/*" multiple style="display:none;"></div>' +
+    '<label>課程截圖</label><div class="tools" style="margin-bottom:6px;">' + shots.map(function(u, i){ return '<span style="position:relative;"><img src="' + u + '" data-r="showshot" data-i="' + i + '" style="width:84px;height:84px;object-fit:cover;border-radius:8px;cursor:zoom-in;border:1px solid var(--line);"><button class="btn sm" data-r="rmshot" data-i="' + i + '" style="position:absolute;top:2px;right:2px;padding:1px 6px;">✕</button></span>'; }).join("") + '<button class="btn sm" data-r="addshot">加入截圖</button> <button class="btn sm" data-r="slidecontent" title="讀今天停留過的簡報頁上的文字，對照這幾課的生詞與語法，把上到的生詞、語法、教學環節填進「本次教材進度」和生詞清單">📖 依簡報整理上課內容</button><button class="btn sm" data-r="autoshots" title="把這堂課那天你在簡報上停留過的頁面自動截圖加進來（需要是在這台電腦上課、這個班的簡報存檔還在）">📸 自動截今天的簡報</button><input type="file" id="rf-shot" accept="image/*" multiple style="display:none;"></div>' +
     '<label>備註（今天有什麼特殊的事？）</label><textarea id="rf-notes" rows="3" placeholder="例如：學生今天生日、發音特別容易搞混的字…">' + esc(d.notes) + '</textarea></div>';
   shell(html); setCrumb([]);
   var main = document.getElementById("main");
@@ -4169,6 +4223,14 @@ function renderRecEditorBase(){
     }
     else if(a === "addshot"){ document.getElementById("rf-shot").click(); }
     else if(a === "rmshot"){ S.rec.shots.splice(i, 1); renderRecEditor(); }
+    else if(a === "slidecontent"){
+      recSync(); var sk = recDraftKey(); if(!sk){ toast("找不到這堂課的班級或日期"); return; }
+      var sit = allClassesList().filter(function(x){ return x.sel.c === sk.c; })[0]; if(!sit){ toast("找不到這個班"); return; }
+      toast("正在整理…"); var scc = null; try{ scc = await recSlideContent(sit.cls, sit.sel, sk.day); }catch(er){}
+      if(!scc){ toast("今天沒有找到停留過的簡報頁（要在這台電腦上課，而且在簡報上停留超過 4 秒的頁才會被記到）"); return; }
+      var infoM = []; var nch = recApplySlideContent(S.rec.draft, scc, infoM);
+      renderRecEditor(); toast(nch ? "已整理：" + infoM.join("、") + "。請看一下再儲存" : (scc.textPages ? "簡報上沒有找到對得上生詞庫的生詞" : "這幾頁簡報都是圖片，讀不到文字"));
+    }
     else if(a === "autoshots"){
       var ask = recDraftKey(); if(!ask){ toast("找不到這堂課的班級或日期"); return; }
       var cit = allClassesList().filter(function(x){ return x.sel.c === ask.c; })[0]; if(!cit){ toast("找不到這個班"); return; }
