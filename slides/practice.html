@@ -4463,6 +4463,8 @@ window.mmTA = (function(){
   if(window.__attempt) document.documentElement.classList.add("attempt");
   // 老師批改：用老師身分打開某位學生的作答房間（唯讀，不會改到學生的答案），在底下的批改列給分、寫評語
   window.__grade = (params.get("grade") === "1" && !isStudent) ? { name: urlName || "" } : null;
+  // 下課後自動截圖（平台在背景開一個看不到的頁面）：進這個班的簡報存檔房間，把指定的幾頁逐頁拍成小圖，傳回給平台，存進課程記錄的截圖
+  window.__capture = (params.get("capture") === "1" && !isStudent) ? { qids: (params.get("qs") || "").split(",").filter(Boolean), w: Number(params.get("w")) || 900 } : null;
   if(window.__grade) document.documentElement.classList.add("attempt", "grading");
   var app_ = document.getElementById("app");
   if(isStudent) app_.classList.add("student-mode");
@@ -4946,6 +4948,7 @@ window.mmTA = (function(){
   async function repairRoomMedia(force){
     if(!inRoom() || isStudent || !roomData || mediaRepairBusy) return;
     if(!force && Date.now() - mediaRepairFailAt < 60000) return;
+    if(window.__capture) return;
     var base = "rooms/" + activeRoomId + "/", jobs = [];
     var secs = (roomData.project && roomData.project.sections) || {};
     Object.keys(secs).forEach(function(sid){ var qs = (secs[sid] && secs[sid].questions) || {}; Object.keys(qs).forEach(function(qid){ if(qs[qid] && isLocalRef(qs[qid].bgImage)) jobs.push({ path: base + "project/sections/" + sid + "/questions/" + qid + "/bgImage", val: qs[qid].bgImage, kind: "img" }); }); });
@@ -7378,6 +7381,7 @@ window.mmTA = (function(){
       renderTopbar(); renderSidebar(); renderStage(); renderTimerWidget(); refreshExamPicker();
       if(window.__attempt) attemptBarRender();
       if(window.__grade) gradeBarRender();
+      if(window.__capture && !window.__captureStarted && roomData.project){ window.__captureStarted = true; setTimeout(runCaptureJob, 1500); }
       if(window.__embedReveal) setTimeout(window.__embedReveal, 80);
     });
     onValue(ref(db, "roomCursors/" + rId), function(snap){ lastCursorsData = snap.val(); renderMultiCursors(lastCursorsData); });
@@ -8843,7 +8847,20 @@ window.mmTA = (function(){
   function mmSafeName(s){ return String(s || "簡報").replace(/[\\/:*?"<>|]+/g, "_").slice(0, 60); }
   function dataUrlToBytes(u){ var b = atob(u.split(",")[1]), a = new Uint8Array(b.length); for(var i = 0; i < b.length; i++) a[i] = b.charCodeAt(i); return a; }
   // 把每一頁在編輯區實際畫出來的畫面拍成圖（只在這台本機切換顯示的頁面，不會動到房間或學生看到的頁面）
-  async function captureDeckLive(info, onPage){
+  async function runCaptureJob(){
+    var cap = window.__capture, out = [], done = false;
+    function finish(shots){ if(done) return; done = true; try{ window.parent.postMessage({ mm: "captureDone", shots: shots || [] }, "*"); }catch(e){} }
+    setTimeout(function(){ finish(out); }, 110000);   // 保險：最多 110 秒
+    try{
+      var found = {}, slides = [];
+      cap.qids.forEach(function(qid){ var it = getAllQuestionsList().find(function(x){ return x.question.id === qid; }); if(it && !found[qid]){ found[qid] = 1; slides.push(it.question); } });
+      if(!slides.length){ finish([]); return; }
+      var cvs = await captureDeckLive({ slides: slides }, null, cap.w);
+      (cvs || []).forEach(function(cv){ if(cv){ try{ out.push(cv.toDataURL("image/jpeg", 0.6)); }catch(e){} } });
+    }catch(e){ console.warn("capture", e); }
+    finish(out);
+  }
+  async function captureDeckLive(info, onPage, targetW){
     var proj = getActiveProject();
     if(!proj || typeof html2canvas === "undefined" || window.__grade) return null;
     var origQ = proj.currentQId, res = [];
@@ -8866,7 +8883,7 @@ window.mmTA = (function(){
           }
           if(wrap){
             var rect = wrap.getBoundingClientRect(), cs = getComputedStyle(wrap), bw = parseFloat(cs.borderTopWidth) || 0;
-            var k = Math.max(1, Math.min(3, 1600 / Math.max(1, rect.width)));
+            var k = Math.max(0.3, Math.min(3, (targetW || 1600) / Math.max(1, rect.width)));
             var raw = await html2canvas(wrap, { logging: false, backgroundColor: "#FFFFFF", useCORS: true, scale: k });
             var cut = Math.round(bw * k);   // 去掉畫布外框與圓角（那只是編輯畫面的外框）
             cv = document.createElement("canvas"); cv.width = Math.max(1, raw.width - cut * 2); cv.height = Math.max(1, raw.height - cut * 2);

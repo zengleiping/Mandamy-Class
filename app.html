@@ -3476,7 +3476,9 @@ async function openRecordFor(slot){
   var exist = slot && recIdForSlot(slot.id); if(exist){ return openRecordEdit(exist, recIncomplete(recMap()[exist]) ? slot : null); }
   var d = newRecordDraft(slot), info = [];
   try{ info = await Promise.race([recAutoFill(d, slot), new Promise(function(res){ setTimeout(function(){ res(null); }, 4000); })]) || []; }catch(e){}
-  S.rec = { edit: null, draft: d, shots: [], autoInfo: info }; S.day = null; S.lib = null; S.grades = null; S.sel = null; S.lesson = null; S.hw = null; S.classes = null; S.act = null; render();
+  S.rec = { edit: null, draft: d, shots: [], autoInfo: info }; S.day = null; S.lib = null; S.grades = null; S.sel = null; S.lesson = null; S.hw = null; S.classes = null; S.act = null;
+  var ak = recDraftKey(); if(ak){ var as = await recLoadClassShots(ak); if(as.length){ S.rec.shots = as.slice(); S.rec.autoShotKey = ak; } }   // 下課後自動截的簡報頁
+  render();
 }
 // 還需要「安排」補課的記錄：請假／調課、還沒補、也還沒排補課那堂、也不是決定不補
 function recNeedsMakeup(r){ return !!(r && r.isAbsence && !r.madeUp && !r.noMakeup && !(r.makeupSlotId && schedMap()[r.makeupSlotId])); }
@@ -3597,7 +3599,9 @@ async function openRecordEdit(id, slotForFill){
   if(!Array.isArray(shots)) shots = Object.keys(shots).map(function(k){ return shots[k]; });
   var info = null;
   if(slotForFill){ var bare = !(r.students || []).some(function(st){ return (st.name || "").trim(); }); if(bare){ var nd = newRecordDraft(slotForFill); r.students = nd.students; r.mode = nd.mode; } try{ info = await Promise.race([recAutoFill(r, slotForFill), new Promise(function(res){ setTimeout(function(){ res(null); }, 4000); })]); }catch(e){} }
-  S.rec = { edit: id, draft: r, shots: shots, filter: S.rec && S.rec.filter, autoInfo: info }; S.day = null; S.lib = null; S.grades = null; S.sel = null; S.lesson = null; S.hw = null; S.classes = null; S.act = null; render();
+  S.rec = { edit: id, draft: r, shots: shots, filter: S.rec && S.rec.filter, autoInfo: info }; S.day = null; S.lib = null; S.grades = null; S.sel = null; S.lesson = null; S.hw = null; S.classes = null; S.act = null;
+  var ak2 = recDraftKey(); if(ak2){ var as2 = await recLoadClassShots(ak2); if(as2.length){ S.rec.shots = shots.concat(as2); S.rec.autoShotKey = ak2; } }
+  render();
 }
 function recSync(){
   var d = S.rec.draft, g = function(i){ return document.getElementById(i); };
@@ -4001,6 +4005,44 @@ async function recPresetDialog(){
   try{ await fbSet("teacherPlatform/" + S.teacher.id + "/meta/recPresets", np); toast("已儲存"); }catch(e){ toast("儲存失敗"); }
 }
 // 下課時：直接跳出已經填好的課堂記錄
+// ---------- 下課後自動截圖：今天這個班上過（停留超過 4 秒）的簡報頁，逐頁拍成小圖，填課堂記錄時自動帶進「課程截圖」 ----------
+function classShotsPath(c, day){ return "teacherPlatform/" + S.teacher.id + "/classShots/" + c + "/" + day; }
+function captureRoomSlides(room, qids, w){
+  return new Promise(function(resolve){
+    var fr = document.createElement("iframe"), done = false;
+    fr.style.cssText = "position:fixed;left:-10000px;top:0;width:1280px;height:800px;border:0;opacity:0;pointer-events:none;";
+    fr.src = "slides/practice.html?v=" + MM_V + "&embed=1&capture=1&room=" + encodeURIComponent(room) + "&qs=" + encodeURIComponent(qids.join(",")) + "&w=" + (w || 900);
+    function fin(shots){ if(done) return; done = true; window.removeEventListener("message", onMsg); clearTimeout(tm); try{ fr.remove(); }catch(e){} resolve(shots || []); }
+    function onMsg(e){ if(e.source === fr.contentWindow && e.data && e.data.mm === "captureDone") fin(e.data.shots); }
+    var tm = setTimeout(function(){ fin([]); }, 125000);
+    window.addEventListener("message", onMsg); document.body.appendChild(fr);
+  });
+}
+async function captureClassDay(sel, day, silent){
+  var cls = getCls(sel); if(!cls) return [];
+  var vis = (cls.progress && cls.progress.visited && cls.progress.visited[day]) || {}, rooms = (S.classRooms && S.classRooms[sel.c]) || {}, all = [], left = 30;
+  var pids = Object.keys(vis);
+  for(var i = 0; i < pids.length && left > 0; i++){
+    var pid = pids[i], room = rooms[pid] && rooms[pid].room; if(!room) continue;
+    var idxs = Object.keys(vis[pid]).map(Number).sort(function(a, b){ return a - b; }), seen = {}, qids = [];
+    idxs.forEach(function(k){ var q = vis[pid][k]; if(q && !seen[q]){ seen[q] = 1; qids.push(q); } });
+    qids = qids.slice(0, left); if(!qids.length) continue;
+    var shots = await captureRoomSlides(room, qids, 900); all = all.concat(shots); left -= qids.length;
+  }
+  if(all.length){
+    try{ await fbSet(classShotsPath(sel.c, day), all); }catch(e){ if(!silent) toast("截圖存檔失敗，請檢查網路"); return []; }
+    S.recShotsAdded = { c: sel.c, day: day, shots: all };
+    // 課堂記錄表已經打開了（下課後馬上填）：把截圖直接加進去
+    if(S.rec && S.rec.draft && !S.rec.preview){ var dk = recDraftKey(); if(dk && dk.c === sel.c && dk.day === day && !S.rec.autoShotKey){ try{ recSync(); }catch(e){} S.rec.autoShotKey = { c: sel.c, day: day }; S.rec.shots = (S.rec.shots || []).concat(all); try{ renderRecEditor(); }catch(e){} } }
+    if(!silent) toast("已自動截圖 " + all.length + " 張今天上過的簡報，填課堂記錄時會帶進「課程截圖」");
+  } else if(!silent) toast("今天沒有找到上過的簡報頁可以截圖");
+  return all;
+}
+function recDraftKey(){ var d = S.rec && S.rec.draft; if(!d) return null; var sl = d.slotId && schedMap()[d.slotId]; var c = (sl && sl.c) || (d.classKey && String(d.classKey).split("|")[2]) || null, day = (sl && sl.date) || d.date || null; return c && day ? { c: c, day: day } : null; }
+async function recLoadClassShots(key){
+  if(!key) return [];
+  try{ var v = await fbGet(classShotsPath(key.c, key.day)); if(!v) return []; return Array.isArray(v) ? v : Object.keys(v).map(function(k){ return v[k]; }); }catch(e){ return []; }
+}
 async function recAfterClass(sel){
   var day = ymd(new Date()), sl = slotsOn(day).filter(function(x){ return x.s === sel.s && x.t === sel.t && x.c === sel.c; })[0];
   if(sl && !recSlotNeeds(sl.id)) return;
@@ -4090,7 +4132,7 @@ function renderRecEditorBase(){
     }).join("") + (d.mode === "group" ? '<button class="btn sm" data-r="addstu">新增學生</button>' : '') + '</div>' +
     '<label>新生詞　<span class="note" style="font-weight:400;">' + d.vocab.length + ' 個</span></label>' + recVocabListHtml(d.vocab, !!S.rec.edit) +
     '<div class="rv-add"><input type="text" id="rf-vw" placeholder="生詞"><input type="text" id="rf-vs" placeholder="拼音／注音／翻譯（選填，用 · 分開）"><button class="btn sm" data-r="addvoc">加入</button></div>' +
-    '<label>課程截圖</label><div class="tools" style="margin-bottom:6px;">' + shots.map(function(u, i){ return '<span style="position:relative;"><img src="' + u + '" data-r="showshot" data-i="' + i + '" style="width:84px;height:84px;object-fit:cover;border-radius:8px;cursor:zoom-in;border:1px solid var(--line);"><button class="btn sm" data-r="rmshot" data-i="' + i + '" style="position:absolute;top:2px;right:2px;padding:1px 6px;">✕</button></span>'; }).join("") + '<button class="btn sm" data-r="addshot">加入截圖</button><input type="file" id="rf-shot" accept="image/*" multiple style="display:none;"></div>' +
+    '<label>課程截圖</label><div class="tools" style="margin-bottom:6px;">' + shots.map(function(u, i){ return '<span style="position:relative;"><img src="' + u + '" data-r="showshot" data-i="' + i + '" style="width:84px;height:84px;object-fit:cover;border-radius:8px;cursor:zoom-in;border:1px solid var(--line);"><button class="btn sm" data-r="rmshot" data-i="' + i + '" style="position:absolute;top:2px;right:2px;padding:1px 6px;">✕</button></span>'; }).join("") + '<button class="btn sm" data-r="addshot">加入截圖</button><button class="btn sm" data-r="autoshots" title="把這堂課那天你在簡報上停留過的頁面自動截圖加進來（需要是在這台電腦上課、這個班的簡報存檔還在）">📸 自動截今天的簡報</button><input type="file" id="rf-shot" accept="image/*" multiple style="display:none;"></div>' +
     '<label>備註（今天有什麼特殊的事？）</label><textarea id="rf-notes" rows="3" placeholder="例如：學生今天生日、發音特別容易搞混的字…">' + esc(d.notes) + '</textarea></div>';
   shell(html); setCrumb([]);
   var main = document.getElementById("main");
@@ -4127,6 +4169,14 @@ function renderRecEditorBase(){
     }
     else if(a === "addshot"){ document.getElementById("rf-shot").click(); }
     else if(a === "rmshot"){ S.rec.shots.splice(i, 1); renderRecEditor(); }
+    else if(a === "autoshots"){
+      var ask = recDraftKey(); if(!ask){ toast("找不到這堂課的班級或日期"); return; }
+      var cit = allClassesList().filter(function(x){ return x.sel.c === ask.c; })[0]; if(!cit){ toast("找不到這個班"); return; }
+      toast("正在截圖…（簡報頁數多的話約需半分鐘）"); S.rec.autoShotKey = null;
+      var got = await captureClassDay(cit.sel, ask.day, true);
+      if(!got.length) toast("沒有找到今天上過的簡報頁（要在這台電腦上課，而且在簡報上停留超過 4 秒的頁才會被記到）");
+      else toast("已加入 " + got.length + " 張截圖");
+    }
     else if(a === "showshot"){ var w2 = window.open(); if(w2){ w2.document.write('<img src="' + S.rec.shots[i] + '" style="max-width:100%;">'); } }
     else if(a === "save"){ await saveRecord(); }
     else if(a === "del"){
@@ -4171,6 +4221,7 @@ async function saveRecord(){
   try{
     await fbSet(base + "/classRecords/" + id, rec);
     await fbSet(base + "/recordShots/" + id, S.rec.shots && S.rec.shots.length ? S.rec.shots : null);
+    if(S.rec.autoShotKey){ try{ await fbSet(classShotsPath(S.rec.autoShotKey.c, S.rec.autoShotKey.day), null); }catch(e){} }   // 已經收進這筆記錄，暫存的刪掉
   }catch(e){ alert("儲存失敗，請檢查網路或 Firebase 規則。內容還留在畫面上。"); return; }
   m[id] = rec; try{ localStorage.removeItem(recBackupKey()); }catch(e){}
   recRememberLabel(d); recSaveNextFrom(d);
@@ -6370,7 +6421,7 @@ function markPart(){
   fbSet(clsPath(S.sel) + "/progress/parts/" + d + "/" + key + "/" + part, true).catch(function(){});
 }
 // 簡報頁回報目前頁數：上課中（或今天這個班已經用這份簡報開過房間）才記，在家備課、編輯不會算進去
-var POS_T = null;
+var POS_T = null, VIS_T = null;
 // ----- 題目練習紀錄：這個班有哪些題目練習過（跳著上也看得出來）。老師上課中停在某一題超過 6 秒就記一次（次數、最近日期），
 //        簡報頁左邊的題目清單會顯示 ✓／○，老師也可以點一下手動標記或取消 -----
 var PR_T = null;
@@ -6401,6 +6452,16 @@ window.addEventListener("message", function(e){
   var pos = { d: day, l: String(S.lesson), pid: String(S.sub), pt: String(ps.title || d.projTitle || "").slice(0, 80), k: d.kind === "quiz" ? "quiz" : "slides", i: Math.max(1, Number(d.idx) || 1), n: Number(d.total) || 0, q: String(d.qid || ""), qt: String(d.qTitle || "").slice(0, 60), at: Date.now() };
   cls.progress = cls.progress || {}; cls.progress.pos = pos;
   var lg = cls.progress.log = cls.progress.log || {}; lg[day] = lg[day] || {}; lg[day][pos.pid] = pos;
+  // 今天翻過哪些頁（停留超過 4 秒才算，快速翻過不算）：下課後自動截圖用
+  if(pos.k === "slides" && pos.q){
+    clearTimeout(VIS_T); var vsel = { s: S.sel.s, t: S.sel.t, c: S.sel.c }, vpid = pos.pid, vi = pos.i, vq = pos.q, vday = day;
+    VIS_T = setTimeout(function(){
+      if(!(S.live && S.live.on)) return; var vc = getCls(vsel); if(!vc) return;
+      vc.progress = vc.progress || {}; var vv = vc.progress.visited = vc.progress.visited || {}; vv[vday] = vv[vday] || {}; vv[vday][vpid] = vv[vday][vpid] || {};
+      if(vv[vday][vpid][vi] === vq) return; vv[vday][vpid][vi] = vq;
+      fbSet(clsPath(vsel) + "/progress/visited/" + vday + "/" + vpid + "/" + vi, vq).catch(function(){});
+    }, 4000);
+  }
   var path = clsPath(S.sel); clearTimeout(POS_T);
   POS_T = setTimeout(function(){ fbSet(path + "/progress/pos", pos).catch(function(){}); fbSet(path + "/progress/log/" + day + "/" + pos.pid, pos).catch(function(){}); }, 1200);
 });
@@ -7408,7 +7469,7 @@ async function toggleLive(){
     if(!confirm("結束上課？學生會回到自己的班級頁。")) return;
     try{ if(S.live.brk){ fbUpdate(liveRef(), { brk: null }).catch(function(){}); } brkClose(false); localStorage.removeItem("mm_brk"); }catch(e){}
     var endRooms = Object.keys(TR_PUB.rooms || {}); if(S.live.room && endRooms.indexOf(S.live.room) < 0) endRooms.push(S.live.room); S.live = null; cls.live = null; try{ endRooms.forEach(function(rid){ fbSet("rooms/" + rid + "/trans", null).catch(function(){}); }); TR_PUB.rooms = {}; await fbSet(liveRef(), null); await fbSet(clsPath(S.sel) + "/liveTrans", null); TR_PUB.last = ""; TR_PUB.roomLast = {}; }catch(e){}
-    setFocus(false); try{ if(document.fullscreenElement) document.exitFullscreen().catch(function(){}); }catch(e){} renderLesson(cls); var selEnd = { s: S.sel.s, t: S.sel.t, c: S.sel.c }; setTimeout(function(){ recAfterClass(selEnd); }, 400); return;
+    setFocus(false); try{ if(document.fullscreenElement) document.exitFullscreen().catch(function(){}); }catch(e){} renderLesson(cls); var selEnd = { s: S.sel.s, t: S.sel.t, c: S.sel.c }; setTimeout(function(){ recAfterClass(selEnd); }, 400); captureClassDay(selEnd, todayStr(), true).catch(function(er){ console.warn("capture", er); }); return;
   }
   // 按「開始上課」：順便把這個班的學生連結複製起來（要在點擊當下、await 之前複製，瀏覽器才允許），老師直接貼給學生
   var stuLk = cls.code ? studentLink(cls.code) : "", copied = false;
