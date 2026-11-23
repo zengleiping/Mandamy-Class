@@ -1279,6 +1279,7 @@ img.vimg{ width:100%; height:100%; object-fit:contain; border-radius:10px; displ
     <button data-lang="th">中＋泰</button>
     <button data-lang="bare">純中文</button>
     <button data-lang="zhuyin">中文＋注音</button>
+    <button data-lang="zhuyinpy">中文＋注音＋拼音</button>
   </div>
 </div>
 
@@ -3080,10 +3081,11 @@ window.addEventListener('message', e=>{
 
 function vocabCardInnerHtml(v){
   const speakBtnHtml = `<button type="button" class="speak-btn" data-word="${escAttr(v['生詞'])}" title="播放發音" aria-label="播放「${escAttr(v['生詞'])}」發音">🔊</button>`;
-  if(state.lang === 'bare' || state.lang === 'zhuyin'){
+  if(state.lang === 'bare' || state.lang === 'zhuyin' || state.lang === 'zhuyinpy'){
     return `
       <span class="lesson-chip" style="background:${lessonColor(v['課別'])}">第${v['課別']}課</span>
-      <div class="bare-word">${state.lang === 'zhuyin' ? zhuyinWordHtml(v['生詞'], v['注音']) : v['生詞']}${speakBtnHtml}</div>
+      <div class="bare-word">${state.lang !== 'bare' ? zhuyinWordHtml(v['生詞'], v['注音']) : v['生詞']}${speakBtnHtml}</div>
+      ${state.lang === 'zhuyinpy' ? `<div class="py" style="text-align:center;margin-top:6px;">${v['拼音']||''}</div>` : ''}
     `;
   }
   const showEn = state.lang==='both' || state.lang==='en';
