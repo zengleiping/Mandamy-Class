@@ -1,0 +1,1436 @@
+{
+ "id": "proj_b2l9quiz",
+ "title": "第二冊 第9課 音樂教室在北方 練習題",
+ "desc": "依第二冊第9課簡報（課文、生詞、句型、習寫漢字、認讀漢字、練習、任務活動）整理；題目說明附英文",
+ "sections": {
+  "s209_1": {
+   "id": "s209_1",
+   "title": "第 1 大題：連連看（生詞和注音） Match the words with zhuyin",
+   "type": "match",
+   "order": 0,
+   "questions": {
+    "q209_01_01": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "指南針",
+       "right": "ㄓˇ ㄋㄢˊ ㄓㄣ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "指北針",
+       "right": "ㄓˇ ㄅㄟˇ ㄓㄣ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "它",
+       "right": "ㄊㄚ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "南方",
+       "right": "ㄋㄢˊ ㄈㄤ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "北方",
+       "right": "ㄅㄟˇ ㄈㄤ"
+      }
+     },
+     "id": "q209_01_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_01_02": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "東方",
+       "right": "ㄉㄨㄥ ㄈㄤ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "西方",
+       "right": "ㄒㄧ ㄈㄤ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "教室",
+       "right": "ㄐㄧㄠˋ ㄕˋ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "告訴",
+       "right": "ㄍㄠˋ ˙ㄙㄨ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "方向",
+       "right": "ㄈㄤ ㄒㄧㄤˋ"
+      }
+     },
+     "id": "q209_01_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_01_03": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "校門口",
+       "right": "ㄒㄧㄠˋ ㄇㄣˊ ㄎㄡˇ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "足球場",
+       "right": "ㄗㄨˊ ㄑㄧㄡˊ ㄔㄤˇ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "還是",
+       "right": "ㄏㄞˊ ˙ㄕ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "因為",
+       "right": "ㄧㄣ ㄨㄟˋ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "所以",
+       "right": "ㄙㄨㄛˇ ㄧˇ"
+      }
+     },
+     "id": "q209_01_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s209_2": {
+   "id": "s209_2",
+   "title": "第 2 大題：連連看（生詞和意思） Match the words with their meanings",
+   "type": "match",
+   "order": 1,
+   "questions": {
+    "q209_02_01": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "指南針",
+       "right": "compass"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "指北針",
+       "right": "compass"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "它",
+       "right": "it"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "南方",
+       "right": "south"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "北方",
+       "right": "north"
+      }
+     },
+     "id": "q209_02_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_02_02": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "東方",
+       "right": "east"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "西方",
+       "right": "west"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "教室",
+       "right": "classroom"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "告訴",
+       "right": "to tell"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "方向",
+       "right": "direction"
+      }
+     },
+     "id": "q209_02_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_02_03": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "校門口",
+       "right": "school gate"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "足球場",
+       "right": "soccer field"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "還是",
+       "right": "or"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "因為",
+       "right": "because"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "所以",
+       "right": "so; therefore"
+      }
+     },
+     "id": "q209_02_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s209_3": {
+   "id": "s209_3",
+   "title": "第 3 大題：我會寫（寫出正確的漢字） Write the characters",
+   "type": "fill",
+   "order": 2,
+   "questions": {
+    "q209_03_01": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "音樂教{室}在什麼方{向}？",
+     "id": "q209_03_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_03_02": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "音樂教室在北{方}，校{門}{口}在南{方}。",
+     "id": "q209_03_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_03_03": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "足球場在{東}方，還是{西}方？",
+     "id": "q209_03_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_03_04": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "{因}{為}音樂教室在北方，{所}以足球場在東方。",
+     "id": "q209_03_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_03_05": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "{指}南{針}，也叫指北針，它{告}{訴}我們南方和北方在哪裡。",
+     "id": "q209_03_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_03_06": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "我們{南}方和{北}方在哪{裡}。",
+     "id": "q209_03_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_03_07": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "音樂教室在{北}方，校門口在{南}方。",
+     "id": "q209_03_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_03_08": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "{因}{為}音樂教室在北方，{所}{以}足球場在東方。",
+     "id": "q209_03_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_03_09": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "現在指針的{方}{向}是北方。",
+     "id": "q209_03_09",
+     "order": 8,
+     "title": "第 9 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s209_4": {
+   "id": "s209_4",
+   "title": "第 4 大題：句型填空 Fill in the sentence patterns",
+   "type": "fill",
+   "order": 3,
+   "questions": {
+    "q209_04_01": {
+     "prompt": "用方向詞完成句子。 Fill in the direction word.",
+     "template": "足球場在{東方}。",
+     "id": "q209_04_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_04_02": {
+     "prompt": "用方向詞完成句子。 Fill in the direction word.",
+     "template": "東明家在{西方}。",
+     "id": "q209_04_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_04_03": {
+     "prompt": "用方向詞完成句子。 Fill in the direction word.",
+     "template": "教室在{北方}。",
+     "id": "q209_04_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_04_04": {
+     "prompt": "用方向詞完成句子。 Fill in the direction word.",
+     "template": "校門口在{南方}。",
+     "id": "q209_04_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_04_05": {
+     "prompt": "用「告訴」完成句子。 Use 告訴.",
+     "template": "老師{告訴}我們足球場在哪裡。",
+     "id": "q209_04_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_04_06": {
+     "prompt": "用「告訴」完成句子。 Use 告訴.",
+     "template": "媽媽{告訴}東明玩具在桌子上面。",
+     "id": "q209_04_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_04_07": {
+     "prompt": "用「因為…所以…」完成句子。 Use 因為…所以….",
+     "template": "{因為}妹妹喜歡喝牛奶，所以媽媽去超市買牛奶。",
+     "id": "q209_04_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_04_08": {
+     "prompt": "用「因為…所以…」完成句子。 Use 因為…所以….",
+     "template": "夏天太熱了，{所以}我不喜歡夏天。",
+     "id": "q209_04_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s209_5": {
+   "id": "s209_5",
+   "title": "第 5 大題：選擇題（句型） Choose the correct answer",
+   "type": "choice",
+   "order": 4,
+   "questions": {
+    "q209_05_01": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n足球場在東方，＿＿西方？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "還是"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "所以"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "因為"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q209_05_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_05_02": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n＿＿音樂教室在北方，所以足球場在東方。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "因為"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "所以"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "還是"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q209_05_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_05_03": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n夏天太熱了，＿＿我不喜歡夏天。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "所以"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "因為"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "還是"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q209_05_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_05_04": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n老師＿＿我們足球場在哪裡。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "告訴"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "帶"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "送"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q209_05_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_05_05": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n指南針告訴我們南方和＿＿方在哪裡。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "北"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "東"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "西"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q209_05_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_05_06": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n音樂教室是什麼＿＿？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "方向"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "時候"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "地方"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q209_05_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_05_07": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n＿＿（指南針）告訴我們方向。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "它"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "他"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "牠"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q209_05_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s209_6": {
+   "id": "s209_6",
+   "title": "第 6 大題：閱讀理解（課文） Reading comprehension",
+   "type": "choice",
+   "order": 5,
+   "questions": {
+    "q209_06_01": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n東明拿的是什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "指南針"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "手機"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "地圖"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "友朋：東明，這是什麼？\n東明：指南針，也叫指北針，它告訴我們南方和北方在哪裡。\n友朋：音樂教室是什麼方向？\n東明：音樂教室在北方，校門口在南方。\n友朋：足球場在東方，還是西方？\n東明：因為音樂教室在北方，所以足球場在東方。",
+     "id": "q209_06_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_06_02": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n指南針也叫什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "指北針"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "指東針"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "指西針"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "友朋：東明，這是什麼？\n東明：指南針，也叫指北針，它告訴我們南方和北方在哪裡。\n友朋：音樂教室是什麼方向？\n東明：音樂教室在北方，校門口在南方。\n友朋：足球場在東方，還是西方？\n東明：因為音樂教室在北方，所以足球場在東方。",
+     "id": "q209_06_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_06_03": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n指南針告訴我們什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "南方和北方在哪裡"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "現在幾點"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "明天天氣"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "友朋：東明，這是什麼？\n東明：指南針，也叫指北針，它告訴我們南方和北方在哪裡。\n友朋：音樂教室是什麼方向？\n東明：音樂教室在北方，校門口在南方。\n友朋：足球場在東方，還是西方？\n東明：因為音樂教室在北方，所以足球場在東方。",
+     "id": "q209_06_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_06_04": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n音樂教室在哪個方向？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "北方"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "南方"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "東方"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "友朋：東明，這是什麼？\n東明：指南針，也叫指北針，它告訴我們南方和北方在哪裡。\n友朋：音樂教室是什麼方向？\n東明：音樂教室在北方，校門口在南方。\n友朋：足球場在東方，還是西方？\n東明：因為音樂教室在北方，所以足球場在東方。",
+     "id": "q209_06_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_06_05": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n校門口在哪個方向？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "南方"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "北方"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "西方"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "友朋：東明，這是什麼？\n東明：指南針，也叫指北針，它告訴我們南方和北方在哪裡。\n友朋：音樂教室是什麼方向？\n東明：音樂教室在北方，校門口在南方。\n友朋：足球場在東方，還是西方？\n東明：因為音樂教室在北方，所以足球場在東方。",
+     "id": "q209_06_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_06_06": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n足球場在哪個方向？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "東方"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "西方"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "南方"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "友朋：東明，這是什麼？\n東明：指南針，也叫指北針，它告訴我們南方和北方在哪裡。\n友朋：音樂教室是什麼方向？\n東明：音樂教室在北方，校門口在南方。\n友朋：足球場在東方，還是西方？\n東明：因為音樂教室在北方，所以足球場在東方。",
+     "id": "q209_06_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s209_7": {
+   "id": "s209_7",
+   "title": "第 7 大題：是非題（課文） True or false",
+   "type": "choice",
+   "order": 6,
+   "questions": {
+    "q209_07_01": {
+     "prompt": "判斷對錯。 True or false?\n\n指南針又叫指北針。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "友朋：東明，這是什麼？\n東明：指南針，也叫指北針，它告訴我們南方和北方在哪裡。\n友朋：音樂教室是什麼方向？\n東明：音樂教室在北方，校門口在南方。\n友朋：足球場在東方，還是西方？\n東明：因為音樂教室在北方，所以足球場在東方。",
+     "id": "q209_07_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_07_02": {
+     "prompt": "判斷對錯。 True or false?\n\n音樂教室在南方。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c2"
+     ],
+     "passage": "友朋：東明，這是什麼？\n東明：指南針，也叫指北針，它告訴我們南方和北方在哪裡。\n友朋：音樂教室是什麼方向？\n東明：音樂教室在北方，校門口在南方。\n友朋：足球場在東方，還是西方？\n東明：因為音樂教室在北方，所以足球場在東方。",
+     "id": "q209_07_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_07_03": {
+     "prompt": "判斷對錯。 True or false?\n\n校門口在南方。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "友朋：東明，這是什麼？\n東明：指南針，也叫指北針，它告訴我們南方和北方在哪裡。\n友朋：音樂教室是什麼方向？\n東明：音樂教室在北方，校門口在南方。\n友朋：足球場在東方，還是西方？\n東明：因為音樂教室在北方，所以足球場在東方。",
+     "id": "q209_07_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_07_04": {
+     "prompt": "判斷對錯。 True or false?\n\n足球場在西方。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c2"
+     ],
+     "passage": "友朋：東明，這是什麼？\n東明：指南針，也叫指北針，它告訴我們南方和北方在哪裡。\n友朋：音樂教室是什麼方向？\n東明：音樂教室在北方，校門口在南方。\n友朋：足球場在東方，還是西方？\n東明：因為音樂教室在北方，所以足球場在東方。",
+     "id": "q209_07_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s209_8": {
+   "id": "s209_8",
+   "title": "第 8 大題：讀讀看，寫上漢字 Read the zhuyin and write the characters",
+   "type": "fill",
+   "order": 7,
+   "questions": {
+    "q209_08_01": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄓˇ ㄋㄢˊ ㄓㄣ → {指南針}",
+     "id": "q209_08_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_08_02": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄓˇ ㄅㄟˇ ㄓㄣ → {指北針}",
+     "id": "q209_08_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_08_03": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄊㄚ → {它}",
+     "id": "q209_08_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_08_04": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄋㄢˊ ㄈㄤ → {南方}",
+     "id": "q209_08_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_08_05": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄅㄟˇ ㄈㄤ → {北方}",
+     "id": "q209_08_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_08_06": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄉㄨㄥ ㄈㄤ → {東方}",
+     "id": "q209_08_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_08_07": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄒㄧ ㄈㄤ → {西方}",
+     "id": "q209_08_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_08_08": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄐㄧㄠˋ ㄕˋ → {教室}",
+     "id": "q209_08_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_08_09": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄍㄠˋ ˙ㄙㄨ → {告訴}",
+     "id": "q209_08_09",
+     "order": 8,
+     "title": "第 9 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_08_10": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄈㄤ ㄒㄧㄤˋ → {方向}",
+     "id": "q209_08_10",
+     "order": 9,
+     "title": "第 10 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_08_11": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄒㄧㄠˋ ㄇㄣˊ ㄎㄡˇ → {校門口}",
+     "id": "q209_08_11",
+     "order": 10,
+     "title": "第 11 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_08_12": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄗㄨˊ ㄑㄧㄡˊ ㄔㄤˇ → {足球場}",
+     "id": "q209_08_12",
+     "order": 11,
+     "title": "第 12 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s209_9": {
+   "id": "s209_9",
+   "title": "第 9 大題：漢字（筆畫） Strokes",
+   "type": "choice",
+   "order": 8,
+   "questions": {
+    "q209_09_01": {
+     "prompt": "「南」有幾畫？ How many strokes does 南 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "9 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "8 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "10 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q209_09_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_09_02": {
+     "prompt": "「北」有幾畫？ How many strokes does 北 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "5 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "4 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "6 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q209_09_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_09_03": {
+     "prompt": "「方」有幾畫？ How many strokes does 方 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "4 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "3 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "5 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q209_09_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_09_04": {
+     "prompt": "「裡」有幾畫？ How many strokes does 裡 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "12 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "11 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "13 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q209_09_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_09_05": {
+     "prompt": "「校」有幾畫？ How many strokes does 校 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "10 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "9 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "11 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q209_09_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_09_06": {
+     "prompt": "「門」有幾畫？ How many strokes does 門 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "8 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "7 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "9 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q209_09_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_09_07": {
+     "prompt": "「口」有幾畫？ How many strokes does 口 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "3 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "2 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "4 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q209_09_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_09_08": {
+     "prompt": "「因」有幾畫？ How many strokes does 因 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "6 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "5 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "7 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q209_09_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_09_09": {
+     "prompt": "「為」有幾畫？ How many strokes does 為 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "9 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "8 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "10 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q209_09_09",
+     "order": 8,
+     "title": "第 9 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_09_10": {
+     "prompt": "「所」有幾畫？ How many strokes does 所 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "8 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "7 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "9 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q209_09_10",
+     "order": 9,
+     "title": "第 10 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s209_10": {
+   "id": "s209_10",
+   "title": "第 10 大題：句子重組 Reorder",
+   "type": "reorder",
+   "order": 9,
+   "questions": {
+    "q209_10_01": {
+     "prompt": "請將下列詞語重組為正確句子 Rearrange the words into a correct sentence",
+     "words": [
+      "指南針，",
+      "也叫指北針，",
+      "它告訴我們南方和北方在哪裡。"
+     ],
+     "alts": [
+      "指南針， 也叫指北針， 它告訴我們南方和北方在哪裡。"
+     ],
+     "id": "q209_10_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s209_11": {
+   "id": "s209_11",
+   "title": "第 11 大題：說說看（句型） Speaking",
+   "type": "record",
+   "order": 10,
+   "questions": {
+    "q209_11_01": {
+     "prompt": "請說說你家在學校的哪個方向。 Say which direction your home is from school.",
+     "reference": "我家在學校的東方。",
+     "maxSec": 30,
+     "id": "q209_11_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_11_02": {
+     "prompt": "請用「因為…所以…」說一個句子。 Make a sentence with 因為…所以….",
+     "reference": "因為夏天太熱了，所以我不喜歡夏天。",
+     "maxSec": 30,
+     "id": "q209_11_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_11_03": {
+     "prompt": "請用「告訴」說一個句子。 Make a sentence with 告訴.",
+     "reference": "老師告訴我們足球場在哪裡。",
+     "maxSec": 30,
+     "id": "q209_11_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_11_04": {
+     "prompt": "請用「還是」問一個問題。 Ask a question with 還是.",
+     "reference": "足球場在東方，還是西方？",
+     "maxSec": 30,
+     "id": "q209_11_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s209_12": {
+   "id": "s209_12",
+   "title": "第 12 大題：習寫漢字 Write the characters",
+   "type": "hanzi",
+   "order": 11,
+   "questions": {
+    "q209_12_01": {
+     "char": "南",
+     "desc": "9畫，部首：十",
+     "id": "q209_12_01",
+     "order": 0,
+     "title": "第 1 題：南",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_12_02": {
+     "char": "北",
+     "desc": "5畫，部首：匕",
+     "id": "q209_12_02",
+     "order": 1,
+     "title": "第 2 題：北",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_12_03": {
+     "char": "方",
+     "desc": "4畫，部首：方",
+     "id": "q209_12_03",
+     "order": 2,
+     "title": "第 3 題：方",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_12_04": {
+     "char": "裡",
+     "desc": "12畫，部首：衣",
+     "id": "q209_12_04",
+     "order": 3,
+     "title": "第 4 題：裡",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_12_05": {
+     "char": "校",
+     "desc": "10畫，部首：木",
+     "id": "q209_12_05",
+     "order": 4,
+     "title": "第 5 題：校",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_12_06": {
+     "char": "門",
+     "desc": "8畫，部首：門",
+     "id": "q209_12_06",
+     "order": 5,
+     "title": "第 6 題：門",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_12_07": {
+     "char": "口",
+     "desc": "3畫，部首：口",
+     "id": "q209_12_07",
+     "order": 6,
+     "title": "第 7 題：口",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_12_08": {
+     "char": "因",
+     "desc": "6畫，部首：囗",
+     "id": "q209_12_08",
+     "order": 7,
+     "title": "第 8 題：因",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_12_09": {
+     "char": "為",
+     "desc": "9畫，部首：火",
+     "id": "q209_12_09",
+     "order": 8,
+     "title": "第 9 題：為",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_12_10": {
+     "char": "所",
+     "desc": "8畫，部首：戶",
+     "id": "q209_12_10",
+     "order": 9,
+     "title": "第 10 題：所",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s209_13": {
+   "id": "s209_13",
+   "title": "第 13 大題：我會唸（課文、認讀漢字） Read aloud",
+   "type": "record",
+   "order": 12,
+   "questions": {
+    "q209_13_01": {
+     "prompt": "請唸出課文第一段。 Read the first part of the text.",
+     "reference": "友朋：東明，這是什麼？\n東明：指南針，也叫指北針，它告訴我們南方和北方在哪裡。\n友朋：音樂教室是什麼方向？",
+     "maxSec": 45,
+     "passage": "友朋：東明，這是什麼？\n東明：指南針，也叫指北針，它告訴我們南方和北方在哪裡。\n友朋：音樂教室是什麼方向？",
+     "id": "q209_13_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_13_02": {
+     "prompt": "請唸出課文第二段。 Read the second part of the text.",
+     "reference": "東明：音樂教室在北方，校門口在南方。\n友朋：足球場在東方，還是西方？\n東明：因為音樂教室在北方，所以足球場在東方。",
+     "maxSec": 45,
+     "passage": "東明：音樂教室在北方，校門口在南方。\n友朋：足球場在東方，還是西方？\n東明：因為音樂教室在北方，所以足球場在東方。",
+     "id": "q209_13_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q209_13_03": {
+     "prompt": "請唸出這些認讀漢字。 Read these characters aloud.",
+     "reference": "指　針　它　足　告　訴　教　室　向",
+     "maxSec": 30,
+     "id": "q209_13_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  }
+ },
+ "currentQId": "q209_01_01"
+}

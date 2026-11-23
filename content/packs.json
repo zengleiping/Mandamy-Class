@@ -372,6 +372,45 @@
    "book": "b1",
    "lesson": 12,
    "file": "content/b1-lesson12-quiz.json"
+  },
+  {
+   "id": "b2-8",
+   "bookTitle": "《學華語向前走》第二冊",
+   "lesson": 8,
+   "file": "content/b2-lesson8.json"
+  },
+  {
+   "id": "b2-8-quiz",
+   "type": "project",
+   "bookTitle": "《學華語向前走》第二冊",
+   "lesson": 8,
+   "file": "content/b2-lesson8-quiz.json"
+  },
+  {
+   "id": "b2-9",
+   "bookTitle": "《學華語向前走》第二冊",
+   "lesson": 9,
+   "file": "content/b2-lesson9.json"
+  },
+  {
+   "id": "b2-9-quiz",
+   "type": "project",
+   "bookTitle": "《學華語向前走》第二冊",
+   "lesson": 9,
+   "file": "content/b2-lesson9-quiz.json"
+  },
+  {
+   "id": "b2-10",
+   "bookTitle": "《學華語向前走》第二冊",
+   "lesson": 10,
+   "file": "content/b2-lesson10.json"
+  },
+  {
+   "id": "b2-10-quiz",
+   "type": "project",
+   "bookTitle": "《學華語向前走》第二冊",
+   "lesson": 10,
+   "file": "content/b2-lesson10-quiz.json"
   }
  ]
 }

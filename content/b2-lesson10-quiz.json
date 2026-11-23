@@ -1,0 +1,1348 @@
+{
+ "id": "proj_b2l10quiz",
+ "title": "第二冊 第10課 外公外婆住在臺灣 練習題",
+ "desc": "依第二冊第10課簡報（課文、生詞、句型、習寫漢字、認讀漢字、練習、任務活動）整理；題目說明附英文",
+ "sections": {
+  "s210_1": {
+   "id": "s210_1",
+   "title": "第 1 大題：連連看（生詞和注音） Match the words with zhuyin",
+   "type": "match",
+   "order": 0,
+   "questions": {
+    "q210_01_01": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "暑假",
+       "right": "ㄕㄨˇ ㄐㄧㄚˋ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "看",
+       "right": "ㄎㄢˋ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "本來",
+       "right": "ㄅㄣˇ ㄌㄞˊ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "住在",
+       "right": "ㄓㄨˋ ㄗㄞˋ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "臺北",
+       "right": "ㄊㄞˊ ㄅㄟˇ"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "退休",
+       "right": "ㄊㄨㄟˋ ㄒㄧㄡ"
+      }
+     },
+     "id": "q210_01_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_01_02": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "舅舅",
+       "right": "ㄐㄧㄡˋ ˙ㄐㄧㄡ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "臺南",
+       "right": "ㄊㄞˊ ㄋㄢˊ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "一次",
+       "right": "ㄧˊ ㄘˋ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "紐約",
+       "right": "ㄋㄧㄡˇ ㄩㄝ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "旅行",
+       "right": "ㄌㄩˇ ㄒㄧㄥˊ"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "法國",
+       "right": "ㄈㄚˇ ㄍㄨㄛˊ"
+      }
+     },
+     "id": "q210_01_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s210_2": {
+   "id": "s210_2",
+   "title": "第 2 大題：連連看（生詞和意思） Match the words with their meanings",
+   "type": "match",
+   "order": 1,
+   "questions": {
+    "q210_02_01": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "暑假",
+       "right": "summer vacation"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "看",
+       "right": "to visit"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "本來",
+       "right": "originally"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "住在",
+       "right": "to live in"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "臺北",
+       "right": "Taipei"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "退休",
+       "right": "to retire"
+      }
+     },
+     "id": "q210_02_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_02_02": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "舅舅",
+       "right": "maternal uncle"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "臺南",
+       "right": "Tainan"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "一次",
+       "right": "once"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "紐約",
+       "right": "New York"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "旅行",
+       "right": "to travel"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "法國",
+       "right": "France"
+      }
+     },
+     "id": "q210_02_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s210_3": {
+   "id": "s210_3",
+   "title": "第 3 大題：我會寫（寫出正確的漢字） Write the characters",
+   "type": "fill",
+   "order": 2,
+   "questions": {
+    "q210_03_01": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "你{外}公、外婆家在哪裡？",
+     "id": "q210_03_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_03_02": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "他們{本}來{住}在臺北，{退}{休}以後，跟我的舅舅住在臺南。",
+     "id": "q210_03_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_03_03": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "心美每年都去看外公、外婆一{次}。",
+     "id": "q210_03_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_03_04": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "張莉的外公、外婆現在{住}在紐約。",
+     "id": "q210_03_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_03_05": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "心美的外公、外婆喜歡{旅}{行}，也常去{法}{國}看阿姨。",
+     "id": "q210_03_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_03_06": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "{暑}{假}的時候，心美會去{臺}灣看外公、外婆。",
+     "id": "q210_03_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_03_07": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "心美的外公、外婆{本}來住臺北，{退}{休}以後，跟心美的舅舅住在臺南。",
+     "id": "q210_03_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_03_08": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "我{舅}舅住在{臺}{南}。",
+     "id": "q210_03_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_03_09": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "我們每年都去看他們一{次}。",
+     "id": "q210_03_09",
+     "order": 8,
+     "title": "第 9 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s210_4": {
+   "id": "s210_4",
+   "title": "第 4 大題：句型填空 Fill in the sentence patterns",
+   "type": "fill",
+   "order": 3,
+   "questions": {
+    "q210_04_01": {
+     "prompt": "用「本來」完成句子。 Use 本來.",
+     "template": "我{本來}喜歡喝牛奶，現在我喜歡喝果汁。",
+     "id": "q210_04_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_04_02": {
+     "prompt": "用「本來」完成句子。 Use 本來.",
+     "template": "叔叔{本來}住在臺南，工作以後，他住在臺北。",
+     "id": "q210_04_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_04_03": {
+     "prompt": "用「一次」完成句子。 Use 一次.",
+     "template": "我們每年都去看外公、外婆{一次}。",
+     "id": "q210_04_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_04_04": {
+     "prompt": "用「每…都」完成句子。 Use 每…都.",
+     "template": "心美每個星期{都}去中文學校一次。",
+     "id": "q210_04_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_04_05": {
+     "prompt": "用「住在」完成句子。 Use 住在.",
+     "template": "她的姑姑{住在}臺北。",
+     "id": "q210_04_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_04_06": {
+     "prompt": "用「住在」完成句子。 Use 住在.",
+     "template": "你外公、外婆{住在}哪裡？",
+     "id": "q210_04_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s210_5": {
+   "id": "s210_5",
+   "title": "第 5 大題：選擇題（句型） Choose the correct answer",
+   "type": "choice",
+   "order": 4,
+   "questions": {
+    "q210_05_01": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n暑假的時候，我會去臺灣＿＿外公、外婆。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "看"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "住"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "本來"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q210_05_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_05_02": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n他們＿＿住臺北，退休以後住臺南。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "本來"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "每"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "一次"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q210_05_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_05_03": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n我們每年都去看他們＿＿。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "一次"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "本來"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "住在"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q210_05_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_05_04": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n我的外公、外婆＿＿紐約。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "住在"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "旅行"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "退休"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q210_05_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_05_05": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n外公以前是醫生，現在已經＿＿了。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "退休"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "旅行"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "暑假"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q210_05_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_05_06": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n心美的舅舅住在＿＿。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "臺南"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "紐約"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "法國"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q210_05_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_05_07": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n心美的外公、外婆喜歡＿＿。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "旅行"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "退休"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "本來"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q210_05_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s210_6": {
+   "id": "s210_6",
+   "title": "第 6 大題：閱讀理解（課文） Reading comprehension",
+   "type": "choice",
+   "order": 5,
+   "questions": {
+    "q210_06_01": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n心美暑假要去哪裡？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "臺灣"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "紐約"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "法國"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：暑假的時候，我會去臺灣看外公、外婆。\n張莉：你外公、外婆家在哪裡？\n心美：他們本來住在臺北，退休以後，跟我的舅舅住在臺南。\n張莉：你們每年都去看外公外婆嗎？\n心美：我們每年都去看他們一次，你外公外婆住在哪裡？\n張莉：我外公、外婆現在住在紐約，他們下個月會來看我們。\n心美：我外公、外婆喜歡旅行，常常來看我們，也常去法國看阿姨。",
+     "id": "q210_06_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_06_02": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n心美的外公、外婆本來住在哪裡？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "臺北"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "臺南"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "紐約"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：暑假的時候，我會去臺灣看外公、外婆。\n張莉：你外公、外婆家在哪裡？\n心美：他們本來住在臺北，退休以後，跟我的舅舅住在臺南。\n張莉：你們每年都去看外公外婆嗎？\n心美：我們每年都去看他們一次，你外公外婆住在哪裡？\n張莉：我外公、外婆現在住在紐約，他們下個月會來看我們。\n心美：我外公、外婆喜歡旅行，常常來看我們，也常去法國看阿姨。",
+     "id": "q210_06_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_06_03": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n他們退休以後跟誰住在臺南？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "舅舅"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "阿姨"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "爸爸"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：暑假的時候，我會去臺灣看外公、外婆。\n張莉：你外公、外婆家在哪裡？\n心美：他們本來住在臺北，退休以後，跟我的舅舅住在臺南。\n張莉：你們每年都去看外公外婆嗎？\n心美：我們每年都去看他們一次，你外公外婆住在哪裡？\n張莉：我外公、外婆現在住在紐約，他們下個月會來看我們。\n心美：我外公、外婆喜歡旅行，常常來看我們，也常去法國看阿姨。",
+     "id": "q210_06_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_06_04": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n心美的家人多久去看外公、外婆一次？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "每年一次"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "每月一次"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "每天一次"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：暑假的時候，我會去臺灣看外公、外婆。\n張莉：你外公、外婆家在哪裡？\n心美：他們本來住在臺北，退休以後，跟我的舅舅住在臺南。\n張莉：你們每年都去看外公外婆嗎？\n心美：我們每年都去看他們一次，你外公外婆住在哪裡？\n張莉：我外公、外婆現在住在紐約，他們下個月會來看我們。\n心美：我外公、外婆喜歡旅行，常常來看我們，也常去法國看阿姨。",
+     "id": "q210_06_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_06_05": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n張莉的外公、外婆現在住在哪裡？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "紐約"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "臺北"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "法國"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：暑假的時候，我會去臺灣看外公、外婆。\n張莉：你外公、外婆家在哪裡？\n心美：他們本來住在臺北，退休以後，跟我的舅舅住在臺南。\n張莉：你們每年都去看外公外婆嗎？\n心美：我們每年都去看他們一次，你外公外婆住在哪裡？\n張莉：我外公、外婆現在住在紐約，他們下個月會來看我們。\n心美：我外公、外婆喜歡旅行，常常來看我們，也常去法國看阿姨。",
+     "id": "q210_06_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_06_06": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n心美的外公、外婆常常去哪裡看阿姨？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "法國"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "臺灣"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "紐約"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：暑假的時候，我會去臺灣看外公、外婆。\n張莉：你外公、外婆家在哪裡？\n心美：他們本來住在臺北，退休以後，跟我的舅舅住在臺南。\n張莉：你們每年都去看外公外婆嗎？\n心美：我們每年都去看他們一次，你外公外婆住在哪裡？\n張莉：我外公、外婆現在住在紐約，他們下個月會來看我們。\n心美：我外公、外婆喜歡旅行，常常來看我們，也常去法國看阿姨。",
+     "id": "q210_06_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s210_7": {
+   "id": "s210_7",
+   "title": "第 7 大題：是非題（課文） True or false",
+   "type": "choice",
+   "order": 6,
+   "questions": {
+    "q210_07_01": {
+     "prompt": "判斷對錯。 True or false?\n\n心美的外公、外婆現在住在臺北。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c2"
+     ],
+     "passage": "心美：暑假的時候，我會去臺灣看外公、外婆。\n張莉：你外公、外婆家在哪裡？\n心美：他們本來住在臺北，退休以後，跟我的舅舅住在臺南。\n張莉：你們每年都去看外公外婆嗎？\n心美：我們每年都去看他們一次，你外公外婆住在哪裡？\n張莉：我外公、外婆現在住在紐約，他們下個月會來看我們。\n心美：我外公、外婆喜歡旅行，常常來看我們，也常去法國看阿姨。",
+     "id": "q210_07_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_07_02": {
+     "prompt": "判斷對錯。 True or false?\n\n心美每年都去看外公、外婆一次。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：暑假的時候，我會去臺灣看外公、外婆。\n張莉：你外公、外婆家在哪裡？\n心美：他們本來住在臺北，退休以後，跟我的舅舅住在臺南。\n張莉：你們每年都去看外公外婆嗎？\n心美：我們每年都去看他們一次，你外公外婆住在哪裡？\n張莉：我外公、外婆現在住在紐約，他們下個月會來看我們。\n心美：我外公、外婆喜歡旅行，常常來看我們，也常去法國看阿姨。",
+     "id": "q210_07_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_07_03": {
+     "prompt": "判斷對錯。 True or false?\n\n張莉的外公、外婆住在紐約。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：暑假的時候，我會去臺灣看外公、外婆。\n張莉：你外公、外婆家在哪裡？\n心美：他們本來住在臺北，退休以後，跟我的舅舅住在臺南。\n張莉：你們每年都去看外公外婆嗎？\n心美：我們每年都去看他們一次，你外公外婆住在哪裡？\n張莉：我外公、外婆現在住在紐約，他們下個月會來看我們。\n心美：我外公、外婆喜歡旅行，常常來看我們，也常去法國看阿姨。",
+     "id": "q210_07_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_07_04": {
+     "prompt": "判斷對錯。 True or false?\n\n心美的外公、外婆不喜歡旅行。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c2"
+     ],
+     "passage": "心美：暑假的時候，我會去臺灣看外公、外婆。\n張莉：你外公、外婆家在哪裡？\n心美：他們本來住在臺北，退休以後，跟我的舅舅住在臺南。\n張莉：你們每年都去看外公外婆嗎？\n心美：我們每年都去看他們一次，你外公外婆住在哪裡？\n張莉：我外公、外婆現在住在紐約，他們下個月會來看我們。\n心美：我外公、外婆喜歡旅行，常常來看我們，也常去法國看阿姨。",
+     "id": "q210_07_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s210_8": {
+   "id": "s210_8",
+   "title": "第 8 大題：讀讀看，寫上漢字 Read the zhuyin and write the characters",
+   "type": "fill",
+   "order": 7,
+   "questions": {
+    "q210_08_01": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄕㄨˇ ㄐㄧㄚˋ → {暑假}",
+     "id": "q210_08_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_08_02": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄎㄢˋ → {看}",
+     "id": "q210_08_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_08_03": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄅㄣˇ ㄌㄞˊ → {本來}",
+     "id": "q210_08_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_08_04": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄓㄨˋ ㄗㄞˋ → {住在}",
+     "id": "q210_08_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_08_05": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄊㄞˊ ㄅㄟˇ → {臺北}",
+     "id": "q210_08_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_08_06": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄊㄨㄟˋ ㄒㄧㄡ → {退休}",
+     "id": "q210_08_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_08_07": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄐㄧㄡˋ ˙ㄐㄧㄡ → {舅舅}",
+     "id": "q210_08_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_08_08": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄊㄞˊ ㄋㄢˊ → {臺南}",
+     "id": "q210_08_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_08_09": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄧˊ ㄘˋ → {一次}",
+     "id": "q210_08_09",
+     "order": 8,
+     "title": "第 9 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_08_10": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄋㄧㄡˇ ㄩㄝ → {紐約}",
+     "id": "q210_08_10",
+     "order": 9,
+     "title": "第 10 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_08_11": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄌㄩˇ ㄒㄧㄥˊ → {旅行}",
+     "id": "q210_08_11",
+     "order": 10,
+     "title": "第 11 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_08_12": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄈㄚˇ ㄍㄨㄛˊ → {法國}",
+     "id": "q210_08_12",
+     "order": 11,
+     "title": "第 12 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s210_9": {
+   "id": "s210_9",
+   "title": "第 9 大題：漢字（筆畫） Strokes",
+   "type": "choice",
+   "order": 8,
+   "questions": {
+    "q210_09_01": {
+     "prompt": "「本」有幾畫？ How many strokes does 本 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "5 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "4 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "6 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q210_09_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_09_02": {
+     "prompt": "「住」有幾畫？ How many strokes does 住 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "7 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "6 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "8 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q210_09_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_09_03": {
+     "prompt": "「退」有幾畫？ How many strokes does 退 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "10 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "9 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "11 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q210_09_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_09_04": {
+     "prompt": "「休」有幾畫？ How many strokes does 休 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "6 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "5 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "7 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q210_09_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_09_05": {
+     "prompt": "「次」有幾畫？ How many strokes does 次 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "6 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "5 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "7 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q210_09_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_09_06": {
+     "prompt": "「旅」有幾畫？ How many strokes does 旅 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "10 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "9 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "11 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q210_09_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_09_07": {
+     "prompt": "「行」有幾畫？ How many strokes does 行 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "6 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "5 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "7 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q210_09_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_09_08": {
+     "prompt": "「法」有幾畫？ How many strokes does 法 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "8 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "7 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "9 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q210_09_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_09_09": {
+     "prompt": "「國」有幾畫？ How many strokes does 國 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "11 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "10 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "12 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q210_09_09",
+     "order": 8,
+     "title": "第 9 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s210_10": {
+   "id": "s210_10",
+   "title": "第 10 大題：句子重組 Reorder",
+   "type": "reorder",
+   "order": 9,
+   "questions": {
+    "q210_10_01": {
+     "prompt": "請將下列詞語重組為正確句子 Rearrange the words into a correct sentence",
+     "words": [
+      "他們本來住在臺北，",
+      "退休以後，",
+      "跟我的舅舅住在臺南。"
+     ],
+     "alts": [
+      "他們本來住在臺北， 退休以後， 跟我的舅舅住在臺南。"
+     ],
+     "id": "q210_10_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_10_02": {
+     "prompt": "請將下列詞語重組為正確句子 Rearrange the words into a correct sentence",
+     "words": [
+      "我外公、外婆喜歡旅行，",
+      "常常來看我們，",
+      "也常去法國看阿姨。"
+     ],
+     "alts": [
+      "我外公、外婆喜歡旅行， 常常來看我們， 也常去法國看阿姨。"
+     ],
+     "id": "q210_10_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s210_11": {
+   "id": "s210_11",
+   "title": "第 11 大題：說說看（句型） Speaking",
+   "type": "record",
+   "order": 10,
+   "questions": {
+    "q210_11_01": {
+     "prompt": "你外公、外婆家在哪裡？你爺爺、奶奶家呢？你家在哪裡？ Where do your grandparents and you live?",
+     "reference": "我外公、外婆住在臺北。我家住在臺中。",
+     "maxSec": 30,
+     "id": "q210_11_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_11_02": {
+     "prompt": "請用「本來…，以後／現在…」說一個句子。 Make a sentence with 本來….",
+     "reference": "我本來住在臺北，現在住在臺中。",
+     "maxSec": 30,
+     "id": "q210_11_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_11_03": {
+     "prompt": "請用「每…都…一次」說一個句子。 Make a sentence with 每…都…一次.",
+     "reference": "我每年都去看外公、外婆一次。",
+     "maxSec": 30,
+     "id": "q210_11_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_11_04": {
+     "prompt": "請用「住在」說一個句子。 Make a sentence with 住在.",
+     "reference": "我的阿姨住在法國。",
+     "maxSec": 30,
+     "id": "q210_11_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s210_12": {
+   "id": "s210_12",
+   "title": "第 12 大題：習寫漢字 Write the characters",
+   "type": "hanzi",
+   "order": 11,
+   "questions": {
+    "q210_12_01": {
+     "char": "本",
+     "desc": "5畫，部首：木",
+     "id": "q210_12_01",
+     "order": 0,
+     "title": "第 1 題：本",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_12_02": {
+     "char": "住",
+     "desc": "7畫，部首：人",
+     "id": "q210_12_02",
+     "order": 1,
+     "title": "第 2 題：住",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_12_03": {
+     "char": "退",
+     "desc": "10畫，部首：辵",
+     "id": "q210_12_03",
+     "order": 2,
+     "title": "第 3 題：退",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_12_04": {
+     "char": "休",
+     "desc": "6畫，部首：人",
+     "id": "q210_12_04",
+     "order": 3,
+     "title": "第 4 題：休",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_12_05": {
+     "char": "次",
+     "desc": "6畫，部首：欠",
+     "id": "q210_12_05",
+     "order": 4,
+     "title": "第 5 題：次",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_12_06": {
+     "char": "旅",
+     "desc": "10畫，部首：方",
+     "id": "q210_12_06",
+     "order": 5,
+     "title": "第 6 題：旅",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_12_07": {
+     "char": "行",
+     "desc": "6畫，部首：行",
+     "id": "q210_12_07",
+     "order": 6,
+     "title": "第 7 題：行",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_12_08": {
+     "char": "法",
+     "desc": "8畫，部首：水",
+     "id": "q210_12_08",
+     "order": 7,
+     "title": "第 8 題：法",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_12_09": {
+     "char": "國",
+     "desc": "11畫，部首：囗",
+     "id": "q210_12_09",
+     "order": 8,
+     "title": "第 9 題：國",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s210_13": {
+   "id": "s210_13",
+   "title": "第 13 大題：我會唸（課文、認讀漢字） Read aloud",
+   "type": "record",
+   "order": 12,
+   "questions": {
+    "q210_13_01": {
+     "prompt": "請唸出課文第一段。 Read the first part of the text.",
+     "reference": "心美：暑假的時候，我會去臺灣看外公、外婆。\n張莉：你外公、外婆家在哪裡？\n心美：他們本來住在臺北，退休以後，跟我的舅舅住在臺南。\n張莉：你們每年都去看外公外婆嗎？",
+     "maxSec": 45,
+     "passage": "心美：暑假的時候，我會去臺灣看外公、外婆。\n張莉：你外公、外婆家在哪裡？\n心美：他們本來住在臺北，退休以後，跟我的舅舅住在臺南。\n張莉：你們每年都去看外公外婆嗎？",
+     "id": "q210_13_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_13_02": {
+     "prompt": "請唸出課文第二段。 Read the second part of the text.",
+     "reference": "心美：我們每年都去看他們一次，你外公外婆住在哪裡？\n張莉：我外公、外婆現在住在紐約，他們下個月會來看我們。\n心美：我外公、外婆喜歡旅行，常常來看我們，也常去法國看阿姨。",
+     "maxSec": 45,
+     "passage": "心美：我們每年都去看他們一次，你外公外婆住在哪裡？\n張莉：我外公、外婆現在住在紐約，他們下個月會來看我們。\n心美：我外公、外婆喜歡旅行，常常來看我們，也常去法國看阿姨。",
+     "id": "q210_13_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q210_13_03": {
+     "prompt": "請唸出這些認讀漢字。 Read these characters aloud.",
+     "reference": "暑　假　舅　臺　紐　約",
+     "maxSec": 30,
+     "id": "q210_13_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  }
+ },
+ "currentQId": "q210_01_01"
+}

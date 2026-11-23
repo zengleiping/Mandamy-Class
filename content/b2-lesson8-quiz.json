@@ -1,0 +1,1478 @@
+{
+ "id": "proj_b2l8quiz",
+ "title": "第二冊 第8課 我的寵物 練習題",
+ "desc": "依第二冊第8課簡報（課文、生詞、句型、習寫漢字、認讀漢字、練習、任務活動）整理；題目說明附英文",
+ "sections": {
+  "s208_1": {
+   "id": "s208_1",
+   "title": "第 1 大題：連連看（生詞和注音） Match the words with zhuyin",
+   "type": "match",
+   "order": 0,
+   "questions": {
+    "q208_01_01": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "送給",
+       "right": "ㄙㄨㄥˋ ㄍㄟˇ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "隻",
+       "right": "ㄓ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "狗",
+       "right": "ㄍㄡˇ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "寵物",
+       "right": "ㄔㄨㄥˇ ㄨˋ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "帶",
+       "right": "ㄉㄞˋ"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "牠們",
+       "right": "ㄊㄚ ˙ㄇㄣ"
+      }
+     },
+     "id": "q208_01_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_01_02": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "散步",
+       "right": "ㄙㄢˋ ㄅㄨˋ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "去年",
+       "right": "ㄑㄩˋ ㄋㄧㄢˊ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "貓",
+       "right": "ㄇㄠ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "上個月",
+       "right": "ㄕㄤˋ ˙ㄍㄜ ㄩㄝˋ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "養",
+       "right": "ㄧㄤˇ"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "不見了",
+       "right": "ㄅㄨˊ ㄐㄧㄢˋ ˙ㄌㄜ"
+      }
+     },
+     "id": "q208_01_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_01_03": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "非常",
+       "right": "ㄈㄟ ㄔㄤˊ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "可愛",
+       "right": "ㄎㄜˇ ㄞˋ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "兔子",
+       "right": "ㄊㄨˋ ˙ㄗ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "餵",
+       "right": "ㄨㄟˋ"
+      }
+     },
+     "id": "q208_01_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s208_2": {
+   "id": "s208_2",
+   "title": "第 2 大題：連連看（生詞和意思） Match the words with their meanings",
+   "type": "match",
+   "order": 1,
+   "questions": {
+    "q208_02_01": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "送給",
+       "right": "to give (a present)"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "隻",
+       "right": "M.W. for animals"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "狗",
+       "right": "dog"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "寵物",
+       "right": "pet"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "帶",
+       "right": "to bring"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "牠們",
+       "right": "they (animals)"
+      }
+     },
+     "id": "q208_02_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_02_02": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "散步",
+       "right": "to take a walk"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "去年",
+       "right": "last year"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "貓",
+       "right": "cat"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "上個月",
+       "right": "last month"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "養",
+       "right": "to raise (a pet)"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "不見了",
+       "right": "to be missing"
+      }
+     },
+     "id": "q208_02_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_02_03": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "非常",
+       "right": "very"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "可愛",
+       "right": "cute"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "兔子",
+       "right": "rabbit"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "餵",
+       "right": "to feed"
+      }
+     },
+     "id": "q208_02_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s208_3": {
+   "id": "s208_3",
+   "title": "第 3 大題：我會寫（寫出正確的漢字） Write the characters",
+   "type": "fill",
+   "order": 2,
+   "questions": {
+    "q208_03_01": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "張莉，你{養}過狗嗎？",
+     "id": "q208_03_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_03_02": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "我沒{養}過狗，我去{年}養了一{隻}貓，可是上個月不{見}了。",
+     "id": "q208_03_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_03_03": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "爸爸的朋友昨天{送}給心美一隻狗。",
+     "id": "q208_03_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_03_04": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "大文有兩隻{狗}，他每天都{帶}牠們去{散}{步}。",
+     "id": "q208_03_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_03_05": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "友朋也養過{貓}，{非}{常}{可}{愛}，他每天都餵牠。",
+     "id": "q208_03_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_03_06": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "昨天我爸爸的朋友{送}給我一{隻}{狗}，你們家有寵物嗎？",
+     "id": "q208_03_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_03_07": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "有，我家有兩隻狗，我每天都{帶}牠們去散{步}。",
+     "id": "q208_03_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_03_08": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "我去年養了一隻{貓}。",
+     "id": "q208_03_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_03_09": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "以後我想養一隻{兔}子。",
+     "id": "q208_03_09",
+     "order": 8,
+     "title": "第 9 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s208_4": {
+   "id": "s208_4",
+   "title": "第 4 大題：句型填空 Fill in the sentence patterns",
+   "type": "fill",
+   "order": 3,
+   "questions": {
+    "q208_04_01": {
+     "prompt": "用「帶」完成句子。 Use 帶.",
+     "template": "媽媽{帶}我去超級市場買東西。",
+     "id": "q208_04_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_04_02": {
+     "prompt": "用「帶」完成句子。 Use 帶.",
+     "template": "老師{帶}我們去吃飯。",
+     "id": "q208_04_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_04_03": {
+     "prompt": "用「V過」完成句子。 Use V過.",
+     "template": "我沒去{過}臺灣。",
+     "id": "q208_04_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_04_04": {
+     "prompt": "用「V過」完成句子。 Use V過.",
+     "template": "你養{過}兔子嗎？沒有，我沒養過兔子。",
+     "id": "q208_04_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_04_05": {
+     "prompt": "用「上個月」完成句子。 Use 上個月.",
+     "template": "張莉的貓{上個月}不見了。",
+     "id": "q208_04_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_04_06": {
+     "prompt": "用「上個星期」完成句子。 Use 上個星期.",
+     "template": "{上個星期}我沒去中文學校學中文。",
+     "id": "q208_04_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_04_07": {
+     "prompt": "用「送給」完成句子。 Use 送給.",
+     "template": "新年的時候，媽媽做年糕{送給}林阿姨。",
+     "id": "q208_04_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_04_08": {
+     "prompt": "用「送給」完成句子。 Use 送給.",
+     "template": "我{送給}媽媽很多紅色的花。",
+     "id": "q208_04_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s208_5": {
+   "id": "s208_5",
+   "title": "第 5 大題：選擇題（句型） Choose the correct answer",
+   "type": "choice",
+   "order": 4,
+   "questions": {
+    "q208_05_01": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n大文＿＿狗去散步。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "帶"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "送"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "養"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q208_05_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_05_02": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n我沒去＿＿臺灣。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "過"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "了"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "在"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q208_05_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_05_03": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n張莉的貓＿＿不見了。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "上個月"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "明天"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "今天"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q208_05_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_05_04": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n生日的時候，奶奶＿＿我一隻狗。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "送給"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "帶去"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "養過"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q208_05_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_05_05": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n大文家有兩＿＿狗。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "隻"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "個"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "張"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q208_05_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_05_06": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n友朋覺得貓＿＿可愛。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "非常"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "不見"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "散步"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q208_05_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_05_07": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n我每天都＿＿牠。（給貓吃東西）",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "餵"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "帶"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "送"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q208_05_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s208_6": {
+   "id": "s208_6",
+   "title": "第 6 大題：閱讀理解（課文） Reading comprehension",
+   "type": "choice",
+   "order": 5,
+   "questions": {
+    "q208_06_01": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n昨天誰送給心美一隻狗？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "爸爸的朋友"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "大文"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "張莉"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：昨天我爸爸的朋友送給我一隻狗，你們家有寵物嗎？\n大文：有，我家有兩隻狗，我每天都帶牠們去散步。\n心美：張莉，你養過狗嗎？\n張莉：我沒養過狗，我去年養了一隻貓，可是上個月不見了。\n友朋：我也養過貓，非常可愛，我每天都餵牠。\n張莉：以後我想養一隻兔子。",
+     "id": "q208_06_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_06_02": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n大文家有幾隻狗？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "兩隻"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "一隻"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "三隻"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：昨天我爸爸的朋友送給我一隻狗，你們家有寵物嗎？\n大文：有，我家有兩隻狗，我每天都帶牠們去散步。\n心美：張莉，你養過狗嗎？\n張莉：我沒養過狗，我去年養了一隻貓，可是上個月不見了。\n友朋：我也養過貓，非常可愛，我每天都餵牠。\n張莉：以後我想養一隻兔子。",
+     "id": "q208_06_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_06_03": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n大文每天做什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "帶狗去散步"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "餵貓"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "養兔子"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：昨天我爸爸的朋友送給我一隻狗，你們家有寵物嗎？\n大文：有，我家有兩隻狗，我每天都帶牠們去散步。\n心美：張莉，你養過狗嗎？\n張莉：我沒養過狗，我去年養了一隻貓，可是上個月不見了。\n友朋：我也養過貓，非常可愛，我每天都餵牠。\n張莉：以後我想養一隻兔子。",
+     "id": "q208_06_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_06_04": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n張莉去年養了什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "一隻貓"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "一隻狗"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "一隻兔子"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：昨天我爸爸的朋友送給我一隻狗，你們家有寵物嗎？\n大文：有，我家有兩隻狗，我每天都帶牠們去散步。\n心美：張莉，你養過狗嗎？\n張莉：我沒養過狗，我去年養了一隻貓，可是上個月不見了。\n友朋：我也養過貓，非常可愛，我每天都餵牠。\n張莉：以後我想養一隻兔子。",
+     "id": "q208_06_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_06_05": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n張莉的貓怎麼了？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "上個月不見了"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "生病了"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "很可愛"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：昨天我爸爸的朋友送給我一隻狗，你們家有寵物嗎？\n大文：有，我家有兩隻狗，我每天都帶牠們去散步。\n心美：張莉，你養過狗嗎？\n張莉：我沒養過狗，我去年養了一隻貓，可是上個月不見了。\n友朋：我也養過貓，非常可愛，我每天都餵牠。\n張莉：以後我想養一隻兔子。",
+     "id": "q208_06_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_06_06": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n張莉以後想養什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "兔子"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "狗"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "貓"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：昨天我爸爸的朋友送給我一隻狗，你們家有寵物嗎？\n大文：有，我家有兩隻狗，我每天都帶牠們去散步。\n心美：張莉，你養過狗嗎？\n張莉：我沒養過狗，我去年養了一隻貓，可是上個月不見了。\n友朋：我也養過貓，非常可愛，我每天都餵牠。\n張莉：以後我想養一隻兔子。",
+     "id": "q208_06_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s208_7": {
+   "id": "s208_7",
+   "title": "第 7 大題：是非題（課文） True or false",
+   "type": "choice",
+   "order": 6,
+   "questions": {
+    "q208_07_01": {
+     "prompt": "判斷對錯。 True or false?\n\n心美的狗是爸爸的朋友送給她的。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：昨天我爸爸的朋友送給我一隻狗，你們家有寵物嗎？\n大文：有，我家有兩隻狗，我每天都帶牠們去散步。\n心美：張莉，你養過狗嗎？\n張莉：我沒養過狗，我去年養了一隻貓，可是上個月不見了。\n友朋：我也養過貓，非常可愛，我每天都餵牠。\n張莉：以後我想養一隻兔子。",
+     "id": "q208_07_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_07_02": {
+     "prompt": "判斷對錯。 True or false?\n\n大文沒有養狗。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c2"
+     ],
+     "passage": "心美：昨天我爸爸的朋友送給我一隻狗，你們家有寵物嗎？\n大文：有，我家有兩隻狗，我每天都帶牠們去散步。\n心美：張莉，你養過狗嗎？\n張莉：我沒養過狗，我去年養了一隻貓，可是上個月不見了。\n友朋：我也養過貓，非常可愛，我每天都餵牠。\n張莉：以後我想養一隻兔子。",
+     "id": "q208_07_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_07_03": {
+     "prompt": "判斷對錯。 True or false?\n\n張莉沒養過狗。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：昨天我爸爸的朋友送給我一隻狗，你們家有寵物嗎？\n大文：有，我家有兩隻狗，我每天都帶牠們去散步。\n心美：張莉，你養過狗嗎？\n張莉：我沒養過狗，我去年養了一隻貓，可是上個月不見了。\n友朋：我也養過貓，非常可愛，我每天都餵牠。\n張莉：以後我想養一隻兔子。",
+     "id": "q208_07_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_07_04": {
+     "prompt": "判斷對錯。 True or false?\n\n友朋養過貓。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：昨天我爸爸的朋友送給我一隻狗，你們家有寵物嗎？\n大文：有，我家有兩隻狗，我每天都帶牠們去散步。\n心美：張莉，你養過狗嗎？\n張莉：我沒養過狗，我去年養了一隻貓，可是上個月不見了。\n友朋：我也養過貓，非常可愛，我每天都餵牠。\n張莉：以後我想養一隻兔子。",
+     "id": "q208_07_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s208_8": {
+   "id": "s208_8",
+   "title": "第 8 大題：讀讀看，寫上漢字 Read the zhuyin and write the characters",
+   "type": "fill",
+   "order": 7,
+   "questions": {
+    "q208_08_01": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄙㄨㄥˋ ㄍㄟˇ → {送給}",
+     "id": "q208_08_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_08_02": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄓ → {隻}",
+     "id": "q208_08_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_08_03": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄍㄡˇ → {狗}",
+     "id": "q208_08_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_08_04": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄔㄨㄥˇ ㄨˋ → {寵物}",
+     "id": "q208_08_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_08_05": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄉㄞˋ → {帶}",
+     "id": "q208_08_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_08_06": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄊㄚ ˙ㄇㄣ → {牠們}",
+     "id": "q208_08_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_08_07": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄙㄢˋ ㄅㄨˋ → {散步}",
+     "id": "q208_08_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_08_08": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄑㄩˋ ㄋㄧㄢˊ → {去年}",
+     "id": "q208_08_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_08_09": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄇㄠ → {貓}",
+     "id": "q208_08_09",
+     "order": 8,
+     "title": "第 9 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_08_10": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄕㄤˋ ˙ㄍㄜ ㄩㄝˋ → {上個月}",
+     "id": "q208_08_10",
+     "order": 9,
+     "title": "第 10 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_08_11": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄧㄤˇ → {養}",
+     "id": "q208_08_11",
+     "order": 10,
+     "title": "第 11 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_08_12": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄅㄨˊ ㄐㄧㄢˋ ˙ㄌㄜ → {不見了}",
+     "id": "q208_08_12",
+     "order": 11,
+     "title": "第 12 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s208_9": {
+   "id": "s208_9",
+   "title": "第 9 大題：漢字（筆畫） Strokes",
+   "type": "choice",
+   "order": 8,
+   "questions": {
+    "q208_09_01": {
+     "prompt": "「送」有幾畫？ How many strokes does 送 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "10 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "9 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "11 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q208_09_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_09_02": {
+     "prompt": "「隻」有幾畫？ How many strokes does 隻 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "10 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "9 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "11 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q208_09_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_09_03": {
+     "prompt": "「狗」有幾畫？ How many strokes does 狗 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "8 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "7 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "9 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q208_09_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_09_04": {
+     "prompt": "「帶」有幾畫？ How many strokes does 帶 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "11 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "10 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "12 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q208_09_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_09_05": {
+     "prompt": "「散」有幾畫？ How many strokes does 散 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "12 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "11 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "13 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q208_09_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_09_06": {
+     "prompt": "「步」有幾畫？ How many strokes does 步 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "7 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "6 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "8 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q208_09_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_09_07": {
+     "prompt": "「貓」有幾畫？ How many strokes does 貓 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "16 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "15 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "17 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q208_09_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_09_08": {
+     "prompt": "「非」有幾畫？ How many strokes does 非 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "8 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "7 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "9 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q208_09_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_09_09": {
+     "prompt": "「常」有幾畫？ How many strokes does 常 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "11 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "10 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "12 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q208_09_09",
+     "order": 8,
+     "title": "第 9 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_09_10": {
+     "prompt": "「愛」有幾畫？ How many strokes does 愛 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "13 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "12 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "14 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q208_09_10",
+     "order": 9,
+     "title": "第 10 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s208_10": {
+   "id": "s208_10",
+   "title": "第 10 大題：句子重組 Reorder",
+   "type": "reorder",
+   "order": 9,
+   "questions": {
+    "q208_10_01": {
+     "prompt": "請將下列詞語重組為正確句子 Rearrange the words into a correct sentence",
+     "words": [
+      "有，",
+      "我家有兩隻狗，",
+      "我每天都帶牠們去散步。"
+     ],
+     "alts": [
+      "有， 我家有兩隻狗， 我每天都帶牠們去散步。"
+     ],
+     "id": "q208_10_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_10_02": {
+     "prompt": "請將下列詞語重組為正確句子 Rearrange the words into a correct sentence",
+     "words": [
+      "我沒養過狗，",
+      "我去年養了一隻貓，",
+      "可是上個月不見了。"
+     ],
+     "alts": [
+      "我沒養過狗， 我去年養了一隻貓， 可是上個月不見了。"
+     ],
+     "id": "q208_10_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_10_03": {
+     "prompt": "請將下列詞語重組為正確句子 Rearrange the words into a correct sentence",
+     "words": [
+      "我也養過貓，",
+      "非常可愛，",
+      "我每天都餵牠。"
+     ],
+     "alts": [
+      "我也養過貓， 非常可愛， 我每天都餵牠。"
+     ],
+     "id": "q208_10_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s208_11": {
+   "id": "s208_11",
+   "title": "第 11 大題：說說看（句型） Speaking",
+   "type": "record",
+   "order": 10,
+   "questions": {
+    "q208_11_01": {
+     "prompt": "你有寵物嗎？你養過寵物嗎？以後你想養什麼寵物？ Do you have pets? Have you had any? What would you like to have?",
+     "reference": "我有一隻貓。我沒養過狗。以後我想養一隻兔子。",
+     "maxSec": 30,
+     "id": "q208_11_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_11_02": {
+     "prompt": "請用「帶…去…」說一個句子。 Make a sentence with 帶…去….",
+     "reference": "我想帶朋友去公園散步。",
+     "maxSec": 30,
+     "id": "q208_11_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_11_03": {
+     "prompt": "請用「V過／沒V過」說一個句子。 Make a sentence with V過／沒V過.",
+     "reference": "我沒去過臺灣。",
+     "maxSec": 30,
+     "id": "q208_11_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_11_04": {
+     "prompt": "請用「送給」說一個句子。 Make a sentence with 送給.",
+     "reference": "生日的時候，奶奶送給我一隻狗。",
+     "maxSec": 30,
+     "id": "q208_11_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s208_12": {
+   "id": "s208_12",
+   "title": "第 12 大題：習寫漢字 Write the characters",
+   "type": "hanzi",
+   "order": 11,
+   "questions": {
+    "q208_12_01": {
+     "char": "送",
+     "desc": "10畫，部首：辵",
+     "id": "q208_12_01",
+     "order": 0,
+     "title": "第 1 題：送",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_12_02": {
+     "char": "隻",
+     "desc": "10畫，部首：隹",
+     "id": "q208_12_02",
+     "order": 1,
+     "title": "第 2 題：隻",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_12_03": {
+     "char": "狗",
+     "desc": "8畫，部首：犬",
+     "id": "q208_12_03",
+     "order": 2,
+     "title": "第 3 題：狗",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_12_04": {
+     "char": "帶",
+     "desc": "11畫，部首：巾",
+     "id": "q208_12_04",
+     "order": 3,
+     "title": "第 4 題：帶",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_12_05": {
+     "char": "散",
+     "desc": "12畫，部首：攴",
+     "id": "q208_12_05",
+     "order": 4,
+     "title": "第 5 題：散",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_12_06": {
+     "char": "步",
+     "desc": "7畫，部首：止",
+     "id": "q208_12_06",
+     "order": 5,
+     "title": "第 6 題：步",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_12_07": {
+     "char": "貓",
+     "desc": "16畫，部首：豸",
+     "id": "q208_12_07",
+     "order": 6,
+     "title": "第 7 題：貓",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_12_08": {
+     "char": "非",
+     "desc": "8畫，部首：非",
+     "id": "q208_12_08",
+     "order": 7,
+     "title": "第 8 題：非",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_12_09": {
+     "char": "常",
+     "desc": "11畫，部首：巾",
+     "id": "q208_12_09",
+     "order": 8,
+     "title": "第 9 題：常",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_12_10": {
+     "char": "愛",
+     "desc": "13畫，部首：心",
+     "id": "q208_12_10",
+     "order": 9,
+     "title": "第 10 題：愛",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s208_13": {
+   "id": "s208_13",
+   "title": "第 13 大題：我會唸（課文、認讀漢字） Read aloud",
+   "type": "record",
+   "order": 12,
+   "questions": {
+    "q208_13_01": {
+     "prompt": "請唸出課文第一段。 Read the first part of the text.",
+     "reference": "心美：昨天我爸爸的朋友送給我一隻狗，你們家有寵物嗎？\n大文：有，我家有兩隻狗，我每天都帶牠們去散步。\n心美：張莉，你養過狗嗎？",
+     "maxSec": 45,
+     "passage": "心美：昨天我爸爸的朋友送給我一隻狗，你們家有寵物嗎？\n大文：有，我家有兩隻狗，我每天都帶牠們去散步。\n心美：張莉，你養過狗嗎？",
+     "id": "q208_13_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_13_02": {
+     "prompt": "請唸出課文第二段。 Read the second part of the text.",
+     "reference": "張莉：我沒養過狗，我去年養了一隻貓，可是上個月不見了。\n友朋：我也養過貓，非常可愛，我每天都餵牠。\n張莉：以後我想養一隻兔子。",
+     "maxSec": 45,
+     "passage": "張莉：我沒養過狗，我去年養了一隻貓，可是上個月不見了。\n友朋：我也養過貓，非常可愛，我每天都餵牠。\n張莉：以後我想養一隻兔子。",
+     "id": "q208_13_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q208_13_03": {
+     "prompt": "請唸出這些認讀漢字。 Read these characters aloud.",
+     "reference": "寵　牠　養　餵　兔",
+     "maxSec": 30,
+     "id": "q208_13_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  }
+ },
+ "currentQId": "q208_01_01"
+}
