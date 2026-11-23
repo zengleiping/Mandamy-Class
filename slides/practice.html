@@ -1211,6 +1211,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .select-union-box{ position:absolute; border:2px solid var(--seal); border-radius:4px; pointer-events:none; box-shadow:0 0 0 1px rgba(255,255,255,.7); }
   .select-marquee{ position:absolute; border:1.5px dashed var(--seal); background:rgba(232,130,90,.12); pointer-events:none; }
   .select-bar{ position:absolute; display:flex; align-items:center; gap:6px; padding:4px 8px; background:var(--surface); border:1.5px solid var(--seal-ring); border-radius:10px; box-shadow:0 6px 18px rgba(0,0,0,.18); pointer-events:auto; white-space:nowrap; z-index:45; }
+  .select-bar{ flex-wrap:wrap; max-width:96%; }
   .select-bar .sb-sep{ width:1px; height:18px; background:rgba(28,33,30,.2); }
   .select-bar .sb-al{ padding:4px 7px; min-width:26px; }
   .cp-dim{ background:rgba(0,0,0,.5); pointer-events:none; }
@@ -1309,6 +1310,10 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
     border:1.5px dashed transparent; cursor:grab; touch-action:none;
   }
   .image-proxy:hover{ border-color:#1E88E5; }
+  .image-proxy.rotated .rh{ display:none !important; }
+  .select-rot-h{ position:absolute; pointer-events:auto; width:26px; height:26px; margin:12px 0 0 -13px; border-radius:50%; background:#fff; border:2px solid var(--seal); color:var(--seal); font-size:16px; line-height:22px; text-align:center; cursor:grab; z-index:42; touch-action:none; box-shadow:0 1px 5px rgba(0,0,0,.3); user-select:none; }
+  .select-bar .sb-num{ width:58px; font-size:13.5px; padding:3px 4px; border-radius:7px; border:1.5px solid rgba(28,33,30,.2); }
+  .select-bar .sb-lab{ font-size:12.5px; color:var(--ink-soft); font-weight:700; }
   .image-proxy.active{ border-color:var(--seal); cursor:grabbing; }
   /* 左側投影片縮圖／新增按鈕 */
   .q-thumb{ width:64px; height:auto; min-height:32px; max-height:48px; object-fit:contain; flex:none; border:1px solid var(--grid-line); border-radius:4px; background:#FFFCF7; }
@@ -8953,7 +8958,7 @@ window.mmTA = (function(){
         var HE = Math.round(WE / ratio); slideRatios.push(HE);
         var rels = [], shapesXml = [], nid = 2;
         var X = function(pct){ return Math.round(pct / 100 * WE); }, Y = function(pct){ return Math.round(pct / 100 * HE); };
-        async function addPic(dataUrlOrRef, xEmu, yEmu, wEmu, hEmu, crop, name){
+        async function addPic(dataUrlOrRef, xEmu, yEmu, wEmu, hEmu, crop, name, rotDeg){
           var du = await refToDataUrl(dataUrlOrRef); if(!du) return;
           var mime = (du.match(/^data:([^;,]+)/) || [])[1] || "image/png";
           var bytes;
@@ -8964,7 +8969,7 @@ window.mmTA = (function(){
           var rid = "rId" + (rels.length + 2); rels.push('<Relationship Id="' + rid + '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="../media/' + fn + '"/>');
           var src = "";
           if(crop && (crop.l || crop.t || crop.r || crop.b)) src = '<a:srcRect l="' + Math.round((crop.l || 0) * 1000) + '" t="' + Math.round((crop.t || 0) * 1000) + '" r="' + Math.round((crop.r || 0) * 1000) + '" b="' + Math.round((crop.b || 0) * 1000) + '"/>';
-          shapesXml.push('<p:pic><p:nvPicPr><p:cNvPr id="' + (nid++) + '" name="' + XE(name) + '"/><p:cNvPicPr><a:picLocks noChangeAspect="1"/></p:cNvPicPr><p:nvPr/></p:nvPicPr><p:blipFill><a:blip r:embed="' + rid + '"/>' + (src || "") + '<a:stretch><a:fillRect/></a:stretch></p:blipFill><p:spPr><a:xfrm><a:off x="' + Math.round(xEmu) + '" y="' + Math.round(yEmu) + '"/><a:ext cx="' + Math.max(1, Math.round(wEmu)) + '" cy="' + Math.max(1, Math.round(hEmu)) + '"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></p:spPr></p:pic>');
+          shapesXml.push('<p:pic><p:nvPicPr><p:cNvPr id="' + (nid++) + '" name="' + XE(name) + '"/><p:cNvPicPr><a:picLocks noChangeAspect="1"/></p:cNvPicPr><p:nvPr/></p:nvPicPr><p:blipFill><a:blip r:embed="' + rid + '"/>' + (src || "") + '<a:stretch><a:fillRect/></a:stretch></p:blipFill><p:spPr><a:xfrm' + (rotDeg ? ' rot="' + Math.round((((rotDeg % 360) + 360) % 360) * 60000) + '"' : '') + '><a:off x="' + Math.round(xEmu) + '" y="' + Math.round(yEmu) + '"/><a:ext cx="' + Math.max(1, Math.round(wEmu)) + '" cy="' + Math.max(1, Math.round(hEmu)) + '"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></p:spPr></p:pic>');
         }
         var bgXml = "";
         var mm = (info.sec.master) || {};
@@ -9004,7 +9009,7 @@ window.mmTA = (function(){
           if(e.k === "text" && !strokeDone) await addStrokes();
           if(e.k === "image"){
             var wE = X(o.w), hE = o.h ? Y(o.h) : wE * (o.ar || 1);
-            await addPic(o.src, X(o.x) - wE / 2, Y(o.y) - hE / 2, wE, hE, o.crop, "圖片");
+            await addPic(o.src, X(o.x) - wE / 2, Y(o.y) - hE / 2, wE, hE, o.crop, "圖片", o.rot);
           } else if(e.k === "table"){
             var tx0 = X(o.x), ty0 = Y(o.y), twE = X(o.w), thE = o.rh.reduce(function(a, b){ return a + Y(b); }, 0);
             var lnX = function(tag){ return o.bw === 0 ? '<a:' + tag + ' w="0"><a:noFill/></a:' + tag + '>' : '<a:' + tag + ' w="' + Math.round((o.bw == null ? 2 : o.bw) * 1.5 * 12700) + '"><a:solidFill><a:srgbClr val="' + hex6(o.bd, "555555") + '"/></a:solidFill></a:' + tag + '>'; };
@@ -15665,8 +15670,15 @@ window.mmTA = (function(){
       return (1 - f.l - f.r > 0.05 && 1 - f.t - f.b > 0.05) ? f : null;
     }
     function imgFullHeightPct(im){ var cW = cWrap.clientWidth || 1, cH = cWrap.clientHeight || 1; return im.h || im.w * (cW / cH) * (im.ar || 1); }
+    function imgRotXf(px, im, f){
+      var r = Number(im.rot) || 0;
+      px.classList.toggle("rotated", !!r);
+      if(!r){ px.style.transform = ""; px.style.transformOrigin = ""; return; }
+      var ox = f ? (0.5 - f.l) / (1 - f.l - f.r) * 100 : 50, oy = f ? (0.5 - f.t) / (1 - f.t - f.b) * 100 : 50;
+      px.style.transformOrigin = ox + "% " + oy + "%"; px.style.transform = "translate(-50%,-50%) rotate(" + r + "deg)";
+    }
     function placeImgProxy(px, im){
-      var f = imgCropFr(im);
+      var f = imgCropFr(im); imgRotXf(px, im, f);
       if(!f){
         px.style.left = im.x + "%"; px.style.top = im.y + "%"; px.style.width = im.w + "%";
         if(im.h){ px.style.height = im.h + "%"; px.style.aspectRatio = "auto"; } else { px.style.height = ""; px.style.aspectRatio = "1 / " + (im.ar || 1); }
@@ -15691,6 +15703,7 @@ window.mmTA = (function(){
         applyAnim(el, im); applyObjFmt(el, im, getScaleRatio()); if(im.link && !isStudent) el.style.outline = "2px dotted #1565C0";
         el.style.left = im.x + "%"; el.style.top = im.y + "%"; el.style.width = im.w + "%";
         if(im.h){ el.style.height = im.h + "%"; el.style.objectFit = "fill"; }
+        if(im.rot) el.style.transform = "translate(-50%,-50%) rotate(" + im.rot + "deg)";
         var rI = zrI.map[im.id] || 0;
         if(rI > zrI.minText){ el.style.zIndex = String(rI + 1); textLayer.appendChild(el); } // 在某個文字上面：要畫在筆跡之上
         else { el.style.zIndex = String(rI); imageLayer.appendChild(el); }
@@ -16683,6 +16696,46 @@ window.mmTA = (function(){
           bar.appendChild(tc);
         }
       }
+      // 單選一張圖片：旋轉把手（拖曳）＋ 浮動列上的角度、寬高（公分）
+      if(items.length === 1 && items[0].k === "image" && !presentLock()){
+        var rIm = images.find(function(x){ return x.id === items[0].id; });
+        if(rIm){
+          var rh = document.createElement("div"); rh.className = "select-rot-h"; rh.textContent = "↻"; rh.title = "拖曳：旋轉圖片（接近 15° 的倍數會自動吸附；按住 Alt 可以自由旋轉）";
+          rh.style.left = ((u.l + u.r) / 2) + "%"; rh.style.top = u.b + "%";
+          rh.addEventListener("pointerdown", function(ev){
+            ev.stopPropagation(); ev.preventDefault(); snapshotForUndo();
+            var ie = cWrap.querySelector('.board-image[data-img-id="' + rIm.id + '"]'); if(!ie) return;
+            var br = ie.getBoundingClientRect(), cx = br.left + br.width / 2, cy = br.top + br.height / 2;
+            function mv(e2){
+              var a = Math.atan2(e2.clientY - cy, e2.clientX - cx) * 180 / Math.PI + 90; a = ((a + 540) % 360) - 180;
+              if(!e2.altKey){ var q15 = Math.round(a / 15) * 15; if(Math.abs(a - q15) < 5) a = q15; }
+              rIm.rot = Math.round(a * 10) / 10; if(rIm.rot === 0) delete rIm.rot;
+              renderImages(); renderSelection();
+            }
+            function up(){ window.removeEventListener("pointermove", mv); window.removeEventListener("pointerup", up); window.removeEventListener("pointercancel", up); writeProgress(q.id, { images: images }); renderTexts(); }
+            window.addEventListener("pointermove", mv); window.addEventListener("pointerup", up); window.addEventListener("pointercancel", up);
+          });
+          selectLayer.appendChild(rh);
+          var SW = 33.867, cr = (cWrap.clientWidth || 1) / (cWrap.clientHeight || 1), fr = imgCropFr(rIm), vw = fr ? 1 - fr.l - fr.r : 1, vh = fr ? 1 - fr.t - fr.b : 1;
+          var wcm = rIm.w * vw / 100 * SW, hcm = imgFullHeightPct(rIm) * vh / 100 * SW / cr;
+          var sz = document.createElement("span"); sz.className = "sb-img"; sz.style.cssText = "display:inline-flex;align-items:center;gap:4px;";
+          sz.innerHTML = '<span class="sb-sep"></span><span class="sb-lab" title="圖片的實際大小（以 16:9 投影片寬 33.87 公分計算，匯出 PowerPoint 時也是這個大小）">寬</span><input class="sb-num" data-f="w" type="number" step="0.1" min="0.3" value="' + wcm.toFixed(1) + '"><span class="sb-lab">高</span><input class="sb-num" data-f="h" type="number" step="0.1" min="0.3" value="' + hcm.toFixed(1) + '"><span class="sb-lab">公分</span><button type="button" data-act="imglock" title="鎖定長寬比：改寬度，高度跟著變（預設鎖定）">' + (rIm.unlock ? "🔓" : "🔒") + '</button><span class="sb-sep"></span><span class="sb-lab">角度</span><input class="sb-num" data-f="rot" type="number" step="1" value="' + (Math.round((rIm.rot || 0) * 10) / 10) + '" style="width:54px;"><button type="button" data-act="rotl" title="向左轉 90°">↺</button><button type="button" data-act="rotr" title="向右轉 90°">↻</button>';
+          sz.addEventListener("keydown", function(ev){ ev.stopPropagation(); if(ev.key === "Enter"){ ev.preventDefault(); ev.target.blur(); } });
+          sz.addEventListener("change", function(ev){
+            var inp = ev.target.closest("input"); if(!inp) return; var v = parseFloat(inp.value); if(!isFinite(v)) return;
+            snapshotForUndo();
+            if(inp.dataset.f === "rot"){ var a = ((v % 360) + 540) % 360 - 180; rIm.rot = Math.round(a * 10) / 10; if(!rIm.rot) delete rIm.rot; }
+            else {
+              v = Math.max(0.3, v); var curH = imgFullHeightPct(rIm), nw = rIm.w, nh = curH;
+              if(inp.dataset.f === "w"){ nw = v / SW * 100 / vw; if(!rIm.unlock) nh = curH * nw / rIm.w; }
+              else { nh = v / (SW / cr) * 100 / vh; if(!rIm.unlock) nw = rIm.w * nh / curH; }
+              rIm.w = Math.round(nw * 100) / 100; if(rIm.h || rIm.unlock) rIm.h = Math.round(nh * 100) / 100;
+            }
+            writeProgress(q.id, { images: images }); renderTexts();
+          });
+          bar.appendChild(sz);
+        }
+      }
       bar.style.left = u.l + "%"; bar.style.top = "calc(" + u.t + "% - 44px)";
       bar.addEventListener("pointerdown", function(e){ e.stopPropagation(); });
       bar.addEventListener("click", function(e){
@@ -16693,6 +16746,12 @@ window.mmTA = (function(){
         else if(bt.dataset.act === "fmt") openObjFormat();
         else if(bt.dataset.act === "crop"){ var cim = images.find(function(x){ return x.id === items[0].id; }); if(cim) startCropEdit(cim); }
         else if(bt.dataset.act === "rmbg"){ var rim = images.find(function(x){ return x.id === items[0].id; }); if(rim) openRemoveBg(rim); }
+        else if(bt.dataset.act === "imglock" || bt.dataset.act === "rotl" || bt.dataset.act === "rotr"){
+          var gim = images.find(function(x){ return x.id === items[0].id; }); if(!gim) return; snapshotForUndo();
+          if(bt.dataset.act === "imglock"){ gim.unlock = !gim.unlock; if(!gim.unlock) delete gim.unlock; }
+          else { var na = (((Number(gim.rot) || 0) + (bt.dataset.act === "rotr" ? 90 : -90)) % 360 + 540) % 360 - 180; gim.rot = na; if(!gim.rot) delete gim.rot; }
+          writeProgress(q.id, { images: images }); renderTexts();
+        }
         else if(bt.dataset.act === "link") openLinkDialog();
         else if(bt.dataset.act === "brush") brushStart(false);
         else if(/^al-/.test(bt.dataset.act)) alignSelection(bt.dataset.act.slice(3));
@@ -16700,6 +16759,7 @@ window.mmTA = (function(){
       selectLayer.appendChild(bar);
       // 浮動列放在框框上方，依它實際的高度（單選文字方塊時比較高）；上面放不下才放到下面——不能蓋住框框，不然抓不到框框拖
       var bh = bar.offsetHeight || 38, lh = selectLayer.clientHeight || 1;
+      var bw0 = bar.offsetWidth, lw0 = selectLayer.clientWidth || 1; if(u.l / 100 * lw0 + bw0 > lw0 - 4) bar.style.left = Math.max(4, lw0 - bw0 - 4) + "px";
       if(u.t / 100 * lh < bh + 8) bar.style.top = "calc(" + u.b + "% + 8px)"; else bar.style.top = "calc(" + u.t + "% - " + (bh + 8) + "px)";
       renderTableTools(u);
     }
