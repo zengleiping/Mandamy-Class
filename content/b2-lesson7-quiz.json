@@ -1,0 +1,1420 @@
+{
+ "id": "proj_b2l7quiz",
+ "title": "第二冊 第7課 早一點睡覺 練習題",
+ "desc": "依第二冊第7課簡報（課文、生詞、句型、習寫漢字、認讀漢字、練習、任務活動）整理；題目說明附英文",
+ "sections": {
+  "s207_1": {
+   "id": "s207_1",
+   "title": "第 1 大題：連連看（生詞和注音） Match the words with zhuyin",
+   "type": "match",
+   "order": 0,
+   "questions": {
+    "q207_01_01": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "該",
+       "right": "ㄍㄞ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "起床",
+       "right": "ㄑㄧˇ ㄔㄨㄤˊ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "累",
+       "right": "ㄌㄟˋ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "睡覺",
+       "right": "ㄕㄨㄟˋ ㄐㄧㄠˋ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "來不及",
+       "right": "ㄌㄞˊ ㄅㄨˋ ㄐㄧˊ"
+      }
+     },
+     "id": "q207_01_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_01_02": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "趕快",
+       "right": "ㄍㄢˇ ㄎㄨㄞˋ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "刷牙",
+       "right": "ㄕㄨㄚ ㄧㄚˊ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "洗澡",
+       "right": "ㄒㄧˇ ㄗㄠˇ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "用",
+       "right": "ㄩㄥˋ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "過",
+       "right": "ㄍㄨㄛˋ"
+      }
+     },
+     "id": "q207_01_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_01_03": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "別",
+       "right": "ㄅㄧㄝˊ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "昨天",
+       "right": "ㄗㄨㄛˊ ㄊㄧㄢ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "忘",
+       "right": "ㄨㄤˋ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "肥皂",
+       "right": "ㄈㄟˊ ㄗㄠˋ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "知道",
+       "right": "ㄓ ㄉㄠˋ"
+      }
+     },
+     "id": "q207_01_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_01_04": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "洗",
+       "right": "ㄒㄧˇ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "乾淨",
+       "right": "ㄍㄢ ㄐㄧㄥˋ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "洗臉",
+       "right": "ㄒㄧˇ ㄌㄧㄢˇ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "晚上",
+       "right": "ㄨㄢˇ ˙ㄕㄤ"
+      }
+     },
+     "id": "q207_01_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s207_2": {
+   "id": "s207_2",
+   "title": "第 2 大題：連連看（生詞和意思） Match the words with their meanings",
+   "type": "match",
+   "order": 1,
+   "questions": {
+    "q207_02_01": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "該",
+       "right": "should"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "起床",
+       "right": "to get up"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "累",
+       "right": "tired"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "睡覺",
+       "right": "to sleep"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "來不及",
+       "right": "too late"
+      }
+     },
+     "id": "q207_02_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_02_02": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "趕快",
+       "right": "hurry"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "刷牙",
+       "right": "to brush teeth"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "洗澡",
+       "right": "to bathe"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "用",
+       "right": "to use"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "過",
+       "right": "(experience)"
+      }
+     },
+     "id": "q207_02_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_02_03": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "別",
+       "right": "don't"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "昨天",
+       "right": "yesterday"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "忘",
+       "right": "to forget"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "肥皂",
+       "right": "soap"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "知道",
+       "right": "to know"
+      }
+     },
+     "id": "q207_02_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_02_04": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "洗",
+       "right": "to wash"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "乾淨",
+       "right": "clean"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "洗臉",
+       "right": "to wash face"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "晚上",
+       "right": "night"
+      }
+     },
+     "id": "q207_02_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s207_3": {
+   "id": "s207_3",
+   "title": "第 3 大題：我會寫（寫出正確的漢字） Write the characters",
+   "type": "fill",
+   "order": 2,
+   "questions": {
+    "q207_03_01": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "大文，該{起}{床}了！來不及了！",
+     "id": "q207_03_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_03_02": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "我很{累}，還想睡覺。",
+     "id": "q207_03_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_03_03": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "今天晚上{早}一點睡，現在趕快去刷牙、洗澡。",
+     "id": "q207_03_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_03_04": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "我昨天晚上{洗}澡了。",
+     "id": "q207_03_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_03_05": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "別{忘}了用肥皂洗{臉}。",
+     "id": "q207_03_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_03_06": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "我昨天晚上洗{過}澡了。",
+     "id": "q207_03_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_03_07": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "別{忘}了用肥皂洗臉。",
+     "id": "q207_03_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_03_08": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "我{知}{道}了，要洗{乾}{淨}。",
+     "id": "q207_03_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_03_09": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "現在趕快去{刷}{牙}。",
+     "id": "q207_03_09",
+     "order": 8,
+     "title": "第 9 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s207_4": {
+   "id": "s207_4",
+   "title": "第 4 大題：句型填空 Fill in the sentence patterns",
+   "type": "fill",
+   "order": 3,
+   "questions": {
+    "q207_04_01": {
+     "prompt": "用「早一點」完成句子。 Use 早一點.",
+     "template": "今天心美想{早一點}睡覺。",
+     "id": "q207_04_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_04_02": {
+     "prompt": "用「晚一點」完成句子。 Use 晚一點.",
+     "template": "媽媽，我還不餓，我想{晚一點}吃飯，好嗎？",
+     "id": "q207_04_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_04_03": {
+     "prompt": "用「該…了」完成句子。 Use 該…了.",
+     "template": "大文{該}刷牙了。",
+     "id": "q207_04_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_04_04": {
+     "prompt": "用「別…了」完成句子。 Use 別…了.",
+     "template": "別睡{了}，我們快點出去吃早飯。",
+     "id": "q207_04_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_04_05": {
+     "prompt": "用「別…了」完成句子。 Use 別…了.",
+     "template": "{別}找了，媽媽不在家。",
+     "id": "q207_04_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_04_06": {
+     "prompt": "用「用」完成句子。 Use 用.",
+     "template": "姊姊{用}肥皂洗臉。",
+     "id": "q207_04_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s207_5": {
+   "id": "s207_5",
+   "title": "第 5 大題：選擇題（句型） Choose the correct answer",
+   "type": "choice",
+   "order": 4,
+   "questions": {
+    "q207_05_01": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n大文，＿＿起床了！",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "該"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "別"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "用"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q207_05_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_05_02": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n今天晚上早＿＿睡覺。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "一點"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "一下"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "了"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q207_05_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_05_03": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n＿＿忘了用肥皂洗臉。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "別"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "該"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "用"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q207_05_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_05_04": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n我昨天晚上洗＿＿澡了。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "過"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "別"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "該"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q207_05_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_05_05": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n姊姊＿＿肥皂洗臉。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "用"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "別"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "該"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q207_05_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s207_6": {
+   "id": "s207_6",
+   "title": "第 6 大題：閱讀理解（課文） Reading comprehension",
+   "type": "choice",
+   "order": 5,
+   "questions": {
+    "q207_06_01": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n媽媽為什麼說來不及了？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "大文還沒起床"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "大文已經吃飯"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "大文不想去"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "媽媽：大文，該起床了！來不及了！\n大文：我很累，還想睡覺。我昨天晚上洗過澡了。\n媽媽：今天晚上早一點睡，現在趕快去刷牙、洗澡。\n媽媽：還有，別忘了用肥皂洗臉。\n大文：我知道了，要洗乾淨。",
+     "id": "q207_06_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_06_02": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n大文為什麼想睡覺？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "他很累"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "他不餓"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "他生病了"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "媽媽：大文，該起床了！來不及了！\n大文：我很累，還想睡覺。我昨天晚上洗過澡了。\n媽媽：今天晚上早一點睡，現在趕快去刷牙、洗澡。\n媽媽：還有，別忘了用肥皂洗臉。\n大文：我知道了，要洗乾淨。",
+     "id": "q207_06_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_06_03": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n大文昨天晚上做了什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "洗過澡"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "刷牙"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "看電視"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "媽媽：大文，該起床了！來不及了！\n大文：我很累，還想睡覺。我昨天晚上洗過澡了。\n媽媽：今天晚上早一點睡，現在趕快去刷牙、洗澡。\n媽媽：還有，別忘了用肥皂洗臉。\n大文：我知道了，要洗乾淨。",
+     "id": "q207_06_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_06_04": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n媽媽要大文做什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "早一點睡"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "晚一點睡"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "去外面玩"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "媽媽：大文，該起床了！來不及了！\n大文：我很累，還想睡覺。我昨天晚上洗過澡了。\n媽媽：今天晚上早一點睡，現在趕快去刷牙、洗澡。\n媽媽：還有，別忘了用肥皂洗臉。\n大文：我知道了，要洗乾淨。",
+     "id": "q207_06_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_06_05": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n媽媽說別忘了用什麼洗臉？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "肥皂"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "牙刷"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "水果"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "媽媽：大文，該起床了！來不及了！\n大文：我很累，還想睡覺。我昨天晚上洗過澡了。\n媽媽：今天晚上早一點睡，現在趕快去刷牙、洗澡。\n媽媽：還有，別忘了用肥皂洗臉。\n大文：我知道了，要洗乾淨。",
+     "id": "q207_06_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s207_7": {
+   "id": "s207_7",
+   "title": "第 7 大題：是非題（課文） True or false",
+   "type": "choice",
+   "order": 6,
+   "questions": {
+    "q207_07_01": {
+     "prompt": "判斷對錯。 True or false?\n\n媽媽叫大文起床。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "媽媽：大文，該起床了！來不及了！\n大文：我很累，還想睡覺。我昨天晚上洗過澡了。\n媽媽：今天晚上早一點睡，現在趕快去刷牙、洗澡。\n媽媽：還有，別忘了用肥皂洗臉。\n大文：我知道了，要洗乾淨。",
+     "id": "q207_07_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_07_02": {
+     "prompt": "判斷對錯。 True or false?\n\n大文昨天晚上沒洗澡。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c2"
+     ],
+     "passage": "媽媽：大文，該起床了！來不及了！\n大文：我很累，還想睡覺。我昨天晚上洗過澡了。\n媽媽：今天晚上早一點睡，現在趕快去刷牙、洗澡。\n媽媽：還有，別忘了用肥皂洗臉。\n大文：我知道了，要洗乾淨。",
+     "id": "q207_07_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_07_03": {
+     "prompt": "判斷對錯。 True or false?\n\n媽媽要大文今天晚上早一點睡。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "媽媽：大文，該起床了！來不及了！\n大文：我很累，還想睡覺。我昨天晚上洗過澡了。\n媽媽：今天晚上早一點睡，現在趕快去刷牙、洗澡。\n媽媽：還有，別忘了用肥皂洗臉。\n大文：我知道了，要洗乾淨。",
+     "id": "q207_07_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_07_04": {
+     "prompt": "判斷對錯。 True or false?\n\n大文不知道要洗乾淨。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c2"
+     ],
+     "passage": "媽媽：大文，該起床了！來不及了！\n大文：我很累，還想睡覺。我昨天晚上洗過澡了。\n媽媽：今天晚上早一點睡，現在趕快去刷牙、洗澡。\n媽媽：還有，別忘了用肥皂洗臉。\n大文：我知道了，要洗乾淨。",
+     "id": "q207_07_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s207_8": {
+   "id": "s207_8",
+   "title": "第 8 大題：讀讀看，寫上漢字 Read the zhuyin and write the characters",
+   "type": "fill",
+   "order": 7,
+   "questions": {
+    "q207_08_01": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄍㄞ → {該}",
+     "id": "q207_08_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_08_02": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄑㄧˇ ㄔㄨㄤˊ → {起床}",
+     "id": "q207_08_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_08_03": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄌㄟˋ → {累}",
+     "id": "q207_08_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_08_04": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄕㄨㄟˋ ㄐㄧㄠˋ → {睡覺}",
+     "id": "q207_08_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_08_05": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄌㄞˊ ㄅㄨˋ ㄐㄧˊ → {來不及}",
+     "id": "q207_08_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_08_06": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄍㄢˇ ㄎㄨㄞˋ → {趕快}",
+     "id": "q207_08_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_08_07": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄕㄨㄚ ㄧㄚˊ → {刷牙}",
+     "id": "q207_08_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_08_08": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄒㄧˇ ㄗㄠˇ → {洗澡}",
+     "id": "q207_08_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_08_09": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄩㄥˋ → {用}",
+     "id": "q207_08_09",
+     "order": 8,
+     "title": "第 9 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_08_10": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄍㄨㄛˋ → {過}",
+     "id": "q207_08_10",
+     "order": 9,
+     "title": "第 10 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_08_11": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄅㄧㄝˊ → {別}",
+     "id": "q207_08_11",
+     "order": 10,
+     "title": "第 11 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_08_12": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄗㄨㄛˊ ㄊㄧㄢ → {昨天}",
+     "id": "q207_08_12",
+     "order": 11,
+     "title": "第 12 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s207_9": {
+   "id": "s207_9",
+   "title": "第 9 大題：漢字（筆畫） Strokes",
+   "type": "choice",
+   "order": 8,
+   "questions": {
+    "q207_09_01": {
+     "prompt": "「起」有幾畫？ How many strokes does 起 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "10 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "9 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "11 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q207_09_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_09_02": {
+     "prompt": "「累」有幾畫？ How many strokes does 累 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "11 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "10 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "12 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q207_09_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_09_03": {
+     "prompt": "「洗」有幾畫？ How many strokes does 洗 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "9 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "8 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "10 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q207_09_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_09_04": {
+     "prompt": "「昨」有幾畫？ How many strokes does 昨 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "9 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "8 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "10 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q207_09_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_09_05": {
+     "prompt": "「過」有幾畫？ How many strokes does 過 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "13 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "12 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "14 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q207_09_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_09_06": {
+     "prompt": "「別」有幾畫？ How many strokes does 別 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "7 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "6 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "8 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q207_09_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_09_07": {
+     "prompt": "「忘」有幾畫？ How many strokes does 忘 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "7 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "6 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "8 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q207_09_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_09_08": {
+     "prompt": "「用」有幾畫？ How many strokes does 用 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "5 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "4 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "6 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q207_09_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_09_09": {
+     "prompt": "「臉」有幾畫？ How many strokes does 臉 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "17 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "16 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "18 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q207_09_09",
+     "order": 8,
+     "title": "第 9 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_09_10": {
+     "prompt": "「早」有幾畫？ How many strokes does 早 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "6 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "5 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "7 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q207_09_10",
+     "order": 9,
+     "title": "第 10 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s207_10": {
+   "id": "s207_10",
+   "title": "第 10 大題：句子重組 Reorder",
+   "type": "reorder",
+   "order": 9,
+   "questions": {
+    "q207_10_01": {
+     "prompt": "請將下列詞語重組為正確句子 Rearrange the words into a correct sentence",
+     "words": [
+      "大文，",
+      "該起床了！",
+      "來不及了！"
+     ],
+     "alts": [
+      "大文， 該起床了！ 來不及了！"
+     ],
+     "id": "q207_10_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_10_02": {
+     "prompt": "請將下列詞語重組為正確句子 Rearrange the words into a correct sentence",
+     "words": [
+      "我很累，",
+      "還想睡覺。",
+      "我昨天晚上洗過澡了。"
+     ],
+     "alts": [
+      "我很累， 還想睡覺。 我昨天晚上洗過澡了。"
+     ],
+     "id": "q207_10_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s207_11": {
+   "id": "s207_11",
+   "title": "第 11 大題：說說看（句型） Speaking",
+   "type": "record",
+   "order": 10,
+   "questions": {
+    "q207_11_01": {
+     "prompt": "你每天早上做什麼？ What do you do every morning?",
+     "reference": "我每天早上先刷牙，再洗臉，然後吃早飯。",
+     "maxSec": 30,
+     "id": "q207_11_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_11_02": {
+     "prompt": "請用「該…了」說一個句子。 Make a sentence with 該…了.",
+     "reference": "很晚了，該睡覺了。",
+     "maxSec": 30,
+     "id": "q207_11_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_11_03": {
+     "prompt": "請用「別…了」說一個句子。 Make a sentence with 別…了.",
+     "reference": "別看電視了，快點去吃飯。",
+     "maxSec": 30,
+     "id": "q207_11_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_11_04": {
+     "prompt": "請用「用」說一個句子。 Make a sentence with 用.",
+     "reference": "姊姊用肥皂洗臉。",
+     "maxSec": 30,
+     "id": "q207_11_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s207_12": {
+   "id": "s207_12",
+   "title": "第 12 大題：習寫漢字 Write the characters",
+   "type": "hanzi",
+   "order": 11,
+   "questions": {
+    "q207_12_01": {
+     "char": "起",
+     "desc": "10畫，部首：走",
+     "id": "q207_12_01",
+     "order": 0,
+     "title": "第 1 題：起",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_12_02": {
+     "char": "累",
+     "desc": "11畫，部首：糸",
+     "id": "q207_12_02",
+     "order": 1,
+     "title": "第 2 題：累",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_12_03": {
+     "char": "洗",
+     "desc": "9畫，部首：水",
+     "id": "q207_12_03",
+     "order": 2,
+     "title": "第 3 題：洗",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_12_04": {
+     "char": "昨",
+     "desc": "9畫，部首：日",
+     "id": "q207_12_04",
+     "order": 3,
+     "title": "第 4 題：昨",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_12_05": {
+     "char": "過",
+     "desc": "13畫，部首：辵",
+     "id": "q207_12_05",
+     "order": 4,
+     "title": "第 5 題：過",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_12_06": {
+     "char": "別",
+     "desc": "7畫，部首：刀",
+     "id": "q207_12_06",
+     "order": 5,
+     "title": "第 6 題：別",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_12_07": {
+     "char": "忘",
+     "desc": "7畫，部首：心",
+     "id": "q207_12_07",
+     "order": 6,
+     "title": "第 7 題：忘",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_12_08": {
+     "char": "用",
+     "desc": "5畫，部首：用",
+     "id": "q207_12_08",
+     "order": 7,
+     "title": "第 8 題：用",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_12_09": {
+     "char": "臉",
+     "desc": "17畫，部首：肉",
+     "id": "q207_12_09",
+     "order": 8,
+     "title": "第 9 題：臉",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_12_10": {
+     "char": "早",
+     "desc": "6畫，部首：日",
+     "id": "q207_12_10",
+     "order": 9,
+     "title": "第 10 題：早",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s207_13": {
+   "id": "s207_13",
+   "title": "第 13 大題：我會唸（課文、認讀漢字） Read aloud",
+   "type": "record",
+   "order": 12,
+   "questions": {
+    "q207_13_01": {
+     "prompt": "請唸出課文第一段。 Read the first part of the text.",
+     "reference": "媽媽：大文，該起床了！來不及了！\n大文：我很累，還想睡覺。我昨天晚上洗過澡了。\n媽媽：今天晚上早一點睡，現在趕快去刷牙、洗澡。",
+     "maxSec": 45,
+     "passage": "媽媽：大文，該起床了！來不及了！\n大文：我很累，還想睡覺。我昨天晚上洗過澡了。\n媽媽：今天晚上早一點睡，現在趕快去刷牙、洗澡。",
+     "id": "q207_13_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_13_02": {
+     "prompt": "請唸出課文第二段。 Read the second part of the text.",
+     "reference": "媽媽：還有，別忘了用肥皂洗臉。\n大文：我知道了，要洗乾淨。",
+     "maxSec": 45,
+     "passage": "媽媽：還有，別忘了用肥皂洗臉。\n大文：我知道了，要洗乾淨。",
+     "id": "q207_13_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q207_13_03": {
+     "prompt": "請唸出這些認讀漢字。 Read these characters aloud.",
+     "reference": "床　覺　及　淨　趕　刷　牙　道　乾　該　澡　肥　皂　知　睡",
+     "maxSec": 30,
+     "id": "q207_13_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  }
+ },
+ "currentQId": "q207_01_01"
+}

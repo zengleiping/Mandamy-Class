@@ -1,0 +1,1325 @@
+{
+ "id": "proj_b2l1quiz",
+ "title": "第二冊 第1課 新同學 練習題",
+ "desc": "依第二冊第1課簡報（課文、生詞、句型、習寫漢字、認讀漢字、練習、任務活動）整理；題目說明附英文",
+ "sections": {
+  "s201_1": {
+   "id": "s201_1",
+   "title": "第 1 大題：連連看（生詞和注音） Match the words with zhuyin",
+   "type": "match",
+   "order": 0,
+   "questions": {
+    "q201_01_01": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "新",
+       "right": "ㄒㄧㄣ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "現在",
+       "right": "ㄒㄧㄢˋ ㄗㄞˋ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "介紹",
+       "right": "ㄐㄧㄝˋ ㄕㄠˋ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "自己",
+       "right": "ㄗˋ ㄐㄧˇ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "大家",
+       "right": "ㄉㄚˋ ㄐㄧㄚ"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "今年",
+       "right": "ㄐㄧㄣ ㄋㄧㄢˊ"
+      }
+     },
+     "id": "q201_01_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_01_02": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "跟",
+       "right": "ㄍㄣ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "游泳",
+       "right": "ㄧㄡˊ ㄩㄥˇ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "比較",
+       "right": "ㄅㄧˇ ㄐㄧㄠˋ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "看書",
+       "right": "ㄎㄢˋ ㄕㄨ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "高興",
+       "right": "ㄍㄠ ㄒㄧㄥˋ"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "認識",
+       "right": "ㄖㄣˋ ㄕˊ"
+      }
+     },
+     "id": "q201_01_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_01_03": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "歡迎",
+       "right": "ㄏㄨㄢ ㄧㄥˊ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "中文",
+       "right": "ㄓㄨㄥ ㄨㄣˊ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "學",
+       "right": "ㄒㄩㄝˊ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "最",
+       "right": "ㄗㄨㄟˋ"
+      }
+     },
+     "id": "q201_01_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s201_2": {
+   "id": "s201_2",
+   "title": "第 2 大題：連連看（生詞和意思） Match the words with their meanings",
+   "type": "match",
+   "order": 1,
+   "questions": {
+    "q201_02_01": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "新",
+       "right": "new"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "現在",
+       "right": "now"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "介紹",
+       "right": "to introduce"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "自己",
+       "right": "oneself"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "大家",
+       "right": "everyone"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "今年",
+       "right": "this year"
+      }
+     },
+     "id": "q201_02_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_02_02": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "跟",
+       "right": "with"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "游泳",
+       "right": "to swim"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "比較",
+       "right": "rather"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "看書",
+       "right": "to read"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "高興",
+       "right": "happy"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "認識",
+       "right": "to know"
+      }
+     },
+     "id": "q201_02_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_02_03": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "歡迎",
+       "right": "to welcome"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "中文",
+       "right": "Chinese"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "學",
+       "right": "to learn"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "最",
+       "right": "most"
+      }
+     },
+     "id": "q201_02_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s201_3": {
+   "id": "s201_3",
+   "title": "第 3 大題：我會寫（寫出正確的漢字） Write the characters",
+   "type": "fill",
+   "order": 2,
+   "questions": {
+    "q201_03_01": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "大家好，我叫張莉，今{年}七歲，我比較喜歡{看}書。",
+     "id": "q201_03_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_03_02": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "今天，我們有兩個{新}{同}{學}。",
+     "id": "q201_03_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_03_03": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "老師請他們介紹{自}{己}。",
+     "id": "q201_03_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_03_04": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "方友朋今年八歲，他最喜歡{跟}爸爸一起游泳。",
+     "id": "q201_03_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_03_05": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "老師歡迎他們來{學}中文。",
+     "id": "q201_03_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_03_06": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "大{家}好，我叫張莉。",
+     "id": "q201_03_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_03_07": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "{現}在請他們介紹自己。",
+     "id": "q201_03_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_03_08": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "很{高}{興}認識你們。",
+     "id": "q201_03_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_03_09": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "我{比}{較}喜歡看書。",
+     "id": "q201_03_09",
+     "order": 8,
+     "title": "第 9 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s201_4": {
+   "id": "s201_4",
+   "title": "第 4 大題：句型填空 Fill in the sentence patterns",
+   "type": "fill",
+   "order": 3,
+   "questions": {
+    "q201_04_01": {
+     "prompt": "用「最」完成句子。 Use 最.",
+     "template": "我最喜歡看書，我{最}不喜歡冬天。",
+     "id": "q201_04_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_04_02": {
+     "prompt": "用「跟…一起」完成句子。 Use 跟…一起.",
+     "template": "大文跟心美{一起}畫雪人。",
+     "id": "q201_04_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_04_03": {
+     "prompt": "用「跟…一起」完成句子。 Use 跟…一起.",
+     "template": "我喜歡{跟}爸爸一起游泳。",
+     "id": "q201_04_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_04_04": {
+     "prompt": "用「比較」完成句子。 Use 比較.",
+     "template": "弟弟{比較}喜歡喝牛奶。",
+     "id": "q201_04_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_04_05": {
+     "prompt": "用「比較」完成句子。 Use 比較.",
+     "template": "我喜歡游泳，你呢？我{比較}喜歡看書。",
+     "id": "q201_04_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s201_5": {
+   "id": "s201_5",
+   "title": "第 5 大題：選擇題（句型） Choose the correct answer",
+   "type": "choice",
+   "order": 4,
+   "questions": {
+    "q201_05_01": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n大文＿＿喜歡的運動是打籃球。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "最"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "比較"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "跟"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q201_05_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_05_02": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n媽媽＿＿大文一起吃早飯。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "跟"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "最"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "比較"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q201_05_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_05_03": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n東明＿＿喜歡夏天。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "比較"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "一起"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "現在"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q201_05_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_05_04": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n請他們＿＿自己。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "介紹"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "歡迎"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "認識"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q201_05_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_05_05": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n很高興＿＿你們。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "認識"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "學"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "看書"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q201_05_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s201_6": {
+   "id": "s201_6",
+   "title": "第 6 大題：閱讀理解（課文） Reading comprehension",
+   "type": "choice",
+   "order": 5,
+   "questions": {
+    "q201_06_01": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n今天有幾個新同學？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "兩個"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "一個"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "三個"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "老師：今天，我們有兩個新同學，現在請他們介紹自己。\n友朋：大家好，我叫方友朋，今年八歲，我最喜歡跟爸爸一起游泳。\n張莉：大家好，我叫張莉，今年七歲，我比較喜歡看書。\n大文：你們好，我叫李大文。很高興認識你們。\n老師：歡迎你們來中文學校學中文。",
+     "id": "q201_06_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_06_02": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n方友朋今年幾歲？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "八歲"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "七歲"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "九歲"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "老師：今天，我們有兩個新同學，現在請他們介紹自己。\n友朋：大家好，我叫方友朋，今年八歲，我最喜歡跟爸爸一起游泳。\n張莉：大家好，我叫張莉，今年七歲，我比較喜歡看書。\n大文：你們好，我叫李大文。很高興認識你們。\n老師：歡迎你們來中文學校學中文。",
+     "id": "q201_06_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_06_03": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n方友朋最喜歡跟爸爸一起做什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "游泳"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "看書"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "跑步"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "老師：今天，我們有兩個新同學，現在請他們介紹自己。\n友朋：大家好，我叫方友朋，今年八歲，我最喜歡跟爸爸一起游泳。\n張莉：大家好，我叫張莉，今年七歲，我比較喜歡看書。\n大文：你們好，我叫李大文。很高興認識你們。\n老師：歡迎你們來中文學校學中文。",
+     "id": "q201_06_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_06_04": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n張莉比較喜歡做什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "看書"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "游泳"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "唱歌"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "老師：今天，我們有兩個新同學，現在請他們介紹自己。\n友朋：大家好，我叫方友朋，今年八歲，我最喜歡跟爸爸一起游泳。\n張莉：大家好，我叫張莉，今年七歲，我比較喜歡看書。\n大文：你們好，我叫李大文。很高興認識你們。\n老師：歡迎你們來中文學校學中文。",
+     "id": "q201_06_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_06_05": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n老師歡迎他們來做什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "學中文"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "打球"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "唱歌"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "老師：今天，我們有兩個新同學，現在請他們介紹自己。\n友朋：大家好，我叫方友朋，今年八歲，我最喜歡跟爸爸一起游泳。\n張莉：大家好，我叫張莉，今年七歲，我比較喜歡看書。\n大文：你們好，我叫李大文。很高興認識你們。\n老師：歡迎你們來中文學校學中文。",
+     "id": "q201_06_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s201_7": {
+   "id": "s201_7",
+   "title": "第 7 大題：是非題（課文） True or false",
+   "type": "choice",
+   "order": 6,
+   "questions": {
+    "q201_07_01": {
+     "prompt": "判斷對錯。 True or false?\n\n張莉今年八歲。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c2"
+     ],
+     "passage": "老師：今天，我們有兩個新同學，現在請他們介紹自己。\n友朋：大家好，我叫方友朋，今年八歲，我最喜歡跟爸爸一起游泳。\n張莉：大家好，我叫張莉，今年七歲，我比較喜歡看書。\n大文：你們好，我叫李大文。很高興認識你們。\n老師：歡迎你們來中文學校學中文。",
+     "id": "q201_07_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_07_02": {
+     "prompt": "判斷對錯。 True or false?\n\n方友朋最喜歡跟爸爸一起游泳。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "老師：今天，我們有兩個新同學，現在請他們介紹自己。\n友朋：大家好，我叫方友朋，今年八歲，我最喜歡跟爸爸一起游泳。\n張莉：大家好，我叫張莉，今年七歲，我比較喜歡看書。\n大文：你們好，我叫李大文。很高興認識你們。\n老師：歡迎你們來中文學校學中文。",
+     "id": "q201_07_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_07_03": {
+     "prompt": "判斷對錯。 True or false?\n\n李大文很高興認識大家。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "老師：今天，我們有兩個新同學，現在請他們介紹自己。\n友朋：大家好，我叫方友朋，今年八歲，我最喜歡跟爸爸一起游泳。\n張莉：大家好，我叫張莉，今年七歲，我比較喜歡看書。\n大文：你們好，我叫李大文。很高興認識你們。\n老師：歡迎你們來中文學校學中文。",
+     "id": "q201_07_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_07_04": {
+     "prompt": "判斷對錯。 True or false?\n\n老師歡迎新同學來學中文。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "老師：今天，我們有兩個新同學，現在請他們介紹自己。\n友朋：大家好，我叫方友朋，今年八歲，我最喜歡跟爸爸一起游泳。\n張莉：大家好，我叫張莉，今年七歲，我比較喜歡看書。\n大文：你們好，我叫李大文。很高興認識你們。\n老師：歡迎你們來中文學校學中文。",
+     "id": "q201_07_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s201_8": {
+   "id": "s201_8",
+   "title": "第 8 大題：讀讀看，寫上漢字 Read the zhuyin and write the characters",
+   "type": "fill",
+   "order": 7,
+   "questions": {
+    "q201_08_01": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄒㄧㄣ → {新}",
+     "id": "q201_08_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_08_02": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄒㄧㄢˋ ㄗㄞˋ → {現在}",
+     "id": "q201_08_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_08_03": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄐㄧㄝˋ ㄕㄠˋ → {介紹}",
+     "id": "q201_08_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_08_04": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄗˋ ㄐㄧˇ → {自己}",
+     "id": "q201_08_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_08_05": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄉㄚˋ ㄐㄧㄚ → {大家}",
+     "id": "q201_08_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_08_06": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄐㄧㄣ ㄋㄧㄢˊ → {今年}",
+     "id": "q201_08_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_08_07": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄍㄣ → {跟}",
+     "id": "q201_08_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_08_08": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄧㄡˊ ㄩㄥˇ → {游泳}",
+     "id": "q201_08_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_08_09": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄅㄧˇ ㄐㄧㄠˋ → {比較}",
+     "id": "q201_08_09",
+     "order": 8,
+     "title": "第 9 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_08_10": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄎㄢˋ ㄕㄨ → {看書}",
+     "id": "q201_08_10",
+     "order": 9,
+     "title": "第 10 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_08_11": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄍㄠ ㄒㄧㄥˋ → {高興}",
+     "id": "q201_08_11",
+     "order": 10,
+     "title": "第 11 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_08_12": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄖㄣˋ ㄕˊ → {認識}",
+     "id": "q201_08_12",
+     "order": 11,
+     "title": "第 12 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s201_9": {
+   "id": "s201_9",
+   "title": "第 9 大題：漢字（筆畫） Strokes",
+   "type": "choice",
+   "order": 8,
+   "questions": {
+    "q201_09_01": {
+     "prompt": "「新」有幾畫？ How many strokes does 新 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "13 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "12 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "14 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q201_09_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_09_02": {
+     "prompt": "「同」有幾畫？ How many strokes does 同 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "6 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "5 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "7 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q201_09_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_09_03": {
+     "prompt": "「學」有幾畫？ How many strokes does 學 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "16 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "15 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "17 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q201_09_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_09_04": {
+     "prompt": "「自」有幾畫？ How many strokes does 自 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "6 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "5 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "7 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q201_09_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_09_05": {
+     "prompt": "「己」有幾畫？ How many strokes does 己 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "3 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "2 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "4 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q201_09_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_09_06": {
+     "prompt": "「年」有幾畫？ How many strokes does 年 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "6 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "5 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "7 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q201_09_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_09_07": {
+     "prompt": "「跟」有幾畫？ How many strokes does 跟 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "13 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "12 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "14 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q201_09_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_09_08": {
+     "prompt": "「比」有幾畫？ How many strokes does 比 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "4 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "3 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "5 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q201_09_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s201_10": {
+   "id": "s201_10",
+   "title": "第 10 大題：句子重組 Reorder",
+   "type": "reorder",
+   "order": 9,
+   "questions": {
+    "q201_10_01": {
+     "prompt": "請將下列詞語重組為正確句子 Rearrange the words into a correct sentence",
+     "words": [
+      "今天，",
+      "我們有兩個新同學，",
+      "現在請他們介紹自己。"
+     ],
+     "alts": [
+      "今天， 我們有兩個新同學， 現在請他們介紹自己。"
+     ],
+     "id": "q201_10_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_10_02": {
+     "prompt": "請將下列詞語重組為正確句子 Rearrange the words into a correct sentence",
+     "words": [
+      "大家好，",
+      "我叫方友朋，",
+      "今年八歲，",
+      "我最喜歡跟爸爸一起游泳。"
+     ],
+     "alts": [
+      "大家好， 我叫方友朋， 今年八歲， 我最喜歡跟爸爸一起游泳。"
+     ],
+     "id": "q201_10_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_10_03": {
+     "prompt": "請將下列詞語重組為正確句子 Rearrange the words into a correct sentence",
+     "words": [
+      "大家好，",
+      "我叫張莉，",
+      "今年七歲，",
+      "我比較喜歡看書。"
+     ],
+     "alts": [
+      "大家好， 我叫張莉， 今年七歲， 我比較喜歡看書。"
+     ],
+     "id": "q201_10_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_10_04": {
+     "prompt": "請將下列詞語重組為正確句子 Rearrange the words into a correct sentence",
+     "words": [
+      "你們好，",
+      "我叫李大文。",
+      "很高興認識你們。"
+     ],
+     "alts": [
+      "你們好， 我叫李大文。 很高興認識你們。"
+     ],
+     "id": "q201_10_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s201_11": {
+   "id": "s201_11",
+   "title": "第 11 大題：說說看（句型） Speaking",
+   "type": "record",
+   "order": 10,
+   "questions": {
+    "q201_11_01": {
+     "prompt": "請介紹自己：我叫＿＿，今年＿＿歲，我喜歡＿＿。 Introduce yourself.",
+     "reference": "大家好，我叫李大文，今年八歲，我最喜歡打球。",
+     "maxSec": 30,
+     "id": "q201_11_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_11_02": {
+     "prompt": "請用「最」說一個句子。 Make a sentence with 最.",
+     "reference": "我最喜歡看書。",
+     "maxSec": 30,
+     "id": "q201_11_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_11_03": {
+     "prompt": "請用「跟…一起」說一個句子。 Make a sentence with 跟…一起.",
+     "reference": "我喜歡跟爸爸一起游泳。",
+     "maxSec": 30,
+     "id": "q201_11_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_11_04": {
+     "prompt": "請用「比較」說一個句子。 Make a sentence with 比較.",
+     "reference": "我比較喜歡看書。",
+     "maxSec": 30,
+     "id": "q201_11_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s201_12": {
+   "id": "s201_12",
+   "title": "第 12 大題：習寫漢字 Write the characters",
+   "type": "hanzi",
+   "order": 11,
+   "questions": {
+    "q201_12_01": {
+     "char": "新",
+     "desc": "13畫，部首：斤",
+     "id": "q201_12_01",
+     "order": 0,
+     "title": "第 1 題：新",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_12_02": {
+     "char": "同",
+     "desc": "6畫，部首：口",
+     "id": "q201_12_02",
+     "order": 1,
+     "title": "第 2 題：同",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_12_03": {
+     "char": "學",
+     "desc": "16畫，部首：子",
+     "id": "q201_12_03",
+     "order": 2,
+     "title": "第 3 題：學",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_12_04": {
+     "char": "自",
+     "desc": "6畫，部首：自",
+     "id": "q201_12_04",
+     "order": 3,
+     "title": "第 4 題：自",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_12_05": {
+     "char": "己",
+     "desc": "3畫，部首：己",
+     "id": "q201_12_05",
+     "order": 4,
+     "title": "第 5 題：己",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_12_06": {
+     "char": "年",
+     "desc": "6畫，部首：干",
+     "id": "q201_12_06",
+     "order": 5,
+     "title": "第 6 題：年",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_12_07": {
+     "char": "跟",
+     "desc": "13畫，部首：足",
+     "id": "q201_12_07",
+     "order": 6,
+     "title": "第 7 題：跟",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_12_08": {
+     "char": "比",
+     "desc": "4畫，部首：比",
+     "id": "q201_12_08",
+     "order": 7,
+     "title": "第 8 題：比",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s201_13": {
+   "id": "s201_13",
+   "title": "第 13 大題：我會唸（課文、認讀漢字） Read aloud",
+   "type": "record",
+   "order": 12,
+   "questions": {
+    "q201_13_01": {
+     "prompt": "請唸出課文第一段。 Read the first part of the text.",
+     "reference": "老師：今天，我們有兩個新同學，現在請他們介紹自己。\n友朋：大家好，我叫方友朋，今年八歲，我最喜歡跟爸爸一起游泳。\n張莉：大家好，我叫張莉，今年七歲，我比較喜歡看書。",
+     "maxSec": 45,
+     "passage": "老師：今天，我們有兩個新同學，現在請他們介紹自己。\n友朋：大家好，我叫方友朋，今年八歲，我最喜歡跟爸爸一起游泳。\n張莉：大家好，我叫張莉，今年七歲，我比較喜歡看書。",
+     "id": "q201_13_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_13_02": {
+     "prompt": "請唸出課文第二段。 Read the second part of the text.",
+     "reference": "大文：你們好，我叫李大文。很高興認識你們。\n老師：歡迎你們來中文學校學中文。",
+     "maxSec": 45,
+     "passage": "大文：你們好，我叫李大文。很高興認識你們。\n老師：歡迎你們來中文學校學中文。",
+     "id": "q201_13_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q201_13_03": {
+     "prompt": "請唸出這些認讀漢字。 Read these characters aloud.",
+     "reference": "介　游　莉　識　認　最　興　較　紹　張　迎",
+     "maxSec": 30,
+     "id": "q201_13_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  }
+ },
+ "currentQId": "q201_01_01"
+}

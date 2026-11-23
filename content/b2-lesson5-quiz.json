@@ -1,0 +1,1342 @@
+{
+ "id": "proj_b2l5quiz",
+ "title": "第二冊 第5課 秋天快到了 練習題",
+ "desc": "依第二冊第5課簡報（課文、生詞、句型、習寫漢字、認讀漢字、練習、任務活動）整理；題目說明附英文",
+ "sections": {
+  "s205_1": {
+   "id": "s205_1",
+   "title": "第 1 大題：連連看（生詞和注音） Match the words with zhuyin",
+   "type": "match",
+   "order": 0,
+   "questions": {
+    "q205_01_01": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "秋天",
+       "right": "ㄑㄧㄡ ㄊㄧㄢ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "樹葉",
+       "right": "ㄕㄨˋ ㄧㄝˋ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "變",
+       "right": "ㄅㄧㄢˋ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "黃",
+       "right": "ㄏㄨㄤˊ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "草",
+       "right": "ㄘㄠˇ"
+      }
+     },
+     "id": "q205_01_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_01_02": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "還是",
+       "right": "ㄏㄞˊ ˙ㄕ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "綠色",
+       "right": "ㄌㄩˋ ㄙㄜˋ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "天氣",
+       "right": "ㄊㄧㄢ ㄑㄧˋ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "舒服",
+       "right": "ㄕㄨ ˙ㄈㄨ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "春天",
+       "right": "ㄔㄨㄣ ㄊㄧㄢ"
+      }
+     },
+     "id": "q205_01_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_01_03": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "不錯",
+       "right": "ㄅㄨˊ ㄘㄨㄛˋ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "顏色",
+       "right": "ㄧㄢˊ ㄙㄜˋ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "時候",
+       "right": "ㄕˊ ˙ㄏㄡ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "花",
+       "right": "ㄏㄨㄚ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "院子",
+       "right": "ㄩㄢˋ ˙ㄗ"
+      }
+     },
+     "id": "q205_01_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_01_04": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "紅色",
+       "right": "ㄏㄨㄥˊ ㄙㄜˋ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "白色",
+       "right": "ㄅㄞˊ ㄙㄜˋ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "漂亮",
+       "right": "ㄆㄧㄠˋ ˙ㄌㄧㄤ"
+      }
+     },
+     "id": "q205_01_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s205_2": {
+   "id": "s205_2",
+   "title": "第 2 大題：連連看（生詞和意思） Match the words with their meanings",
+   "type": "match",
+   "order": 1,
+   "questions": {
+    "q205_02_01": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "秋天",
+       "right": "autumn"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "樹葉",
+       "right": "leaves"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "變",
+       "right": "to change"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "黃",
+       "right": "yellow"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "草",
+       "right": "grass"
+      }
+     },
+     "id": "q205_02_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_02_02": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "還是",
+       "right": "still"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "綠色",
+       "right": "green"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "天氣",
+       "right": "weather"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "舒服",
+       "right": "comfortable"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "春天",
+       "right": "spring"
+      }
+     },
+     "id": "q205_02_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_02_03": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "不錯",
+       "right": "not bad"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "顏色",
+       "right": "color"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "時候",
+       "right": "time; when"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "花",
+       "right": "flower"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "院子",
+       "right": "yard"
+      }
+     },
+     "id": "q205_02_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_02_04": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "紅色",
+       "right": "red"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "白色",
+       "right": "white"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "漂亮",
+       "right": "pretty"
+      }
+     },
+     "id": "q205_02_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s205_3": {
+   "id": "s205_3",
+   "title": "第 3 大題：我會寫（寫出正確的漢字） Write the characters",
+   "type": "fill",
+   "order": 2,
+   "questions": {
+    "q205_03_01": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "秋{天}天{氣}很好，我覺得很{舒}{服}。",
+     "id": "q205_03_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_03_02": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "春天也不{錯}。",
+     "id": "q205_03_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_03_03": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "樹葉{變}{黃}了，秋天快到了。",
+     "id": "q205_03_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_03_04": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "春天的{時}{候}，院子有很多顏色的{花}。",
+     "id": "q205_03_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_03_05": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "紅色的花最漂{亮}。",
+     "id": "q205_03_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_03_06": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "草還是{綠}色的。",
+     "id": "q205_03_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_03_07": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "{紅}色的、{白}色的都有。",
+     "id": "q205_03_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_03_08": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "我們家院子有很多顏{色}的花。",
+     "id": "q205_03_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_03_09": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "春天的{時}{候}，花很漂亮。",
+     "id": "q205_03_09",
+     "order": 8,
+     "title": "第 9 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s205_4": {
+   "id": "s205_4",
+   "title": "第 4 大題：句型填空 Fill in the sentence patterns",
+   "type": "fill",
+   "order": 3,
+   "questions": {
+    "q205_04_01": {
+     "prompt": "用「…的時候」完成句子。 Use …的時候.",
+     "template": "夏天{的時候}天氣太熱了。",
+     "id": "q205_04_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_04_02": {
+     "prompt": "用「變…了」完成句子。 Use 變…了.",
+     "template": "秋天的時候，樹葉{變}黃了。",
+     "id": "q205_04_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_04_03": {
+     "prompt": "用「變…了」完成句子。 Use 變…了.",
+     "template": "奶奶說我{變}漂亮了。",
+     "id": "q205_04_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_04_04": {
+     "prompt": "用「是…的」完成句子。 Use 是…的.",
+     "template": "媽媽的自行車{是}白色的。",
+     "id": "q205_04_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_04_05": {
+     "prompt": "用「是…的」完成句子。 Use 是…的.",
+     "template": "你的玩具車是什麼顏色{的}？",
+     "id": "q205_04_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_04_06": {
+     "prompt": "用「都有」完成句子。 Use 都有.",
+     "template": "我家有很多吃的東西，麵包、水果、牛奶{都有}。",
+     "id": "q205_04_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s205_5": {
+   "id": "s205_5",
+   "title": "第 5 大題：選擇題（句型） Choose the correct answer",
+   "type": "choice",
+   "order": 4,
+   "questions": {
+    "q205_05_01": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n你看！樹葉＿＿黃了。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "變"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "是"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "還"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q205_05_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_05_02": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n春天＿＿，院子有很多顏色的花。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "的時候"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "都有"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "變了"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q205_05_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_05_03": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n媽媽的自行車＿＿白色的。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "是"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "變"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "都"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q205_05_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_05_04": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n紅色的、白色的＿＿有。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "都"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "還"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "變"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q205_05_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_05_05": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n秋天天氣很好，我覺得很＿＿。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "舒服"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "漂亮"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "顏色"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q205_05_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s205_6": {
+   "id": "s205_6",
+   "title": "第 6 大題：閱讀理解（課文） Reading comprehension",
+   "type": "choice",
+   "order": 5,
+   "questions": {
+    "q205_06_01": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n大文說秋天快到了，因為什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "樹葉變黃了"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "天氣很熱"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "草變紅了"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：你看！樹葉變黃了，秋天快到了。\n張莉：可是草還是綠色的。\n心美：秋天天氣很好。我覺得很舒服。\n東明：春天也不錯。\n大文：春天的時候，我們家院子有很多顏色的花，紅色的、白色的都有。\n心美：我覺得紅色的花最漂亮。",
+     "id": "q205_06_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_06_02": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n張莉說什麼還是綠色的？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "草"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "花"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "樹葉"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：你看！樹葉變黃了，秋天快到了。\n張莉：可是草還是綠色的。\n心美：秋天天氣很好。我覺得很舒服。\n東明：春天也不錯。\n大文：春天的時候，我們家院子有很多顏色的花，紅色的、白色的都有。\n心美：我覺得紅色的花最漂亮。",
+     "id": "q205_06_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_06_03": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n心美覺得秋天怎麼樣？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "很舒服"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "很熱"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "很冷"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：你看！樹葉變黃了，秋天快到了。\n張莉：可是草還是綠色的。\n心美：秋天天氣很好。我覺得很舒服。\n東明：春天也不錯。\n大文：春天的時候，我們家院子有很多顏色的花，紅色的、白色的都有。\n心美：我覺得紅色的花最漂亮。",
+     "id": "q205_06_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_06_04": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n大文家院子春天有什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "很多顏色的花"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "很多雪"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "很多樹"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：你看！樹葉變黃了，秋天快到了。\n張莉：可是草還是綠色的。\n心美：秋天天氣很好。我覺得很舒服。\n東明：春天也不錯。\n大文：春天的時候，我們家院子有很多顏色的花，紅色的、白色的都有。\n心美：我覺得紅色的花最漂亮。",
+     "id": "q205_06_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_06_05": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n心美覺得什麼顏色的花最漂亮？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "紅色"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "白色"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "黃色"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：你看！樹葉變黃了，秋天快到了。\n張莉：可是草還是綠色的。\n心美：秋天天氣很好。我覺得很舒服。\n東明：春天也不錯。\n大文：春天的時候，我們家院子有很多顏色的花，紅色的、白色的都有。\n心美：我覺得紅色的花最漂亮。",
+     "id": "q205_06_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s205_7": {
+   "id": "s205_7",
+   "title": "第 7 大題：是非題（課文） True or false",
+   "type": "choice",
+   "order": 6,
+   "questions": {
+    "q205_07_01": {
+     "prompt": "判斷對錯。 True or false?\n\n大文說秋天快到了。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：你看！樹葉變黃了，秋天快到了。\n張莉：可是草還是綠色的。\n心美：秋天天氣很好。我覺得很舒服。\n東明：春天也不錯。\n大文：春天的時候，我們家院子有很多顏色的花，紅色的、白色的都有。\n心美：我覺得紅色的花最漂亮。",
+     "id": "q205_07_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_07_02": {
+     "prompt": "判斷對錯。 True or false?\n\n張莉說草變黃了。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c2"
+     ],
+     "passage": "大文：你看！樹葉變黃了，秋天快到了。\n張莉：可是草還是綠色的。\n心美：秋天天氣很好。我覺得很舒服。\n東明：春天也不錯。\n大文：春天的時候，我們家院子有很多顏色的花，紅色的、白色的都有。\n心美：我覺得紅色的花最漂亮。",
+     "id": "q205_07_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_07_03": {
+     "prompt": "判斷對錯。 True or false?\n\n東明覺得春天也不錯。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：你看！樹葉變黃了，秋天快到了。\n張莉：可是草還是綠色的。\n心美：秋天天氣很好。我覺得很舒服。\n東明：春天也不錯。\n大文：春天的時候，我們家院子有很多顏色的花，紅色的、白色的都有。\n心美：我覺得紅色的花最漂亮。",
+     "id": "q205_07_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_07_04": {
+     "prompt": "判斷對錯。 True or false?\n\n心美覺得白色的花最漂亮。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c2"
+     ],
+     "passage": "大文：你看！樹葉變黃了，秋天快到了。\n張莉：可是草還是綠色的。\n心美：秋天天氣很好。我覺得很舒服。\n東明：春天也不錯。\n大文：春天的時候，我們家院子有很多顏色的花，紅色的、白色的都有。\n心美：我覺得紅色的花最漂亮。",
+     "id": "q205_07_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s205_8": {
+   "id": "s205_8",
+   "title": "第 8 大題：讀讀看，寫上漢字 Read the zhuyin and write the characters",
+   "type": "fill",
+   "order": 7,
+   "questions": {
+    "q205_08_01": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄑㄧㄡ ㄊㄧㄢ → {秋天}",
+     "id": "q205_08_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_08_02": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄕㄨˋ ㄧㄝˋ → {樹葉}",
+     "id": "q205_08_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_08_03": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄅㄧㄢˋ → {變}",
+     "id": "q205_08_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_08_04": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄏㄨㄤˊ → {黃}",
+     "id": "q205_08_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_08_05": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄘㄠˇ → {草}",
+     "id": "q205_08_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_08_06": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄏㄞˊ ˙ㄕ → {還是}",
+     "id": "q205_08_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_08_07": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄌㄩˋ ㄙㄜˋ → {綠色}",
+     "id": "q205_08_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_08_08": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄊㄧㄢ ㄑㄧˋ → {天氣}",
+     "id": "q205_08_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_08_09": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄕㄨ ˙ㄈㄨ → {舒服}",
+     "id": "q205_08_09",
+     "order": 8,
+     "title": "第 9 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_08_10": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄔㄨㄣ ㄊㄧㄢ → {春天}",
+     "id": "q205_08_10",
+     "order": 9,
+     "title": "第 10 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_08_11": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄅㄨˊ ㄘㄨㄛˋ → {不錯}",
+     "id": "q205_08_11",
+     "order": 10,
+     "title": "第 11 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_08_12": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄧㄢˊ ㄙㄜˋ → {顏色}",
+     "id": "q205_08_12",
+     "order": 11,
+     "title": "第 12 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s205_9": {
+   "id": "s205_9",
+   "title": "第 9 大題：漢字（筆畫） Strokes",
+   "type": "choice",
+   "order": 8,
+   "questions": {
+    "q205_09_01": {
+     "prompt": "「黃」有幾畫？ How many strokes does 黃 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "12 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "11 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "13 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q205_09_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_09_02": {
+     "prompt": "「綠」有幾畫？ How many strokes does 綠 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "14 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "13 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "15 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q205_09_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_09_03": {
+     "prompt": "「色」有幾畫？ How many strokes does 色 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "6 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "5 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "7 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q205_09_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_09_04": {
+     "prompt": "「紅」有幾畫？ How many strokes does 紅 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "9 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "8 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "10 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q205_09_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_09_05": {
+     "prompt": "「白」有幾畫？ How many strokes does 白 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "5 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "4 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "6 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q205_09_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_09_06": {
+     "prompt": "「花」有幾畫？ How many strokes does 花 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "8 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "7 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "9 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q205_09_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_09_07": {
+     "prompt": "「時」有幾畫？ How many strokes does 時 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "10 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "9 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "11 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q205_09_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_09_08": {
+     "prompt": "「候」有幾畫？ How many strokes does 候 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "10 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "9 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "11 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q205_09_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s205_10": {
+   "id": "s205_10",
+   "title": "第 10 大題：句子重組 Reorder",
+   "type": "reorder",
+   "order": 9,
+   "questions": {
+    "q205_10_01": {
+     "prompt": "請將下列詞語重組為正確句子 Rearrange the words into a correct sentence",
+     "words": [
+      "你看！",
+      "樹葉變黃了，",
+      "秋天快到了。"
+     ],
+     "alts": [
+      "你看！ 樹葉變黃了， 秋天快到了。"
+     ],
+     "id": "q205_10_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_10_02": {
+     "prompt": "請將下列詞語重組為正確句子 Rearrange the words into a correct sentence",
+     "words": [
+      "春天的時候，",
+      "我們家院子有很多顏色的花，",
+      "紅色的、白色的都有。"
+     ],
+     "alts": [
+      "春天的時候， 我們家院子有很多顏色的花， 紅色的、白色的都有。"
+     ],
+     "id": "q205_10_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s205_11": {
+   "id": "s205_11",
+   "title": "第 11 大題：說說看（句型） Speaking",
+   "type": "record",
+   "order": 10,
+   "questions": {
+    "q205_11_01": {
+     "prompt": "你喜歡什麼季節？為什麼？ Which season do you like and why?",
+     "reference": "我喜歡春天，因為春天的花很漂亮。",
+     "maxSec": 30,
+     "id": "q205_11_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_11_02": {
+     "prompt": "請用「變…了」說一個句子。 Make a sentence with 變…了.",
+     "reference": "秋天的時候，樹葉變黃了。",
+     "maxSec": 30,
+     "id": "q205_11_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_11_03": {
+     "prompt": "請用「…的時候」說一個句子。 Make a sentence with …的時候.",
+     "reference": "週末的時候，我喜歡跑步。",
+     "maxSec": 30,
+     "id": "q205_11_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_11_04": {
+     "prompt": "請說說你最喜歡的顏色。 Say your favorite color.",
+     "reference": "我最喜歡的顏色是紅色。",
+     "maxSec": 30,
+     "id": "q205_11_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s205_12": {
+   "id": "s205_12",
+   "title": "第 12 大題：習寫漢字 Write the characters",
+   "type": "hanzi",
+   "order": 11,
+   "questions": {
+    "q205_12_01": {
+     "char": "黃",
+     "desc": "12畫，部首：黃",
+     "id": "q205_12_01",
+     "order": 0,
+     "title": "第 1 題：黃",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_12_02": {
+     "char": "綠",
+     "desc": "14畫，部首：糸",
+     "id": "q205_12_02",
+     "order": 1,
+     "title": "第 2 題：綠",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_12_03": {
+     "char": "色",
+     "desc": "6畫，部首：色",
+     "id": "q205_12_03",
+     "order": 2,
+     "title": "第 3 題：色",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_12_04": {
+     "char": "紅",
+     "desc": "9畫，部首：糸",
+     "id": "q205_12_04",
+     "order": 3,
+     "title": "第 4 題：紅",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_12_05": {
+     "char": "白",
+     "desc": "5畫，部首：白",
+     "id": "q205_12_05",
+     "order": 4,
+     "title": "第 5 題：白",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_12_06": {
+     "char": "花",
+     "desc": "8畫，部首：艸",
+     "id": "q205_12_06",
+     "order": 5,
+     "title": "第 6 題：花",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_12_07": {
+     "char": "時",
+     "desc": "10畫，部首：日",
+     "id": "q205_12_07",
+     "order": 6,
+     "title": "第 7 題：時",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_12_08": {
+     "char": "候",
+     "desc": "10畫，部首：人",
+     "id": "q205_12_08",
+     "order": 7,
+     "title": "第 8 題：候",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s205_13": {
+   "id": "s205_13",
+   "title": "第 13 大題：我會唸（課文、認讀漢字） Read aloud",
+   "type": "record",
+   "order": 12,
+   "questions": {
+    "q205_13_01": {
+     "prompt": "請唸出課文第一段。 Read the first part of the text.",
+     "reference": "大文：你看！樹葉變黃了，秋天快到了。\n張莉：可是草還是綠色的。\n心美：秋天天氣很好。我覺得很舒服。",
+     "maxSec": 45,
+     "passage": "大文：你看！樹葉變黃了，秋天快到了。\n張莉：可是草還是綠色的。\n心美：秋天天氣很好。我覺得很舒服。",
+     "id": "q205_13_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_13_02": {
+     "prompt": "請唸出課文第二段。 Read the second part of the text.",
+     "reference": "東明：春天也不錯。\n大文：春天的時候，我們家院子有很多顏色的花，紅色的、白色的都有。\n心美：我覺得紅色的花最漂亮。",
+     "maxSec": 45,
+     "passage": "東明：春天也不錯。\n大文：春天的時候，我們家院子有很多顏色的花，紅色的、白色的都有。\n心美：我覺得紅色的花最漂亮。",
+     "id": "q205_13_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q205_13_03": {
+     "prompt": "請唸出這些認讀漢字。 Read these characters aloud.",
+     "reference": "樹　葉　變　錯　秋　草　氣　服　春　舒　院　顏　漂　亮",
+     "maxSec": 30,
+     "id": "q205_13_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  }
+ },
+ "currentQId": "q205_01_01"
+}

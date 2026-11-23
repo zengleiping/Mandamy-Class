@@ -1,0 +1,1378 @@
+{
+ "id": "proj_b2l11quiz",
+ "title": "第二冊 第11課 去動物園 練習題",
+ "desc": "依第二冊第11課簡報（課文、生詞、句型、習寫漢字、認讀漢字、練習、任務活動）整理；題目說明附英文",
+ "sections": {
+  "s211_1": {
+   "id": "s211_1",
+   "title": "第 1 大題：連連看（生詞和注音） Match the words with zhuyin",
+   "type": "match",
+   "order": 0,
+   "questions": {
+    "q211_01_01": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "動物園",
+       "right": "ㄉㄨㄥˋ ㄨˋ ㄩㄢˊ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "玩",
+       "right": "ㄨㄢˊ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "看到",
+       "right": "ㄎㄢˋ ㄉㄠˋ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "大象",
+       "right": "ㄉㄚˋ ㄒㄧㄤˋ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "老虎",
+       "right": "ㄌㄠˇ ㄏㄨˇ"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "這一次",
+       "right": "ㄓㄜˋ ㄧˊ ㄘˋ"
+      }
+     },
+     "id": "q211_01_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_01_02": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "希望",
+       "right": "ㄒㄧ ㄨㄤˋ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "猴子",
+       "right": "ㄏㄡˊ ˙ㄗ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "不但",
+       "right": "ㄅㄨˊ ㄉㄢˋ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "企鵝",
+       "right": "ㄑㄧˇ ㄜˊ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "熊貓",
+       "right": "ㄒㄩㄥˊ ㄇㄠ"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "真",
+       "right": "ㄓㄣ"
+      }
+     },
+     "id": "q211_01_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_01_03": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "長頸鹿",
+       "right": "ㄔㄤˊ ㄐㄧㄥˇ ㄌㄨˋ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "脖子",
+       "right": "ㄅㄛˊ ˙ㄗ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "胖",
+       "right": "ㄆㄤˋ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "長",
+       "right": "ㄔㄤˊ"
+      }
+     },
+     "id": "q211_01_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s211_2": {
+   "id": "s211_2",
+   "title": "第 2 大題：連連看（生詞和意思） Match the words with their meanings",
+   "type": "match",
+   "order": 1,
+   "questions": {
+    "q211_02_01": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "動物園",
+       "right": "zoo"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "玩",
+       "right": "to play"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "看到",
+       "right": "to see"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "大象",
+       "right": "elephant"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "老虎",
+       "right": "tiger"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "這一次",
+       "right": "this time"
+      }
+     },
+     "id": "q211_02_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_02_02": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "希望",
+       "right": "to hope"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "猴子",
+       "right": "monkey"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "不但",
+       "right": "not only"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "企鵝",
+       "right": "penguin"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "熊貓",
+       "right": "panda"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "真",
+       "right": "really"
+      }
+     },
+     "id": "q211_02_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_02_03": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "長頸鹿",
+       "right": "giraffe"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "脖子",
+       "right": "neck"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "胖",
+       "right": "fat"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "長",
+       "right": "long"
+      }
+     },
+     "id": "q211_02_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s211_3": {
+   "id": "s211_3",
+   "title": "第 3 大題：我會寫（寫出正確的漢字） Write the characters",
+   "type": "fill",
+   "order": 2,
+   "questions": {
+    "q211_03_01": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "下個星期五，學校要帶我們去{動}{物}{園}玩。",
+     "id": "q211_03_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_03_02": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "你可以看到你喜歡的大{象}和老{虎}。",
+     "id": "q211_03_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_03_03": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "這一次我{希}{望}可以看到熊貓。",
+     "id": "q211_03_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_03_04": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "現在不但有熊貓，還有{企}{鵝}。",
+     "id": "q211_03_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_03_05": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "我覺得熊貓{胖}胖的，{真}可愛！",
+     "id": "q211_03_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_03_06": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "我喜歡長{頸}{鹿}，{脖}子長長的。",
+     "id": "q211_03_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_03_07": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "以前我去的時候，動物園沒有{熊}{貓}。",
+     "id": "q211_03_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_03_08": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "院子不但有紅色的花，{還}有白色的花。",
+     "id": "q211_03_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_03_09": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "大象的鼻子很{長}。",
+     "id": "q211_03_09",
+     "order": 8,
+     "title": "第 9 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s211_4": {
+   "id": "s211_4",
+   "title": "第 4 大題：句型填空 Fill in the sentence patterns",
+   "type": "fill",
+   "order": 3,
+   "questions": {
+    "q211_04_01": {
+     "prompt": "用「希望」完成句子。 Use 希望.",
+     "template": "這一次我{希望}可以看到熊貓。",
+     "id": "q211_04_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_04_02": {
+     "prompt": "用「這一次」完成句子。 Use 這一次.",
+     "template": "{這一次}暑假，我想去台灣看外婆。",
+     "id": "q211_04_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_04_03": {
+     "prompt": "用「不但…，還…」完成句子。 Use 不但…，還….",
+     "template": "妹妹{不但}喜歡唱歌，還喜歡跳舞。",
+     "id": "q211_04_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_04_04": {
+     "prompt": "用「不但…，還…」完成句子。 Use 不但…，還….",
+     "template": "院子不但有紅色的花，{還}有白色的花。",
+     "id": "q211_04_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_04_05": {
+     "prompt": "用「胖胖的」完成句子。 Use 胖胖的.",
+     "template": "熊貓胖胖{的}，真可愛！",
+     "id": "q211_04_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_04_06": {
+     "prompt": "用「真」完成句子。 Use 真.",
+     "template": "法國的冬天{真}冷。",
+     "id": "q211_04_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s211_5": {
+   "id": "s211_5",
+   "title": "第 5 大題：選擇題（句型） Choose the correct answer",
+   "type": "choice",
+   "order": 4,
+   "questions": {
+    "q211_05_01": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n妹妹＿＿喜歡唱歌，還喜歡跳舞。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "不但"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "真"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "這一次"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q211_05_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_05_02": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n這一次我＿＿可以看到熊貓。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "希望"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "不但"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "胖胖"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q211_05_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_05_03": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n熊貓胖胖的，＿＿可愛！",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "真"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "還"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "不但"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q211_05_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_05_04": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n長頸鹿的脖子＿＿長的。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "長"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "胖"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "真"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q211_05_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_05_05": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n大象和老虎是我最喜歡＿＿動物。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "的"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "了"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "嗎"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q211_05_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s211_6": {
+   "id": "s211_6",
+   "title": "第 6 大題：閱讀理解（課文） Reading comprehension",
+   "type": "choice",
+   "order": 5,
+   "questions": {
+    "q211_06_01": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n學校下個星期五要帶他們去哪裡？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "動物園"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "公園"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "超級市場"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：下個星期五，學校要帶我們去動物園玩。\n心美哥哥：太好了！你可以看到你喜歡的大象和老虎。\n心美：這一次我希望可以看到熊貓。\n心美哥哥：對，以前我去的時候，動物園沒有熊貓。\n爸爸：現在不但有熊貓，還有企鵝。\n心美：我覺得熊貓胖胖的，真可愛！\n心美哥哥：我喜歡長頸鹿，脖子長長的。",
+     "id": "q211_06_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_06_02": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n心美哥哥說心美可以看到什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "大象和老虎"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "企鵝"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "猴子"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：下個星期五，學校要帶我們去動物園玩。\n心美哥哥：太好了！你可以看到你喜歡的大象和老虎。\n心美：這一次我希望可以看到熊貓。\n心美哥哥：對，以前我去的時候，動物園沒有熊貓。\n爸爸：現在不但有熊貓，還有企鵝。\n心美：我覺得熊貓胖胖的，真可愛！\n心美哥哥：我喜歡長頸鹿，脖子長長的。",
+     "id": "q211_06_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_06_03": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n心美這一次希望看到什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "熊貓"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "猴子"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "老虎"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：下個星期五，學校要帶我們去動物園玩。\n心美哥哥：太好了！你可以看到你喜歡的大象和老虎。\n心美：這一次我希望可以看到熊貓。\n心美哥哥：對，以前我去的時候，動物園沒有熊貓。\n爸爸：現在不但有熊貓，還有企鵝。\n心美：我覺得熊貓胖胖的，真可愛！\n心美哥哥：我喜歡長頸鹿，脖子長長的。",
+     "id": "q211_06_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_06_04": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n以前動物園有沒有熊貓？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "沒有"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "有"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "不知道"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：下個星期五，學校要帶我們去動物園玩。\n心美哥哥：太好了！你可以看到你喜歡的大象和老虎。\n心美：這一次我希望可以看到熊貓。\n心美哥哥：對，以前我去的時候，動物園沒有熊貓。\n爸爸：現在不但有熊貓，還有企鵝。\n心美：我覺得熊貓胖胖的，真可愛！\n心美哥哥：我喜歡長頸鹿，脖子長長的。",
+     "id": "q211_06_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_06_05": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n現在動物園不但有熊貓，還有什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "企鵝"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "猴子"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "長頸鹿"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：下個星期五，學校要帶我們去動物園玩。\n心美哥哥：太好了！你可以看到你喜歡的大象和老虎。\n心美：這一次我希望可以看到熊貓。\n心美哥哥：對，以前我去的時候，動物園沒有熊貓。\n爸爸：現在不但有熊貓，還有企鵝。\n心美：我覺得熊貓胖胖的，真可愛！\n心美哥哥：我喜歡長頸鹿，脖子長長的。",
+     "id": "q211_06_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_06_06": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n哥哥喜歡什麼動物？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "長頸鹿"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "熊貓"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "大象"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：下個星期五，學校要帶我們去動物園玩。\n心美哥哥：太好了！你可以看到你喜歡的大象和老虎。\n心美：這一次我希望可以看到熊貓。\n心美哥哥：對，以前我去的時候，動物園沒有熊貓。\n爸爸：現在不但有熊貓，還有企鵝。\n心美：我覺得熊貓胖胖的，真可愛！\n心美哥哥：我喜歡長頸鹿，脖子長長的。",
+     "id": "q211_06_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s211_7": {
+   "id": "s211_7",
+   "title": "第 7 大題：是非題（課文） True or false",
+   "type": "choice",
+   "order": 6,
+   "questions": {
+    "q211_07_01": {
+     "prompt": "判斷對錯。 True or false?\n\n學校要帶他們去動物園玩。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：下個星期五，學校要帶我們去動物園玩。\n心美哥哥：太好了！你可以看到你喜歡的大象和老虎。\n心美：這一次我希望可以看到熊貓。\n心美哥哥：對，以前我去的時候，動物園沒有熊貓。\n爸爸：現在不但有熊貓，還有企鵝。\n心美：我覺得熊貓胖胖的，真可愛！\n心美哥哥：我喜歡長頸鹿，脖子長長的。",
+     "id": "q211_07_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_07_02": {
+     "prompt": "判斷對錯。 True or false?\n\n心美不想看熊貓。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c2"
+     ],
+     "passage": "心美：下個星期五，學校要帶我們去動物園玩。\n心美哥哥：太好了！你可以看到你喜歡的大象和老虎。\n心美：這一次我希望可以看到熊貓。\n心美哥哥：對，以前我去的時候，動物園沒有熊貓。\n爸爸：現在不但有熊貓，還有企鵝。\n心美：我覺得熊貓胖胖的，真可愛！\n心美哥哥：我喜歡長頸鹿，脖子長長的。",
+     "id": "q211_07_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_07_03": {
+     "prompt": "判斷對錯。 True or false?\n\n以前動物園沒有熊貓。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "心美：下個星期五，學校要帶我們去動物園玩。\n心美哥哥：太好了！你可以看到你喜歡的大象和老虎。\n心美：這一次我希望可以看到熊貓。\n心美哥哥：對，以前我去的時候，動物園沒有熊貓。\n爸爸：現在不但有熊貓，還有企鵝。\n心美：我覺得熊貓胖胖的，真可愛！\n心美哥哥：我喜歡長頸鹿，脖子長長的。",
+     "id": "q211_07_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_07_04": {
+     "prompt": "判斷對錯。 True or false?\n\n哥哥喜歡企鵝。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c2"
+     ],
+     "passage": "心美：下個星期五，學校要帶我們去動物園玩。\n心美哥哥：太好了！你可以看到你喜歡的大象和老虎。\n心美：這一次我希望可以看到熊貓。\n心美哥哥：對，以前我去的時候，動物園沒有熊貓。\n爸爸：現在不但有熊貓，還有企鵝。\n心美：我覺得熊貓胖胖的，真可愛！\n心美哥哥：我喜歡長頸鹿，脖子長長的。",
+     "id": "q211_07_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s211_8": {
+   "id": "s211_8",
+   "title": "第 8 大題：讀讀看，寫上漢字 Read the zhuyin and write the characters",
+   "type": "fill",
+   "order": 7,
+   "questions": {
+    "q211_08_01": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄉㄨㄥˋ ㄨˋ ㄩㄢˊ → {動物園}",
+     "id": "q211_08_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_08_02": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄨㄢˊ → {玩}",
+     "id": "q211_08_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_08_03": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄎㄢˋ ㄉㄠˋ → {看到}",
+     "id": "q211_08_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_08_04": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄉㄚˋ ㄒㄧㄤˋ → {大象}",
+     "id": "q211_08_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_08_05": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄌㄠˇ ㄏㄨˇ → {老虎}",
+     "id": "q211_08_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_08_06": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄓㄜˋ ㄧˊ ㄘˋ → {這一次}",
+     "id": "q211_08_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_08_07": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄒㄧ ㄨㄤˋ → {希望}",
+     "id": "q211_08_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_08_08": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄏㄡˊ ˙ㄗ → {猴子}",
+     "id": "q211_08_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_08_09": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄅㄨˊ ㄉㄢˋ → {不但}",
+     "id": "q211_08_09",
+     "order": 8,
+     "title": "第 9 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_08_10": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄑㄧˇ ㄜˊ → {企鵝}",
+     "id": "q211_08_10",
+     "order": 9,
+     "title": "第 10 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_08_11": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄒㄩㄥˊ ㄇㄠ → {熊貓}",
+     "id": "q211_08_11",
+     "order": 10,
+     "title": "第 11 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_08_12": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄓㄣ → {真}",
+     "id": "q211_08_12",
+     "order": 11,
+     "title": "第 12 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s211_9": {
+   "id": "s211_9",
+   "title": "第 9 大題：漢字（筆畫） Strokes",
+   "type": "choice",
+   "order": 8,
+   "questions": {
+    "q211_09_01": {
+     "prompt": "「動」有幾畫？ How many strokes does 動 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "11 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "10 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "12 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q211_09_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_09_02": {
+     "prompt": "「物」有幾畫？ How many strokes does 物 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "8 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "7 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "9 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q211_09_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_09_03": {
+     "prompt": "「園」有幾畫？ How many strokes does 園 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "13 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "12 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "14 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q211_09_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_09_04": {
+     "prompt": "「老」有幾畫？ How many strokes does 老 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "6 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "5 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "7 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q211_09_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_09_05": {
+     "prompt": "「希」有幾畫？ How many strokes does 希 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "7 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "6 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "8 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q211_09_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_09_06": {
+     "prompt": "「望」有幾畫？ How many strokes does 望 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "11 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "10 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "12 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q211_09_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_09_07": {
+     "prompt": "「但」有幾畫？ How many strokes does 但 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "7 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "6 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "8 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q211_09_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_09_08": {
+     "prompt": "「胖」有幾畫？ How many strokes does 胖 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "9 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "8 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "10 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q211_09_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_09_09": {
+     "prompt": "「真」有幾畫？ How many strokes does 真 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "10 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "9 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "11 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q211_09_09",
+     "order": 8,
+     "title": "第 9 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_09_10": {
+     "prompt": "「長」有幾畫？ How many strokes does 長 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "8 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "7 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "9 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q211_09_10",
+     "order": 9,
+     "title": "第 10 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s211_10": {
+   "id": "s211_10",
+   "title": "第 10 大題：句子重組 Reorder",
+   "type": "reorder",
+   "order": 9,
+   "questions": {
+    "q211_10_01": {
+     "prompt": "請將下列詞語重組為正確句子 Rearrange the words into a correct sentence",
+     "words": [
+      "對，",
+      "以前我去的時候，",
+      "動物園沒有熊貓。"
+     ],
+     "alts": [
+      "對， 以前我去的時候， 動物園沒有熊貓。"
+     ],
+     "id": "q211_10_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s211_11": {
+   "id": "s211_11",
+   "title": "第 11 大題：說說看（句型） Speaking",
+   "type": "record",
+   "order": 10,
+   "questions": {
+    "q211_11_01": {
+     "prompt": "你最喜歡的動物是什麼？為什麼？ What is your favorite animal and why?",
+     "reference": "我最喜歡的動物是熊貓，因為牠胖胖的，很可愛。",
+     "maxSec": 30,
+     "id": "q211_11_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_11_02": {
+     "prompt": "請用「不但…，還…」說一個句子。 Make a sentence with 不但…還….",
+     "reference": "妹妹不但喜歡唱歌，還喜歡跳舞。",
+     "maxSec": 30,
+     "id": "q211_11_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_11_03": {
+     "prompt": "請用「這一次」說一個句子。 Make a sentence with 這一次.",
+     "reference": "這一次我希望可以看到熊貓。",
+     "maxSec": 30,
+     "id": "q211_11_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_11_04": {
+     "prompt": "請用「真」說一個句子。 Make a sentence with 真.",
+     "reference": "今天真熱。",
+     "maxSec": 30,
+     "id": "q211_11_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s211_12": {
+   "id": "s211_12",
+   "title": "第 12 大題：習寫漢字 Write the characters",
+   "type": "hanzi",
+   "order": 11,
+   "questions": {
+    "q211_12_01": {
+     "char": "動",
+     "desc": "11畫，部首：力",
+     "id": "q211_12_01",
+     "order": 0,
+     "title": "第 1 題：動",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_12_02": {
+     "char": "物",
+     "desc": "8畫，部首：牛",
+     "id": "q211_12_02",
+     "order": 1,
+     "title": "第 2 題：物",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_12_03": {
+     "char": "園",
+     "desc": "13畫，部首：囗",
+     "id": "q211_12_03",
+     "order": 2,
+     "title": "第 3 題：園",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_12_04": {
+     "char": "老",
+     "desc": "6畫，部首：老",
+     "id": "q211_12_04",
+     "order": 3,
+     "title": "第 4 題：老",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_12_05": {
+     "char": "希",
+     "desc": "7畫，部首：巾",
+     "id": "q211_12_05",
+     "order": 4,
+     "title": "第 5 題：希",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_12_06": {
+     "char": "望",
+     "desc": "11畫，部首：月",
+     "id": "q211_12_06",
+     "order": 5,
+     "title": "第 6 題：望",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_12_07": {
+     "char": "但",
+     "desc": "7畫，部首：人",
+     "id": "q211_12_07",
+     "order": 6,
+     "title": "第 7 題：但",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_12_08": {
+     "char": "胖",
+     "desc": "9畫，部首：肉",
+     "id": "q211_12_08",
+     "order": 7,
+     "title": "第 8 題：胖",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_12_09": {
+     "char": "真",
+     "desc": "10畫，部首：目",
+     "id": "q211_12_09",
+     "order": 8,
+     "title": "第 9 題：真",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_12_10": {
+     "char": "長",
+     "desc": "8畫，部首：長",
+     "id": "q211_12_10",
+     "order": 9,
+     "title": "第 10 題：長",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s211_13": {
+   "id": "s211_13",
+   "title": "第 13 大題：我會唸（課文、認讀漢字） Read aloud",
+   "type": "record",
+   "order": 12,
+   "questions": {
+    "q211_13_01": {
+     "prompt": "請唸出課文第一段。 Read the first part of the text.",
+     "reference": "心美：下個星期五，學校要帶我們去動物園玩。\n心美哥哥：太好了！你可以看到你喜歡的大象和老虎。\n心美：這一次我希望可以看到熊貓。\n心美哥哥：對，以前我去的時候，動物園沒有熊貓。",
+     "maxSec": 45,
+     "passage": "心美：下個星期五，學校要帶我們去動物園玩。\n心美哥哥：太好了！你可以看到你喜歡的大象和老虎。\n心美：這一次我希望可以看到熊貓。\n心美哥哥：對，以前我去的時候，動物園沒有熊貓。",
+     "id": "q211_13_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_13_02": {
+     "prompt": "請唸出課文第二段。 Read the second part of the text.",
+     "reference": "爸爸：現在不但有熊貓，還有企鵝。\n心美：我覺得熊貓胖胖的，真可愛！\n心美哥哥：我喜歡長頸鹿，脖子長長的。",
+     "maxSec": 45,
+     "passage": "爸爸：現在不但有熊貓，還有企鵝。\n心美：我覺得熊貓胖胖的，真可愛！\n心美哥哥：我喜歡長頸鹿，脖子長長的。",
+     "id": "q211_13_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q211_13_03": {
+     "prompt": "請唸出這些認讀漢字。 Read these characters aloud.",
+     "reference": "象　虎　熊　猴　企　鵝　頸　鹿　脖",
+     "maxSec": 30,
+     "id": "q211_13_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  }
+ },
+ "currentQId": "q211_01_01"
+}

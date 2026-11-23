@@ -1,0 +1,1266 @@
+{
+ "id": "proj_b2l6quiz",
+ "title": "第二冊 第6課 華人新年 練習題",
+ "desc": "依第二冊第6課簡報（課文、生詞、句型、習寫漢字、認讀漢字、練習、任務活動）整理；題目說明附英文",
+ "sections": {
+  "s206_1": {
+   "id": "s206_1",
+   "title": "第 1 大題：連連看（生詞和注音） Match the words with zhuyin",
+   "type": "match",
+   "order": 0,
+   "questions": {
+    "q206_01_01": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "說",
+       "right": "ㄕㄨㄛ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "新年",
+       "right": "ㄒㄧㄣ ㄋㄧㄢˊ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "華人",
+       "right": "ㄏㄨㄚˊ ㄖㄣˊ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "下",
+       "right": "ㄒㄧㄚˋ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "星期",
+       "right": "ㄒㄧㄥ ㄑㄧ"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "會",
+       "right": "ㄏㄨㄟˋ"
+      }
+     },
+     "id": "q206_01_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_01_02": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "年糕",
+       "right": "ㄋㄧㄢˊ ㄍㄠ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "那天",
+       "right": "ㄋㄚˋ ㄊㄧㄢ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "給",
+       "right": "ㄍㄟˇ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "拜年",
+       "right": "ㄅㄞˋ ㄋㄧㄢˊ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "臺灣",
+       "right": "ㄊㄞˊ ㄨㄢ"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "每",
+       "right": "ㄇㄟˇ"
+      }
+     },
+     "id": "q206_01_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s206_2": {
+   "id": "s206_2",
+   "title": "第 2 大題：連連看（生詞和意思） Match the words with their meanings",
+   "type": "match",
+   "order": 1,
+   "questions": {
+    "q206_02_01": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "說",
+       "right": "to say"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "新年",
+       "right": "New Year"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "華人",
+       "right": "Chinese people"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "下",
+       "right": "next"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "星期",
+       "right": "week"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "會",
+       "right": "will"
+      }
+     },
+     "id": "q206_02_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_02_02": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "年糕",
+       "right": "rice cake"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "那天",
+       "right": "that day"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "給",
+       "right": "to give"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "拜年",
+       "right": "New Year visit"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "臺灣",
+       "right": "Taiwan"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "每",
+       "right": "every"
+      }
+     },
+     "id": "q206_02_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s206_3": {
+   "id": "s206_3",
+   "title": "第 3 大題：我會寫（寫出正確的漢字） Write the characters",
+   "type": "fill",
+   "order": 2,
+   "questions": {
+    "q206_03_01": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "大文的老師{說}華人新年快到了。",
+     "id": "q206_03_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_03_02": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "下個星{期}五是華人新年。",
+     "id": "q206_03_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_03_03": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "媽媽{會}去超市買年糕。",
+     "id": "q206_03_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_03_04": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "大文要{給}爺爺奶奶拜年。",
+     "id": "q206_03_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_03_05": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "爺爺{每}年都會給大文紅包。",
+     "id": "q206_03_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_03_06": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "老師說{華}{人}新年快到了。",
+     "id": "q206_03_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_03_07": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "對，下{個}星期五是華人新年。",
+     "id": "q206_03_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_03_08": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "那天我們還要給爺爺奶奶{拜}年。",
+     "id": "q206_03_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_03_09": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "太好了，爺爺每年都會{給}我紅包。",
+     "id": "q206_03_09",
+     "order": 8,
+     "title": "第 9 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s206_4": {
+   "id": "s206_4",
+   "title": "第 4 大題：句型填空 Fill in the sentence patterns",
+   "type": "fill",
+   "order": 3,
+   "questions": {
+    "q206_04_01": {
+     "prompt": "用「給(人)V」完成句子。 Use 給.",
+     "template": "媽媽不在家，爸爸{給}我們做晚飯。",
+     "id": "q206_04_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_04_02": {
+     "prompt": "用「會」完成句子。 Use 會.",
+     "template": "新年的時候，媽媽{會}去超市買年糕。",
+     "id": "q206_04_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_04_03": {
+     "prompt": "用「還」完成句子。 Use 還.",
+     "template": "我今天早餐吃了麵包，{還}喝了牛奶。",
+     "id": "q206_04_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_04_04": {
+     "prompt": "用「還」完成句子。 Use 還.",
+     "template": "媽媽買了青菜，{還}買了牛肉。",
+     "id": "q206_04_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_04_05": {
+     "prompt": "用「每…都」完成句子。 Use 每…都.",
+     "template": "大文每個星期{都}去中文學校。",
+     "id": "q206_04_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_04_06": {
+     "prompt": "用「每…都」完成句子。 Use 每…都.",
+     "template": "爺爺每天{都}游泳。",
+     "id": "q206_04_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s206_5": {
+   "id": "s206_5",
+   "title": "第 5 大題：選擇題（句型） Choose the correct answer",
+   "type": "choice",
+   "order": 4,
+   "questions": {
+    "q206_05_01": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n下個星期五＿＿華人新年。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "是"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "會"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "每"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q206_05_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_05_02": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n爺爺＿＿年都會給大文紅包。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "每"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "還"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "說"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q206_05_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_05_03": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n媽媽＿＿去超市買年糕。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "會"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "每"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "給"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q206_05_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_05_04": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n我們要給爺爺奶奶＿＿年。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "拜"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "說"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "每"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q206_05_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_05_05": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n如果在臺灣，我們＿＿會貼春聯、放鞭炮。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "還"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "每"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "說"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q206_05_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s206_6": {
+   "id": "s206_6",
+   "title": "第 6 大題：閱讀理解（課文） Reading comprehension",
+   "type": "choice",
+   "order": 5,
+   "questions": {
+    "q206_06_01": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n誰說華人新年快到了？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "老師"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "媽媽"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "爺爺"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：老師說華人新年快到了。\n爸爸：對，下個星期五是華人新年。\n大文：媽媽會去超市買年糕嗎？\n爸爸：會，那天我們還要給爺爺奶奶拜年。\n大文：太好了，爺爺每年都會給我紅包。\n爸爸：如果在臺灣，我們還會貼春聯、放鞭炮。",
+     "id": "q206_06_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_06_02": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n華人新年是什麼時候？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "下個星期五"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "這個星期五"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "下個月"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：老師說華人新年快到了。\n爸爸：對，下個星期五是華人新年。\n大文：媽媽會去超市買年糕嗎？\n爸爸：會，那天我們還要給爺爺奶奶拜年。\n大文：太好了，爺爺每年都會給我紅包。\n爸爸：如果在臺灣，我們還會貼春聯、放鞭炮。",
+     "id": "q206_06_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_06_03": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n媽媽會去超市買什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "年糕"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "紅包"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "春聯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：老師說華人新年快到了。\n爸爸：對，下個星期五是華人新年。\n大文：媽媽會去超市買年糕嗎？\n爸爸：會，那天我們還要給爺爺奶奶拜年。\n大文：太好了，爺爺每年都會給我紅包。\n爸爸：如果在臺灣，我們還會貼春聯、放鞭炮。",
+     "id": "q206_06_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_06_04": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n那天他們還要做什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "給爺爺奶奶拜年"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "去學校"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "去游泳"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：老師說華人新年快到了。\n爸爸：對，下個星期五是華人新年。\n大文：媽媽會去超市買年糕嗎？\n爸爸：會，那天我們還要給爺爺奶奶拜年。\n大文：太好了，爺爺每年都會給我紅包。\n爸爸：如果在臺灣，我們還會貼春聯、放鞭炮。",
+     "id": "q206_06_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_06_05": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n爺爺每年都會給大文什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "紅包"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "年糕"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "鞭炮"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：老師說華人新年快到了。\n爸爸：對，下個星期五是華人新年。\n大文：媽媽會去超市買年糕嗎？\n爸爸：會，那天我們還要給爺爺奶奶拜年。\n大文：太好了，爺爺每年都會給我紅包。\n爸爸：如果在臺灣，我們還會貼春聯、放鞭炮。",
+     "id": "q206_06_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s206_7": {
+   "id": "s206_7",
+   "title": "第 7 大題：是非題（課文） True or false",
+   "type": "choice",
+   "order": 6,
+   "questions": {
+    "q206_07_01": {
+     "prompt": "判斷對錯。 True or false?\n\n下個星期五是華人新年。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：老師說華人新年快到了。\n爸爸：對，下個星期五是華人新年。\n大文：媽媽會去超市買年糕嗎？\n爸爸：會，那天我們還要給爺爺奶奶拜年。\n大文：太好了，爺爺每年都會給我紅包。\n爸爸：如果在臺灣，我們還會貼春聯、放鞭炮。",
+     "id": "q206_07_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_07_02": {
+     "prompt": "判斷對錯。 True or false?\n\n媽媽不會去買年糕。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c2"
+     ],
+     "passage": "大文：老師說華人新年快到了。\n爸爸：對，下個星期五是華人新年。\n大文：媽媽會去超市買年糕嗎？\n爸爸：會，那天我們還要給爺爺奶奶拜年。\n大文：太好了，爺爺每年都會給我紅包。\n爸爸：如果在臺灣，我們還會貼春聯、放鞭炮。",
+     "id": "q206_07_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_07_03": {
+     "prompt": "判斷對錯。 True or false?\n\n爺爺每年都給大文紅包。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：老師說華人新年快到了。\n爸爸：對，下個星期五是華人新年。\n大文：媽媽會去超市買年糕嗎？\n爸爸：會，那天我們還要給爺爺奶奶拜年。\n大文：太好了，爺爺每年都會給我紅包。\n爸爸：如果在臺灣，我們還會貼春聯、放鞭炮。",
+     "id": "q206_07_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_07_04": {
+     "prompt": "判斷對錯。 True or false?\n\n在臺灣，他們不會放鞭炮。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c2"
+     ],
+     "passage": "大文：老師說華人新年快到了。\n爸爸：對，下個星期五是華人新年。\n大文：媽媽會去超市買年糕嗎？\n爸爸：會，那天我們還要給爺爺奶奶拜年。\n大文：太好了，爺爺每年都會給我紅包。\n爸爸：如果在臺灣，我們還會貼春聯、放鞭炮。",
+     "id": "q206_07_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s206_8": {
+   "id": "s206_8",
+   "title": "第 8 大題：讀讀看，寫上漢字 Read the zhuyin and write the characters",
+   "type": "fill",
+   "order": 7,
+   "questions": {
+    "q206_08_01": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄕㄨㄛ → {說}",
+     "id": "q206_08_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_08_02": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄒㄧㄣ ㄋㄧㄢˊ → {新年}",
+     "id": "q206_08_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_08_03": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄏㄨㄚˊ ㄖㄣˊ → {華人}",
+     "id": "q206_08_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_08_04": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄒㄧㄚˋ → {下}",
+     "id": "q206_08_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_08_05": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄒㄧㄥ ㄑㄧ → {星期}",
+     "id": "q206_08_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_08_06": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄏㄨㄟˋ → {會}",
+     "id": "q206_08_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_08_07": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄋㄧㄢˊ ㄍㄠ → {年糕}",
+     "id": "q206_08_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_08_08": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄋㄚˋ ㄊㄧㄢ → {那天}",
+     "id": "q206_08_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_08_09": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄍㄟˇ → {給}",
+     "id": "q206_08_09",
+     "order": 8,
+     "title": "第 9 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_08_10": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄅㄞˋ ㄋㄧㄢˊ → {拜年}",
+     "id": "q206_08_10",
+     "order": 9,
+     "title": "第 10 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_08_11": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄊㄞˊ ㄨㄢ → {臺灣}",
+     "id": "q206_08_11",
+     "order": 10,
+     "title": "第 11 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_08_12": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄇㄟˇ → {每}",
+     "id": "q206_08_12",
+     "order": 11,
+     "title": "第 12 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s206_9": {
+   "id": "s206_9",
+   "title": "第 9 大題：漢字（筆畫） Strokes",
+   "type": "choice",
+   "order": 8,
+   "questions": {
+    "q206_09_01": {
+     "prompt": "「華」有幾畫？ How many strokes does 華 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "12 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "11 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "13 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q206_09_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_09_02": {
+     "prompt": "「說」有幾畫？ How many strokes does 說 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "14 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "13 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "15 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q206_09_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_09_03": {
+     "prompt": "「對」有幾畫？ How many strokes does 對 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "14 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "13 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "15 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q206_09_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_09_04": {
+     "prompt": "「星」有幾畫？ How many strokes does 星 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "9 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "8 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "10 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q206_09_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_09_05": {
+     "prompt": "「期」有幾畫？ How many strokes does 期 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "12 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "11 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "13 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q206_09_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_09_06": {
+     "prompt": "「會」有幾畫？ How many strokes does 會 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "13 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "12 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "14 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q206_09_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_09_07": {
+     "prompt": "「每」有幾畫？ How many strokes does 每 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "7 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "6 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "8 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q206_09_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_09_08": {
+     "prompt": "「給」有幾畫？ How many strokes does 給 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "12 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "11 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "13 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q206_09_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_09_09": {
+     "prompt": "「如」有幾畫？ How many strokes does 如 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "6 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "5 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "7 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q206_09_09",
+     "order": 8,
+     "title": "第 9 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_09_10": {
+     "prompt": "「果」有幾畫？ How many strokes does 果 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "8 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "7 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "9 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q206_09_10",
+     "order": 9,
+     "title": "第 10 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s206_10": {
+   "id": "s206_10",
+   "title": "第 10 大題：說說看（句型） Speaking",
+   "type": "record",
+   "order": 9,
+   "questions": {
+    "q206_10_01": {
+     "prompt": "華人新年的時候，你會做什麼？ What will you do at Chinese New Year?",
+     "reference": "華人新年的時候，我會給爺爺奶奶拜年。",
+     "maxSec": 30,
+     "id": "q206_10_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_10_02": {
+     "prompt": "請用「每…都」說一個句子。 Make a sentence with 每…都.",
+     "reference": "我每個週末都運動。",
+     "maxSec": 30,
+     "id": "q206_10_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_10_03": {
+     "prompt": "請用「還」說一個句子。 Make a sentence with 還.",
+     "reference": "我今天吃了麵包，還喝了牛奶。",
+     "maxSec": 30,
+     "id": "q206_10_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_10_04": {
+     "prompt": "請從星期一念到星期天。 Say the days of the week.",
+     "reference": "星期一、星期二、星期三、星期四、星期五、星期六、星期天。",
+     "maxSec": 45,
+     "id": "q206_10_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s206_11": {
+   "id": "s206_11",
+   "title": "第 11 大題：習寫漢字 Write the characters",
+   "type": "hanzi",
+   "order": 10,
+   "questions": {
+    "q206_11_01": {
+     "char": "華",
+     "desc": "12畫，部首：艸",
+     "id": "q206_11_01",
+     "order": 0,
+     "title": "第 1 題：華",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_11_02": {
+     "char": "說",
+     "desc": "14畫，部首：言",
+     "id": "q206_11_02",
+     "order": 1,
+     "title": "第 2 題：說",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_11_03": {
+     "char": "對",
+     "desc": "14畫，部首：寸",
+     "id": "q206_11_03",
+     "order": 2,
+     "title": "第 3 題：對",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_11_04": {
+     "char": "星",
+     "desc": "9畫，部首：日",
+     "id": "q206_11_04",
+     "order": 3,
+     "title": "第 4 題：星",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_11_05": {
+     "char": "期",
+     "desc": "12畫，部首：月",
+     "id": "q206_11_05",
+     "order": 4,
+     "title": "第 5 題：期",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_11_06": {
+     "char": "會",
+     "desc": "13畫，部首：曰",
+     "id": "q206_11_06",
+     "order": 5,
+     "title": "第 6 題：會",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_11_07": {
+     "char": "每",
+     "desc": "7畫，部首：毋",
+     "id": "q206_11_07",
+     "order": 6,
+     "title": "第 7 題：每",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_11_08": {
+     "char": "給",
+     "desc": "12畫，部首：糸",
+     "id": "q206_11_08",
+     "order": 7,
+     "title": "第 8 題：給",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_11_09": {
+     "char": "如",
+     "desc": "6畫，部首：女",
+     "id": "q206_11_09",
+     "order": 8,
+     "title": "第 9 題：如",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_11_10": {
+     "char": "果",
+     "desc": "8畫，部首：木",
+     "id": "q206_11_10",
+     "order": 9,
+     "title": "第 10 題：果",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s206_12": {
+   "id": "s206_12",
+   "title": "第 12 大題：我會唸（課文、認讀漢字） Read aloud",
+   "type": "record",
+   "order": 11,
+   "questions": {
+    "q206_12_01": {
+     "prompt": "請唸出課文第一段。 Read the first part of the text.",
+     "reference": "大文：老師說華人新年快到了。\n爸爸：對，下個星期五是華人新年。\n大文：媽媽會去超市買年糕嗎？",
+     "maxSec": 45,
+     "passage": "大文：老師說華人新年快到了。\n爸爸：對，下個星期五是華人新年。\n大文：媽媽會去超市買年糕嗎？",
+     "id": "q206_12_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_12_02": {
+     "prompt": "請唸出課文第二段。 Read the second part of the text.",
+     "reference": "爸爸：會，那天我們還要給爺爺奶奶拜年。\n大文：太好了，爺爺每年都會給我紅包。\n爸爸：如果在臺灣，我們還會貼春聯、放鞭炮。",
+     "maxSec": 45,
+     "passage": "爸爸：會，那天我們還要給爺爺奶奶拜年。\n大文：太好了，爺爺每年都會給我紅包。\n爸爸：如果在臺灣，我們還會貼春聯、放鞭炮。",
+     "id": "q206_12_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q206_12_03": {
+     "prompt": "請唸出這些認讀漢字。 Read these characters aloud.",
+     "reference": "臺　糕　拜　炮　灣　貼　聯　放　鞭",
+     "maxSec": 30,
+     "id": "q206_12_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  }
+ },
+ "currentQId": "q206_01_01"
+}

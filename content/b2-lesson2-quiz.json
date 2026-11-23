@@ -1,0 +1,1254 @@
+{
+ "id": "proj_b2l2quiz",
+ "title": "第二冊 第2課 我爸爸做生意 練習題",
+ "desc": "依第二冊第2課簡報（課文、生詞、句型、習寫漢字、認讀漢字、練習、任務活動）整理；題目說明附英文",
+ "sections": {
+  "s202_1": {
+   "id": "s202_1",
+   "title": "第 1 大題：連連看（生詞和注音） Match the words with zhuyin",
+   "type": "match",
+   "order": 0,
+   "questions": {
+    "q202_01_01": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "外公",
+       "right": "ㄨㄞˋ ㄍㄨㄥ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "以前",
+       "right": "ㄧˇ ㄑㄧㄢˊ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "以後",
+       "right": "ㄧˇ ㄏㄡˋ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "外婆",
+       "right": "ㄨㄞˋ ㄆㄛˊ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "做生意",
+       "right": "ㄗㄨㄛˋ ㄕㄥ ˙ㄧ"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "幫",
+       "right": "ㄅㄤ"
+      }
+     },
+     "id": "q202_01_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_01_02": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "醫生",
+       "right": "ㄧ ㄕㄥ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "工作",
+       "right": "ㄍㄨㄥ ㄗㄨㄛˋ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "銀行",
+       "right": "ㄧㄣˊ ㄏㄤˊ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "一樣",
+       "right": "ㄧˊ ㄧㄤˋ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "電腦公司",
+       "right": "ㄉㄧㄢˋ ㄋㄠˇ ㄍㄨㄥ ㄙ"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "上班",
+       "right": "ㄕㄤˋ ㄅㄢ"
+      }
+     },
+     "id": "q202_01_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s202_2": {
+   "id": "s202_2",
+   "title": "第 2 大題：連連看（生詞和意思） Match the words with their meanings",
+   "type": "match",
+   "order": 1,
+   "questions": {
+    "q202_02_01": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "外公",
+       "right": "maternal grandfather"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "以前",
+       "right": "before"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "以後",
+       "right": "after"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "外婆",
+       "right": "maternal grandmother"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "做生意",
+       "right": "to do business"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "幫",
+       "right": "to help"
+      }
+     },
+     "id": "q202_02_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_02_02": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "醫生",
+       "right": "doctor"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "工作",
+       "right": "job; to work"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "銀行",
+       "right": "bank"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "一樣",
+       "right": "the same"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "電腦公司",
+       "right": "computer company"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "上班",
+       "right": "to go to work"
+      }
+     },
+     "id": "q202_02_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s202_3": {
+   "id": "s202_3",
+   "title": "第 3 大題：我會寫（寫出正確的漢字） Write the characters",
+   "type": "fill",
+   "order": 2,
+   "questions": {
+    "q202_03_01": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "張莉的{外}{公}以前是醫生。",
+     "id": "q202_03_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_03_02": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "張莉的爸爸做{生}意。",
+     "id": "q202_03_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_03_03": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "大文的爸爸在電腦公司{上}{班}。",
+     "id": "q202_03_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_03_04": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "大文的媽媽在銀行{工}{作}。",
+     "id": "q202_03_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_03_05": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "張莉{以}{後}想跟爸爸一樣。",
+     "id": "q202_03_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_03_06": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "我爸爸在電腦公司{上}{班}，我媽媽在銀行{工}{作}。",
+     "id": "q202_03_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_03_07": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "你{以}{後}想做什麼？",
+     "id": "q202_03_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_03_08": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "我{以}{後}想跟爸爸一樣。",
+     "id": "q202_03_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_03_09": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "左邊是我{外}公，他{以}{前}是醫生。",
+     "id": "q202_03_09",
+     "order": 8,
+     "title": "第 9 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s202_4": {
+   "id": "s202_4",
+   "title": "第 4 大題：句型填空 Fill in the sentence patterns",
+   "type": "fill",
+   "order": 3,
+   "questions": {
+    "q202_04_01": {
+     "prompt": "用「A的B是C」完成句子。 Use A的B是C.",
+     "template": "大文最喜歡{的}禮物是玩具和漫畫書。",
+     "id": "q202_04_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_04_02": {
+     "prompt": "用「以前」完成句子。 Use 以前.",
+     "template": "他的爸爸{以前}在銀行工作。",
+     "id": "q202_04_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_04_03": {
+     "prompt": "用「以後」完成句子。 Use 以後.",
+     "template": "張莉{以後}想在電腦公司上班。",
+     "id": "q202_04_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_04_04": {
+     "prompt": "用「幫」完成句子。 Use 幫.",
+     "template": "媽媽{幫}我們做早飯。",
+     "id": "q202_04_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_04_05": {
+     "prompt": "用「跟…一樣」完成句子。 Use 跟…一樣.",
+     "template": "大文跟東明{一樣}，喜歡運動。",
+     "id": "q202_04_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_04_06": {
+     "prompt": "用「跟…一樣」完成句子。 Use 跟…一樣.",
+     "template": "我想{跟}爸爸一樣，在電腦公司上班。",
+     "id": "q202_04_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s202_5": {
+   "id": "s202_5",
+   "title": "第 5 大題：選擇題（句型） Choose the correct answer",
+   "type": "choice",
+   "order": 4,
+   "questions": {
+    "q202_05_01": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n她是我奶奶，她＿＿是老師。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "以前"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "以後"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "一樣"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q202_05_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_05_02": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n我＿＿想在銀行工作。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "以後"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "以前"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "幫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q202_05_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_05_03": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n媽媽＿＿我們做早飯。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "幫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "跟"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "是"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q202_05_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_05_04": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n我想＿＿爸爸一樣。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "跟"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "在"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "是"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q202_05_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_05_05": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n你爸爸媽媽做什麼＿＿？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "工作"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "公司"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "醫生"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q202_05_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s202_6": {
+   "id": "s202_6",
+   "title": "第 6 大題：閱讀理解（課文） Reading comprehension",
+   "type": "choice",
+   "order": 5,
+   "questions": {
+    "q202_06_01": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n照片左邊是誰？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "張莉的外公"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "張莉的外婆"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "張莉的爸爸"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：張莉，照片裡面的人是誰？\n張莉：左邊是我外公，他以前是醫生，右邊是我外婆。\n大文：你爸爸媽媽做什麼工作？\n張莉：我爸爸做生意，我媽媽幫他。你爸爸媽媽呢？\n大文：我爸爸在電腦公司上班，我媽媽在銀行工作。你以後想做什麼？\n張莉：我以後想跟爸爸一樣。",
+     "id": "q202_06_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_06_02": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n張莉的外公以前做什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "醫生"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "老師"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "做生意"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：張莉，照片裡面的人是誰？\n張莉：左邊是我外公，他以前是醫生，右邊是我外婆。\n大文：你爸爸媽媽做什麼工作？\n張莉：我爸爸做生意，我媽媽幫他。你爸爸媽媽呢？\n大文：我爸爸在電腦公司上班，我媽媽在銀行工作。你以後想做什麼？\n張莉：我以後想跟爸爸一樣。",
+     "id": "q202_06_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_06_03": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n張莉的爸爸做什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "做生意"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "醫生"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "老師"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：張莉，照片裡面的人是誰？\n張莉：左邊是我外公，他以前是醫生，右邊是我外婆。\n大文：你爸爸媽媽做什麼工作？\n張莉：我爸爸做生意，我媽媽幫他。你爸爸媽媽呢？\n大文：我爸爸在電腦公司上班，我媽媽在銀行工作。你以後想做什麼？\n張莉：我以後想跟爸爸一樣。",
+     "id": "q202_06_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_06_04": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n大文的爸爸在哪裡上班？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "電腦公司"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "銀行"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "醫院"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：張莉，照片裡面的人是誰？\n張莉：左邊是我外公，他以前是醫生，右邊是我外婆。\n大文：你爸爸媽媽做什麼工作？\n張莉：我爸爸做生意，我媽媽幫他。你爸爸媽媽呢？\n大文：我爸爸在電腦公司上班，我媽媽在銀行工作。你以後想做什麼？\n張莉：我以後想跟爸爸一樣。",
+     "id": "q202_06_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_06_05": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n張莉以後想怎麼樣？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "跟爸爸一樣"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "當醫生"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "在銀行工作"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：張莉，照片裡面的人是誰？\n張莉：左邊是我外公，他以前是醫生，右邊是我外婆。\n大文：你爸爸媽媽做什麼工作？\n張莉：我爸爸做生意，我媽媽幫他。你爸爸媽媽呢？\n大文：我爸爸在電腦公司上班，我媽媽在銀行工作。你以後想做什麼？\n張莉：我以後想跟爸爸一樣。",
+     "id": "q202_06_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s202_7": {
+   "id": "s202_7",
+   "title": "第 7 大題：是非題（課文） True or false",
+   "type": "choice",
+   "order": 6,
+   "questions": {
+    "q202_07_01": {
+     "prompt": "判斷對錯。 True or false?\n\n張莉的外婆是醫生。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c2"
+     ],
+     "passage": "大文：張莉，照片裡面的人是誰？\n張莉：左邊是我外公，他以前是醫生，右邊是我外婆。\n大文：你爸爸媽媽做什麼工作？\n張莉：我爸爸做生意，我媽媽幫他。你爸爸媽媽呢？\n大文：我爸爸在電腦公司上班，我媽媽在銀行工作。你以後想做什麼？\n張莉：我以後想跟爸爸一樣。",
+     "id": "q202_07_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_07_02": {
+     "prompt": "判斷對錯。 True or false?\n\n張莉的媽媽幫爸爸做生意。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：張莉，照片裡面的人是誰？\n張莉：左邊是我外公，他以前是醫生，右邊是我外婆。\n大文：你爸爸媽媽做什麼工作？\n張莉：我爸爸做生意，我媽媽幫他。你爸爸媽媽呢？\n大文：我爸爸在電腦公司上班，我媽媽在銀行工作。你以後想做什麼？\n張莉：我以後想跟爸爸一樣。",
+     "id": "q202_07_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_07_03": {
+     "prompt": "判斷對錯。 True or false?\n\n大文的媽媽在銀行工作。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：張莉，照片裡面的人是誰？\n張莉：左邊是我外公，他以前是醫生，右邊是我外婆。\n大文：你爸爸媽媽做什麼工作？\n張莉：我爸爸做生意，我媽媽幫他。你爸爸媽媽呢？\n大文：我爸爸在電腦公司上班，我媽媽在銀行工作。你以後想做什麼？\n張莉：我以後想跟爸爸一樣。",
+     "id": "q202_07_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_07_04": {
+     "prompt": "判斷對錯。 True or false?\n\n張莉以後想跟媽媽一樣。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c2"
+     ],
+     "passage": "大文：張莉，照片裡面的人是誰？\n張莉：左邊是我外公，他以前是醫生，右邊是我外婆。\n大文：你爸爸媽媽做什麼工作？\n張莉：我爸爸做生意，我媽媽幫他。你爸爸媽媽呢？\n大文：我爸爸在電腦公司上班，我媽媽在銀行工作。你以後想做什麼？\n張莉：我以後想跟爸爸一樣。",
+     "id": "q202_07_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s202_8": {
+   "id": "s202_8",
+   "title": "第 8 大題：讀讀看，寫上漢字 Read the zhuyin and write the characters",
+   "type": "fill",
+   "order": 7,
+   "questions": {
+    "q202_08_01": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄨㄞˋ ㄍㄨㄥ → {外公}",
+     "id": "q202_08_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_08_02": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄧˇ ㄑㄧㄢˊ → {以前}",
+     "id": "q202_08_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_08_03": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄧˇ ㄏㄡˋ → {以後}",
+     "id": "q202_08_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_08_04": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄨㄞˋ ㄆㄛˊ → {外婆}",
+     "id": "q202_08_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_08_05": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄗㄨㄛˋ ㄕㄥ ˙ㄧ → {做生意}",
+     "id": "q202_08_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_08_06": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄅㄤ → {幫}",
+     "id": "q202_08_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_08_07": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄧ ㄕㄥ → {醫生}",
+     "id": "q202_08_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_08_08": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄍㄨㄥ ㄗㄨㄛˋ → {工作}",
+     "id": "q202_08_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_08_09": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄧㄣˊ ㄏㄤˊ → {銀行}",
+     "id": "q202_08_09",
+     "order": 8,
+     "title": "第 9 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_08_10": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄧˊ ㄧㄤˋ → {一樣}",
+     "id": "q202_08_10",
+     "order": 9,
+     "title": "第 10 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_08_11": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄉㄧㄢˋ ㄋㄠˇ ㄍㄨㄥ ㄙ → {電腦公司}",
+     "id": "q202_08_11",
+     "order": 10,
+     "title": "第 11 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_08_12": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄕㄤˋ ㄅㄢ → {上班}",
+     "id": "q202_08_12",
+     "order": 11,
+     "title": "第 12 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s202_9": {
+   "id": "s202_9",
+   "title": "第 9 大題：漢字（筆畫） Strokes",
+   "type": "choice",
+   "order": 8,
+   "questions": {
+    "q202_09_01": {
+     "prompt": "「外」有幾畫？ How many strokes does 外 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "5 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "4 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "6 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q202_09_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_09_02": {
+     "prompt": "「公」有幾畫？ How many strokes does 公 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "4 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "3 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "5 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q202_09_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_09_03": {
+     "prompt": "「工」有幾畫？ How many strokes does 工 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "3 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "2 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "4 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q202_09_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_09_04": {
+     "prompt": "「作」有幾畫？ How many strokes does 作 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "7 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "6 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "8 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q202_09_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_09_05": {
+     "prompt": "「前」有幾畫？ How many strokes does 前 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "9 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "8 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "10 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q202_09_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_09_06": {
+     "prompt": "「班」有幾畫？ How many strokes does 班 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "10 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "9 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "11 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q202_09_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_09_07": {
+     "prompt": "「以」有幾畫？ How many strokes does 以 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "5 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "4 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "6 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q202_09_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_09_08": {
+     "prompt": "「後」有幾畫？ How many strokes does 後 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "9 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "8 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "10 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q202_09_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s202_10": {
+   "id": "s202_10",
+   "title": "第 10 大題：句子重組 Reorder",
+   "type": "reorder",
+   "order": 9,
+   "questions": {
+    "q202_10_01": {
+     "prompt": "請將下列詞語重組為正確句子 Rearrange the words into a correct sentence",
+     "words": [
+      "左邊是我外公，",
+      "他以前是醫生，",
+      "右邊是我外婆。"
+     ],
+     "alts": [
+      "左邊是我外公， 他以前是醫生， 右邊是我外婆。"
+     ],
+     "id": "q202_10_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_10_02": {
+     "prompt": "請將下列詞語重組為正確句子 Rearrange the words into a correct sentence",
+     "words": [
+      "我爸爸做生意，",
+      "我媽媽幫他。",
+      "你爸爸媽媽呢？"
+     ],
+     "alts": [
+      "我爸爸做生意， 我媽媽幫他。 你爸爸媽媽呢？"
+     ],
+     "id": "q202_10_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_10_03": {
+     "prompt": "請將下列詞語重組為正確句子 Rearrange the words into a correct sentence",
+     "words": [
+      "我爸爸在電腦公司上班，",
+      "我媽媽在銀行工作。",
+      "你以後想做什麼？"
+     ],
+     "alts": [
+      "我爸爸在電腦公司上班， 我媽媽在銀行工作。 你以後想做什麼？"
+     ],
+     "id": "q202_10_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s202_11": {
+   "id": "s202_11",
+   "title": "第 11 大題：說說看（句型） Speaking",
+   "type": "record",
+   "order": 10,
+   "questions": {
+    "q202_11_01": {
+     "prompt": "你爸爸媽媽做什麼工作？ What do your parents do?",
+     "reference": "我爸爸在電腦公司上班，我媽媽在銀行工作。",
+     "maxSec": 30,
+     "id": "q202_11_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_11_02": {
+     "prompt": "你以後想做什麼？ What do you want to do in the future?",
+     "reference": "我以後想跟爸爸一樣。",
+     "maxSec": 30,
+     "id": "q202_11_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_11_03": {
+     "prompt": "請用「幫」說一個句子。 Make a sentence with 幫.",
+     "reference": "我常常幫媽媽做早飯。",
+     "maxSec": 30,
+     "id": "q202_11_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_11_04": {
+     "prompt": "請用「跟…一樣」說一個句子。 Make a sentence with 跟…一樣.",
+     "reference": "我跟你一樣，喜歡游泳。",
+     "maxSec": 30,
+     "id": "q202_11_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s202_12": {
+   "id": "s202_12",
+   "title": "第 12 大題：習寫漢字 Write the characters",
+   "type": "hanzi",
+   "order": 11,
+   "questions": {
+    "q202_12_01": {
+     "char": "外",
+     "desc": "5畫，部首：夕",
+     "id": "q202_12_01",
+     "order": 0,
+     "title": "第 1 題：外",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_12_02": {
+     "char": "公",
+     "desc": "4畫，部首：八",
+     "id": "q202_12_02",
+     "order": 1,
+     "title": "第 2 題：公",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_12_03": {
+     "char": "工",
+     "desc": "3畫，部首：工",
+     "id": "q202_12_03",
+     "order": 2,
+     "title": "第 3 題：工",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_12_04": {
+     "char": "作",
+     "desc": "7畫，部首：人",
+     "id": "q202_12_04",
+     "order": 3,
+     "title": "第 4 題：作",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_12_05": {
+     "char": "前",
+     "desc": "9畫，部首：刀",
+     "id": "q202_12_05",
+     "order": 4,
+     "title": "第 5 題：前",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_12_06": {
+     "char": "班",
+     "desc": "10畫，部首：玉",
+     "id": "q202_12_06",
+     "order": 5,
+     "title": "第 6 題：班",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_12_07": {
+     "char": "以",
+     "desc": "5畫，部首：人",
+     "id": "q202_12_07",
+     "order": 6,
+     "title": "第 7 題：以",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_12_08": {
+     "char": "後",
+     "desc": "9畫，部首：彳",
+     "id": "q202_12_08",
+     "order": 7,
+     "title": "第 8 題：後",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s202_13": {
+   "id": "s202_13",
+   "title": "第 13 大題：我會唸（課文、認讀漢字） Read aloud",
+   "type": "record",
+   "order": 12,
+   "questions": {
+    "q202_13_01": {
+     "prompt": "請唸出課文第一段。 Read the first part of the text.",
+     "reference": "大文：張莉，照片裡面的人是誰？\n張莉：左邊是我外公，他以前是醫生，右邊是我外婆。\n大文：你爸爸媽媽做什麼工作？",
+     "maxSec": 45,
+     "passage": "大文：張莉，照片裡面的人是誰？\n張莉：左邊是我外公，他以前是醫生，右邊是我外婆。\n大文：你爸爸媽媽做什麼工作？",
+     "id": "q202_13_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_13_02": {
+     "prompt": "請唸出課文第二段。 Read the second part of the text.",
+     "reference": "張莉：我爸爸做生意，我媽媽幫他。你爸爸媽媽呢？\n大文：我爸爸在電腦公司上班，我媽媽在銀行工作。你以後想做什麼？\n張莉：我以後想跟爸爸一樣。",
+     "maxSec": 45,
+     "passage": "張莉：我爸爸做生意，我媽媽幫他。你爸爸媽媽呢？\n大文：我爸爸在電腦公司上班，我媽媽在銀行工作。你以後想做什麼？\n張莉：我以後想跟爸爸一樣。",
+     "id": "q202_13_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q202_13_03": {
+     "prompt": "請唸出這些認讀漢字。 Read these characters aloud.",
+     "reference": "婆　醫　樣　幫　腦　司　銀　行",
+     "maxSec": 30,
+     "id": "q202_13_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  }
+ },
+ "currentQId": "q202_01_01"
+}

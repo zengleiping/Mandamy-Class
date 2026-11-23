@@ -1,0 +1,1245 @@
+{
+ "id": "proj_b2l3quiz",
+ "title": "第二冊 第3課 去超級市場 練習題",
+ "desc": "依第二冊第3課簡報（課文、生詞、句型、習寫漢字、認讀漢字、練習、任務活動）整理；題目說明附英文",
+ "sections": {
+  "s203_1": {
+   "id": "s203_1",
+   "title": "第 1 大題：連連看（生詞和注音） Match the words with zhuyin",
+   "type": "match",
+   "order": 0,
+   "questions": {
+    "q203_01_01": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "要",
+       "right": "ㄧㄠˋ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "附近",
+       "right": "ㄈㄨˋ ㄐㄧㄣˋ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "超級市場",
+       "right": "ㄔㄠ ㄐㄧˊ ㄕˋ ㄔㄤˇ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "東西",
+       "right": "ㄉㄨㄥ ˙ㄒㄧ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "巧克力",
+       "right": "ㄑㄧㄠˇ ㄎㄜˋ ㄌㄧˋ"
+      }
+     },
+     "id": "q203_01_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_01_02": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "冰淇淋",
+       "right": "ㄅㄧㄥ ㄑㄧˊ ㄌㄧㄣˊ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "買",
+       "right": "ㄇㄞˇ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "牛肉",
+       "right": "ㄋㄧㄡˊ ㄖㄡˋ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "青菜",
+       "right": "ㄑㄧㄥ ㄘㄞˋ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "米",
+       "right": "ㄇㄧˇ"
+      }
+     },
+     "id": "q203_01_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_01_03": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "可以",
+       "right": "ㄎㄜˇ ㄧˇ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "糖果",
+       "right": "ㄊㄤˊ ㄍㄨㄛˇ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "魚",
+       "right": "ㄩˊ"
+      }
+     },
+     "id": "q203_01_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s203_2": {
+   "id": "s203_2",
+   "title": "第 2 大題：連連看（生詞和意思） Match the words with their meanings",
+   "type": "match",
+   "order": 1,
+   "questions": {
+    "q203_02_01": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "要",
+       "right": "to want"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "附近",
+       "right": "nearby"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "超級市場",
+       "right": "supermarket"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "東西",
+       "right": "thing"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "巧克力",
+       "right": "chocolate"
+      }
+     },
+     "id": "q203_02_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_02_02": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "冰淇淋",
+       "right": "ice cream"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "買",
+       "right": "to buy"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "牛肉",
+       "right": "beef"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "青菜",
+       "right": "vegetables"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "米",
+       "right": "rice"
+      }
+     },
+     "id": "q203_02_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_02_03": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "可以",
+       "right": "can; may"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "糖果",
+       "right": "candy"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "魚",
+       "right": "fish"
+      }
+     },
+     "id": "q203_02_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s203_3": {
+   "id": "s203_3",
+   "title": "第 3 大題：我會寫（寫出正確的漢字） Write the characters",
+   "type": "fill",
+   "order": 2,
+   "questions": {
+    "q203_03_01": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "我要去附{近}的超級市場買東{西}，你要跟我一起去嗎？",
+     "id": "q203_03_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_03_02": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "要，我想去{買}巧克力冰淇淋。",
+     "id": "q203_03_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_03_03": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "我今天要買{魚}、牛肉、青菜，{還}要買米。",
+     "id": "q203_03_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_03_04": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "大文{可}以買糖果嗎？",
+     "id": "q203_03_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_03_05": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "大文想去買{東}{西}。",
+     "id": "q203_03_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_03_06": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "你今天要{買}什麼？",
+     "id": "q203_03_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_03_07": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "我今天要買魚、牛{肉}、青{菜}，還要買{米}。",
+     "id": "q203_03_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_03_08": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "我要去{附}近的超級市場。",
+     "id": "q203_03_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_03_09": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "我{可}以吃糖果嗎？",
+     "id": "q203_03_09",
+     "order": 8,
+     "title": "第 9 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s203_4": {
+   "id": "s203_4",
+   "title": "第 4 大題：句型填空 Fill in the sentence patterns",
+   "type": "fill",
+   "order": 3,
+   "questions": {
+    "q203_04_01": {
+     "prompt": "用「要」完成句子。 Use 要.",
+     "template": "哥哥{要}吃冰淇淋，弟弟要喝果汁。",
+     "id": "q203_04_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_04_02": {
+     "prompt": "用「要」完成句子。 Use 要.",
+     "template": "媽媽，你{要}去買什麼？",
+     "id": "q203_04_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_04_03": {
+     "prompt": "用「的」完成句子。 Use 的.",
+     "template": "我要去附近{的}超級市場。",
+     "id": "q203_04_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_04_04": {
+     "prompt": "用「可以…嗎」完成句子。 Use 可以…嗎.",
+     "template": "大文{可以}買糖果嗎？",
+     "id": "q203_04_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_04_05": {
+     "prompt": "用「可以…嗎」完成句子。 Use 可以…嗎.",
+     "template": "爸爸，我{可以}畫圖嗎？",
+     "id": "q203_04_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s203_5": {
+   "id": "s203_5",
+   "title": "第 5 大題：選擇題（句型） Choose the correct answer",
+   "type": "choice",
+   "order": 4,
+   "questions": {
+    "q203_05_01": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n媽媽＿＿去超級市場買東西。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "要"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "的"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "在"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q203_05_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_05_02": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n我＿＿吃糖果嗎？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "可以"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "附近"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "東西"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q203_05_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_05_03": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n我要去附近＿＿超級市場。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "的"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "可以"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "要"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q203_05_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_05_04": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n媽媽要買魚、牛肉、青菜，＿＿要買米。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "還"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "可以"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "去"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q203_05_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_05_05": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n大文想買巧克力＿＿。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "冰淇淋"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "青菜"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "牛肉"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q203_05_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s203_6": {
+   "id": "s203_6",
+   "title": "第 6 大題：閱讀理解（課文） Reading comprehension",
+   "type": "choice",
+   "order": 5,
+   "questions": {
+    "q203_06_01": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n媽媽要去哪裡？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "附近的超級市場"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "學校"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "公園"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：媽媽，你要去哪裡？\n媽媽：我要去附近的超級市場買東西，你要跟我一起去嗎？\n大文：要，我想去買巧克力冰淇淋。你今天要買什麼？\n媽媽：我今天要買魚、牛肉、青菜，還要買米。\n大文：我也可以買糖果嗎？\n媽媽：我們去看一下吧！",
+     "id": "q203_06_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_06_02": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n大文想買什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "巧克力冰淇淋"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "魚"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "米"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：媽媽，你要去哪裡？\n媽媽：我要去附近的超級市場買東西，你要跟我一起去嗎？\n大文：要，我想去買巧克力冰淇淋。你今天要買什麼？\n媽媽：我今天要買魚、牛肉、青菜，還要買米。\n大文：我也可以買糖果嗎？\n媽媽：我們去看一下吧！",
+     "id": "q203_06_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_06_03": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n媽媽要買什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "魚、牛肉、青菜、米"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "糖果"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "冰淇淋"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：媽媽，你要去哪裡？\n媽媽：我要去附近的超級市場買東西，你要跟我一起去嗎？\n大文：要，我想去買巧克力冰淇淋。你今天要買什麼？\n媽媽：我今天要買魚、牛肉、青菜，還要買米。\n大文：我也可以買糖果嗎？\n媽媽：我們去看一下吧！",
+     "id": "q203_06_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_06_04": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n大文也想買什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "糖果"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "牛肉"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "青菜"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：媽媽，你要去哪裡？\n媽媽：我要去附近的超級市場買東西，你要跟我一起去嗎？\n大文：要，我想去買巧克力冰淇淋。你今天要買什麼？\n媽媽：我今天要買魚、牛肉、青菜，還要買米。\n大文：我也可以買糖果嗎？\n媽媽：我們去看一下吧！",
+     "id": "q203_06_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_06_05": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n媽媽怎麼回答大文想買糖果？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "我們去看一下吧"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "不可以"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "你自己去"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：媽媽，你要去哪裡？\n媽媽：我要去附近的超級市場買東西，你要跟我一起去嗎？\n大文：要，我想去買巧克力冰淇淋。你今天要買什麼？\n媽媽：我今天要買魚、牛肉、青菜，還要買米。\n大文：我也可以買糖果嗎？\n媽媽：我們去看一下吧！",
+     "id": "q203_06_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s203_7": {
+   "id": "s203_7",
+   "title": "第 7 大題：是非題（課文） True or false",
+   "type": "choice",
+   "order": 6,
+   "questions": {
+    "q203_07_01": {
+     "prompt": "判斷對錯。 True or false?\n\n媽媽要去附近的超級市場。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：媽媽，你要去哪裡？\n媽媽：我要去附近的超級市場買東西，你要跟我一起去嗎？\n大文：要，我想去買巧克力冰淇淋。你今天要買什麼？\n媽媽：我今天要買魚、牛肉、青菜，還要買米。\n大文：我也可以買糖果嗎？\n媽媽：我們去看一下吧！",
+     "id": "q203_07_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_07_02": {
+     "prompt": "判斷對錯。 True or false?\n\n大文不想跟媽媽一起去。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c2"
+     ],
+     "passage": "大文：媽媽，你要去哪裡？\n媽媽：我要去附近的超級市場買東西，你要跟我一起去嗎？\n大文：要，我想去買巧克力冰淇淋。你今天要買什麼？\n媽媽：我今天要買魚、牛肉、青菜，還要買米。\n大文：我也可以買糖果嗎？\n媽媽：我們去看一下吧！",
+     "id": "q203_07_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_07_03": {
+     "prompt": "判斷對錯。 True or false?\n\n媽媽要買魚、牛肉、青菜和米。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "大文：媽媽，你要去哪裡？\n媽媽：我要去附近的超級市場買東西，你要跟我一起去嗎？\n大文：要，我想去買巧克力冰淇淋。你今天要買什麼？\n媽媽：我今天要買魚、牛肉、青菜，還要買米。\n大文：我也可以買糖果嗎？\n媽媽：我們去看一下吧！",
+     "id": "q203_07_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_07_04": {
+     "prompt": "判斷對錯。 True or false?\n\n大文想買牛肉。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c2"
+     ],
+     "passage": "大文：媽媽，你要去哪裡？\n媽媽：我要去附近的超級市場買東西，你要跟我一起去嗎？\n大文：要，我想去買巧克力冰淇淋。你今天要買什麼？\n媽媽：我今天要買魚、牛肉、青菜，還要買米。\n大文：我也可以買糖果嗎？\n媽媽：我們去看一下吧！",
+     "id": "q203_07_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s203_8": {
+   "id": "s203_8",
+   "title": "第 8 大題：讀讀看，寫上漢字 Read the zhuyin and write the characters",
+   "type": "fill",
+   "order": 7,
+   "questions": {
+    "q203_08_01": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄧㄠˋ → {要}",
+     "id": "q203_08_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_08_02": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄈㄨˋ ㄐㄧㄣˋ → {附近}",
+     "id": "q203_08_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_08_03": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄔㄠ ㄐㄧˊ ㄕˋ ㄔㄤˇ → {超級市場}",
+     "id": "q203_08_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_08_04": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄉㄨㄥ ˙ㄒㄧ → {東西}",
+     "id": "q203_08_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_08_05": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄑㄧㄠˇ ㄎㄜˋ ㄌㄧˋ → {巧克力}",
+     "id": "q203_08_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_08_06": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄅㄧㄥ ㄑㄧˊ ㄌㄧㄣˊ → {冰淇淋}",
+     "id": "q203_08_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_08_07": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄇㄞˇ → {買}",
+     "id": "q203_08_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_08_08": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄋㄧㄡˊ ㄖㄡˋ → {牛肉}",
+     "id": "q203_08_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_08_09": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄑㄧㄥ ㄘㄞˋ → {青菜}",
+     "id": "q203_08_09",
+     "order": 8,
+     "title": "第 9 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_08_10": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄇㄧˇ → {米}",
+     "id": "q203_08_10",
+     "order": 9,
+     "title": "第 10 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_08_11": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄎㄜˇ ㄧˇ → {可以}",
+     "id": "q203_08_11",
+     "order": 10,
+     "title": "第 11 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_08_12": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄊㄤˊ ㄍㄨㄛˇ → {糖果}",
+     "id": "q203_08_12",
+     "order": 11,
+     "title": "第 12 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s203_9": {
+   "id": "s203_9",
+   "title": "第 9 大題：漢字（筆畫） Strokes",
+   "type": "choice",
+   "order": 8,
+   "questions": {
+    "q203_09_01": {
+     "prompt": "「去」有幾畫？ How many strokes does 去 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "5 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "4 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "6 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q203_09_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_09_02": {
+     "prompt": "「近」有幾畫？ How many strokes does 近 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "8 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "7 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "9 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q203_09_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_09_03": {
+     "prompt": "「買」有幾畫？ How many strokes does 買 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "12 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "11 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "13 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q203_09_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_09_04": {
+     "prompt": "「東」有幾畫？ How many strokes does 東 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "8 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "7 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "9 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q203_09_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_09_05": {
+     "prompt": "「西」有幾畫？ How many strokes does 西 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "6 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "5 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "7 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q203_09_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_09_06": {
+     "prompt": "「魚」有幾畫？ How many strokes does 魚 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "11 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "10 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "12 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q203_09_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_09_07": {
+     "prompt": "「還」有幾畫？ How many strokes does 還 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "17 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "16 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "18 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q203_09_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_09_08": {
+     "prompt": "「可」有幾畫？ How many strokes does 可 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "5 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "4 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "6 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q203_09_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s203_10": {
+   "id": "s203_10",
+   "title": "第 10 大題：句子重組 Reorder",
+   "type": "reorder",
+   "order": 9,
+   "questions": {
+    "q203_10_01": {
+     "prompt": "請將下列詞語重組為正確句子 Rearrange the words into a correct sentence",
+     "words": [
+      "要，",
+      "我想去買巧克力冰淇淋。",
+      "你今天要買什麼？"
+     ],
+     "alts": [
+      "要， 我想去買巧克力冰淇淋。 你今天要買什麼？"
+     ],
+     "id": "q203_10_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s203_11": {
+   "id": "s203_11",
+   "title": "第 11 大題：說說看（句型） Speaking",
+   "type": "record",
+   "order": 10,
+   "questions": {
+    "q203_11_01": {
+     "prompt": "你要去哪裡？你要買什麼？ Where are you going? What will you buy?",
+     "reference": "我要去超級市場，我要買魚和米。",
+     "maxSec": 30,
+     "id": "q203_11_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_11_02": {
+     "prompt": "請用「可以…嗎」問一個問題。 Ask a question with 可以…嗎.",
+     "reference": "老師，我可以吃飯嗎？",
+     "maxSec": 30,
+     "id": "q203_11_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_11_03": {
+     "prompt": "請說說超級市場裡有什麼。 Say what is in a supermarket.",
+     "reference": "超級市場有魚、牛肉、青菜、米和糖果。",
+     "maxSec": 30,
+     "id": "q203_11_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_11_04": {
+     "prompt": "請用「要」說一個句子。 Make a sentence with 要.",
+     "reference": "我要去買冰淇淋。",
+     "maxSec": 30,
+     "id": "q203_11_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s203_12": {
+   "id": "s203_12",
+   "title": "第 12 大題：習寫漢字 Write the characters",
+   "type": "hanzi",
+   "order": 11,
+   "questions": {
+    "q203_12_01": {
+     "char": "去",
+     "desc": "5畫，部首：厶",
+     "id": "q203_12_01",
+     "order": 0,
+     "title": "第 1 題：去",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_12_02": {
+     "char": "近",
+     "desc": "8畫，部首：辵",
+     "id": "q203_12_02",
+     "order": 1,
+     "title": "第 2 題：近",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_12_03": {
+     "char": "買",
+     "desc": "12畫，部首：貝",
+     "id": "q203_12_03",
+     "order": 2,
+     "title": "第 3 題：買",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_12_04": {
+     "char": "東",
+     "desc": "8畫，部首：木",
+     "id": "q203_12_04",
+     "order": 3,
+     "title": "第 4 題：東",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_12_05": {
+     "char": "西",
+     "desc": "6畫，部首：襾",
+     "id": "q203_12_05",
+     "order": 4,
+     "title": "第 5 題：西",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_12_06": {
+     "char": "魚",
+     "desc": "11畫，部首：魚",
+     "id": "q203_12_06",
+     "order": 5,
+     "title": "第 6 題：魚",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_12_07": {
+     "char": "還",
+     "desc": "17畫，部首：辵",
+     "id": "q203_12_07",
+     "order": 6,
+     "title": "第 7 題：還",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_12_08": {
+     "char": "可",
+     "desc": "5畫，部首：口",
+     "id": "q203_12_08",
+     "order": 7,
+     "title": "第 8 題：可",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s203_13": {
+   "id": "s203_13",
+   "title": "第 13 大題：我會唸（課文、認讀漢字） Read aloud",
+   "type": "record",
+   "order": 12,
+   "questions": {
+    "q203_13_01": {
+     "prompt": "請唸出課文第一段。 Read the first part of the text.",
+     "reference": "大文：媽媽，你要去哪裡？\n媽媽：我要去附近的超級市場買東西，你要跟我一起去嗎？\n大文：要，我想去買巧克力冰淇淋。你今天要買什麼？",
+     "maxSec": 45,
+     "passage": "大文：媽媽，你要去哪裡？\n媽媽：我要去附近的超級市場買東西，你要跟我一起去嗎？\n大文：要，我想去買巧克力冰淇淋。你今天要買什麼？",
+     "id": "q203_13_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_13_02": {
+     "prompt": "請唸出課文第二段。 Read the second part of the text.",
+     "reference": "媽媽：我今天要買魚、牛肉、青菜，還要買米。\n大文：我也可以買糖果嗎？\n媽媽：我們去看一下吧！",
+     "maxSec": 45,
+     "passage": "媽媽：我今天要買魚、牛肉、青菜，還要買米。\n大文：我也可以買糖果嗎？\n媽媽：我們去看一下吧！",
+     "id": "q203_13_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q203_13_03": {
+     "prompt": "請唸出這些認讀漢字。 Read these characters aloud.",
+     "reference": "附　超　級　冰　市　場　巧　克　力　淇　淋　青　菜　米　糖　果",
+     "maxSec": 30,
+     "id": "q203_13_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  }
+ },
+ "currentQId": "q203_01_01"
+}

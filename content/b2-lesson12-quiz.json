@@ -1,0 +1,1364 @@
+{
+ "id": "proj_b2l12quiz",
+ "title": "第二冊 第12課 打網路電話 練習題",
+ "desc": "依第二冊第12課簡報（課文、生詞、句型、習寫漢字、認讀漢字、練習、任務活動）整理；題目說明附英文",
+ "sections": {
+  "s212_1": {
+   "id": "s212_1",
+   "title": "第 1 大題：連連看（生詞和注音） Match the words with zhuyin",
+   "type": "match",
+   "order": 0,
+   "questions": {
+    "q212_01_01": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "網路",
+       "right": "ㄨㄤˇ ㄌㄨˋ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "電話",
+       "right": "ㄉㄧㄢˋ ㄏㄨㄚˋ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "很久",
+       "right": "ㄏㄣˇ ㄐㄧㄡˇ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "說話",
+       "right": "ㄕㄨㄛ ㄏㄨㄚˋ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "影像",
+       "right": "ㄧㄥˇ ㄒㄧㄤˋ"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "過來",
+       "right": "ㄍㄨㄛˋ ㄌㄞˊ"
+      }
+     },
+     "id": "q212_01_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_01_02": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "長高",
+       "right": "ㄓㄤˇ ㄍㄠ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "看起來",
+       "right": "ㄎㄢˋ ㄑㄧˇ ㄌㄞˊ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "瘦",
+       "right": "ㄕㄡˋ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "啊",
+       "right": "˙ㄚ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "寫",
+       "right": "ㄒㄧㄝˇ"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "上課",
+       "right": "ㄕㄤˋ ㄎㄜˋ"
+      }
+     },
+     "id": "q212_01_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_01_03": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "有意思",
+       "right": "ㄧㄡˇ ㄧˋ ˙ㄙ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "好好",
+       "right": "ㄏㄠˇ ㄏㄠˇ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "信",
+       "right": "ㄒㄧㄣˋ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "一定",
+       "right": "ㄧˊ ㄉㄧㄥˋ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "沒問題",
+       "right": "ㄇㄟˊ ㄨㄣˋ ㄊㄧˊ"
+      }
+     },
+     "id": "q212_01_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s212_2": {
+   "id": "s212_2",
+   "title": "第 2 大題：連連看（生詞和意思） Match the words with their meanings",
+   "type": "match",
+   "order": 1,
+   "questions": {
+    "q212_02_01": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "網路",
+       "right": "internet"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "電話",
+       "right": "phone"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "很久",
+       "right": "a long time"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "說話",
+       "right": "to talk"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "影像",
+       "right": "image"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "過來",
+       "right": "come over"
+      }
+     },
+     "id": "q212_02_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_02_02": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "長高",
+       "right": "grow taller"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "看起來",
+       "right": "looks"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "瘦",
+       "right": "thin"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "啊",
+       "right": "(particle)"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "寫",
+       "right": "to write"
+      },
+      "p6": {
+       "id": "p6",
+       "left": "上課",
+       "right": "to attend class"
+      }
+     },
+     "id": "q212_02_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_02_03": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "有意思",
+       "right": "interesting"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "好好",
+       "right": "properly"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "信",
+       "right": "letter"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "一定",
+       "right": "definitely"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "沒問題",
+       "right": "no problem"
+      }
+     },
+     "id": "q212_02_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s212_3": {
+   "id": "s212_3",
+   "title": "第 3 大題：我會寫（寫出正確的漢字） Write the characters",
+   "type": "fill",
+   "order": 2,
+   "questions": {
+    "q212_03_01": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "大文，我現在要用{網}{路}給姑姑打{電}{話}。",
+     "id": "q212_03_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_03_02": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "可以看到姑姑嗎？我{很}{久}沒跟姑姑{說}{話}了。",
+     "id": "q212_03_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_03_03": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "你好好學中文，以後用網路給我{寫}{信}。",
+     "id": "q212_03_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_03_04": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "{沒}{問}題，我{一}{定}會好好學中文。",
+     "id": "q212_03_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_03_05": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "是啊！{上}{課}很有{意}{思}。",
+     "id": "q212_03_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_03_06": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "大文，你看起來{瘦}了。",
+     "id": "q212_03_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_03_07": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "我沒瘦，我{長}{高}了。",
+     "id": "q212_03_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_03_08": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "可以看到她的{影}{像}，快一點{過}{來}。",
+     "id": "q212_03_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_03_09": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "我{一}{定}會好好學中文。",
+     "id": "q212_03_09",
+     "order": 8,
+     "title": "第 9 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s212_4": {
+   "id": "s212_4",
+   "title": "第 4 大題：句型填空 Fill in the sentence patterns",
+   "type": "fill",
+   "order": 3,
+   "questions": {
+    "q212_04_01": {
+     "prompt": "用「很久沒…了」完成句子。 Use 很久沒…了.",
+     "template": "我{很久}沒跟爺爺、奶奶說話了。",
+     "id": "q212_04_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_04_02": {
+     "prompt": "用「很久沒…了」完成句子。 Use 很久沒…了.",
+     "template": "爸爸很久沒{運動}了。",
+     "id": "q212_04_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_04_03": {
+     "prompt": "用「胖／瘦了」完成句子。 Use 胖／瘦了.",
+     "template": "他以前有一點胖，現在{瘦}了。",
+     "id": "q212_04_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_04_04": {
+     "prompt": "用「看起來」完成句子。 Use 看起來.",
+     "template": "熊貓眼睛大大的，{看起來}很可愛。",
+     "id": "q212_04_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_04_05": {
+     "prompt": "用「好好」完成句子。 Use 好好.",
+     "template": "你{好好}學中文。",
+     "id": "q212_04_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_04_06": {
+     "prompt": "用「一定」完成句子。 Use 一定.",
+     "template": "你好好學電腦，以後去電腦公司上班。我{一定}好好學。",
+     "id": "q212_04_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s212_5": {
+   "id": "s212_5",
+   "title": "第 5 大題：選擇題（句型） Choose the correct answer",
+   "type": "choice",
+   "order": 4,
+   "questions": {
+    "q212_05_01": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n我＿＿沒跟姑姑說話了。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "很久"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "一定"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "好好"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q212_05_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_05_02": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n大文，你＿＿瘦了。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "看起來"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "一定"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "很久"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q212_05_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_05_03": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n你＿＿學中文。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "好好"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "瘦了"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "過來"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q212_05_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_05_04": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n沒問題，我＿＿會好好學中文。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "一定"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "看起來"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "很久"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q212_05_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_05_05": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n爸爸用＿＿給姑姑打電話。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "網路"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "信"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "影像"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q212_05_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s212_6": {
+   "id": "s212_6",
+   "title": "第 6 大題：閱讀理解（課文） Reading comprehension",
+   "type": "choice",
+   "order": 5,
+   "questions": {
+    "q212_06_01": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n爸爸要用什麼給姑姑打電話？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "網路"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "手機"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "信"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "爸爸：大文，我現在要用網路給姑姑打電話。\n大文：可以看到姑姑嗎？我很久沒跟姑姑說話了。\n爸爸：可以看到她的影像，快一點過來。\n姑姑：大文，你看起來瘦了。\n大文：我沒瘦，我長高了。\n姑姑：文文現在也跟你一起去學中文嗎？\n大文：是啊！上中文課很有意思。\n姑姑：你好好學中文，以後可以用網路給我寫信。\n大文：沒問題，我一定會好好學中文。",
+     "id": "q212_06_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_06_02": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n大文為什麼想看到姑姑？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "他很久沒跟姑姑說話了"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "他生病了"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "他想買東西"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "爸爸：大文，我現在要用網路給姑姑打電話。\n大文：可以看到姑姑嗎？我很久沒跟姑姑說話了。\n爸爸：可以看到她的影像，快一點過來。\n姑姑：大文，你看起來瘦了。\n大文：我沒瘦，我長高了。\n姑姑：文文現在也跟你一起去學中文嗎？\n大文：是啊！上中文課很有意思。\n姑姑：你好好學中文，以後可以用網路給我寫信。\n大文：沒問題，我一定會好好學中文。",
+     "id": "q212_06_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_06_03": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n姑姑說大文看起來怎麼樣？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "瘦了"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "胖了"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "累了"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "爸爸：大文，我現在要用網路給姑姑打電話。\n大文：可以看到姑姑嗎？我很久沒跟姑姑說話了。\n爸爸：可以看到她的影像，快一點過來。\n姑姑：大文，你看起來瘦了。\n大文：我沒瘦，我長高了。\n姑姑：文文現在也跟你一起去學中文嗎？\n大文：是啊！上中文課很有意思。\n姑姑：你好好學中文，以後可以用網路給我寫信。\n大文：沒問題，我一定會好好學中文。",
+     "id": "q212_06_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_06_04": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n大文說自己怎麼了？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "長高了"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "瘦了"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "生病了"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "爸爸：大文，我現在要用網路給姑姑打電話。\n大文：可以看到姑姑嗎？我很久沒跟姑姑說話了。\n爸爸：可以看到她的影像，快一點過來。\n姑姑：大文，你看起來瘦了。\n大文：我沒瘦，我長高了。\n姑姑：文文現在也跟你一起去學中文嗎？\n大文：是啊！上中文課很有意思。\n姑姑：你好好學中文，以後可以用網路給我寫信。\n大文：沒問題，我一定會好好學中文。",
+     "id": "q212_06_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_06_05": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n姑姑要大文做什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "好好學中文"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "多吃飯"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "早點睡"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "爸爸：大文，我現在要用網路給姑姑打電話。\n大文：可以看到姑姑嗎？我很久沒跟姑姑說話了。\n爸爸：可以看到她的影像，快一點過來。\n姑姑：大文，你看起來瘦了。\n大文：我沒瘦，我長高了。\n姑姑：文文現在也跟你一起去學中文嗎？\n大文：是啊！上中文課很有意思。\n姑姑：你好好學中文，以後可以用網路給我寫信。\n大文：沒問題，我一定會好好學中文。",
+     "id": "q212_06_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_06_06": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n大文怎麼回答？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "沒問題，一定好好學"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "我不想學"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "我沒時間"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "爸爸：大文，我現在要用網路給姑姑打電話。\n大文：可以看到姑姑嗎？我很久沒跟姑姑說話了。\n爸爸：可以看到她的影像，快一點過來。\n姑姑：大文，你看起來瘦了。\n大文：我沒瘦，我長高了。\n姑姑：文文現在也跟你一起去學中文嗎？\n大文：是啊！上中文課很有意思。\n姑姑：你好好學中文，以後可以用網路給我寫信。\n大文：沒問題，我一定會好好學中文。",
+     "id": "q212_06_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s212_7": {
+   "id": "s212_7",
+   "title": "第 7 大題：是非題（課文） True or false",
+   "type": "choice",
+   "order": 6,
+   "questions": {
+    "q212_07_01": {
+     "prompt": "判斷對錯。 True or false?\n\n爸爸用手機給姑姑打電話。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c2"
+     ],
+     "passage": "爸爸：大文，我現在要用網路給姑姑打電話。\n大文：可以看到姑姑嗎？我很久沒跟姑姑說話了。\n爸爸：可以看到她的影像，快一點過來。\n姑姑：大文，你看起來瘦了。\n大文：我沒瘦，我長高了。\n姑姑：文文現在也跟你一起去學中文嗎？\n大文：是啊！上中文課很有意思。\n姑姑：你好好學中文，以後可以用網路給我寫信。\n大文：沒問題，我一定會好好學中文。",
+     "id": "q212_07_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_07_02": {
+     "prompt": "判斷對錯。 True or false?\n\n大文很久沒跟姑姑說話了。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "爸爸：大文，我現在要用網路給姑姑打電話。\n大文：可以看到姑姑嗎？我很久沒跟姑姑說話了。\n爸爸：可以看到她的影像，快一點過來。\n姑姑：大文，你看起來瘦了。\n大文：我沒瘦，我長高了。\n姑姑：文文現在也跟你一起去學中文嗎？\n大文：是啊！上中文課很有意思。\n姑姑：你好好學中文，以後可以用網路給我寫信。\n大文：沒問題，我一定會好好學中文。",
+     "id": "q212_07_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_07_03": {
+     "prompt": "判斷對錯。 True or false?\n\n大文說他瘦了。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c2"
+     ],
+     "passage": "爸爸：大文，我現在要用網路給姑姑打電話。\n大文：可以看到姑姑嗎？我很久沒跟姑姑說話了。\n爸爸：可以看到她的影像，快一點過來。\n姑姑：大文，你看起來瘦了。\n大文：我沒瘦，我長高了。\n姑姑：文文現在也跟你一起去學中文嗎？\n大文：是啊！上中文課很有意思。\n姑姑：你好好學中文，以後可以用網路給我寫信。\n大文：沒問題，我一定會好好學中文。",
+     "id": "q212_07_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_07_04": {
+     "prompt": "判斷對錯。 True or false?\n\n大文覺得上中文課很有意思。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "爸爸：大文，我現在要用網路給姑姑打電話。\n大文：可以看到姑姑嗎？我很久沒跟姑姑說話了。\n爸爸：可以看到她的影像，快一點過來。\n姑姑：大文，你看起來瘦了。\n大文：我沒瘦，我長高了。\n姑姑：文文現在也跟你一起去學中文嗎？\n大文：是啊！上中文課很有意思。\n姑姑：你好好學中文，以後可以用網路給我寫信。\n大文：沒問題，我一定會好好學中文。",
+     "id": "q212_07_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s212_8": {
+   "id": "s212_8",
+   "title": "第 8 大題：讀讀看，寫上漢字 Read the zhuyin and write the characters",
+   "type": "fill",
+   "order": 7,
+   "questions": {
+    "q212_08_01": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄨㄤˇ ㄌㄨˋ → {網路}",
+     "id": "q212_08_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_08_02": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄉㄧㄢˋ ㄏㄨㄚˋ → {電話}",
+     "id": "q212_08_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_08_03": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄏㄣˇ ㄐㄧㄡˇ → {很久}",
+     "id": "q212_08_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_08_04": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄕㄨㄛ ㄏㄨㄚˋ → {說話}",
+     "id": "q212_08_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_08_05": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄧㄥˇ ㄒㄧㄤˋ → {影像}",
+     "id": "q212_08_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_08_06": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄍㄨㄛˋ ㄌㄞˊ → {過來}",
+     "id": "q212_08_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_08_07": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄓㄤˇ ㄍㄠ → {長高}",
+     "id": "q212_08_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_08_08": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄎㄢˋ ㄑㄧˇ ㄌㄞˊ → {看起來}",
+     "id": "q212_08_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_08_09": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄕㄡˋ → {瘦}",
+     "id": "q212_08_09",
+     "order": 8,
+     "title": "第 9 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_08_10": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "˙ㄚ → {啊}",
+     "id": "q212_08_10",
+     "order": 9,
+     "title": "第 10 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_08_11": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄒㄧㄝˇ → {寫}",
+     "id": "q212_08_11",
+     "order": 10,
+     "title": "第 11 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_08_12": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄕㄤˋ ㄎㄜˋ → {上課}",
+     "id": "q212_08_12",
+     "order": 11,
+     "title": "第 12 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s212_9": {
+   "id": "s212_9",
+   "title": "第 9 大題：漢字（筆畫） Strokes",
+   "type": "choice",
+   "order": 8,
+   "questions": {
+    "q212_09_01": {
+     "prompt": "「久」有幾畫？ How many strokes does 久 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "3 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "2 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "4 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q212_09_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_09_02": {
+     "prompt": "「話」有幾畫？ How many strokes does 話 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "13 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "12 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "14 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q212_09_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_09_03": {
+     "prompt": "「高」有幾畫？ How many strokes does 高 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "10 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "9 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "11 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q212_09_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_09_04": {
+     "prompt": "「課」有幾畫？ How many strokes does 課 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "15 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "14 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "16 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q212_09_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_09_05": {
+     "prompt": "「寫」有幾畫？ How many strokes does 寫 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "15 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "14 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "16 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q212_09_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_09_06": {
+     "prompt": "「沒」有幾畫？ How many strokes does 沒 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "7 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "6 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "8 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q212_09_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_09_07": {
+     "prompt": "「題」有幾畫？ How many strokes does 題 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "18 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "17 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "19 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q212_09_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_09_08": {
+     "prompt": "「定」有幾畫？ How many strokes does 定 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "8 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "7 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "9 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q212_09_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_09_09": {
+     "prompt": "「意」有幾畫？ How many strokes does 意 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "13 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "12 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "14 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q212_09_09",
+     "order": 8,
+     "title": "第 9 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_09_10": {
+     "prompt": "「思」有幾畫？ How many strokes does 思 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "9 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "8 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "10 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q212_09_10",
+     "order": 9,
+     "title": "第 10 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s212_10": {
+   "id": "s212_10",
+   "title": "第 10 大題：說說看（句型） Speaking",
+   "type": "record",
+   "order": 9,
+   "questions": {
+    "q212_10_01": {
+     "prompt": "你多久沒跟家人說話了？ How long since you talked with your family?",
+     "reference": "我很久沒跟爺爺、奶奶說話了。",
+     "maxSec": 30,
+     "id": "q212_10_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_10_02": {
+     "prompt": "請用「看起來」說一個句子。 Make a sentence with 看起來.",
+     "reference": "老師今天看起來很高興。",
+     "maxSec": 30,
+     "id": "q212_10_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_10_03": {
+     "prompt": "請用「好好…」和「一定」做一個對話。 Make a dialogue with 好好 and 一定.",
+     "reference": "你好好學中文。我一定好好學。",
+     "maxSec": 30,
+     "id": "q212_10_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_10_04": {
+     "prompt": "請用「很久沒…了」說一個句子。 Make a sentence with 很久沒…了.",
+     "reference": "我們很久沒一起去吃飯了。",
+     "maxSec": 30,
+     "id": "q212_10_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s212_11": {
+   "id": "s212_11",
+   "title": "第 11 大題：習寫漢字 Write the characters",
+   "type": "hanzi",
+   "order": 10,
+   "questions": {
+    "q212_11_01": {
+     "char": "久",
+     "desc": "3畫，部首：丿",
+     "id": "q212_11_01",
+     "order": 0,
+     "title": "第 1 題：久",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_11_02": {
+     "char": "話",
+     "desc": "13畫，部首：言",
+     "id": "q212_11_02",
+     "order": 1,
+     "title": "第 2 題：話",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_11_03": {
+     "char": "高",
+     "desc": "10畫，部首：高",
+     "id": "q212_11_03",
+     "order": 2,
+     "title": "第 3 題：高",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_11_04": {
+     "char": "課",
+     "desc": "15畫，部首：言",
+     "id": "q212_11_04",
+     "order": 3,
+     "title": "第 4 題：課",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_11_05": {
+     "char": "寫",
+     "desc": "15畫，部首：宀",
+     "id": "q212_11_05",
+     "order": 4,
+     "title": "第 5 題：寫",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_11_06": {
+     "char": "沒",
+     "desc": "7畫，部首：水",
+     "id": "q212_11_06",
+     "order": 5,
+     "title": "第 6 題：沒",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_11_07": {
+     "char": "題",
+     "desc": "18畫，部首：頁",
+     "id": "q212_11_07",
+     "order": 6,
+     "title": "第 7 題：題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_11_08": {
+     "char": "定",
+     "desc": "8畫，部首：宀",
+     "id": "q212_11_08",
+     "order": 7,
+     "title": "第 8 題：定",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_11_09": {
+     "char": "意",
+     "desc": "13畫，部首：心",
+     "id": "q212_11_09",
+     "order": 8,
+     "title": "第 9 題：意",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_11_10": {
+     "char": "思",
+     "desc": "9畫，部首：心",
+     "id": "q212_11_10",
+     "order": 9,
+     "title": "第 10 題：思",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s212_12": {
+   "id": "s212_12",
+   "title": "第 12 大題：我會唸（課文、認讀漢字） Read aloud",
+   "type": "record",
+   "order": 11,
+   "questions": {
+    "q212_12_01": {
+     "prompt": "請唸出課文第一段。 Read the first part of the text.",
+     "reference": "爸爸：大文，我現在要用網路給姑姑打電話。\n大文：可以看到姑姑嗎？我很久沒跟姑姑說話了。\n爸爸：可以看到她的影像，快一點過來。\n姑姑：大文，你看起來瘦了。\n大文：我沒瘦，我長高了。",
+     "maxSec": 45,
+     "passage": "爸爸：大文，我現在要用網路給姑姑打電話。\n大文：可以看到姑姑嗎？我很久沒跟姑姑說話了。\n爸爸：可以看到她的影像，快一點過來。\n姑姑：大文，你看起來瘦了。\n大文：我沒瘦，我長高了。",
+     "id": "q212_12_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_12_02": {
+     "prompt": "請唸出課文第二段。 Read the second part of the text.",
+     "reference": "姑姑：文文現在也跟你一起去學中文嗎？\n大文：是啊！上中文課很有意思。\n姑姑：你好好學中文，以後可以用網路給我寫信。\n大文：沒問題，我一定會好好學中文。",
+     "maxSec": 45,
+     "passage": "姑姑：文文現在也跟你一起去學中文嗎？\n大文：是啊！上中文課很有意思。\n姑姑：你好好學中文，以後可以用網路給我寫信。\n大文：沒問題，我一定會好好學中文。",
+     "id": "q212_12_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q212_12_03": {
+     "prompt": "請唸出這些認讀漢字。 Read these characters aloud.",
+     "reference": "網　路　影　像　瘦　信　啊",
+     "maxSec": 30,
+     "id": "q212_12_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  }
+ },
+ "currentQId": "q212_01_01"
+}

@@ -1,0 +1,1341 @@
+{
+ "id": "proj_b2l4quiz",
+ "title": "第二冊 第4課 我想吃漢堡 練習題",
+ "desc": "依第二冊第4課簡報（課文、生詞、句型、習寫漢字、認讀漢字、練習、任務活動）整理；題目說明附英文",
+ "sections": {
+  "s204_1": {
+   "id": "s204_1",
+   "title": "第 1 大題：連連看（生詞和注音） Match the words with zhuyin",
+   "type": "match",
+   "order": 0,
+   "questions": {
+    "q204_01_01": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "週末",
+       "right": "ㄓㄡ ㄇㄛˋ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "漢堡",
+       "right": "ㄏㄢˋ ㄅㄠˇ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "薯條",
+       "right": "ㄕㄨˇ ㄊㄧㄠˊ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "出去",
+       "right": "ㄔㄨ ㄑㄩˋ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "先",
+       "right": "ㄒㄧㄢ"
+      }
+     },
+     "id": "q204_01_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_01_02": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "蛋炒飯",
+       "right": "ㄉㄢˋ ㄔㄠˇ ㄈㄢˋ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "晚飯",
+       "right": "ㄨㄢˇ ㄈㄢˋ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "再",
+       "right": "ㄗㄞˋ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "麵",
+       "right": "ㄇㄧㄢˋ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "了",
+       "right": "˙ㄌㄜ"
+      }
+     },
+     "id": "q204_01_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_01_03": {
+     "leftLabel": "生詞",
+     "rightLabel": "注音",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "湯",
+       "right": "ㄊㄤ"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "玉米",
+       "right": "ㄩˋ ㄇㄧˇ"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "已經",
+       "right": "ㄧˇ ㄐㄧㄥ"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "餓",
+       "right": "ㄜˋ"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "快點",
+       "right": "ㄎㄨㄞˋ ㄉㄧㄢˇ"
+      }
+     },
+     "id": "q204_01_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s204_2": {
+   "id": "s204_2",
+   "title": "第 2 大題：連連看（生詞和意思） Match the words with their meanings",
+   "type": "match",
+   "order": 1,
+   "questions": {
+    "q204_02_01": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "週末",
+       "right": "weekend"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "漢堡",
+       "right": "hamburger"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "薯條",
+       "right": "french fries"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "出去",
+       "right": "to go out"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "先",
+       "right": "first"
+      }
+     },
+     "id": "q204_02_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_02_02": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "蛋炒飯",
+       "right": "egg fried rice"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "晚飯",
+       "right": "dinner"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "再",
+       "right": "then"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "麵",
+       "right": "noodles"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "了",
+       "right": "(completed)"
+      }
+     },
+     "id": "q204_02_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_02_03": {
+     "leftLabel": "生詞",
+     "rightLabel": "English",
+     "pairs": {
+      "p1": {
+       "id": "p1",
+       "left": "湯",
+       "right": "soup"
+      },
+      "p2": {
+       "id": "p2",
+       "left": "玉米",
+       "right": "corn"
+      },
+      "p3": {
+       "id": "p3",
+       "left": "已經",
+       "right": "already"
+      },
+      "p4": {
+       "id": "p4",
+       "left": "餓",
+       "right": "hungry"
+      },
+      "p5": {
+       "id": "p5",
+       "left": "快點",
+       "right": "hurry up"
+      }
+     },
+     "id": "q204_02_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s204_3": {
+   "id": "s204_3",
+   "title": "第 3 大題：我會寫（寫出正確的漢字） Write the characters",
+   "type": "fill",
+   "order": 2,
+   "questions": {
+    "q204_03_01": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "文文想{出}去吃。",
+     "id": "q204_03_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_03_02": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "大文想吃{麵}。",
+     "id": "q204_03_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_03_03": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "文文想吃蛋{炒}飯。",
+     "id": "q204_03_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_03_04": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "媽媽已經做了{玉}米湯。",
+     "id": "q204_03_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_03_05": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "大文現{在}很餓。",
+     "id": "q204_03_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_03_06": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "我想吃漢{堡}跟薯{條}，我們可不可以出去吃？",
+     "id": "q204_03_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_03_07": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "今天{先}在家吃，{週}{末}再出去吃吧！",
+     "id": "q204_03_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_03_08": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "我想吃蛋炒{飯}，有湯嗎？",
+     "id": "q204_03_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_03_09": {
+     "prompt": "寫出正確的漢字。 Write the correct Chinese characters.",
+     "template": "我{已}{經}做了玉米湯。",
+     "id": "q204_03_09",
+     "order": 8,
+     "title": "第 9 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s204_4": {
+   "id": "s204_4",
+   "title": "第 4 大題：句型填空 Fill in the sentence patterns",
+   "type": "fill",
+   "order": 3,
+   "questions": {
+    "q204_04_01": {
+     "prompt": "用「出去」完成句子。 Use 出去.",
+     "template": "哥哥跟弟弟一起{出去}運動。",
+     "id": "q204_04_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_04_02": {
+     "prompt": "用「V了」完成句子。 Use V了.",
+     "template": "我喝{了}果汁，吃了麵包。",
+     "id": "q204_04_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_04_03": {
+     "prompt": "用「V了」完成句子。 Use V了.",
+     "template": "媽媽，你買{了}什麼？",
+     "id": "q204_04_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_04_04": {
+     "prompt": "用「先…再…」完成句子。 Use 先…再….",
+     "template": "張莉{先}聽音樂，{再}看電視。",
+     "id": "q204_04_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_04_05": {
+     "prompt": "用「可不可以」完成句子。 Use 可不可以.",
+     "template": "老師，我{可不可以}出去玩？",
+     "id": "q204_04_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_04_06": {
+     "prompt": "用「可不可以」完成句子。 Use 可不可以.",
+     "template": "媽媽，我{可不可以}吃糖果？",
+     "id": "q204_04_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s204_5": {
+   "id": "s204_5",
+   "title": "第 5 大題：選擇題（句型） Choose the correct answer",
+   "type": "choice",
+   "order": 4,
+   "questions": {
+    "q204_05_01": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n今天先在家吃，週末＿＿出去吃吧！",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "再"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "先"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "了"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q204_05_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_05_02": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n媽媽，你買＿＿什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "了"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "先"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "再"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q204_05_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_05_03": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n老師，我＿＿出去玩？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "可不可以"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "已經"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "快點"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q204_05_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_05_04": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n我現在很＿＿，想快點吃晚飯。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "餓"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "先"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "湯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q204_05_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_05_05": {
+     "prompt": "選出正確的答案。 Choose the correct answer.\n\n媽媽＿＿做了玉米湯。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "已經"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "可不可以"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "先"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q204_05_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s204_6": {
+   "id": "s204_6",
+   "title": "第 6 大題：閱讀理解（課文） Reading comprehension",
+   "type": "choice",
+   "order": 5,
+   "questions": {
+    "q204_06_01": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n文文想吃什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "漢堡跟薯條"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "麵"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "蛋炒飯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "文文：我想吃漢堡跟薯條，我們可不可以出去吃？\n媽媽：今天先在家吃，週末再出去吃吧！今天晚餐想吃什麼？\n大文：我想吃麵。文文，你呢？\n文文：我想吃蛋炒飯，有湯嗎？\n媽媽：我已經做了玉米湯。\n大文：媽，我現在很餓，想快點吃晚飯，好嗎？",
+     "id": "q204_06_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_06_02": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n媽媽說什麼時候出去吃？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "週末"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "今天"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "明天"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "文文：我想吃漢堡跟薯條，我們可不可以出去吃？\n媽媽：今天先在家吃，週末再出去吃吧！今天晚餐想吃什麼？\n大文：我想吃麵。文文，你呢？\n文文：我想吃蛋炒飯，有湯嗎？\n媽媽：我已經做了玉米湯。\n大文：媽，我現在很餓，想快點吃晚飯，好嗎？",
+     "id": "q204_06_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_06_03": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n大文想吃什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "麵"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "漢堡"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "蛋炒飯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "文文：我想吃漢堡跟薯條，我們可不可以出去吃？\n媽媽：今天先在家吃，週末再出去吃吧！今天晚餐想吃什麼？\n大文：我想吃麵。文文，你呢？\n文文：我想吃蛋炒飯，有湯嗎？\n媽媽：我已經做了玉米湯。\n大文：媽，我現在很餓，想快點吃晚飯，好嗎？",
+     "id": "q204_06_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_06_04": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n媽媽已經做了什麼？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "玉米湯"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "蛋炒飯"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "漢堡"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "文文：我想吃漢堡跟薯條，我們可不可以出去吃？\n媽媽：今天先在家吃，週末再出去吃吧！今天晚餐想吃什麼？\n大文：我想吃麵。文文，你呢？\n文文：我想吃蛋炒飯，有湯嗎？\n媽媽：我已經做了玉米湯。\n大文：媽，我現在很餓，想快點吃晚飯，好嗎？",
+     "id": "q204_06_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_06_05": {
+     "prompt": "讀課文，選出正確的答案。 Read the text and choose the correct answer.\n\n大文為什麼想快點吃晚飯？",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "他很餓"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "他很累"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "他想出去"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "文文：我想吃漢堡跟薯條，我們可不可以出去吃？\n媽媽：今天先在家吃，週末再出去吃吧！今天晚餐想吃什麼？\n大文：我想吃麵。文文，你呢？\n文文：我想吃蛋炒飯，有湯嗎？\n媽媽：我已經做了玉米湯。\n大文：媽，我現在很餓，想快點吃晚飯，好嗎？",
+     "id": "q204_06_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s204_7": {
+   "id": "s204_7",
+   "title": "第 7 大題：是非題（課文） True or false",
+   "type": "choice",
+   "order": 6,
+   "questions": {
+    "q204_07_01": {
+     "prompt": "判斷對錯。 True or false?\n\n文文想出去吃飯。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "文文：我想吃漢堡跟薯條，我們可不可以出去吃？\n媽媽：今天先在家吃，週末再出去吃吧！今天晚餐想吃什麼？\n大文：我想吃麵。文文，你呢？\n文文：我想吃蛋炒飯，有湯嗎？\n媽媽：我已經做了玉米湯。\n大文：媽，我現在很餓，想快點吃晚飯，好嗎？",
+     "id": "q204_07_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_07_02": {
+     "prompt": "判斷對錯。 True or false?\n\n媽媽說今天出去吃。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c2"
+     ],
+     "passage": "文文：我想吃漢堡跟薯條，我們可不可以出去吃？\n媽媽：今天先在家吃，週末再出去吃吧！今天晚餐想吃什麼？\n大文：我想吃麵。文文，你呢？\n文文：我想吃蛋炒飯，有湯嗎？\n媽媽：我已經做了玉米湯。\n大文：媽，我現在很餓，想快點吃晚飯，好嗎？",
+     "id": "q204_07_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_07_03": {
+     "prompt": "判斷對錯。 True or false?\n\n大文想吃麵。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "passage": "文文：我想吃漢堡跟薯條，我們可不可以出去吃？\n媽媽：今天先在家吃，週末再出去吃吧！今天晚餐想吃什麼？\n大文：我想吃麵。文文，你呢？\n文文：我想吃蛋炒飯，有湯嗎？\n媽媽：我已經做了玉米湯。\n大文：媽，我現在很餓，想快點吃晚飯，好嗎？",
+     "id": "q204_07_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_07_04": {
+     "prompt": "判斷對錯。 True or false?\n\n媽媽還沒做湯。",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "對"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "錯"
+      }
+     },
+     "answerIds": [
+      "c2"
+     ],
+     "passage": "文文：我想吃漢堡跟薯條，我們可不可以出去吃？\n媽媽：今天先在家吃，週末再出去吃吧！今天晚餐想吃什麼？\n大文：我想吃麵。文文，你呢？\n文文：我想吃蛋炒飯，有湯嗎？\n媽媽：我已經做了玉米湯。\n大文：媽，我現在很餓，想快點吃晚飯，好嗎？",
+     "id": "q204_07_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s204_8": {
+   "id": "s204_8",
+   "title": "第 8 大題：讀讀看，寫上漢字 Read the zhuyin and write the characters",
+   "type": "fill",
+   "order": 7,
+   "questions": {
+    "q204_08_01": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄓㄡ ㄇㄛˋ → {週末}",
+     "id": "q204_08_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_08_02": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄏㄢˋ ㄅㄠˇ → {漢堡}",
+     "id": "q204_08_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_08_03": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄕㄨˇ ㄊㄧㄠˊ → {薯條}",
+     "id": "q204_08_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_08_04": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄔㄨ ㄑㄩˋ → {出去}",
+     "id": "q204_08_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_08_05": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄒㄧㄢ → {先}",
+     "id": "q204_08_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_08_06": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄉㄢˋ ㄔㄠˇ ㄈㄢˋ → {蛋炒飯}",
+     "id": "q204_08_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_08_07": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄨㄢˇ ㄈㄢˋ → {晚飯}",
+     "id": "q204_08_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_08_08": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄗㄞˋ → {再}",
+     "id": "q204_08_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_08_09": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄇㄧㄢˋ → {麵}",
+     "id": "q204_08_09",
+     "order": 8,
+     "title": "第 9 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_08_10": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "˙ㄌㄜ → {了}",
+     "id": "q204_08_10",
+     "order": 9,
+     "title": "第 10 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_08_11": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄊㄤ → {湯}",
+     "id": "q204_08_11",
+     "order": 10,
+     "title": "第 11 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_08_12": {
+     "prompt": "讀出注音並寫出正確漢字。 Read the zhuyin and write the characters.",
+     "template": "ㄩˋ ㄇㄧˇ → {玉米}",
+     "id": "q204_08_12",
+     "order": 11,
+     "title": "第 12 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s204_9": {
+   "id": "s204_9",
+   "title": "第 9 大題：漢字（筆畫） Strokes",
+   "type": "choice",
+   "order": 8,
+   "questions": {
+    "q204_09_01": {
+     "prompt": "「出」有幾畫？ How many strokes does 出 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "5 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "4 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "6 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q204_09_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_09_02": {
+     "prompt": "「週」有幾畫？ How many strokes does 週 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "12 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "11 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "13 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q204_09_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_09_03": {
+     "prompt": "「末」有幾畫？ How many strokes does 末 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "5 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "4 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "6 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q204_09_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_09_04": {
+     "prompt": "「先」有幾畫？ How many strokes does 先 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "6 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "5 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "7 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q204_09_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_09_05": {
+     "prompt": "「晚」有幾畫？ How many strokes does 晚 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "11 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "10 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "12 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q204_09_05",
+     "order": 4,
+     "title": "第 5 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_09_06": {
+     "prompt": "「蛋」有幾畫？ How many strokes does 蛋 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "11 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "10 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "12 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q204_09_06",
+     "order": 5,
+     "title": "第 6 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_09_07": {
+     "prompt": "「飯」有幾畫？ How many strokes does 飯 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "12 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "11 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "13 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q204_09_07",
+     "order": 6,
+     "title": "第 7 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_09_08": {
+     "prompt": "「現」有幾畫？ How many strokes does 現 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "11 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "10 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "12 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q204_09_08",
+     "order": 7,
+     "title": "第 8 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_09_09": {
+     "prompt": "「點」有幾畫？ How many strokes does 點 have?",
+     "choices": {
+      "c1": {
+       "id": "c1",
+       "text": "17 畫"
+      },
+      "c2": {
+       "id": "c2",
+       "text": "16 畫"
+      },
+      "c3": {
+       "id": "c3",
+       "text": "18 畫"
+      }
+     },
+     "answerIds": [
+      "c1"
+     ],
+     "id": "q204_09_09",
+     "order": 8,
+     "title": "第 9 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s204_10": {
+   "id": "s204_10",
+   "title": "第 10 大題：句子重組 Reorder",
+   "type": "reorder",
+   "order": 9,
+   "questions": {
+    "q204_10_01": {
+     "prompt": "請將下列詞語重組為正確句子 Rearrange the words into a correct sentence",
+     "words": [
+      "今天先在家吃，",
+      "週末再出去吃吧！",
+      "今天晚餐想吃什麼？"
+     ],
+     "alts": [
+      "今天先在家吃， 週末再出去吃吧！ 今天晚餐想吃什麼？"
+     ],
+     "id": "q204_10_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_10_02": {
+     "prompt": "請將下列詞語重組為正確句子 Rearrange the words into a correct sentence",
+     "words": [
+      "我想吃麵。",
+      "文文，",
+      "你呢？"
+     ],
+     "alts": [
+      "我想吃麵。 文文， 你呢？"
+     ],
+     "id": "q204_10_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_10_03": {
+     "prompt": "請將下列詞語重組為正確句子 Rearrange the words into a correct sentence",
+     "words": [
+      "媽，",
+      "我現在很餓，",
+      "想快點吃晚飯，",
+      "好嗎？"
+     ],
+     "alts": [
+      "媽， 我現在很餓， 想快點吃晚飯， 好嗎？"
+     ],
+     "id": "q204_10_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s204_11": {
+   "id": "s204_11",
+   "title": "第 11 大題：說說看（句型） Speaking",
+   "type": "record",
+   "order": 10,
+   "questions": {
+    "q204_11_01": {
+     "prompt": "請用「先…再…」說說你下課以後要做什麼。 Say what you will do after class with 先…再….",
+     "reference": "下課以後我要先吃飯，再看電視。",
+     "maxSec": 30,
+     "id": "q204_11_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_11_02": {
+     "prompt": "請用「可不可以」問一個問題。 Ask a question with 可不可以.",
+     "reference": "媽媽，我可不可以出去打球？",
+     "maxSec": 30,
+     "id": "q204_11_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_11_03": {
+     "prompt": "請用「V了」說說你今天早上吃了什麼。 Say what you ate this morning.",
+     "reference": "我今天早上吃了麵包。",
+     "maxSec": 30,
+     "id": "q204_11_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_11_04": {
+     "prompt": "請說說你現在餓不餓。 Say whether you are hungry.",
+     "reference": "我現在很餓，想快點吃飯。",
+     "maxSec": 30,
+     "id": "q204_11_04",
+     "order": 3,
+     "title": "第 4 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s204_12": {
+   "id": "s204_12",
+   "title": "第 12 大題：習寫漢字 Write the characters",
+   "type": "hanzi",
+   "order": 11,
+   "questions": {
+    "q204_12_01": {
+     "char": "出",
+     "desc": "5畫，部首：凵",
+     "id": "q204_12_01",
+     "order": 0,
+     "title": "第 1 題：出",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_12_02": {
+     "char": "週",
+     "desc": "12畫，部首：辵",
+     "id": "q204_12_02",
+     "order": 1,
+     "title": "第 2 題：週",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_12_03": {
+     "char": "末",
+     "desc": "5畫，部首：木",
+     "id": "q204_12_03",
+     "order": 2,
+     "title": "第 3 題：末",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_12_04": {
+     "char": "先",
+     "desc": "6畫，部首：儿",
+     "id": "q204_12_04",
+     "order": 3,
+     "title": "第 4 題：先",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_12_05": {
+     "char": "晚",
+     "desc": "11畫，部首：日",
+     "id": "q204_12_05",
+     "order": 4,
+     "title": "第 5 題：晚",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_12_06": {
+     "char": "蛋",
+     "desc": "11畫，部首：虫",
+     "id": "q204_12_06",
+     "order": 5,
+     "title": "第 6 題：蛋",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_12_07": {
+     "char": "飯",
+     "desc": "12畫，部首：食",
+     "id": "q204_12_07",
+     "order": 6,
+     "title": "第 7 題：飯",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_12_08": {
+     "char": "現",
+     "desc": "11畫，部首：玉",
+     "id": "q204_12_08",
+     "order": 7,
+     "title": "第 8 題：現",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_12_09": {
+     "char": "點",
+     "desc": "17畫，部首：黑",
+     "id": "q204_12_09",
+     "order": 8,
+     "title": "第 9 題：點",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  },
+  "s204_13": {
+   "id": "s204_13",
+   "title": "第 13 大題：我會唸（課文、認讀漢字） Read aloud",
+   "type": "record",
+   "order": 12,
+   "questions": {
+    "q204_13_01": {
+     "prompt": "請唸出課文第一段。 Read the first part of the text.",
+     "reference": "文文：我想吃漢堡跟薯條，我們可不可以出去吃？\n媽媽：今天先在家吃，週末再出去吃吧！今天晚餐想吃什麼？\n大文：我想吃麵。文文，你呢？",
+     "maxSec": 45,
+     "passage": "文文：我想吃漢堡跟薯條，我們可不可以出去吃？\n媽媽：今天先在家吃，週末再出去吃吧！今天晚餐想吃什麼？\n大文：我想吃麵。文文，你呢？",
+     "id": "q204_13_01",
+     "order": 0,
+     "title": "第 1 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_13_02": {
+     "prompt": "請唸出課文第二段。 Read the second part of the text.",
+     "reference": "文文：我想吃蛋炒飯，有湯嗎？\n媽媽：我已經做了玉米湯。\n大文：媽，我現在很餓，想快點吃晚飯，好嗎？",
+     "maxSec": 45,
+     "passage": "文文：我想吃蛋炒飯，有湯嗎？\n媽媽：我已經做了玉米湯。\n大文：媽，我現在很餓，想快點吃晚飯，好嗎？",
+     "id": "q204_13_02",
+     "order": 1,
+     "title": "第 2 題",
+     "weight": 1,
+     "teacherNote": ""
+    },
+    "q204_13_03": {
+     "prompt": "請唸出這些認讀漢字。 Read these characters aloud.",
+     "reference": "堡　薯　條　嗎　餐　炒　玉　經　餓　漢　湯　已",
+     "maxSec": 30,
+     "id": "q204_13_03",
+     "order": 2,
+     "title": "第 3 題",
+     "weight": 1,
+     "teacherNote": ""
+    }
+   }
+  }
+ },
+ "currentQId": "q204_01_01"
+}
