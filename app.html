@@ -1536,6 +1536,25 @@ async function applyVocabFill(fx){
   await fbUpdate("teacherVocabBanks/" + t, { courseData: cd, updatedAt: Date.now(), updatedBy: S.teacher.name || t });
   await syncLessonIndex();
 }
+// 修正已經存在的生詞欄位／課文注音：只有目前的內容還和 from 一模一樣（老師沒改過）才換成 to
+async function applyVocabSet(fx){
+  var bid = fx.book || (fx.bookTitle ? findBookByTitle(fx.bookTitle) : DEFAULT_BOOK); if(!bid) return;
+  var t = S.teacher.id, bank = await fbGet("teacherVocabBanks/" + t), cd = arrOf(bank && bank.courseData);
+  var L = cd.filter(function(x){ return x && (x.book || DEFAULT_BOOK) === bid && Number(x.lesson) === Number(fx.lesson); })[0]; if(!L) return;
+  var n = 0, vs = arrOf(L.vocab);
+  (fx.items || []).forEach(function(it){ vs.forEach(function(v){ if(v && String(v["生詞"] || "").trim() === it.word && String(v[it.field] || "").trim() === it.from){ v[it.field] = it.to; n++; } }); });
+  if(n) L.vocab = vs;
+  // 課文逐字注音：{ text: 這句話, ch: 字, idx: 第幾個該字（從 0 算）, from, to }
+  var tx = arrOf(L.texts);
+  (fx.zy || []).forEach(function(z){ tx.forEach(function(te){ arrOf(te.lines).forEach(function(ln){
+    if(!ln || String(ln.text || "") !== z.text) return; var zy = arrOf(ln.zy), k = 0;
+    zy.forEach(function(pr, i){ if(pr && pr[0] === z.ch){ if(k === z.idx && pr[1] === z.from){ pr[1] = z.to; n++; } k++; } }); if(zy.length) ln.zy = zy;
+  }); }); });
+  if(n && tx.length) L.texts = tx;
+  if(!n) return;
+  await fbUpdate("teacherVocabBanks/" + t, { courseData: cd, updatedAt: Date.now(), updatedBy: S.teacher.name || t });
+  await syncLessonIndex();
+}
 // 已經加進測驗庫的練習題，之後的修改：每個欄位只有在老師沒改過（跟原本一模一樣）時才換成新版
 function fixSame(a, b){ function norm(x){ if(Array.isArray(x)) return x.map(norm); if(x && typeof x === "object"){ var o = {}; Object.keys(x).sort().forEach(function(k){ o[k] = norm(x[k]); }); return o; } return x == null ? null : x; } return JSON.stringify(norm(a)) === JSON.stringify(norm(b)); }
 async function applyProjectEdit(fx){
@@ -1555,6 +1574,7 @@ async function applyContentFixes(){
   for(var f = 0; f < list.fixes.length; f++){
     var fx = list.fixes[f]; if(!fx || !fx.id || done[fx.id]) continue;
     if(fx.kind === "projectEdit"){ try{ await applyProjectEdit(fx); }catch(e){ console.warn("projectEdit", e); continue; } done[fx.id] = Date.now(); S.plat.meta = S.plat.meta || {}; S.plat.meta.fixesApplied = done; try{ await fbSet(base + "/meta/fixesApplied/" + fx.id, done[fx.id]); }catch(e){} continue; }
+    if(fx.kind === "vocabSet"){ try{ await applyVocabSet(fx); }catch(e){ console.warn("vocabSet", e); continue; } done[fx.id] = Date.now(); S.plat.meta = S.plat.meta || {}; S.plat.meta.fixesApplied = done; try{ await fbSet(base + "/meta/fixesApplied/" + fx.id, done[fx.id]); }catch(e){} continue; }
     if(fx.kind === "vocabFill"){ try{ await applyVocabFill(fx); }catch(e){ console.warn("vocabFill", e); continue; } done[fx.id] = Date.now(); S.plat.meta = S.plat.meta || {}; S.plat.meta.fixesApplied = done; try{ await fbSet(base + "/meta/fixesApplied/" + fx.id, done[fx.id]); }catch(e){} continue; }
     var tl = {}; try{ tl = (await fbGet(base + "/transList")) || {}; }catch(e){ continue; }
     var touched = {};
