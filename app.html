@@ -1001,6 +1001,25 @@ async function saveVocabPic(spots, word, url){
 }
 async function uploadVocabPic(file){ return (await uploadFile("teacherMedia/" + S.teacher.id + "/vocab-img-" + Date.now() + "-" + Math.random().toString(36).slice(2, 6), file)).url; }
 // ---------- 生詞卡上直接修正生詞：老師帳號才能存（助教與學生不行），存回教材的生詞庫 ----------
+// 學生端：把老師的畫記轉送進畫面裡的教材頁（唯讀）
+function stuInkPush(){
+  var fr = document.getElementById("fr"); if(!fr || !fr.contentWindow) return; var v = S.liveInk;
+  try{ fr.contentWindow.postMessage({ mm: "inkShared", scope: (v && v.scope) || "", items: (v && v.items) || null }, "*"); }catch(e){}
+}
+window.addEventListener("message", function(e){
+  if(!e.data || e.data.mm !== "inkReady" || !S.student) return;
+  var fr = document.getElementById("fr"); if(!fr || e.source !== fr.contentWindow) return; stuInkPush();
+});
+// 老師：教材頁的畫記同步給學生（上課中才寫；寫在 live/ink，學生本來就讀得到這個節點）
+window.addEventListener("message", function(e){
+  var d = e.data; if(!d || d.mm !== "inkShare" || !S.teacher) return;
+  var fr = document.getElementById("fr"); if(!fr || e.source !== fr.contentWindow) return;
+  if(!(S.live && S.live.on) || !S.sel || !S.sel.c) return;
+  var path = liveRef() + "/ink";
+  if(!d.on || !d.items || !Object.keys(d.items).length){ fbSet(path, null).catch(function(){}); return; }
+  if(JSON.stringify(d.items).length > 400000){ toast("畫記太多，沒辦法同步給學生，請清掉一些"); return; }
+  fbSet(path, { scope: d.scope || "", items: d.items, at: Date.now() }).catch(function(){});
+});
 async function saveVocabFields(spot, oldWord, patch){
   var t = S.teacher.id, bank = await fbGet("teacherVocabBanks/" + t), cd = arrOf(bank && bank.courseData), hit = 0;
   var okKeys = ["生詞", "注音", "拼音", "詞性", "英文翻譯", "泰文翻譯", "例句（中文）", "例句（英文）", "例句（泰文）"];
@@ -8016,7 +8035,10 @@ async function startStudent(code, name, pw, opts){
     if(needAcct && !(opts && opts.google)){ var au = await studentAuth(idx, name, pw); if(au !== true){ viewStudentEntry(au, code); return; } }
     S.student = { name: name, code: code, idx: idx, school: res[0], term: res[1], cls: res[2], acct: needAcct };
     S.live = res[2].live && res[2].live.on ? res[2].live : null;
-    try{ window.onValue(window.ref(window.db, base + "/schools/" + idx.s + "/terms/" + idx.tm + "/classes/" + idx.c + "/live"), function(snap){ var v = snap.val(); var nv = v && v.on ? v : null; var key = JSON.stringify(nv); if(key === S.liveKey) return; S.liveKey = key; S.live = nv; S.liveRendered = null; if(S.student) renderStudent(); try{ brkSync(nv && nv.brk, false); }catch(e3){} try{ drSync(nv && nv.draw); }catch(e4){} try{ stuToolSync(nv && nv.tool); }catch(e5){} try{ if(window.PET) window.PET.refresh(); }catch(e6){} try{ stuTransDraw(); }catch(e2){} }); stuTransStart(base, idx); }catch(e){}
+    try{ window.onValue(window.ref(window.db, base + "/schools/" + idx.s + "/terms/" + idx.tm + "/classes/" + idx.c + "/live"), function(snap){ var v = snap.val();
+      // 老師在生詞卡／課文上的畫記（live/ink）：只轉送給畫面裡的教材頁，不能讓它觸發整個學生畫面重畫
+      var inkv = (v && v.ink) || null; if(v && v.ink){ v = Object.assign({}, v); delete v.ink; } S.liveInk = inkv; try{ stuInkPush(); }catch(eI){}
+      var nv = v && v.on ? v : null; var key = JSON.stringify(nv); if(key === S.liveKey) return; S.liveKey = key; S.live = nv; S.liveRendered = null; if(S.student) renderStudent(); try{ brkSync(nv && nv.brk, false); }catch(e3){} try{ drSync(nv && nv.draw); }catch(e4){} try{ stuToolSync(nv && nv.tool); }catch(e5){} try{ if(window.PET) window.PET.refresh(); }catch(e6){} try{ stuTransDraw(); }catch(e2){} }); stuTransStart(base, idx); }catch(e){}
     S.plat = { lessons: res[3] || {}, books: res[4] || {} };
     S.lesson = null; S.tab = null; S.sub = null;
     var h = new URLSearchParams(location.hash.replace(/^#/, "")); if(h.get("l")) S.lesson = h.get("l"); if(h.get("tab")) S.tab = h.get("tab");
