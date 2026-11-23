@@ -7227,6 +7227,26 @@ async function classPartialUpdate(pid){
   };
   d.oncancel = function(e){ e.preventDefault(); d.close(); };
 }
+// 把「全班同一組題目」套用到這個班的存檔（上課的房間）：沒選的題目設成隱藏（學生看不到、也不計分），選回「全部題目」就恢復。
+// 只動「由選題隱藏的」題目（記在 qselHidden），你自己手動隱藏的題目不會被改到。
+async function applyQselToRoom(cid, pid, key, q){
+  var rid = S.classRooms && S.classRooms[cid] && S.classRooms[cid][pid] && S.classRooms[cid][pid].room; if(!rid) return "noroom";
+  var proj = await fbGet("rooms/" + rid + "/project"); if(!proj || !proj.sections) return "noroom";
+  var hidPath = clsPath(S.sel) + "/lessonOpen/" + key + "/qselHidden/" + pid, prev = arrOf(await fbGet(hidPath)), prevSet = {}, up = {}, newHid = [];
+  prev.forEach(function(id){ prevSet[id] = 1; });
+  var where = {}; Object.keys(proj.sections).forEach(function(sid){ Object.keys(proj.sections[sid].questions || {}).forEach(function(qid){ where[qid] = sid; }); });
+  prev.forEach(function(qid){ if(where[qid]) up["project/sections/" + where[qid] + "/questions/" + qid + "/hidden"] = null; });
+  if(q && q.mode === "same" && (q.def || []).length){
+    var keep = {}; q.def.forEach(function(id){ keep[id] = 1; });
+    Object.keys(where).forEach(function(qid){
+      var sid = where[qid], qq = proj.sections[sid].questions[qid], manual = !!(qq && qq.hidden) && !prevSet[qid];
+      if(!keep[qid] && !manual){ up["project/sections/" + sid + "/questions/" + qid + "/hidden"] = true; newHid.push(qid); }
+    });
+  }
+  if(Object.keys(up).length) await fbUpdate("rooms/" + rid, up);
+  await fbSet(hidPath, newHid.length ? newHid : null);
+  return newHid.length;
+}
 // 班級的練習題選題：這份練習題要出哪些題（全部／全班同一組／每位學生各自不同），存在這個班這一課的開放設定裡
 function qselRead(prevQ, list, root){
   var qmEl = root.querySelector('input[name="ed-qmode"]:checked'), qm = qmEl ? qmEl.value : (prevQ && prevQ.mode) || "all";
@@ -7237,7 +7257,7 @@ function qselRead(prevQ, list, root){
   return nq;
 }
 async function openClassQsel(pid){
-  var cls = getCls(S.sel), key = S.lesson; if(!cls || !key) return;
+  var cls = getCls(S.sel), key = S.lesson, cid0 = S.sel.c; if(!cls || !key) return;
   var d = document.getElementById("qseldlg"); if(!d){ d = document.createElement("dialog"); d.id = "qseldlg"; document.body.appendChild(d); }
   d.style.width = "min(640px,96vw)"; d.innerHTML = '<div class="rec-form"><p class="note">讀取題目中…</p></div>'; d.showModal();
   var list; try{ list = examQList(await fbGet("teacherLibraries/" + S.teacher.id + "/projects/" + pid)); EXAM_Q[pid] = list; }catch(e){ d.close(); toast("讀取題目失敗，請檢查網路"); return; }
@@ -7247,7 +7267,7 @@ async function openClassQsel(pid){
   var st = { _qpick: null }, ex = { pid: pid, assignees: null, qsel: cur ? JSON.parse(JSON.stringify(cur)) : null };
   function sync(){ ex.qsel = qselRead(ex.qsel, list, d); }
   function draw(){
-    d.innerHTML = '<form method="dialog" onsubmit="return false;" class="rec-form"><h3>🎯 選題：' + esc(title) + '</h3><p class="note" style="margin:0 0 6px;">學生自己練習這份題目時，只會看到分配給他的題目。上課中全班一起做的內容不受影響。</p>' + examQselHtml(st, ex) + '<div class="row"><button type="button" class="btn" data-e="cancel">取消</button><button type="button" class="btn primary" data-e="save">儲存</button></div></form>';
+    d.innerHTML = '<form method="dialog" onsubmit="return false;" class="rec-form"><h3>🎯 選題：' + esc(title) + '</h3><p class="note" style="margin:0 0 6px;">這份通用教材維持全部題目。選了「<b>全班同一組題目</b>」：這個班上課時只會出勾選的題目（沒勾的隱藏，學生看不到、也不計分），學生自己練習時也一樣。選了「<b>每位學生各自不同</b>」：只對學生<b>自己練習</b>有效，上課時全班仍是全部題目。</p>' + examQselHtml(st, ex) + '<div class="row"><button type="button" class="btn" data-e="cancel">取消</button><button type="button" class="btn primary" data-e="save">儲存</button></div></form>';
   }
   draw();
   d.onchange = function(e){
@@ -7261,7 +7281,10 @@ async function openClassQsel(pid){
       var o = cls.lessonOpen = cls.lessonOpen || {}, ko = o[key] = o[key] || {}; ko.qsel = ko.qsel || {};
       try{ await fbSet(clsPath(S.sel) + "/lessonOpen/" + key + "/qsel/" + pid, q || null); }catch(er){ alert("儲存失敗，請檢查網路或 Firebase 規則。"); return; }
       if(q) ko.qsel[pid] = q; else delete ko.qsel[pid];
-      d.close(); toast(q ? "已儲存選題（" + (q.mode === "each" ? "每位學生各自不同" : "全班同一組 " + (q.def || []).length + " 題") + "）" : "已改回出全部題目"); renderLesson(getCls(S.sel)); return;
+      var roomRes = null; try{ roomRes = await applyQselToRoom(cid0, pid, key, q); }catch(er){ console.warn("applyQselToRoom", er); roomRes = "err"; }
+      d.close();
+      toast((q ? "已儲存選題（" + (q.mode === "each" ? "每位學生各自不同，上課仍是全部題目" : "全班同一組 " + (q.def || []).length + " 題") + "）" : "已改回出全部題目") + (roomRes === "noroom" ? "。這個班還沒有用過這份題目（沒有存檔），先打開上一次課，再回來按一次儲存，上課時才會套用" : roomRes === "err" ? "。套用到上課存檔失敗，請再按一次儲存" : ""));
+      renderLesson(getCls(S.sel)); return;
     }
     var qsx = ex.qsel, tg = b.dataset.t; if(!qsx) return;
     if(a === "qpick"){ st._qpick = st._qpick === tg ? null : tg; }
