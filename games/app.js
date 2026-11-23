@@ -15,7 +15,7 @@
       quiz: { q: "mix", count: 10, sec: 15, voice: "zh-TW-HsiaoChenNeural", music: "happy" },
       order: { mode: "survive", flow: "free", pace: "fast", voice: "zh-TW-HsiaoChenNeural", lives: 2, comeback: true, start: 2, maxLen: 6, plays: 2, perWord: 3.5, show: "both", music: "relax" },
       whack: { char: "cat", q: "w2p", lives: 3, speed: 3, seconds: 90, music: "happy" },
-      find: { show: "zhzy", cursor: "lens", tts: true, pts: 10, bonus: 20 },
+      find: { show: "zhzy", ctrl: "teacher", cursor: "lens", tts: true, pts: 10, bonus: 20 },
       cards: { n: 12, back: "num", label: "show", ans: "mc", q: "mix", sec: 20, pts: 10, music: "" },
       live: { scoring: "avg", seconds: 90, stuMusic: true }
     };
@@ -151,6 +151,7 @@
       '<div class="note" style="margin-top:6px;">只有即時多人：學生用手機或電腦加入。輪到的人（有分組就小組輪流，每組再輪流派人）自己選一張卡，卡翻開是生詞，答對幫自己和小組得分，翻過的卡不能再選。老師的畫面是投影用的牌桌，也可以直接點卡代替沒有裝置的學生。沒有學生的裝置時，在等待室用「分組比賽」就可以分小組比分。</div></div>';
     var fd = c.find || {};
     var findOpts = '<div class="mg-opt"><label>方向詞怎麼顯示</label>' + seg("find.show", fd.show || "zhzy", MG.Find ? MG.Find.SHOWS : []) +
+      '<label>誰來操控（看不到目標的人）</label>' + seg("find.ctrl", fd.ctrl || "teacher", [["teacher", "老師操控，學生指揮（全班）"], ["student", "學生操控，老師指揮（一對一）"]]) + (fd.ctrl === "student" ? '<div class="note" style="margin-top:4px;">老師的畫面看得到目標，學生的畫面是操控畫面（方向鍵、F／B 或畫面上的按鈕）。用第一位加入的學生當操控者；不能和「分組比賽」同時使用。</div>' : '') +
       '<label>游標</label>' + seg("find.cursor", fd.cursor || "lens", [["lens", "放大鏡"], ["hand", "手指"], ["robot", "小機器人"]]) +
       '<label>聽到方向詞的聲音</label>' + seg("find.tts", fd.tts === false ? "off" : "on", [["on", "有（學生按下去時念出來）"], ["off", "沒有"]]) +
       '<label>學生說對一個方向得幾分</label>' + seg("find.pts", fd.pts || 10, [[5, "5"], [10, "10"], [20, "20"]]) +

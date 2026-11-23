@@ -56,6 +56,10 @@
   function fmtMs(ms){ return (Math.max(0, ms || 0) / 1000).toFixed(1) + " 秒"; }
   function list(o){ return Object.keys(o || {}).map(function(k){ return Object.assign({ uid: k }, o[k]); }); }
 
+  function padHtml(show, attr){
+    var btn = function(d, z){ return '<button type="button" class="fd-b' + (z ? " z" : "") + '" ' + attr + '="' + d + '"><em>' + DIRS[d].a + '</em>' + dirLab(d, show) + '</button>'; };
+    return '<div class="fd-pad"><div class="fd-dp">' + [[null, 0, null], [2, null, 3], [null, 1, null]].map(function(r){ return r.map(function(d){ return d === null ? '<span class="fd-dp0"></span>' : btn(d); }).join(""); }).join("") + '</div><div class="fd-zp">' + btn(4, 1) + btn(5, 1) + '</div></div>';
+  }
   // 三層並排的櫃子。showTgt：學生的畫面會標出目標；老師的畫面不標
   function cabHtml(lay, pos, f, showTgt){
     var out = '<div class="fd-cab">';
@@ -88,6 +92,7 @@
     var c = api.cfg(), round = api.state().round || 1, f = c.find || {}, show = f.show || "zhzy", base = api.base, pts = Number(f.pts) || 10;
     var T = { n: 0, k: 0 }, res = {}, lay = null, queue = [], tmr = null, stopped = false, drawT = null, bump = 0, rolling = "";
     function groupsOn(){ return !!api.state().groupsOn; }
+    function ctrlMode(){ return f.ctrl === "student" && !groupsOn(); }   // 一對一：學生操控，老師看得到目標、口頭指揮
     function teams(){
       var st = api.state(), pl = list(api.players()).filter(function(p){ return !p.kicked; }), pg = st.pg || {}, gn = st.gn || {};
       return Object.keys(gn).filter(function(g){ return pl.some(function(p){ return pg[p.uid] === g; }); });
@@ -101,6 +106,7 @@
       clearTimeout(drawT); var tm = groupsOn() ? teams() : [], g = tm[gi || 0] || "", gn = (api.state().gn || {})[g] || "";
       lay = layout(c, round, k); queue = [];
       T = { n: (T.n || 0) + 1, k: k, gi: gi || 0, g: g, gname: gn, uid: "", name: "", phase: "draw", pos: lay.start.slice(), steps: 0, t0: MG.fb.now(), hint: null };
+      if(ctrlMode()){ var m0 = members()[0]; T.cuid = m0 ? m0.uid : ""; T.cname = m0 ? m0.name : ""; T.phase = m0 ? "say" : "draw"; T.t0 = MG.fb.now(); write(); render(); return; }
       write(); render(); draw();
     }
     // 籤筒抽籤：名字很快跳過，停在抽到的人；同一輪沒有抽過的先抽，大家都抽過才重新洗牌
@@ -132,10 +138,16 @@
         res[key] = { name: groupsOn() ? T.gname : "", steps: T.steps, ms: ms, k: T.k };
         write(); render(); MG.beep("end"); return;
       }
-      T.n++; T.hint = null; write(); render(); draw();
+      T.n++; T.hint = null; write(); render(); if(!ctrlMode()) draw();
     }
     // 學生按了方向詞：判斷這個指示是不是讓游標更靠近目標
+    var lastAt = 0;
     function check(){
+      if(ctrlMode()){
+        if(T.phase !== "say" || !T.cuid) return;
+        var q = api.players()[T.cuid], b = q && q.act; if(!b || b.k !== "move" || b.n !== T.n || !DIRS[b.v] || !(b.at > lastAt)) return;
+        lastAt = b.at; move(b.v); return;
+      }
       if(T.phase !== "say" || !T.uid || T.hint) return;
       var p = api.players()[T.uid], a = p && p.act; if(!a || a.k !== "say" || a.n !== T.n || !DIRS[a.v]) return;
       var np = step(T.pos, a.v), ok = inside(np) && dist(np, lay.tgt) < dist(T.pos, lay.tgt);
@@ -143,21 +155,19 @@
       if(f.tts !== false && f.tts !== "off"){ try{ MG.speak(DIRS[a.v].w, { voice: f.voice }); }catch(e){} }
     }
     function clock(){ return T.phase === "found" || T.phase === "over" ? T.ms || 0 : T.t0 ? Math.max(0, MG.fb.now() - T.t0) : 0; }
-    function pad(){
-      return '<div class="fd-pad"><div class="fd-dp">' + [[null, 0, null], [2, null, 3], [null, 1, null]].map(function(r){ return r.map(function(d){ return d === null ? '<span class="fd-dp0"></span>' : '<button type="button" class="fd-b" data-d="' + d + '"><em>' + DIRS[d].a + '</em>' + dirLab(d, show) + '</button>'; }).join(""); }).join("") + '</div>' +
-        '<div class="fd-zp">' + [4, 5].map(function(d){ return '<button type="button" class="fd-b z" data-d="' + d + '"><em>' + DIRS[d].a + '</em>' + dirLab(d, show) + '</button>'; }).join("") + '</div></div>';
-    }
     function render(){
       if(!box.isConnected || !lay) return;
       var who = T.name ? MG.esc(T.name) + (T.gname ? '<small>（' + MG.esc(T.gname) + '）</small>' : '') : "", head, tm = groupsOn() ? teams() : [], mode = groupsOn() ? "grp" : "coop";
-      if(T.phase === "over") head = '<div class="fd-turn"><b>每一組都玩完了！ All teams done!</b><button class="mg-btn primary" data-a="end">結束，看總排行</button></div>';
+      var cm = ctrlMode();
+      if(cm && T.phase !== "found" && T.phase !== "over") head = T.cuid ? '<div class="fd-turn"><span>操控的人是</span><b>' + MG.esc(T.cname) + '</b><span>他看不到目標，請你用口頭指示他怎麼走</span></div>' : '<div class="fd-turn"><b>等學生加入… Waiting for the player…</b></div>';
+      else if(T.phase === "over") head = '<div class="fd-turn"><b>每一組都玩完了！ All teams done!</b><button class="mg-btn primary" data-a="end">結束，看總排行</button></div>';
       else if(T.phase === "found") head = '<div class="fd-turn"><b>找到了！</b></div>';
       else if(T.phase === "draw") head = '<div class="fd-turn"><span>籤筒抽籤中…</span><b class="fd-roll">' + MG.esc(rolling) + '</b>' + (members(T.g).length ? '' : '<span class="note">等學生加入… Waiting for players…</span>') + '</div>';
       else head = '<div class="fd-turn"><span>輪到</span><b>' + who + '</b><span>說怎麼走</span><button class="mg-btn sm" data-a="skip">換人 Skip</button></div>';
-      var hint = T.hint ? '<div class="fd-hint ' + (T.hint.ok ? "ok" : "bad") + '">' + MG.esc(T.hint.name) + '：' + dirLab(T.hint.dir, show) + '</div>' : (T.phase === "say" ? '<div class="fd-hint wait">等同學說…（也可以直接聽同學口頭說）</div>' : '');
+      var hint = cm ? '' : T.hint ? '<div class="fd-hint ' + (T.hint.ok ? "ok" : "bad") + '">' + MG.esc(T.hint.name) + '：' + dirLab(T.hint.dir, show) + '</div>' : (T.phase === "say" ? '<div class="fd-hint wait">等同學說…（也可以直接聽同學口頭說）</div>' : '');
       var info = '<div class="fd-info"><span>' + (T.gname ? MG.esc(T.gname) + '・' : '') + '步數 <b>' + T.steps + '</b></span><span>時間 <b id="fd-clk">' + MG.fmtTime(clock()) + '</b></span><span class="note">' + (mode === "grp" ? "第 " + ((T.gi || 0) + 1) + " / " + tm.length + " 組" : "第 " + ((T.k || 0) + 1) + " 局") + '</span></div>';
       var foot = T.phase === "found" ? '<div class="fd-next">' + (mode === "grp" ? '<button class="mg-btn big primary" data-a="next">' + ((T.gi || 0) + 1 < tm.length ? "下一組" : "看全部排行") + '</button>' : '<button class="mg-btn big primary" data-a="next">下一局（換新的東西）</button>') + '</div>' : '';
-      box.innerHTML = '<div class="fd-host' + (Date.now() - bump < 500 ? " bump" : "") + '"><div class="fd-wall"></div>' + head + info + hint + '<div class="fd-q">要找的東西：<b>？？？</b> <span class="note">（你看不到，請同學告訴你怎麼走）</span></div>' + cabHtml(lay, T.pos, f, false) + (T.phase === "say" || T.phase === "draw" ? pad() + '<div class="note fd-keys">鍵盤：← ↑ ↓ → 移動，F 前面，B 後面；撞到牆不算步數</div>' : '') + (T.phase === "found" || T.phase === "over" ? foundHtml(T, res, mode, foot) : '') + '</div>';
+      box.innerHTML = '<div class="fd-host' + (Date.now() - bump < 500 ? " bump" : "") + '"><div class="fd-wall"></div>' + head + info + hint + (cm ? '<div class="fd-tgt"><img src="find/o-' + OBJS[lay.obj][0] + '.png" alt="">' + objLab(lay.obj, show) + '<span class="note">要找的東西（只有你看得到，學生看不到）</span></div>' : '<div class="fd-q">要找的東西：<b>？？？</b> <span class="note">（你看不到，請同學告訴你怎麼走）</span></div>') + cabHtml(lay, T.pos, f, cm) + (!cm && (T.phase === "say" || T.phase === "draw") ? padHtml(show, "data-d") + '<div class="note fd-keys">鍵盤：← ↑ ↓ → 移動，F 前面，B 後面；撞到牆不算步數</div>' : '') + (T.phase === "found" || T.phase === "over" ? foundHtml(T, res, mode, foot) : '') + '</div>';
     }
     box.onclick = function(e){
       var b = e.target.closest("[data-d]"); if(b){ move(Number(b.dataset.d)); return; }
@@ -165,18 +175,19 @@
       if(k === "skip" && T.phase === "say") draw(); else if(k === "next") nextGame(); else if(k === "end") api.endRound();
     };
     function onKey(e){
-      if(!box.isConnected || e.repeat || e.ctrlKey || e.metaKey || e.altKey || /^(INPUT|TEXTAREA|SELECT)$/.test((e.target || {}).tagName || "")) return;
+      if(ctrlMode() || !box.isConnected || e.repeat || e.ctrlKey || e.metaKey || e.altKey || /^(INPUT|TEXTAREA|SELECT)$/.test((e.target || {}).tagName || "")) return;
       if(KEYS[e.key] !== undefined){ e.preventDefault(); move(KEYS[e.key]); }
     }
     document.addEventListener("keydown", onKey);
     tmr = setInterval(function(){
       if(stopped) return; var el = document.getElementById("fd-clk"); if(el && (T.phase === "say" || T.phase === "draw")) el.textContent = MG.fmtTime(clock());
-      if(!T.uid && T.phase === "draw" && !drawT && members(T.g).length) draw();
+      if(ctrlMode()){ if(!T.cuid && members().length) startGame(T.k, 0); }
+      else if(!T.uid && T.phase === "draw" && !drawT && members(T.g).length) draw();
     }, 500);
     // 重新整理後回到房間：接著上次的進度
     MG.fb.get(base + "/find").then(function(sv){
       if(stopped) return;
-      if(sv && sv.t && sv.t.pos){ T = sv.t; res = sv.res || {}; lay = layout(c, round, T.k); render(); if(T.phase === "draw" || (T.phase === "say" && !T.uid)) draw(); else check(); }
+      if(sv && sv.t && sv.t.pos){ T = sv.t; res = sv.res || {}; lay = layout(c, round, T.k); render(); if(ctrlMode()) check(); else if(T.phase === "draw" || (T.phase === "say" && !T.uid)) draw(); else check(); }
       else startGame(0, 0);
     }).catch(function(){ startGame(0, 0); });
     return { update: check, stop: function(){ stopped = true; clearInterval(tmr); clearTimeout(drawT); document.removeEventListener("keydown", onKey); } };
@@ -191,11 +202,13 @@
     root.innerHTML = '<div class="gm"><div class="gm-hud"><span class="gm-title">' + MG.esc(MG.gameTitle("find")) + '</span><span class="grow"></span><div class="gm-stat score"><small>我的分數 Score</small><b id="fd-sc">0</b></div></div><div class="fd-stu" id="fd-body"></div></div>';
     var body = root.querySelector("#fd-body");
     function mine(){ return S.t && S.t.uid === uid && S.t.phase === "say"; }
+    function ctl(){ return f.ctrl === "student" && S.t && S.t.cuid === uid; }   // 一對一：我是操控的人
     function render(){
       if(stopped || !body) return; var T = S.t;
       if(!T || !lay){ body.innerHTML = '<div class="fd-turn"><b>等老師開始… Waiting…</b></div>'; return; }
-      var head, o = lay.obj;
-      if(T.phase === "over") head = '<div class="fd-turn"><b>每一組都玩完了！</b></div>';
+      var head, o = lay.obj, cl = ctl();
+      if(cl && T.phase === "say") head = '<div class="fd-turn me"><b>你來操控！</b><span>老師會告訴你怎麼走（鍵盤方向鍵、F 前面、B 後面，或按下面的按鈕）</span></div>';
+      else if(T.phase === "over") head = '<div class="fd-turn"><b>每一組都玩完了！</b></div>';
       else if(T.phase === "found") head = '<div class="fd-turn"><b>找到了！</b></div>';
       else if(T.phase === "draw") head = '<div class="fd-turn"><span>籤筒抽籤中…</span></div>';
       else if(mine()) head = '<div class="fd-turn me"><b>輪到你了！</b><span>請大聲說出怎麼走，也可以按下面的按鈕</span><span class="note">Your turn — say it aloud!</span></div>';
@@ -206,7 +219,8 @@
       if(T.phase === "say" && mine() && !T.hint) btns = '<div class="fd-say">' + DIRS.map(function(D, d){ return '<button type="button" class="fd-b" data-s="' + d + '"' + (sent === T.n ? " disabled" : "") + '><em>' + D.a + '</em>' + dirLab(d, show) + '</button>'; }).join("") + '</div>';
       var info = '<div class="fd-info"><span>' + (T.gname ? MG.esc(T.gname) + '・' : '') + '步數 <b>' + T.steps + '</b></span><span>時間 <b id="fd-clk">' + MG.fmtTime(T.phase === "found" || T.phase === "over" ? T.ms || 0 : Math.max(0, MG.fb.now() - (T.t0 || 0))) + '</b></span></div>';
       var mode = S.groupsOn ? "grp" : "coop";
-      body.innerHTML = '<div class="fd-wall"></div>' + head + tgt + info + hint + btns + cabHtml(lay, T.pos, f, true) + (T.phase === "found" || T.phase === "over" ? foundHtml(T, S.res, mode, '') : '');
+      if(cl && T.phase !== "found" && T.phase !== "over"){ tgt = '<div class="fd-q">要找的東西：<b>？？？</b> <span class="note">（你看不到，請聽老師說）</span></div>'; hint = ''; btns = T.phase === "say" ? padHtml(show, "data-m") : ''; }
+      body.innerHTML = '<div class="fd-wall"></div>' + head + tgt + info + hint + btns + cabHtml(lay, T.pos, f, !cl || T.phase === "found" || T.phase === "over") + (T.phase === "found" || T.phase === "over" ? foundHtml(T, S.res, mode, '') : '');
       var scEl = root.querySelector("#fd-sc"); if(scEl) scEl.textContent = S.sc.s;
     }
     function apply(T){
@@ -230,16 +244,23 @@
       apply(T); render();
     }));
     body.onclick = function(e){
+      var mv = e.target.closest("[data-m]"); if(mv){ send(Number(mv.dataset.m)); return; }
       var b = e.target.closest("[data-s]"); if(!b || !mine() || b.disabled) return;
       var d = Number(b.dataset.s); sent = S.t.n; MG.beep("pop");
       if(f.tts !== false && f.tts !== "off"){ try{ MG.speak(DIRS[d].w, { voice: f.voice }); }catch(er){} }
       MG.fb.update(base + "/players/" + uid, { act: { n: S.t.n, k: "say", v: d, at: MG.fb.now() } }).catch(function(){});
       body.querySelectorAll("[data-s]").forEach(function(x){ x.disabled = true; x.classList.toggle("pickd", x === b); });
     };
+    function send(d){ if(!ctl() || S.t.phase !== "say") return; MG.beep("pop"); MG.fb.update(base + "/players/" + uid, { act: { n: S.t.n, k: "move", v: d, at: MG.fb.now() } }).catch(function(){}); }
+    function onKey(e){
+      if(!ctl() || e.repeat || e.ctrlKey || e.metaKey || e.altKey || /^(INPUT|TEXTAREA|SELECT)$/.test((e.target || {}).tagName || "")) return;
+      if(KEYS[e.key] !== undefined){ e.preventDefault(); send(KEYS[e.key]); }
+    }
+    document.addEventListener("keydown", onKey);
     tmr = setInterval(function(){ var el = document.getElementById("fd-clk"); if(el && S.t && (S.t.phase === "say" || S.t.phase === "draw")) el.textContent = MG.fmtTime(Math.max(0, MG.fb.now() - (S.t.t0 || 0))); }, 500);
-    return { stop: function(){ stopped = true; clearInterval(tmr); unsub.forEach(function(u){ try{ u(); }catch(e){} }); }, finish: function(){ this.stop(); } };
+    return { stop: function(){ stopped = true; clearInterval(tmr); document.removeEventListener("keydown", onKey); unsub.forEach(function(u){ try{ u(); }catch(e){} }); }, finish: function(){ this.stop(); } };
   }
 
   MG.Find = { host: host, student: student, layout: layout, OBJS: OBJS, DIRS: DIRS, SHOWS: SHOWS, CURSORS: CURSORS,
-    summary: function(fc){ fc = fc || {}; var s = SHOWS.filter(function(x){ return x[0] === (fc.show || "zhzy"); })[0]; return "找東西 Find It・方向詞：" + (s ? s[1] : "中文＋注音") + "・游標：" + (CURSORS[fc.cursor] || "放大鏡"); } };
+    summary: function(fc){ fc = fc || {}; var s = SHOWS.filter(function(x){ return x[0] === (fc.show || "zhzy"); })[0]; return "找東西 Find It・" + (fc.ctrl === "student" ? "學生操控（一對一）・" : "老師操控・") + "方向詞：" + (s ? s[1] : "中文＋注音") + "・游標：" + (CURSORS[fc.cursor] || "放大鏡"); } };
 })();
