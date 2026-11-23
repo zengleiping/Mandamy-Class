@@ -59,7 +59,7 @@
 
 ## 資料來源與授權
 
-- CC-CEDICT（MDBG，CC BY-SA 4.0）
+- CC-CEDICT（MDBG，CC BY-SA 3.0）
 - 華測會《華語八千詞表》2024 年 9 月版
 - complete-hsk-vocabulary（MIT）
 - 中華民國教育部《國語辭典簡編本》（版本 2014_20260929，CC BY-ND 3.0 TW）：近義詞、反義詞
