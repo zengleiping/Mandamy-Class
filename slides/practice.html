@@ -694,6 +694,8 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .circle-prompt{font-family:MM Latin,Iansui,serif;font-size:21px;margin:0 0 20px;line-height:1.6;color:var(--ink);}
   .mc-ink-host{position:relative;max-width:860px;margin:0 auto;}
   .mc-ink-wrap{position:relative;padding-bottom:140px;}
+  /* 手寫／打字是畫在整塊作答區上的：閱讀文本不能在區塊裡面另外捲動，否則文字捲走了、筆記還留在原地（看起來像懸浮）。整段攤開，跟著頁面一起捲動 */
+  .mc-ink-wrap .passage-text{ max-height:none; overflow:visible; padding-right:0; }
   .mc-ink-host .mc-choices-container{max-width:none;}
   .mc-ink-canvas{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:3;touch-action:none;}
   .mc-ink-texts{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:4;}
@@ -1209,6 +1211,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .select-union-box{ position:absolute; border:2px solid var(--seal); border-radius:4px; pointer-events:none; box-shadow:0 0 0 1px rgba(255,255,255,.7); }
   .select-marquee{ position:absolute; border:1.5px dashed var(--seal); background:rgba(232,130,90,.12); pointer-events:none; }
   .select-bar{ position:absolute; display:flex; align-items:center; gap:6px; padding:4px 8px; background:var(--surface); border:1.5px solid var(--seal-ring); border-radius:10px; box-shadow:0 6px 18px rgba(0,0,0,.18); pointer-events:auto; white-space:nowrap; z-index:45; }
+  .select-bar{ flex-wrap:wrap; max-width:96%; }
   .select-bar .sb-sep{ width:1px; height:18px; background:rgba(28,33,30,.2); }
   .select-bar .sb-al{ padding:4px 7px; min-width:26px; }
   .cp-dim{ background:rgba(0,0,0,.5); pointer-events:none; }
@@ -1307,6 +1310,10 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
     border:1.5px dashed transparent; cursor:grab; touch-action:none;
   }
   .image-proxy:hover{ border-color:#1E88E5; }
+  .image-proxy.rotated .rh{ display:none !important; }
+  .select-rot-h{ position:absolute; pointer-events:auto; width:26px; height:26px; margin:12px 0 0 -13px; border-radius:50%; background:#fff; border:2px solid var(--seal); color:var(--seal); font-size:16px; line-height:22px; text-align:center; cursor:grab; z-index:42; touch-action:none; box-shadow:0 1px 5px rgba(0,0,0,.3); user-select:none; }
+  .select-bar .sb-num{ width:58px; font-size:13.5px; padding:3px 4px; border-radius:7px; border:1.5px solid rgba(28,33,30,.2); }
+  .select-bar .sb-lab{ font-size:12.5px; color:var(--ink-soft); font-weight:700; }
   .image-proxy.active{ border-color:var(--seal); cursor:grabbing; }
   /* 左側投影片縮圖／新增按鈕 */
   .q-thumb{ width:64px; height:auto; min-height:32px; max-height:48px; object-fit:contain; flex:none; border:1px solid var(--grid-line); border-radius:4px; background:#FFFCF7; }
@@ -3132,7 +3139,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
     var fbApp = appMod.initializeApp(window.FIREBASE_CONFIG);
     window.db = dbMod.getDatabase(fbApp);
     window.ref = dbMod.ref; window.onValue = dbMod.onValue; window.set = dbMod.set;
-    window.update = dbMod.update; window.onDisconnect = dbMod.onDisconnect;
+    window.update = dbMod.update; window.onDisconnect = dbMod.onDisconnect; window.goOffline = dbMod.goOffline; window.goOnline = dbMod.goOnline;
     window.serverTimestamp = dbMod.serverTimestamp; window.get = dbMod.get;
     window.push = dbMod.push; window.remove = dbMod.remove;
     window.auth = authMod.getAuth(fbApp);
@@ -3151,7 +3158,12 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
     // 就只是「音檔只存在這台裝置」，不會讓整個 Firebase 連線失敗。
     try{
       import("https://www.gstatic.com/firebasejs/12.18.0/firebase-storage.js").then(function(sm){
-        window.storageApi = { storage: sm.getStorage(fbApp), ref: sm.ref, uploadBytes: sm.uploadBytes, getDownloadURL: sm.getDownloadURL };
+        // Firebase Storage 沒有回應時（例如專案沒開通、被擋住），官方 SDK 會在背景重試長達 10 分鐘才放棄，畫面看起來就是「一直卡住不動」。
+        // 這裡加上逾時：小檔案 30 秒（大檔案依大小加長）沒完成就當作失敗，馬上回報原因。
+        var tmo = function(pr, ms, what){ return new Promise(function(res, rej){ var t = setTimeout(function(){ var e = new Error(what + "逾時：雲端檔案儲存沒有回應（可能尚未開通、被網路擋住或網路太慢）"); e.code = "timeout"; rej(e); }, ms); pr.then(function(v){ clearTimeout(t); res(v); }, function(e){ clearTimeout(t); rej(e); }); }); };
+        window.storageApi = { storage: sm.getStorage(fbApp), ref: sm.ref,
+          uploadBytes: function(r, b, o){ return tmo(sm.uploadBytes(r, b, o), 30000 + Math.round(((b && b.size) || 0) / 20), "上傳"); },
+          getDownloadURL: function(r){ return tmo(sm.getDownloadURL(r), 20000, "取得網址"); } };
         window.dispatchEvent(new Event("firebase-storage-ready"));
       }).catch(function(e){ console.warn("Firebase Storage 載入失敗（音檔只會存在這台裝置）", e); });
     }catch(e){}
@@ -4456,6 +4468,8 @@ window.mmTA = (function(){
   if(window.__attempt) document.documentElement.classList.add("attempt");
   // 老師批改：用老師身分打開某位學生的作答房間（唯讀，不會改到學生的答案），在底下的批改列給分、寫評語
   window.__grade = (params.get("grade") === "1" && !isStudent) ? { name: urlName || "" } : null;
+  // 下課後自動截圖（平台在背景開一個看不到的頁面）：進這個班的簡報存檔房間，把指定的幾頁逐頁拍成小圖，傳回給平台，存進課程記錄的截圖
+  window.__capture = (params.get("capture") === "1" && !isStudent) ? { qids: (params.get("qs") || "").split(",").filter(Boolean), w: Number(params.get("w")) || 900 } : null;
   if(window.__grade) document.documentElement.classList.add("attempt", "grading");
   var app_ = document.getElementById("app");
   if(isStudent) app_.classList.add("student-mode");
@@ -4482,7 +4496,7 @@ window.mmTA = (function(){
   // 不同裝置的編號本來就不會相等，也就不會被拿來互相比大小，不會再受時鐘誤差影響。
   var deviceInstanceId = uid("dev");
 
-  var roomData = null; var cursorOn = true; var currentFolderId = null; var activeProjectId = null;
+  var roomData = null; var cursorOn = false; var currentFolderId = null; var activeProjectId = null;   // cursorOn 預設關閉＝低流量：老師的指標不分享給學生（需要時在房間上方打開「指標分享」）
   var editingFolderId = null; var editingProjectId = null; var activeSectionForAdd = null; var editingSectionId = null;
   var editingQuestionId = null;
   var draggedSecId = null; var draggedQ = null;
@@ -4685,22 +4699,32 @@ window.mmTA = (function(){
     var keys = getSortedQuestionKeys(found.sec), idx = keys.indexOf(qId);
     [1, 2, 3, 4, -1].forEach(function(d, i){ var k = keys[idx + d]; if(k) setTimeout(function(){ prefetchSlideImages(k); }, 250 + i * 250); });
   }
+  // 雲端檔案儲存不能用時，老師端把圖片放在 roomStudentSnapshots/{房間}/__media/{key}（資料庫裡），房間資料裡只留很短的參照 mm:key@rtdb:房間；
+  // 學生看到那一頁才去讀那一張（以前是整個塞進房間資料，每位學生一進房間就全部下載，重新整理一次又全部下載一次）
+  var rtdbMediaMem = {};
+  function rtdbMedia(r){
+    var rid = r.url.slice(5), k = rid + "/" + r.key;
+    if(rtdbMediaMem[k]) return rtdbMediaMem[k];
+    return (rtdbMediaMem[k] = get(ref(db, "roomStudentSnapshots/" + rid + "/__media/" + r.key)).then(function(sn){ var v = sn.val(); if(!v) delete rtdbMediaMem[k]; return v || null; }).catch(function(){ delete rtdbMediaMem[k]; return null; }));
+  }
   function resolveMediaSrc(val, name){
     var ref0 = parseMediaRef(val);
     if(!ref0) return Promise.resolve(typeof val === "string" ? val : null); // 舊格式：資料網址／一般網址
     if(mediaObjUrlCache[ref0.key]) return Promise.resolve(mediaObjUrlCache[ref0.key]);
-    if(!MO || !MO.ok) return Promise.resolve(ref0.url || null);
+    var isRtdb = ref0.url.indexOf("rtdb:") === 0;
+    if(!MO || !MO.ok) return Promise.resolve(isRtdb ? rtdbMedia(ref0) : (ref0.url || null));
     // IndexedDB 偶爾會卡住不回應（被別的分頁佔著、瀏覽器的儲存限制…）：等太久就直接用雲端網址，不然圖片永遠出不來
     var gm = Promise.race([MO.getMedia(ref0.key), new Promise(function(res){ setTimeout(function(){ res(undefined); }, 2500); })]);
     return gm.then(function(rec){
       if(rec && rec.blob){ var u = URL.createObjectURL(rec.blob); mediaObjUrlCache[ref0.key] = u; return u; }
+      if(isRtdb) return rtdbMedia(ref0);
       if(ref0.url){
         if(!isStudent && !mediaFetching[ref0.key]){ mediaFetching[ref0.key] = true;
         fetch(ref0.url).then(function(r){ if(!r.ok) throw new Error("HTTP " + r.status); return r.blob(); }).then(function(bl){ return MO.putMediaWithKey(ref0.key, bl, name || ""); }).catch(function(){ delete mediaFetching[ref0.key]; }); }
         return ref0.url;
       }
       return null;
-    }).catch(function(){ return ref0.url || null; });
+    }).catch(function(){ return isRtdb ? rtdbMedia(ref0) : (ref0.url || null); });
   }
   // 課程庫裡所有「大型媒體欄位」：題目底圖（q.bgImage）、progress.bgImage、progress.images[].src（圖片）、progress.mediaData[id]（音檔）。
   // 每個欄位 { kind:'img'|'audio', get(), set(v) }——同步雲端、備份匯出入、自動瘦身都走這一份清單。
@@ -4748,7 +4772,65 @@ window.mmTA = (function(){
     if(!u) return "";
     try{ var resp = await fetch(u); var bl = await resp.blob(); return await blobToDataUrl(bl); }catch(e){ return ""; }
   }
-  var mediaSyncing = false;
+  // ---- 圖片／音檔上傳狀態：「已定稿」只代表排版內容存好了；圖片是另外上傳到雲端的，沒上傳的換一台電腦或學生就看不到 ----
+  function mediaRefsNow(){
+    var out = [];
+    function add(v){ var r = parseMediaRef(v); if(r) out.push(r); }
+    if(inRoom()){
+      var secs = (roomData && roomData.project && roomData.project.sections) || {};
+      Object.keys(secs).forEach(function(sid){ var qs = (secs[sid] && secs[sid].questions) || {}; Object.keys(qs).forEach(function(qid){ if(qs[qid]) add(qs[qid].bgImage); }); });
+      var sp = (roomData && roomData.sharedProgress) || {};
+      Object.keys(sp).forEach(function(qid){ var pp = sp[qid]; if(!pp) return; add(pp.bgImage); if(pp.images) Object.keys(pp.images).forEach(function(i){ if(pp.images[i]) add(pp.images[i].src); }); if(pp.mediaData) Object.keys(pp.mediaData).forEach(function(m){ add(pp.mediaData[m]); }); });
+    } else {
+      var pid = activeProjectId || window.__embedProject, pr = pid && fsData && fsData.projects && fsData.projects[pid];
+      if(pr) collectMediaSlots({ projects: { x: pr } }).forEach(function(sl){ add(sl.get()); });
+    }
+    return out;
+  }
+  function mediaCountsNow(){
+    var seen = {}, c = { total: 0, cloud: 0, local: 0, localKeys: [] };
+    mediaRefsNow().forEach(function(r){ if(seen[r.key]) return; seen[r.key] = 1; c.total++; if(r.url) c.cloud++; else { c.local++; c.localKeys.push(r.key); } });
+    return c;
+  }
+  async function mediaStatusDialog(){
+    if(document.getElementById("mm-mediastat")) return;
+    var back = document.createElement("div"); back.className = "tb-modal-back"; back.id = "mm-mediastat";
+    var modal = document.createElement("div"); modal.className = "tb-modal"; modal.style.width = "min(540px,94vw)"; back.appendChild(modal);
+    modal.innerHTML = '<h3>☁ 圖片與音檔上傳狀態</h3><div class="ms-body" style="font-size:15px;line-height:1.7;">檢查中…</div><div class="tb-foot"><button type="button" class="ms-close">關閉</button></div>';
+    modal.querySelector(".ms-close").onclick = function(){ back.remove(); };
+    back.addEventListener("pointerdown", function(e){ if(e.target === back) back.remove(); });
+    document.body.appendChild(back);
+    var body = modal.querySelector(".ms-body");
+    try{
+      var c0 = mediaCountsNow();
+      if(c0.local){
+        body.textContent = "正在上傳 " + c0.local + " 個檔案…";
+        var runP = (inRoom() ? (isStudent ? Promise.resolve() : repairRoomMedia(true)) : syncMediaToCloud()).catch(function(){});
+        var tick = setInterval(function(){ var cn = mediaCountsNow(); body.textContent = "正在上傳… 已完成 " + (c0.local - cn.local) + " / " + c0.local + " 個" + (mediaSyncProg.fail ? "（失敗 " + mediaSyncProg.fail + " 次，若一直失敗會自動停止並說明原因）" : ""); }, 700);
+        await runP; clearInterval(tick);
+        await new Promise(function(r){ setTimeout(r, 600); });
+      }
+      var c = mediaCountsNow(), miss = 0;
+      for(var i = 0; i < c.localKeys.length; i++){ var rec = null; try{ rec = (MO && MO.ok) ? await MO.getMedia(c.localKeys[i]) : null; }catch(e){} if(!rec || !rec.blob) miss++; }
+      var why = [];
+      if(c.local){
+        if(navigator.onLine === false) why.push("目前沒有網路");
+        if(!currentTeacher && !inRoom()) why.push("沒有用老師帳號登入");
+        if(!window.storageApi) why.push("雲端檔案儲存（Firebase Storage）沒有載入或尚未開通");
+        if(mediaLastErr) why.push("上傳失敗的原因：" + escapeHtml(String(mediaLastErr).slice(0, 160)));
+        if(mediaSyncProg.stopped) why.push("連續上傳失敗，已自動停止（避免一直等下去）。請把這個畫面拍給維護的人，通常是 Firebase 的「Storage」還沒開通，或規則不允許上傳");
+      }
+      var h = '<div>這份簡報共有 <b>' + c.total + '</b> 個圖片／音檔：</div><div>✅ 已上傳到雲端：<b>' + c.cloud + '</b></div><div>' + (c.local ? '⚠️' : '✅') + ' 還沒上傳（只存在匯入的那台電腦）：<b>' + c.local + '</b></div>';
+      if(c.local){
+        if(miss) h += '<div style="color:#B23B32;margin-top:6px;">其中 <b>' + miss + '</b> 個檔案連這台電腦也找不到（是在別台電腦匯入的）。<b>請回到當初匯入簡報的那台電腦、用同一個瀏覽器（不要用無痕視窗）打開這份簡報</b>，系統會自動上傳；上傳完成這裡就會顯示全部已上傳。</div>';
+        if(c.local - miss > 0) h += '<div style="margin-top:6px;">這台電腦找得到的 ' + (c.local - miss) + ' 個，已經嘗試上傳' + (why.length ? '，但沒成功：' : '，請稍等一下再按一次檢查。') + '</div>';
+        if(why.length) h += '<ul style="margin:6px 0 0 18px;">' + why.map(function(w){ return '<li>' + w + '</li>'; }).join("") + '</ul>';
+      } else if(c.total){ h += '<div style="margin-top:6px;color:#2E7D32;">全部都在雲端了，換一台電腦或學生端都看得到。</div>'; }
+      else h += '<div style="margin-top:6px;">這份簡報沒有需要上傳的圖片或音檔。</div>';
+      body.innerHTML = h;
+    }catch(e){ body.textContent = "檢查失敗：" + (e && e.message ? e.message : e); }
+  }
+  var mediaSyncing = false, mediaSyncProg = { fail: 0, stopped: false };
   // 把還沒上傳的媒體（音檔、圖片）傳到 Firebase Storage（登入且有網路、Storage 可用時）。成功的參照會加上 @網址，再存回課程庫。
   // 上傳前把太大的圖片縮小（最長邊 1920px；沒有透明的改存 JPEG），學生端載入會快很多；本機保留原檔
   async function shrinkImageBlob(blob, opt){
@@ -4769,12 +4851,14 @@ window.mmTA = (function(){
   async function syncMediaToCloud(){
     if(mediaSyncing || !currentTeacher || !MO || !MO.ok || !window.storageApi || navigator.onLine === false) return { uploaded: 0, pending: 0 };
     mediaSyncing = true;
-    var uploaded = 0, pending = 0, changed = false, done = {};
+    var uploaded = 0, pending = 0, changed = false, done = {}, consecFail = 0;
+    mediaSyncProg = { fail: 0, stopped: false };
     try{
       var jobs = [];
       collectMediaSlots(fsData).forEach(function(sl){ var r = parseMediaRef(sl.get()); if(r && !r.url) jobs.push({ sl: sl, key: r.key }); });
       for(var i = 0; i < jobs.length; i++){
         var j = jobs[i];
+        if(consecFail >= 2){ pending++; mediaSyncProg.stopped = true; continue; }   // 連續失敗：雲端檔案儲存多半有問題，不要再一個一個等，直接停下來回報原因
         try{
           if(done[j.key] === undefined){
             var rec = await MO.getMedia(j.key);
@@ -4786,8 +4870,8 @@ window.mmTA = (function(){
               done[j.key] = await window.storageApi.getDownloadURL(sr);
             }
           }
-          if(done[j.key]){ j.sl.set("mm:" + j.key + "@" + done[j.key]); uploaded++; changed = true; } else pending++;
-        }catch(e){ console.warn("媒體上傳失敗（先保留在這台裝置）", e); pending++; }
+          if(done[j.key]){ j.sl.set("mm:" + j.key + "@" + done[j.key]); uploaded++; changed = true; consecFail = 0; } else pending++;
+        }catch(e){ console.warn("媒體上傳失敗（先保留在這台裝置）", e); noteMediaErr(e); consecFail++; mediaSyncProg.fail++; pending++; }
       }
       if(changed) saveFS();
     } finally { mediaSyncing = false; }
@@ -4826,10 +4910,10 @@ window.mmTA = (function(){
   // 以前只有「開房間的那一刻」會補傳，房間裡才匯入的內容完全沒人補。
   // 做法：掃描房間裡所有「只有本機參照」的圖片／背景／音檔 → 傳到雲端換成 mm:key@網址；雲端不能用（Firebase 方案不支援、離線…）時，
   // 圖片縮小後直接放進房間資料（有總量上限）；每批寫回房間，學生那邊會即時出現。
-  var mediaRepairBusy = false, mediaRepairFailAt = 0, mediaShareMemo = {}, mediaInlineBudget = 12000000, mediaLastErr = "";
+  var mediaRepairBusy = false, mediaRepairFailAt = 0, mediaShareMemo = {}, mediaInlineBudget = 24000000, mediaLastErr = "";
   function isLocalRef(v){ var r = parseMediaRef(v); return !!(r && !r.url); }
   function noteMediaErr(e){
-    mediaLastErr = (e && (e.code || e.message)) || String(e);
+    mediaLastErr = e ? ((e.code && e.message && e.code !== "timeout" ? e.code + "：" : "") + (e.message || e.code || String(e))) : "";
     try{ console.warn("[mm] 媒體上傳失敗", e); localStorage.setItem("mm_media_diag", JSON.stringify({ t: new Date().toISOString(), err: mediaLastErr, teacher: !!currentTeacher, storage: !!window.storageApi, online: navigator.onLine })); }catch(er){}
   }
   async function makeRefShareable(val, kind){
@@ -4851,15 +4935,25 @@ window.mmTA = (function(){
       }
       if(!out && kind === "img"){
         var sm = await shrinkImageBlob(rec.blob, { edge: 900, q: 0.72, always: true }), du = await blobToDataUrl(sm);
-        if(du.length <= 350000 && du.length <= mediaInlineBudget){ mediaInlineBudget -= du.length; out = du; }
+        if(du.length <= 450000 && du.length <= mediaInlineBudget && activeRoomId){
+          try{ await set(ref(db, "roomStudentSnapshots/" + activeRoomId + "/__media/" + r.key), du); mediaInlineBudget -= du.length; out = "mm:" + r.key + "@rtdb:" + activeRoomId; }catch(e){ noteMediaErr(e); }
+        }
       }
     }catch(e){ noteMediaErr(e); }
     if(out) mediaShareMemo[r.key] = out;
     return out || val;
   }
+  // 以前塞進房間資料裡的大張圖片（資料網址）：搬到資料庫的獨立位置，房間資料只留短參照（學生用到才讀）
+  function isHeavyInline(v){ return typeof v === "string" && v.indexOf("data:image") === 0 && v.length > 20000; }
+  async function lazifyInline(du){
+    var h = 5381; for(var i = 0; i < du.length; i += 97){ h = ((h * 33) ^ du.charCodeAt(i)) >>> 0; } var key = "inl" + h.toString(36) + du.length.toString(36);
+    await set(ref(db, "roomStudentSnapshots/" + activeRoomId + "/__media/" + key), du);
+    return "mm:" + key + "@rtdb:" + activeRoomId;
+  }
   async function repairRoomMedia(force){
     if(!inRoom() || isStudent || !roomData || mediaRepairBusy) return;
     if(!force && Date.now() - mediaRepairFailAt < 60000) return;
+    if(window.__capture) return;
     var base = "rooms/" + activeRoomId + "/", jobs = [];
     var secs = (roomData.project && roomData.project.sections) || {};
     Object.keys(secs).forEach(function(sid){ var qs = (secs[sid] && secs[sid].questions) || {}; Object.keys(qs).forEach(function(qid){ if(qs[qid] && isLocalRef(qs[qid].bgImage)) jobs.push({ path: base + "project/sections/" + sid + "/questions/" + qid + "/bgImage", val: qs[qid].bgImage, kind: "img" }); }); });
@@ -4867,7 +4961,8 @@ window.mmTA = (function(){
     Object.keys(sp).forEach(function(qid){
       var pp = sp[qid]; if(!pp) return; var bp = base + "sharedProgress/" + qid + "/";
       if(isLocalRef(pp.bgImage)) jobs.push({ path: bp + "bgImage", val: pp.bgImage, kind: "img" });
-      if(pp.images) Object.keys(pp.images).forEach(function(i){ var im = pp.images[i]; if(im && isLocalRef(im.src)) jobs.push({ path: bp + "images/" + i + "/src", val: im.src, kind: "img" }); });
+      else if(isHeavyInline(pp.bgImage)) jobs.push({ path: bp + "bgImage", val: pp.bgImage, kind: "inline" });
+      if(pp.images) Object.keys(pp.images).forEach(function(i){ var im = pp.images[i]; if(im && isLocalRef(im.src)) jobs.push({ path: bp + "images/" + i + "/src", val: im.src, kind: "img" }); else if(im && isHeavyInline(im.src)) jobs.push({ path: bp + "images/" + i + "/src", val: im.src, kind: "inline" }); });
       if(pp.mediaData) Object.keys(pp.mediaData).forEach(function(mid){ if(isLocalRef(pp.mediaData[mid])) jobs.push({ path: bp + "mediaData/" + mid, val: pp.mediaData[mid], kind: "audio" }); });
     });
     if(!jobs.length) return;
@@ -4876,7 +4971,7 @@ window.mmTA = (function(){
     try{
       toast("正在把 " + jobs.length + " 個圖片／音檔傳給學生…（學生會陸續看到）");
       for(var i = 0; i < jobs.length; i++){
-        var nv = await makeRefShareable(jobs[i].val, jobs[i].kind);
+        var nv = jobs[i].kind === "inline" ? await lazifyInline(jobs[i].val).catch(function(){ return jobs[i].val; }) : await makeRefShareable(jobs[i].val, jobs[i].kind);
         if(nv !== jobs[i].val){ batch[jobs[i].path] = nv; nb++; ok++; }
         else { var rf = parseMediaRef(jobs[i].val), rec0 = null; try{ rec0 = (MO && MO.ok) ? await MO.getMedia(rf.key) : null; }catch(e){} if(!rec0 || !rec0.blob) missing++; else failed++; }
         if(nb >= 8){ var b1 = batch; batch = {}; nb = 0; await update(ref(db), b1); }
@@ -5049,6 +5144,42 @@ window.mmTA = (function(){
   document.addEventListener("change", function(e){
     if(e.target && e.target.id === "exam-view-sel"){ examViewId = e.target.value || null; renderStage(); }
   });
+  /* ---- 學生在投影片上的畫記：預設只有老師看得到（省流量） ----
+     全班共用同一份筆跡時，每個人的每一筆都要傳給房間裡每一個人（人數的平方）。預設改成：學生的畫記只存在 roomStudentSnapshots/{房間}/__ink/{學生}/{題}，
+     只有老師訂閱；學生自己的畫面照常看得到自己畫的＋老師畫的。老師按房間上方「學生畫記互相可見」打開後，新的畫記才會共用（舊的仍維持只有老師看得到）。 */
+  var privInk = {};          // 學生端：自己寫過的筆跡 { 題號: { strokes: [...] } }
+  var inkAll = {};           // 老師端：所有學生的畫記 { 學生id: { 題號: { strokes: [...] } } }
+  var inkLastMerged = {};    // 老師端：上次顯示時併進畫面的學生筆跡 id（用來判斷哪些是老師擦掉的）
+  function isBoardQ(qId){ var info = findSectionForQuestion(qId); return !!(info && info.sec.type === "board"); }
+  function privateInkOn(){ return inRoom() && !(roomData && roomData.shareInk === true) && currentClassMode !== "exam" && !window.__attempt && !window.__grade && !window.__solo; }
+  function inkAllFor(qId){
+    var out = [], ids = {};
+    Object.keys(inkAll || {}).forEach(function(sid){ var e = inkAll[sid] && inkAll[sid][qId]; wbList(e && e.strokes).forEach(function(st){ out.push(st); ids[st.id] = sid; }); });
+    inkLastMerged[qId] = ids; return out;
+  }
+  function writePrivateInk(qId, ownStrokes){
+    var prev = wbList((privInk[qId] || {}).strokes), base = "roomStudentSnapshots/" + activeRoomId + "/__ink/" + myId + "/" + qId, same = ownStrokes.length >= prev.length;
+    for(var i = 0; same && i < prev.length; i++){ if(!ownStrokes[i] || ownStrokes[i].id !== prev[i].id) same = false; }
+    privInk[qId] = { strokes: ownStrokes };
+    if(same){
+      if(ownStrokes.length === prev.length) return;
+      var upd = {}; for(var j = prev.length; j < ownStrokes.length; j++) upd["strokes/" + j] = ownStrokes[j];
+      update(ref(db, base), upd).catch(function(e){ console.warn("ink", e); });
+    } else set(ref(db, base + "/strokes"), ownStrokes.length ? ownStrokes : null).catch(function(e){ console.warn("ink", e); });
+  }
+  // 老師寫入筆跡時：只存在學生私人位置的筆跡不要寫進共用資料；老師擦掉的學生筆跡要從學生的私人位置刪掉
+  function teacherSplitInk(qId, patch){
+    var sharedNow = wbList(roomData && roomData.sharedProgress && roomData.sharedProgress[qId] && roomData.sharedProgress[qId].strokes), sharedIds = {}, present = {};
+    sharedNow.forEach(function(st){ sharedIds[st.id] = 1; });
+    patch.strokes.forEach(function(st){ if(st && st.id) present[st.id] = 1; });
+    var privIds = inkLastMerged[qId] || {}, keep = patch.strokes.filter(function(st){ return !(st && st.by && !sharedIds[st.id] && privIds[st.id]); });
+    Object.keys(inkAll || {}).forEach(function(sid){
+      var e = inkAll[sid] && inkAll[sid][qId]; if(!e) return;
+      var arr = wbList(e.strokes), rest = arr.filter(function(st){ return !privIds[st.id] || present[st.id]; });
+      if(rest.length !== arr.length){ e.strokes = rest; set(ref(db, "roomStudentSnapshots/" + activeRoomId + "/__ink/" + sid + "/" + qId + "/strokes"), rest.length ? rest : null).catch(function(){}); }
+    });
+    var out = Object.assign({}, patch); out.strokes = keep; return out;
+  }
   function getProgress(qId){
     if(inRoom()){
       var pk = examPrivateFor(qId);
@@ -5058,6 +5189,10 @@ window.mmTA = (function(){
         return priv;
       }
       var shp = (roomData && roomData.sharedProgress && roomData.sharedProgress[qId]) || {};
+      if(currentClassMode !== "exam" && !window.__attempt && !window.__grade && !window.__solo && isBoardQ(qId)){
+        if(isStudent){ var mine = wbList((privInk[qId] || {}).strokes); if(mine.length) shp = Object.assign({}, shp, { strokes: wbList(shp.strokes).concat(mine) }); }
+        else { var all = inkAllFor(qId); if(all.length) shp = Object.assign({}, shp, { strokes: wbList(shp.strokes).concat(all) }); }
+      }
       // 測驗模式的選擇題：每位學生各自作答（記在 votes），自己畫面只看到自己的選擇
       if(isStudent && choiceVoteOn() && isChoiceQ(qId)){ var mv = choiceVotes(qId)[myId]; return Object.assign({}, shp, { multiPicks: Object.assign({}, (mv && mv.picks) || {}) }); }
       return shp;
@@ -5140,6 +5275,29 @@ window.mmTA = (function(){
   }
   window.addEventListener("pointerup", objDragEnd, true); window.addEventListener("pointercancel", objDragEnd, true); window.addEventListener("blur", objDragEnd);
 
+  // 省流量：新增一筆筆跡時，不再把這一頁「全部筆跡」整個陣列重傳（會傳給房間裡每一個人），只傳新增的那幾筆（strokes/<序號>）。
+  // 房間裡目前的筆跡是這次寫入的前綴時才這樣做；擦除、清除、復原這類會改到舊筆跡的操作，照舊整個寫入。
+  function strokeDeltaPatch(qId, patch){
+    if(!Array.isArray(patch.strokes)) return patch;
+    var cur = roomData && roomData.sharedProgress && roomData.sharedProgress[qId] && roomData.sharedProgress[qId].strokes;
+    if(cur == null) cur = [];
+    if(!Array.isArray(cur)) return patch;
+    var ns = patch.strokes; if(ns.length <= cur.length) return patch;
+    for(var i = 0; i < cur.length; i++){ if(!cur[i] || !ns[i] || cur[i].id !== ns[i].id) return patch; }
+    var out = {}; Object.keys(patch).forEach(function(k){ if(k !== "strokes") out[k] = patch[k]; });
+    for(var j = cur.length; j < ns.length; j++) out["strokes/" + j] = ns[j];
+    return out;
+  }
+  // 筆跡座標存檔前先精簡：座標取到小數兩位、距離不到畫布 0.08% 的點省略（肉眼看不出來，資料量少好幾倍）
+  function compactPts(pts){
+    var out = [], last = null, n = pts.length;
+    pts.forEach(function(pt, i){
+      var x = Math.round(pt.x * 100) / 100, y = Math.round(pt.y * 100) / 100;
+      if(last && i < n - 1 && Math.abs(x - last.x) + Math.abs(y - last.y) < 0.08) return;
+      var o = Object.assign({}, pt, { x: x, y: y }); out.push(o); last = o;
+    });
+    return out.length >= 2 ? out : pts;
+  }
   function writeProgress(qId, patch){
     var pk = inRoom() ? examPrivateFor(qId) : null;
     if(pk && pk !== "__none__"){ update(ref(db, "rooms/" + activeRoomId + "/examProg/" + pk + "/" + qId), isWhiteboardQ(qId) ? wbPrivatePatch(qId, patch) : patch); return; }
@@ -5149,7 +5307,18 @@ window.mmTA = (function(){
         if(cans.length && cpk.length === cans.length && cpk.every(function(k){ return cans.indexOf(k) >= 0; })) window.parent.postMessage({ mm: "petEarn", kind: "choice", room: activeRoomId, id: qId }, "*");
       }catch(e){}
       return; }
-    if(inRoom()){ protectTeacherInk(qId, patch); update(ref(db, "rooms/" + activeRoomId + "/sharedProgress/" + qId), patch); }
+    if(inRoom() && isBoardQ(qId) && Array.isArray(patch.strokes) && currentClassMode !== "exam" && !window.__attempt){
+      if(isStudent && privateInkOn()){
+        writePrivateInk(qId, patch.strokes.filter(function(st){ return st && st.by === myId; }));
+        patch = Object.assign({}, patch); delete patch.strokes; delete patch.strokesRevSeq; delete patch.strokesRevBy;
+        if(!Object.keys(patch).length) return;
+      } else if(!isStudent){ patch = teacherSplitInk(qId, patch); }
+      else {   // 學生、畫記已改成互相可見：先前只存在私人位置的筆跡不要再重複寫進共用資料
+        var pids = {}; wbList((privInk[qId] || {}).strokes).forEach(function(st){ pids[st.id] = 1; });
+        patch = Object.assign({}, patch); patch.strokes = patch.strokes.filter(function(st){ return !(st && pids[st.id]); });
+      }
+    }
+    if(inRoom()){ protectTeacherInk(qId, patch); update(ref(db, "rooms/" + activeRoomId + "/sharedProgress/" + qId), strokeDeltaPatch(qId, patch)); }
     else { Object.assign(getProgress(qId), patch); saveFS(); renderStage(); }
   }
 
@@ -6392,6 +6561,11 @@ window.mmTA = (function(){
           renderTopbar();
         };
         c2.appendChild(toggleCursor);
+        var toggleInk = document.createElement("label"); var inkShared = !!(roomData && roomData.shareInk === true); toggleInk.className = "toggle" + (inkShared ? " on" : "");
+        toggleInk.title = "預設：學生在投影片上的畫記只有老師看得到（省流量）。打開後，之後的畫記全班都看得到。";
+        toggleInk.innerHTML = '<span class="toggle-track"></span><span>' + (inkShared ? "學生畫記互相可見 Shared" : "學生畫記僅老師可見 Private") + '</span>';
+        toggleInk.onclick = function(){ update(ref(db, "rooms/" + activeRoomId), { shareInk: !inkShared }); };
+        c2.appendChild(toggleInk);
       }
       topbarActions.appendChild(c2);
       if(!isStudent){
@@ -7141,12 +7315,47 @@ window.mmTA = (function(){
     SLT.btn.innerHTML = '📝 翻譯<br><b>' + ids.length + '</b>';
   }
 
+  /* 學生閒置保護：在房間裡超過 10 分鐘沒有動作（滑鼠、觸控、鍵盤都沒動，老師也沒有換頁）就暫停連線，不再接收房間資料，
+     省 Firebase 流量（學生常常忘記關頁面）。點一下畫面就恢復。考卷作答中、自習模式不套用。 */
+  (function(){
+    var IDLE_MS = 10 * 60 * 1000, last = Date.now(), off = false, ov = null, lastQ = null;
+    function act(){ last = Date.now(); }
+    ["pointerdown", "pointermove", "keydown", "touchstart", "wheel"].forEach(function(ev){ window.addEventListener(ev, function(){ if(!off) act(); }, { capture: true, passive: true }); });
+    function resume(){
+      off = false; if(ov){ ov.remove(); ov = null; }
+      try{ if(window.goOnline && window.db) window.goOnline(window.db); }catch(e){}
+      act();
+    }
+    function goIdle(){
+      off = true;
+      try{ if(window.goOffline && window.db) window.goOffline(window.db); }catch(e){}
+      ov = document.createElement("div");
+      ov.style.cssText = "position:fixed;inset:0;z-index:2147483000;background:rgba(40,34,30,.88);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;font-size:22px;text-align:center;cursor:pointer;padding:20px;";
+      ov.innerHTML = '<div style="font-size:44px;">💤</div><div>你已經閒置超過 10 分鐘，連線已暫停。</div><div style="font-size:18px;opacity:.85;">點一下畫面繼續上課<br>You have been idle for 10 minutes. Tap anywhere to continue.</div>';
+      ov.addEventListener("pointerdown", function(e){ e.preventDefault(); resume(); });
+      ov.addEventListener("keydown", resume);
+      document.body.appendChild(ov);
+    }
+    setInterval(function(){
+      if(off || !isStudent || !inRoom() || window.__attempt || window.__solo || window.__grade) return;
+      var q = roomData && roomData.project && roomData.project.currentQId;
+      if(q !== lastQ){ lastQ = q; act(); }   // 老師換頁也算有動作（學生只是在看老師講課）
+      if(Date.now() - last > IDLE_MS) goIdle();
+    }, 15000);
+  })();
+
   function startRoom(rId, role){
     activeRoomId = rId; roomRole = role;
     if(role === "teacher"){ setTimeout(function(){ repairRoomMedia(true); }, 5000); }   // 進房間後檢查有沒有學生拿不到的圖片
     if(role === "teacher" && window.parent !== window){ try{ window.parent.postMessage({ mm: "room", id: rId }, "*"); }catch(e){} } // 平台嵌入：通知外殼，學生會自動進房
     if(window.__attempt){ /* 個別作答：不需要老師即時監看學生畫面 */ }
-    else if(role === "student") startStudentSnapshotLoop(); else startTeacherSnapshotListener(rId);
+    else if(role === "student"){
+      startStudentSnapshotLoop();
+      try{ get(ref(db, "roomStudentSnapshots/" + rId + "/__ink/" + myId)).then(function(sn){ var v = sn.val(); if(v){ privInk = v; try{ renderStage(); }catch(e){} } }).catch(function(){}); }catch(e){}
+    } else {
+      startTeacherSnapshotListener(rId);
+      try{ onValue(ref(db, "roomStudentSnapshots/" + rId + "/__ink"), function(sn){ inkAll = sn.val() || {}; var f = function(){ try{ renderStage(); }catch(e){} }; if(typeof objDragActive === "function" && objDragActive()) objDragDefer(f); else f(); }); }catch(e){}
+    }
     onValue(ref(db, "rooms/" + rId), function(snap){
       roomData = snap.val() || {};
       try{ slTransDraw(); }catch(erT){ console.warn("slTransDraw", erT); }
@@ -7177,6 +7386,7 @@ window.mmTA = (function(){
       renderTopbar(); renderSidebar(); renderStage(); renderTimerWidget(); refreshExamPicker();
       if(window.__attempt) attemptBarRender();
       if(window.__grade) gradeBarRender();
+      if(window.__capture && !window.__captureStarted && roomData.project){ window.__captureStarted = true; setTimeout(runCaptureJob, 1500); }
       if(window.__embedReveal) setTimeout(window.__embedReveal, 80);
     });
     onValue(ref(db, "roomCursors/" + rId), function(snap){ lastCursorsData = snap.val(); renderMultiCursors(lastCursorsData); });
@@ -7615,8 +7825,12 @@ window.mmTA = (function(){
     if(inRoom()) remove(ref(db, "roomCursors/" + activeRoomId + "/" + myId));
   }
   var lastCursorSendAt = 0;
+  var lastCursorX = -99, lastCursorY = -99;
   document.addEventListener("mousemove", function(e){
     if(!inRoom() || !cursorOn){ wasCursorOnBoard = false; return; }
+    // 只有老師送出游標位置：學生的游標原本也每 50 毫秒送一次、再轉發給全班每個人，
+    // 20 位學生同時動滑鼠一堂課就會下載好幾 GB（Firebase 每月下載量就是這樣用光的）
+    if(isStudent) return;
     var boardArea = document.getElementById("board-area");
     if(!boardArea){ clearMyRoomCursor(); return; }
     var refEl = getCursorRefEl(boardArea);
@@ -7635,12 +7849,14 @@ window.mmTA = (function(){
     // 2026-09-29：節流間隔從 80ms 調到 50ms——游標位置的廣播頻率跟「殘留一點點跟手指/滑鼠位置對不上」
     // 的落差直接相關（對方看到的永遠是「幾十毫秒前」送出的那個位置），縮短間隔能直接減少這個落差，
     // 副作用（多送一點點資料量）在這種輕量的百分比座標上可以忽略。
-    if(now - lastCursorSendAt < 50) return;
+    if(now - lastCursorSendAt < 120) return;
     lastCursorSendAt = now;
     var qInfo = getCurrentQInfo(); if(!qInfo) return;
     wasCursorOnBoard = true;
     var x = (e.clientX - rect.left) / rect.width * 100;
     var y = (e.clientY - rect.top) / rect.height * 100;
+    if(Math.abs(x - lastCursorX) + Math.abs(y - lastCursorY) < 0.5) return;   // 幾乎沒動就不送
+    lastCursorX = x; lastCursorY = y;
     var curRef = ref(db, "roomCursors/" + activeRoomId + "/" + myId);
     set(curRef, { x: x, y: y, name: myName, role: roomRole, qId: qInfo.question.id, t: Date.now() });
     if(!window.__curDiscRef || window.__curDiscRef !== activeRoomId + "|" + myId){ window.__curDiscRef = activeRoomId + "|" + myId; try{ onDisconnect(curRef).remove(); }catch(e){} }   // 關掉頁面／斷線就自動移除
@@ -7673,16 +7889,19 @@ window.mmTA = (function(){
       if(!src){ resolve(null); return; }
       if(thumbImgCache[src]){ resolve(thumbImgCache[src]); return; }
       // mm: 參照先換成可以載入的網址（本機 IndexedDB 的 blob 網址，或雲端網址）
+      // 某一張圖一直載不下來（網路卡住、檔案太大）時，不能讓整排縮圖跟著卡死：最多等 7 秒，逾時就當作沒有這張圖
+      var settled = false, tmo = setTimeout(function(){ if(!settled){ settled = true; resolve(null); } }, 7000);
+      function done(v){ if(settled) return; settled = true; clearTimeout(tmo); resolve(v); }
       resolveMediaSrc(src, "").then(function(realSrc){
-        if(!realSrc){ resolve(null); return; }
+        if(!realSrc){ done(null); return; }
         var im = new Image();
         im.onload = function(){
           if(Object.keys(thumbImgCache).length > 60) thumbImgCache = {};
-          thumbImgCache[src] = im; resolve(im);
+          thumbImgCache[src] = im; done(im);
         };
-        im.onerror = function(){ resolve(null); };
+        im.onerror = function(){ done(null); };
         im.src = realSrc;
-      });
+      }, function(){ done(null); });
     });
   }
   function drawSlideThumb(q, cb, W0, asCanvas, live){
@@ -7808,12 +8027,16 @@ window.mmTA = (function(){
     var cached = slideThumbCache[qId];
     if(cached && cached.sig === sig){ applySlideThumb(qId, cached.url); pumpSlideThumbQueue(); return; }
     slideThumbBusy = true;
-    drawSlideThumb(item.question, function(url){
-      slideThumbCache[qId] = { sig: sig, url: url };
-      applySlideThumb(qId, url);
+    var jobDone = false;
+    function finishJob(url){
+      if(jobDone) return; jobDone = true; clearTimeout(guard);
+      if(url){ slideThumbCache[qId] = { sig: sig, url: url }; applySlideThumb(qId, url); }
       slideThumbBusy = false;
       pumpSlideThumbQueue();
-    });
+    }
+    // 保險：畫一張縮圖最多 12 秒，卡住就放掉換下一張，不讓後面所有縮圖都空白
+    var guard = setTimeout(function(){ finishJob(null); }, 12000);
+    try{ drawSlideThumb(item.question, finishJob); }catch(er){ console.warn("thumb", er); finishJob(null); }
   }
   function scheduleSlideThumb(qId){
     clearTimeout(slideThumbTimers[qId]);
@@ -8628,15 +8851,70 @@ window.mmTA = (function(){
   }
   function mmSafeName(s){ return String(s || "簡報").replace(/[\\/:*?"<>|]+/g, "_").slice(0, 60); }
   function dataUrlToBytes(u){ var b = atob(u.split(",")[1]), a = new Uint8Array(b.length); for(var i = 0; i < b.length; i++) a[i] = b.charCodeAt(i); return a; }
+  // 把每一頁在編輯區實際畫出來的畫面拍成圖（只在這台本機切換顯示的頁面，不會動到房間或學生看到的頁面）
+  async function runCaptureJob(){
+    var cap = window.__capture, out = [], done = false;
+    function finish(shots){ if(done) return; done = true; try{ window.parent.postMessage({ mm: "captureDone", shots: shots || [] }, "*"); }catch(e){} }
+    setTimeout(function(){ finish(out); }, 110000);   // 保險：最多 110 秒
+    try{
+      var found = {}, slides = [];
+      cap.qids.forEach(function(qid){ var it = getAllQuestionsList().find(function(x){ return x.question.id === qid; }); if(it && !found[qid]){ found[qid] = 1; slides.push(it.question); } });
+      if(!slides.length){ finish([]); return; }
+      var cvs = await captureDeckLive({ slides: slides }, null, cap.w);
+      (cvs || []).forEach(function(cv){ if(cv){ try{ out.push(cv.toDataURL("image/jpeg", 0.6)); }catch(e){} } });
+    }catch(e){ console.warn("capture", e); }
+    finish(out);
+  }
+  async function captureDeckLive(info, onPage, targetW){
+    var proj = getActiveProject();
+    if(!proj || typeof html2canvas === "undefined" || window.__grade) return null;
+    var origQ = proj.currentQId, res = [];
+    var st = document.createElement("style");
+    st.textContent = ".text-step-badge,.resize-handle,.tb-edge,.select-marquee,.crop-handle,.sel-handle{display:none !important;}";
+    document.head.appendChild(st);
+    try{
+      try{ if(document.fonts && document.fonts.ready) await document.fonts.ready; }catch(e){}
+      for(var i = 0; i < info.slides.length; i++){
+        if(onPage) onPage(i);
+        var q = info.slides[i], cv = null;
+        try{
+          proj.currentQId = q.id; renderStage();
+          var wrap = null, t0 = Date.now();
+          while(Date.now() - t0 < 6000){
+            await new Promise(function(r){ setTimeout(r, 120); });
+            var ci = getCurrentQInfo(); if(!ci || ci.question.id !== q.id){ proj.currentQId = q.id; renderStage(); continue; }
+            wrap = document.querySelector(".canvas-stage-wrap");
+            if(wrap && Array.prototype.every.call(wrap.querySelectorAll("img"), function(im){ return im.complete; }) && Date.now() - t0 > 250) break;
+          }
+          if(wrap){
+            var rect = wrap.getBoundingClientRect(), cs = getComputedStyle(wrap), bw = parseFloat(cs.borderTopWidth) || 0;
+            var k = Math.max(0.3, Math.min(3, (targetW || 1600) / Math.max(1, rect.width)));
+            var raw = await html2canvas(wrap, { logging: false, backgroundColor: "#FFFFFF", useCORS: true, scale: k });
+            var cut = Math.round(bw * k);   // 去掉畫布外框與圓角（那只是編輯畫面的外框）
+            cv = document.createElement("canvas"); cv.width = Math.max(1, raw.width - cut * 2); cv.height = Math.max(1, raw.height - cut * 2);
+            var cx = cv.getContext("2d"); cx.fillStyle = "#FFFFFF"; cx.fillRect(0, 0, cv.width, cv.height); cx.drawImage(raw, cut, cut, cv.width, cv.height, 0, 0, cv.width, cv.height);
+          }
+        }catch(e){ console.warn("匯出拍攝失敗，改用簡易重畫", i, e); cv = null; }
+        res.push(cv);
+      }
+    } finally {
+      proj.currentQId = origQ; try{ renderStage(); }catch(e){}
+      st.remove();
+    }
+    return res;
+  }
   async function exportDeckPdf(){
     var info = exportDeckInfo(); if(!info) return;
     var bar = document.createElement("div"); bar.className = "import-slides-toast"; bar.textContent = "正在產生 PDF…"; document.body.appendChild(bar);
     try{
       var pages = [];
+      // 先用「編輯畫面實際畫出來的樣子」逐頁拍下來（文字注音、字色字級、圖片、圖案、表格…跟編輯區完全一樣）；
+      // 某一頁拍不起來才退回簡易版重畫
+      var live = await captureDeckLive(info, function(i){ bar.textContent = "正在產生 PDF… " + (i + 1) + " / " + info.slides.length; });
       for(var i = 0; i < info.slides.length; i++){
         bar.textContent = "正在產生 PDF… " + (i + 1) + " / " + info.slides.length;
-        var cv = await new Promise(function(res){ drawSlideThumb(info.slides[i], res, 1600, true); });
-        pages.push({ w: cv.width, h: cv.height, jpg: dataUrlToBytes(cv.toDataURL("image/jpeg", 0.88)) });
+        var cv = live && live[i] ? live[i] : await new Promise(function(res){ drawSlideThumb(info.slides[i], res, 1600, true); });
+        pages.push({ w: cv.width, h: cv.height, jpg: dataUrlToBytes(cv.toDataURL("image/jpeg", 0.9)) });
       }
       var enc = new TextEncoder(), parts = [], offsets = [], len = 0;
       function put(x){ var b = typeof x === "string" ? enc.encode(x) : x; parts.push(b); len += b.length; }
@@ -8680,7 +8958,7 @@ window.mmTA = (function(){
         var HE = Math.round(WE / ratio); slideRatios.push(HE);
         var rels = [], shapesXml = [], nid = 2;
         var X = function(pct){ return Math.round(pct / 100 * WE); }, Y = function(pct){ return Math.round(pct / 100 * HE); };
-        async function addPic(dataUrlOrRef, xEmu, yEmu, wEmu, hEmu, crop, name){
+        async function addPic(dataUrlOrRef, xEmu, yEmu, wEmu, hEmu, crop, name, rotDeg){
           var du = await refToDataUrl(dataUrlOrRef); if(!du) return;
           var mime = (du.match(/^data:([^;,]+)/) || [])[1] || "image/png";
           var bytes;
@@ -8691,7 +8969,7 @@ window.mmTA = (function(){
           var rid = "rId" + (rels.length + 2); rels.push('<Relationship Id="' + rid + '" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="../media/' + fn + '"/>');
           var src = "";
           if(crop && (crop.l || crop.t || crop.r || crop.b)) src = '<a:srcRect l="' + Math.round((crop.l || 0) * 1000) + '" t="' + Math.round((crop.t || 0) * 1000) + '" r="' + Math.round((crop.r || 0) * 1000) + '" b="' + Math.round((crop.b || 0) * 1000) + '"/>';
-          shapesXml.push('<p:pic><p:nvPicPr><p:cNvPr id="' + (nid++) + '" name="' + XE(name) + '"/><p:cNvPicPr><a:picLocks noChangeAspect="1"/></p:cNvPicPr><p:nvPr/></p:nvPicPr><p:blipFill><a:blip r:embed="' + rid + '"/>' + (src || "") + '<a:stretch><a:fillRect/></a:stretch></p:blipFill><p:spPr><a:xfrm><a:off x="' + Math.round(xEmu) + '" y="' + Math.round(yEmu) + '"/><a:ext cx="' + Math.max(1, Math.round(wEmu)) + '" cy="' + Math.max(1, Math.round(hEmu)) + '"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></p:spPr></p:pic>');
+          shapesXml.push('<p:pic><p:nvPicPr><p:cNvPr id="' + (nid++) + '" name="' + XE(name) + '"/><p:cNvPicPr><a:picLocks noChangeAspect="1"/></p:cNvPicPr><p:nvPr/></p:nvPicPr><p:blipFill><a:blip r:embed="' + rid + '"/>' + (src || "") + '<a:stretch><a:fillRect/></a:stretch></p:blipFill><p:spPr><a:xfrm' + (rotDeg ? ' rot="' + Math.round((((rotDeg % 360) + 360) % 360) * 60000) + '"' : '') + '><a:off x="' + Math.round(xEmu) + '" y="' + Math.round(yEmu) + '"/><a:ext cx="' + Math.max(1, Math.round(wEmu)) + '" cy="' + Math.max(1, Math.round(hEmu)) + '"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></p:spPr></p:pic>');
         }
         var bgXml = "";
         var mm = (info.sec.master) || {};
@@ -8731,7 +9009,7 @@ window.mmTA = (function(){
           if(e.k === "text" && !strokeDone) await addStrokes();
           if(e.k === "image"){
             var wE = X(o.w), hE = o.h ? Y(o.h) : wE * (o.ar || 1);
-            await addPic(o.src, X(o.x) - wE / 2, Y(o.y) - hE / 2, wE, hE, o.crop, "圖片");
+            await addPic(o.src, X(o.x) - wE / 2, Y(o.y) - hE / 2, wE, hE, o.crop, "圖片", o.rot);
           } else if(e.k === "table"){
             var tx0 = X(o.x), ty0 = Y(o.y), twE = X(o.w), thE = o.rh.reduce(function(a, b){ return a + Y(b); }, 0);
             var lnX = function(tag){ return o.bw === 0 ? '<a:' + tag + ' w="0"><a:noFill/></a:' + tag + '>' : '<a:' + tag + ' w="' + Math.round((o.bw == null ? 2 : o.bw) * 1.5 * 12700) + '"><a:solidFill><a:srgbClr val="' + hex6(o.bd, "555555") + '"/></a:solidFill></a:' + tag + '>'; };
@@ -12918,6 +13196,17 @@ window.mmTA = (function(){
           rbFinal.title = "已儲存定稿（共 " + n + " 個內容）：放映時這些內容不能更動，上課中仍可新增文字方塊與寫字";
         }, "儲存定稿：做好最終版本時按。放映後這些內容就不能更動，上課中仍可新增文字方塊與寫字");
         rbFinal.id = "btn-save-final"; rbNavSlot.appendChild(rbFinal);
+        // 圖片上傳狀態：已定稿＝排版內容存好了；圖片要另外確認有沒有上傳到雲端
+        var rbCloud = rbBtn("☁", "圖片<br>檢查中", function(){ mediaStatusDialog(); }, "檢查這份簡報的圖片、音檔有沒有上傳到雲端（沒上傳的，換一台電腦或學生就看不到）");
+        rbCloud.id = "btn-media-status"; rbNavSlot.appendChild(rbCloud);
+        function refreshCloudBtn(){
+          if(!rbCloud.isConnected) return; var c = mediaCountsNow(), lab = rbCloud.querySelector(".tool-btn-v-label");
+          var st = !c.total ? "none" : (c.local ? "warn" : "ok");
+          var txt = st === "none" ? "圖片<br>無需上傳" : (st === "ok" ? "✔ 圖片<br>已上傳" : "⚠ " + c.local + " 張<br>未上傳");
+          if(rbCloud.dataset.st !== st + c.local){ rbCloud.dataset.st = st + c.local; lab.innerHTML = txt; rbCloud.classList.toggle("active", st === "ok"); rbCloud.style.color = st === "warn" ? "#B23B32" : ""; }
+        }
+        var cloudTimer = setInterval(function(){ if(!rbCloud.isConnected){ clearInterval(cloudTimer); return; } refreshCloudBtn(); }, 4000);
+        refreshCloudBtn();
         function refreshFinalBtn(){
           if(!document.body.contains(container) && !rbFinal.isConnected) return;
           var pr1 = getProgress(q.id), lab = rbFinal.querySelector(".tool-btn-v-label");
@@ -15374,6 +15663,31 @@ window.mmTA = (function(){
       window.addEventListener("pointermove", mv); window.addEventListener("pointerup", up); window.addEventListener("pointercancel", up);
     }
     var imgElCache = {}; // 同一張圖片重畫時沿用同一個 <img>，不要每次都重新載入（不然每次同步都會閃一下、慢一下）
+    // 圖片有裁剪時，點選／拖曳／縮放用的透明框（image-proxy）只框住「看得到的那一塊」，不是整張原圖的大小
+    function imgCropFr(im){
+      var c = (im && im.crop && !(cropEdit && cropEdit.id === im.id)) ? im.crop : null; if(!c) return null;
+      var f = { l: (c.l || 0) / 100, r: (c.r || 0) / 100, t: (c.t || 0) / 100, b: (c.b || 0) / 100 };
+      return (1 - f.l - f.r > 0.05 && 1 - f.t - f.b > 0.05) ? f : null;
+    }
+    function imgFullHeightPct(im){ var cW = cWrap.clientWidth || 1, cH = cWrap.clientHeight || 1; return im.h || im.w * (cW / cH) * (im.ar || 1); }
+    function imgRotXf(px, im, f){
+      var r = Number(im.rot) || 0;
+      px.classList.toggle("rotated", !!r);
+      if(!r){ px.style.transform = ""; px.style.transformOrigin = ""; return; }
+      var ox = f ? (0.5 - f.l) / (1 - f.l - f.r) * 100 : 50, oy = f ? (0.5 - f.t) / (1 - f.t - f.b) * 100 : 50;
+      px.style.transformOrigin = ox + "% " + oy + "%"; px.style.transform = "translate(-50%,-50%) rotate(" + r + "deg)";
+    }
+    function placeImgProxy(px, im){
+      var f = imgCropFr(im); imgRotXf(px, im, f);
+      if(!f){
+        px.style.left = im.x + "%"; px.style.top = im.y + "%"; px.style.width = im.w + "%";
+        if(im.h){ px.style.height = im.h + "%"; px.style.aspectRatio = "auto"; } else { px.style.height = ""; px.style.aspectRatio = "1 / " + (im.ar || 1); }
+        return;
+      }
+      var vw = 1 - f.l - f.r, vh = 1 - f.t - f.b, hh = imgFullHeightPct(im);
+      px.style.left = (im.x + im.w * (f.l - f.r) / 2) + "%"; px.style.top = (im.y + hh * (f.t - f.b) / 2) + "%"; px.style.width = (im.w * vw) + "%";
+      if(im.h){ px.style.height = (im.h * vh) + "%"; px.style.aspectRatio = "auto"; } else { px.style.height = ""; px.style.aspectRatio = "1 / " + ((im.ar || 1) * vh / vw); }
+    }
     function renderImages(){
       imageLayer.innerHTML = "";
       var zrI = zRanks();
@@ -15389,6 +15703,7 @@ window.mmTA = (function(){
         applyAnim(el, im); applyObjFmt(el, im, getScaleRatio()); if(im.link && !isStudent) el.style.outline = "2px dotted #1565C0";
         el.style.left = im.x + "%"; el.style.top = im.y + "%"; el.style.width = im.w + "%";
         if(im.h){ el.style.height = im.h + "%"; el.style.objectFit = "fill"; }
+        if(im.rot) el.style.transform = "translate(-50%,-50%) rotate(" + im.rot + "deg)";
         var rI = zrI.map[im.id] || 0;
         if(rI > zrI.minText){ el.style.zIndex = String(rI + 1); textLayer.appendChild(el); } // 在某個文字上面：要畫在筆跡之上
         else { el.style.zIndex = String(rI); imageLayer.appendChild(el); }
@@ -15396,21 +15711,26 @@ window.mmTA = (function(){
         var px = document.createElement("div");
         px.className = "image-proxy" + (im.id === activeSelectedImageId ? " active" : "");
         px.dataset.imgId = im.id;
-        px.style.left = im.x + "%"; px.style.top = im.y + "%"; px.style.width = im.w + "%";
-        if(im.h) px.style.height = im.h + "%"; else px.style.aspectRatio = "1 / " + (im.ar || 1);
+        placeImgProxy(px, im);
         px.style.zIndex = String(rI + 1);
         px.innerHTML = ((!isStudent && (im.step || 0) > 0) ? '<span class="text-step-badge" title="第 ' + im.step + ' 次點擊出現">' + im.step + '</span>' : '') + '';
         addEdgeHandles(px, {
           clamp: false, prop: true, minW: 3, minH: 3,
           select: function(){ selectImageObj(im.id); }, snapshot: snapshotForUndo,
           getBox: function(){
+            var f = imgCropFr(im);
+            if(f){ var pr = px.getBoundingClientRect(), cr0 = cWrap.getBoundingClientRect(); return { l: (pr.left - cr0.left) / cr0.width * 100, r: (pr.right - cr0.left) / cr0.width * 100, t: (pr.top - cr0.top) / cr0.height * 100, b: (pr.bottom - cr0.top) / cr0.height * 100 }; }
             var hh = im.h || (px.getBoundingClientRect().height / (cWrap.getBoundingClientRect().height || 1) * 100);
             return { l: im.x - im.w / 2, r: im.x + im.w / 2, t: im.y - hh / 2, b: im.y + hh / 2 };
           },
           setBox: function(b){
-            im.w = b.r - b.l; im.h = b.b - b.t; im.x = (b.l + b.r) / 2; im.y = (b.t + b.b) / 2;
-            [px, el].forEach(function(n){ n.style.left = im.x + "%"; n.style.top = im.y + "%"; n.style.width = im.w + "%"; n.style.height = im.h + "%"; });
-            px.style.aspectRatio = "auto"; el.style.objectFit = "fill";
+            var f = imgCropFr(im);
+            if(f){
+              var vw = 1 - f.l - f.r, vh = 1 - f.t - f.b, w2 = (b.r - b.l) / vw, h2 = (b.b - b.t) / vh, left = b.l - w2 * f.l, top = b.t - h2 * f.t;
+              im.w = w2; im.h = h2; im.x = left + w2 / 2; im.y = top + h2 / 2;
+            } else { im.w = b.r - b.l; im.h = b.b - b.t; im.x = (b.l + b.r) / 2; im.y = (b.t + b.b) / 2; }
+            el.style.left = im.x + "%"; el.style.top = im.y + "%"; el.style.width = im.w + "%"; el.style.height = im.h + "%";
+            placeImgProxy(px, im); el.style.objectFit = "fill";
           },
           commit: function(){ ["x","y","w","h"].forEach(function(k){ im[k] = Math.round(im[k] * 10) / 10; }); writeProgress(q.id, { images: images }); }
         });
@@ -15432,7 +15752,7 @@ window.mmTA = (function(){
           function onMove(ev){
             im.x = Math.max(0, Math.min(100, origX + (ev.clientX - startX) / rect.width * 100));
             im.y = Math.max(0, Math.min(100, origY + (ev.clientY - startY) / rect.height * 100));
-            px.style.left = im.x + "%"; px.style.top = im.y + "%";
+            placeImgProxy(px, im);
             el.style.left = im.x + "%"; el.style.top = im.y + "%";
           }
           function onUp(){
@@ -15772,7 +16092,7 @@ window.mmTA = (function(){
         snapshotForUndo();
         var newStroke = {
           id: uid("st"),
-          points: currentPath,
+          points: compactPts(currentPath),
           color: boardState.color,
           // 局部橡皮擦大小固定不低於原本預設（6），不跟著筆刷粗細（預設現在是 2）變得太小擦不乾淨
           size: boardState.tool === "pixel-eraser" ? Math.max(boardState.size, 6) : boardState.size,
@@ -15946,7 +16266,11 @@ window.mmTA = (function(){
     }
     function itemBox(it){
       if(it.k === "text") return elBox(textLayer.querySelector('.movable-text[data-text-id="' + it.id + '"]'));
-      if(it.k === "image") return elBox(cWrap.querySelector('.board-image[data-img-id="' + it.id + '"]'));
+      if(it.k === "image"){
+        var imo = images.find(function(x){ return x.id === it.id; });
+        if(imo && imgCropFr(imo)){ var pxe = cWrap.querySelector('.image-proxy[data-img-id="' + it.id + '"]'); if(pxe) return elBox(pxe); }
+        return elBox(cWrap.querySelector('.board-image[data-img-id="' + it.id + '"]'));
+      }
       if(it.k === "table") return elBox(cWrap.querySelector('.table-obj[data-table-id="' + it.id + '"]'));
       if(it.k === "shape"){
         var sh = shapes.find(function(x){ return x.id === it.id; }); if(!sh) return null;
@@ -16141,13 +16465,40 @@ window.mmTA = (function(){
       };
       function close(){ back.remove(); }
       modal.querySelector(".rb-no").onclick = close; back.addEventListener("click", function(e){ if(e.target === back) close(); });
-      modal.querySelector(".rb-orig").onclick = function(){ if(im.srcOrig){ snapshotForUndo(); im.src = im.srcOrig; delete im.srcOrig; writeProgress(q.id, { images: images }); renderImages(); renderSelection(); } close(); };
+      modal.querySelector(".rb-orig").onclick = function(){ if(im.srcOrig){ snapshotForUndo(); im.src = im.srcOrig; delete im.srcOrig;
+        if(im.trimF){ var tf2 = im.trimF, cW2 = cWrap.clientWidth || 1, cH2 = cWrap.clientHeight || 1, hh2 = im.h || im.w * (cW2 / cH2) * (im.ar || 1), fw2 = im.w / (tf2.fx1 - tf2.fx0), fh2 = hh2 / (tf2.fy1 - tf2.fy0), fl2 = (im.x - im.w / 2) - fw2 * tf2.fx0, ft2 = (im.y - hh2 / 2) - fh2 * tf2.fy0; im.x = fl2 + fw2 / 2; im.y = ft2 + fh2 / 2; im.w = fw2; if(im.h) im.h = fh2; else im.ar = (fh2 * cH2) / (fw2 * cW2); delete im.trimF; } writeProgress(q.id, { images: images }); renderImages(); renderSelection(); } close(); };
       modal.querySelector(".rb-ok").onclick = async function(e){
         if(!seeds.length){ close(); return; }
         var btn = e.target; btn.disabled = true; btn.textContent = "處理中…";
         var blob = await new Promise(function(r){ dcv.toBlob(r, "image/png"); });
         var ref = blob ? await storeMediaBlob(blob) : ""; if(!ref){ alert("存圖失敗，請再試一次。"); btn.disabled = false; btn.textContent = "✓ 套用"; return; }
-        snapshotForUndo(); if(!im.srcOrig) im.srcOrig = im.src; im.src = ref;
+        // 去背後把四周的透明空白切掉，框只留在看得到的圖上（不會是一大塊透明的空框）；位置維持原樣
+        var trim = null;
+        try{
+          var idat = dcx.getImageData(0, 0, W, H).data, cf = (!im.trimF && im.crop) ? { l: (im.crop.l || 0) / 100, r: (im.crop.r || 0) / 100, t: (im.crop.t || 0) / 100, b: (im.crop.b || 0) / 100 } : { l: 0, r: 0, t: 0, b: 0 };
+          var xa = Math.floor(cf.l * W), xb = Math.min(W - 1, Math.ceil((1 - cf.r) * W) - 1), ya = Math.floor(cf.t * H), yb = Math.min(H - 1, Math.ceil((1 - cf.b) * H) - 1), x0 = W, y0 = H, x1 = -1, y1 = -1;
+          for(var yy = ya; yy <= yb; yy++){ for(var xx = xa; xx <= xb; xx++){ if(idat[(yy * W + xx) * 4 + 3] > 12){ if(xx < x0) x0 = xx; if(xx > x1) x1 = xx; if(yy < y0) y0 = yy; if(yy > y1) y1 = yy; } } }
+          if(x1 >= 0){
+            var pad = Math.round(Math.max(W, H) * 0.004) + 1; x0 = Math.max(0, x0 - pad); y0 = Math.max(0, y0 - pad); x1 = Math.min(W - 1, x1 + pad); y1 = Math.min(H - 1, y1 + pad);
+            if((x1 - x0 + 1) * (y1 - y0 + 1) < 0.97 * W * H) trim = { x0: x0, y0: y0, x1: x1, y1: y1 };
+          }
+        }catch(_){ trim = null; }
+        var cWp = cWrap.clientWidth || 1, cHp = cWrap.clientHeight || 1, cur = { x: im.x, y: im.y, w: im.w, hh: im.h || im.w * (cWp / cHp) * (im.ar || 1) }, full = cur;
+        if(im.trimF){ var tf = im.trimF, fw0 = cur.w / (tf.fx1 - tf.fx0), fh0 = cur.hh / (tf.fy1 - tf.fy0), fl0 = (cur.x - cur.w / 2) - fw0 * tf.fx0, ft0 = (cur.y - cur.hh / 2) - fh0 * tf.fy0; full = { x: fl0 + fw0 / 2, y: ft0 + fh0 / 2, w: fw0, hh: fh0 }; }
+        var useRef = ref;
+        if(trim){
+          var tc = document.createElement("canvas"); tc.width = trim.x1 - trim.x0 + 1; tc.height = trim.y1 - trim.y0 + 1; tc.getContext("2d").drawImage(dcv, trim.x0, trim.y0, tc.width, tc.height, 0, 0, tc.width, tc.height);
+          var tb = await new Promise(function(r){ tc.toBlob(r, "image/png"); }); var tr = tb ? await storeMediaBlob(tb) : ""; if(tr) useRef = tr; else trim = null;
+        }
+        snapshotForUndo(); if(!im.srcOrig) im.srcOrig = im.src; im.src = useRef;
+        if(trim){
+          var fx0 = trim.x0 / W, fx1 = (trim.x1 + 1) / W, fy0 = trim.y0 / H, fy1 = (trim.y1 + 1) / H, nw = full.w * (fx1 - fx0), nh = full.hh * (fy1 - fy0);
+          im.x = Math.round((full.x - full.w / 2 + full.w * (fx0 + fx1) / 2) * 100) / 100; im.y = Math.round((full.y - full.hh / 2 + full.hh * (fy0 + fy1) / 2) * 100) / 100; im.w = Math.round(nw * 100) / 100;
+          if(im.h) im.h = Math.round(nh * 100) / 100; else im.ar = (nh * cHp) / (nw * cWp);
+          im.trimF = { fx0: fx0, fx1: fx1, fy0: fy0, fy1: fy1 }; delete im.crop;
+        } else if(im.trimF){
+          im.x = full.x; im.y = full.y; im.w = full.w; if(im.h) im.h = full.hh; else im.ar = (full.hh * cHp) / (full.w * cWp); delete im.trimF;
+        }
         writeProgress(q.id, { images: images }); renderImages(); renderTexts(); renderSelection(); close();
       };
     }
@@ -16345,6 +16696,46 @@ window.mmTA = (function(){
           bar.appendChild(tc);
         }
       }
+      // 單選一張圖片：旋轉把手（拖曳）＋ 浮動列上的角度、寬高（公分）
+      if(items.length === 1 && items[0].k === "image" && !presentLock()){
+        var rIm = images.find(function(x){ return x.id === items[0].id; });
+        if(rIm){
+          var rh = document.createElement("div"); rh.className = "select-rot-h"; rh.textContent = "↻"; rh.title = "拖曳：旋轉圖片（接近 15° 的倍數會自動吸附；按住 Alt 可以自由旋轉）";
+          rh.style.left = ((u.l + u.r) / 2) + "%"; rh.style.top = u.b + "%";
+          rh.addEventListener("pointerdown", function(ev){
+            ev.stopPropagation(); ev.preventDefault(); snapshotForUndo();
+            var ie = cWrap.querySelector('.board-image[data-img-id="' + rIm.id + '"]'); if(!ie) return;
+            var br = ie.getBoundingClientRect(), cx = br.left + br.width / 2, cy = br.top + br.height / 2;
+            function mv(e2){
+              var a = Math.atan2(e2.clientY - cy, e2.clientX - cx) * 180 / Math.PI + 90; a = ((a + 540) % 360) - 180;
+              if(!e2.altKey){ var q15 = Math.round(a / 15) * 15; if(Math.abs(a - q15) < 5) a = q15; }
+              rIm.rot = Math.round(a * 10) / 10; if(rIm.rot === 0) delete rIm.rot;
+              renderImages(); renderSelection();
+            }
+            function up(){ window.removeEventListener("pointermove", mv); window.removeEventListener("pointerup", up); window.removeEventListener("pointercancel", up); writeProgress(q.id, { images: images }); renderTexts(); }
+            window.addEventListener("pointermove", mv); window.addEventListener("pointerup", up); window.addEventListener("pointercancel", up);
+          });
+          selectLayer.appendChild(rh);
+          var SW = 33.867, cr = (cWrap.clientWidth || 1) / (cWrap.clientHeight || 1), fr = imgCropFr(rIm), vw = fr ? 1 - fr.l - fr.r : 1, vh = fr ? 1 - fr.t - fr.b : 1;
+          var wcm = rIm.w * vw / 100 * SW, hcm = imgFullHeightPct(rIm) * vh / 100 * SW / cr;
+          var sz = document.createElement("span"); sz.className = "sb-img"; sz.style.cssText = "display:inline-flex;align-items:center;gap:4px;";
+          sz.innerHTML = '<span class="sb-sep"></span><span class="sb-lab" title="圖片的實際大小（以 16:9 投影片寬 33.87 公分計算，匯出 PowerPoint 時也是這個大小）">寬</span><input class="sb-num" data-f="w" type="number" step="0.1" min="0.3" value="' + wcm.toFixed(1) + '"><span class="sb-lab">高</span><input class="sb-num" data-f="h" type="number" step="0.1" min="0.3" value="' + hcm.toFixed(1) + '"><span class="sb-lab">公分</span><button type="button" data-act="imglock" title="鎖定長寬比：改寬度，高度跟著變（預設鎖定）">' + (rIm.unlock ? "🔓" : "🔒") + '</button><span class="sb-sep"></span><span class="sb-lab">角度</span><input class="sb-num" data-f="rot" type="number" step="1" value="' + (Math.round((rIm.rot || 0) * 10) / 10) + '" style="width:54px;"><button type="button" data-act="rotl" title="向左轉 90°">↺</button><button type="button" data-act="rotr" title="向右轉 90°">↻</button>';
+          sz.addEventListener("keydown", function(ev){ ev.stopPropagation(); if(ev.key === "Enter"){ ev.preventDefault(); ev.target.blur(); } });
+          sz.addEventListener("change", function(ev){
+            var inp = ev.target.closest("input"); if(!inp) return; var v = parseFloat(inp.value); if(!isFinite(v)) return;
+            snapshotForUndo();
+            if(inp.dataset.f === "rot"){ var a = ((v % 360) + 540) % 360 - 180; rIm.rot = Math.round(a * 10) / 10; if(!rIm.rot) delete rIm.rot; }
+            else {
+              v = Math.max(0.3, v); var curH = imgFullHeightPct(rIm), nw = rIm.w, nh = curH;
+              if(inp.dataset.f === "w"){ nw = v / SW * 100 / vw; if(!rIm.unlock) nh = curH * nw / rIm.w; }
+              else { nh = v / (SW / cr) * 100 / vh; if(!rIm.unlock) nw = rIm.w * nh / curH; }
+              rIm.w = Math.round(nw * 100) / 100; if(rIm.h || rIm.unlock) rIm.h = Math.round(nh * 100) / 100;
+            }
+            writeProgress(q.id, { images: images }); renderTexts();
+          });
+          bar.appendChild(sz);
+        }
+      }
       bar.style.left = u.l + "%"; bar.style.top = "calc(" + u.t + "% - 44px)";
       bar.addEventListener("pointerdown", function(e){ e.stopPropagation(); });
       bar.addEventListener("click", function(e){
@@ -16355,6 +16746,12 @@ window.mmTA = (function(){
         else if(bt.dataset.act === "fmt") openObjFormat();
         else if(bt.dataset.act === "crop"){ var cim = images.find(function(x){ return x.id === items[0].id; }); if(cim) startCropEdit(cim); }
         else if(bt.dataset.act === "rmbg"){ var rim = images.find(function(x){ return x.id === items[0].id; }); if(rim) openRemoveBg(rim); }
+        else if(bt.dataset.act === "imglock" || bt.dataset.act === "rotl" || bt.dataset.act === "rotr"){
+          var gim = images.find(function(x){ return x.id === items[0].id; }); if(!gim) return; snapshotForUndo();
+          if(bt.dataset.act === "imglock"){ gim.unlock = !gim.unlock; if(!gim.unlock) delete gim.unlock; }
+          else { var na = (((Number(gim.rot) || 0) + (bt.dataset.act === "rotr" ? 90 : -90)) % 360 + 540) % 360 - 180; gim.rot = na; if(!gim.rot) delete gim.rot; }
+          writeProgress(q.id, { images: images }); renderTexts();
+        }
         else if(bt.dataset.act === "link") openLinkDialog();
         else if(bt.dataset.act === "brush") brushStart(false);
         else if(/^al-/.test(bt.dataset.act)) alignSelection(bt.dataset.act.slice(3));
@@ -16362,6 +16759,7 @@ window.mmTA = (function(){
       selectLayer.appendChild(bar);
       // 浮動列放在框框上方，依它實際的高度（單選文字方塊時比較高）；上面放不下才放到下面——不能蓋住框框，不然抓不到框框拖
       var bh = bar.offsetHeight || 38, lh = selectLayer.clientHeight || 1;
+      var bw0 = bar.offsetWidth, lw0 = selectLayer.clientWidth || 1; if(u.l / 100 * lw0 + bw0 > lw0 - 4) bar.style.left = Math.max(4, lw0 - bw0 - 4) + "px";
       if(u.t / 100 * lh < bh + 8) bar.style.top = "calc(" + u.b + "% + 8px)"; else bar.style.top = "calc(" + u.t + "% - " + (bh + 8) + "px)";
       renderTableTools(u);
     }
@@ -18826,6 +19224,7 @@ window.mmTA = (function(){
     if(!inRoom() || roomRole !== "student") return;
     if(isCapturingSnapshot) return; // 上一張還沒擷取完（例如裝置比較慢）就跳過這一輪，不要疊起來
     if(typeof html2canvas === "undefined") return; // CDN 沒載入成功就安靜跳過，不影響其他功能
+    if(!(roomData && roomData.monitorOn === true)) return;   // 老師沒開「看全班畫面」就不上傳，省 Firebase 流量
     isCapturingSnapshot = true;
     try{
       var target = getSnapshotCaptureTarget();
@@ -18865,16 +19264,29 @@ window.mmTA = (function(){
     if(studentSnapshotTimer){ clearInterval(studentSnapshotTimer); studentSnapshotTimer = null; }
   }
 
-  function startTeacherSnapshotListener(rId){
-    onValue(ref(db, "roomStudentSnapshots/" + rId), function(snap){
-      liveStudentSnapshots = snap.val() || {};
-      if(studentMonitorDialogOpen) renderStudentMonitorThumbnails();
-      if(studentMonitorZoomPeerId) renderStudentMonitorZoom();
-    });
+  // 「看全班畫面」只在老師打開監看視窗時才收學生畫面、學生端也才上傳（原本一進房間就持續上傳／下載，
+  // 全班每 4 秒一張圖，會把 Realtime Database 的每月下載量很快用光）
+  var snapRoomId = null, snapUnsub = null;
+  function startTeacherSnapshotListener(rId){ snapRoomId = rId; }
+  function snapAttach(){
+    if(!snapRoomId || snapUnsub) return;
+    try{
+      snapUnsub = onValue(ref(db, "roomStudentSnapshots/" + snapRoomId), function(snap){
+        liveStudentSnapshots = snap.val() || {};
+        if(studentMonitorDialogOpen) renderStudentMonitorThumbnails();
+        if(studentMonitorZoomPeerId) renderStudentMonitorZoom();
+      });
+      var mref = ref(db, "rooms/" + snapRoomId + "/monitorOn");
+      set(mref, true).catch(function(){}); try{ onDisconnect(mref).set(false); }catch(e){}
+    }catch(e){ console.warn("snapAttach", e); }
+  }
+  function snapDetach(){
+    if(snapUnsub){ try{ snapUnsub(); }catch(e){} snapUnsub = null; }
+    if(snapRoomId){ try{ set(ref(db, "rooms/" + snapRoomId + "/monitorOn"), false).catch(function(){}); }catch(e){} }
   }
 
   function openStudentMonitorDialog(){
-    studentMonitorDialogOpen = true;
+    studentMonitorDialogOpen = true; snapAttach();
     renderStudentMonitorThumbnails();
     safeShowModal(document.getElementById("student-monitor-dialog"));
     // 就算學生端沒有送新畫面過來，「幾秒前更新」的文字本身也要跟著時間繼續跳動，
@@ -18886,7 +19298,7 @@ window.mmTA = (function(){
     }, 2000);
   }
   function closeStudentMonitorDialog(){
-    studentMonitorDialogOpen = false;
+    studentMonitorDialogOpen = false; snapDetach();
     if(studentMonitorTickTimer){ clearInterval(studentMonitorTickTimer); studentMonitorTickTimer = null; }
     closeModalDialog(document.getElementById("student-monitor-dialog"));
   }

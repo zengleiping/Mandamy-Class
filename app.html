@@ -151,6 +151,11 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .rb-st{ display:flex; gap:6px; align-items:center; flex-wrap:wrap; padding:4px 0; } .rb-st b{ min-width:70px; }
   .lib-grp{ display:inline-flex; align-items:flex-end; gap:0; margin-right:10px; padding-left:8px; border-left:1px solid var(--line); }
   .lib-grp:first-of-type{ border-left:none; }
+  .lib-it[draggable="true"], .lib-tabs .tab[draggable="true"]{ cursor:grab; }
+  .dnd-dragging{ opacity:.45; }
+  .lib-it.dnd-over{ box-shadow:inset 0 3px 0 #E8825A; }
+  .lib-tabs .tab.dnd-over{ box-shadow:inset 3px 0 0 #E8825A; background:#FFF1E8; }
+  .lib-grp.dnd-over-grp{ outline:2px dashed #E8825A; outline-offset:2px; border-radius:8px; }
   .lib-grp-t{ font-size:13px; font-weight:700; color:var(--ink-soft); align-self:center; margin-right:2px; white-space:nowrap; }
   .mainnav{ display:flex; gap:2px; margin-right:6px; }
   .mn{ border:none; background:none; padding:6px 10px; border-radius:10px; font:inherit; font-size:15.5px; font-weight:700; color:var(--ink-soft); cursor:pointer; display:inline-flex; gap:4px; align-items:center; white-space:nowrap; }
@@ -516,7 +521,7 @@ function toast(msg){ var t = document.createElement("div"); t.className = "toast
   document.addEventListener("click", releasePw, true);
   document.addEventListener("submit", releasePw, true);
 })();
-function askText(title, value, okLabel, type){
+function askText(title, value, okLabel, type, allowEmpty){
   return new Promise(function(resolve){
     var d = document.getElementById("ask"), i = document.getElementById("ask-i"); i.type = type || "text";
     document.getElementById("ask-t").textContent = title; i.value = value || "";
@@ -525,7 +530,7 @@ function askText(title, value, okLabel, type){
     function fin(v){ if(done) return; done = true; try{ i.blur(); }catch(e){} i.type = "text"; try{ d.close(); }catch(e){} resolve(v); }
     document.getElementById("ask-no").onclick = function(){ fin(null); };
     d.oncancel = function(e){ e.preventDefault(); fin(null); };
-    d.querySelector("form").onsubmit = function(e){ e.preventDefault(); var v = i.value.trim(); fin(v || null); };
+    d.querySelector("form").onsubmit = function(e){ e.preventDefault(); var v = i.value.trim(); fin(v || (allowEmpty ? "" : null)); };
     d.showModal(); setTimeout(function(){ i.focus(); i.select(); }, 30);
   });
 }
@@ -596,7 +601,7 @@ function bookIds(all){
     var sx = bookSeries(x), sy = bookSeries(y);
     if(!!sx !== !!sy) return sx ? -1 : 1;
     if(sx !== sy) return (so[sx] - so[sy]) || sx.localeCompare(sy);
-    if(sx){ var d = bookVol(x) - bookVol(y); if(d) return d; }
+    if(sx && !(b[x].man && b[y].man)){ var d = bookVol(x) - bookVol(y); if(d) return d; }
     return (b[x].order || 0) - (b[y].order || 0);
   });
 }
@@ -606,7 +611,7 @@ function multiBooks(){ return bookIds().length > 1; }
 function isUnit(no){ var l = (S.plat.lessons || {})[no]; return !!(l && l.unit); }
 function lessonsOfBook(bid){
   var L = S.plat.lessons || {};
-  return Object.keys(L).filter(function(k){ return !L[k].unit && (L[k].book || DEFAULT_BOOK) === bid; }).sort(function(a, b){ return L[a].no - L[b].no; });
+  return Object.keys(L).filter(function(k){ return !L[k].unit && (L[k].book || DEFAULT_BOOK) === bid; }).sort(function(a, b){ var oa = L[a].ord != null ? L[a].ord : L[a].no * 10, ob = L[b].ord != null ? L[b].ord : L[b].no * 10; return (oa - ob) || (L[a].no - L[b].no); });
 }
 function unitKeys(){ var L = S.plat.lessons || {}; return Object.keys(L).filter(function(k){ return L[k].unit; }).sort(function(a, b){ return (L[a].order || 0) - (L[b].order || 0); }); }
 function lessonKeys(cls){
@@ -629,6 +634,7 @@ function lessonTitle(key){
   var l = (S.plat.lessons || {})[key];
   if(l && l.unit) return "📚 複習：" + (l.title || "") + "（" + memberRange(l.members) + "）";
   var pk = parseKey(key) || { book: DEFAULT_BOOK, no: key };
+  if(l && l.noNum) return (multiBooks() ? bookTitle(pk.book) + "　" : "") + (l.title || "（未命名）");   // 沒有課次的教材（例如複習卷）：只顯示名稱
   return (multiBooks() ? bookTitle(pk.book) + "　" : "") + "第 " + pk.no + " 課" + (l && l.title ? " " + l.title : "");
 }
 // 嵌入教材頁用的課次參數；目前只有預設教材（第一冊）有雲端生詞庫，其他教材回傳 null
@@ -994,6 +1000,53 @@ async function saveVocabPic(spots, word, url){
   return true;
 }
 async function uploadVocabPic(file){ return (await uploadFile("teacherMedia/" + S.teacher.id + "/vocab-img-" + Date.now() + "-" + Math.random().toString(36).slice(2, 6), file)).url; }
+// ---------- 生詞卡上直接修正生詞：老師帳號才能存（助教與學生不行），存回教材的生詞庫 ----------
+// 學生端：把老師的畫記轉送進畫面裡的教材頁（唯讀）
+function stuInkPush(){
+  var fr = document.getElementById("fr"); if(!fr || !fr.contentWindow) return; var v = S.liveInk;
+  try{ fr.contentWindow.postMessage({ mm: "inkShared", scope: (v && v.scope) || "", items: (v && v.items) || null }, "*"); }catch(e){}
+}
+window.addEventListener("message", function(e){
+  if(!e.data || e.data.mm !== "inkReady" || !S.student) return;
+  var fr = document.getElementById("fr"); if(!fr || e.source !== fr.contentWindow) return; stuInkPush();
+});
+// 老師：教材頁的畫記同步給學生（上課中才寫；寫在 live/ink，學生本來就讀得到這個節點）
+window.addEventListener("message", function(e){
+  var d = e.data; if(!d || d.mm !== "inkShare" || !S.teacher) return;
+  var fr = document.getElementById("fr"); if(!fr || e.source !== fr.contentWindow) return;
+  if(!(S.live && S.live.on) || !S.sel || !S.sel.c) return;
+  var path = liveRef() + "/ink";
+  if(!d.on || !d.items || !Object.keys(d.items).length){ fbSet(path, null).catch(function(){}); return; }
+  if(JSON.stringify(d.items).length > 400000){ toast("畫記太多，沒辦法同步給學生，請清掉一些"); return; }
+  fbSet(path, { scope: d.scope || "", items: d.items, at: Date.now() }).catch(function(){});
+});
+async function saveVocabFields(spot, oldWord, patch){
+  var t = S.teacher.id, bank = await fbGet("teacherVocabBanks/" + t), cd = arrOf(bank && bank.courseData), hit = 0;
+  var okKeys = ["生詞", "注音", "拼音", "詞性", "英文翻譯", "泰文翻譯", "例句（中文）", "例句（英文）", "例句（泰文）"];
+  function apply(list){
+    list.forEach(function(L){
+      if(!L || (L.book || DEFAULT_BOOK) !== spot.book || (spot.no && Number(L.lesson) !== spot.no)) return;
+      var vs = arrOf(L.vocab), ch = false;
+      vs.forEach(function(v){ if(v && String(v["生詞"] || "").trim() === oldWord){ okKeys.forEach(function(k){ if(patch[k] !== undefined) v[k] = String(patch[k]); }); ch = true; } });
+      if(ch){ L.vocab = vs; hit++; }
+    });
+  }
+  apply(cd); if(!hit) return false;
+  await fbUpdate("teacherVocabBanks/" + t, { courseData: cd, updatedAt: Date.now(), updatedBy: S.teacher.name || t });
+  apply(S.bank || []); embedBankSet(spot.book);
+  return true;
+}
+window.addEventListener("message", async function(e){
+  var d = e.data; if(!d || d.mm !== "vocabEdit" || !S.teacher) return;
+  var fr = document.getElementById("fr"); if(!fr || e.source !== fr.contentWindow) return;
+  function reply(ok, msg){ try{ fr.contentWindow.postMessage({ mm: ok ? "vocabEditSaved" : "vocabEditFail", msg: msg || "" }, "*"); }catch(er){} }
+  if(S.teacher.role === "ta"){ reply(false, "助教不能修改教材"); return; }
+  try{
+    var ok = await saveVocabFields({ book: d.book || DEFAULT_BOOK, no: Number(d.lesson) || 0 }, String(d.oldWord || "").trim(), d.patch || {});
+    reply(ok, ok ? "" : "教材裡找不到這個生詞");
+    if(ok) toast("已修正，存回教材");
+  }catch(er){ reply(false, (er && er.message) || "存檔失敗"); }
+});
 window.addEventListener("message", async function(e){
   var d = e.data; if(!d || d.mm !== "vocabImg" || !S.teacher) return;
   var fr = document.getElementById("fr"); if(!fr || e.source !== fr.contentWindow) return;
@@ -1464,14 +1517,14 @@ async function startTeacher(acc, owner){
     S.teacher = { id: owner, name: (acc.displayName || acc.username) + "（助教）", role: "ta", me: acc.id };
   }
   root.innerHTML = '<div class="center-wrap"><div class="note">載入中…</div></div>';
-  var plat = {}, pbase = "teacherPlatform/" + S.teacher.id, pkeys = ["schools", "lessonMap", "lessons", "units", "books", "customLessons", "hier", "schedule", "classRecords", "meta", "assistants"];
+  var plat = {}, pbase = "teacherPlatform/" + S.teacher.id, pkeys = ["schools", "lessonMap", "lessons", "units", "books", "customLessons", "hier", "schedule", "classRecords", "meta", "assistants", "lessonOrder", "projIndex", "projIndexAt"];
   var pvals = await Promise.all(pkeys.map(function(k){ return fbGet(pbase + "/" + k).catch(function(){ return null; }); }));
   pkeys.forEach(function(k, i){ if(pvals[i] != null) plat[k] = pvals[i]; });
-  plat.schools = plat.schools || {}; plat.lessonMap = plat.lessonMap || {}; plat.lessons = plat.lessons || {}; plat.units = plat.units || {}; plat.books = plat.books || {}; plat.customLessons = plat.customLessons || {};
+  plat.schools = plat.schools || {}; plat.lessonMap = plat.lessonMap || {}; plat.lessons = plat.lessons || {}; plat.units = plat.units || {}; plat.books = plat.books || {}; plat.customLessons = plat.customLessons || {}; plat.lessonOrder = plat.lessonOrder || {};
   S.plat = plat;
   await migrateHier();
   S.plat.schedule = S.plat.schedule || {};
-  await syncLessonIndex();
+  await syncLessonIndex({ light: true });   // 登入時不讀整個測驗庫，用上次存的簡短索引（省 Firebase 下載量）
   try{ S.classRooms = (await fbGet(pbase + "/classRooms")) || {}; }catch(e){ S.classRooms = {}; }   // 先讀好今天用過的房間，重新整理後才能回到同一個房間
   startReminders(); startNotify(); trStart(); classRoomsStart();
   restoreFromHash();
@@ -1530,6 +1583,25 @@ async function applyVocabFill(fx){
   await fbUpdate("teacherVocabBanks/" + t, { courseData: cd, updatedAt: Date.now(), updatedBy: S.teacher.name || t });
   await syncLessonIndex();
 }
+// 修正已經存在的生詞欄位／課文注音：只有目前的內容還和 from 一模一樣（老師沒改過）才換成 to
+async function applyVocabSet(fx){
+  var bid = fx.book || (fx.bookTitle ? findBookByTitle(fx.bookTitle) : DEFAULT_BOOK); if(!bid) return;
+  var t = S.teacher.id, bank = await fbGet("teacherVocabBanks/" + t), cd = arrOf(bank && bank.courseData);
+  var L = cd.filter(function(x){ return x && (x.book || DEFAULT_BOOK) === bid && Number(x.lesson) === Number(fx.lesson); })[0]; if(!L) return;
+  var n = 0, vs = arrOf(L.vocab);
+  (fx.items || []).forEach(function(it){ vs.forEach(function(v){ if(v && String(v["生詞"] || "").trim() === it.word && String(v[it.field] || "").trim() === it.from){ v[it.field] = it.to; n++; } }); });
+  if(n) L.vocab = vs;
+  // 課文逐字注音：{ text: 這句話, ch: 字, idx: 第幾個該字（從 0 算）, from, to }
+  var tx = arrOf(L.texts);
+  (fx.zy || []).forEach(function(z){ tx.forEach(function(te){ arrOf(te.lines).forEach(function(ln){
+    if(!ln || String(ln.text || "") !== z.text) return; var zy = arrOf(ln.zy), k = 0;
+    zy.forEach(function(pr, i){ if(pr && pr[0] === z.ch){ if(k === z.idx && pr[1] === z.from){ pr[1] = z.to; n++; } k++; } }); if(zy.length) ln.zy = zy;
+  }); }); });
+  if(n && tx.length) L.texts = tx;
+  if(!n) return;
+  await fbUpdate("teacherVocabBanks/" + t, { courseData: cd, updatedAt: Date.now(), updatedBy: S.teacher.name || t });
+  await syncLessonIndex();
+}
 // 已經加進測驗庫的練習題，之後的修改：每個欄位只有在老師沒改過（跟原本一模一樣）時才換成新版
 function fixSame(a, b){ function norm(x){ if(Array.isArray(x)) return x.map(norm); if(x && typeof x === "object"){ var o = {}; Object.keys(x).sort().forEach(function(k){ o[k] = norm(x[k]); }); return o; } return x == null ? null : x; } return JSON.stringify(norm(a)) === JSON.stringify(norm(b)); }
 async function applyProjectEdit(fx){
@@ -1549,6 +1621,7 @@ async function applyContentFixes(){
   for(var f = 0; f < list.fixes.length; f++){
     var fx = list.fixes[f]; if(!fx || !fx.id || done[fx.id]) continue;
     if(fx.kind === "projectEdit"){ try{ await applyProjectEdit(fx); }catch(e){ console.warn("projectEdit", e); continue; } done[fx.id] = Date.now(); S.plat.meta = S.plat.meta || {}; S.plat.meta.fixesApplied = done; try{ await fbSet(base + "/meta/fixesApplied/" + fx.id, done[fx.id]); }catch(e){} continue; }
+    if(fx.kind === "vocabSet"){ try{ await applyVocabSet(fx); }catch(e){ console.warn("vocabSet", e); continue; } done[fx.id] = Date.now(); S.plat.meta = S.plat.meta || {}; S.plat.meta.fixesApplied = done; try{ await fbSet(base + "/meta/fixesApplied/" + fx.id, done[fx.id]); }catch(e){} continue; }
     if(fx.kind === "vocabFill"){ try{ await applyVocabFill(fx); }catch(e){ console.warn("vocabFill", e); continue; } done[fx.id] = Date.now(); S.plat.meta = S.plat.meta || {}; S.plat.meta.fixesApplied = done; try{ await fbSet(base + "/meta/fixesApplied/" + fx.id, done[fx.id]); }catch(e){} continue; }
     var tl = {}; try{ tl = (await fbGet(base + "/transList")) || {}; }catch(e){ continue; }
     var touched = {};
@@ -1648,14 +1721,36 @@ async function autoAddContentPacks(t, bank){
   return Object.assign({}, bank, { courseData: cd, autoAdded: done });
 }
 // 把「雲端生詞庫」跟「測驗庫」整理成一份輕量的課次索引（學生端只讀這一份，不必下載整個測驗庫）
-async function syncLessonIndex(){
-  var t = S.teacher.id, bank = null, lib = null;
-  try{ bank = await fbGet("teacherVocabBanks/" + t); }catch(e){}
-  try{ bank = await autoAddContentPacks(t, bank); }catch(e){ console.warn("autoAddContentPacks", e); }
+// 生詞庫（所有課的生詞・語法・課文，資料量很大）：先只讀一個很小的 updatedAt，跟這台電腦上次存的一樣就直接用本機的，不用每次登入都整份重新下載。
+// 每次有人改生詞庫都會更新 updatedAt（平台與教材編輯器都是），所以內容改了一定會重新下載。
+async function bankCached(tid){
+  var key = "mm_bank_" + tid, stamp = null;
+  try{ stamp = await fbGet("teacherVocabBanks/" + tid + "/updatedAt"); }catch(e){}
+  if(stamp != null){ try{ var c = JSON.parse(localStorage.getItem(key) || "null"); if(c && c.stamp === stamp && c.bank) return c.bank; }catch(e){} }
+  var bank = await fbGet("teacherVocabBanks/" + tid);
+  try{ if(bank && bank.updatedAt != null) localStorage.setItem(key, JSON.stringify({ stamp: bank.updatedAt, bank: bank })); else localStorage.removeItem(key); }catch(e){ try{ localStorage.removeItem(key); }catch(e2){} }
+  return bank;
+}
+// 重新整理課次索引。登入時、從編輯器回來時要完整讀取（讀整個測驗庫與生詞庫，資料量很大）；
+// 只是改排序、隱藏教材、新增空課次這類「不動到內容」的操作，傳 { cached: true } 沿用這次登入已經讀過的內容，不要每次都重新下載（Firebase 下載量就是這樣被耗掉的）
+async function syncLessonIndex(opts){
+  var t = S.teacher.id, bank = null, lib = null, useMemo = !!(opts && opts.cached && S._memoLib && S._memoBank && Date.now() - (S._memoAt || 0) < 300000);   // 5 分鐘內讀過的才沿用
+  var light = !!(opts && opts.light) && !!S.plat.projIndex && Object.keys(S.plat.projIndex).length > 0 && Date.now() - (Number(S.plat.projIndexAt) || 0) < 86400000, packsBefore = 0;   // 簡短索引超過一天沒更新就完整讀一次
+  if(useMemo){ bank = S._memoBank; lib = S._memoLib; }
+  else {
+    try{ bank = await bankCached(t); }catch(e){}
+    packsBefore = Object.keys((bank && bank.autoAdded) || {}).length;
+    try{ bank = await autoAddContentPacks(t, bank); }catch(e){ console.warn("autoAddContentPacks", e); }
+    if(light && Object.keys((bank && bank.autoAdded) || {}).length !== packsBefore) light = false;   // 剛自動加入新教材：要完整讀一次
+  }
   if(!S.vocabPub && S.teacher.role !== "ta"){ S.vocabPub = true; setTimeout(function(){ allClassesList().forEach(function(x){ var ls = recLabelsOfClass(x.sel); publishClassVocab(ls[0] || "", x.sel.s + "|" + x.sel.t + "|" + x.sel.c); }); }, 4000); }
   if(!S.fixesRun){ S.fixesRun = true; setTimeout(function(){ applyContentFixes().catch(function(e){ console.warn("fixes", e); }); }, 1500); }
   S.bank = (bank && Array.isArray(bank.courseData)) ? bank.courseData : [];
-  try{ lib = await fbGet("teacherLibraries/" + t); }catch(e){}
+  if(!useMemo){
+    if(light){ var pj = {}; Object.keys(S.plat.projIndex).forEach(function(pid){ var x = S.plat.projIndex[pid] || {}; pj[pid] = { __idx: 1, title: x.title || "", slides: x.slides || 0, quiz: x.quiz || 0 }; }); lib = { projects: pj }; }
+    else { try{ lib = await fbGet("teacherLibraries/" + t); }catch(e){} }
+    S._memoBank = bank; S._memoLib = lib; S._memoAt = Date.now();
+  }
   var lessons = {}, lm = S.plat.lessonMap || {};
   // 雲端生詞庫：沒有標「book」的課次都算預設教材（第一冊）
   if(bank && Array.isArray(bank.courseData)) bank.courseData.forEach(function(l){
@@ -1664,7 +1759,7 @@ async function syncLessonIndex(){
   });
   // 老師自己新增的課次（例如其他教材、還沒有生詞也想先建好的課）
   var cl = S.plat.customLessons || {};
-  Object.keys(cl).forEach(function(k){ if(!booksObj()[cl[k].book]) return; if(!lessons[k]) lessons[k] = { book: cl[k].book, no: Number(cl[k].no), title: cl[k].title || "", counts: {}, projects: {} }; else if(!lessons[k].title && cl[k].title) lessons[k].title = cl[k].title; });
+  Object.keys(cl).forEach(function(k){ if(!booksObj()[cl[k].book]) return; if(!lessons[k]) lessons[k] = { book: cl[k].book, no: Number(cl[k].no), title: cl[k].title || "", counts: {}, projects: {} }; else if(!lessons[k].title && cl[k].title) lessons[k].title = cl[k].title; if(cl[k].noNum && lessons[k]){ lessons[k].noNum = true; if(cl[k].title) lessons[k].title = cl[k].title; } });
   // 複習單元：成員是課次的 key；生詞／語法／課文數量是成員的總和
   var units = S.plat.units || {};
   Object.keys(units).forEach(function(uk){
@@ -1680,7 +1775,8 @@ async function syncLessonIndex(){
       if(guess != null){ var gb = bookFromTitle(p.title) || DEFAULT_BOOK; key = lkey(gb, guess); lm[pid] = key; }
     }
     var slides = 0, quiz = 0;
-    Object.keys(p.sections || {}).forEach(function(sid){ var sc = p.sections[sid], n = Object.keys(sc.questions || {}).length; if(sc.type === "board") slides += n; else quiz += n; });
+    if(p.__idx){ slides = p.slides || 0; quiz = p.quiz || 0; }
+    else Object.keys(p.sections || {}).forEach(function(sid){ var sc = p.sections[sid], n = Object.keys(sc.questions || {}).length; if(sc.type === "board") slides += n; else quiz += n; });
     allProjects[pid] = { title: p.title, slides: slides, quiz: quiz };
     if(key == null){ unassigned[pid] = { title: p.title, slides: slides, quiz: quiz }; return; }
     if(key.indexOf("u_") === 0 && !lessons[key]){ unassigned[pid] = { title: p.title, slides: slides, quiz: quiz }; return; } // 歸去的複習單元已被刪除
@@ -1691,9 +1787,12 @@ async function syncLessonIndex(){
     }
     lessons[key].projects[pid] = { title: p.title, slides: slides, quiz: quiz };
   });
+  var lo = S.plat.lessonOrder || {}; Object.keys(lessons).forEach(function(k){ if(!lessons[k].unit && lo[k] != null && lo[k] !== "") lessons[k].ord = Number(lo[k]); });   // 老師拖曳排過的課次順序（學生端也依這個順序）
   S.plat.lessons = lessons; S.plat.lessonMap = lm; S.unassigned = unassigned; S.allProjects = allProjects;
   var base = "teacherPlatform/" + t;
-  try{ await fbUpdate(base, { lessons: lessons, lessonMap: lm, books: booksObj() }); }catch(e){ console.error("寫入課次索引失敗（可能是 Firebase 規則還沒開放 teacherPlatform）", e); S.ruleErr = true; }
+  var wr = { lessons: lessons, lessonMap: lm, books: booksObj() };
+  if(!useMemo && !light){ wr.projIndex = allProjects; wr.projIndexAt = Date.now(); S.plat.projIndex = allProjects; S.plat.projIndexAt = wr.projIndexAt; }   // 完整讀取時順便更新簡短索引，下次登入就不用再讀整個測驗庫
+  try{ await fbUpdate(base, wr); }catch(e){ console.error("寫入課次索引失敗（可能是 Firebase 規則還沒開放 teacherPlatform）", e); S.ruleErr = true; }
 }
 
 // ---------- 網址記憶 ----------
@@ -2005,20 +2104,75 @@ function renderLibrary(){
         '<button class="lib-it' + (key === "_un" ? ' on' : '') + '" data-lk="_un"><b>📂 未分類</b>' + (unk.length ? ' <span class="chip" style="background:#FBEBC8;">' + unk.length + '</span>' : '') + '<span class="note">還沒歸到任何一課的簡報／測驗</span></button>' +
         '<button class="lib-it' + (key === "_trash" ? ' on' : '') + '" data-lk="_trash"><b>🗑️ 最近刪除</b>' + (trashN ? ' <span class="chip">' + trashN + '</span>' : '') + '<span class="note">30 天內可以還原</span></button></div>';
     } else {
-      nav = '<div class="lib-nav">' + ks.map(function(k){ var c = lessonCounts(k); return '<button class="lib-it' + (k === key ? ' on' : '') + '" data-lk="' + esc(k) + '"><b>第 ' + L[k].no + ' 課</b> ' + esc(L[k].title || "") + '<span class="note">生詞 ' + c.vocab + '・簡報／練習 ' + Object.keys(L[k].projects || {}).length + '</span></button>'; }).join("") +
+      nav = '<div class="lib-nav"><div class="note" style="margin:0 0 6px;font-size:13px;">⠿ 按住拖曳：重新排序；拖到上方的教材分頁＝移到那一本</div>' + ks.map(function(k){ var c = lessonCounts(k); return '<button class="lib-it' + (k === key ? ' on' : '') + '" data-lk="' + esc(k) + '" data-dlesson="' + esc(k) + '" draggable="true">' + (L[k].noNum ? '<b>' + esc(L[k].title || "（未命名）") + '</b>' : '<b>第 ' + L[k].no + ' 課</b> ' + esc(L[k].title || "")) + '<span class="note">生詞 ' + c.vocab + '・簡報／練習 ' + Object.keys(L[k].projects || {}).length + '</span></button>'; }).join("") +
         (us.length ? '<div class="lib-sep">複習單元</div>' + us.map(function(k){ return '<button class="lib-it' + (k === key ? ' on' : '') + '" data-lk="' + esc(k) + '"><b>📚 ' + esc(L[k].title || "") + '</b><span class="note">' + esc(memberRange(L[k].members)) + '</span></button>'; }).join("") : '') +
         '<button class="btn sm" data-newlesson="' + esc(cur) + '" style="margin-top:8px;width:100%;">＋ 新增課次</button></div>';
     }
     var pane = key === "_trash" ? libTrashHtml() : key === "_un" ? libUnassignedHtml() : key === "_sug" ? libSugHtml(sug) : key === "_none" ? '<div class="panel"><p class="note">這本教材還沒有課次。按左邊「＋ 新增課次」開始。</p></div>' : libLessonHtml(key);
     var grp = [], gi = {};
     bids.forEach(function(bk){ var sr = bookSeries(bk) || "__own"; if(gi[sr] == null){ gi[sr] = grp.length; grp.push({ sr: sr, ids: [] }); } grp[gi[sr]].ids.push(bk); });
-    var tabsHtml = grp.map(function(g){ return '<span class="lib-grp"><span class="lib-grp-t">' + (g.sr === "__own" ? '自編教材' : esc(g.sr)) + '</span>' + g.ids.map(function(bk){ return '<button class="tab' + (!tidy && bk === cur ? ' on' : '') + '" data-libbook="' + esc(bk) + '">' + esc(g.sr === "__own" ? bookTitle(bk) : bookShort(bk)) + '</button>'; }).join("") + '</span>'; }).join("");
+    var tabsHtml = grp.map(function(g){ return '<span class="lib-grp" data-dgrp="' + esc(g.sr) + '"><span class="lib-grp-t">' + (g.sr === "__own" ? '自編教材' : esc(g.sr)) + '</span>' + g.ids.map(function(bk){ return '<button class="tab' + (!tidy && bk === cur ? ' on' : '') + '" data-libbook="' + esc(bk) + '" data-dbook="' + esc(bk) + '" draggable="true" title="按住拖曳：調整順序、移到別的系列">' + esc(g.sr === "__own" ? bookTitle(bk) : bookShort(bk)) + '</button>'; }).join("") + '</span>'; }).join("");
     html = '<div class="tabs lib-tabs"><button class="tab" data-libback="1">‹ 返回</button>' + tabsHtml +
       '<span style="margin-left:auto;display:flex;gap:2px;flex-wrap:wrap;"><button class="tab" data-libimp="1" title="匯入別的老師分享的課次檔案">⬆ 匯入課次</button><button class="tab' + (tidy ? ' on' : '') + '" data-libtidy="1">🧹 整理' + (tidyN ? ' <span class="chip" style="background:#FBEBC8;">' + tidyN + '</span>' : '') + '</button><button class="tab" data-libadd="1">＋ 新增教材</button>' + (tidy ? '' : '<button class="tab" data-libren="1">⚙️ 教材設定</button>' + (cur === DEFAULT_BOOK ? '<button class="tab" data-libhide="1">隱藏這本</button>' : '<button class="tab" data-libdel="1" style="color:#B23B32;">刪除教材</button>')) + (hiddenN ? '<button class="tab" data-libunhide="1">已隱藏（' + hiddenN + '）</button>' : '') + '</span></div>' +
       '<div class="lib-wrap">' + nav + '<div class="lib-pane">' + pane + '</div></div>';
   }
   shell(html, { flush: true }); setCrumb([]);
   var main = document.getElementById("main");
+  // ---- 拖曳整理：課次（左側清單）重新排序／拖到上方教材分頁＝換一本；教材分頁重新排序／拖到別的系列 ----
+  var dnd = null;
+  function dndClear(){ main.querySelectorAll(".dnd-over,.dnd-over-grp,.dnd-dragging").forEach(function(n){ n.classList.remove("dnd-over", "dnd-over-grp", "dnd-dragging"); }); }
+  main.ondragstart = function(e){
+    var l = e.target.closest && e.target.closest("[data-dlesson]"), bk = e.target.closest && e.target.closest("[data-dbook]");
+    if(!S.teacher || S.teacher.role === "ta"){ e.preventDefault(); return; }
+    var el = l || bk; if(!el){ return; }
+    dnd = l ? { kind: "lesson", id: l.dataset.dlesson } : { kind: "book", id: bk.dataset.dbook };
+    try{ e.dataTransfer.setData("text/plain", dnd.id); e.dataTransfer.effectAllowed = "move"; }catch(er){}
+    setTimeout(function(){ el.classList.add("dnd-dragging"); }, 0);
+  };
+  main.ondragover = function(e){
+    if(!dnd) return;
+    var l = e.target.closest("[data-dlesson]"), bk = e.target.closest("[data-dbook]"), g = e.target.closest("[data-dgrp]"), ok = false;
+    main.querySelectorAll(".dnd-over,.dnd-over-grp").forEach(function(n){ n.classList.remove("dnd-over", "dnd-over-grp"); });
+    if(dnd.kind === "lesson"){
+      if(l && l.dataset.dlesson !== dnd.id){ l.classList.add("dnd-over"); ok = true; }
+      else if(bk && bk.dataset.dbook !== cur){ bk.classList.add("dnd-over"); ok = true; }
+    } else {
+      if(bk && bk.dataset.dbook !== dnd.id){ bk.classList.add("dnd-over"); ok = true; }
+      else if(g){ g.classList.add("dnd-over-grp"); ok = true; }
+    }
+    if(ok){ e.preventDefault(); try{ e.dataTransfer.dropEffect = "move"; }catch(er){} }
+  };
+  main.ondragend = function(){ dnd = null; dndClear(); };
+  main.ondrop = async function(e){
+    if(!dnd) return; var d = dnd; dnd = null;
+    var l = e.target.closest("[data-dlesson]"), bk = e.target.closest("[data-dbook]"), g = e.target.closest("[data-dgrp]");
+    dndClear(); e.preventDefault();
+    if(!needOwner()) return;
+    try{
+      if(d.kind === "lesson"){
+        if(l && l.dataset.dlesson !== d.id){
+          var order = lessonsOfBook(cur).filter(function(k){ return k !== d.id; }), at = order.indexOf(l.dataset.dlesson);
+          order.splice(at < 0 ? order.length : at, 0, d.id);
+          var lo = S.plat.lessonOrder = S.plat.lessonOrder || {}, patch = {};
+          order.forEach(function(k, i){ lo[k] = (i + 1) * 10; patch[k] = lo[k]; });
+          await fbUpdate("teacherPlatform/" + S.teacher.id + "/lessonOrder", patch);
+          await syncLessonIndex({ cached: true }); renderLibrary(); toast("已調整課次順序");
+        } else if(bk && bk.dataset.dbook !== cur){
+          var nk = await moveLessonToBook(d.id, bk.dataset.dbook);
+          if(nk){ S.lib = { book: bk.dataset.dbook, key: nk }; renderLibrary(); }
+        }
+      } else {
+        var ids = bookIds(true).filter(function(k){ return k !== d.id; }), tgtSr = null;
+        if(bk && bk.dataset.dbook !== d.id){ var ti = ids.indexOf(bk.dataset.dbook); tgtSr = bookSeries(bk.dataset.dbook); ids.splice(ti < 0 ? ids.length : ti, 0, d.id); }
+        else if(g){ var gsr = g.dataset.dgrp === "__own" ? "" : g.dataset.dgrp; tgtSr = gsr; var lastIn = -1; ids.forEach(function(k, i){ if(bookSeries(k) === gsr) lastIn = i; }); ids.splice(lastIn < 0 ? ids.length : lastIn + 1, 0, d.id); }
+        else return;
+        var bo = S.plat.books = S.plat.books || {}, bpatch = {}, all = booksObj();
+        ids.forEach(function(k, i){ var nb = Object.assign({}, all[k] || {}, { order: (i + 1) * 10, man: 1 }); if(k === d.id && tgtSr != null && tgtSr !== bookSeries(k)) nb.series = tgtSr; bo[k] = nb; bpatch[k] = nb; });
+        await fbUpdate("teacherPlatform/" + S.teacher.id + "/books", bpatch);
+        await syncLessonIndex({ cached: true }); renderLibrary(); toast("已調整教材順序");
+      }
+    }catch(er){ console.error(er); toast("調整失敗，請檢查網路後再試"); }
+  };
   main.onchange = async function(e){
     var sel = e.target.closest("select[data-assign]"); if(!sel) return;
     var pid = sel.dataset.assign, v = sel.value;
@@ -2037,6 +2191,20 @@ function renderLibrary(){
       var rk = b.dataset.lesren, oldT = ((S.plat.lessons || {})[rk] || {}).title || "";
       var nt = await askText("這一課的名稱（例如：天氣變涼了）", oldT, "儲存"); if(!nt || nt === oldT) return;
       if(await renameLesson(rk, nt)){ toast("已改成「" + lessonTitle(rk) + "」"); renderLibrary(); }
+      return;
+    }
+    if(b.dataset.lesnonum){
+      if(!needOwner()) return;
+      var nk2 = b.dataset.lesnonum, pk2 = parseKey(nk2), l2 = (S.plat.lessons || {})[nk2]; if(!pk2 || !l2) return;
+      var willHide = !l2.noNum, ttl = l2.title || "";
+      if(willHide && !ttl){ ttl = await askText("沒有課次時只顯示名稱，請先幫這份教材取個名稱（例如：期中考複習卷）", ""); if(!ttl) return; }
+      var cl2 = S.plat.customLessons = S.plat.customLessons || {}, ent = Object.assign({}, cl2[nk2] || { book: pk2.book, no: pk2.no }, { title: ttl });
+      if(willHide) ent.noNum = true; else delete ent.noNum;
+      cl2[nk2] = ent;
+      try{ await fbSet("teacherPlatform/" + S.teacher.id + "/customLessons/" + nk2, ent); }catch(er){ toast("儲存失敗，請檢查網路後再試"); return; }
+      // 教材庫裡這一課如果有名稱欄位，一併同步
+      if(willHide && ttl !== (l2.title || "")){ try{ await renameLesson(nk2, ttl); }catch(er){} }
+      await syncLessonIndex({ cached: true }); renderLibrary(); toast(willHide ? "已隱藏課次數字，只顯示名稱" : "已恢復顯示課次數字");
       return;
     }
     if(b.dataset.lesnum){
@@ -2075,11 +2243,11 @@ function renderLibrary(){
       var autoS = (/《([^》]+)》/.exec(nn) || [])[1], curS = booksObj()[cur].series != null ? booksObj()[cur].series : (autoS ? "《" + autoS + "》" : "");
       var sr = await askText("這本屬於哪一套教材？同一套的各冊會排在一起（例如《學華語向前走》）。\n留空＝放在「自編教材」。", curS, "儲存"); if(sr == null) return;
       S.plat.books = S.plat.books || {}; S.plat.books[cur] = Object.assign({}, booksObj()[cur], { title: nn, series: sr.trim() });
-      await fbSet("teacherPlatform/" + S.teacher.id + "/books/" + cur, S.plat.books[cur]); await syncLessonIndex(); renderLibrary(); return;
+      await fbSet("teacherPlatform/" + S.teacher.id + "/books/" + cur, S.plat.books[cur]); await syncLessonIndex({ cached: true }); renderLibrary(); return;
     }
     if(b.dataset.libdel){ await deleteBook(cur); S.lib = { book: DEFAULT_BOOK }; renderLibrary(); return; }
-    if(b.dataset.libhide){ if(!confirm("隱藏「" + bookTitle(cur) + "」？\n隱藏後教材頁、班級和學生都不會再看到它（內容不會刪除），之後可以在「已隱藏」裡顯示回來。")) return; S.plat.books = S.plat.books || {}; S.plat.books[cur] = Object.assign({}, booksObj()[cur], { hidden: true }); await fbSet("teacherPlatform/" + S.teacher.id + "/books/" + cur, S.plat.books[cur]); S.lib = { book: bookIds()[0] }; await syncLessonIndex(); renderLibrary(); return; }
-    if(b.dataset.libunhide){ var hid = bookIds(true).filter(function(k){ return booksObj()[k].hidden; }); var pick = await askChoice("要顯示回來的教材：", [{ label: "已隱藏", items: hid.map(function(k){ return { v: k, t: bookTitle(k) }; }) }], "顯示"); if(!pick) return; S.plat.books = S.plat.books || {}; S.plat.books[pick] = Object.assign({}, booksObj()[pick]); delete S.plat.books[pick].hidden; await fbSet("teacherPlatform/" + S.teacher.id + "/books/" + pick, S.plat.books[pick]); S.lib = { book: pick }; await syncLessonIndex(); renderLibrary(); return; }
+    if(b.dataset.libhide){ if(!confirm("隱藏「" + bookTitle(cur) + "」？\n隱藏後教材頁、班級和學生都不會再看到它（內容不會刪除），之後可以在「已隱藏」裡顯示回來。")) return; S.plat.books = S.plat.books || {}; S.plat.books[cur] = Object.assign({}, booksObj()[cur], { hidden: true }); await fbSet("teacherPlatform/" + S.teacher.id + "/books/" + cur, S.plat.books[cur]); S.lib = { book: bookIds()[0] }; await syncLessonIndex({ cached: true }); renderLibrary(); return; }
+    if(b.dataset.libunhide){ var hid = bookIds(true).filter(function(k){ return booksObj()[k].hidden; }); var pick = await askChoice("要顯示回來的教材：", [{ label: "已隱藏", items: hid.map(function(k){ return { v: k, t: bookTitle(k) }; }) }], "顯示"); if(!pick) return; S.plat.books = S.plat.books || {}; S.plat.books[pick] = Object.assign({}, booksObj()[pick]); delete S.plat.books[pick].hidden; await fbSet("teacherPlatform/" + S.teacher.id + "/books/" + pick, S.plat.books[pick]); S.lib = { book: pick }; await syncLessonIndex({ cached: true }); renderLibrary(); return; }
   };
 }
 async function libAssign(pid, v){
@@ -2141,25 +2309,26 @@ async function renameLesson(key, title){
 }
 // 改課次：把一課整個換成別的編號（同一本教材內）。生詞・語法・課文、簡報／練習題、單元、各班的開放與進度都跟著搬；
 // 目標那一課如果已經有內容就不動（避免蓋掉），是空的才會被取代。
-async function renumberLesson(key, newNo){
+async function renumberLesson(key, newNo, newBook, noConfirm){
   var pk = parseKey(key); if(!pk) return null;
-  var t = S.teacher.id, base = "teacherPlatform/" + t, nkey = lkey(pk.book, newNo), Lm = S.plat.lessons || {};
+  var nbook = newBook || pk.book;
+  var t = S.teacher.id, base = "teacherPlatform/" + t, nkey = lkey(nbook, newNo), Lm = S.plat.lessons || {};
   var tgt = Lm[nkey];
   if(tgt){
     var tc = lessonCounts(nkey);
     if(tc.vocab + tc.grammar + tc.text > 0 || Object.keys(tgt.projects || {}).length){ alert("第 " + newNo + " 課已經有內容了（" + lessonTitle(nkey) + "）。\n請先把那一課的內容移走或刪掉，或改成別的課次。"); return null; }
   }
-  if(!confirm("把「" + lessonTitle(key) + "」改成第 " + newNo + " 課？\n這一課的生詞・語法・課文、簡報、練習題，還有各班的開放設定與進度都會一起搬過去。")) return null;
+  if(!noConfirm && !confirm("把「" + lessonTitle(key) + "」改成第 " + newNo + " 課？\n這一課的生詞・語法・課文、簡報、練習題，還有各班的開放設定與進度都會一起搬過去。")) return null;
   try{
     // 自己新增的課次記錄
     var cl = S.plat.customLessons = S.plat.customLessons || {};
     if(cl[nkey] && !cl[key]){ delete cl[nkey]; await fbSet(base + "/customLessons/" + nkey, null); }
-    if(cl[key]){ var ce = Object.assign({}, cl[key], { no: newNo }); delete cl[key]; cl[nkey] = ce; await fbSet(base + "/customLessons/" + key, null); await fbSet(base + "/customLessons/" + nkey, ce); }
+    if(cl[key]){ var ce = Object.assign({}, cl[key], { no: newNo, book: nbook }); delete cl[key]; cl[nkey] = ce; await fbSet(base + "/customLessons/" + key, null); await fbSet(base + "/customLessons/" + nkey, ce); }
     // 教材庫（生詞・語法・課文）
     var bank = await fbGet("teacherVocabBanks/" + t), cd = arrOf(bank && bank.courseData);
     var changed = false;
-    cd = cd.filter(function(x){ var hit = x && (x.book || DEFAULT_BOOK) === pk.book && Number(x.lesson) === newNo; if(hit && !(x.vocab || []).length && !(x.grammar || []).length && !(x.texts || []).length){ changed = true; return false; } return true; });
-    cd.forEach(function(x){ if(x && (x.book || DEFAULT_BOOK) === pk.book && Number(x.lesson) === pk.no){ x.lesson = newNo; changed = true; } });
+    cd = cd.filter(function(x){ var hit = x && (x.book || DEFAULT_BOOK) === nbook && Number(x.lesson) === newNo; if(hit && !(x.vocab || []).length && !(x.grammar || []).length && !(x.texts || []).length){ changed = true; return false; } return true; });
+    cd.forEach(function(x){ if(x && (x.book || DEFAULT_BOOK) === pk.book && Number(x.lesson) === pk.no){ x.lesson = newNo; if(nbook !== pk.book){ if(nbook === DEFAULT_BOOK) delete x.book; else x.book = nbook; } changed = true; } });
     if(changed){ cd.sort(function(a, b){ return (Number(a.lesson) || 0) - (Number(b.lesson) || 0); }); await fbUpdate("teacherVocabBanks/" + t, { courseData: cd, updatedAt: Date.now(), updatedBy: S.teacher.name || t }); }
     // 簡報／練習題歸課
     var lm = S.plat.lessonMap = S.plat.lessonMap || {};
@@ -2177,8 +2346,20 @@ async function renumberLesson(key, newNo){
       }
     } } }
   }catch(e){ console.error(e); toast("改課次失敗，請檢查網路後再試"); return null; }
-  await syncLessonIndex(); toast("已改成第 " + newNo + " 課");
+  // 順序記錄：舊的課次 key 不用了，新的排在那一本最後面
+  try{ var lo2 = S.plat.lessonOrder = S.plat.lessonOrder || {}; if(lo2[key] != null && nkey !== key){ delete lo2[key]; await fbSet(base + "/lessonOrder/" + key, null); } }catch(e){}
+  await syncLessonIndex(); if(!noConfirm) toast("已改成第 " + newNo + " 課");
   return nkey;
+}
+// 把一課整個移到另一本教材（拖曳到上方的教材分頁）：課次數字排在那一本最後；沒有課次數字的（複習卷）維持原樣
+async function moveLessonToBook(key, nbook){
+  var pk = parseKey(key); if(!pk || pk.book === nbook) return null;
+  var L = (S.plat.lessons || {})[key] || {}, maxNo = 0; lessonsOfBook(nbook).forEach(function(k){ var q = parseKey(k); if(q && q.no > maxNo) maxNo = q.no; });
+  var no = L.noNum ? Math.max(901, maxNo + 1) : maxNo + 1;
+  if(!confirm("把「" + lessonTitle(key) + "」移到「" + bookTitle(nbook) + "」？\n這一課的生詞・語法・課文、簡報、練習題，還有各班的開放設定與進度都會一起搬過去。")) return null;
+  var nk = await renumberLesson(key, no, nbook, true);
+  if(nk) toast("已移到「" + bookTitle(nbook) + "」" + (L.noNum ? "" : "，成為第 " + no + " 課（可再用「改課次」調整）"));
+  return nk;
 }
 // 刪除一課：只有沒有內容（生詞・語法・課文都是 0、也沒有簡報／測驗）時才能刪，避免誤刪教材
 async function libDeleteLesson(key){
@@ -2251,7 +2432,7 @@ async function libImportLesson(file, cur){
 }
 function libLessonHtml(key){
   var L = S.plat.lessons || {}, l = L[key] || {}, c = lessonCounts(key), ps = l.projects || {}, pids = Object.keys(ps), dup = libDupSet();
-  var h = '<div class="head-row" style="margin-bottom:10px;"><div style="flex:1;"><h2>' + esc(lessonTitle(key)) + '</h2></div>' + (l.unit ? '' : '<button class="btn sm" data-lesren="' + esc(key) + '">改課名</button> <button class="btn sm" data-lesnum="' + esc(key) + '" title="把這一課換成別的課次編號（生詞・語法・課文、簡報、練習題、班級進度都會跟著搬過去）">改課次</button> <button class="btn sm" data-lesexp="' + esc(key) + '" title="把這一課的生詞・語法・課文和簡報、練習打包成一個檔案，可以傳給別的老師">⬇ 匯出這一課</button> <button class="btn sm danger" data-lesdel="' + esc(key) + '" title="沒有內容的課才能刪">刪除這一課</button>') + '</div>';
+  var h = '<div class="head-row" style="margin-bottom:10px;"><div style="flex:1;"><h2>' + esc(lessonTitle(key)) + '</h2></div>' + (l.unit ? '' : '<button class="btn sm" data-lesren="' + esc(key) + '">改課名</button> <button class="btn sm" data-lesnonum="' + esc(key) + '" title="複習卷、考卷這類沒有課次的內容：不顯示「第 N 課」，只顯示名稱">' + (l.noNum ? "顯示課次數字" : "不顯示課次數字") + '</button> <button class="btn sm" data-lesnum="' + esc(key) + '" title="把這一課換成別的課次編號（生詞・語法・課文、簡報、練習題、班級進度都會跟著搬過去）">改課次</button> <button class="btn sm" data-lesexp="' + esc(key) + '" title="把這一課的生詞・語法・課文和簡報、練習打包成一個檔案，可以傳給別的老師">⬇ 匯出這一課</button> <button class="btn sm danger" data-lesdel="' + esc(key) + '" title="沒有內容的課才能刪">刪除這一課</button>') + '</div>';
   h += '<div class="panel"><div class="lh" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><h3 style="margin:0;flex:1;">📖 生詞・語法・課文</h3>' + (l.unit ? '' : '' + stdSelectHtml() + '<button class="btn sm" data-vtool="1" title="把這一課的生詞整理成生詞表：自動補拼音／注音、英文、TOCFL／HSK 級別，加例句、挖空練習，匯出 Word、PPT、字卡">生詞表製作</button> <button class="btn sm primary" data-bank="1">編輯生詞・語法・課文</button>') + '</div>' +
     '<div class="tools" style="margin-top:8px;"><span class="chip">生詞 ' + c.vocab + '</span><span class="chip">語法 ' + c.grammar + '</span><span class="chip">課文 ' + c.text + '</span></div>' + (l.unit ? '<p class="note" style="margin:6px 0 0;">複習單元的生詞・語法・課文是 ' + esc(memberRange(l.members)) + ' 的合計，請到各課編輯。</p>' : (c.vocab + c.grammar + c.text ? '' : '<p class="note" style="margin:6px 0 0;">這一課還沒有生詞・語法・課文。按右上角開始編輯，或用 Excel 匯入。</p>')) + '</div>';
   h += '<div class="panel"><div class="lh" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><h3 style="margin:0;flex:1;">🖥️ 簡報與練習（' + pids.length + '）</h3><button class="btn sm" data-pnew="' + esc(key) + '">＋ 新增簡報／測驗</button></div>' +
@@ -3362,7 +3543,9 @@ async function openRecordFor(slot){
   var exist = slot && recIdForSlot(slot.id); if(exist){ return openRecordEdit(exist, recIncomplete(recMap()[exist]) ? slot : null); }
   var d = newRecordDraft(slot), info = [];
   try{ info = await Promise.race([recAutoFill(d, slot), new Promise(function(res){ setTimeout(function(){ res(null); }, 4000); })]) || []; }catch(e){}
-  S.rec = { edit: null, draft: d, shots: [], autoInfo: info }; S.day = null; S.lib = null; S.grades = null; S.sel = null; S.lesson = null; S.hw = null; S.classes = null; S.act = null; render();
+  S.rec = { edit: null, draft: d, shots: [], autoInfo: info }; S.day = null; S.lib = null; S.grades = null; S.sel = null; S.lesson = null; S.hw = null; S.classes = null; S.act = null;
+  var ak = recDraftKey(); if(ak){ var as = await recLoadClassShots(ak); if(as.length){ S.rec.shots = as.slice(); S.rec.autoShotKey = ak; } }   // 下課後自動截的簡報頁
+  render();
 }
 // 還需要「安排」補課的記錄：請假／調課、還沒補、也還沒排補課那堂、也不是決定不補
 function recNeedsMakeup(r){ return !!(r && r.isAbsence && !r.madeUp && !r.noMakeup && !(r.makeupSlotId && schedMap()[r.makeupSlotId])); }
@@ -3483,7 +3666,9 @@ async function openRecordEdit(id, slotForFill){
   if(!Array.isArray(shots)) shots = Object.keys(shots).map(function(k){ return shots[k]; });
   var info = null;
   if(slotForFill){ var bare = !(r.students || []).some(function(st){ return (st.name || "").trim(); }); if(bare){ var nd = newRecordDraft(slotForFill); r.students = nd.students; r.mode = nd.mode; } try{ info = await Promise.race([recAutoFill(r, slotForFill), new Promise(function(res){ setTimeout(function(){ res(null); }, 4000); })]); }catch(e){} }
-  S.rec = { edit: id, draft: r, shots: shots, filter: S.rec && S.rec.filter, autoInfo: info }; S.day = null; S.lib = null; S.grades = null; S.sel = null; S.lesson = null; S.hw = null; S.classes = null; S.act = null; render();
+  S.rec = { edit: id, draft: r, shots: shots, filter: S.rec && S.rec.filter, autoInfo: info }; S.day = null; S.lib = null; S.grades = null; S.sel = null; S.lesson = null; S.hw = null; S.classes = null; S.act = null;
+  var ak2 = recDraftKey(); if(ak2){ var as2 = await recLoadClassShots(ak2); if(as2.length){ S.rec.shots = shots.concat(as2); S.rec.autoShotKey = ak2; } }
+  render();
 }
 function recSync(){
   var d = S.rec.draft, g = function(i){ return document.getElementById(i); };
@@ -3764,6 +3949,7 @@ async function recAutoFill(d, slot){
     var plain = slot && slot.lesson && (S.plat.lessons || {})[slot.lesson] ? lessonTitle(slot.lesson) : "", auto = recProgressText(cls, day, ks);
     if(auto && (!d.material || d.material === plain)){ d.material = auto; info.push("進度"); }
     // 下次從這裡開始：今天的記錄（或上次停的那天就是這堂）才自動帶，補填很久以前的記錄不帶
+    try{ var scn = await recSlideContent(cls, sel, day); if(scn) recApplySlideContent(d, scn, info); }catch(e){ console.warn("slide content", e); }
     var nf = classNextFrom(cls, sel);
     if(d.nextFrom == null && nf && (day === ymd(new Date()) || nf.d === day)){ d.nextFrom = nf.text; d._nextAuto = nf.text; info.push("下次進度"); }
   }
@@ -3887,6 +4073,97 @@ async function recPresetDialog(){
   try{ await fbSet("teacherPlatform/" + S.teacher.id + "/meta/recPresets", np); toast("已儲存"); }catch(e){ toast("儲存失敗"); }
 }
 // 下課時：直接跳出已經填好的課堂記錄
+// ---------- 下課後自動截圖：今天這個班上過（停留超過 4 秒）的簡報頁，逐頁拍成小圖，填課堂記錄時自動帶進「課程截圖」 ----------
+function classShotsPath(c, day){ return "teacherPlatform/" + S.teacher.id + "/classShots/" + c + "/" + day; }
+function captureRoomSlides(room, qids, w){
+  return new Promise(function(resolve){
+    var fr = document.createElement("iframe"), done = false;
+    fr.style.cssText = "position:fixed;left:-10000px;top:0;width:1280px;height:800px;border:0;opacity:0;pointer-events:none;";
+    fr.src = "slides/practice.html?v=" + MM_V + "&embed=1&capture=1&room=" + encodeURIComponent(room) + "&qs=" + encodeURIComponent(qids.join(",")) + "&w=" + (w || 900);
+    function fin(shots){ if(done) return; done = true; window.removeEventListener("message", onMsg); clearTimeout(tm); try{ fr.remove(); }catch(e){} resolve(shots || []); }
+    function onMsg(e){ if(e.source === fr.contentWindow && e.data && e.data.mm === "captureDone") fin(e.data.shots); }
+    var tm = setTimeout(function(){ fin([]); }, 125000);
+    window.addEventListener("message", onMsg); document.body.appendChild(fr);
+  });
+}
+async function captureClassDay(sel, day, silent){
+  var cls = getCls(sel); if(!cls) return [];
+  var vis = (cls.progress && cls.progress.visited && cls.progress.visited[day]) || {}, rooms = (S.classRooms && S.classRooms[sel.c]) || {}, all = [], left = 30;
+  var pids = Object.keys(vis);
+  for(var i = 0; i < pids.length && left > 0; i++){
+    var pid = pids[i], room = rooms[pid] && rooms[pid].room; if(!room) continue;
+    var idxs = Object.keys(vis[pid]).map(Number).sort(function(a, b){ return a - b; }), seen = {}, qids = [];
+    idxs.forEach(function(k){ var q = vis[pid][k]; if(q && !seen[q]){ seen[q] = 1; qids.push(q); } });
+    qids = qids.slice(0, left); if(!qids.length) continue;
+    var shots = await captureRoomSlides(room, qids, 900); all = all.concat(shots); left -= qids.length;
+  }
+  if(all.length){
+    try{ await fbSet(classShotsPath(sel.c, day), all); }catch(e){ if(!silent) toast("截圖存檔失敗，請檢查網路"); return []; }
+    S.recShotsAdded = { c: sel.c, day: day, shots: all };
+    // 課堂記錄表已經打開了（下課後馬上填）：把截圖直接加進去
+    if(S.rec && S.rec.draft && !S.rec.preview){ var dk = recDraftKey(); if(dk && dk.c === sel.c && dk.day === day && !S.rec.autoShotKey){ try{ recSync(); }catch(e){} S.rec.autoShotKey = { c: sel.c, day: day }; S.rec.shots = (S.rec.shots || []).concat(all); try{ renderRecEditor(); }catch(e){} } }
+    if(!silent) toast("已自動截圖 " + all.length + " 張今天上過的簡報，填課堂記錄時會帶進「課程截圖」");
+  } else if(!silent) toast("今天沒有找到上過的簡報頁可以截圖");
+  return all;
+}
+// ---------- 依簡報內容整理「今天上了什麼」：讀今天停留過的簡報頁上的文字，對照這幾課的生詞／語法，列出上到的生詞、語法和教學環節 ----------
+async function recSlideContent(cls, sel, day){
+  var vis = (cls.progress && cls.progress.visited && cls.progress.visited[day]) || {}, rooms = (S.classRooms && S.classRooms[sel.c]) || {}, texts = [], pages = 0, textPages = 0;
+  var pids = Object.keys(vis);
+  for(var i = 0; i < pids.length; i++){
+    var room = rooms[pids[i]] && rooms[pids[i]].room; if(!room) continue;
+    var idxs = Object.keys(vis[pids[i]]).map(Number).sort(function(a, b){ return a - b; }), seen = {}, n = 0;
+    for(var j = 0; j < idxs.length && n < 40; j++){
+      var qid = vis[pids[i]][idxs[j]]; if(!qid || seen[qid]) continue; seen[qid] = 1; n++; pages++;
+      var got = [];
+      try{
+        arrOf(await fbGet("rooms/" + room + "/sharedProgress/" + qid + "/texts")).forEach(function(t){ if(t && t.text) got.push(String(t.text)); });
+        arrOf(await fbGet("rooms/" + room + "/sharedProgress/" + qid + "/tables")).forEach(function(tb){ (tb && tb.cells ? arrOf(tb.cells) : []).forEach(function(row){ arrOf(row).forEach(function(c){ if(c && c.t) got.push(String(c.t)); }); }); });
+      }catch(e){}
+      if(got.length){ textPages++; texts = texts.concat(got); }
+    }
+  }
+  if(!pages) return null;
+  var norm = function(t){ return String(t || "").replace(/[\s\u3000，。、；：:！？!?「」『』（）()\-—…~～,.·]/g, ""); };
+  var nj = norm(texts.join("\n")), exact = {}; texts.forEach(function(t){ exact[norm(t)] = 1; });
+  var tg = (cls.progress || {}).taught || {}, keys = Object.keys(tg).filter(function(k){ return tg[k] && tg[k][day]; });
+  var bank = Array.isArray(S.bank) ? S.bank : [], pool = bank.filter(function(x){ return keys.indexOf(lkey(x.book || DEFAULT_BOOK, x.lesson)) >= 0; }); if(!pool.length) pool = bank;
+  var vocab = [], seenW = {}, grammar = [], seenG = {}, parts = [];
+  pool.forEach(function(L){
+    (L.vocab || []).forEach(function(v){
+      var w = v && (v["生詞"] || v.word); if(!w) return; var nw = norm(w); if(!nw || seenW[nw]) return;
+      var at = nw.length >= 2 ? nj.indexOf(nw) : (exact[nw] ? nj.indexOf(nw) : -1); if(at < 0) return;
+      seenW[nw] = 1; vocab.push({ word: String(w), sub: [v["拼音"], v["英文翻譯"]].filter(Boolean).join(" · "), at: at });
+    });
+    (L.grammar || []).forEach(function(g){
+      var gp = g && g["語法點"]; if(!gp || seenG[gp]) return;
+      var variants = String(gp).split(/[／\/、，,]|\s+/).map(norm).filter(function(x){ return x.length >= 2; });
+      if(variants.some(function(x){ return nj.indexOf(x) >= 0; })){ seenG[gp] = 1; grammar.push(String(gp)); }
+    });
+  });
+  vocab.sort(function(a, b){ return a.at - b.at; });
+  [["生詞", "生詞"], ["語法", "語法"], ["課文", "課文"], ["對話", "對話"], ["練習", "練習"], ["遊戲", "遊戲"], ["活動", "課堂活動"], ["複習", "複習"], ["作業", "作業"]].forEach(function(k){
+    if(texts.some(function(t){ var nt = norm(t); return nt.length <= 10 && nt.indexOf(k[0]) >= 0; }) && parts.indexOf(k[1]) < 0) parts.push(k[1]);
+  });
+  return { vocab: vocab, grammar: grammar, parts: parts, pages: pages, textPages: textPages };
+}
+function recApplySlideContent(d, sc, info){
+  var have = {}; d.vocab = d.vocab || []; d.vocab.forEach(function(v){ have[v.word] = 1; }); var nv = 0;
+  sc.vocab.forEach(function(v){ if(!have[v.word]){ d.vocab.push({ word: v.word, sub: v.sub }); have[v.word] = 1; nv++; } });
+  var lines = [];
+  if(sc.parts.length) lines.push("上到的內容：" + sc.parts.join("、"));
+  if(sc.vocab.length) lines.push("上到的生詞：" + sc.vocab.map(function(v){ return v.word; }).join("、"));
+  if(sc.grammar.length) lines.push("上到的語法：" + sc.grammar.join("、"));
+  var cur = d.material || ""; lines = lines.filter(function(l){ return cur.indexOf(l.split("：")[0] + "：") < 0; });
+  if(lines.length) d.material = (cur ? cur + "\n" : "") + lines.join("\n");
+  if(info){ if(nv) info.push(nv + " 個生詞（依簡報內容）"); if(sc.grammar.length) info.push("語法 " + sc.grammar.length + " 項"); if(sc.pages && !sc.textPages) info.push("簡報頁都是圖片，讀不到文字"); }
+  return nv + lines.length;
+}
+function recDraftKey(){ var d = S.rec && S.rec.draft; if(!d) return null; var sl = d.slotId && schedMap()[d.slotId]; var c = (sl && sl.c) || (d.classKey && String(d.classKey).split("|")[2]) || null, day = (sl && sl.date) || d.date || null; return c && day ? { c: c, day: day } : null; }
+async function recLoadClassShots(key){
+  if(!key) return [];
+  try{ var v = await fbGet(classShotsPath(key.c, key.day)); if(!v) return []; return Array.isArray(v) ? v : Object.keys(v).map(function(k){ return v[k]; }); }catch(e){ return []; }
+}
 async function recAfterClass(sel){
   var day = ymd(new Date()), sl = slotsOn(day).filter(function(x){ return x.s === sel.s && x.t === sel.t && x.c === sel.c; })[0];
   if(sl && !recSlotNeeds(sl.id)) return;
@@ -3976,7 +4253,7 @@ function renderRecEditorBase(){
     }).join("") + (d.mode === "group" ? '<button class="btn sm" data-r="addstu">新增學生</button>' : '') + '</div>' +
     '<label>新生詞　<span class="note" style="font-weight:400;">' + d.vocab.length + ' 個</span></label>' + recVocabListHtml(d.vocab, !!S.rec.edit) +
     '<div class="rv-add"><input type="text" id="rf-vw" placeholder="生詞"><input type="text" id="rf-vs" placeholder="拼音／注音／翻譯（選填，用 · 分開）"><button class="btn sm" data-r="addvoc">加入</button></div>' +
-    '<label>課程截圖</label><div class="tools" style="margin-bottom:6px;">' + shots.map(function(u, i){ return '<span style="position:relative;"><img src="' + u + '" data-r="showshot" data-i="' + i + '" style="width:84px;height:84px;object-fit:cover;border-radius:8px;cursor:zoom-in;border:1px solid var(--line);"><button class="btn sm" data-r="rmshot" data-i="' + i + '" style="position:absolute;top:2px;right:2px;padding:1px 6px;">✕</button></span>'; }).join("") + '<button class="btn sm" data-r="addshot">加入截圖</button><input type="file" id="rf-shot" accept="image/*" multiple style="display:none;"></div>' +
+    '<label>課程截圖</label><div class="tools" style="margin-bottom:6px;">' + shots.map(function(u, i){ return '<span style="position:relative;"><img src="' + u + '" data-r="showshot" data-i="' + i + '" style="width:84px;height:84px;object-fit:cover;border-radius:8px;cursor:zoom-in;border:1px solid var(--line);"><button class="btn sm" data-r="rmshot" data-i="' + i + '" style="position:absolute;top:2px;right:2px;padding:1px 6px;">✕</button></span>'; }).join("") + '<button class="btn sm" data-r="addshot">加入截圖</button> <button class="btn sm" data-r="slidecontent" title="讀今天停留過的簡報頁上的文字，對照這幾課的生詞與語法，把上到的生詞、語法、教學環節填進「本次教材進度」和生詞清單">📖 依簡報整理上課內容</button><button class="btn sm" data-r="autoshots" title="把這堂課那天你在簡報上停留過的頁面自動截圖加進來（需要是在這台電腦上課、這個班的簡報存檔還在）">📸 自動截今天的簡報</button><input type="file" id="rf-shot" accept="image/*" multiple style="display:none;"></div>' +
     '<label>備註（今天有什麼特殊的事？）</label><textarea id="rf-notes" rows="3" placeholder="例如：學生今天生日、發音特別容易搞混的字…">' + esc(d.notes) + '</textarea></div>';
   shell(html); setCrumb([]);
   var main = document.getElementById("main");
@@ -4013,6 +4290,22 @@ function renderRecEditorBase(){
     }
     else if(a === "addshot"){ document.getElementById("rf-shot").click(); }
     else if(a === "rmshot"){ S.rec.shots.splice(i, 1); renderRecEditor(); }
+    else if(a === "slidecontent"){
+      recSync(); var sk = recDraftKey(); if(!sk){ toast("找不到這堂課的班級或日期"); return; }
+      var sit = allClassesList().filter(function(x){ return x.sel.c === sk.c; })[0]; if(!sit){ toast("找不到這個班"); return; }
+      toast("正在整理…"); var scc = null; try{ scc = await recSlideContent(sit.cls, sit.sel, sk.day); }catch(er){}
+      if(!scc){ toast("今天沒有找到停留過的簡報頁（要在這台電腦上課，而且在簡報上停留超過 4 秒的頁才會被記到）"); return; }
+      var infoM = []; var nch = recApplySlideContent(S.rec.draft, scc, infoM);
+      renderRecEditor(); toast(nch ? "已整理：" + infoM.join("、") + "。請看一下再儲存" : (scc.textPages ? "簡報上沒有找到對得上生詞庫的生詞" : "這幾頁簡報都是圖片，讀不到文字"));
+    }
+    else if(a === "autoshots"){
+      var ask = recDraftKey(); if(!ask){ toast("找不到這堂課的班級或日期"); return; }
+      var cit = allClassesList().filter(function(x){ return x.sel.c === ask.c; })[0]; if(!cit){ toast("找不到這個班"); return; }
+      toast("正在截圖…（簡報頁數多的話約需半分鐘）"); S.rec.autoShotKey = null;
+      var got = await captureClassDay(cit.sel, ask.day, true);
+      if(!got.length) toast("沒有找到今天上過的簡報頁（要在這台電腦上課，而且在簡報上停留超過 4 秒的頁才會被記到）");
+      else toast("已加入 " + got.length + " 張截圖");
+    }
     else if(a === "showshot"){ var w2 = window.open(); if(w2){ w2.document.write('<img src="' + S.rec.shots[i] + '" style="max-width:100%;">'); } }
     else if(a === "save"){ await saveRecord(); }
     else if(a === "del"){
@@ -4057,6 +4350,7 @@ async function saveRecord(){
   try{
     await fbSet(base + "/classRecords/" + id, rec);
     await fbSet(base + "/recordShots/" + id, S.rec.shots && S.rec.shots.length ? S.rec.shots : null);
+    if(S.rec.autoShotKey){ try{ await fbSet(classShotsPath(S.rec.autoShotKey.c, S.rec.autoShotKey.day), null); }catch(e){} }   // 已經收進這筆記錄，暫存的刪掉
   }catch(e){ alert("儲存失敗，請檢查網路或 Firebase 規則。內容還留在畫面上。"); return; }
   m[id] = rec; try{ localStorage.removeItem(recBackupKey()); }catch(e){}
   recRememberLabel(d); recSaveNextFrom(d);
@@ -6256,7 +6550,7 @@ function markPart(){
   fbSet(clsPath(S.sel) + "/progress/parts/" + d + "/" + key + "/" + part, true).catch(function(){});
 }
 // 簡報頁回報目前頁數：上課中（或今天這個班已經用這份簡報開過房間）才記，在家備課、編輯不會算進去
-var POS_T = null;
+var POS_T = null, VIS_T = null;
 // ----- 題目練習紀錄：這個班有哪些題目練習過（跳著上也看得出來）。老師上課中停在某一題超過 6 秒就記一次（次數、最近日期），
 //        簡報頁左邊的題目清單會顯示 ✓／○，老師也可以點一下手動標記或取消 -----
 var PR_T = null;
@@ -6287,6 +6581,16 @@ window.addEventListener("message", function(e){
   var pos = { d: day, l: String(S.lesson), pid: String(S.sub), pt: String(ps.title || d.projTitle || "").slice(0, 80), k: d.kind === "quiz" ? "quiz" : "slides", i: Math.max(1, Number(d.idx) || 1), n: Number(d.total) || 0, q: String(d.qid || ""), qt: String(d.qTitle || "").slice(0, 60), at: Date.now() };
   cls.progress = cls.progress || {}; cls.progress.pos = pos;
   var lg = cls.progress.log = cls.progress.log || {}; lg[day] = lg[day] || {}; lg[day][pos.pid] = pos;
+  // 今天翻過哪些頁（停留超過 4 秒才算，快速翻過不算）：下課後自動截圖用
+  if(pos.k === "slides" && pos.q){
+    clearTimeout(VIS_T); var vsel = { s: S.sel.s, t: S.sel.t, c: S.sel.c }, vpid = pos.pid, vi = pos.i, vq = pos.q, vday = day;
+    VIS_T = setTimeout(function(){
+      if(!(S.live && S.live.on)) return; var vc = getCls(vsel); if(!vc) return;
+      vc.progress = vc.progress || {}; var vv = vc.progress.visited = vc.progress.visited || {}; vv[vday] = vv[vday] || {}; vv[vday][vpid] = vv[vday][vpid] || {};
+      if(vv[vday][vpid][vi] === vq) return; vv[vday][vpid][vi] = vq;
+      fbSet(clsPath(vsel) + "/progress/visited/" + vday + "/" + vpid + "/" + vi, vq).catch(function(){});
+    }, 4000);
+  }
   var path = clsPath(S.sel); clearTimeout(POS_T);
   POS_T = setTimeout(function(){ fbSet(path + "/progress/pos", pos).catch(function(){}); fbSet(path + "/progress/log/" + day + "/" + pos.pid, pos).catch(function(){}); }, 1200);
 });
@@ -6581,15 +6885,21 @@ function bindClassTools(cls, tm){
 
 // ---------- 新增課次／刪除教材 ----------
 async function newLessonFlow(bid){
-  var ns = await askText("第幾課？（數字，例如 7）", ""); if(!ns) return null;
-  var no = cnNum(ns.replace(/[第課\s]/g, "")); if(!no || no < 1 || no > 999){ toast("請輸入課次數字"); return null; }
+  var ns = await askText("第幾課？（數字，例如 7）\n沒有課次的複習卷、考卷：不用填，直接按「確定」", "", "確定", "text", true); if(ns === null) return null;
+  var noNum = (ns === ""), no, title;
+  if(noNum){
+    title = await askText("這份教材的名稱（例如：期中考複習卷）", ""); if(!title) return null;
+    var maxNo = 900; lessonsOfBook(bid).forEach(function(k){ var q = parseKey(k); if(q && q.no > maxNo) maxNo = q.no; }); no = maxNo + 1;   // 課次數字不顯示，只在內部用來排序（排在最後）
+  } else {
+    no = cnNum(ns.replace(/[第課\s]/g, "")); if(!no || no < 1 || no > 999){ toast("請輸入課次數字"); return null; }
+  }
   var key = lkey(bid, no);
-  if((S.plat.lessons || {})[key]){ toast("這本教材已經有第 " + no + " 課了"); return key; }
-  var title = await askText("這一課的名稱（可以留空，之後再補）", "") || "";
+  if(!noNum && (S.plat.lessons || {})[key]){ toast("這本教材已經有第 " + no + " 課了"); return key; }
+  if(!noNum) title = await askText("這一課的名稱（可以留空，之後再補）", "") || "";
   S.plat.customLessons = S.plat.customLessons || {};
-  S.plat.customLessons[key] = { book: bid, no: no, title: title };
+  S.plat.customLessons[key] = noNum ? { book: bid, no: no, title: title, noNum: true } : { book: bid, no: no, title: title };
   try{ await fbSet("teacherPlatform/" + S.teacher.id + "/customLessons/" + key, S.plat.customLessons[key]); }catch(e){ toast("儲存失敗，請檢查網路或 Firebase 規則"); return null; }
-  await syncLessonIndex();
+  await syncLessonIndex({ cached: true });
   return key;
 }
 async function deleteBook(bid){
@@ -6611,7 +6921,7 @@ async function deleteBook(bid){
       ks.forEach(function(k){ if(cls[cid].lessonOpen && cls[cid].lessonOpen[k]){ delete cls[cid].lessonOpen[k]; fbSet(cp + "/lessonOpen/" + k, null); } });
     } } }
   }catch(e){}
-  await syncLessonIndex(); render();
+  await syncLessonIndex({ cached: true }); render();
 }
 // ---------- 複習單元 ----------
 function openUnitDialog(key){
@@ -6641,7 +6951,7 @@ function openUnitDialog(key){
     S.plat.units = S.plat.units || {}; S.plat.units[id] = rec;
     d.close();
     try{ await fbSet("teacherPlatform/" + S.teacher.id + "/units/" + id, rec); }catch(er){ toast("儲存失敗，請檢查網路或 Firebase 規則"); return; }
-    await syncLessonIndex(); render();
+    await syncLessonIndex({ cached: true }); render();
   };
   d.showModal();
   setTimeout(function(){ document.getElementById("unit-name").focus(); }, 30);
@@ -6659,7 +6969,7 @@ async function deleteUnit(key){
     var schools = S.plat.schools || {};
     for(var sid in schools){ var terms = schools[sid].terms || {}; for(var tid in terms){ var cl = terms[tid].classes || {}; for(var cid in cl){ if(cl[cid].lessonOpen && cl[cid].lessonOpen[key]){ delete cl[cid].lessonOpen[key]; await fbSet("teacherPlatform/" + S.teacher.id + "/schools/" + sid + "/terms/" + tid + "/classes/" + cid + "/lessonOpen/" + key, null); } } } }
   }catch(er){}
-  await syncLessonIndex(); render();
+  await syncLessonIndex({ cached: true }); render();
 }
 // ---------- 🎲 課堂活動：全部活動集中一頁（常用、最近用過），選課次／班級就開始 ----------
 var ACTS = [
@@ -6667,6 +6977,7 @@ var ACTS = [
   { id: "blast", e: "", img: "icons/act-blast.png", t: "Blast", d: "答案從畫面掉下來，點對的那個；四種主題，可以全班即時比賽", et: "Blast", en: "Tap the right answer as it falls", need: "lesson", game: true },
   { id: "whack", e: "🔨", t: "打貓咪 Whack-a-Cat", d: "地洞冒出舉著答案牌的像素貓（也可以選地鼠），打對的那隻；自己玩、作業連結，或全班即時分組競賽", et: "Whack-a-Cat", en: "Whack the cat holding the right answer", need: "lesson", game: true },
   { id: "cards", e: "🃏", t: "翻卡選題 Card Pick", d: "蓋著的卡（數字、水果或動物），輪到的學生用自己的裝置選一張，翻開是生詞，答對幫小組得分；只有即時多人", et: "Card Pick", en: "Pick a hidden card, reveal a word, answer to score for your team", need: "lesson", game: true },
+  { id: "find", e: "🔍", t: "找東西 Find It", d: "櫃子裡藏了一樣東西，操控的人看不到，只能照同學說的上面、下面、左邊、右邊、前面、後面走；全班合作或分組比步數、比時間；只有即時多人", et: "Find It", en: "Guide the searcher with direction words to find the hidden object", need: "lesson", game: true },
   { id: "quiz", e: "🎯", t: "快問快答 Quiz", d: "像 Kahoot：一題一題出，四選一，越快分數越高；全班同一秒進到同一題，可以分組、出作業連結", et: "Quiz", en: "Answer fast to score more, one question at a time", need: "lesson", game: true },
   { id: "listenorder", e: "👂", t: "聽音排序 Listen & Order", d: "聽一串詞語，拖成聽到的順序；每輪多一個詞，越來越難；被淘汰還能旁觀練習、復活", et: "Listen & Order", en: "Listen, then drag the words into the order you heard", need: "lesson", game: true },
   { id: "flashcard", e: "", t: "字卡練習", d: "生詞字卡，翻面看注音和意思", et: "Flashcards", en: "Flip a card to see zhuyin and meaning", need: "lesson" },
@@ -6840,16 +7151,27 @@ function tabsFor(open, teacher){
   var all = [["material","教材", ["vocab","grammar","text"]], ["slides","投影片",["slides"]], ["quiz","測驗與練習",["quiz"]], ["bingo","🎯 賓果",["quiz"]], ["activities","🎲 活動",["activities"]]];
   return all.filter(function(t){ if(t[0] === "bingo" && !teacher && !(S.live && S.live.on)) return false; return teacher || t[2].some(function(k){ return open[k]; }); });
 }
+// 上課中直接換課次：在分頁下拉選單最上面選另一課，停留在同一個分頁（投影片／測驗與練習）
+function lessonSwitchHtml(no){
+  var cls = S.sel ? getCls(S.sel) : null; if(!cls) return '';
+  var opts = classBookIds(cls).map(function(b){
+    var ks = lessonsOfBook(b); if(!ks.length) return '';
+    return '<optgroup label="' + esc(bookTitle(b)) + '">' + ks.map(function(k){ return '<option value="' + esc(k) + '"' + (String(k) === String(no) ? " selected" : "") + '>' + esc(lessonTitle(k)) + '</option>'; }).join("") + '</optgroup>';
+  }).join("");
+  var us = unitKeys(); if(us.length) opts += '<optgroup label="複習單元">' + us.map(function(k){ return '<option value="' + esc(k) + '"' + (String(k) === String(no) ? " selected" : "") + '>' + esc(lessonTitle(k)) + '</option>'; }).join("") + '</optgroup>';
+  if(!opts) return '';
+  return '<div style="padding:4px 6px 8px;border-bottom:1px solid var(--line);margin-bottom:4px;"><div class="note" style="font-weight:700;margin-bottom:3px;">📖 換課次（停在這個分頁）</div><select data-ddlesson="1" style="width:100%;padding:5px 8px;border-radius:8px;border:1.5px solid var(--line);font-size:14.5px;">' + opts + '</select></div>';
+}
 // 投影片／測驗與練習分頁：滑鼠移到分頁上，下拉選單列出這一課的每一份簡報（測驗），點一下就換（取代原本分頁下面那一整列）
 function lessonDeckMenu(no, kind, btn){
   var ps = ((S.plat.lessons || {})[no] || {}).projects || {}, pids = Object.keys(ps);
-  if(!pids.length) return btn;
+  if(!pids.length){ var swOnly = lessonSwitchHtml(no); return swOnly ? '<span class="tab-dd">' + btn.replace('</button>', ' <span class="tab-dd-arrow">▾</span></button>') + '<div class="tab-dd-menu">' + swOnly + '</div></span>' : btn; }
   var fit = pids.filter(function(p){ return (ps[p][kind] || 0) > 0 || p === S.sub; }); if(fit.length) pids = fit;   // 投影片只列有投影片的、測驗只列有題目的
   var curPid = S.tab === kind ? (S.sub && pids.indexOf(S.sub) >= 0 ? S.sub : pids[0]) : null;
   var items = pids.map(function(p){ var on = p === curPid; return '<button type="button" class="tab-dd-item' + (on ? ' on' : '') + '" data-ddtab="' + kind + '" data-ddsub="' + esc(p) + '">' + (on ? '✓ ' : '') + esc(ps[p].title || "（未命名）") + '</button>'; }).join("");
   var qst = (curPid && kind === "quiz") ? (((((getCls(S.sel) || {}).lessonOpen || {})[no] || {}).qsel || {})[curPid] || {}).mode : null;
-  var acts = curPid ? (kind === "quiz" ? '<div class="tab-dd-sep"></div><button type="button" class="tab-dd-item sm" data-ddact="qsel" data-kind="quiz" data-ddpid="' + esc(curPid) + '" title="這份練習題只出部分題目；也可以讓每位學生各自檢討不同的題目（學生自習時只會看到自己的題目）">🎯 選題（' + (qst === "same" ? "全班同一組" : qst === "each" ? "每位學生不同" : "目前：全部題目") + '）</button>' : '') + '<div class="tab-dd-sep"></div><button type="button" class="tab-dd-item sm" data-ddact="resync" data-ddpid="' + esc(curPid) + '" title="通用教材改過之後，想讓這個班用最新版時按這個。這個班目前的筆記和自己改過的內容會收起來（不會刪掉）">↻ 用最新的通用教材重建這個班的存檔</button><button type="button" class="tab-dd-item sm" data-ddact="editmaster" data-ddpid="' + esc(curPid) + '" title="通用教材只能在教材區編輯">✎ 到教材區編輯通用版</button>' : '';
-  return '<span class="tab-dd">' + btn.replace('</button>', ' <span class="tab-dd-arrow">▾</span></button>') + '<div class="tab-dd-menu">' + items + acts + '</div></span>';
+  var acts = curPid ? (kind === "quiz" ? '<div class="tab-dd-sep"></div><button type="button" class="tab-dd-item sm" data-ddact="qsel" data-kind="quiz" data-ddpid="' + esc(curPid) + '" title="這份練習題只出部分題目；也可以讓每位學生各自檢討不同的題目（學生自習時只會看到自己的題目）">🎯 選題（' + (qst === "same" ? "全班同一組" : qst === "each" ? "每位學生不同" : "目前：全部題目") + '）</button>' : '') + '<div class="tab-dd-sep"></div><button type="button" class="tab-dd-item sm" data-ddact="partial" data-ddpid="' + esc(curPid) + '" title="只選幾頁用最新的通用教材更新，沒選的頁面維持這個班原本的內容與筆記">↻ 只更新部分頁面…</button><button type="button" class="tab-dd-item sm" data-ddact="resync" data-ddpid="' + esc(curPid) + '" title="通用教材改過之後，想讓這個班用最新版時按這個。這個班目前的筆記和自己改過的內容會收起來（不會刪掉）">↻ 用最新的通用教材重建這個班的存檔</button><button type="button" class="tab-dd-item sm" data-ddact="editmaster" data-ddpid="' + esc(curPid) + '" title="通用教材只能在教材區編輯">✎ 到教材區編輯通用版</button>' : '';
+  return '<span class="tab-dd">' + btn.replace('</button>', ' <span class="tab-dd-arrow">▾</span></button>') + '<div class="tab-dd-menu">' + lessonSwitchHtml(no) + items + acts + '</div></span>';
 }
 // 班級存檔／通用教材的動作（從分頁下拉選單或「這一課還沒有簡報」按鈕）
 async function classDeckAction(act, pid, kind){
@@ -6861,6 +7183,7 @@ async function classDeckAction(act, pid, kind){
     S.lesson = null; S.tab = null; S.sub = null; render(); return;
   }
   if(act === "qsel"){ openClassQsel(pid); return; }
+  if(act === "partial"){ classPartialUpdate(pid); return; }
   if(act === "resync"){
     if(S.live && S.live.on){ alert("上課中不能重建存檔，請先結束上課。"); return; }
     var cur = S.sel && S.sel.c && S.classRooms && S.classRooms[S.sel.c] && S.classRooms[S.sel.c][pid];
@@ -6873,6 +7196,141 @@ async function classDeckAction(act, pid, kind){
     toast("已重建，會用最新的通用教材開新的存檔"); renderLesson(getCls(S.sel)); return;
   }
 }
+// 只更新部分頁面：從通用教材挑幾頁，覆蓋這個班存檔裡對應的頁面（含那幾頁的筆記）；沒選的頁面維持班級原本的內容與筆記。
+function cpFlat(proj){
+  var out = [], secs = (proj && proj.sections) || {};
+  Object.keys(secs).sort(function(a, b){ return (secs[a].order || 0) - (secs[b].order || 0); }).forEach(function(sid){
+    var qs = secs[sid].questions || {};
+    Object.keys(qs).sort(function(a, b){ return (qs[a].order || 0) - (qs[b].order || 0); }).forEach(function(qid){ out.push({ sid: sid, qid: qid, q: qs[qid], n: out.length + 1 }); });
+  });
+  return out;
+}
+function cpIds(pr){ var o = {}; ["texts", "images", "shapes", "tables"].forEach(function(k){ arrOf(pr && pr[k]).forEach(function(x){ if(x && x.id) o[x.id] = 1; }); }); return o; }
+async function classPartialUpdate(pid){
+  var cid = S.sel && S.sel.c, cur = cid && S.classRooms && S.classRooms[cid] && S.classRooms[cid][pid], rid = cur && cur.room;
+  if(!rid){ alert("這個班還沒有這份教材的存檔，下次打開會自動用最新的通用教材建立，不需要部分更新。"); return; }
+  if(S.live && S.live.on){ alert("上課中不能更新，請先結束上課。"); return; }
+  var d = document.getElementById("cpdlg"); if(!d){ d = document.createElement("dialog"); d.id = "cpdlg"; document.body.appendChild(d); }
+  d.style.width = "min(680px,96vw)"; d.innerHTML = '<div class="rec-form"><p class="note">讀取中…</p></div>'; d.showModal();
+  var t = S.teacher.id, master, roomProj, roomProg, backup;
+  try{
+    master = await fbGet("teacherLibraries/" + t + "/projects/" + pid); roomProj = await fbGet("rooms/" + rid + "/project"); roomProg = {};
+    backup = await fbGet("teacherPlatform/" + t + "/classPartialBackup/" + cid + "/" + pid);
+    // 不一次讀整個存檔的進度（可能很大）：只逐頁讀筆跡，用來標示哪些頁有班級筆記
+    await Promise.all(cpFlat(roomProj).map(function(x){ return fbGet("rooms/" + rid + "/sharedProgress/" + x.qid + "/strokes").then(function(v){ if(v) roomProg[x.qid] = { strokes: v }; }).catch(function(){}); }));
+  }catch(e){ console.error("classPartialUpdate read", e); d.close(); alert("讀取失敗：" + (e && (e.code || e.message) || e) + "\n\n請檢查網路；如果 Firebase 用量已超過上限，也會讀不到。"); return; }
+  if(!master || !roomProj){ d.close(); toast("找不到通用教材或這個班的存檔"); return; }
+  var M = cpFlat(master), R = cpFlat(roomProj), inRoom = {}; R.forEach(function(x){ inRoom[x.qid] = x; });
+  var mp = master.progress || {}, picked = {}, Mset = {}, usedRoom = {};
+  M.forEach(function(m){ Mset[m.qid] = 1; });
+  // 對應班級存檔的哪一頁：編號相同的對編號；編號對不上的（例如通用版重新匯入過、頁面編號整批換了）就照頁序對應（第 N 頁對第 N 頁）
+  var rows = M.map(function(x){ var t = inRoom[x.qid] || null; if(t) usedRoom[t.qid] = 1; return { x: x, tgt: t, byPos: false }; });
+  rows.forEach(function(r, idx){ if(r.tgt) return; var c = R[idx]; if(c && !Mset[c.qid] && !usedRoom[c.qid]){ r.tgt = c; r.byPos = true; usedRoom[c.qid] = 1; } });
+  rows.forEach(function(r){
+    var rp = r.tgt ? roomProg[r.tgt.qid] : null, mids = cpIds(mp[r.x.qid]);
+    r.isNew = !r.tgt; r.notes = !!(rp && arrOf(rp.strokes).length);
+  });
+  var gone = R.filter(function(x){ return !usedRoom[x.qid] && !Mset[x.qid]; });
+  function draw(){
+    d.innerHTML = '<form method="dialog" onsubmit="return false;" class="rec-form"><h3>↻ 只更新部分頁面</h3><p class="note" style="margin:0 0 6px;">勾選的頁面會換成通用教材最新的內容（<b>那幾頁班級的筆記也會被蓋掉</b>）；沒勾的頁面維持這個班原本的內容與筆記。</p>' +
+      '<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:6px;"><button type="button" class="btn sm" data-p="all">全選</button><button type="button" class="btn sm" data-p="none">全不選</button><button type="button" class="btn sm" data-p="new">只選班級存檔沒有的新頁</button><span class="note">從第</span><input type="number" id="cp-from" min="1" max="' + M.length + '" style="width:64px;"><span class="note">頁到最後</span><button type="button" class="btn sm" data-p="from">選取</button></div>' +
+      '<div style="max-height:46vh;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:4px 8px;">' + rows.map(function(r){
+        return '<label style="display:flex;gap:8px;align-items:center;padding:3px 0;font-weight:400;"><input type="checkbox" data-q="' + esc(r.x.qid) + '"' + (picked[r.x.qid] ? " checked" : "") + '><span style="min-width:46px;color:var(--ink-soft);">第 ' + r.x.n + ' 頁</span><span style="flex:1;">' + esc((r.x.q.title || "").slice(0, 40)) + '</span>' + (r.isNew ? '<span class="chip" style="background:#DFF0D8;">新頁</span>' : '') + (r.byPos ? '<span class="chip" style="background:#E3ECF7;" title="這一頁的編號和通用版不同，照頁序對應到班級存檔的第 ' + (R.indexOf(r.tgt) + 1) + ' 頁">依頁序對應</span>' : '') + (r.notes ? '<span class="chip" style="background:#FBEBC8;">有班級筆記</span>' : '') + '</label>';
+      }).join("") + '</div>' +
+      (gone.length ? '<label style="display:flex;gap:6px;align-items:center;margin-top:6px;font-weight:400;"><input type="checkbox" id="cp-rm"> 同時刪除通用教材已經沒有的 ' + gone.length + ' 頁（班級存檔裡還留著）</label>' : '') +
+      '<div class="note" id="cp-sum" style="margin-top:6px;"></div>' +
+      '<div class="row">' + (backup ? '<button type="button" class="btn" data-p="undo" title="把上一次部分更新蓋掉的頁面還原">↩ 復原上次部分更新</button>' : '') + '<button type="button" class="btn" data-p="cancel">取消</button><button type="button" class="btn primary" data-p="go">更新勾選的頁面</button></div></form>';
+    sum();
+  }
+  function sum(){ var n = Object.keys(picked).filter(function(k){ return picked[k]; }).length, w = rows.filter(function(r){ return picked[r.x.qid] && r.notes; }).length, el = document.getElementById("cp-sum"); if(el) el.textContent = "已選 " + n + " 頁" + (w ? "，其中 " + w + " 頁有班級筆記會被蓋掉" : ""); }
+  draw();
+  d.onchange = function(e){ var q = e.target && e.target.dataset && e.target.dataset.q; if(q){ picked[q] = e.target.checked; sum(); } };
+  d.onclick = async function(e){
+    var b = e.target.closest("[data-p]"); if(!b) return; var a = b.dataset.p;
+    if(a === "cancel"){ d.close(); return; }
+    if(a === "all"){ rows.forEach(function(r){ picked[r.x.qid] = true; }); draw(); return; }
+    if(a === "none"){ picked = {}; draw(); return; }
+    if(a === "new"){ picked = {}; rows.forEach(function(r){ if(r.isNew) picked[r.x.qid] = true; }); draw(); return; }
+    if(a === "from"){ var f = Number(document.getElementById("cp-from").value) || 0; if(f < 1) return; rows.forEach(function(r){ picked[r.x.qid] = r.x.n >= f; }); draw(); return; }
+    var base = "rooms/" + rid + "/";
+    if(a === "undo"){
+      if(!confirm("把上一次部分更新蓋掉的 " + Object.keys(backup.items || {}).length + " 頁還原？")) return;
+      var uu = {};
+      Object.keys(backup.items || {}).forEach(function(qid){ var it = backup.items[qid]; uu[base + "project/sections/" + it.sid + "/questions/" + qid] = it.q || null; uu[base + "sharedProgress/" + qid] = it.p || null; });
+      arrOf(backup.newIds).forEach(function(qid){ var sid = backup.newSec && backup.newSec[qid]; if(sid) uu[base + "project/sections/" + sid + "/questions/" + qid] = null; uu[base + "sharedProgress/" + qid] = null; });
+      try{ await fbUpdate("rooms/" + rid, Object.keys(uu).reduce(function(o, k){ o[k.slice(("rooms/" + rid + "/").length)] = uu[k]; return o; }, {})); await fbSet("teacherPlatform/" + t + "/classPartialBackup/" + cid + "/" + pid, null); }catch(er){ alert("復原失敗，請檢查網路。"); return; }
+      d.close(); toast("已復原"); return;
+    }
+    if(a === "go"){
+      var sel = rows.filter(function(r){ return picked[r.x.qid]; }), rm = document.getElementById("cp-rm") && document.getElementById("cp-rm").checked;
+      if(!sel.length && !rm){ toast("請先勾選要更新的頁面"); return; }
+      var noteN = sel.filter(function(r){ return r.notes; }).length;
+      if(!confirm("更新 " + sel.length + " 頁" + (rm ? "，並刪除 " + gone.length + " 頁" : "") + "？" + (noteN ? "\n其中 " + noteN + " 頁有班級筆記，會被通用教材的內容蓋掉（可以用「復原上次部分更新」還原一次）。" : ""))) return;
+      var up = {}, bk = { at: Date.now(), items: {}, newIds: [], newSec: {} }, touched = {};
+      var seedKeys = ["texts", "images", "shapes", "tables", "groups", "medias", "mediaData", "gridType", "canvasRatio", "bgColor", "bgOp", "bgImage"];
+      function seedOf(pr){ var o = {}; seedKeys.forEach(function(k){ if(pr && pr[k] !== undefined && pr[k] !== null && !(Array.isArray(pr[k]) && !pr[k].length)) o[k] = pr[k]; }); return Object.keys(o).length ? JSON.parse(JSON.stringify(o)) : null; }   // 和開存檔時帶進來的內容一樣：不含老師上課的筆跡
+      sel.forEach(function(r){
+        var T = r.tgt ? r.tgt.qid : r.x.qid, sid = r.tgt ? r.tgt.sid : r.x.sid;
+        if(r.tgt){ bk.items[T] = { sid: r.tgt.sid, q: r.tgt.q, p: roomProg[T] || null }; } else { bk.newIds.push(T); bk.newSec[T] = sid; }
+        r.T = T; r.sid = sid; touched[sid] = true;
+      });
+      if(rm) gone.forEach(function(g){ bk.items[g.qid] = { sid: g.sid, q: g.q, p: roomProg[g.qid] || null }; touched[g.sid] = true; });
+      // 排序：照通用教材的頁序；班級存檔自己多出來的頁排在最後
+      var secOf = {};
+      Object.keys(touched).forEach(function(sid){
+        var ids = [];
+        rows.forEach(function(r){ var sid2 = r.tgt ? r.tgt.sid : r.x.sid; if(sid2 !== sid) return; if(r.tgt) ids.push(r.tgt.qid); else if(picked[r.x.qid]) ids.push(r.x.qid); });
+        gone.forEach(function(g){ if(g.sid === sid && !rm) ids.push(g.qid); });
+        secOf[sid] = ids;
+      });
+      var byT = {}; rows.forEach(function(r){ if(picked[r.x.qid]) byT[r.tgt ? r.tgt.qid : r.x.qid] = r; });
+      Object.keys(secOf).forEach(function(sid){
+        var newSecObj = null;
+        if(!roomProj.sections || !roomProj.sections[sid]){ newSecObj = Object.assign({}, master.sections[sid]); newSecObj.questions = {}; up["project/sections/" + sid] = newSecObj; }   // 班級存檔沒有這個大題：整個大題一起放進去（不能和底下的子路徑同時寫）
+        secOf[sid].forEach(function(qid, i){
+          var r = byT[qid];
+          if(r){
+            var nq = Object.assign({}, r.x.q, { id: qid, order: i });
+            if(newSecObj) newSecObj.questions[qid] = nq; else up["project/sections/" + sid + "/questions/" + qid] = nq;
+            up["sharedProgress/" + qid] = seedOf(mp[r.x.qid]);
+          } else if(!newSecObj) up["project/sections/" + sid + "/questions/" + qid + "/order"] = i;
+        });
+      });
+      if(rm) gone.forEach(function(g){ up["project/sections/" + g.sid + "/questions/" + g.qid] = null; up["sharedProgress/" + g.qid] = null; });
+      b.disabled = true; b.textContent = "更新中…";
+      var step = "備份";
+      try{
+        // 備份被蓋掉的頁面（逐頁讀完整進度）；備份失敗不擋更新，但會提醒
+        var bkOk = true;
+        try{ var ks = Object.keys(bk.items); await Promise.all(ks.map(function(qid){ return fbGet("rooms/" + rid + "/sharedProgress/" + qid).then(function(v){ bk.items[qid].p = v || null; }); })); await fbSet("teacherPlatform/" + t + "/classPartialBackup/" + cid + "/" + pid, bk); }catch(eb){ console.warn("backup", eb); bkOk = false; }
+        if(!bkOk && !confirm("無法建立備份（更新後就不能用「復原」）。\n仍要繼續更新嗎？")){ b.disabled = false; b.textContent = "更新勾選的頁面"; return; }
+        step = "寫入存檔"; await fbUpdate("rooms/" + rid, up);
+      }catch(er){ console.error("classPartialUpdate", step, er, up); alert("更新失敗（" + step + "）：" + (er && (er.code || er.message) || er) + "\n\n請把這段文字拍給我。"); b.disabled = false; b.textContent = "更新勾選的頁面"; return; }
+      d.close(); toast("已更新 " + sel.length + " 頁"); renderLesson(getCls(S.sel)); return;
+    }
+  };
+  d.oncancel = function(e){ e.preventDefault(); d.close(); };
+}
+// 把「全班同一組題目」套用到這個班的存檔（上課的房間）：沒選的題目設成隱藏（學生看不到、也不計分），選回「全部題目」就恢復。
+// 只動「由選題隱藏的」題目（記在 qselHidden），你自己手動隱藏的題目不會被改到。
+async function applyQselToRoom(cid, pid, key, q){
+  var rid = S.classRooms && S.classRooms[cid] && S.classRooms[cid][pid] && S.classRooms[cid][pid].room; if(!rid) return "noroom";
+  var proj = await fbGet("rooms/" + rid + "/project"); if(!proj || !proj.sections) return "noroom";
+  var hidPath = clsPath(S.sel) + "/lessonOpen/" + key + "/qselHidden/" + pid, prev = arrOf(await fbGet(hidPath)), prevSet = {}, up = {}, newHid = [];
+  prev.forEach(function(id){ prevSet[id] = 1; });
+  var where = {}; Object.keys(proj.sections).forEach(function(sid){ Object.keys(proj.sections[sid].questions || {}).forEach(function(qid){ where[qid] = sid; }); });
+  prev.forEach(function(qid){ if(where[qid]) up["project/sections/" + where[qid] + "/questions/" + qid + "/hidden"] = null; });
+  if(q && q.mode === "same" && (q.def || []).length){
+    var keep = {}; q.def.forEach(function(id){ keep[id] = 1; });
+    Object.keys(where).forEach(function(qid){
+      var sid = where[qid], qq = proj.sections[sid].questions[qid], manual = !!(qq && qq.hidden) && !prevSet[qid];
+      if(!keep[qid] && !manual){ up["project/sections/" + sid + "/questions/" + qid + "/hidden"] = true; newHid.push(qid); }
+    });
+  }
+  if(Object.keys(up).length) await fbUpdate("rooms/" + rid, up);
+  await fbSet(hidPath, newHid.length ? newHid : null);
+  return newHid.length;
+}
 // 班級的練習題選題：這份練習題要出哪些題（全部／全班同一組／每位學生各自不同），存在這個班這一課的開放設定裡
 function qselRead(prevQ, list, root){
   var qmEl = root.querySelector('input[name="ed-qmode"]:checked'), qm = qmEl ? qmEl.value : (prevQ && prevQ.mode) || "all";
@@ -6883,7 +7341,7 @@ function qselRead(prevQ, list, root){
   return nq;
 }
 async function openClassQsel(pid){
-  var cls = getCls(S.sel), key = S.lesson; if(!cls || !key) return;
+  var cls = getCls(S.sel), key = S.lesson, cid0 = S.sel.c; if(!cls || !key) return;
   var d = document.getElementById("qseldlg"); if(!d){ d = document.createElement("dialog"); d.id = "qseldlg"; document.body.appendChild(d); }
   d.style.width = "min(640px,96vw)"; d.innerHTML = '<div class="rec-form"><p class="note">讀取題目中…</p></div>'; d.showModal();
   var list; try{ list = examQList(await fbGet("teacherLibraries/" + S.teacher.id + "/projects/" + pid)); EXAM_Q[pid] = list; }catch(e){ d.close(); toast("讀取題目失敗，請檢查網路"); return; }
@@ -6893,7 +7351,7 @@ async function openClassQsel(pid){
   var st = { _qpick: null }, ex = { pid: pid, assignees: null, qsel: cur ? JSON.parse(JSON.stringify(cur)) : null };
   function sync(){ ex.qsel = qselRead(ex.qsel, list, d); }
   function draw(){
-    d.innerHTML = '<form method="dialog" onsubmit="return false;" class="rec-form"><h3>🎯 選題：' + esc(title) + '</h3><p class="note" style="margin:0 0 6px;">學生自己練習這份題目時，只會看到分配給他的題目。上課中全班一起做的內容不受影響。</p>' + examQselHtml(st, ex) + '<div class="row"><button type="button" class="btn" data-e="cancel">取消</button><button type="button" class="btn primary" data-e="save">儲存</button></div></form>';
+    d.innerHTML = '<form method="dialog" onsubmit="return false;" class="rec-form"><h3>🎯 選題：' + esc(title) + '</h3><p class="note" style="margin:0 0 6px;">這份通用教材維持全部題目。選了「<b>全班同一組題目</b>」：這個班上課時只會出勾選的題目（沒勾的隱藏，學生看不到、也不計分），學生自己練習時也一樣。選了「<b>每位學生各自不同</b>」：只對學生<b>自己練習</b>有效，上課時全班仍是全部題目。</p>' + examQselHtml(st, ex) + '<div class="row"><button type="button" class="btn" data-e="cancel">取消</button><button type="button" class="btn primary" data-e="save">儲存</button></div></form>';
   }
   draw();
   d.onchange = function(e){
@@ -6907,7 +7365,10 @@ async function openClassQsel(pid){
       var o = cls.lessonOpen = cls.lessonOpen || {}, ko = o[key] = o[key] || {}; ko.qsel = ko.qsel || {};
       try{ await fbSet(clsPath(S.sel) + "/lessonOpen/" + key + "/qsel/" + pid, q || null); }catch(er){ alert("儲存失敗，請檢查網路或 Firebase 規則。"); return; }
       if(q) ko.qsel[pid] = q; else delete ko.qsel[pid];
-      d.close(); toast(q ? "已儲存選題（" + (q.mode === "each" ? "每位學生各自不同" : "全班同一組 " + (q.def || []).length + " 題") + "）" : "已改回出全部題目"); renderLesson(getCls(S.sel)); return;
+      var roomRes = null; try{ roomRes = await applyQselToRoom(cid0, pid, key, q); }catch(er){ console.warn("applyQselToRoom", er); roomRes = "err"; }
+      d.close();
+      toast((q ? "已儲存選題（" + (q.mode === "each" ? "每位學生各自不同，上課仍是全部題目" : "全班同一組 " + (q.def || []).length + " 題") + "）" : "已改回出全部題目") + (roomRes === "noroom" ? "。這個班還沒有用過這份題目（沒有存檔），先打開上一次課，再回來按一次儲存，上課時才會套用" : roomRes === "err" ? "。套用到上課存檔失敗，請再按一次儲存" : ""));
+      renderLesson(getCls(S.sel)); return;
     }
     var qsx = ex.qsel, tg = b.dataset.t; if(!qsx) return;
     if(a === "qpick"){ st._qpick = st._qpick === tg ? null : tg; }
@@ -7277,7 +7738,7 @@ async function toggleLive(){
     if(!confirm("結束上課？學生會回到自己的班級頁。")) return;
     try{ if(S.live.brk){ fbUpdate(liveRef(), { brk: null }).catch(function(){}); } brkClose(false); localStorage.removeItem("mm_brk"); }catch(e){}
     var endRooms = Object.keys(TR_PUB.rooms || {}); if(S.live.room && endRooms.indexOf(S.live.room) < 0) endRooms.push(S.live.room); S.live = null; cls.live = null; try{ endRooms.forEach(function(rid){ fbSet("rooms/" + rid + "/trans", null).catch(function(){}); }); TR_PUB.rooms = {}; await fbSet(liveRef(), null); await fbSet(clsPath(S.sel) + "/liveTrans", null); TR_PUB.last = ""; TR_PUB.roomLast = {}; }catch(e){}
-    setFocus(false); try{ if(document.fullscreenElement) document.exitFullscreen().catch(function(){}); }catch(e){} renderLesson(cls); var selEnd = { s: S.sel.s, t: S.sel.t, c: S.sel.c }; setTimeout(function(){ recAfterClass(selEnd); }, 400); return;
+    setFocus(false); try{ if(document.fullscreenElement) document.exitFullscreen().catch(function(){}); }catch(e){} renderLesson(cls); var selEnd = { s: S.sel.s, t: S.sel.t, c: S.sel.c }; setTimeout(function(){ recAfterClass(selEnd); }, 400); captureClassDay(selEnd, todayStr(), true).catch(function(er){ console.warn("capture", er); }); return;
   }
   // 按「開始上課」：順便把這個班的學生連結複製起來（要在點擊當下、await 之前複製，瀏覽器才允許），老師直接貼給學生
   var stuLk = cls.code ? studentLink(cls.code) : "", copied = false;
@@ -7396,6 +7857,11 @@ function toggleBrowserFullscreen(){
 }
 function bindLessonNav(cls, backFn, renderFn){
   var m = document.getElementById("main");
+  m.onchange = function(e){
+    var sel = e.target && e.target.closest && e.target.closest("select[data-ddlesson]"); if(!sel) return;
+    var k = String(sel.value || ""); if(!k || k === String(S.lesson)) return;
+    S.lesson = k; S.sub = null; S.jumpQ = null; renderFn(); pushLive();
+  };
   m.onclick = function(e){
     var b = e.target.closest("button"); if(!b) return;
     if(b.dataset.back){ if(S.focus) setFocus(false); backFn(); if(S.teacher) pushLive(true); return; }
@@ -7565,12 +8031,15 @@ async function startStudent(code, name, pw, opts){
     var base = "teacherPlatform/" + idx.t;
     var res = await Promise.all([fbGet(base + "/schools/" + idx.s + "/name"), fbGet(base + "/schools/" + idx.s + "/terms/" + idx.tm + "/name"), fbGet(base + "/schools/" + idx.s + "/terms/" + idx.tm + "/classes/" + idx.c), fbGet(base + "/lessons"), fbGet(base + "/books")]);
     if(!res[2]){ viewStudentEntry("這個班級已不存在。", code); return; }
-    try{ var sb = await fbGet("teacherVocabBanks/" + idx.t); S.bank = (sb && Array.isArray(sb.courseData)) ? sb.courseData : []; }catch(e){ S.bank = []; }
+    try{ var sb = await bankCached(idx.t); S.bank = (sb && Array.isArray(sb.courseData)) ? sb.courseData : []; }catch(e){ S.bank = []; }
     var needAcct = !!(await fbGet(base + "/accountsOn/" + idx.c));
     if(needAcct && !(opts && opts.google)){ var au = await studentAuth(idx, name, pw); if(au !== true){ viewStudentEntry(au, code); return; } }
     S.student = { name: name, code: code, idx: idx, school: res[0], term: res[1], cls: res[2], acct: needAcct };
     S.live = res[2].live && res[2].live.on ? res[2].live : null;
-    try{ window.onValue(window.ref(window.db, base + "/schools/" + idx.s + "/terms/" + idx.tm + "/classes/" + idx.c + "/live"), function(snap){ var v = snap.val(); var nv = v && v.on ? v : null; var key = JSON.stringify(nv); if(key === S.liveKey) return; S.liveKey = key; S.live = nv; S.liveRendered = null; if(S.student) renderStudent(); try{ brkSync(nv && nv.brk, false); }catch(e3){} try{ drSync(nv && nv.draw); }catch(e4){} try{ stuToolSync(nv && nv.tool); }catch(e5){} try{ if(window.PET) window.PET.refresh(); }catch(e6){} try{ stuTransDraw(); }catch(e2){} }); stuTransStart(base, idx); }catch(e){}
+    try{ window.onValue(window.ref(window.db, base + "/schools/" + idx.s + "/terms/" + idx.tm + "/classes/" + idx.c + "/live"), function(snap){ var v = snap.val();
+      // 老師在生詞卡／課文上的畫記（live/ink）：只轉送給畫面裡的教材頁，不能讓它觸發整個學生畫面重畫
+      var inkv = (v && v.ink) || null; if(v && v.ink){ v = Object.assign({}, v); delete v.ink; } S.liveInk = inkv; try{ stuInkPush(); }catch(eI){}
+      var nv = v && v.on ? v : null; var key = JSON.stringify(nv); if(key === S.liveKey) return; S.liveKey = key; S.live = nv; S.liveRendered = null; if(S.student) renderStudent(); try{ brkSync(nv && nv.brk, false); }catch(e3){} try{ drSync(nv && nv.draw); }catch(e4){} try{ stuToolSync(nv && nv.tool); }catch(e5){} try{ if(window.PET) window.PET.refresh(); }catch(e6){} try{ stuTransDraw(); }catch(e2){} }); stuTransStart(base, idx); }catch(e){}
     S.plat = { lessons: res[3] || {}, books: res[4] || {} };
     S.lesson = null; S.tab = null; S.sub = null;
     var h = new URLSearchParams(location.hash.replace(/^#/, "")); if(h.get("l")) S.lesson = h.get("l"); if(h.get("tab")) S.tab = h.get("tab");
