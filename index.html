@@ -763,6 +763,10 @@ img.vimg{ width:100%; height:100%; object-fit:contain; border-radius:10px; displ
 
   /* 共用：右側直式注音標注（課文、生詞卡、字卡、翻卡等皆共用，依所在文字大小以 em 縮放） */
   .zy-char{ display:inline-flex; align-items:center; }
+  .py-char{ display:inline-flex; flex-direction:column; align-items:center; vertical-align:bottom; margin:0 .04em; }
+  .py-top{ font-size:.5em; line-height:1.2; font-weight:700; letter-spacing:0; white-space:nowrap; color:var(--accent,#C4602A); min-height:1.2em; }
+  .bare-word .py-top{ font-size:.46em; }
+  .dialogue-text .py-top{ font-size:.72em; min-height:1.25em; }
   .zy-col{ display:inline-flex; flex-direction:column; align-items:center; justify-content:center; margin:0 0.62em 0 0.14em; }
   .zy-row{ font-size:0.5em; font-weight:700; color:var(--accent); line-height:1.3; position:relative; white-space:nowrap; }
   .zy-tone{ position:absolute; top:calc(50% + 0.13em); right:-0.66em; transform:translateY(-50%); font-size:1.2em; font-weight:900; line-height:1; }
@@ -1278,6 +1282,7 @@ img.vimg{ width:100%; height:100%; object-fit:contain; border-radius:10px; displ
     <button data-lang="en">中＋英</button>
     <button data-lang="th">中＋泰</button>
     <button data-lang="bare">純中文</button>
+    <button data-lang="pinyin">中文＋拼音</button>
     <button data-lang="zhuyin">中文＋注音</button>
     <button data-lang="zhuyinpy">中文＋注音＋拼音</button>
   </div>
@@ -1291,7 +1296,9 @@ img.vimg{ width:100%; height:100%; object-fit:contain; border-radius:10px; displ
   <div class="lesson-chips" id="textLessonChips"></div>
   <div class="lang-toggle" id="textDisplayToggle">
     <button class="active" data-mode="plain">📖 漢字</button>
+    <button data-mode="pinyin">🔤 漢字＋拼音</button>
     <button data-mode="zhuyin">🔤 漢字＋注音</button>
+    <button data-mode="zhuyinpy">🔤 漢字＋注音＋拼音</button>
   </div>
 </div>
 
@@ -1381,6 +1388,8 @@ img.vimg{ width:100%; height:100%; object-fit:contain; border-radius:10px; displ
     <button data-mode="zh">中文</button>
     <button data-mode="zhuyin">注音</button>
     <button class="active" data-mode="both">中文＋注音</button>
+    <button data-mode="zhpy">中文＋拼音</button>
+    <button data-mode="all">中文＋注音＋拼音</button>
   </div>
   <button class="draw-btn" id="flipGenBtn">🃏 發牌</button>
 </div>
@@ -2308,6 +2317,59 @@ function zhuyinWordHtml(word, zhuyinStr){
   return chars.map((ch,i)=>zhuyinCharHtml(ch, tokens[i])).join('');
 }
 
+// 注音 → 拼音（帶聲調符號）：用老師填的注音逐字轉換，拼音就會和注音一致
+const ZY_PY_INIT = {'ㄅ':'b','ㄆ':'p','ㄇ':'m','ㄈ':'f','ㄉ':'d','ㄊ':'t','ㄋ':'n','ㄌ':'l','ㄍ':'g','ㄎ':'k','ㄏ':'h','ㄐ':'j','ㄑ':'q','ㄒ':'x','ㄓ':'zh','ㄔ':'ch','ㄕ':'sh','ㄖ':'r','ㄗ':'z','ㄘ':'c','ㄙ':'s'};
+const ZY_PY_PLAIN = {'ㄚ':'a','ㄛ':'o','ㄜ':'e','ㄝ':'ê','ㄞ':'ai','ㄟ':'ei','ㄠ':'ao','ㄡ':'ou','ㄢ':'an','ㄣ':'en','ㄤ':'ang','ㄥ':'eng','ㄦ':'er'};
+const ZY_PY_I = {'':['i','yi'],'ㄚ':['ia','ya'],'ㄛ':['io','yo'],'ㄝ':['ie','ye'],'ㄞ':['iai','yai'],'ㄠ':['iao','yao'],'ㄡ':['iu','you'],'ㄢ':['ian','yan'],'ㄣ':['in','yin'],'ㄤ':['iang','yang'],'ㄥ':['ing','ying']};
+const ZY_PY_U = {'':['u','wu'],'ㄚ':['ua','wa'],'ㄛ':['uo','wo'],'ㄞ':['uai','wai'],'ㄟ':['ui','wei'],'ㄢ':['uan','wan'],'ㄣ':['un','wen'],'ㄤ':['uang','wang'],'ㄥ':['ong','weng']};
+const ZY_PY_V = {'':['ü','yu'],'ㄝ':['üe','yue'],'ㄢ':['üan','yuan'],'ㄣ':['ün','yun'],'ㄥ':['iong','yong']};
+function pyAddTone(py, tone){
+  if(!tone) return py;
+  const M = { a:'āáǎà', o:'ōóǒò', e:'ēéěè', i:'īíǐì', u:'ūúǔù', 'ü':'ǖǘǚǜ', 'ê':'ê̄éê̌è' };
+  let at = py.indexOf('a'); if(at < 0) at = py.indexOf('e'); if(at < 0) at = py.indexOf('o');
+  if(at < 0){ const iu = py.indexOf('iu'), ui = py.indexOf('ui'); if(iu >= 0) at = iu + 1; else if(ui >= 0) at = ui + 1; }
+  if(at < 0){ for(let k = py.length - 1; k >= 0; k--){ if('iuü'.includes(py[k])){ at = k; break; } } }
+  if(at < 0) return py;
+  const ch = py[at], set = M[ch]; if(!set) return py;
+  const marked = [...set]; const idx = tone - 1; const out = marked.length === 4 ? marked[idx] : ch;
+  return py.slice(0, at) + out + py.slice(at + 1);
+}
+function zyToPy(zy){
+  let s = String(zy||'').trim(); if(!s) return '';
+  let tone = 1, neutral = false;
+  if(s.startsWith('˙')){ neutral = true; s = s.slice(1); }
+  if(s.endsWith('˙')){ neutral = true; s = s.slice(0, -1); }
+  const last = s[s.length-1];
+  if(last === 'ˊ'){ tone = 2; s = s.slice(0, -1); } else if(last === 'ˇ'){ tone = 3; s = s.slice(0, -1); } else if(last === 'ˋ'){ tone = 4; s = s.slice(0, -1); }
+  let init = '', rest = s;
+  if(ZY_PY_INIT[rest[0]]){ init = rest[0]; rest = rest.slice(1); }
+  let body = null;
+  const hasInit = !!init;
+  if(rest === '' ){ if(!hasInit) return ''; body = ['zh','ch','sh','r','z','c','s'].includes(ZY_PY_INIT[init]) ? 'i' : null; if(body === null) return ''; }
+  else if(rest[0] === 'ㄧ' || rest[0] === 'ㄨ' || rest[0] === 'ㄩ'){
+    const tbl = rest[0] === 'ㄧ' ? ZY_PY_I : rest[0] === 'ㄨ' ? ZY_PY_U : ZY_PY_V, e = tbl[rest.slice(1)];
+    if(!e) return '';
+    body = e[hasInit ? 0 : 1];
+    if(hasInit && body[0] === 'ü' && !'nl'.includes(ZY_PY_INIT[init])) body = 'u' + body.slice(1);
+    if(hasInit && body === 'iong' && false) body = 'iong';
+  } else { body = ZY_PY_PLAIN[rest]; if(!body) return ''; if(!hasInit && body === 'ê' ) body = 'ê'; }
+  const py = (hasInit ? ZY_PY_INIT[init] : '') + body;
+  return pyAddTone(py, neutral ? 0 : tone);
+}
+// 逐字加上拼音（拼音在字的上方）；withZy＝同時顯示注音。zy 是逐字的注音
+function pinyinCharHtml(ch, zy, withZy, erhua){
+  const py = erhua ? 'r' : zyToPy(zy);   // 詞尾的「兒」讀成兒化音：拼音寫 r
+  const inner = withZy ? zhuyinCharHtml(ch, zy) : `<span class="zy-plain">${ch}</span>`;
+  return `<span class="py-char"><span class="py-top">${py || '&nbsp;'}</span>${inner}</span>`;
+}
+function pinyinWordHtml(word, zhuyinStr, withZy){
+  const chars = [...String(word||'')];
+  const tokens = String(zhuyinStr||'').trim().split(/\s+/).filter(Boolean);
+  if(!chars.length) return '';
+  if(chars.length !== tokens.length) return withZy ? zhuyinWordHtml(word, zhuyinStr) : `<span class="zy-plain">${word||''}</span>`;
+  return chars.map((ch,i)=>pinyinCharHtml(ch, tokens[i], withZy, i > 0 && ch === '兒' && tokens[i] === 'ㄦ')).join('');
+}
+
 // HTML 屬性跳脫（生詞來自固定資料表，理論上不會有特殊字元，但還是保守處理一下）
 function escAttr(s){
   return String(s==null ? '' : s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -3081,11 +3143,13 @@ window.addEventListener('message', e=>{
 
 function vocabCardInnerHtml(v){
   const speakBtnHtml = `<button type="button" class="speak-btn" data-word="${escAttr(v['生詞'])}" title="播放發音" aria-label="播放「${escAttr(v['生詞'])}」發音">🔊</button>`;
-  if(state.lang === 'bare' || state.lang === 'zhuyin' || state.lang === 'zhuyinpy'){
+  if(['bare','zhuyin','pinyin','zhuyinpy'].includes(state.lang)){
+    const wordHtml = state.lang === 'zhuyin' ? zhuyinWordHtml(v['生詞'], v['注音'])
+      : state.lang === 'pinyin' ? pinyinWordHtml(v['生詞'], v['注音'], false)
+      : state.lang === 'zhuyinpy' ? pinyinWordHtml(v['生詞'], v['注音'], true) : v['生詞'];
     return `
       <span class="lesson-chip" style="background:${lessonColor(v['課別'])}">第${v['課別']}課</span>
-      <div class="bare-word">${state.lang !== 'bare' ? zhuyinWordHtml(v['生詞'], v['注音']) : v['生詞']}${speakBtnHtml}</div>
-      ${state.lang === 'zhuyinpy' ? `<div class="py" style="text-align:center;margin-top:6px;">${v['拼音']||''}</div>` : ''}
+      <div class="bare-word">${wordHtml}${speakBtnHtml}</div>
     `;
   }
   const showEn = state.lang==='both' || state.lang==='en';
@@ -3405,10 +3469,11 @@ function renderTextView(){
   }
   if(textIndex < 0 || textIndex >= texts.length) textIndex = 0;
   const entry = texts[textIndex];
-  const zyMode = textDisplayMode === 'zhuyin';
+  const zyMode = textDisplayMode !== 'plain';
   const linesHtml = entry.lines.map(l=>{
     const textHtml = (zyMode && l.zy)
-      ? l.zy.map(([ch, zy])=>zhuyinCharHtml(ch, zy)).join('')
+      ? (textDisplayMode === 'zhuyin' ? l.zy.map(([ch, zy])=>zhuyinCharHtml(ch, zy)).join('')
+         : l.zy.map(([ch, zy], zi)=>pinyinCharHtml(ch, zy, textDisplayMode === 'zhuyinpy', zi > 0 && ch === '兒' && zy === 'ㄦ')).join(''))
       : l.text;
     return `
     <div class="dialogue-line${zyMode ? ' with-zy' : ''}">
@@ -4577,6 +4642,8 @@ function renderFlip(){
           <div class="flip-emoji">${vPicHtml(c.word)}</div>
           ${flipDisplayMode==='both'
             ? `<div class="flip-word">${zhuyinWordHtml(c.word['生詞'], c.word['注音'])}</div>`
+            : flipDisplayMode==='zhpy' ? `<div class="flip-word">${pinyinWordHtml(c.word['生詞'], c.word['注音'], false)}</div>`
+            : flipDisplayMode==='all' ? `<div class="flip-word">${pinyinWordHtml(c.word['生詞'], c.word['注音'], true)}</div>`
             : showZh ? `<div class="flip-word">${c.word['生詞']}</div>` : ''}
           ${flipDisplayMode==='zhuyin' ? `<div class="flip-zy only">${c.word['注音']||''}</div>` : ''}
         </div>`;
