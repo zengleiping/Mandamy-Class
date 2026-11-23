@@ -88,7 +88,7 @@ def load_lexicon(path: Path = LEXICON_TXT) -> List[str]:
 
 
 def load_idioms(path: Path = LEXICON_IDIOMS_TXT) -> List[str]:
-    """成語／固定詞組字典（教育部辭典與新華成語，已排除能拆成兩個 TBCL 詞的合成詞）。"""
+    """成語／固定詞組字典（教育部辭典，已排除能拆成兩個 TBCL 詞的合成詞）。"""
     return [w.strip() for w in path.read_text(encoding="utf8").splitlines() if w.strip()] if path.exists() else []
 
 
