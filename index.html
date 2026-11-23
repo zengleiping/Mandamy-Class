@@ -41,6 +41,17 @@ img.vimg{ width:100%; height:100%; object-fit:contain; border-radius:10px; displ
 .vocab-card:hover .vimg-tools, .card:hover .vimg-tools, .vimg-tools:focus-within{ opacity:1; }
 .vimg-tools button{ font:inherit; font-size:12px; font-weight:700; padding:2px 8px; border-radius:99px; border:1.5px solid var(--border, #ddd); background:var(--card, #fff); color:var(--ink); cursor:pointer; }
 .vimg-tools button:hover{ border-color:var(--brand, #E8825A); }
+.vedit-btn{ position:absolute; right:88px; top:14px; z-index:3; width:30px; height:30px; border-radius:50%; border:1.5px solid var(--border,#ddd); background:var(--card,#fff); cursor:pointer; font-size:14px; opacity:0; transition:opacity .15s; padding:0; }
+.card:hover .vedit-btn, .vedit-btn:focus{ opacity:1; }
+.vedit-btn:hover{ border-color:var(--brand,#E8825A); }
+.vedit-back{ position:fixed; inset:0; background:rgba(40,34,30,.5); z-index:99999; display:flex; align-items:center; justify-content:center; padding:12px; }
+.vedit-box{ background:#fff; border-radius:16px; padding:18px 20px; width:min(560px,96vw); max-height:92vh; overflow:auto; box-shadow:0 20px 40px rgba(0,0,0,.3); }
+.vedit-box h3{ margin:0 0 8px; font-size:18px; }
+.vedit-box label{ display:block; font-size:13px; font-weight:700; color:#6B5F55; margin:8px 0 3px; }
+.vedit-box input, .vedit-box textarea{ width:100%; box-sizing:border-box; padding:7px 9px; border:1.5px solid #d8cfc2; border-radius:8px; font:inherit; font-size:15px; }
+.vedit-row{ display:flex; gap:8px; justify-content:flex-end; margin-top:12px; flex-wrap:wrap; }
+.vedit-row button{ font:inherit; font-weight:700; padding:7px 16px; border-radius:10px; border:1.5px solid #d8cfc2; background:#fff; cursor:pointer; }
+.vedit-row .primary{ background:#E8825A; color:#fff; border-color:#E8825A; }
 @media (hover:none){ .vimg-tools{ opacity:1; } }
 /* 給學生看的英文說明 */
 .en{ font-size:.82em; font-weight:600; opacity:.8; }
@@ -3105,6 +3116,51 @@ function vPicHtml(v){
 }
 // 在平台裡打開的老師畫面（不是學生）：生詞卡上可以上傳／更換／移除圖片
 const VPIC_TEACHER = (function(){ try{ const q = new URLSearchParams(location.search); return !!q.get('embed') && q.get('role') !== 'student' && window.parent !== window && !q.get('activity'); }catch(e){ return false; } })();
+// 老師在生詞卡上直接修正生詞內容（只有老師帳號、嵌在平台裡才看得到；學生看不到、平台也會再檢查一次身分）
+function vEditBtn(v){
+  if(!VPIC_TEACHER) return '';
+  return `<button type="button" class="vedit-btn" data-vw="${escAttr(v['生詞'])}" data-vl="${escAttr(v['課別'])}" title="修改這個生詞（存回教材）">✏️</button>`;
+}
+const VEDIT_FIELDS = [['生詞','生詞'],['注音','注音（字與字之間空格）'],['拼音','拼音'],['詞性','詞性'],['英文翻譯','英文翻譯'],['泰文翻譯','泰文翻譯'],['例句（中文）','例句（中文）'],['例句（英文）','例句（英文）'],['例句（泰文）','例句（泰文）']];
+let vEditPending = null;
+function openVocabEdit(word, lesson){
+  const v = VOCAB.find(x => x['生詞'] === word && String(x['課別']) === String(lesson)); if(!v) return;
+  const back = document.createElement('div'); back.className = 'vedit-back';
+  back.innerHTML = `<div class="vedit-box"><h3>✏️ 修改生詞（第${escAttr(lesson)}課）</h3><div class="note" style="font-size:13px;color:#6B5F55;">改完會存回教材，所有班級、學生都會看到修正後的內容。</div>` +
+    VEDIT_FIELDS.map(([k, lab])=>{ const long = k.startsWith('例句'); return `<label>${lab}</label>` + (long ? `<textarea data-k="${k}" rows="2">${escAttr(v[k]||'')}</textarea>` : `<input data-k="${k}" type="text" value="${escAttr(v[k]||'')}">`); }).join('') +
+    `<div class="vedit-row"><button type="button" data-a="py" title="依上面的注音重新產生拼音">↻ 依注音產生拼音</button><button type="button" data-a="cancel">取消</button><button type="button" class="primary" data-a="save">儲存</button></div></div>`;
+  document.body.appendChild(back);
+  const val = k => back.querySelector(`[data-k="${k}"]`).value.trim();
+  back.addEventListener('mousedown', e=>{ if(e.target === back) back.remove(); });
+  back.addEventListener('click', e=>{
+    const b = e.target.closest('[data-a]'); if(!b) return; const a = b.dataset.a;
+    if(a === 'cancel'){ back.remove(); return; }
+    if(a === 'py'){ const py = String(val('注音')).split(/\s+/).filter(Boolean).map(zyToPy).join(''); if(py) back.querySelector('[data-k="拼音"]').value = py; return; }
+    if(a === 'save'){
+      const patch = {}; VEDIT_FIELDS.forEach(([k])=>{ const nv = val(k); if(nv !== String(v[k]||'')) patch[k] = nv; });
+      if(!val('生詞')){ alert('生詞不能空白'); return; }
+      if(!Object.keys(patch).length){ back.remove(); return; }
+      const prev = {}; Object.keys(patch).forEach(k => { prev[k] = v[k]; });
+      Object.assign(v, patch);
+      vEditPending = { word: patch['生詞'] || word, oldWord: word, lesson, prev };
+      window.parent.postMessage({ mm: 'vocabEdit', oldWord: word, lesson, book: new URLSearchParams(location.search).get('book') || '', patch }, '*');
+      back.remove(); try{ render(); }catch(err){}
+    }
+  });
+}
+document.addEventListener('click', e=>{
+  const b = e.target.closest && e.target.closest('.vedit-btn'); if(!b) return;
+  e.stopPropagation(); e.preventDefault(); openVocabEdit(b.dataset.vw, b.dataset.vl);
+}, true);
+window.addEventListener('message', e=>{
+  const d = e.data; if(!d || (d.mm !== 'vocabEditSaved' && d.mm !== 'vocabEditFail')) return;
+  if(d.mm === 'vocabEditFail' && vEditPending){
+    const pe = vEditPending, v = VOCAB.find(x => x['生詞'] === pe.word && String(x['課別']) === String(pe.lesson));
+    if(v){ Object.keys(pe.prev).forEach(k => { if(pe.prev[k] === undefined) delete v[k]; else v[k] = pe.prev[k]; }); try{ render(); }catch(err){} }
+    alert('沒有存成功：' + (d.msg || '請檢查網路後再試'));
+  }
+  vEditPending = null;
+});
 function vPicTools(v){
   if(!VPIC_TEACHER) return '';
   const has = !!String(v['圖片'] || '').trim();
@@ -3148,7 +3204,7 @@ function vocabCardInnerHtml(v){
       : state.lang === 'pinyin' ? pinyinWordHtml(v['生詞'], v['注音'], false)
       : state.lang === 'zhuyinpy' ? pinyinWordHtml(v['生詞'], v['注音'], true) : v['生詞'];
     return `
-      <span class="lesson-chip" style="background:${lessonColor(v['課別'])}">第${v['課別']}課</span>
+      ${vEditBtn(v)}<span class="lesson-chip" style="background:${lessonColor(v['課別'])}">第${v['課別']}課</span>
       <div class="bare-word">${wordHtml}${speakBtnHtml}</div>
     `;
   }
@@ -3157,7 +3213,7 @@ function vocabCardInnerHtml(v){
   const suggestions = (v['建議補充生詞']||'').split('；').filter(Boolean).slice(0,4)
       .map(s=>s.split('(')[0]).join('、');
   return `
-    <span class="lesson-chip" style="background:${lessonColor(v['課別'])}">第${v['課別']}課</span>
+    ${vEditBtn(v)}<span class="lesson-chip" style="background:${lessonColor(v['課別'])}">第${v['課別']}課</span>
     <div class="card-top">
       <div class="emoji">${vPicHtml(v)}${vPicTools(v)}</div>
       <div>

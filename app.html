@@ -1000,6 +1000,34 @@ async function saveVocabPic(spots, word, url){
   return true;
 }
 async function uploadVocabPic(file){ return (await uploadFile("teacherMedia/" + S.teacher.id + "/vocab-img-" + Date.now() + "-" + Math.random().toString(36).slice(2, 6), file)).url; }
+// ---------- 生詞卡上直接修正生詞：老師帳號才能存（助教與學生不行），存回教材的生詞庫 ----------
+async function saveVocabFields(spot, oldWord, patch){
+  var t = S.teacher.id, bank = await fbGet("teacherVocabBanks/" + t), cd = arrOf(bank && bank.courseData), hit = 0;
+  var okKeys = ["生詞", "注音", "拼音", "詞性", "英文翻譯", "泰文翻譯", "例句（中文）", "例句（英文）", "例句（泰文）"];
+  function apply(list){
+    list.forEach(function(L){
+      if(!L || (L.book || DEFAULT_BOOK) !== spot.book || (spot.no && Number(L.lesson) !== spot.no)) return;
+      var vs = arrOf(L.vocab), ch = false;
+      vs.forEach(function(v){ if(v && String(v["生詞"] || "").trim() === oldWord){ okKeys.forEach(function(k){ if(patch[k] !== undefined) v[k] = String(patch[k]); }); ch = true; } });
+      if(ch){ L.vocab = vs; hit++; }
+    });
+  }
+  apply(cd); if(!hit) return false;
+  await fbUpdate("teacherVocabBanks/" + t, { courseData: cd, updatedAt: Date.now(), updatedBy: S.teacher.name || t });
+  apply(S.bank || []); embedBankSet(spot.book);
+  return true;
+}
+window.addEventListener("message", async function(e){
+  var d = e.data; if(!d || d.mm !== "vocabEdit" || !S.teacher) return;
+  var fr = document.getElementById("fr"); if(!fr || e.source !== fr.contentWindow) return;
+  function reply(ok, msg){ try{ fr.contentWindow.postMessage({ mm: ok ? "vocabEditSaved" : "vocabEditFail", msg: msg || "" }, "*"); }catch(er){} }
+  if(S.teacher.role === "ta"){ reply(false, "助教不能修改教材"); return; }
+  try{
+    var ok = await saveVocabFields({ book: d.book || DEFAULT_BOOK, no: Number(d.lesson) || 0 }, String(d.oldWord || "").trim(), d.patch || {});
+    reply(ok, ok ? "" : "教材裡找不到這個生詞");
+    if(ok) toast("已修正，存回教材");
+  }catch(er){ reply(false, (er && er.message) || "存檔失敗"); }
+});
 window.addEventListener("message", async function(e){
   var d = e.data; if(!d || d.mm !== "vocabImg" || !S.teacher) return;
   var fr = document.getElementById("fr"); if(!fr || e.source !== fr.contentWindow) return;
