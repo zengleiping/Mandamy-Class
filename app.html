@@ -7151,18 +7151,21 @@ async function classPartialUpdate(pid){
   }catch(e){ d.close(); toast("讀取失敗，請檢查網路"); return; }
   if(!master || !roomProj){ d.close(); toast("找不到通用教材或這個班的存檔"); return; }
   var M = cpFlat(master), R = cpFlat(roomProj), inRoom = {}; R.forEach(function(x){ inRoom[x.qid] = x; });
-  var mp = master.progress || {}, picked = {};
-  var rows = M.map(function(x){
-    var rp = roomProg[x.qid], mids = cpIds(mp[x.qid]), isNew = !inRoom[x.qid];
-    var notes = !!(rp && (arrOf(rp.strokes).length || Object.keys(cpIds(rp)).some(function(id){ return !mids[id]; })));
-    return { x: x, isNew: isNew, notes: notes };
+  var mp = master.progress || {}, picked = {}, Mset = {}, usedRoom = {};
+  M.forEach(function(m){ Mset[m.qid] = 1; });
+  // 對應班級存檔的哪一頁：編號相同的對編號；編號對不上的（例如通用版重新匯入過、頁面編號整批換了）就照頁序對應（第 N 頁對第 N 頁）
+  var rows = M.map(function(x){ var t = inRoom[x.qid] || null; if(t) usedRoom[t.qid] = 1; return { x: x, tgt: t, byPos: false }; });
+  rows.forEach(function(r, idx){ if(r.tgt) return; var c = R[idx]; if(c && !Mset[c.qid] && !usedRoom[c.qid]){ r.tgt = c; r.byPos = true; usedRoom[c.qid] = 1; } });
+  rows.forEach(function(r){
+    var rp = r.tgt ? roomProg[r.tgt.qid] : null, mids = cpIds(mp[r.x.qid]);
+    r.isNew = !r.tgt; r.notes = !!(rp && (arrOf(rp.strokes).length || Object.keys(cpIds(rp)).some(function(id){ return !mids[id]; })));
   });
-  var gone = R.filter(function(x){ return !M.some(function(m){ return m.qid === x.qid; }); });
+  var gone = R.filter(function(x){ return !usedRoom[x.qid] && !Mset[x.qid]; });
   function draw(){
     d.innerHTML = '<form method="dialog" onsubmit="return false;" class="rec-form"><h3>↻ 只更新部分頁面</h3><p class="note" style="margin:0 0 6px;">勾選的頁面會換成通用教材最新的內容（<b>那幾頁班級的筆記也會被蓋掉</b>）；沒勾的頁面維持這個班原本的內容與筆記。</p>' +
       '<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:6px;"><button type="button" class="btn sm" data-p="all">全選</button><button type="button" class="btn sm" data-p="none">全不選</button><button type="button" class="btn sm" data-p="new">只選班級存檔沒有的新頁</button><span class="note">從第</span><input type="number" id="cp-from" min="1" max="' + M.length + '" style="width:64px;"><span class="note">頁到最後</span><button type="button" class="btn sm" data-p="from">選取</button></div>' +
       '<div style="max-height:46vh;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:4px 8px;">' + rows.map(function(r){
-        return '<label style="display:flex;gap:8px;align-items:center;padding:3px 0;font-weight:400;"><input type="checkbox" data-q="' + esc(r.x.qid) + '"' + (picked[r.x.qid] ? " checked" : "") + '><span style="min-width:46px;color:var(--ink-soft);">第 ' + r.x.n + ' 頁</span><span style="flex:1;">' + esc((r.x.q.title || "").slice(0, 40)) + '</span>' + (r.isNew ? '<span class="chip" style="background:#DFF0D8;">新頁</span>' : '') + (r.notes ? '<span class="chip" style="background:#FBEBC8;">有班級筆記</span>' : '') + '</label>';
+        return '<label style="display:flex;gap:8px;align-items:center;padding:3px 0;font-weight:400;"><input type="checkbox" data-q="' + esc(r.x.qid) + '"' + (picked[r.x.qid] ? " checked" : "") + '><span style="min-width:46px;color:var(--ink-soft);">第 ' + r.x.n + ' 頁</span><span style="flex:1;">' + esc((r.x.q.title || "").slice(0, 40)) + '</span>' + (r.isNew ? '<span class="chip" style="background:#DFF0D8;">新頁</span>' : '') + (r.byPos ? '<span class="chip" style="background:#E3ECF7;" title="這一頁的編號和通用版不同，照頁序對應到班級存檔的第 ' + (R.indexOf(r.tgt) + 1) + ' 頁">依頁序對應</span>' : '') + (r.notes ? '<span class="chip" style="background:#FBEBC8;">有班級筆記</span>' : '') + '</label>';
       }).join("") + '</div>' +
       (gone.length ? '<label style="display:flex;gap:6px;align-items:center;margin-top:6px;font-weight:400;"><input type="checkbox" id="cp-rm"> 同時刪除通用教材已經沒有的 ' + gone.length + ' 頁（班級存檔裡還留著）</label>' : '') +
       '<div class="note" id="cp-sum" style="margin-top:6px;"></div>' +
@@ -7194,28 +7197,32 @@ async function classPartialUpdate(pid){
       var noteN = sel.filter(function(r){ return r.notes; }).length;
       if(!confirm("更新 " + sel.length + " 頁" + (rm ? "，並刪除 " + gone.length + " 頁" : "") + "？" + (noteN ? "\n其中 " + noteN + " 頁有班級筆記，會被通用教材的內容蓋掉（可以用「復原上次部分更新」還原一次）。" : ""))) return;
       var up = {}, bk = { at: Date.now(), items: {}, newIds: [], newSec: {} }, touched = {};
+      var seedKeys = ["texts", "images", "shapes", "tables", "groups", "medias", "mediaData", "gridType", "canvasRatio", "bgColor", "bgOp", "bgImage"];
+      function seedOf(pr){ var o = {}; seedKeys.forEach(function(k){ if(pr && pr[k] !== undefined && pr[k] !== null && !(Array.isArray(pr[k]) && !pr[k].length)) o[k] = pr[k]; }); return Object.keys(o).length ? JSON.parse(JSON.stringify(o)) : null; }   // 和開存檔時帶進來的內容一樣：不含老師上課的筆跡
       sel.forEach(function(r){
-        var x = r.x, old = inRoom[x.qid];
-        if(old){ bk.items[x.qid] = { sid: old.sid, q: old.q, p: roomProg[x.qid] || null }; } else { bk.newIds.push(x.qid); bk.newSec[x.qid] = x.sid; }
-        touched[x.sid] = true; if(old && old.sid !== x.sid) touched[old.sid] = true;
+        var T = r.tgt ? r.tgt.qid : r.x.qid, sid = r.tgt ? r.tgt.sid : r.x.sid;
+        if(r.tgt){ bk.items[T] = { sid: r.tgt.sid, q: r.tgt.q, p: roomProg[T] || null }; } else { bk.newIds.push(T); bk.newSec[T] = sid; }
+        r.T = T; r.sid = sid; touched[sid] = true;
       });
       if(rm) gone.forEach(function(g){ bk.items[g.qid] = { sid: g.sid, q: g.q, p: roomProg[g.qid] || null }; touched[g.sid] = true; });
-      // 排序：通用教材有的頁照通用教材的順序；班級存檔自己多出來的頁排在最後
-      var secOf = {}; Object.keys(touched).forEach(function(sid){
-        var ids = M.filter(function(m){ return m.sid === sid && (inRoom[m.qid] || picked[m.qid]); }).map(function(m){ return m.qid; });
-        R.filter(function(r2){ return r2.sid === sid && !M.some(function(m){ return m.qid === r2.qid; }) && !(rm && true); }).forEach(function(r2){ ids.push(r2.qid); });
+      // 排序：照通用教材的頁序；班級存檔自己多出來的頁排在最後
+      var secOf = {};
+      Object.keys(touched).forEach(function(sid){
+        var ids = [];
+        rows.forEach(function(r){ var sid2 = r.tgt ? r.tgt.sid : r.x.sid; if(sid2 !== sid) return; if(r.tgt) ids.push(r.tgt.qid); else if(picked[r.x.qid]) ids.push(r.x.qid); });
+        gone.forEach(function(g){ if(g.sid === sid && !rm) ids.push(g.qid); });
         secOf[sid] = ids;
       });
+      var byT = {}; rows.forEach(function(r){ if(picked[r.x.qid]) byT[r.tgt ? r.tgt.qid : r.x.qid] = r; });
       Object.keys(secOf).forEach(function(sid){
         var newSecObj = null;
         if(!roomProj.sections || !roomProj.sections[sid]){ newSecObj = Object.assign({}, master.sections[sid]); newSecObj.questions = {}; up["project/sections/" + sid] = newSecObj; }   // 班級存檔沒有這個大題：整個大題一起放進去（不能和底下的子路徑同時寫）
         secOf[sid].forEach(function(qid, i){
-          var mq = (master.sections[sid] && master.sections[sid].questions && master.sections[sid].questions[qid]);
-          if(picked[qid] && mq){
-            var nq = Object.assign({}, mq, { order: i });
+          var r = byT[qid];
+          if(r){
+            var nq = Object.assign({}, r.x.q, { id: qid, order: i });
             if(newSecObj) newSecObj.questions[qid] = nq; else up["project/sections/" + sid + "/questions/" + qid] = nq;
-            up["sharedProgress/" + qid] = mp[qid] || null;
-            var oldq = inRoom[qid]; if(oldq && oldq.sid !== sid) up["project/sections/" + oldq.sid + "/questions/" + qid] = null;   // 通用教材把這一頁搬到別的大題
+            up["sharedProgress/" + qid] = seedOf(mp[r.x.qid]);
           } else if(!newSecObj) up["project/sections/" + sid + "/questions/" + qid + "/order"] = i;
         });
       });
