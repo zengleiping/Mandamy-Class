@@ -7146,9 +7146,11 @@ async function classPartialUpdate(pid){
   d.style.width = "min(680px,96vw)"; d.innerHTML = '<div class="rec-form"><p class="note">讀取中…</p></div>'; d.showModal();
   var t = S.teacher.id, master, roomProj, roomProg, backup;
   try{
-    master = await fbGet("teacherLibraries/" + t + "/projects/" + pid); roomProj = await fbGet("rooms/" + rid + "/project"); roomProg = (await fbGet("rooms/" + rid + "/sharedProgress")) || {};
+    master = await fbGet("teacherLibraries/" + t + "/projects/" + pid); roomProj = await fbGet("rooms/" + rid + "/project"); roomProg = {};
     backup = await fbGet("teacherPlatform/" + t + "/classPartialBackup/" + cid + "/" + pid);
-  }catch(e){ d.close(); toast("讀取失敗，請檢查網路"); return; }
+    // 不一次讀整個存檔的進度（可能很大）：只逐頁讀筆跡，用來標示哪些頁有班級筆記
+    await Promise.all(cpFlat(roomProj).map(function(x){ return fbGet("rooms/" + rid + "/sharedProgress/" + x.qid + "/strokes").then(function(v){ if(v) roomProg[x.qid] = { strokes: v }; }).catch(function(){}); }));
+  }catch(e){ console.error("classPartialUpdate read", e); d.close(); alert("讀取失敗：" + (e && (e.code || e.message) || e) + "\n\n請檢查網路；如果 Firebase 用量已超過上限，也會讀不到。"); return; }
   if(!master || !roomProj){ d.close(); toast("找不到通用教材或這個班的存檔"); return; }
   var M = cpFlat(master), R = cpFlat(roomProj), inRoom = {}; R.forEach(function(x){ inRoom[x.qid] = x; });
   var mp = master.progress || {}, picked = {}, Mset = {}, usedRoom = {};
@@ -7158,7 +7160,7 @@ async function classPartialUpdate(pid){
   rows.forEach(function(r, idx){ if(r.tgt) return; var c = R[idx]; if(c && !Mset[c.qid] && !usedRoom[c.qid]){ r.tgt = c; r.byPos = true; usedRoom[c.qid] = 1; } });
   rows.forEach(function(r){
     var rp = r.tgt ? roomProg[r.tgt.qid] : null, mids = cpIds(mp[r.x.qid]);
-    r.isNew = !r.tgt; r.notes = !!(rp && (arrOf(rp.strokes).length || Object.keys(cpIds(rp)).some(function(id){ return !mids[id]; })));
+    r.isNew = !r.tgt; r.notes = !!(rp && arrOf(rp.strokes).length);
   });
   var gone = R.filter(function(x){ return !usedRoom[x.qid] && !Mset[x.qid]; });
   function draw(){
@@ -7228,7 +7230,14 @@ async function classPartialUpdate(pid){
       });
       if(rm) gone.forEach(function(g){ up["project/sections/" + g.sid + "/questions/" + g.qid] = null; up["sharedProgress/" + g.qid] = null; });
       b.disabled = true; b.textContent = "更新中…";
-      try{ await fbSet("teacherPlatform/" + t + "/classPartialBackup/" + cid + "/" + pid, bk); await fbUpdate("rooms/" + rid, up); }catch(er){ console.error(er); alert("更新失敗，請檢查網路後再試。"); b.disabled = false; b.textContent = "更新勾選的頁面"; return; }
+      var step = "備份";
+      try{
+        // 備份被蓋掉的頁面（逐頁讀完整進度）；備份失敗不擋更新，但會提醒
+        var bkOk = true;
+        try{ var ks = Object.keys(bk.items); await Promise.all(ks.map(function(qid){ return fbGet("rooms/" + rid + "/sharedProgress/" + qid).then(function(v){ bk.items[qid].p = v || null; }); })); await fbSet("teacherPlatform/" + t + "/classPartialBackup/" + cid + "/" + pid, bk); }catch(eb){ console.warn("backup", eb); bkOk = false; }
+        if(!bkOk && !confirm("無法建立備份（更新後就不能用「復原」）。\n仍要繼續更新嗎？")){ b.disabled = false; b.textContent = "更新勾選的頁面"; return; }
+        step = "寫入存檔"; await fbUpdate("rooms/" + rid, up);
+      }catch(er){ console.error("classPartialUpdate", step, er, up); alert("更新失敗（" + step + "）：" + (er && (er.code || er.message) || er) + "\n\n請把這段文字拍給我。"); b.disabled = false; b.textContent = "更新勾選的頁面"; return; }
       d.close(); toast("已更新 " + sel.length + " 頁"); renderLesson(getCls(S.sel)); return;
     }
   };
