@@ -15929,7 +15929,7 @@ window.mmTA = (function(){
           window.addEventListener("pointerup", lpClear, true); window.addEventListener("pointercancel", lpClear, true);
         }
       }
-      if(boardState.tool === "pan" || autoPanEligible(p) || isPalmTouch(e)){
+      if(boardState.tool === "pan" || (e.pointerType !== "pen" && autoPanEligible(p)) || isPalmTouch(e)){   // 觸控筆一律是寫字：放大之後也不能被當成平移（只有手指／滑鼠點空白處才平移）
         // 移動畫面：拖曳位移直接是螢幕像素（見 applyCanvasZoomPan 的說明），跟目前縮放比例無關，
         // 拖起來的手感才會跟滑鼠移動的距離一致，不會縮放愈大拖愈遲鈍或愈敏感。
         isPanning = true;
