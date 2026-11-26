@@ -4733,7 +4733,12 @@ window.mmTA = (function(){
   function rtdbMedia(r){
     var rid = r.url.slice(5), k = rid + "/" + r.key;
     if(rtdbMediaMem[k]) return rtdbMediaMem[k];
-    return (rtdbMediaMem[k] = get(ref(db, "roomStudentSnapshots/" + rid + "/__media/" + r.key)).then(function(sn){ var v = sn.val(); if(!v) delete rtdbMediaMem[k]; return v || null; }).catch(function(){ delete rtdbMediaMem[k]; return null; }));
+    return (rtdbMediaMem[k] = get(ref(db, "roomStudentSnapshots/" + rid + "/__media/" + r.key)).then(function(sn){
+      var v = sn.val(); if(!v) delete rtdbMediaMem[k];
+      // 學生端：下載過的圖片存在這台裝置（IndexedDB），之後再進同一份簡報（不管哪個房間）不用重新下載，省資料庫流量
+      if(v && isStudent && typeof v === "string" && v.indexOf("data:") === 0 && MO && MO.ok){ try{ fetch(v).then(function(rs){ return rs.blob(); }).then(function(bl){ return MO.putMediaWithKey(r.key, bl, ""); }).catch(function(){}); }catch(e){} }
+      return v || null;
+    }).catch(function(){ delete rtdbMediaMem[k]; return null; }));
   }
   function resolveMediaSrc(val, name){
     var ref0 = parseMediaRef(val);
@@ -4872,7 +4877,9 @@ window.mmTA = (function(){
       var cx = cv.getContext("2d"); cx.drawImage(im, 0, 0, cv.width, cv.height); URL.revokeObjectURL(url);
       var opaque = true;
       if(blob.type !== "image/jpeg"){ var d = cx.getImageData(0, 0, cv.width, cv.height).data; for(var i = 3; i < d.length; i += 40){ if(d[i] < 250){ opaque = false; break; } } }
-      var out = await new Promise(function(res){ if(opaque) cv.toBlob(res, "image/jpeg", opt.q || 0.86); else cv.toBlob(res, "image/png"); });
+      var out = null;
+      if(opaque && opt.webp){ out = await new Promise(function(res){ cv.toBlob(res, "image/webp", opt.q || 0.8); }); if(out && out.type !== "image/webp") out = null; }   // WebP 比 JPEG 再小約三成；不支援的瀏覽器退回 JPEG
+      if(!out) out = await new Promise(function(res){ if(opaque) cv.toBlob(res, "image/jpeg", opt.q || 0.86); else cv.toBlob(res, "image/png"); });
       return (out && out.size < blob.size) ? out : blob;
     }catch(e){ return blob; }
   }
@@ -4962,7 +4969,7 @@ window.mmTA = (function(){
         }catch(e){ noteMediaErr(e); }
       }
       if(!out && kind === "img"){
-        var sm = await shrinkImageBlob(rec.blob, { edge: 900, q: 0.72, always: true }), du = await blobToDataUrl(sm);
+        var sm = await shrinkImageBlob(rec.blob, { edge: 900, q: 0.7, always: true, webp: true }), du = await blobToDataUrl(sm);
         if(du.length <= 450000 && du.length <= mediaInlineBudget && activeRoomId){
           try{ await set(ref(db, "roomStudentSnapshots/" + activeRoomId + "/__media/" + r.key), du); mediaInlineBudget -= du.length; out = "mm:" + r.key + "@rtdb:" + activeRoomId; }catch(e){ noteMediaErr(e); }
         }
@@ -4974,6 +4981,8 @@ window.mmTA = (function(){
   // 以前塞進房間資料裡的大張圖片（資料網址）：搬到資料庫的獨立位置，房間資料只留短參照（學生用到才讀）
   function isHeavyInline(v){ return typeof v === "string" && v.indexOf("data:image") === 0 && v.length > 20000; }
   async function lazifyInline(du){
+    // 放進資料庫之前先縮小：學生每看一張就要下載一次，圖越小越省流量
+    try{ if(du.length > 120000){ var b0 = await (await fetch(du)).blob(), b1 = await shrinkImageBlob(b0, { edge: 900, q: 0.7, always: true, webp: true }); if(b1 && b1.size < b0.size){ var d1 = await blobToDataUrl(b1); if(d1 && d1.length < du.length) du = d1; } } }catch(eZ){}
     var h = 5381; for(var i = 0; i < du.length; i += 97){ h = ((h * 33) ^ du.charCodeAt(i)) >>> 0; } var key = "inl" + h.toString(36) + du.length.toString(36);
     await set(ref(db, "roomStudentSnapshots/" + activeRoomId + "/__media/" + key), du);
     return "mm:" + key + "@rtdb:" + activeRoomId;
