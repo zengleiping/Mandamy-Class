@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
+<script src="../firebase-config.js"></script>
+<script>window.FIREBASE_CONFIG = window.FIREBASE_CONFIG || { apiKey: "offline", authDomain: "offline.invalid", databaseURL: "https://offline-default-rtdb.firebaseio.com/", projectId: "offline", appId: "offline" };   /* 離線教課：頁面從快取打開、抓不到設定檔時的備用值（不會連到任何專案） */</script>
+
 
 <meta charset="UTF-8">
 <script>
@@ -3127,15 +3130,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
 </script>
 
 <script>
-  window.FIREBASE_CONFIG = {
-    apiKey: "AIzaSyC6DjPDuRCdSKuZYKKiCSlbWI_eLVM05oc",
-    authDomain: "chinese-onlineboard.firebaseapp.com",
-    databaseURL: "https://chinese-onlineboard-default-rtdb.asia-southeast1.firebasedatabase.app/",
-    projectId: "chinese-onlineboard",
-    storageBucket: "chinese-onlineboard.firebasestorage.app",
-    messagingSenderId: "635462964030",
-    appId: "1:635462964030:web:4059918956a649bf6a926f"
-  };
+  /* Firebase 專案設定在 ../firebase-config.js */
 </script>
 <script>
 // 平台裡的簡報頁（嵌入）如果程式出錯，在畫面上方顯示一條紅色提示（不然只會一片空白，看不出哪裡壞了）
