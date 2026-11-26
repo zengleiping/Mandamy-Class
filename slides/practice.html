@@ -1316,7 +1316,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   /* 便利貼（老師講題用） */
   .mm-note{ position:fixed; display:flex; flex-direction:column; min-width:200px; min-height:120px; max-width:96vw; border-radius:10px; box-shadow:0 8px 24px rgba(0,0,0,.28); border:1.5px solid rgba(0,0,0,.18); resize:both; overflow:hidden; font-family:Iansui,"MM Latin",serif; color:#2A333C; }
   .mm-note.folded{ resize:none; height:auto !important; min-height:0; }
-  .mm-note.folded .mmn-tools, .mm-note.folded .mmn-body{ display:none; }
+  .mm-note.folded .mmn-tools, .mm-note.folded .mmn-pen, .mm-note.folded .mmn-main{ display:none; }
   .mmn-head{ display:flex; align-items:center; gap:6px; padding:4px 8px; background:rgba(0,0,0,.09); cursor:move; touch-action:none; user-select:none; font-size:13.5px; font-weight:700; flex:none; }
   .mmn-tt{ flex:1; white-space:nowrap; }
   .mmn-bgs{ display:inline-flex; gap:4px; } .mmn-bgs i, .mmn-tools i{ display:inline-block; width:16px; height:16px; border-radius:50%; border:1.5px solid rgba(0,0,0,.35); cursor:pointer; flex:none; }
@@ -1331,6 +1331,17 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .mmn-edit{ display:none; }
   .mm-note.editing .mmn-view{ display:none; } .mm-note.editing .mmn-edit{ display:block; }
   .mmn-ph0{ opacity:.5; }
+  /* 老師：題目、閱讀文本都可以選取複製（貼到便利貼）；學生端維持不能複製。畫布和按鈕不受影響 */
+  html.mm-teacher .mc-ink-wrap, html.mm-teacher .stage-head, html.mm-teacher .teacher-note-block{ -webkit-user-select:text; user-select:text; }
+  html.mm-teacher .mc-ink-wrap .board-area, html.mm-teacher .mc-ink-wrap button, html.mm-teacher .mc-ink-wrap .tool-btn-v{ -webkit-user-select:none; user-select:none; }
+  .mmn-main{ position:relative; flex:1; min-height:0; display:flex; flex-direction:column; } .mmn-main .mmn-body{ flex:1; }
+  .mmn-ink{ position:absolute; left:0; top:0; pointer-events:none; }
+  .mm-note.pen .mmn-ink{ pointer-events:auto; cursor:crosshair; touch-action:none; }
+  .mmn-pen{ display:none; align-items:center; gap:5px; flex-wrap:wrap; padding:4px 8px; background:rgba(255,255,255,.55); flex:none; }
+  .mm-note.pen .mmn-pen{ display:flex; } .mm-note.pen .mmn-tools{ display:none !important; }
+  .mmn-pen button{ font-size:13px; font-weight:700; padding:2px 7px; border-radius:7px; border:1.5px solid rgba(28,33,30,.25); background:rgba(255,255,255,.85); cursor:pointer; color:inherit; }
+  .mmn-pen button.on, .mmn-head button.on{ background:var(--seal); color:#fff; border-color:var(--seal); }
+  .mmn-pen i{ display:inline-block; width:16px; height:16px; border-radius:50%; border:1.5px solid rgba(0,0,0,.35); cursor:pointer; flex:none; } .mmn-pen i.sel{ outline:2.5px solid #2A333C; outline-offset:1px; }
   .mmn-ov{ background:rgba(123,31,162,.14); border-radius:3px; }
   .mmn-view ruby[data-ph-idx], .mmn-view .zy-r[data-ph-idx]{ cursor:pointer; }
   .mm-note.ro{ resize:none; }
@@ -4486,6 +4497,7 @@ window.mmTA = (function(){
   // 班級存檔（平台上課用）：每個班 × 每份簡報／測驗有自己獨立的一份（房間），筆記存在裡面；通用教材只能在「教材」區編輯，這裡只能加筆記
   window.__classCopy = !!(params.get("classcopy") && params.get("embed") && urlRole !== "student");
   var isStudent = (urlRole === "student");
+  if(!isStudent) document.documentElement.classList.add("mm-teacher");
   // 線上考卷（個別作答）：每位學生一個獨立房間，只有他自己作答；交卷後把分數記到老師的考卷名單
   window.__attempt = params.get("attempt") === "1" ? { tid: params.get("tid"), cid: params.get("cid"), item: params.get("item"), name: urlName || "", limitMin: Number(params.get("limit")) || 0, startedAt: Number(params.get("started")) || 0 } : null;
   if(window.__attempt) document.documentElement.classList.add("attempt");
@@ -11204,6 +11216,15 @@ window.mmTA = (function(){
   // ===== 便利貼（老師講題用）=====
   // 講題時可以在螢幕上任何地方貼便利貼，把題目的文字複製進來、加注音／拼音、換顏色、加粗；
   // 便利貼屬於「建立它的那一題」：換到下一題就收起來，回到那一題又出現。只存在老師自己這台裝置（localStorage），不上傳、學生看不到。
+  function mmDrawInk(cv, ink){
+    var host = cv.parentNode, w = host.clientWidth, h = host.clientHeight, dpr = window.devicePixelRatio || 1; if(!w || !h) return;
+    cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); cv.style.width = w + "px"; cv.style.height = h + "px";
+    var x = cv.getContext("2d"); x.setTransform(dpr, 0, 0, dpr, 0, 0); x.clearRect(0, 0, w, h); x.lineCap = "round"; x.lineJoin = "round";
+    (ink || []).forEach(function(st){
+      var pt = st.p; if(!pt || !pt.length) return; x.strokeStyle = st.c || "#B23B32"; x.lineWidth = st.w || 3; x.beginPath(); x.moveTo(pt[0][0] * w, pt[0][1] * h);
+      if(pt.length === 1) x.lineTo(pt[0][0] * w + 0.1, pt[0][1] * h); for(var i = 1; i < pt.length; i++) x.lineTo(pt[i][0] * w, pt[i][1] * h); x.stroke();
+    });
+  }
   window.__mmNotes = (function(){
     var shown = null, list = [], els = {}, saveT = 0, launcher = null, FC = ["#B23B32", "#E8825A", "#1E88E5", "#2E7D32", "#7B1FA2", "#2A333C"], BG = ["#FFF3B0", "#FFD6E0", "#CDEBFF", "#D8F5C7"];
     var PHN = { zhuyin: "注音", pinyin: "拼音", both: "注音＋拼音" };
@@ -11218,7 +11239,7 @@ window.mmTA = (function(){
     function inLive(){ try{ return !!(inRoom() && roomRole === "teacher"); }catch(e){ return false; } }
     function publish(){
       if(!shown || isStudent || !inLive()) return;
-      var arr = list.filter(function(n){ return n.share && (n.t || "").length; }).map(function(n){ return { id: n.id, t: n.t, r: n.r || [], x: n.x, y: n.y, w: n.w, h: n.h, bg: n.bg, fs: n.fs || 28, fold: n.fold ? 1 : 0 }; });
+      var arr = list.filter(function(n){ return n.share && ((n.t || "").length || (n.ink || []).length); }).map(function(n){ var o = { id: n.id, t: n.t || "", r: n.r || [], x: n.x, y: n.y, w: n.w, h: n.h, bg: n.bg, fs: n.fs || 28, fold: n.fold ? 1 : 0 }; if(n.ink && n.ink.length) o.ink = n.ink.slice(-200); return o; });
       try{ set(ref(db, "rooms/" + activeRoomId + "/noteShare/" + shown), arr.length ? arr : null); }catch(e){ console.warn("便利貼分享失敗", e); }
     }
     function same(a, b){ a = a || {}; b = b || {}; return (a.c || "") === (b.c || "") && !!a.b === !!b.b && (a.f || "") === (b.f || "") && (a.o || "") === (b.o || ""); }
@@ -11287,11 +11308,12 @@ window.mmTA = (function(){
       var el = document.createElement("div"); el.className = "mm-note"; el.dataset.id = n.id; el.style.background = n.bg || BG[0]; el.style.zIndex = String(8000 + (n.z || 0));
       el.innerHTML = '<div class="mmn-head" title="拖曳＝搬動便利貼"><span class="mmn-tt">🗒 便利貼</span>' +
         '<span class="mmn-bgs">' + BG.map(function(c){ return '<i data-bg="' + c + '" style="background:' + c + '" title="便利貼顏色"></i>'; }).join("") + '</span>' +
-        '<button type="button" data-a="share" title="給學生看：打開後，學生的畫面上也會出現這張便利貼（唯讀；要先開課堂）">👁</button><button type="button" data-a="fs-" title="字縮小">A−</button><button type="button" data-a="fs+" title="字放大">A＋</button><button type="button" data-a="fold" title="收起／展開">—</button><button type="button" data-a="del" title="刪除這張便利貼">✕</button></div>' +
+        '<button type="button" data-a="pen" title="畫筆：在便利貼上畫記、圈重點">✏️</button><button type="button" data-a="share" title="給學生看：打開後，學生的畫面上也會出現這張便利貼（唯讀；要先開課堂）">👁</button><button type="button" data-a="fs-" title="字縮小">A−</button><button type="button" data-a="fs+" title="字放大">A＋</button><button type="button" data-a="fold" title="收起／展開">—</button><button type="button" data-a="del" title="刪除這張便利貼">✕</button></div>' +
         '<div class="mmn-tools"><button type="button" data-f="zhuyin" title="選取的字加注音（沒選字＝整張）">注音</button><button type="button" data-f="pinyin" title="選取的字加拼音">拼音</button><button type="button" data-f="both" title="注音＋拼音都加">注音＋拼音</button><button type="button" data-f="off" title="拿掉注音／拼音">清除</button><button type="button" data-a="reading" title="選一個字再按：手動改這個字的讀音（多音字判斷錯的時候用）。畫面上的注音／拼音也可以直接點一下修改">改讀音</button>' +
         '<span class="mmn-sep"></span>' + FC.map(function(c){ return '<i data-c="' + c + '" style="background:' + c + '" title="字的顏色"></i>'; }).join("") + '<i data-c="" class="mmn-dc" title="預設顏色">∅</i>' +
         '<span class="mmn-sep"></span><button type="button" data-a="bold" title="粗體"><b>B</b></button></div>' +
-        '<div class="mmn-body"><div class="mmn-view" title="點一下開始編輯"></div><div class="mmn-edit" spellcheck="false"></div></div>';
+        '<div class="mmn-pen"><button type="button" data-pa="pen" class="on" title="畫筆">✏️ 畫筆</button><button type="button" data-pa="erase" title="橡皮擦：點到或拖過的筆跡會被擦掉">🧽 橡皮擦</button><span class="mmn-sep"></span>' + FC.map(function(c, i){ return '<i data-pc="' + c + '" style="background:' + c + '"' + (i ? '' : ' class="sel"') + ' title="筆的顏色"></i>'; }).join("") + '<span class="mmn-sep"></span><button type="button" data-pw="2">細</button><button type="button" data-pw="4" class="on">中</button><button type="button" data-pw="8">粗</button><span class="mmn-sep"></span><button type="button" data-pa="undo" title="復原上一筆">↶</button><button type="button" data-pa="clear" title="清除全部筆跡">清除</button><button type="button" data-pa="done" title="畫完了">完成</button></div>' +
+        '<div class="mmn-main"><div class="mmn-body"><div class="mmn-view" title="點一下開始編輯"></div><div class="mmn-edit" spellcheck="false"></div></div><canvas class="mmn-ink"></canvas></div>';
       var view = el.querySelector(".mmn-view"), ed = el.querySelector(".mmn-edit");
       ed.contentEditable = "plaintext-only"; if(ed.contentEditable !== "plaintext-only") ed.contentEditable = "true";
       var o = { n: n, el: el, view: view, ed: ed, editing: false };
@@ -11306,6 +11328,53 @@ window.mmTA = (function(){
       ed.addEventListener("keydown", function(e){ e.stopPropagation(); if(e.key === "Escape"){ ed.blur(); o.exit(); } });
       ed.addEventListener("keyup", function(e){ e.stopPropagation(); });
       el.addEventListener("focusout", function(){ setTimeout(function(){ if(o.editing && !el.contains(document.activeElement)) o.exit(); }, 60); });
+      // ---- 畫筆 ----
+      var cv = el.querySelector(".mmn-ink"), pen = { c: FC[0], w: 4, erase: false }, penOn = false;
+      function redraw(){ mmDrawInk(cv, n.ink); }
+      function setPen(on){
+        penOn = !!on; if(on) o.exit(); el.classList.toggle("pen", penOn); var pb = el.querySelector('.mmn-head [data-a="pen"]'); if(pb) pb.classList.toggle("on", penOn); redraw();
+      }
+      o.redraw = redraw;
+      el.querySelector(".mmn-pen").addEventListener("mousedown", function(e){ e.preventDefault(); });
+      el.querySelector(".mmn-pen").addEventListener("click", function(e){
+        var t = e.target.closest("[data-pc],[data-pw],[data-pa]"); if(!t) return;
+        var bar = el.querySelector(".mmn-pen");
+        if(t.dataset.pc){ pen.c = t.dataset.pc; pen.erase = false; bar.querySelectorAll("[data-pc]").forEach(function(i){ i.classList.toggle("sel", i === t); }); }
+        else if(t.dataset.pw){ pen.w = Number(t.dataset.pw); bar.querySelectorAll("[data-pw]").forEach(function(b){ b.classList.toggle("on", b === t); }); }
+        else if(t.dataset.pa === "pen"){ pen.erase = false; }
+        else if(t.dataset.pa === "erase"){ pen.erase = true; }
+        else if(t.dataset.pa === "undo"){ if(n.ink && n.ink.length){ n.ink.pop(); if(!n.ink.length) delete n.ink; redraw(); save(); } }
+        else if(t.dataset.pa === "clear"){ if(n.ink && n.ink.length && confirm("清除這張便利貼上全部的筆跡？")){ delete n.ink; redraw(); save(); } }
+        else if(t.dataset.pa === "done"){ setPen(false); return; }
+        bar.querySelector('[data-pa="pen"]').classList.toggle("on", !pen.erase); bar.querySelector('[data-pa="erase"]').classList.toggle("on", pen.erase);
+      });
+      cv.addEventListener("pointerdown", function(e){
+        if(!penOn) return; e.preventDefault(); e.stopPropagation(); try{ cv.setPointerCapture(e.pointerId); }catch(er){}
+        var r = cv.getBoundingClientRect(), W = r.width, H = r.height; if(!W || !H) return;
+        function pt(ev){ return [Math.max(0, Math.min(1, (ev.clientX - r.left) / W)), Math.max(0, Math.min(1, (ev.clientY - r.top) / H))]; }
+        if(pen.erase){
+          function hit(ev){
+            var q = pt(ev), rad = 12, ink = n.ink || [], keep = ink.filter(function(s){ return !s.p.some(function(a){ var dx = (a[0] - q[0]) * W, dy = (a[1] - q[1]) * H; return dx * dx + dy * dy < rad * rad; }); });
+            if(keep.length !== ink.length){ n.ink = keep; if(!keep.length) delete n.ink; redraw(); }
+          }
+          hit(e);
+          var mvE = function(ev){ hit(ev); }, upE = function(){ cv.removeEventListener("pointermove", mvE); cv.removeEventListener("pointerup", upE); cv.removeEventListener("pointercancel", upE); save(); };
+          cv.addEventListener("pointermove", mvE); cv.addEventListener("pointerup", upE); cv.addEventListener("pointercancel", upE); return;
+        }
+        var st = { c: pen.c, w: pen.w, p: [pt(e)] }, x = cv.getContext("2d"), last = [e.clientX, e.clientY];
+        x.strokeStyle = st.c; x.lineWidth = st.w; x.lineCap = "round"; x.lineJoin = "round";
+        var mv = function(ev){
+          if(Math.hypot(ev.clientX - last[0], ev.clientY - last[1]) < 1.5) return;
+          var a = st.p[st.p.length - 1], b = pt(ev); st.p.push(b); last = [ev.clientX, ev.clientY];
+          x.beginPath(); x.moveTo(a[0] * W, a[1] * H); x.lineTo(b[0] * W, b[1] * H); x.stroke();
+        };
+        var up = function(){
+          cv.removeEventListener("pointermove", mv); cv.removeEventListener("pointerup", up); cv.removeEventListener("pointercancel", up);
+          st.p = st.p.map(function(a){ return [Math.round(a[0] * 1000) / 1000, Math.round(a[1] * 1000) / 1000]; });
+          n.ink = (n.ink || []).concat([st]).slice(-200); redraw(); save();
+        };
+        cv.addEventListener("pointermove", mv); cv.addEventListener("pointerup", up); cv.addEventListener("pointercancel", up);
+      });
       function applyFn(fn, boldCheck){
         o.enter(); commit(); var rg = selOff(ed), a = 0, e2 = (n.t || "").length; if(rg && rg.a !== rg.e){ a = Math.min(rg.a, rg.e); e2 = Math.max(rg.a, rg.e); }
         var arr = toArr(n), allB = true; for(var i = a; i < e2; i++) if(!(arr[i] && arr[i].b)) allB = false;
@@ -11342,6 +11411,7 @@ window.mmTA = (function(){
         var t = e.target.closest("[data-a],[data-bg]"); if(!t) return;
         if(t.dataset.bg){ n.bg = t.dataset.bg; el.style.background = n.bg; save(); return; }
         if(t.dataset.a === "fs+" || t.dataset.a === "fs-"){ n.fs = Math.max(12, Math.min(80, (n.fs || 28) + (t.dataset.a === "fs+" ? 2 : -2))); fs(); save(); return; }
+        if(t.dataset.a === "pen"){ setPen(!penOn); return; }
         if(t.dataset.a === "share"){
           if(!n.share && !inLive()){ alert("要先開課堂（進入房間）學生才看得到。\n這張便利貼先留在你自己的畫面。"); return; }
           n.share = !n.share; if(!n.share) delete n.share; t.classList.toggle("on", !!n.share); save(); return;
@@ -11358,9 +11428,9 @@ window.mmTA = (function(){
         window.addEventListener("pointermove", mv); window.addEventListener("pointerup", up); window.addEventListener("pointercancel", up);
       });
       el.addEventListener("pointerdown", function(){ bring(n, el); });
-      if(window.ResizeObserver){ var first = true; new ResizeObserver(function(){ if(first){ first = false; return; } if(el.classList.contains("folded")) return; n.w = Math.round(el.offsetWidth); n.h = Math.round(el.offsetHeight); save(); }).observe(el); }
+      if(window.ResizeObserver){ var first = true; new ResizeObserver(function(){ if(first){ first = false; return; } if(el.classList.contains("folded")) return; n.w = Math.round(el.offsetWidth); n.h = Math.round(el.offsetHeight); redraw(); save(); }).observe(el); }
       pos(n, el); fs(); renderView(); el.classList.toggle("folded", !!n.fold); if(n.share) el.querySelector('[data-a="share"]').classList.add("on");
-      document.body.appendChild(el); els[n.id] = o; return o;
+      document.body.appendChild(el); els[n.id] = o; setTimeout(redraw, 0); return o;
     }
     function bring(n, el){ var m = 0; list.forEach(function(x){ m = Math.max(m, x.z || 0); }); if((n.z || 0) < m || !n.z){ n.z = m + 1; el.style.zIndex = String(8000 + n.z); save(); } }
     function clear(){ Object.keys(els).forEach(function(k){ try{ els[k].exit(); }catch(e){} els[k].el.remove(); }); els = {}; }
@@ -11372,7 +11442,7 @@ window.mmTA = (function(){
     }
     function buildRO(n){
       var el = document.createElement("div"); el.className = "mm-note ro"; el.style.background = n.bg || BG[0]; el.style.zIndex = "8000";
-      el.innerHTML = '<div class="mmn-head" title="可以拖曳挪開"><span class="mmn-tt">🗒 老師的便利貼</span><button type="button" data-a="fold" title="收起／展開">—</button></div><div class="mmn-body"><div class="mmn-view"></div></div>';
+      el.innerHTML = '<div class="mmn-head" title="可以拖曳挪開"><span class="mmn-tt">🗒 老師的便利貼</span><button type="button" data-a="fold" title="收起／展開">—</button></div><div class="mmn-main"><div class="mmn-body"><div class="mmn-view"></div></div><canvas class="mmn-ink"></canvas></div>';
       var view = el.querySelector(".mmn-view"); view.style.fontSize = (n.fs || 28) + "px"; view.style.cursor = "default"; view.innerHTML = viewHtml(n); el.classList.toggle("has-ruby", !!(n.r || []).some(function(r){ return r.f; }));
       pos(n, el); el.classList.toggle("folded", !!n.fold);
       el.querySelector('[data-a="fold"]').addEventListener("click", function(){ el.classList.toggle("folded"); });
@@ -11383,7 +11453,7 @@ window.mmTA = (function(){
         function up(){ window.removeEventListener("pointermove", mv); window.removeEventListener("pointerup", up); window.removeEventListener("pointercancel", up); }
         window.addEventListener("pointermove", mv); window.addEventListener("pointerup", up); window.addEventListener("pointercancel", up);
       });
-      document.body.appendChild(el); els[n.id] = { el: el, exit: function(){} };
+      document.body.appendChild(el); els[n.id] = { el: el, exit: function(){}, redraw: function(){ mmDrawInk(el.querySelector(".mmn-ink"), n.ink); } }; setTimeout(function(){ els[n.id] && els[n.id].redraw(); }, 0);
     }
     function showStudent(qid){
       var raw = (typeof roomData !== "undefined" && roomData && roomData.noteShare && qid) ? roomData.noteShare[qid] : null, arr = Array.isArray(raw) ? raw : (raw ? Object.keys(raw).map(function(k){ return raw[k]; }) : []);
@@ -11398,7 +11468,7 @@ window.mmTA = (function(){
       list.forEach(build);
     }
     document.addEventListener("pointerdown", function(e){ Object.keys(els).forEach(function(k){ var o = els[k]; if(o.editing && !o.el.contains(e.target)) o.exit(); }); }, true);   // 點便利貼以外的地方＝編輯完成
-    window.addEventListener("resize", function(){ list.forEach(function(n){ var o = els[n.id]; if(o) pos(n, o.el); }); });
+    window.addEventListener("resize", function(){ list.forEach(function(n){ var o = els[n.id]; if(o){ pos(n, o.el); if(o.redraw) o.redraw(); } }); });
     window.addEventListener("beforeunload", flush);
     return { show: show, refresh: refresh };
   })();
