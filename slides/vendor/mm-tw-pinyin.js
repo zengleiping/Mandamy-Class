@@ -8,7 +8,7 @@
       // ── 單字預設 ──
       "企":"qì", "車":"chē", "們":"men", "麼":"me", "蘋":"píng", "乾":"gān", "危":"wéi", "期":"qí", "髮":"fǎ", "著":"zhe", "還":"hái", "誰":"shéi", "和":"hàn",
       // ── 詞語 ──
-      "研究":"yán jiù", "研究所":"yán jiù suǒ", "研究生":"yán jiù shēng", "鑰匙":"yào shi", "乾坤":"qián kūn",
+      "狐狸":"hú lí", "老狐狸":"lǎo hú lí", "小狐狸":"xiǎo hú lí", "狐狸精":"hú lí jīng", "研究":"yán jiù", "研究所":"yán jiù suǒ", "研究生":"yán jiù shēng", "鑰匙":"yào shi", "乾坤":"qián kūn",
       "為了":"wèi le", "因為":"yīn wèi", "為什麼":"wèi shén me", "為甚麼":"wèi shén me", "為何":"wèi hé", "為止":"wéi zhǐ",
       "長大":"zhǎng dà", "長高":"zhǎng gāo", "長得":"zhǎng de", "生長":"shēng zhǎng", "成長":"chéng zhǎng", "增長":"zēng zhǎng", "家長":"jiā zhǎng",
       "校長":"xiào zhǎng", "班長":"bān zhǎng", "隊長":"duì zhǎng", "組長":"zǔ zhǎng", "村長":"cūn zhǎng", "市長":"shì zhǎng", "縣長":"xiàn zhǎng",
