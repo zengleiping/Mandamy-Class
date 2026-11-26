@@ -7888,7 +7888,7 @@ function drSync(d){
 }
 // ---------- 上課（老師開始上課，學生跟著老師的畫面）----------
 // ---------- ⏰ 這堂課幾點下課：上課中顯示在工具列，時間到自動跳出下課提醒 ----------
-var END = { el: null, ring: null };
+var END = { el: null, ring: null, auto: false, warned: "" };
 function endKey(){ return "mm_end_" + (S.sel ? S.sel.c : "x") + "_" + ymd(new Date()); }
 function endHM(ms){ var d = new Date(ms); return pad2(d.getHours()) + ":" + pad2(d.getMinutes()); }
 // 今天這個班的下課時間：老師手動調整過的優先，其次是課表裡正在上（或最近要上）的那一堂的結束時間
@@ -7899,14 +7899,14 @@ function endToday(){
   var today = ymd(new Date()), now = Date.now(), best = null;
   classSlots(S.sel).forEach(function(x){
     if(x.date !== today || !x.end) return;
-    var e = new Date(x.date + "T" + x.end + ":00").getTime(); if(!isFinite(e) || e < now - 20 * 60000) return;
+    var e = new Date(x.date + "T" + x.end + ":00").getTime(); if(!isFinite(e) || e < now - 60 * 60000) return;
     if(!best || e < best.endAt) best = { endAt: e, src: "schedule" };
   });
   return best;
 }
 function endTick(){
   var chip = document.getElementById("endchip");
-  if(!(S.teacher && S.live && S.live.on && S.sel && S.sel.c)){ if(END.el) endClose(); return; }
+  if(!(S.teacher && S.live && S.live.on && S.sel && S.sel.c)){ if(END.el) endClose(); END.auto = false; return; }
   var e = endToday(), now = Date.now();
   if(chip){
     if(!e) chip.textContent = "⏰ 設定下課時間";
@@ -7914,9 +7914,16 @@ function endTick(){
   }
   if(e && now >= e.endAt && !END.el){
     var dk = "mm_end_done_" + endKey(), done = ""; try{ done = localStorage.getItem(dk) || ""; }catch(er){}
-    if(done === String(e.endAt)) return;
-    try{ localStorage.setItem(dk, String(e.endAt)); }catch(er){}
-    if(now - e.endAt < 10 * 60000) endAlarm(e);   // 過了很久才開始上課／重新整理：不再跳出來，免得嚇一跳
+    if(done !== String(e.endAt)){
+      try{ localStorage.setItem(dk, String(e.endAt)); }catch(er){}
+      if(now - e.endAt < 10 * 60000) endAlarm(e);   // 過了很久才開始上課／重新整理：不再跳出來，免得嚇一跳
+    }
+  }
+  // 下課後 20 分鐘還沒有結束上課：自動結束（只限「在下課時間之前就開始上的課」；下課後才補開的課不會被自動結束）。要繼續上，按提醒視窗的「再 5／10 分鐘」
+  if(e && S.live.startedAt && S.live.startedAt < e.endAt){
+    var over = now - e.endAt, wk = endKey() + ":" + e.endAt;
+    if(over >= 15 * 60000 && over < 20 * 60000 && END.warned !== wk){ END.warned = wk; toast("已經下課 15 分鐘了，5 分鐘後會自動結束上課（要繼續請到「⏰」調整下課時間）"); }
+    if(over >= 20 * 60000 && !END.auto){ END.auto = true; endClose(); toast("已經下課超過 20 分鐘，自動結束上課"); toggleLive(true); }
   }
 }
 setInterval(function(){ try{ endTick(); }catch(e){} }, 1000);
@@ -7929,7 +7936,7 @@ function endRing(){
 }
 function endAlarm(e){
   endClose(); var el = document.createElement("div"); el.id = "endov"; END.el = el; document.body.appendChild(el);
-  el.innerHTML = '<div class="brk-box"><img class="brk-clock" src="icons/break-clock.png" alt="下課"><div class="brk-title">下課時間到了！</div><div class="brk-sub">現在 ' + endHM(Date.now()) + '，這堂課預定 ' + endHM(e.endAt) + ' 結束</div>' +
+  el.innerHTML = '<div class="brk-box"><img class="brk-clock" src="icons/break-clock.png" alt="下課"><div class="brk-title">下課時間到了！</div><div class="brk-sub">現在 ' + endHM(Date.now()) + '，這堂課預定 ' + endHM(e.endAt) + ' 結束</div><div class="brk-sub" style="font-size:14px;">下課超過 20 分鐘還沒結束，系統會自動結束上課；要繼續請按「再 5／10 分鐘」</div>' +
     '<div class="brk-act"><button type="button" class="btn" data-en="ext5">再 5 分鐘</button><button type="button" class="btn" data-en="ext10">再 10 分鐘</button><button type="button" class="btn" data-en="brk">開始下課休息倒數</button><button type="button" class="btn" data-en="end">結束上課</button><button type="button" class="btn primary" data-en="close">關閉提醒</button></div></div>';
   el.onclick = function(ev){
     var b = ev.target.closest("[data-en]"); if(!b) return; var a = b.dataset.en;
@@ -7953,10 +7960,10 @@ async function endEdit(){
 }
 function liveRef(){ return clsPath(S.sel) + "/live"; }
 setInterval(function(){ try{ brkRestore(); }catch(e){} }, 2000);
-async function toggleLive(){
+async function toggleLive(auto){
   var cls = getCls(S.sel); if(!cls) return;
   if(S.live && S.live.on){
-    if(!confirm("結束上課？學生會回到自己的班級頁。")) return;
+    if(auto !== true && !confirm("結束上課？學生會回到自己的班級頁。")) return;
     try{ if(S.live.brk){ fbUpdate(liveRef(), { brk: null }).catch(function(){}); } brkClose(false); localStorage.removeItem("mm_brk"); }catch(e){}
     var endRooms = Object.keys(TR_PUB.rooms || {}); if(S.live.room && endRooms.indexOf(S.live.room) < 0) endRooms.push(S.live.room); S.live = null; cls.live = null; try{ endRooms.forEach(function(rid){ fbSet("rooms/" + rid + "/trans", null).catch(function(){}); }); TR_PUB.rooms = {}; await fbSet(liveRef(), null); await fbSet(clsPath(S.sel) + "/liveTrans", null); TR_PUB.last = ""; TR_PUB.roomLast = {}; }catch(e){}
     setFocus(false); try{ if(document.fullscreenElement) document.exitFullscreen().catch(function(){}); }catch(e){} renderLesson(cls); var selEnd = { s: S.sel.s, t: S.sel.t, c: S.sel.c }; setTimeout(function(){ recAfterClass(selEnd); }, 400); captureClassDay(selEnd, todayStr(), true).catch(function(er){ console.warn("capture", er); }); return;
