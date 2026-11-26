@@ -1305,7 +1305,7 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .shape-type-btn.active{ background:var(--seal); color:#fff; border-color:var(--seal); }
   .shape-fill-btn{ width:100%; padding:6px 8px; font-size:13.5px; font-weight:600; border-radius:8px; border:1.5px solid rgba(28,33,30,0.14); background:var(--surface); color:var(--ink); cursor:pointer; }
   .shape-fill-btn.active{ background:var(--seal); color:#fff; border-color:var(--seal); }
-  .image-layer{ position:absolute; inset:0; z-index:1; pointer-events:none; overflow:hidden; }
+  .image-layer{ position:absolute; inset:0; z-index:1; pointer-events:none; overflow:visible; }   /* 老師編輯時，畫布外的工作區也看得到圖片；放映／學生端用 stageArea 的 clip-path 裁成白色畫布 */
   .board-image{ position:absolute; transform:translate(-50%,-50%); height:auto; max-width:none; user-select:none; -webkit-user-drag:none; }
   .board-image.step-hidden{ opacity:0.35; }
   .image-proxy{
@@ -13911,6 +13911,7 @@ window.mmTA = (function(){
       if(fitChanged && typeof resizeCanvas === "function") resizeCanvas();
       if(typeof renderShapeSvg === "function") renderShapeSvg();
       if(typeof applyCanvasZoomPan === "function") applyCanvasZoomPan(); // cWrap 的基準尺寸變了，縮放/平移要重新夾限一次，避免留下超出邊界的舊位移
+      applyPresentClip();
     }
     boardResizeHandler = fitCanvasToViewport;
     requestAnimationFrame(fitCanvasToViewport);
@@ -14234,7 +14235,7 @@ window.mmTA = (function(){
       var w = Math.min(50, 60 * ch / (Math.max(0.05, res.ar) * cw)); // 寬最多佔 50%、高最多佔 60%
       w = Math.max(5, Math.round(w * 10) / 10);
       var off = (pasteOffsetN++ % 6) * 3, pp = window.__mmPastePos; window.__mmPastePos = null;   // 右鍵貼上：放在滑鼠點的位置
-      var obj = { id: uid("im"), src: res.src, ar: res.ar, x: pp ? Math.max(5, Math.min(95, pp.x)) : Math.min(95, 50 + off), y: pp ? Math.max(5, Math.min(95, pp.y)) : Math.min(95, 50 + off), w: w, step: 0 };
+      var obj = { id: uid("im"), src: res.src, ar: res.ar, x: pp ? Math.max(isStudent ? 5 : -40, Math.min(isStudent ? 95 : 140, pp.x)) : Math.min(95, 50 + off), y: pp ? Math.max(isStudent ? 5 : -40, Math.min(isStudent ? 95 : 140, pp.y)) : Math.min(95, 50 + off), w: w, step: 0 };
       snapshotForUndo();
       assignNewZ("image", obj);
       images.push(obj);
@@ -15192,7 +15193,8 @@ window.mmTA = (function(){
       if(pw > 0 && ph > 0){
         var cs = getComputedStyle(cWrap);
         var bw = parseFloat(cs.borderLeftWidth) || 0, bh = parseFloat(cs.borderTopWidth) || 0;
-        var sw = Math.max(pw, Math.round(stageArea.clientWidth || 0)), sh = Math.max(ph, Math.round(stageArea.clientHeight || 0));
+        var zf = Math.min(1, (typeof canvasZoom === "number" && canvasZoom > 0) ? canvasZoom : 1);   // 縮小檢視時，筆跡畫布要跟著放大，才蓋得滿整個工作區
+        var sw = Math.max(pw, Math.round((stageArea.clientWidth || 0) / zf)), sh = Math.max(ph, Math.round((stageArea.clientHeight || 0) / zf));
         pageW = pw; pageH = ph;
         padX = Math.round((sw - cWrap.offsetWidth) / 2 + bw);
         padY = Math.round((sh - cWrap.offsetHeight) / 2 + bh);
@@ -15428,8 +15430,8 @@ window.mmTA = (function(){
           function onMove(ev){
             var dx = (ev.clientX - startX) / rect.width * 100;
             var dy = (ev.clientY - startY) / rect.height * 100;
-            t.x = Math.max(5, Math.min(95, origX + dx));
-            t.y = Math.max(5, Math.min(95, origY + dy));
+            t.x = Math.max(isStudent ? 5 : -40, Math.min(isStudent ? 95 : 140, origX + dx));
+            t.y = Math.max(isStudent ? 5 : -40, Math.min(isStudent ? 95 : 140, origY + dy));
             div.style.left = t.x + "%";
             div.style.top = t.y + "%";
           }
@@ -15935,8 +15937,8 @@ window.mmTA = (function(){
           selectShapeObj(sh.id); snapshotForUndo();
           var sx = e.clientX, sy = e.clientY, ox = sh.x, oy = sh.y, rect = cWrap.getBoundingClientRect();
           function onMove(ev){
-            sh.x = Math.max(0, Math.min(100 - sh.w, ox + (ev.clientX - sx) / rect.width * 100));
-            sh.y = Math.max(0, Math.min(100 - sh.h, oy + (ev.clientY - sy) / rect.height * 100));
+            sh.x = Math.max(wsLo(), Math.min(wsHi() - sh.w, ox + (ev.clientX - sx) / rect.width * 100));
+            sh.y = Math.max(wsLo(), Math.min(wsHi() - sh.h, oy + (ev.clientY - sy) / rect.height * 100));
             place(); renderShapeSvg();
           }
           function onUp(){
@@ -15957,7 +15959,7 @@ window.mmTA = (function(){
       function mv(ev){
         var p = getPos(ev);
         if(Math.hypot(p.x - p0.x, p.y - p0.y) > 0.8) moved = true;
-        draft.x = Math.max(0, Math.min(p0.x, p.x)); draft.y = Math.max(0, Math.min(p0.y, p.y));
+        draft.x = Math.max(wsLo(), Math.min(p0.x, p.x)); draft.y = Math.max(wsLo(), Math.min(p0.y, p.y));
         draft.w = Math.min(100, Math.abs(p.x - p0.x)); draft.h = Math.min(100, Math.abs(p.y - p0.y));
         draft.fx = p.x < p0.x; draft.fy = p.y < p0.y;
         renderShapeSvg(draft);
@@ -15965,7 +15967,7 @@ window.mmTA = (function(){
       function up(){
         window.removeEventListener("pointermove", mv); window.removeEventListener("pointerup", up); window.removeEventListener("pointercancel", up);
         if(!moved){ // 只點一下：放一個預設大小的圖形（平板上很好用）
-          draft.w = isLine ? 20 : 16; draft.h = isLine ? 0 : 22; draft.x = Math.max(0, Math.min(100 - draft.w, p0.x - draft.w / 2)); draft.y = Math.max(0, Math.min(100 - draft.h, p0.y - draft.h / 2));
+          draft.w = isLine ? 20 : 16; draft.h = isLine ? 0 : 22; draft.x = Math.max(wsLo(), Math.min(wsHi() - draft.w, p0.x - draft.w / 2)); draft.y = Math.max(wsLo(), Math.min(wsHi() - draft.h, p0.y - draft.h / 2));
           draft.fx = false; draft.fy = false;
         }
         draft.w = Math.round(draft.w * 10) / 10; draft.h = Math.round(draft.h * 10) / 10; draft.x = Math.round(draft.x * 10) / 10; draft.y = Math.round(draft.y * 10) / 10;
@@ -16066,8 +16068,8 @@ window.mmTA = (function(){
           var startX = e.clientX, startY = e.clientY, origX = im.x, origY = im.y;
           var rect = cWrap.getBoundingClientRect();
           function onMove(ev){
-            im.x = Math.max(0, Math.min(100, origX + (ev.clientX - startX) / rect.width * 100));
-            im.y = Math.max(0, Math.min(100, origY + (ev.clientY - startY) / rect.height * 100));
+            im.x = Math.max(wsLo(), Math.min(wsHi(), origX + (ev.clientX - startX) / rect.width * 100));
+            im.y = Math.max(wsLo(), Math.min(wsHi(), origY + (ev.clientY - startY) / rect.height * 100));
             placeImgProxy(px, im);
             el.style.left = im.x + "%"; el.style.top = im.y + "%";
           }
@@ -16085,6 +16087,18 @@ window.mmTA = (function(){
       });
     }
 
+    function wsLo(){ return isStudent ? 0 : -45; }       // 工作區：老師可以把物件放到畫布外一點（放映時只顯示白色畫布）
+    function wsHi(){ return isStudent ? 100 : 145; }
+    function applyPresentClip(){
+      // 放映（老師全螢幕放映）和學生端：只顯示白色畫布，畫布外的物件／筆跡裁掉；老師編輯時不裁（看得到工作區）
+      try{
+        if(!stageArea || !cWrap || !document.body.contains(cWrap)) return;
+        if(!(isStudent || presentLock())){ stageArea.style.clipPath = ""; return; }
+        var ar = stageArea.getBoundingClientRect(), cr = cWrap.getBoundingClientRect();
+        if(!ar.width || !cr.width) return;
+        stageArea.style.clipPath = "inset(" + Math.max(0, cr.top - ar.top).toFixed(1) + "px " + Math.max(0, ar.right - cr.right).toFixed(1) + "px " + Math.max(0, ar.bottom - cr.bottom).toFixed(1) + "px " + Math.max(0, cr.left - ar.left).toFixed(1) + "px round 18px)";
+      }catch(e){}
+    }
     function getPos(e){
       var r = cWrap.getBoundingClientRect();
       var cx = e.touches ? e.touches[0].clientX : e.clientX;
@@ -16162,6 +16176,8 @@ window.mmTA = (function(){
     function applyPresentLockState(){
       var on = presentLock();
       container.classList.toggle("present-lock", on);
+      try{ if(on && typeof setCanvasZoom === "function" && canvasZoom !== 1) setCanvasZoom(1); }catch(eZ){}   // 放映一定是 100%、只看白色畫布
+      setTimeout(applyPresentClip, 0);
       if(on){
         if(inPlaceEdit) inPlaceEdit.finish(true);
         selSet = selSet.filter(isLiveItem); tblSel = null; clearObjSelection(); selectLayer.innerHTML = ""; renderSelection();
@@ -18678,7 +18694,7 @@ window.mmTA = (function(){
     var canvasZoom = 1, canvasPanX = 0, canvasPanY = 0;
     var zoomCtrl = document.createElement("div"); zoomCtrl.className = "canvas-zoom-ctrl";
     zoomCtrl.innerHTML = `
-      <button type="button" id="btn-canvas-zoom-out" title="縮放：縮小 Zoom (zoom into the board/image) — Zoom out">－</button>
+      <button type="button" id="btn-canvas-zoom-out" title="縮小：看到白色畫布外面的工作區，可以把文字、圖片、畫記先放在外面（放映時只顯示白色畫布）— Zoom out">－</button>
       <span id="canvas-zoom-pct" title="🎨 縮放：只放大這塊畫布本身（方便看清底圖細節、搭配移動工具拖曳），點擊回到 100% Zoom — zooms only this board/canvas. Click to reset zoom &amp; pan">🎨 100%</span>
       <button type="button" id="btn-canvas-zoom-in" title="縮放：放大 Zoom (zoom into the board/image) — Zoom in">＋</button>
     `;
@@ -18686,6 +18702,7 @@ window.mmTA = (function(){
     var zoomPctEl = zoomCtrl.querySelector("#canvas-zoom-pct");
     function clampPan(){
       var w = cWrap.clientWidth, h = cWrap.clientHeight;
+      if(canvasZoom < 1){ canvasPanX = w * (1 - canvasZoom) / 2; canvasPanY = h * (1 - canvasZoom) / 2; return; }   // 縮小檢視：白色畫布留在正中央，四周是工作區
       var minX = w * (1 - canvasZoom), minY = h * (1 - canvasZoom);
       canvasPanX = Math.min(0, Math.max(minX, canvasPanX));
       canvasPanY = Math.min(0, Math.max(minY, canvasPanY));
@@ -18697,7 +18714,8 @@ window.mmTA = (function(){
       if(zoomPctEl) zoomPctEl.textContent = "🎨 " + Math.round(canvasZoom * 100) + "%";
     }
     function setCanvasZoom(z){
-      canvasZoom = Math.max(1, Math.min(4, Math.round(z * 100) / 100));
+      var prevZoom = canvasZoom;
+      canvasZoom = Math.max((isStudent || presentLock()) ? 1 : 0.5, Math.min(4, Math.round(z * 100) / 100));
       if(canvasZoom === 1){
         canvasPanX = 0; canvasPanY = 0;
         // 縮放回 100% 時，「自動拖曳」跟著失效（見 autoPanEligible），游標要立刻恢復成工具本來的
@@ -18705,6 +18723,7 @@ window.mmTA = (function(){
         if(boardState.tool !== "pan") canvas.style.cursor = toolCursor();
       }
       applyCanvasZoomPan();
+      if(prevZoom < 1 || canvasZoom < 1){ try{ resizeCanvas(); }catch(eR){} }
     }
     zoomCtrl.querySelector("#btn-canvas-zoom-in").onclick = function(){ setCanvasZoom(canvasZoom + 0.25); };
     zoomCtrl.querySelector("#btn-canvas-zoom-out").onclick = function(){ setCanvasZoom(canvasZoom - 0.25); };
