@@ -7895,6 +7895,7 @@ function endHM(ms){ var d = new Date(ms); return pad2(d.getHours()) + ":" + pad2
 function endToday(){
   if(!S.sel || !S.sel.c) return null;
   var o = null; try{ o = JSON.parse(localStorage.getItem(endKey()) || "null"); }catch(e){}
+  if(o && o.off) return null;   // 老師說今天不要下課提醒、不要自動結束（例如在測試遊戲、簡報）
   if(o && o.endAt) return { endAt: o.endAt, src: "manual" };
   var today = ymd(new Date()), now = Date.now(), best = null;
   classSlots(S.sel).forEach(function(x){
@@ -7909,14 +7910,14 @@ function endTick(){
   if(!(S.teacher && S.live && S.live.on && S.sel && S.sel.c)){ if(END.el) endClose(); END.auto = false; return; }
   var e = endToday(), now = Date.now();
   if(chip){
-    if(!e) chip.textContent = "⏰ 設定下課時間";
+    if(!e){ var o0 = null; try{ o0 = JSON.parse(localStorage.getItem(endKey()) || "null"); }catch(er){} chip.textContent = o0 && o0.off ? "⏰ 今天不提醒下課" : "⏰ 設定下課時間"; chip.classList.remove("warn"); }
     else { var left = e.endAt - now; chip.textContent = "⏰ " + endHM(e.endAt) + " 下課" + (left > 0 ? "（還有 " + Math.ceil(left / 60000) + " 分鐘）" : "（時間到）"); chip.classList.toggle("warn", left <= 5 * 60000); }
   }
   if(e && now >= e.endAt && !END.el){
     var dk = "mm_end_done_" + endKey(), done = ""; try{ done = localStorage.getItem(dk) || ""; }catch(er){}
     if(done !== String(e.endAt)){
       try{ localStorage.setItem(dk, String(e.endAt)); }catch(er){}
-      if(now - e.endAt < 10 * 60000) endAlarm(e);   // 過了很久才開始上課／重新整理：不再跳出來，免得嚇一跳
+      if(now - e.endAt < 10 * 60000 && S.live.startedAt && S.live.startedAt < e.endAt) endAlarm(e);   // 下課後才開始（補課、測試遊戲／簡報）或過了很久才重新整理：不跳出來，免得嚇一跳
     }
   }
   // 下課後 20 分鐘還沒有結束上課：自動結束（只限「在下課時間之前就開始上的課」；下課後才補開的課不會被自動結束）。要繼續上，按提醒視窗的「再 5／10 分鐘」
@@ -7948,10 +7949,11 @@ function endAlarm(e){
   endRing();
 }
 async function endEdit(){
-  var e = endToday(), v = await askText("這堂課幾點下課？（24 小時制，例如 15:30；清空＝改回課表的時間）", e ? endHM(e.endAt) : "", "設定", "text", true);
+  var e = endToday(), v = await askText("這堂課幾點下課？（24 小時制，例如 15:30；清空＝改回課表的時間；輸入「不要」＝今天不提醒下課、不自動結束，測試遊戲或簡報時可以用）", e ? endHM(e.endAt) : "", "設定", "text", true);
   if(v === null || v === undefined) return;
   v = String(v).trim();
   if(!v){ try{ localStorage.removeItem(endKey()); }catch(er){} toast("已改回課表的下課時間"); endTick(); return; }
+  if(/^(off|不要|不用|關|關閉|無)$/i.test(v)){ try{ localStorage.setItem(endKey(), JSON.stringify({ off: 1 })); }catch(er){} endClose(); toast("好的，今天這個班不會提醒下課、也不會自動結束上課"); endTick(); return; }
   var m = /^(\d{1,2})\s*[:：點时時]\s*(\d{1,2})?\s*分?$/.exec(v);
   if(!m || +m[1] > 23 || +(m[2] || 0) > 59){ alert("格式不對，請輸入像 15:30 這樣的時間。"); return; }
   var d = new Date(); d.setHours(+m[1], +(m[2] || 0), 0, 0);
