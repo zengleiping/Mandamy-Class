@@ -354,6 +354,17 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   }
   .frame.fs-full{ position:fixed !important; inset:0 !important; width:100vw !important; height:100vh !important; max-width:none !important; z-index:9970; border:0 !important; border-radius:0 !important; background:var(--bg,#fff); }
   body.frame-fs{ overflow:hidden; }
+  .mmprog{ position:fixed; inset:0; z-index:9998; background:rgba(28,33,30,.45); display:flex; align-items:center; justify-content:center; }
+  .mmprog .pbox{ background:var(--surface,#fff); border-radius:16px; padding:22px 26px; width:min(440px,92vw); box-shadow:0 12px 40px rgba(0,0,0,.3); text-align:center; }
+  .mmprog .pbar{ height:12px; border-radius:99px; background:var(--line,#e6d8c6); overflow:hidden; margin:12px 0 8px; } .mmprog .pbar i{ display:block; height:100%; width:0; background:var(--seal,#E8825A); transition:width .3s; }
+  .mmprog .pspin{ width:34px; height:34px; border:4px solid var(--line,#e6d8c6); border-top-color:var(--seal,#E8825A); border-radius:50%; margin:0 auto 10px; animation:mmspin .9s linear infinite; } @keyframes mmspin{ to{ transform:rotate(360deg); } }
+  .tour-dim{ position:fixed; z-index:9990; border-radius:10px; box-shadow:0 0 0 9999px rgba(28,33,30,.58); pointer-events:none; transition:all .25s; }
+  .tour-card{ position:fixed; z-index:9991; width:min(340px,92vw); background:var(--surface,#fff); border-radius:14px; padding:14px 16px; box-shadow:0 10px 34px rgba(0,0,0,.35); }
+  .tour-card h4{ margin:0 0 6px; font-size:17px; } .tour-card p{ margin:0 0 12px; line-height:1.65; font-size:14.5px; }
+  .tour-card .tbtns{ display:flex; gap:6px; align-items:center; } .tour-card .tbtns .grow{ flex:1; } .tour-card .tcnt{ font-size:12.5px; color:var(--muted,#9a8f7c); }
+  .helpdlg{ position:fixed; inset:0; z-index:9992; background:rgba(28,33,30,.45); display:flex; align-items:center; justify-content:center; }
+  .helpdlg .hbox{ background:var(--surface,#fff); border-radius:16px; width:min(720px,94vw); max-height:88vh; overflow:auto; padding:18px 22px; box-shadow:0 12px 40px rgba(0,0,0,.3); }
+  .helpdlg .hitem{ border:1.5px solid var(--line,#e6d8c6); border-radius:12px; padding:10px 12px; margin:8px 0; } .helpdlg .hitem h4{ margin:0 0 4px; } .helpdlg .hitem p{ margin:0 0 6px; font-size:14px; line-height:1.65; }
   .toast{ position:fixed; left:50%; bottom:24px; transform:translateX(-50%); background:var(--ink); color:#fff; padding:9px 16px; border-radius:99px; font-size:14.5px; z-index:9999; }
   @media (max-width:820px){ .side{ display:none; } .side.show{ display:block; position:fixed; z-index:50; top:48px; bottom:0; left:0; box-shadow:var(--shadow); } .menu-btn{ display:inline-block !important; } }
   .menu-btn{ display:none; }
@@ -1665,6 +1676,7 @@ async function autoAddContentPacks(t, bank){
   bank = bank || {}; var cd = Array.isArray(bank.courseData) ? bank.courseData.slice() : [], done = Object.assign({}, bank.autoAdded || {}), added = [], changed = false;
   for(var i = 0; i < list.packs.length; i++){
     var pk = list.packs[i]; if(!pk || !pk.id || done[pk.id]) continue;
+    try{ PROG.set(i, list.packs.length, "正在加入" + (pk.lesson != null ? "第 " + pk.lesson + " 課" : "教材") + (pk.type === "project" ? "的練習題" : "")); }catch(eP){}
     // bookLike：老師已經有名稱含這段文字的教材（例如「高中國文」）就放進那一本，不另外開新的
     if(pk.bookLike && !pk.book){ var tgtB = bookIds(true).filter(function(b){ return bookTitle(b).indexOf(pk.bookLike) >= 0 && bookTitle(b) !== pk.bookTitle; })[0]; if(tgtB) pk = Object.assign({}, pk, { book: tgtB }); }
     // 指定「教材名稱」的包（例如第三冊）：找老師同一本教材（同系列同冊別），沒有就幫忙建一本
@@ -1915,7 +1927,7 @@ function shell(inner, opts){
   root.innerHTML = '<div class="shell' + (S.focus ? ' focus' : '') + '"><div class="top">' +
     '<a href="#" class="brand" id="brandhome" title="回到首頁" style="text-decoration:none;color:inherit;cursor:pointer;"><img src="icons/logo.svg" alt="" style="width:30px;height:30px;vertical-align:middle;margin-right:6px;">曼米中文' + (isT ? '' : '<small>學生</small>') + '</a><div class="crumb" id="crumb"></div><div class="grow"></div>' +
     (isT ? '<nav class="mainnav">' + [["navhome", "🏠", "首頁", topArea() === "home"], ["navcls", "🏫", "班級", topArea() === "cls"], ["libbtn", "📚", "教材", topArea() === "lib", "owner-only"], ["actbtn", "🎲", "課堂活動", topArea() === "act"], ["recbtn", "📊", "記錄與成績", topArea() === "rec"], ["tbclbtn", "🔎", "等級檢核", false], ["synbtn", "📖", "近義詞", false]].concat(window.top === window ? [["labbtn", "🧪", "測試教室", false]] : []).map(function(n){ return '<button class="mn' + (n[3] ? ' on' : '') + (n[4] ? ' ' + n[4] : '') + '" id="' + n[0] + '">' + n[2] + '</button>'; }).join("") + '</nav>' +
-         '<button class="btn sm" id="bell" title="新的繳交">🔔</button><span class="umenu"><button class="btn sm ughost" id="ubtn" title="' + esc(S.teacher.name) + '"><img src="icons/teacher.png" alt="" style="width:26px;height:26px;border-radius:50%;vertical-align:middle;"><span class="mn-t"> ' + esc(S.teacher.name) + ' ▾</span></button><div class="udrop" id="udrop"><button class="owner-only" id="setbtn">⚙️ 設定</button><button id="logout">登出</button></div></span>'
+         '<button class="btn sm" id="bell" title="新的繳交">🔔</button><span class="umenu"><button class="btn sm ughost" id="ubtn" title="' + esc(S.teacher.name) + '"><img src="icons/teacher.png" alt="" style="width:26px;height:26px;border-radius:50%;vertical-align:middle;"><span class="mn-t"> ' + esc(S.teacher.name) + ' ▾</span></button><div class="udrop" id="udrop"><button id="helpbtn">❓ 新手說明</button><button class="owner-only" id="setbtn">⚙️ 設定</button><button id="logout">登出</button></div></span>'
          : '<span class="crumb">👤 ' + esc(S.student ? S.student.name : "") + '</span><button class="btn sm" id="leave">離開</button>') +
     '</div><div class="body">' + '<main class="main' + (opts.flush ? ' flush' : '') + '" id="main">' + inner + '</main></div></div>';
   document.body.classList.toggle("frame-tab", !!(isT && S.sel && S.lesson && !S.rec && !S.lib && !S.day && !S.grades && !S.act && (S.tab === "slides" || S.tab === "quiz")));
@@ -1938,6 +1950,7 @@ function shell(inner, opts){
     var lb = document.getElementById("labbtn"); if(lb) lb.onclick = openLab;
     document.getElementById("ubtn").onclick = function(e){ e.stopPropagation(); document.getElementById("udrop").classList.toggle("open"); };
     document.addEventListener("click", function(){ var u = document.getElementById("udrop"); if(u) u.classList.remove("open"); });
+    document.getElementById("helpbtn").onclick = openHelp;
     document.getElementById("setbtn").onclick = function(){ if(S.focus) setFocus(false); S.grades = null; S.act = null; S.classes = null; S.settings = true; S.lib = null; S.rec = null; S.day = null; S.sel = null; S.lesson = null; S.hw = null; render(); };
     document.getElementById("libbtn").onclick = (function(){ var bk = S.lib ? S.lib.book : DEFAULT_BOOK; return goTop(function(){ S.lib = { book: bk }; }); })();
     document.getElementById("logout").onclick = async function(){ try{ localStorage.removeItem(SESSION_KEY); localStorage.removeItem("mm_ta_owner"); }catch(e){} try{ await window.mmTA.logout(); }catch(e){} try{ trStop(); }catch(e){} S.teacher = null; S.sel = null; NAV.last = null; history.replaceState(null, "", location.pathname); viewLogin(); };
@@ -6453,24 +6466,102 @@ async function quickNewClass(){
   await fbSet(base + "/" + y + "/terms/" + t + "/classes/" + cid, cls); await fbSet("classCodes/" + code, { t: S.teacher.id, s: y, tm: t, c: cid });
   S.classes = null; S.sel = { s: y, t: t, c: cid }; S.lesson = null; toast("已建立「" + name + "」，班級代碼 " + code); render();
 }
+// ---------- 進度視窗（按了之後要讓人知道在做什麼、做到哪裡）----------
+var PROG = (function(){
+  var el = null;
+  function ensure(){ if(el && el.isConnected) return el; el = document.createElement("div"); el.className = "mmprog"; el.innerHTML = '<div class="pbox"><div class="pspin"></div><b class="ptitle"></b><div class="pbar"><i></i></div><div class="note ptext"></div><div class="pfoot" style="margin-top:10px;display:none;"></div></div>'; document.body.appendChild(el); return el; }
+  return {
+    show: function(title, text){ var e = ensure(); e.querySelector(".ptitle").textContent = title || ""; e.querySelector(".ptext").textContent = text || ""; e.querySelector(".pbar i").style.width = "4%"; e.querySelector(".pspin").style.display = ""; e.querySelector(".pfoot").style.display = "none"; },
+    set: function(n, total, text){ if(!el || !el.isConnected) return; if(total) el.querySelector(".pbar i").style.width = Math.max(4, Math.min(100, Math.round(n / total * 100))) + "%"; if(text) el.querySelector(".ptext").textContent = text + (total ? "（" + Math.min(n + 1, total) + "／" + total + "）" : ""); },
+    fail: function(msg, retry){ var e = ensure(); e.querySelector(".pspin").style.display = "none"; e.querySelector(".ptitle").textContent = "沒有成功"; e.querySelector(".ptext").textContent = msg; var f = e.querySelector(".pfoot"); f.style.display = ""; f.innerHTML = (retry ? '<button class="btn sm primary" data-pr="retry">再試一次</button> ' : '') + '<button class="btn sm" data-pr="close">關閉</button>'; f.onclick = function(ev){ var b = ev.target.closest("[data-pr]"); if(!b) return; if(b.dataset.pr === "retry" && retry){ retry(); } else { PROG.hide(); } }; },
+    hide: function(){ if(el){ el.remove(); el = null; } }
+  };
+})();
+
+// ---------- 新手導覽：一步一步框出上面的按鈕，說明它是做什麼的 ----------
+var TOUR_STEPS = [
+  { sel: "#navhome", t: "🏠 首頁", d: "每天先看這裡：待辦事項、我的班級、月課表都在首頁。新手先照「開始使用」的 4 個步驟做就可以了。" },
+  { sel: "#navcls", t: "🏫 班級", d: "建立班級（一對一學生也一樣）、拿給學生的連結、看每一堂課的進度和作業。" },
+  { sel: "#libbtn", t: "📚 教材", d: "生詞、語法、課文、簡報和測驗題都放在這裡。有現成的《學華語向前走》教材，也可以自己新增課次。" },
+  { sel: "#actbtn", t: "🎲 課堂活動", d: "上課時用的遊戲、抽籤、找東西、計時器…選好班級和課次就能開始，學生用自己的手機或電腦加入。" },
+  { sel: "#recbtn", t: "📊 記錄與成績", d: "每堂課上了什麼、學生的作業和考試成績，之後都在這裡查。" },
+  { sel: "#labbtn", t: "🧪 測試教室", d: "不確定怎麼操作的時候，先到這裡扮演學生試一次，不會影響真正的班級。" },
+  { sel: "#ubtn", t: "⚙️ 設定和說明", d: "備份、助教管理都在「設定」。任何時候想再看一次導覽或操作說明，按這裡的「❓ 新手說明」。" }
+];
+function tourEnd(markDone){
+  var d = document.getElementById("tour-dim"), c = document.getElementById("tour-card"); if(d) d.remove(); if(c) c.remove();
+  if(markDone && S.teacher){ S.plat.meta = S.plat.meta || {}; S.plat.meta.tourDone = true; fbSet("teacherPlatform/" + S.teacher.id + "/meta/tourDone", true).catch(function(){}); }
+}
+function startTour(i){
+  i = i || 0; var steps = TOUR_STEPS.filter(function(x){ var e = document.querySelector(x.sel); return e && e.offsetParent !== null; });
+  if(!steps.length){ toast("這個畫面沒有可以導覽的按鈕，請先回到首頁。"); return; }
+  if(i >= steps.length){ tourEnd(true); toast("導覽結束了！之後想再看，按右上角名字 → ❓ 新手說明"); return; }
+  var st = steps[i], el = document.querySelector(st.sel), r = el.getBoundingClientRect();
+  var dim = document.getElementById("tour-dim"), card = document.getElementById("tour-card");
+  if(!dim){ dim = document.createElement("div"); dim.id = "tour-dim"; dim.className = "tour-dim"; document.body.appendChild(dim); }
+  if(!card){ card = document.createElement("div"); card.id = "tour-card"; card.className = "tour-card"; document.body.appendChild(card); }
+  dim.style.left = (r.left - 6) + "px"; dim.style.top = (r.top - 4) + "px"; dim.style.width = (r.width + 12) + "px"; dim.style.height = (r.height + 8) + "px";
+  card.innerHTML = '<h4>' + st.t + '</h4><p>' + st.d + '</p><div class="tbtns"><span class="tcnt">' + (i + 1) + ' / ' + steps.length + '</span><span class="grow"></span><button class="btn sm ghost" data-tr="end">結束</button>' + (i ? '<button class="btn sm" data-tr="prev">上一步</button>' : '') + '<button class="btn sm primary" data-tr="next">' + (i === steps.length - 1 ? "完成" : "下一步") + '</button></div>';
+  var cw = Math.min(340, window.innerWidth * 0.92), left = Math.max(8, Math.min(window.innerWidth - cw - 8, r.left + r.width / 2 - cw / 2));
+  card.style.left = left + "px"; card.style.top = (r.bottom + 14) + "px";
+  card.onclick = function(e){ var b = e.target.closest("[data-tr]"); if(!b) return; if(b.dataset.tr === "end") tourEnd(true); else if(b.dataset.tr === "prev") startTour(i - 1); else startTour(i + 1); };
+}
+// ---------- 新手說明（常見操作，每一項都有「帶我去」）----------
+function openHelp(){
+  var old = document.getElementById("helpdlg"); if(old) old.remove();
+  var items = [
+    ["🏫 建立班級", "家教一對一也一樣：填學生的名字就好，不用先建年度和學校。建好後會有一組班級代碼和學生連結。", "cls", "新增班級"],
+    ["📚 準備教材", "按「教材」，可以加入現成的《學華語向前走》，也能新增自己的課次、貼上生詞、做簡報和測驗。", "lib", "到教材"],
+    ["🗓 排課", "把上課時間排進課表，首頁的月課表和「下一堂」提醒就會出現；課堂記錄也會跟著這個時間。", "sched", "新增排課"],
+    ["🔗 把連結給學生", "到班級頁拿學生連結，貼到 LINE 或寄給學生；學生打開就能看作業、進教室，不用註冊。", "link", "到班級拿連結"],
+    ["🎲 上課用遊戲", "「課堂活動」選一個遊戲（配對、找東西、快問快答…），選好班級和課次，學生用自己的手機或電腦輸入房間代碼加入。", "act", "到課堂活動"],
+    ["🧪 先自己試一次", "「測試教室」讓你扮演學生，確認流程再正式上課，不會動到真的班級資料。", "lab", "開測試教室"],
+    ["🧭 重新看導覽", "再看一次平台各個按鈕是做什麼的。", "tour", "開始導覽"]
+  ];
+  var d = document.createElement("div"); d.id = "helpdlg"; d.className = "helpdlg";
+  d.innerHTML = '<div class="hbox"><div style="display:flex;align-items:center;"><h3 style="margin:0;flex:1;">❓ 新手說明</h3><button class="btn sm" data-h="close">關閉</button></div><p class="note" style="margin:6px 0;">不知道從哪裡開始？照下面的順序做，每一項都可以直接「帶我去」。</p>' +
+    items.map(function(x){ return '<div class="hitem"><h4>' + x[0] + '</h4><p>' + x[1] + '</p><button class="btn sm primary" data-h="' + x[2] + '">' + x[3] + '</button></div>'; }).join("") +
+    '<div class="hitem"><h4>🙋 常見問題</h4><p><b>學生要註冊嗎？</b> 不用，打開老師給的連結、輸入名字就能進來。<br><b>資料會不見嗎？</b> 平台會定期自動備份，也可以到「設定」手動備份。<br><b>忘記密碼？</b> 請找管理員在「設定 → 老師帳號」幫你重設。<br><b>做錯了怎麼辦？</b> 大部分地方都能按「復原」，簡報頁還有「版本記錄」。</p></div></div>';
+  document.body.appendChild(d);
+  d.onclick = function(e){
+    var b = e.target.closest("[data-h]"); if(!b){ if(e.target === d) d.remove(); return; }
+    var a = b.dataset.h; d.remove();
+    if(a === "close") return;
+    if(a === "tour"){ goHomeForTour(); return; }
+    if(a === "act"){ var ab = document.getElementById("actbtn"); if(ab) ab.click(); return; }
+    if(a === "lab"){ var lb = document.getElementById("labbtn"); if(lb) lb.click(); return; }
+    onboardAct(a);
+  };
+}
+function goHomeForTour(){ var h = document.getElementById("navhome"); if(h) h.click(); setTimeout(function(){ startTour(0); }, 400); }
 function onboardHtml(){
   var m = S.plat.meta || {}, html = '';
   if(S.packOffer) html += '<div class="panel" style="background:#E7F2EC;border-color:#BFDCCB;"><b>📦 要加入《學華語向前走》的現成教材嗎？</b><div class="note" style="margin:4px 0 8px;">第一冊第 ' + (S.packLessons || []).join('、') + ' 課，已經整理好生詞、語法、課文（含注音）和練習題。用別的課本的話選「不用」，之後隨時可以自己建立教材。</div><div class="tools"><button class="btn sm primary" data-ob="packyes">加入</button><button class="btn sm" data-ob="packno">不用</button></div></div>';
+  if(!m.tourDone) html += '<div class="panel" style="background:#FFF6DC;border-color:#EBD79B;"><b>👋 第一次使用？花 1 分鐘認識平台吧</b><div class="note" style="margin:4px 0 8px;">我會一步一步指給你看每個按鈕是做什麼的，之後隨時可以在右上角名字 → ❓ 新手說明 再看。</div><div class="tools"><button class="btn sm primary" data-ob="tour">開始導覽</button><button class="btn sm" data-ob="tournot">不用了</button><button class="btn sm ghost" data-ob="help">❓ 看操作說明</button></div></div>';
   if(m.onboardDone) return html;
   var steps = [
-    ["cls", "建立第一個班級", allClassesList().length > 0, "＋ 新增班級"],
-    ["lib", "準備教材（生詞、語法、課文、簡報）", Object.keys(S.plat.lessons || {}).length > 0, "到教材"],
-    ["sched", "把上課時間排進課表", Object.keys(schedMap()).length > 0, "新增排課"],
-    ["link", "把學生連結傳給學生", !!m.linkShared, "到班級拿連結"]
+    ["cls", "建立第一個班級", allClassesList().length > 0, "＋ 新增班級", "家教一對一也可以，填學生名字就好。"],
+    ["lib", "準備教材（生詞、語法、課文、簡報）", Object.keys(S.plat.lessons || {}).length > 0, "到教材", "上面的綠色方塊可以一鍵加入現成教材；也可以自己新增課次。"],
+    ["sched", "把上課時間排進課表", Object.keys(schedMap()).length > 0, "新增排課", "選班級、日期和時間，首頁月課表就會出現。"],
+    ["link", "把學生連結傳給學生", !!m.linkShared, "到班級拿連結", "到班級頁複製連結，貼到 LINE 給學生。"]
   ];
   var n = steps.filter(function(x){ return x[2]; }).length; if(n === steps.length) return html;
   return html + '<div class="panel"><div style="display:flex;align-items:center;gap:8px;"><h3 style="margin:0;flex:1;">🚀 開始使用（' + n + '／' + steps.length + '）</h3><button class="btn sm ghost" data-ob="done">我會了，不用再顯示</button></div>' +
-    steps.map(function(x, i){ return '<div class="slot"><div class="slot-time" style="min-width:34px;font-size:19px;">' + (x[2] ? '✅' : (i + 1) + '.') + '</div><div class="slot-main"' + (x[2] ? ' style="opacity:.6;"' : '') + '><b>' + x[1] + '</b></div>' + (x[2] ? '' : '<div class="slot-act"><button class="btn sm primary" data-ob="' + x[0] + '">' + x[3] + '</button></div>') + '</div>'; }).join("") + '</div>';
+    steps.map(function(x, i){ return '<div class="slot"><div class="slot-time" style="min-width:34px;font-size:19px;">' + (x[2] ? '✅' : (i + 1) + '.') + '</div><div class="slot-main"' + (x[2] ? ' style="opacity:.6;"' : '') + '><b>' + x[1] + '</b>' + (x[2] || !x[4] ? '' : '<div class="note">' + x[4] + '</div>') + '</div>' + (x[2] ? '' : '<div class="slot-act"><button class="btn sm primary" data-ob="' + x[0] + '">' + x[3] + '</button></div>') + '</div>'; }).join("") + '</div>';
+}
+async function runPackAdd(){
+  PROG.show("正在加入現成教材", "準備中…請不要關閉這個視窗");
+  try{ await syncLessonIndex(); }
+  catch(e){ console.warn("packadd", e); PROG.fail("加入教材時發生錯誤（" + ((e && e.message) || "網路或權限問題") + "）。你的資料沒有被刪除，可以再試一次。", runPackAdd); return; }
+  PROG.set(1, 1, "完成了"); setTimeout(function(){ PROG.hide(); toast("教材加入完成！到「教材」就能看到"); render(); }, 500);
 }
 async function onboardAct(a){
   var base = "teacherPlatform/" + S.teacher.id + "/meta/";
   S.plat.meta = S.plat.meta || {};
-  if(a === "packyes" || a === "packno"){ S.plat.meta.packsOptIn = a === "packyes"; await fbSet(base + "packsOptIn", a === "packyes"); S.packOffer = 0; if(a === "packyes"){ toast("正在加入教材…"); await syncLessonIndex(); } render(); return; }
+  if(a === "packyes" || a === "packno"){ S.plat.meta.packsOptIn = a === "packyes"; await fbSet(base + "packsOptIn", a === "packyes"); S.packOffer = 0; if(a === "packyes"){ await runPackAdd(); return; } render(); return; }
+  if(a === "tour"){ goHomeForTour(); return; }
+  if(a === "tournot"){ S.plat.meta.tourDone = true; await fbSet(base + "tourDone", true); render(); return; }
+  if(a === "help"){ openHelp(); return; }
   if(a === "done"){ S.plat.meta.onboardDone = true; await fbSet(base + "onboardDone", true); render(); return; }
   if(a === "cls"){ quickNewClass(); return; }
   if(a === "lib"){ S.lib = { book: bookIds()[0] || DEFAULT_BOOK }; render(); return; }
