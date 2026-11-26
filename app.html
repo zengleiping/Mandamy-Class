@@ -37,6 +37,8 @@ body{ -webkit-text-stroke-width:.22px; -webkit-text-stroke-color:currentColor; t
   .btn.ghost{ background:transparent; border-color:transparent; color:var(--ink-soft); }
   #brk{ position:fixed; inset:0; z-index:99990; display:flex; align-items:center; justify-content:center; background:rgba(250,247,242,.8); backdrop-filter:blur(1.5px); -webkit-backdrop-filter:blur(1.5px); }
   #brk.brk-done{ background:rgba(255,236,230,.84); }
+  #endov{ position:fixed; inset:0; z-index:99991; display:flex; align-items:center; justify-content:center; background:rgba(255,236,230,.9); backdrop-filter:blur(1.5px); -webkit-backdrop-filter:blur(1.5px); }
+  #endchip.warn{ color:var(--seal); font-weight:800; }
   /* 🎡 籤筒：跟下課鬧鐘同一種全螢幕風格；老師抽到的人，學生的畫面也會跳出來 */
   #toolov{ position:fixed; inset:0; z-index:99990; display:flex; align-items:center; justify-content:center; background:rgba(250,247,242,.94); padding:14px; box-sizing:border-box; }
   .tv-box{ text-align:center; width:min(560px,96vw); max-height:96vh; overflow:auto; }
@@ -7543,7 +7545,7 @@ function renderLessonCommon(no, open, teacher, liveStudent){
   var cur = tabs.filter(function(t){ return t[0] === S.tab; })[0];
   var live = S.live && S.live.on;
   var html = '<div class="tabs">' + (liveStudent ? '' : '<button class="tab" data-back="1">‹ 返回</button>' + tabs.filter(function(t){ return t[0] !== "bingo"; }).map(function(t){ var on = t[0] === S.tab || (t[0] === "activities" && S.tab === "bingo"); var btn = '<button class="tab' + (on ? ' on' : '') + '" data-tab="' + t[0] + '">' + t[1] + '</button>'; return teacher && (t[0] === "slides" || t[0] === "quiz") ? lessonDeckMenu(no, t[0], btn) : btn; }).join("") + (teacher ? '<!--copyto-->' : '') +
-    (teacher ? '<button class="tab focus-btn" data-actmenu="1" style="margin-left:auto;" title="叫出課堂活動選單（常用、最近用過）">⚡ 活動選單</button><button class="tab focus-btn" data-brk="1" style="margin-left:6px;" title="下課休息倒數：時間到會響鈴提醒回來上課（上課中，學生畫面也會一起倒數）">下課鬧鐘</button><button class="tab focus-btn" data-draw="1" style="margin-left:6px;" title="籤筒：從班上同學隨機抽一位（不重複，抽完換下一輪；學生的畫面也看得到抽到誰）"><img src="icons/draw-wheel.png" alt="" style="width:1.25em;height:1.25em;vertical-align:-.25em;margin-right:3px;">籤筒</button><button class="tab focus-btn" data-ct="1" style="margin-left:6px;" title="開關畫面底部的課堂工具列：計時器、分組、記分板、白板、便利貼…30 多種小工具，視窗可以自由拖曳，也有一鍵純淨桌面">🧰 工具箱</button>' : '') + (teacher ? ((live ? '<button class="tab focus-btn" data-fs="1" style="margin-left:6px;" title="瀏覽器全螢幕（Esc 退出，不會結束上課）">⛶ 全螢幕</button><button class="tab focus-btn" data-focus="1" style="margin-left:6px;">' + (S.focus ? "顯示欄位" : "隱藏欄位") + '</button><button class="tab focus-btn" data-copylink="1" style="margin-left:6px;" title="複製學生上課連結（臨時要再貼給學生時用）">🔗 複製連結</button><button class="tab focus-btn" data-live="1" style="margin-left:6px;background:var(--seal);color:#fff;">⏹ 結束上課</button>' : '<button class="tab focus-btn" data-copylink="1" style="margin-left:6px;" title="複製學生上課連結（臨時要再貼給學生時用）">🔗 複製連結</button><button class="tab focus-btn" data-live="1" title="開始上課：學生會自動跟著你的畫面，並隱藏上方與左側欄位">🎬 開始上課</button>')) : '')) + '</div>';
+    (teacher ? '<button class="tab focus-btn" data-actmenu="1" style="margin-left:auto;" title="叫出課堂活動選單（常用、最近用過）">⚡ 活動選單</button><button class="tab focus-btn" data-brk="1" style="margin-left:6px;" title="下課休息倒數：時間到會響鈴提醒回來上課（上課中，學生畫面也會一起倒數）">下課鬧鐘</button>' + (live ? '<button class="tab focus-btn" id="endchip" data-endchip="1" style="margin-left:6px;" title="這堂課幾點下課（來自課表；點一下可以調整）。時間到會自動跳出下課提醒">⏰ 下課時間</button>' : '') + '<button class="tab focus-btn" data-draw="1" style="margin-left:6px;" title="籤筒：從班上同學隨機抽一位（不重複，抽完換下一輪；學生的畫面也看得到抽到誰）"><img src="icons/draw-wheel.png" alt="" style="width:1.25em;height:1.25em;vertical-align:-.25em;margin-right:3px;">籤筒</button><button class="tab focus-btn" data-ct="1" style="margin-left:6px;" title="開關畫面底部的課堂工具列：計時器、分組、記分板、白板、便利貼…30 多種小工具，視窗可以自由拖曳，也有一鍵純淨桌面">🧰 工具箱</button>' : '') + (teacher ? ((live ? '<button class="tab focus-btn" data-fs="1" style="margin-left:6px;" title="瀏覽器全螢幕（Esc 退出，不會結束上課）">⛶ 全螢幕</button><button class="tab focus-btn" data-focus="1" style="margin-left:6px;">' + (S.focus ? "顯示欄位" : "隱藏欄位") + '</button><button class="tab focus-btn" data-copylink="1" style="margin-left:6px;" title="複製學生上課連結（臨時要再貼給學生時用）">🔗 複製連結</button><button class="tab focus-btn" data-live="1" style="margin-left:6px;background:var(--seal);color:#fff;">⏹ 結束上課</button>' : '<button class="tab focus-btn" data-copylink="1" style="margin-left:6px;" title="複製學生上課連結（臨時要再貼給學生時用）">🔗 複製連結</button><button class="tab focus-btn" data-live="1" title="開始上課：學生會自動跟著你的畫面，並隱藏上方與左側欄位">🎬 開始上課</button>')) : '')) + '</div>';
   var sub = '', frame = '', role = teacher ? '' : '&role=student';
   if(S.tab === "material"){
     var subs = [["vocab","生詞"],["grammar","語法"],["text","課文"]].filter(function(s){ return teacher || open[s[0]]; });
@@ -7885,6 +7887,70 @@ function drSync(d){
   DR.stuTimer = setTimeout(function(){ if(DR.stuEl === el){ el.remove(); DR.stuEl = null; } }, mine ? 12000 : 8000);
 }
 // ---------- 上課（老師開始上課，學生跟著老師的畫面）----------
+// ---------- ⏰ 這堂課幾點下課：上課中顯示在工具列，時間到自動跳出下課提醒 ----------
+var END = { el: null, ring: null };
+function endKey(){ return "mm_end_" + (S.sel ? S.sel.c : "x") + "_" + ymd(new Date()); }
+function endHM(ms){ var d = new Date(ms); return pad2(d.getHours()) + ":" + pad2(d.getMinutes()); }
+// 今天這個班的下課時間：老師手動調整過的優先，其次是課表裡正在上（或最近要上）的那一堂的結束時間
+function endToday(){
+  if(!S.sel || !S.sel.c) return null;
+  var o = null; try{ o = JSON.parse(localStorage.getItem(endKey()) || "null"); }catch(e){}
+  if(o && o.endAt) return { endAt: o.endAt, src: "manual" };
+  var today = ymd(new Date()), now = Date.now(), best = null;
+  classSlots(S.sel).forEach(function(x){
+    if(x.date !== today || !x.end) return;
+    var e = new Date(x.date + "T" + x.end + ":00").getTime(); if(!isFinite(e) || e < now - 20 * 60000) return;
+    if(!best || e < best.endAt) best = { endAt: e, src: "schedule" };
+  });
+  return best;
+}
+function endTick(){
+  var chip = document.getElementById("endchip");
+  if(!(S.teacher && S.live && S.live.on && S.sel && S.sel.c)){ if(END.el) endClose(); return; }
+  var e = endToday(), now = Date.now();
+  if(chip){
+    if(!e) chip.textContent = "⏰ 設定下課時間";
+    else { var left = e.endAt - now; chip.textContent = "⏰ " + endHM(e.endAt) + " 下課" + (left > 0 ? "（還有 " + Math.ceil(left / 60000) + " 分鐘）" : "（時間到）"); chip.classList.toggle("warn", left <= 5 * 60000); }
+  }
+  if(e && now >= e.endAt && !END.el){
+    var dk = "mm_end_done_" + endKey(), done = ""; try{ done = localStorage.getItem(dk) || ""; }catch(er){}
+    if(done === String(e.endAt)) return;
+    try{ localStorage.setItem(dk, String(e.endAt)); }catch(er){}
+    if(now - e.endAt < 10 * 60000) endAlarm(e);   // 過了很久才開始上課／重新整理：不再跳出來，免得嚇一跳
+  }
+}
+setInterval(function(){ try{ endTick(); }catch(e){} }, 1000);
+function endStopRing(){ if(END.ring){ clearTimeout(END.ring); END.ring = null; } try{ brkStopSound(); }catch(e){} }
+function endClose(){ endStopRing(); if(END.el){ END.el.remove(); END.el = null; } }
+function endRing(){
+  endStopRing(); if(!brkSoundOn()) return;
+  var until = Date.now() + 30000, tn = brkToneGet();   // 響 30 秒就停，畫面繼續留著
+  (function loop(){ if(!END.el || Date.now() > until){ END.ring = null; return; } var gap = brkPlayTone(tn.id, tn.id === "custom" ? tn.url : null); END.ring = setTimeout(loop, Math.max(1, gap) * 1000); })();
+}
+function endAlarm(e){
+  endClose(); var el = document.createElement("div"); el.id = "endov"; END.el = el; document.body.appendChild(el);
+  el.innerHTML = '<div class="brk-box"><img class="brk-clock" src="icons/break-clock.png" alt="下課"><div class="brk-title">下課時間到了！</div><div class="brk-sub">現在 ' + endHM(Date.now()) + '，這堂課預定 ' + endHM(e.endAt) + ' 結束</div>' +
+    '<div class="brk-act"><button type="button" class="btn" data-en="ext5">再 5 分鐘</button><button type="button" class="btn" data-en="ext10">再 10 分鐘</button><button type="button" class="btn" data-en="brk">開始下課休息倒數</button><button type="button" class="btn" data-en="end">結束上課</button><button type="button" class="btn primary" data-en="close">關閉提醒</button></div></div>';
+  el.onclick = function(ev){
+    var b = ev.target.closest("[data-en]"); if(!b) return; var a = b.dataset.en;
+    if(a === "ext5" || a === "ext10"){ var add = a === "ext5" ? 5 : 10; try{ localStorage.setItem(endKey(), JSON.stringify({ endAt: Date.now() + add * 60000 })); }catch(er){} endClose(); toast("好的，延長 " + add + " 分鐘，" + endHM(Date.now() + add * 60000) + " 再提醒"); }
+    else if(a === "brk"){ endClose(); brkOpenDialog(); }
+    else if(a === "end"){ endClose(); toggleLive(); }
+    else endClose();
+  };
+  endRing();
+}
+async function endEdit(){
+  var e = endToday(), v = await askText("這堂課幾點下課？（24 小時制，例如 15:30；清空＝改回課表的時間）", e ? endHM(e.endAt) : "", "設定", "text", true);
+  if(v === null || v === undefined) return;
+  v = String(v).trim();
+  if(!v){ try{ localStorage.removeItem(endKey()); }catch(er){} toast("已改回課表的下課時間"); endTick(); return; }
+  var m = /^(\d{1,2})\s*[:：點时時]\s*(\d{1,2})?\s*分?$/.exec(v);
+  if(!m || +m[1] > 23 || +(m[2] || 0) > 59){ alert("格式不對，請輸入像 15:30 這樣的時間。"); return; }
+  var d = new Date(); d.setHours(+m[1], +(m[2] || 0), 0, 0);
+  try{ localStorage.setItem(endKey(), JSON.stringify({ endAt: d.getTime() })); localStorage.removeItem("mm_end_done_" + endKey()); }catch(er){}
+  toast("好的，" + endHM(d.getTime()) + " 下課時會提醒你"); endTick();
+}
 function liveRef(){ return clsPath(S.sel) + "/live"; }
 setInterval(function(){ try{ brkRestore(); }catch(e){} }, 2000);
 async function toggleLive(){
@@ -8036,6 +8102,7 @@ function bindLessonNav(cls, backFn, renderFn){
     if(b.id === "mkproj"){ S.creating = S.lesson; renderFn(); return; }
     if(b.dataset.actmenu){ openActMenu(); return; }
     if(b.dataset.brk){ brkOpenDialog(); return; }
+    if(b.dataset.endchip){ endEdit(); return; }
     if(b.dataset.draw){ drOpen(); return; }
     if(b.dataset.ct){ if(window.CT) window.CT.toggleBox(); return; }
     if(b.dataset.actfav){ actToggleFav(b.dataset.actfav).then(renderFn); return; }
