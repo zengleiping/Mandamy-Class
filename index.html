@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
+<script src="firebase-config.js"></script>
+
 
 <meta charset="UTF-8">
 <script src="tts-config.js"></script>
@@ -5673,15 +5675,7 @@ render();
      連線，完全不影響原本秒開、免登入的離線使用體驗。
      ============================================================ -->
 <script>
-  window.FIREBASE_CONFIG = {
-    apiKey: "AIzaSyC6DjPDuRCdSKuZYKKiCSlbWI_eLVM05oc",
-    authDomain: "chinese-onlineboard.firebaseapp.com",
-    databaseURL: "https://chinese-onlineboard-default-rtdb.asia-southeast1.firebasedatabase.app/",
-    projectId: "chinese-onlineboard",
-    storageBucket: "chinese-onlineboard.firebasestorage.app",
-    messagingSenderId: "635462964030",
-    appId: "1:635462964030:web:4059918956a649bf6a926f"
-  };
+  /* Firebase 專案設定在 firebase-config.js */
 </script>
 <script type="module">
 (async function(){
