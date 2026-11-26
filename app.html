@@ -5692,6 +5692,75 @@ function openReportCards(label, names, rng, texts, hwBy){
 // ---------- 助教 ----------
 function isTA(){ return !!(S.teacher && S.teacher.role === "ta"); }
 function needOwner(){ if(isTA()){ alert("這個操作只有老師本人可以做（助教不能刪除、改名單或改設定）。"); return false; } return true; }
+// ---------- 設定 → 老師帳號（只有管理員看得到）：新增老師、重設密碼、停用、刪除，建立後直接複製邀請訊息 ----------
+function teacherAdminPanelHtml(){
+  if(!S.teacher || !S.teacher.isAdmin) return "";
+  return '<div class="panel" id="tadm"><h3>老師帳號（管理員）</h3><p class="note" style="margin:0 0 8px;">邀請別的老師來用這個平台：在下面填「帳號」就按「新增並複製邀請訊息」，把複製好的訊息傳給對方就好。每位老師的班級、教材、紀錄都是分開的，互相看不到。忘記密碼時按「重設密碼」。</p>' +
+    '<div id="tadm-list" class="note">載入中…</div>' +
+    '<div class="tools" style="margin-top:10px;flex-wrap:wrap;"><input type="text" id="tadm-name" placeholder="老師的名字（例如：王老師）" style="max-width:200px;"><input type="text" id="tadm-user" placeholder="登入帳號（英文或數字，例如 wang）" style="max-width:240px;"><input type="text" id="tadm-pw" placeholder="密碼" style="max-width:150px;"><button class="btn sm" id="tadm-gen" title="自動產生一組好記的密碼">🎲 換一組</button><button class="btn sm" id="tadm-add">＋ 新增並複製邀請訊息</button></div>' +
+    '<div id="tadm-msg" style="display:none;margin-top:10px;"><div class="note" style="margin-bottom:4px;">邀請訊息（已複製，貼給對方即可；沒有複製成功的話請手動選取）</div><textarea id="tadm-msgbox" readonly rows="6" style="width:100%;font-size:14px;"></textarea></div></div>';
+}
+function tadmPw(){ var cs = "abcdefghjkmnpqrstuvwxyz23456789", a = crypto.getRandomValues(new Uint8Array(8)); return Array.prototype.map.call(a, function(x){ return cs[x % cs.length]; }).join(""); }
+function tadmInvite(name, user, pw){
+  var url = location.href.split("#")[0].split("?")[0];
+  return (name ? name + " " : "") + "您好，邀請您使用曼米中文平台：\n網址：" + url + "\n帳號：" + user + "\n密碼：" + pw + "\n\n第一次登入後就是您自己的帳號，班級和教材都是分開的。";
+}
+async function tadmCopy(text){
+  try{ await navigator.clipboard.writeText(text); return true; }catch(e){}
+  try{ var t = document.createElement("textarea"); t.value = text; document.body.appendChild(t); t.select(); var ok = document.execCommand("copy"); t.remove(); return ok; }catch(e){ return false; }
+}
+function tadmShow(text, copied){
+  var m = document.getElementById("tadm-msg"), b = document.getElementById("tadm-msgbox"); if(!m) return;
+  m.style.display = ""; b.value = text; if(!copied){ b.focus(); b.select(); }
+}
+async function tadmRefresh(){
+  var box = document.getElementById("tadm-list"); if(!box) return;
+  var accs = {}; try{ accs = await fbGet("teacherAccounts") || {}; }catch(e){ box.textContent = "讀取失敗，請檢查網路。"; return; }
+  var ids = Object.keys(accs).sort(function(a, b){ return (accs[a].createdAt || 0) - (accs[b].createdAt || 0); });
+  box.className = ""; box.innerHTML = ids.map(function(id){
+    var a = accs[id], me = id === S.teacher.id;
+    return '<div class="slot"><div class="slot-time" style="min-width:140px;">' + esc(a.displayName || a.username || id) + '</div><div class="slot-main note">帳號：' + esc(id) + (a.isAdmin ? '・管理員' : '') + (a.disabled ? '・<b style="color:var(--seal);">已停用</b>' : '') + (me ? '・就是你' : '') + (a.uid ? '' : '・還沒登入過') + '</div><div class="slot-act">' +
+      '<button class="btn sm" data-ta="reset" data-id="' + esc(id) + '">重設密碼</button>' + (me ? '' : '<button class="btn sm" data-ta="dis" data-id="' + esc(id) + '">' + (a.disabled ? "啟用" : "停用") + '</button><button class="btn sm danger" data-ta="del" data-id="' + esc(id) + '">刪除</button>') + '</div></div>';
+  }).join("") || '<div class="note">還沒有老師帳號。</div>';
+  box._accs = accs;
+}
+async function tadmHash(pw){ var salt = hex(crypto.getRandomValues(new Uint8Array(16))); return { saltHex: salt, hashHex: await pbkdf2(pw, salt), iterations: PBKDF2_ITERATIONS }; }
+async function tadmAct(a, id){
+  var accs = (document.getElementById("tadm-list") || {})._accs || {}, acc = accs[id]; if(!acc) return;
+  if(a === "dis"){ await fbUpdate("teacherAccounts/" + id, { disabled: !acc.disabled }); toast(acc.disabled ? "已啟用" : "已停用"); }
+  else if(a === "del"){
+    if(!confirm("確定要刪除「" + (acc.displayName || id) + "」（@" + id + "）？這位老師的教材庫會一併刪除，無法復原！")) return;
+    try{ if(acc.uid) await fbSet("uidMap/" + acc.uid, null); }catch(e){}
+    await fbSet("teacherAccounts/" + id, null); await fbSet("teacherLibraries/" + id, null); toast("已刪除");
+  } else if(a === "reset"){
+    var v = prompt("「" + (acc.displayName || id) + "」的新密碼（至少 6 碼；留空＝自動產生一組）", ""); if(v === null) return;
+    var pw = v.trim() || tadmPw(); if(pw.length < 6){ alert("密碼至少 6 碼。"); return; }
+    var h = await tadmHash(pw), patch = { saltHex: h.saltHex, hashHex: h.hashHex, iterations: h.iterations };
+    if(id === S.teacher.id){ alert("要改自己的密碼，請登出再登入一次後，到簡報頁的「教師帳號管理」修改。"); return; }
+    if(acc.uid || acc.authGen != null){ patch.authGen = (acc.authGen || 0) + 1; patch.uid = null; try{ if(acc.uid) await fbSet("uidMap/" + acc.uid, null); }catch(e){} }
+    await fbUpdate("teacherAccounts/" + id, patch);
+    var txt = tadmInvite(acc.displayName || "", id, pw).replace("邀請您使用", "您的新密碼已設定，請使用"); tadmShow(txt, await tadmCopy(txt)); toast("密碼已重設，訊息已複製");
+  }
+  tadmRefresh();
+}
+function bindTeacherAdmin(){
+  var panel = document.getElementById("tadm"); if(!panel) return;
+  var pwEl = document.getElementById("tadm-pw"); pwEl.value = tadmPw();
+  document.getElementById("tadm-gen").onclick = function(){ pwEl.value = tadmPw(); };
+  document.getElementById("tadm-add").onclick = async function(){
+    var name = document.getElementById("tadm-name").value.trim(), user = sanitizeUser(document.getElementById("tadm-user").value), pw = pwEl.value.trim();
+    if(user.length < 3){ alert("登入帳號至少 3 個字，只能用英文字母、數字、底線。"); return; }
+    if(pw.length < 6){ alert("密碼至少 6 碼。"); return; }
+    var cur = null; try{ cur = await fbGet("teacherAccounts/" + user); }catch(e){}
+    if(cur){ alert("這個帳號已經有人用了，請換一個。"); return; }
+    var h = await tadmHash(pw);
+    await fbSet("teacherAccounts/" + user, { id: user, username: user, displayName: name || user, isAdmin: false, disabled: false, createdAt: Date.now(), saltHex: h.saltHex, hashHex: h.hashHex, iterations: h.iterations });
+    var txt = tadmInvite(name, user, pw), ok = await tadmCopy(txt); tadmShow(txt, ok); toast(ok ? "已新增，邀請訊息已複製" : "已新增，請手動複製下面的訊息");
+    document.getElementById("tadm-name").value = ""; document.getElementById("tadm-user").value = ""; pwEl.value = tadmPw(); tadmRefresh();
+  };
+  panel.addEventListener("click", function(e){ var b = e.target.closest("[data-ta]"); if(b) tadmAct(b.dataset.ta, b.dataset.id); });
+  tadmRefresh();
+}
 function assistantsPanelHtml(list){
   var ids = Object.keys(list);
   return '<div class="panel owner-only"><h3>助教</h3><p class="note" style="margin:0 0 8px;">讓另一位老師帳號當你的助教：可以看課表、進班級上課、批改聯絡簿、填課堂記錄；不能刪除、不能改名單與設定、不能備份還原。助教登入時，在登入頁的「助教登入」欄位填你的帳號。（這是介面上的限制，不是資料庫層級的權限。）</p>' +
@@ -6190,11 +6259,12 @@ async function setSchoolColor(name, color){
 }
 function renderSettings(){
   S.focus = false;
-  var html = '<div class="head-row"><div style="flex:1;"><h2>設定</h2><div class="note">備份與還原、助教管理</div></div></div>';
+  var html = '<div class="head-row"><div style="flex:1;"><h2>設定</h2><div class="note">備份與還原、助教管理、老師帳號</div></div></div>';
   html += '<div class="panel owner-only"><h3>備份與還原</h3><p class="note" style="margin:0 0 8px;">把年度、學校、班級、開放設定、複習單元、教材分冊等平台資料存成一個檔案，萬一資料被改壞可以還原。「完整備份」另外包含聯絡簿（作業、學生繳交與照片）和課堂記錄截圖，檔案會比較大。生詞教材請用教材庫、測驗簡報請用簡報頁各自備份。</p><div class="tools"><button class="btn sm" id="bk-out">下載備份</button><button class="btn sm" id="bk-full">下載完整備份（含聯絡簿、截圖）</button><button class="btn sm" id="bk-in">從備份還原…</button><label style="display:flex;align-items:center;gap:6px;margin:0;">自動備份 <select id="bk-days"><option value="0">關閉</option><option value="1">每天</option><option value="3">每 3 天</option><option value="7">每週</option><option value="14">每 2 週</option></select></label><input type="file" id="bk-file" accept=".json,application/json" style="display:none;"></div></div>';
   html += schoolColorPanelHtml();
   html += assistantsPanelHtml(S.plat.assistants || {});
-  shell(html); setCrumb([]); bindListPage();
+  html += teacherAdminPanelHtml();
+  shell(html); setCrumb([]); bindListPage(); bindTeacherAdmin();
   var scp = document.getElementById("scol");
   if(scp){
     scp.onchange = async function(e){ var i = e.target.closest("[data-sc]"); if(!i) return; await setSchoolColor(i.dataset.sc, i.value); };
