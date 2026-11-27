@@ -3936,7 +3936,9 @@ window.mmTA = (function(){
       for(var k = 0; k < s.images.length; k++){
         var im = s.images[k], sc = await loadScaledImage(zip, im.path, 1000, im.crop, imgCache);
         if(!sc){ page.warnings.push("有一張圖片格式瀏覽器無法顯示（" + im.path.split("/").pop() + "），已略過"); continue; }
-        page.images.push({ blob: sc.blob, ar: sc.ar, x: pctX(im.box.x + im.box.cx / 2), y: pctY(im.box.y + im.box.cy / 2), w: pctX(im.box.cx), h: pctY(im.box.cy) });
+        var pim = { blob: sc.blob, ar: sc.ar, x: pctX(im.box.x + im.box.cx / 2), y: pctY(im.box.y + im.box.cy / 2), w: pctX(im.box.cx), h: pctY(im.box.cy) };
+        ["x", "y", "w", "h"].forEach(function(kk){ if(!isFinite(pim[kk])) delete pim[kk]; });   // 算出 NaN 的位置／大小不要存（存了會害整頁無法同步）
+        page.images.push(pim);
       }
       s.shapes.forEach(function(sh){
         var b = sh.box;
@@ -5342,6 +5344,18 @@ window.mmTA = (function(){
     });
     return out.length >= 2 ? out : pts;
   }
+  // 寫進房間資料：Firebase 不接受 NaN／undefined（會丟出 "update failed: values argument contains NaN"，整次更新失敗，學生就收不到）。
+  // 遇到就把 NaN 轉成 null（＝刪掉那個欄位，圖片／文字會退回預設大小）再寫一次，不讓一個壞欄位擋住整頁的同步。
+  function mmFbUpdate(path, val){
+    try{ return update(ref(db, path), val); }
+    catch(e){
+      if(/NaN|undefined|Infinity/i.test(String((e && e.message) || e))){
+        console.warn("[mm] 寫入含有 NaN／undefined 的欄位，已清掉後重寫：", e && e.message);
+        return update(ref(db, path), JSON.parse(JSON.stringify(val)));
+      }
+      throw e;
+    }
+  }
   function writeProgress(qId, patch){
     var pk = inRoom() ? examPrivateFor(qId) : null;
     if(pk && pk !== "__none__"){ update(ref(db, "rooms/" + activeRoomId + "/examProg/" + pk + "/" + qId), isWhiteboardQ(qId) ? wbPrivatePatch(qId, patch) : patch); return; }
@@ -5362,7 +5376,7 @@ window.mmTA = (function(){
         patch = Object.assign({}, patch); patch.strokes = patch.strokes.filter(function(st){ return !(st && pids[st.id]); });
       }
     }
-    if(inRoom()){ protectTeacherInk(qId, patch); update(ref(db, "rooms/" + activeRoomId + "/sharedProgress/" + qId), strokeDeltaPatch(qId, patch)); }
+    if(inRoom()){ protectTeacherInk(qId, patch); mmFbUpdate("rooms/" + activeRoomId + "/sharedProgress/" + qId, strokeDeltaPatch(qId, patch)); }
     else { Object.assign(getProgress(qId), patch); saveFS(); renderStage(); }
   }
 
